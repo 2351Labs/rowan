@@ -1,0 +1,29 @@
+:host {
+  display: inline-flex;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--rowan-color-muted);
+  cursor: pointer;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  padding: 0.45rem 0.6rem;
+}
+
+:host([active]) .tab {
+  border-bottom-color: var(--rowan-color-accent);
+  color: var(--rowan-color-fg);
+  font-weight: 600;
+}
+
+.tab:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}

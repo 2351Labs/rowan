@@ -1,0 +1,114 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.item {
+  align-items: center;
+  background: var(--rowan-surface-subtle, #f7f8f5);
+  border: var(--rowan-border-width) solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-md);
+  display: grid;
+  gap: var(--rowan-space-3);
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  padding: var(--rowan-space-3);
+}
+
+.meta {
+  min-width: 0;
+}
+
+.name,
+.details {
+  margin: 0;
+}
+
+.name {
+  color: var(--rowan-color-fg);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details {
+  color: var(--rowan-color-muted, #606b63);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-xs, 0.75rem);
+}
+
+.state {
+  align-items: end;
+  display: grid;
+  gap: var(--rowan-space-1);
+  justify-items: end;
+}
+
+.status {
+  color: var(--rowan-color-fg);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-xs, 0.75rem);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.progress {
+  block-size: 0.5rem;
+  inline-size: 6rem;
+}
+
+.actions {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--rowan-space-2);
+}
+
+.action {
+  background: var(--rowan-field-bg, #ffffff);
+  border: var(--rowan-border-width) solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-sm);
+  color: var(--rowan-color-fg);
+  cursor: pointer;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-xs, 0.75rem);
+  min-block-size: 2rem;
+  padding: 0 var(--rowan-space-2);
+}
+
+.action:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+:host([status="failed"]) .status {
+  color: var(--rowan-color-danger);
+}
+
+:host([status="success"]) .status {
+  color: var(--rowan-color-success, #2f6a4d);
+}
+
+:host([disabled]) .item {
+  opacity: 0.6;
+}
+
+.action:disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 40rem) {
+  .item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .state,
+  .actions {
+    justify-items: start;
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,2 @@
+function c({steps:i=[],events:s=[]}={}){const n=Array.isArray(i)?i.filter(t=>typeof t=="string"&&t.trim().length>0).map(t=>t.trim()):[],e=Array.isArray(s)?s.filter(t=>typeof t=="string"&&t.trim().length>0).map(t=>t.trim()):[],r=[];if(n.length>0){r.push("Interaction script:");for(const[t,o]of n.entries())r.push(`${t+1}. ${o}`)}return e.length>0&&(r.length>0&&r.push(""),r.push(`Expected events: ${e.join(", ")}`)),{docs:{description:{story:r.join(`
+`)}},rowanEventTrace:{script:n,events:e}}}export{c};

@@ -1,0 +1,29 @@
+:host {
+  display: inline-grid;
+  gap: 0.35rem;
+  min-width: 8rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.progress {
+  background: #e5ebe3;
+  border-radius: 999px;
+  height: 0.5rem;
+  overflow: hidden;
+}
+
+.bar {
+  background: var(--rowan-color-accent);
+  border-radius: 999px;
+  height: 100%;
+  width: 0;
+}
+
+.meta {
+  color: var(--rowan-color-muted);
+  font-family: var(--rowan-font-family);
+  font-size: 0.75rem;
+}

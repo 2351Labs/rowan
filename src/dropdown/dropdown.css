@@ -1,0 +1,16 @@
+:host {
+  display: inline-block;
+  position: relative;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.panel {
+  left: 0;
+  min-width: 12rem;
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  z-index: 30;
+}

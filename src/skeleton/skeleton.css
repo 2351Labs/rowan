@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e6ebe5 0%, #f4f7f2 45%, #e6ebe5 100%);
+  background-size: 200% 100%;
+  border-radius: var(--rowan-radius-sm);
+  display: block;
+  height: 0.95rem;
+}
+
+.skeleton.animated {
+  animation: rowan-skeleton-shimmer 1.1s linear infinite;
+}
+
+:host([shape="rect"]) .skeleton {
+  border-radius: var(--rowan-radius-md);
+  height: 4rem;
+}
+
+:host([shape="circle"]) .skeleton {
+  border-radius: 50%;
+  height: 2rem;
+  width: 2rem;
+}
+
+@keyframes rowan-skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}

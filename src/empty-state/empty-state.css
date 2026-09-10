@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.container {
+  border: var(--rowan-border-width) dashed var(--rowan-color-border);
+  border-radius: var(--rowan-radius-lg);
+  display: grid;
+  gap: var(--rowan-space-2);
+  justify-items: center;
+  padding: var(--rowan-space-5);
+  text-align: center;
+}
+
+.icon {
+  color: var(--rowan-color-muted);
+  font-size: 1.25rem;
+}
+
+.title {
+  color: var(--rowan-color-fg);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-lg);
+  margin: 0;
+}
+
+.body {
+  color: var(--rowan-color-muted);
+  font-family: var(--rowan-font-family);
+  line-height: var(--rowan-line-height);
+}
+
+.actions {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--rowan-space-2);
+}

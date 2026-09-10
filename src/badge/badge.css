@@ -1,0 +1,48 @@
+:host {
+  display: inline-flex;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.badge {
+  align-items: center;
+  background: #e8f0eb;
+  border: var(--rowan-border-width) solid #b8cfc0;
+  border-radius: 999px;
+  color: var(--rowan-color-fg);
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  font-weight: 600;
+  line-height: 1;
+  min-block-size: 1.5rem;
+  padding: 0 var(--rowan-space-2);
+}
+
+:host([tone="success"]) .badge {
+  background: #deece4;
+  border-color: #a6c7b2;
+}
+
+:host([tone="warning"]) .badge {
+  background: #f2e6cf;
+  border-color: #d4bd8a;
+}
+
+:host([tone="danger"]) .badge {
+  background: #f6dfdc;
+  border-color: #d9a7a1;
+}
+
+:host([size="sm"]) .badge {
+  min-block-size: 1.25rem;
+  padding-inline: var(--rowan-space-2);
+}
+
+:host([size="lg"]) .badge {
+  font-size: var(--rowan-font-size-md);
+  min-block-size: 1.75rem;
+  padding-inline: var(--rowan-space-3);
+}

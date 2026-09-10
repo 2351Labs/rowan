@@ -1,0 +1,43 @@
+:host {
+  display: inline-block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.avatar {
+  align-items: center;
+  background: #dbe5dd;
+  border-radius: 50%;
+  color: var(--rowan-color-forest-900);
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: 0.82rem;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 2rem;
+}
+
+:host([size="sm"]) .avatar {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+:host([size="lg"]) .avatar {
+  height: 2.625rem;
+  width: 2.625rem;
+}
+
+.image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.initials {
+  line-height: 1;
+}

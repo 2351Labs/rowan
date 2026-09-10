@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.container {
+  align-items: center;
+  color: var(--rowan-color-fg);
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  gap: var(--rowan-space-3);
+}
+
+button {
+  background: var(--rowan-color-surface);
+  border: var(--rowan-border-width) solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-sm);
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0.35rem 0.65rem;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

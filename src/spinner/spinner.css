@@ -1,0 +1,51 @@
+:host {
+  display: inline-flex;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.spinner {
+  animation: rowan-spin 700ms linear infinite;
+  border: 2px solid rgb(29 67 47 / 24%);
+  border-radius: 50%;
+  border-top-color: var(--rowan-color-accent);
+  display: inline-block;
+  height: 1rem;
+  width: 1rem;
+}
+
+:host([size="sm"]) .spinner {
+  height: 0.8rem;
+  width: 0.8rem;
+}
+
+:host([size="lg"]) .spinner {
+  border-width: 3px;
+  height: 1.35rem;
+  width: 1.35rem;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@keyframes rowan-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

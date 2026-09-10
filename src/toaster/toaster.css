@@ -1,0 +1,65 @@
+:host {
+  bottom: calc(var(--rowan-space-3) + env(safe-area-inset-bottom));
+  display: block;
+  inset-inline: var(--rowan-space-3);
+  pointer-events: none;
+  position: fixed;
+  z-index: var(--rowan-toaster-z-index, 1000);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.stack {
+  display: grid;
+  gap: var(--rowan-space-2);
+}
+
+.stack rowan-toast {
+  pointer-events: auto;
+}
+
+@media (min-width: 48rem) {
+  :host {
+    inset-inline: auto;
+    max-width: min(26rem, calc(100vw - var(--rowan-space-8)));
+    transform: none;
+  }
+
+  :host(:not([placement])),
+  :host([placement="top-end"]) {
+    bottom: auto;
+    right: var(--rowan-space-4);
+    top: var(--rowan-space-4);
+  }
+
+  :host([placement="top-start"]) {
+    bottom: auto;
+    left: var(--rowan-space-4);
+    right: auto;
+    top: var(--rowan-space-4);
+  }
+
+  :host([placement="bottom-start"]) {
+    bottom: calc(var(--rowan-space-4) + env(safe-area-inset-bottom));
+    left: var(--rowan-space-4);
+    right: auto;
+    top: auto;
+  }
+
+  :host([placement="bottom-end"]) {
+    bottom: calc(var(--rowan-space-4) + env(safe-area-inset-bottom));
+    right: var(--rowan-space-4);
+    top: auto;
+  }
+
+  :host([placement="bottom-center"]) {
+    bottom: calc(var(--rowan-space-4) + env(safe-area-inset-bottom));
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    width: min(26rem, calc(100vw - var(--rowan-space-8)));
+  }
+}

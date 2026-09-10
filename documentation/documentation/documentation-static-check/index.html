@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rowan Documentation</title>
+    <script type="module" crossorigin src="/assets/index-j1UuoT_n.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CUmVQmg9.css">
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#getting-started" aria-label="Rowan documentation home">
+        <span class="brand-mark">R</span>
+        <span class="brand-copy">
+          <span class="eyebrow">ROWAN UI</span>
+          <strong>Documentation</strong>
+        </span>
+      </a>
+
+      <div class="topbar-controls">
+        <rowan-text-field
+          id="docs-search"
+          type="search"
+          label="Search topics"
+          placeholder="Filter topics"
+        ></rowan-text-field>
+        <rowan-switch id="theme-toggle" label="Toggle dark theme">Dark theme</rowan-switch>
+        <rowan-button id="quickstart-trigger" variant="secondary" size="sm">
+          Quick Start
+        </rowan-button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Documentation navigation sidebar">
+        <div class="sidebar-shell">
+          <p class="sidebar-eyebrow">Rowan Docs</p>
+          <nav id="docs-nav" class="sidebar-nav" aria-label="Documentation sections"></nav>
+        </div>
+      </aside>
+
+      <main id="docs-main" class="docs-main" tabindex="-1"></main>
+
+      <aside class="toc-wrap" aria-label="Page table of contents">
+        <rowan-card>
+          <p slot="title" class="toc-title">On this page</p>
+          <nav id="docs-toc" class="toc" aria-label="Page section headings"></nav>
+        </rowan-card>
+      </aside>
+    </div>
+
+    <rowan-dialog id="quickstart-dialog">
+      <h2 slot="title">Quick Start</h2>
+      <p>
+        Install the package, import tokens, and register either all components or only what your
+        page needs.
+      </p>
+      <pre class="code-block"><code id="quickstart-code"></code></pre>
+      <div slot="actions" class="dialog-actions">
+        <rowan-button id="copy-quickstart" variant="secondary">Copy snippet</rowan-button>
+        <rowan-button id="close-quickstart">Close</rowan-button>
+      </div>
+    </rowan-dialog>
+
+    <noscript>
+      Rowan documentation requires JavaScript to load examples and navigation.
+    </noscript>
+
+  </body>
+</html>

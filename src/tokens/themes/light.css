@@ -1,0 +1,27 @@
+:root,
+[data-theme="light"] {
+  --rowan-color-bg: var(--rowan-color-sand-50);
+  --rowan-color-fg: var(--rowan-color-ink-900);
+  --rowan-color-muted: var(--rowan-color-ink-700);
+  --rowan-color-accent: var(--rowan-color-forest-700);
+  --rowan-color-border: #d8dcd5;
+  --rowan-color-danger: var(--rowan-color-danger-600);
+
+  --rowan-button-bg: var(--rowan-color-accent);
+  --rowan-button-fg: #ffffff;
+  --rowan-field-bg: #ffffff;
+  --rowan-card-bg: #ffffff;
+  --rowan-dialog-bg: #ffffff;
+  --rowan-calendar-bg: var(--rowan-card-bg);
+  --rowan-calendar-fg: var(--rowan-color-fg);
+  --rowan-calendar-muted: var(--rowan-color-muted);
+  --rowan-calendar-border: var(--rowan-color-border);
+  --rowan-calendar-accent: var(--rowan-color-accent);
+  --rowan-calendar-accent-contrast: #ffffff;
+  --rowan-toast-bg: var(--rowan-card-bg);
+  --rowan-toast-fg: var(--rowan-color-fg);
+  --rowan-toast-border: var(--rowan-color-border);
+  --rowan-toast-shadow: 0 10px 24px rgb(16 28 22 / 18%);
+  --rowan-toaster-z-index: 1000;
+  --rowan-overlay-backdrop: rgb(16 28 22 / 48%);
+}

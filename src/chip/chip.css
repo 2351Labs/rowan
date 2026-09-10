@@ -1,0 +1,52 @@
+:host {
+  display: inline-block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.chip {
+  align-items: center;
+  background: #eef3ef;
+  border: var(--rowan-border-width) solid #c9d6cb;
+  border-radius: 999px;
+  color: var(--rowan-color-fg);
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  gap: var(--rowan-space-1);
+  line-height: 1;
+  padding: 0.28rem 0.55rem;
+}
+
+:host([tone="success"]) .chip {
+  background: #e5f1e8;
+  border-color: #b5cdbb;
+}
+
+:host([tone="warning"]) .chip {
+  background: #f6eddc;
+  border-color: #d8c8a2;
+}
+
+:host([tone="danger"]) .chip {
+  background: #f7e4e1;
+  border-color: #dfb6b0;
+}
+
+:host([size="sm"]) .chip {
+  font-size: 0.75rem;
+  padding: 0.18rem 0.45rem;
+}
+
+:host([size="lg"]) .chip {
+  font-size: var(--rowan-font-size-md);
+  padding: 0.35rem 0.7rem;
+}
+
+.prefix,
+.suffix {
+  align-items: center;
+  display: inline-flex;
+}

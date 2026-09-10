@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.card {
+  background: var(--rowan-card-bg, #ffffff);
+  border: var(--rowan-border-width) solid var(--rowan-card-border, var(--rowan-color-border));
+  border-radius: var(--rowan-radius-lg);
+  color: var(--rowan-color-fg);
+  display: grid;
+  gap: var(--rowan-space-4);
+  padding: var(--rowan-space-4);
+}
+
+.media,
+.header,
+.title,
+.footer,
+.actions {
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--rowan-font-size-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.body {
+  color: var(--rowan-color-fg);
+  line-height: var(--rowan-line-height);
+}
+
+.actions {
+  display: flex;
+  gap: var(--rowan-space-2);
+  justify-content: flex-end;
+}

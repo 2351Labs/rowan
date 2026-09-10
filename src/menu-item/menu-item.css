@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.item {
+  background: transparent;
+  border: none;
+  border-radius: var(--rowan-radius-sm);
+  color: var(--rowan-color-fg);
+  cursor: pointer;
+  display: block;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  width: 100%;
+}
+
+.item:hover:not(:disabled) {
+  background: #eef3ef;
+}
+
+.item:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+.item:disabled {
+  color: var(--rowan-color-muted);
+  cursor: not-allowed;
+}

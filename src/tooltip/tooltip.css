@@ -1,0 +1,30 @@
+:host {
+  display: inline-block;
+  position: relative;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.trigger {
+  display: inline-flex;
+}
+
+.tooltip {
+  background: #1f2421;
+  border-radius: var(--rowan-radius-sm);
+  color: #ffffff;
+  font-family: var(--rowan-font-family);
+  font-size: 0.75rem;
+  left: 50%;
+  line-height: 1.2;
+  max-width: 16rem;
+  padding: 0.3rem 0.45rem;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+}

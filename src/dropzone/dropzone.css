@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.surface {
+  align-items: center;
+  background: var(--rowan-surface-subtle, #f7f8f5);
+  border: 2px dashed var(--rowan-color-border);
+  border-radius: var(--rowan-radius-lg);
+  cursor: pointer;
+  display: grid;
+  gap: var(--rowan-space-2);
+  justify-items: center;
+  min-block-size: 8rem;
+  padding: var(--rowan-space-4);
+  text-align: center;
+}
+
+.surface:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+.surface.drag-active,
+:host([drag-active]) .surface {
+  border-color: var(--rowan-color-accent);
+  background: var(--rowan-color-sand-100, #efede4);
+}
+
+.label,
+.description {
+  margin: 0;
+}
+
+.label {
+  color: var(--rowan-color-fg);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-md);
+  font-weight: 600;
+}
+
+.description {
+  color: var(--rowan-color-muted, #606b63);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+}
+
+:host([disabled]) .surface {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

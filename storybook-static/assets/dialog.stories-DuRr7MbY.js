@@ -1,0 +1,44 @@
+var x=Object.defineProperty;var O=e=>{throw TypeError(e)};var S=(e,o,t)=>o in e?x(e,o,{enumerable:!0,configurable:!0,writable:!0,value:t}):e[o]=t;var b=(e,o,t)=>S(e,typeof o!="symbol"?o+"":o,t),v=(e,o,t)=>o.has(e)||O("Cannot "+t);var s=(e,o,t)=>(v(e,o,"read from private field"),t?t.call(e):o.get(e)),p=(e,o,t)=>o.has(e)?O("Cannot add the same private member more than once"):o instanceof WeakSet?o.add(e):o.set(e,t),h=(e,o,t,i)=>(v(e,o,"write to private field"),i?i.call(e,t):o.set(e,t),t),r=(e,o,t)=>(v(e,o,"access private method"),t);import{B as R,d as z}from"./define-C1bbOtVV.js";import{e as N}from"./events-CaQanPdG.js";import"./button-Cnv2b6fF.js";import{c as D}from"./event-script-39NhYcVW.js";const Z=["button:not([disabled])","[href]","input:not([disabled])","select:not([disabled])","textarea:not([disabled])","[tabindex]:not([tabindex='-1'])"].join(",");var u,l,C,m,I,f,n,L,w,X,A,Y,K,G,E,F;class g extends R{constructor(){super(...arguments);p(this,n);p(this,u,null);p(this,l,null);p(this,C,null);p(this,m,null);p(this,I,!1);p(this,f,t=>{if(!this.open)return;const i=t.target;i instanceof Node&&(r(this,n,F).call(this,i)||r(this,n,G).call(this))})}disconnectedCallback(){super.disconnectedCallback(),document.removeEventListener("focusin",s(this,f),!0)}get open(){return this.readBoolean("open")}set open(t){this.reflectBoolean("open",!!t)}show(){this.open=!0}hide(){this.open=!1}render(){s(this,l)||(this.renderRoot.innerHTML=`
+        <div class="overlay" part="overlay" hidden>
+          <div class="backdrop" part="backdrop"></div>
+          <section class="panel" part="panel" tabindex="-1">
+            <header class="header" part="header">
+              <div class="title" part="title"><slot name="title"></slot></div>
+              <button class="close" part="close" type="button" aria-label="Close dialog">×</button>
+            </header>
+            <div class="body" part="body"><slot></slot></div>
+            <footer class="actions" part="actions"><slot name="actions"></slot></footer>
+          </section>
+        </div>
+      `,h(this,u,this.renderRoot.querySelector(".overlay")),h(this,l,this.renderRoot.querySelector(".panel")),h(this,C,this.renderRoot.querySelector(".close")),this.listen(s(this,C),"click",()=>{r(this,n,w).call(this,"close-button")}),this.listen(s(this,u),"click",t=>{(t.target===s(this,u)||t.target===s(this,u).firstElementChild)&&r(this,n,w).call(this,"backdrop")}),this.listen(s(this,l),"keydown",t=>{if(t.key==="Escape"){t.preventDefault(),r(this,n,w).call(this,"escape");return}t.key==="Tab"&&r(this,n,K).call(this,t)})),r(this,n,L).call(this),r(this,n,X).call(this)}}u=new WeakMap,l=new WeakMap,C=new WeakMap,m=new WeakMap,I=new WeakMap,f=new WeakMap,n=new WeakSet,L=function(){this.internals&&(!this.hasAttribute("role")&&"role"in this.internals&&(this.internals.role="dialog"),!this.hasAttribute("aria-modal")&&"ariaModal"in this.internals&&(this.internals.ariaModal="true"))},w=function(t){this.open&&(this.open=!1,N(this,"rowan-close",{reason:t}))},X=function(){if(this.open!==s(this,I)){if(h(this,I,this.open),this.open){r(this,n,A).call(this);return}r(this,n,Y).call(this)}},A=function(){h(this,m,document.activeElement instanceof HTMLElement?document.activeElement:null),s(this,u).hidden=!1,document.addEventListener("focusin",s(this,f),!0),queueMicrotask(()=>{this.open&&r(this,n,G).call(this)})},Y=function(){s(this,u).hidden=!0,document.removeEventListener("focusin",s(this,f),!0),s(this,m)&&typeof s(this,m).focus=="function"&&s(this,m).focus(),h(this,m,null)},K=function(t){const i=r(this,n,E).call(this);if(i.length===0){t.preventDefault(),s(this,l).focus();return}const d=i[0],a=i[i.length-1],c=this.shadowRoot.activeElement||document.activeElement;if(t.shiftKey){(c===d||c===s(this,l))&&(t.preventDefault(),a.focus());return}c===a&&(t.preventDefault(),d.focus())},G=function(){(r(this,n,E).call(this)[0]??s(this,l)).focus()},E=function(){const t=new Set,i=[],d=a=>{a instanceof HTMLElement&&(t.has(a)||a.matches(Z)&&(t.add(a),i.push(a)))};return s(this,l).querySelectorAll(Z).forEach(a=>{d(a)}),s(this,l).querySelectorAll("slot").forEach(a=>{a.assignedElements({flatten:!0}).forEach(c=>{d(c),typeof c.querySelectorAll=="function"&&c.querySelectorAll(Z).forEach(V=>{d(V)})})}),i},F=function(t){return!!(t instanceof HTMLElement&&this.contains(t)||this.shadowRoot&&this.shadowRoot.contains(t))},b(g,"styleUrl",new URL("data:text/css;base64,Omhvc3QgewogIGRpc3BsYXk6IGNvbnRlbnRzOwp9Cgo6aG9zdChbaGlkZGVuXSkgewogIGRpc3BsYXk6IG5vbmU7Cn0KCi5vdmVybGF5IHsKICBhbGlnbi1pdGVtczogY2VudGVyOwogIGRpc3BsYXk6IGdyaWQ7CiAgaW5zZXQ6IDA7CiAganVzdGlmeS1pdGVtczogY2VudGVyOwogIHBhZGRpbmc6IHZhcigtLXJvd2FuLXNwYWNlLTYpOwogIHBvc2l0aW9uOiBmaXhlZDsKICB6LWluZGV4OiAxMDAwOwp9Cgoub3ZlcmxheVtoaWRkZW5dIHsKICBkaXNwbGF5OiBub25lOwp9CgouYmFja2Ryb3AgewogIGJhY2tncm91bmQ6IHZhcigtLXJvd2FuLW92ZXJsYXktYmFja2Ryb3AsIHJnYigxNiAyOCAyMiAvIDQ4JSkpOwogIGluc2V0OiAwOwogIHBvc2l0aW9uOiBhYnNvbHV0ZTsKfQoKLnBhbmVsIHsKICBiYWNrZ3JvdW5kOiB2YXIoLS1yb3dhbi1kaWFsb2ctYmcsICNmZmZmZmYpOwogIGJvcmRlcjogdmFyKC0tcm93YW4tYm9yZGVyLXdpZHRoKSBzb2xpZCB2YXIoLS1yb3dhbi1jb2xvci1ib3JkZXIpOwogIGJvcmRlci1yYWRpdXM6IHZhcigtLXJvd2FuLXJhZGl1cy1sZyk7CiAgY29sb3I6IHZhcigtLXJvd2FuLWNvbG9yLWZnKTsKICBkaXNwbGF5OiBncmlkOwogIGdhcDogdmFyKC0tcm93YW4tc3BhY2UtNCk7CiAgbWF4LWlubGluZS1zaXplOiBtaW4oMzZyZW0sIDEwMCUpOwogIG1pbi1pbmxpbmUtc2l6ZTogbWluKDIycmVtLCAxMDAlKTsKICBwYWRkaW5nOiB2YXIoLS1yb3dhbi1zcGFjZS00KTsKICBwb3NpdGlvbjogcmVsYXRpdmU7CiAgd2lkdGg6IDEwMCU7Cn0KCi5oZWFkZXIgewogIGFsaWduLWl0ZW1zOiBzdGFydDsKICBkaXNwbGF5OiBmbGV4OwogIGdhcDogdmFyKC0tcm93YW4tc3BhY2UtMyk7CiAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuOwp9CgoudGl0bGUgewogIGZvbnQtc2l6ZTogdmFyKC0tcm93YW4tZm9udC1zaXplLWxnKTsKICBmb250LXdlaWdodDogNjAwOwogIGxpbmUtaGVpZ2h0OiAxLjI7Cn0KCi5hY3Rpb25zIHsKICBkaXNwbGF5OiBmbGV4OwogIGdhcDogdmFyKC0tcm93YW4tc3BhY2UtMik7CiAganVzdGlmeS1jb250ZW50OiBmbGV4LWVuZDsKfQoKLmNsb3NlIHsKICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDsKICBib3JkZXI6IG5vbmU7CiAgYm9yZGVyLXJhZGl1czogdmFyKC0tcm93YW4tcmFkaXVzLXNtKTsKICBjb2xvcjogaW5oZXJpdDsKICBjdXJzb3I6IHBvaW50ZXI7CiAgZm9udC1zaXplOiAxLjI1cmVtOwogIGxpbmUtaGVpZ2h0OiAxOwogIG1pbi1oZWlnaHQ6IDEuNzVyZW07CiAgbWluLXdpZHRoOiAxLjc1cmVtOwogIHBhZGRpbmc6IDA7Cn0KCi5jbG9zZTpmb2N1cy12aXNpYmxlLAoucGFuZWw6Zm9jdXMtdmlzaWJsZSB7CiAgYm94LXNoYWRvdzogdmFyKC0tcm93YW4tZm9jdXMtcmluZyk7CiAgb3V0bGluZTogbm9uZTsKfQo=",import.meta.url).href),b(g,"useElementInternals",!0),b(g,"shadowRootOptions",{mode:"open",delegatesFocus:!0}),b(g,"observedAttributes",["open"]),b(g,"upgradeProperties",["open"]);z("rowan-dialog",g);const U={title:"Components/Dialog",tags:["autodocs"],argTypes:{open:{control:"boolean"}},args:{open:!1}},y={parameters:D({steps:["Click Open dialog.","Close using the Save action or press Escape.","Compare rowan-click and rowan-close entries in Event Trace."],events:["rowan-click","rowan-close"]}),render:({open:e})=>{const o=document.createElement("div"),t=document.createElement("rowan-button");t.textContent="Open dialog";const i=document.createElement("rowan-dialog");e&&i.setAttribute("open","");const d=document.createElement("span");d.slot="title",d.textContent="Confirm route";const a=document.createElement("p");a.textContent="Do you want to save this trail plan to your collection?";const c=document.createElement("rowan-button");return c.slot="actions",c.textContent="Save",i.append(d,a,c),t.addEventListener("rowan-click",()=>{i.open=!0}),c.addEventListener("rowan-click",()=>{i.open=!1}),o.append(t,i),o}};var B,W,k;y.parameters={...y.parameters,docs:{...(B=y.parameters)==null?void 0:B.docs,source:{originalSource:`{
+  parameters: createEventScriptParameters({
+    steps: ["Click Open dialog.", "Close using the Save action or press Escape.", "Compare rowan-click and rowan-close entries in Event Trace."],
+    events: ["rowan-click", "rowan-close"]
+  }),
+  render: ({
+    open
+  }) => {
+    const wrapper = document.createElement("div");
+    const trigger = document.createElement("rowan-button");
+    trigger.textContent = "Open dialog";
+    const dialog = document.createElement("rowan-dialog");
+    if (open) dialog.setAttribute("open", "");
+    const title = document.createElement("span");
+    title.slot = "title";
+    title.textContent = "Confirm route";
+    const body = document.createElement("p");
+    body.textContent = "Do you want to save this trail plan to your collection?";
+    const action = document.createElement("rowan-button");
+    action.slot = "actions";
+    action.textContent = "Save";
+    dialog.append(title, body, action);
+    trigger.addEventListener("rowan-click", () => {
+      dialog.open = true;
+    });
+    action.addEventListener("rowan-click", () => {
+      dialog.open = false;
+    });
+    wrapper.append(trigger, dialog);
+    return wrapper;
+  }
+}`,...(k=(W=y.parameters)==null?void 0:W.docs)==null?void 0:k.source}}};const Q=["Playground"];export{y as Playground,Q as __namedExportsOrder,U as default};

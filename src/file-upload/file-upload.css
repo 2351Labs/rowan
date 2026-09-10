@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.upload {
+  display: grid;
+  gap: var(--rowan-space-3);
+}
+
+.file-list {
+  display: grid;
+  gap: var(--rowan-space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  margin: 0;
+}
+
+.empty {
+  color: var(--rowan-color-muted, #606b63);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  margin: 0;
+}
+
+:host([disabled]) {
+  opacity: 0.7;
+}

@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.panel {
+  border-top: var(--rowan-border-width) solid var(--rowan-color-border);
+  color: var(--rowan-color-fg);
+  font-family: var(--rowan-font-family);
+  line-height: var(--rowan-line-height);
+  padding-top: var(--rowan-space-3);
+}

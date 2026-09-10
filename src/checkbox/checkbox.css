@@ -1,0 +1,48 @@
+:host {
+  display: inline-block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  align-items: center;
+  color: var(--rowan-field-fg, var(--rowan-color-fg));
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-md);
+  gap: var(--rowan-space-2);
+  line-height: var(--rowan-line-height);
+}
+
+.input {
+  accent-color: var(--rowan-color-accent);
+  block-size: 1rem;
+  inline-size: 1rem;
+  margin: 0;
+}
+
+.input:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+:host([disabled]) .control {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

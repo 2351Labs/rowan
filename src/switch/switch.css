@@ -1,0 +1,78 @@
+:host {
+  display: inline-block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  align-items: center;
+  color: var(--rowan-field-fg, var(--rowan-color-fg));
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-md);
+  gap: var(--rowan-space-2);
+  line-height: var(--rowan-line-height);
+}
+
+.input {
+  block-size: 1px;
+  inline-size: 1px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+}
+
+.track {
+  align-items: center;
+  background: var(--rowan-color-border);
+  border-radius: 999px;
+  box-sizing: border-box;
+  display: inline-flex;
+  inline-size: 2.1rem;
+  padding: 0.12rem;
+  transition: background-color 120ms ease;
+}
+
+.thumb {
+  background: #ffffff;
+  block-size: 0.95rem;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  inline-size: 0.95rem;
+  transform: translateX(0);
+  transition: transform 120ms ease;
+}
+
+.input:checked + .track {
+  background: var(--rowan-color-accent);
+}
+
+.input:checked + .track .thumb {
+  transform: translateX(0.95rem);
+}
+
+.input:focus-visible + .track {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+:host([disabled]) .control {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

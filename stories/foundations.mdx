@@ -1,0 +1,246 @@
+import { Meta } from "@storybook/blocks";
+
+import "./foundations.css";
+import {
+	componentTokens,
+	primitiveColorTokens,
+	primitiveRadiusTokens,
+	primitiveSpaceTokens,
+	primitiveStructuralTokens,
+	primitiveTypographyTokens,
+	semanticTokens,
+	themeComparisonTokens,
+	tokenSourcePaths,
+} from "../src/tokens/token-data.js";
+
+<Meta title="Foundations/Tokens" />
+
+# Rowan Tokens
+
+<div className="tokens-page">
+	<p className="tokens-intro">
+		Rowan token APIs are layered and stable. Primitives define scales, semantic tokens represent intent,
+		and component tokens bind component defaults to semantic meaning.
+	</p>
+
+	<div className="tokens-layer-grid">
+		<article className="tokens-layer-card">
+			<h3>Primitive layer</h3>
+			<p>Raw design values: palette ramps, spacing, radius, typography, and structural constants.</p>
+			<span className="tokens-layer-count">{primitiveColorTokens.length + primitiveSpaceTokens.length + primitiveRadiusTokens.length + primitiveTypographyTokens.length + primitiveStructuralTokens.length} tokens</span>
+		</article>
+		<article className="tokens-layer-card">
+			<h3>Semantic layer</h3>
+			<p>Theme-level meaning used by components: background, foreground, accent, border, danger.</p>
+			<span className="tokens-layer-count">{semanticTokens.length} tokens</span>
+		</article>
+		<article className="tokens-layer-card">
+			<h3>Component layer</h3>
+			<p>Default component hooks that map to semantic values and support local overrides.</p>
+			<span className="tokens-layer-count">{componentTokens.length} tokens</span>
+		</article>
+	</div>
+
+	<p className="tokens-note">
+		Source of truth:
+		{" "}
+		{tokenSourcePaths.join(", ")}
+	</p>
+
+	<p className="tokens-theme-hint">
+		Use the Storybook toolbar Theme toggle to inspect token behavior across light and dark modes.
+	</p>
+</div>
+
+## Primitive: Color
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{primitiveColorTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							<span className="tokens-preview-color" style={{ background: `var(${token.name})` }}></span>
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Primitive: Space
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{primitiveSpaceTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							<span className="tokens-preview-space" style={{ width: `var(${token.name})` }}></span>
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Primitive: Radius
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{primitiveRadiusTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							<span className="tokens-preview-radius" style={{ borderRadius: `var(${token.name})` }}></span>
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Primitive: Typography and Structural
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{[...primitiveTypographyTokens, ...primitiveStructuralTokens].map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							<span className="tokens-preview-font">Ag</span>
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Semantic Tokens
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{semanticTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							{token.name.includes("color") ? (
+								<span className="tokens-preview-color" style={{ background: `var(${token.name})` }}></span>
+							) : (
+								<span className="tokens-preview-font">Ag</span>
+							)}
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Component Tokens
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Value</th>
+				<th>Preview</th>
+			</tr>
+		</thead>
+		<tbody>
+			{componentTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.value}</td>
+					<td>
+						<span className="tokens-preview">
+							{token.name.includes("color") || token.name.endsWith("-bg") || token.name.endsWith("-border") ? (
+								<span className="tokens-preview-color" style={{ background: `var(${token.name})` }}></span>
+							) : (
+								<span className="tokens-preview-font">Ag</span>
+							)}
+						</span>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+## Theme Comparison
+
+<div className="tokens-table-wrap">
+	<table className="tokens-table">
+		<thead>
+			<tr>
+				<th>Token</th>
+				<th>Light</th>
+				<th>Dark</th>
+			</tr>
+		</thead>
+		<tbody>
+			{themeComparisonTokens.map((token) => (
+				<tr key={token.name}>
+					<td className="tokens-name">{token.name}</td>
+					<td className="tokens-value">{token.light}</td>
+					<td className="tokens-value">{token.dark}</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
