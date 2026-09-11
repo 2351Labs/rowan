@@ -103,6 +103,17 @@
   color: var(--_calendar-accent-contrast);
 }
 
+.day.in-range {
+  border-color: color-mix(in srgb, var(--_calendar-accent) 22%, var(--_calendar-bg));
+  background: color-mix(in srgb, var(--_calendar-accent) 14%, var(--_calendar-bg));
+}
+
+.day.range-start,
+.day.range-end {
+  background: var(--_calendar-accent);
+  color: var(--_calendar-accent-contrast);
+}
+
 .day:hover:not(:disabled),
 .nav-button:hover:not(:disabled) {
   border-color: var(--_calendar-accent);

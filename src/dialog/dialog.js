@@ -35,6 +35,7 @@ export class RowanDialog extends BaseElement {
   #panel = null;
   #closeButton = null;
   #lastFocused = null;
+  #removeDocumentFocusListener = null;
   #isOpen = false;
   #handleDocumentFocusIn = (event) => {
     if (!this.open) return;
@@ -46,11 +47,6 @@ export class RowanDialog extends BaseElement {
       this.#focusFirstElement();
     }
   };
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener("focusin", this.#handleDocumentFocusIn, true);
-  }
 
   get open() {
     return this.readBoolean("open");
@@ -152,7 +148,12 @@ export class RowanDialog extends BaseElement {
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     this.#overlay.hidden = false;
 
-    document.addEventListener("focusin", this.#handleDocumentFocusIn, true);
+    this.#removeDocumentFocusListener = this.listen(
+      document,
+      "focusin",
+      this.#handleDocumentFocusIn,
+      true,
+    );
     queueMicrotask(() => {
       if (this.open) {
         this.#focusFirstElement();
@@ -162,7 +163,8 @@ export class RowanDialog extends BaseElement {
 
   #onClose() {
     this.#overlay.hidden = true;
-    document.removeEventListener("focusin", this.#handleDocumentFocusIn, true);
+    this.#removeDocumentFocusListener?.();
+    this.#removeDocumentFocusListener = null;
 
     if (this.#lastFocused && typeof this.#lastFocused.focus === "function") {
       this.#lastFocused.focus();

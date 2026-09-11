@@ -33,4 +33,19 @@ describe("rowan-icon-button", () => {
     el.shadowRoot.querySelector("button").click();
     expect(count).to.equal(1);
   });
+
+  it("does not emit rowan-click when disabled", async () => {
+    const el = document.createElement("rowan-icon-button");
+    el.disabled = true;
+    document.body.append(el);
+    await nextMicrotask();
+
+    let count = 0;
+    el.addEventListener("rowan-click", () => {
+      count += 1;
+    });
+
+    el.shadowRoot.querySelector("button").click();
+    expect(count).to.equal(0);
+  });
 });

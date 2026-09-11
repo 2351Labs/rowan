@@ -19,11 +19,14 @@ export class RowanPagination extends BaseElement {
   static upgradeProperties = ["page", "totalPages"];
 
   #container = null;
+  #removeClickListener = null;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.listen(this, "click", (event) => {
+    if (this.#removeClickListener) return;
+
+    this.#removeClickListener = this.listen(this, "click", (event) => {
       const button = event
         .composedPath()
         .find((node) => node instanceof HTMLElement && node.matches("button[data-action]"));

@@ -4,79 +4,293 @@
   "description": "Rowan vanilla Web Components design system.",
   "license": "MIT",
   "type": "module",
+  "types": "./src/index.d.ts",
   "main": "./src/index.js",
   "module": "./src/index.js",
   "exports": {
-    ".": "./src/index.js",
-    "./accordion": "./src/accordion/accordion.js",
-    "./alert": "./src/alert/alert.js",
-    "./avatar": "./src/avatar/avatar.js",
-    "./button": "./src/button/button.js",
-    "./breadcrumb": "./src/breadcrumb/breadcrumb.js",
-    "./calendar": "./src/calendar/calendar.js",
-    "./card": "./src/card/card.js",
-    "./checkbox": "./src/checkbox/checkbox.js",
-    "./chip": "./src/chip/chip.js",
-    "./combobox": "./src/combobox/combobox.js",
-    "./date-picker": "./src/date-picker/date-picker.js",
-    "./date-range-picker": "./src/date-range-picker/date-range-picker.js",
-    "./dialog": "./src/dialog/dialog.js",
-    "./divider": "./src/divider/divider.js",
-    "./dropzone": "./src/dropzone/dropzone.js",
-    "./drawer": "./src/drawer/drawer.js",
-    "./dropdown": "./src/dropdown/dropdown.js",
-    "./empty-state": "./src/empty-state/empty-state.js",
-    "./file-item": "./src/file-item/file-item.js",
-    "./file-upload": "./src/file-upload/file-upload.js",
-    "./icon-button": "./src/icon-button/icon-button.js",
-    "./link": "./src/link/link.js",
-    "./menu": "./src/menu/menu.js",
-    "./menu-item": "./src/menu-item/menu-item.js",
-    "./number-field": "./src/number-field/number-field.js",
-    "./pagination": "./src/pagination/pagination.js",
-    "./popover": "./src/popover/popover.js",
-    "./progress": "./src/progress/progress.js",
-    "./radio": "./src/radio/radio.js",
-    "./radio-group": "./src/radio-group/radio-group.js",
-    "./skeleton": "./src/skeleton/skeleton.js",
-    "./select": "./src/select/select.js",
-    "./spinner": "./src/spinner/spinner.js",
-    "./stepper": "./src/stepper/stepper.js",
-    "./switch": "./src/switch/switch.js",
-    "./tab": "./src/tab/tab.js",
-    "./tab-panel": "./src/tab-panel/tab-panel.js",
-    "./table": "./src/table/table.js",
-    "./tabs": "./src/tabs/tabs.js",
-    "./text-field": "./src/text-field/text-field.js",
-    "./textarea": "./src/textarea/textarea.js",
-    "./time-picker": "./src/time-picker/time-picker.js",
-    "./toast": "./src/toast/toast.js",
-    "./toaster": "./src/toaster/toaster.js",
-    "./tooltip": "./src/tooltip/tooltip.js",
-    "./validation-summary": "./src/validation-summary/validation-summary.js",
-    "./badge": "./src/badge/badge.js",
-    "./tokens": "./src/tokens/tokens.css",
-    "./tokens/light": "./src/tokens/themes/light.css",
-    "./tokens/dark": "./src/tokens/themes/dark.css",
-    "./lib/base-element": "./src/lib/base-element.js",
-    "./lib/define": "./src/lib/define.js",
-    "./lib/debounce": "./src/lib/debounce.js",
-    "./lib/events": "./src/lib/events.js",
-    "./lib/keys": "./src/lib/keys.js",
-    "./lib/reflect": "./src/lib/reflect.js"
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./accordion": {
+      "types": "./src/accordion/accordion.d.ts",
+      "default": "./src/accordion/accordion.js"
+    },
+    "./alert": {
+      "types": "./src/alert/alert.d.ts",
+      "default": "./src/alert/alert.js"
+    },
+    "./avatar": {
+      "types": "./src/avatar/avatar.d.ts",
+      "default": "./src/avatar/avatar.js"
+    },
+    "./bulk-actions-bar": {
+      "types": "./src/bulk-actions-bar/bulk-actions-bar.d.ts",
+      "default": "./src/bulk-actions-bar/bulk-actions-bar.js"
+    },
+    "./button": {
+      "types": "./src/button/button.d.ts",
+      "default": "./src/button/button.js"
+    },
+    "./filter-builder": {
+      "types": "./src/filter-builder/filter-builder.d.ts",
+      "default": "./src/filter-builder/filter-builder.js"
+    },
+    "./breadcrumb": {
+      "types": "./src/breadcrumb/breadcrumb.d.ts",
+      "default": "./src/breadcrumb/breadcrumb.js"
+    },
+    "./calendar": {
+      "types": "./src/calendar/calendar.d.ts",
+      "default": "./src/calendar/calendar.js"
+    },
+    "./card": {
+      "types": "./src/card/card.d.ts",
+      "default": "./src/card/card.js"
+    },
+    "./checkbox": {
+      "types": "./src/checkbox/checkbox.d.ts",
+      "default": "./src/checkbox/checkbox.js"
+    },
+    "./chip": {
+      "types": "./src/chip/chip.d.ts",
+      "default": "./src/chip/chip.js"
+    },
+    "./combobox": {
+      "types": "./src/combobox/combobox.d.ts",
+      "default": "./src/combobox/combobox.js"
+    },
+    "./command-item": {
+      "types": "./src/command-item/command-item.d.ts",
+      "default": "./src/command-item/command-item.js"
+    },
+    "./command-palette": {
+      "types": "./src/command-palette/command-palette.d.ts",
+      "default": "./src/command-palette/command-palette.js"
+    },
+    "./date-picker": {
+      "types": "./src/date-picker/date-picker.d.ts",
+      "default": "./src/date-picker/date-picker.js"
+    },
+    "./date-range-picker": {
+      "types": "./src/date-range-picker/date-range-picker.d.ts",
+      "default": "./src/date-range-picker/date-range-picker.js"
+    },
+    "./dialog": {
+      "types": "./src/dialog/dialog.d.ts",
+      "default": "./src/dialog/dialog.js"
+    },
+    "./divider": {
+      "types": "./src/divider/divider.d.ts",
+      "default": "./src/divider/divider.js"
+    },
+    "./dropzone": {
+      "types": "./src/dropzone/dropzone.d.ts",
+      "default": "./src/dropzone/dropzone.js"
+    },
+    "./drawer": {
+      "types": "./src/drawer/drawer.d.ts",
+      "default": "./src/drawer/drawer.js"
+    },
+    "./dropdown": {
+      "types": "./src/dropdown/dropdown.d.ts",
+      "default": "./src/dropdown/dropdown.js"
+    },
+    "./empty-state": {
+      "types": "./src/empty-state/empty-state.d.ts",
+      "default": "./src/empty-state/empty-state.js"
+    },
+    "./file-item": {
+      "types": "./src/file-item/file-item.d.ts",
+      "default": "./src/file-item/file-item.js"
+    },
+    "./file-upload": {
+      "types": "./src/file-upload/file-upload.d.ts",
+      "default": "./src/file-upload/file-upload.js"
+    },
+    "./form-wizard": {
+      "types": "./src/form-wizard/form-wizard.d.ts",
+      "default": "./src/form-wizard/form-wizard.js"
+    },
+    "./icon-button": {
+      "types": "./src/icon-button/icon-button.d.ts",
+      "default": "./src/icon-button/icon-button.js"
+    },
+    "./link": {
+      "types": "./src/link/link.d.ts",
+      "default": "./src/link/link.js"
+    },
+    "./menu": {
+      "types": "./src/menu/menu.d.ts",
+      "default": "./src/menu/menu.js"
+    },
+    "./menu-item": {
+      "types": "./src/menu-item/menu-item.d.ts",
+      "default": "./src/menu-item/menu-item.js"
+    },
+    "./number-field": {
+      "types": "./src/number-field/number-field.d.ts",
+      "default": "./src/number-field/number-field.js"
+    },
+    "./pagination": {
+      "types": "./src/pagination/pagination.d.ts",
+      "default": "./src/pagination/pagination.js"
+    },
+    "./popover": {
+      "types": "./src/popover/popover.d.ts",
+      "default": "./src/popover/popover.js"
+    },
+    "./progress": {
+      "types": "./src/progress/progress.d.ts",
+      "default": "./src/progress/progress.js"
+    },
+    "./radio": {
+      "types": "./src/radio/radio.d.ts",
+      "default": "./src/radio/radio.js"
+    },
+    "./radio-group": {
+      "types": "./src/radio-group/radio-group.d.ts",
+      "default": "./src/radio-group/radio-group.js"
+    },
+    "./row-details-panel": {
+      "types": "./src/row-details-panel/row-details-panel.d.ts",
+      "default": "./src/row-details-panel/row-details-panel.js"
+    },
+    "./skeleton": {
+      "types": "./src/skeleton/skeleton.d.ts",
+      "default": "./src/skeleton/skeleton.js"
+    },
+    "./select": {
+      "types": "./src/select/select.d.ts",
+      "default": "./src/select/select.js"
+    },
+    "./spinner": {
+      "types": "./src/spinner/spinner.d.ts",
+      "default": "./src/spinner/spinner.js"
+    },
+    "./stepper": {
+      "types": "./src/stepper/stepper.d.ts",
+      "default": "./src/stepper/stepper.js"
+    },
+    "./switch": {
+      "types": "./src/switch/switch.d.ts",
+      "default": "./src/switch/switch.js"
+    },
+    "./tab": {
+      "types": "./src/tab/tab.d.ts",
+      "default": "./src/tab/tab.js"
+    },
+    "./tab-panel": {
+      "types": "./src/tab-panel/tab-panel.d.ts",
+      "default": "./src/tab-panel/tab-panel.js"
+    },
+    "./table": {
+      "types": "./src/table/table.d.ts",
+      "default": "./src/table/table.js"
+    },
+    "./table-toolbar": {
+      "types": "./src/table-toolbar/table-toolbar.d.ts",
+      "default": "./src/table-toolbar/table-toolbar.js"
+    },
+    "./tabs": {
+      "types": "./src/tabs/tabs.d.ts",
+      "default": "./src/tabs/tabs.js"
+    },
+    "./tree": {
+      "types": "./src/tree/tree.d.ts",
+      "default": "./src/tree/tree.js"
+    },
+    "./tree-item": {
+      "types": "./src/tree-item/tree-item.d.ts",
+      "default": "./src/tree-item/tree-item.js"
+    },
+    "./text-field": {
+      "types": "./src/text-field/text-field.d.ts",
+      "default": "./src/text-field/text-field.js"
+    },
+    "./textarea": {
+      "types": "./src/textarea/textarea.d.ts",
+      "default": "./src/textarea/textarea.js"
+    },
+    "./time-picker": {
+      "types": "./src/time-picker/time-picker.d.ts",
+      "default": "./src/time-picker/time-picker.js"
+    },
+    "./toast": {
+      "types": "./src/toast/toast.d.ts",
+      "default": "./src/toast/toast.js"
+    },
+    "./toaster": {
+      "types": "./src/toaster/toaster.d.ts",
+      "default": "./src/toaster/toaster.js"
+    },
+    "./tooltip": {
+      "types": "./src/tooltip/tooltip.d.ts",
+      "default": "./src/tooltip/tooltip.js"
+    },
+    "./validation-summary": {
+      "types": "./src/validation-summary/validation-summary.d.ts",
+      "default": "./src/validation-summary/validation-summary.js"
+    },
+    "./badge": {
+      "types": "./src/badge/badge.d.ts",
+      "default": "./src/badge/badge.js"
+    },
+    "./tokens": {
+      "types": "./src/tokens/tokens.css.d.ts",
+      "default": "./src/tokens/tokens.css"
+    },
+    "./tokens/light": {
+      "types": "./src/tokens/themes/light.css.d.ts",
+      "default": "./src/tokens/themes/light.css"
+    },
+    "./tokens/dark": {
+      "types": "./src/tokens/themes/dark.css.d.ts",
+      "default": "./src/tokens/themes/dark.css"
+    },
+    "./lib/base-element": {
+      "types": "./src/lib/base-element.d.ts",
+      "default": "./src/lib/base-element.js"
+    },
+    "./lib/define": {
+      "types": "./src/lib/define.d.ts",
+      "default": "./src/lib/define.js"
+    },
+    "./lib/debounce": {
+      "types": "./src/lib/debounce.d.ts",
+      "default": "./src/lib/debounce.js"
+    },
+    "./lib/events": {
+      "types": "./src/lib/events.d.ts",
+      "default": "./src/lib/events.js"
+    },
+    "./lib/keys": {
+      "types": "./src/lib/keys.d.ts",
+      "default": "./src/lib/keys.js"
+    },
+    "./lib/reflect": {
+      "types": "./src/lib/reflect.d.ts",
+      "default": "./src/lib/reflect.js"
+    }
   },
   "files": [
     "src",
+    "types",
     "custom-elements.json",
+    "LICENSE",
     "README.md"
   ],
   "sideEffects": [
     "./src/accordion/accordion.js",
     "./src/alert/alert.js",
     "./src/avatar/avatar.js",
+    "./src/bulk-actions-bar/bulk-actions-bar.js",
+    "./src/filter-builder/filter-builder.js",
     "./src/breadcrumb/breadcrumb.js",
     "./src/chip/chip.js",
     "./src/combobox/combobox.js",
+    "./src/command-item/command-item.js",
+    "./src/command-palette/command-palette.js",
     "./src/card/card.js",
     "./src/button/button.js",
     "./src/calendar/calendar.js",
@@ -91,6 +305,7 @@
     "./src/empty-state/empty-state.js",
     "./src/file-item/file-item.js",
     "./src/file-upload/file-upload.js",
+    "./src/form-wizard/form-wizard.js",
     "./src/icon-button/icon-button.js",
     "./src/link/link.js",
     "./src/menu/menu.js",
@@ -101,6 +316,7 @@
     "./src/progress/progress.js",
     "./src/radio/radio.js",
     "./src/radio-group/radio-group.js",
+    "./src/row-details-panel/row-details-panel.js",
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",
     "./src/spinner/spinner.js",
@@ -109,7 +325,10 @@
     "./src/tab/tab.js",
     "./src/tab-panel/tab-panel.js",
     "./src/table/table.js",
+    "./src/table-toolbar/table-toolbar.js",
     "./src/tabs/tabs.js",
+    "./src/tree/tree.js",
+    "./src/tree-item/tree-item.js",
     "./src/text-field/text-field.js",
     "./src/textarea/textarea.js",
     "./src/time-picker/time-picker.js",
@@ -125,22 +344,34 @@
     "storybook": "storybook dev -p 6006",
     "documentation": "vite --open /documentation/index.html",
     "build-storybook": "storybook build",
-    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve",
-    "lint": "eslint \"src/**/*.js\"",
+    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --concurrency=1",
+    "test:browser": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
+    "benchmark": "node ./scripts/run-benchmarks.mjs && prettier --write benchmarks/RESULTS.md benchmarks/results/latest.json",
+    "tokens:sync": "node ./scripts/sync-token-sheet.mjs",
+    "tokens:check": "node ./scripts/sync-token-sheet.mjs --check",
+    "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",
+    "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json",
+    "lint": "npm run tokens:check && eslint \"src/**/*.js\"",
     "format": "prettier --write \"**/*.{js,css,md,mdx,json}\"",
     "format:check": "prettier --check \"**/*.{js,css,md,mdx,json}\""
   },
   "devDependencies": {
-    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@awesome.me/webawesome": "^3.12.0",
     "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@microsoft/fast-element": "^3.0.3",
     "@storybook/addon-a11y": "^8.6.14",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/web-components": "^8.6.14",
     "@storybook/web-components-vite": "^8.6.14",
     "@web/test-runner": "^0.18.2",
+    "@web/test-runner-playwright": "^0.11.0",
     "eslint": "^8.57.1",
+    "lit": "^3.3.3",
+    "playwright": "^1.63.0",
     "prettier": "^3.0.0",
     "storybook": "^8.6.14",
+    "typescript": "~5.4.5",
     "vite": "^5.4.10"
   }
 }

@@ -121,4 +121,34 @@ describe("rowan-dialog", () => {
 
     expect(dialog.shadowRoot.activeElement).to.equal(closeButton);
   });
+
+  it("restores controls and focus containment after reconnecting while open", async () => {
+    const outside = document.createElement("button");
+    outside.textContent = "Outside";
+    document.body.append(outside);
+
+    const dialog = document.createElement("rowan-dialog");
+    document.body.append(dialog);
+    await wait();
+
+    dialog.open = true;
+    await wait();
+
+    dialog.remove();
+    await wait();
+    document.body.append(dialog);
+    await wait();
+
+    outside.focus();
+    await wait();
+
+    const closeButton = dialog.shadowRoot.querySelector('button[part="close"]');
+    expect(dialog.shadowRoot.activeElement).to.equal(closeButton);
+
+    const panel = dialog.shadowRoot.querySelector(".panel");
+    panel.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await wait();
+
+    expect(dialog.open).to.equal(false);
+  });
 });

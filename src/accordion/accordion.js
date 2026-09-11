@@ -21,10 +21,14 @@ export class RowanAccordion extends BaseElement {
 
   #trigger = null;
   #panel = null;
+  #removeClickListener = null;
 
   connectedCallback() {
     super.connectedCallback();
-    this.listen(this, "click", (event) => {
+
+    if (this.#removeClickListener) return;
+
+    this.#removeClickListener = this.listen(this, "click", (event) => {
       const path = event.composedPath();
       if (path.includes(this.#trigger)) {
         this.open = !this.open;

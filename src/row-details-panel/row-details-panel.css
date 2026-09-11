@@ -1,0 +1,129 @@
+:host {
+  color: var(--rowan-row-details-panel-fg);
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.overlay {
+  inset: 0;
+  position: fixed;
+  z-index: var(--rowan-row-details-panel-z-index);
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.backdrop {
+  background: var(--rowan-row-details-panel-backdrop);
+  inset: 0;
+  position: absolute;
+}
+
+.panel {
+  background: var(--rowan-row-details-panel-bg);
+  border: 1px solid var(--rowan-row-details-panel-border);
+  border-radius: var(--rowan-row-details-panel-radius) 0 0 var(--rowan-row-details-panel-radius);
+  box-shadow: var(--rowan-row-details-panel-shadow);
+  box-sizing: border-box;
+  color: var(--rowan-row-details-panel-fg);
+  display: grid;
+  gap: var(--rowan-row-details-panel-gap);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: min(100%, var(--rowan-row-details-panel-width));
+  outline: none;
+  padding: var(--rowan-row-details-panel-padding);
+  position: absolute;
+}
+
+:host([side="start"]) .panel {
+  border-radius: 0 var(--rowan-row-details-panel-radius) var(--rowan-row-details-panel-radius) 0;
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+}
+
+.header,
+.heading,
+.actions {
+  min-inline-size: 0;
+}
+
+.header,
+.actions {
+  align-items: center;
+  display: flex;
+  gap: var(--rowan-row-details-panel-gap);
+}
+
+.header {
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--rowan-font-size-lg);
+  line-height: var(--rowan-line-height);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.body {
+  min-block-size: 0;
+  overflow: auto;
+}
+
+.fields {
+  display: grid;
+  margin: 0;
+}
+
+.fields[hidden],
+.empty[hidden] {
+  display: none;
+}
+
+.field {
+  border-block-end: 1px solid var(--rowan-row-details-panel-border);
+  display: grid;
+  gap: var(--rowan-row-details-panel-field-gap);
+  padding: var(--rowan-row-details-panel-field-padding);
+}
+
+.field:first-child {
+  padding-block-start: 0;
+}
+
+.term {
+  color: var(--rowan-row-details-panel-muted-fg);
+  font-size: var(--rowan-font-size-sm);
+  font-weight: 600;
+}
+
+.description {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.empty {
+  color: var(--rowan-row-details-panel-muted-fg);
+  font-size: var(--rowan-font-size-sm);
+}
+
+.panel:focus-visible,
+.close:focus-visible {
+  outline: 2px solid var(--rowan-row-details-panel-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 36rem) {
+  .panel,
+  :host([side="start"]) .panel {
+    border-radius: 0;
+    inline-size: 100%;
+  }
+}

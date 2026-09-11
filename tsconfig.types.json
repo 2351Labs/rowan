@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./types",
+    "rootDir": "./src",
+    "skipLibCheck": true,
+    "target": "ES2022"
+  },
+  "include": ["src/**/*.js"],
+  "exclude": ["src/**/*.stories.js", "src/**/*.test.js", "types/**"]
+}

@@ -43,16 +43,14 @@ body {
   background:
     radial-gradient(circle at 6% -4%, rgb(44 95 63 / 30%), transparent 34%),
     radial-gradient(circle at 94% -8%, rgb(206 219 178 / 42%), transparent 38%),
-    linear-gradient(180deg, rgb(255 255 255 / 12%), transparent 26%),
-    var(--rowan-color-bg);
+    linear-gradient(180deg, rgb(255 255 255 / 12%), transparent 26%), var(--rowan-color-bg);
 }
 
 html[data-theme="dark"] body {
   background:
     radial-gradient(circle at 6% -4%, rgb(85 138 103 / 25%), transparent 36%),
     radial-gradient(circle at 94% -8%, rgb(33 67 48 / 58%), transparent 41%),
-    linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 30%),
-    var(--rowan-color-bg);
+    linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 30%), var(--rowan-color-bg);
 }
 
 .atmosphere {
@@ -322,7 +320,7 @@ html[data-theme="dark"] body {
 }
 
 .doc-page {
-  animation: doc-fade-up 240ms ease;
+  animation: doc-fade-in 240ms ease;
   background: var(--docs-panel-bg);
   border: 1px solid var(--docs-border);
   border-radius: 1rem;
@@ -330,15 +328,13 @@ html[data-theme="dark"] body {
   padding: 1.2rem 1.2rem 1.8rem;
 }
 
-@keyframes doc-fade-up {
+@keyframes doc-fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

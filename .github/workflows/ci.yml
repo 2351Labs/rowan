@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run types
+      - run: npm run typecheck
+      - run: npm run analyze
+      - name: Verify generated artifacts
+        run: |
+          changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types)"
+          if [[ -n "$changes" ]]; then
+            printf '%s\n' "$changes"
+            exit 1
+          fi
+      - run: npm test
+      - run: npm run build-storybook
+      - run: npm pack --dry-run
+
+  browser-compatibility:
+    name: Browser (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npm run test:browser
+        env:
+          ROWAN_BROWSER: ${{ matrix.browser }}

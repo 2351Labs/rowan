@@ -29,7 +29,9 @@ describe("rowan-link", () => {
       count += 1;
     });
 
-    el.shadowRoot.querySelector("a").click();
+    const anchor = el.shadowRoot.querySelector("a");
+    anchor.addEventListener("click", (event) => event.preventDefault());
+    anchor.click();
     expect(count).to.equal(1);
   });
 });

@@ -21,11 +21,14 @@ export class RowanDrawer extends BaseElement {
 
   #backdrop = null;
   #closeButton = null;
+  #removeClickListener = null;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.listen(this, "click", (event) => {
+    if (this.#removeClickListener) return;
+
+    this.#removeClickListener = this.listen(this, "click", (event) => {
       const path = event.composedPath();
       if (path.includes(this.#backdrop) || path.includes(this.#closeButton)) {
         this.open = false;

@@ -22,11 +22,14 @@ export class RowanRadioGroup extends BaseElement {
   static upgradeProperties = ["value", "name", "disabled", "required"];
 
   #slot = null;
+  #removeChangeListener = null;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.listen(this, "rowan-change", (event) => {
+    if (this.#removeChangeListener) return;
+
+    this.#removeChangeListener = this.listen(this, "rowan-change", (event) => {
       const source = event.target;
       if (!(source instanceof HTMLElement)) return;
       if (source.tagName.toLowerCase() !== "rowan-radio") return;
@@ -78,8 +81,7 @@ export class RowanRadioGroup extends BaseElement {
 
   render() {
     if (!this.#slot) {
-      this.renderRoot.innerHTML =
-        '<div class="group" part="group"><slot></slot></div>';
+      this.renderRoot.innerHTML = '<div class="group" part="group"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
     }
 

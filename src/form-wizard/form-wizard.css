@@ -1,0 +1,76 @@
+:host {
+  display: block;
+  color: var(--rowan-form-wizard-fg);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.wizard {
+  display: grid;
+  gap: var(--rowan-form-wizard-gap);
+}
+
+.progress {
+  border-bottom: 1px solid var(--rowan-form-wizard-border);
+  padding-bottom: var(--rowan-form-wizard-progress-padding);
+}
+
+.panels {
+  min-width: 0;
+}
+
+.panel {
+  background: var(--rowan-form-wizard-panel-bg);
+  min-width: 0;
+}
+
+.actions {
+  align-items: center;
+  border-top: 1px solid var(--rowan-form-wizard-border);
+  display: flex;
+  gap: var(--rowan-form-wizard-actions-gap);
+  justify-content: flex-end;
+  padding-top: var(--rowan-form-wizard-actions-padding);
+}
+
+.previous-button {
+  margin-right: auto;
+}
+
+.action-button {
+  appearance: none;
+  background: var(--rowan-form-wizard-next-bg);
+  border: 1px solid var(--rowan-form-wizard-next-border);
+  border-radius: var(--rowan-form-wizard-button-radius);
+  color: var(--rowan-form-wizard-next-fg);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1;
+  min-height: var(--rowan-form-wizard-button-min-height);
+  padding: 0 var(--rowan-form-wizard-button-padding);
+}
+
+.previous-button {
+  background: var(--rowan-form-wizard-previous-bg);
+  border-color: var(--rowan-form-wizard-previous-border);
+  color: var(--rowan-form-wizard-previous-fg);
+}
+
+.action-button:focus-visible {
+  box-shadow: var(--rowan-form-wizard-focus-ring);
+  outline: none;
+}
+
+.action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 34rem) {
+  .actions {
+    flex-wrap: wrap;
+  }
+}

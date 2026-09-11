@@ -237,6 +237,95 @@ describe("rowan-table", () => {
     expect(fired).to.equal(false);
   });
 
+  it("treats config as full replacement and flattened properties as partial updates", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      caption: "Initial table",
+      density: "lg",
+      selected: ["1"],
+      sort: { id: "name", dir: "asc" },
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const columns = table.columns;
+    const rows = table.rows;
+    table.selected = ["2"];
+    await nextMicrotask();
+
+    expect(table.columns).to.equal(columns);
+    expect(table.rows).to.equal(rows);
+    expect(table.selected).to.deep.equal(["2"]);
+    expect(table.selectable).to.equal("multiple");
+
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "4", name: "Grace" }],
+    };
+    await nextMicrotask();
+
+    expect(table.caption).to.equal("");
+    expect(table.density).to.equal("md");
+    expect(table.selectable).to.equal("none");
+    expect(table.selected).to.deep.equal([]);
+    expect(table.sort).to.equal(null);
+    expect(table.page).to.equal(null);
+    expect(table.rows).to.deep.equal([{ id: "4", name: "Grace" }]);
+  });
+
+  it("warns for invalid configuration and keeps valid data usable", async () => {
+    const warnings = [];
+    const originalWarning = console.warn;
+    console.warn = (message) => warnings.push(message);
+
+    try {
+      const table = document.createElement("rowan-table");
+      table.config = {
+        rowId: 42,
+        columns: [
+          { header: "Missing ID" },
+          { id: "name", header: "Name", type: "unsupported" },
+          { id: "name", header: "Repeated name" },
+        ],
+        rows: [
+          { id: "1", name: "Ada" },
+          { id: "2", name: "Alan" },
+        ],
+      };
+
+      document.body.append(table);
+      await nextMicrotask();
+
+      expect(table.shadowRoot.querySelectorAll("thead th").length).to.equal(1);
+      expect(table.shadowRoot.querySelectorAll("tbody tr").length).to.equal(2);
+      expect(table.shadowRoot.querySelector('td[data-column-id="name"]').textContent).to.equal(
+        "Ada",
+      );
+
+      table.config = {
+        rowId: "id",
+        columns: [{ id: "name", header: "Name" }],
+        rows: [
+          { id: "same", name: "Ada" },
+          { id: "same", name: "Alan" },
+        ],
+      };
+      await nextMicrotask();
+
+      expect(table.shadowRoot.querySelectorAll("tbody tr").length).to.equal(2);
+      expect(
+        warnings.some((message) => message.includes("missing a non-empty string id")),
+      ).to.equal(true);
+      expect(warnings.some((message) => message.includes("unsupported cell type"))).to.equal(true);
+      expect(warnings.some((message) => message.includes("rowId must be"))).to.equal(true);
+      expect(warnings.some((message) => message.includes("share row id"))).to.equal(true);
+    } finally {
+      console.warn = originalWarning;
+    }
+  });
+
   it("renders step 5 cell types and custom template cells", async () => {
     const table = document.createElement("rowan-table");
 
@@ -304,6 +393,155 @@ describe("rowan-table", () => {
     expect(table.selectedRows.length).to.equal(0);
   });
 
+  it("preserves unchanged row elements when selection changes", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = createStepFiveConfig();
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const firstRow = table.shadowRoot.querySelector('tbody tr[data-row-id="1"]');
+    const secondRow = table.shadowRoot.querySelector('tbody tr[data-row-id="2"]');
+    expect(firstRow).to.not.equal(null);
+    expect(secondRow).to.not.equal(null);
+
+    table.selected = ["1"];
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="1"]')).to.equal(firstRow);
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="2"]')).to.equal(secondRow);
+    expect(firstRow.querySelector('td[data-column-id="__select"] rowan-checkbox').checked).to.equal(
+      true,
+    );
+    expect(
+      secondRow.querySelector('td[data-column-id="__select"] rowan-checkbox').checked,
+    ).to.equal(false);
+  });
+
+  it("does not rearrange rows for selection-only updates", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = createStepFiveConfig();
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const body = table.shadowRoot.querySelector("tbody");
+    const mutations = [];
+    const observer = new MutationObserver((records) => mutations.push(...records));
+    observer.observe(body, { childList: true });
+
+    table.selected = ["1"];
+    await nextMicrotask();
+    await nextMicrotask();
+    observer.disconnect();
+
+    expect(mutations).to.deep.equal([]);
+  });
+
+  it("preserves custom cell content for unchanged keyed rows", async () => {
+    const table = document.createElement("rowan-table");
+    const template = document.createElement("template");
+    template.slot = "price-cell";
+    template.innerHTML = '<span class="price-pill">Price</span>';
+    table.append(template);
+    table.config = createStepFiveConfig();
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const priceCell = table.shadowRoot.querySelector(
+      'tbody tr[data-row-id="1"] td[data-column-id="price"] .price-pill',
+    );
+    expect(priceCell).to.not.equal(null);
+
+    table.selected = ["1"];
+    await nextMicrotask();
+
+    expect(
+      table.shadowRoot.querySelector(
+        'tbody tr[data-row-id="1"] td[data-column-id="price"] .price-pill',
+      ),
+    ).to.equal(priceCell);
+  });
+
+  it("preserves unchanged row elements across sorting and overlapping page updates", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      page: null,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const rowOne = table.shadowRoot.querySelector('tbody tr[data-row-id="1"]');
+    const rowTwo = table.shadowRoot.querySelector('tbody tr[data-row-id="2"]');
+    const rowThree = table.shadowRoot.querySelector('tbody tr[data-row-id="3"]');
+
+    table.sort = { id: "name", dir: "asc" };
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="1"]')).to.equal(rowOne);
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="2"]')).to.equal(rowTwo);
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="3"]')).to.equal(rowThree);
+
+    table.page = { index: 0, size: 2, total: 3 };
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="2"]')).to.equal(rowTwo);
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="3"]')).to.equal(rowThree);
+  });
+
+  it("delegates header, row, cell action, and selection interactions", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      page: null,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const events = {
+      sort: 0,
+      select: 0,
+      action: 0,
+      activate: 0,
+    };
+    table.addEventListener("rowan-sort", () => {
+      events.sort += 1;
+    });
+    table.addEventListener("rowan-select", () => {
+      events.select += 1;
+    });
+    table.addEventListener("rowan-cell-action", () => {
+      events.action += 1;
+    });
+    table.addEventListener("rowan-row-activate", () => {
+      events.activate += 1;
+    });
+
+    table.shadowRoot.querySelector('th[data-column-id="name"] .sort-button').click();
+    await nextMicrotask();
+
+    const adaRow = table.shadowRoot.querySelector('tbody tr[data-row-id="2"]');
+    const selector = adaRow.querySelector('td[data-column-id="__select"] rowan-checkbox');
+    clickCheckboxInput(selector);
+    await nextMicrotask();
+
+    const iconButton = adaRow.querySelector("rowan-icon-button");
+    iconButton.shadowRoot.querySelector("button").click();
+    adaRow.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await nextMicrotask();
+
+    expect(events).to.deep.equal({
+      sort: 1,
+      select: 1,
+      action: 1,
+      activate: 1,
+    });
+  });
+
   it("emits rowan-sort and sorts rows from sortable header clicks", async () => {
     const table = document.createElement("rowan-table");
     table.config = createStepFiveConfig();
@@ -318,7 +556,7 @@ describe("rowan-table", () => {
       eventMeta.push({ bubbles: event.bubbles, composed: event.composed });
     });
 
-    const nameSortButton = table.shadowRoot.querySelector('th[data-column-id="name"] .sort-button');
+    let nameSortButton = table.shadowRoot.querySelector('th[data-column-id="name"] .sort-button');
     expect(nameSortButton).to.not.equal(null);
 
     nameSortButton.click();
@@ -328,6 +566,7 @@ describe("rowan-table", () => {
       .querySelector('tbody tr td[data-column-id="name"] a')
       .textContent.trim();
 
+    nameSortButton = table.shadowRoot.querySelector('th[data-column-id="name"] .sort-button');
     nameSortButton.click();
     await nextMicrotask();
 
@@ -486,5 +725,28 @@ describe("rowan-table", () => {
     await nextMicrotask();
 
     expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["1", "2", "3"]);
+  });
+
+  it("keeps row keyboard selection separate from nested control keyboard events", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      page: null,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const row = table.shadowRoot.querySelector('tbody tr[data-row-id="1"]');
+    row.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: " " }));
+    await nextMicrotask();
+
+    const selector = row.querySelector('td[data-column-id="__select"] rowan-checkbox');
+    selector.shadowRoot
+      .querySelector("input")
+      .dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key: " " }));
+    await nextMicrotask();
+
+    expect(table.selectedRows.map((item) => item.id)).to.deep.equal(["1"]);
   });
 });

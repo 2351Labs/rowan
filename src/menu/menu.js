@@ -14,11 +14,14 @@ export class RowanMenu extends BaseElement {
   static useElementInternals = true;
 
   #menu = null;
+  #removeClickListener = null;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.listen(this, "click", (event) => {
+    if (this.#removeClickListener) return;
+
+    this.#removeClickListener = this.listen(this, "click", (event) => {
       const path = event.composedPath();
       const selected = path.find(
         (node) => node instanceof HTMLElement && node.tagName.toLowerCase() === "rowan-menu-item",

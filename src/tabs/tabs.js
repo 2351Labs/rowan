@@ -20,11 +20,14 @@ export class RowanTabs extends BaseElement {
   static upgradeProperties = ["value"];
 
   #slot = null;
+  #removeClickListener = null;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.listen(this, "click", (event) => {
+    if (this.#removeClickListener) return;
+
+    this.#removeClickListener = this.listen(this, "click", (event) => {
       const tab = event
         .composedPath()
         .find((node) => node instanceof HTMLElement && node.tagName.toLowerCase() === "rowan-tab");
@@ -51,8 +54,7 @@ export class RowanTabs extends BaseElement {
 
   render() {
     if (!this.#slot) {
-      this.renderRoot.innerHTML =
-        '<div class="tabs" part="tabs"><slot></slot></div>';
+      this.renderRoot.innerHTML = '<div class="tabs" part="tabs"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
     }
 

@@ -1,0 +1,2442 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T15:38:09.843Z",
+  "environment": {
+    "node": "v24.15.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "operatingSystemVersion": "25.6.0",
+    "cpu": "Apple M4 Pro",
+    "packageVersions": {
+      "rowan": "0.1.0",
+      "lit": "3.3.3",
+      "fastElement": "3.0.3",
+      "webAwesome": "3.12.0",
+      "playwright": "1.63.0"
+    },
+    "browser": {
+      "name": "chromium",
+      "version": "153.0.8010.12",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+    }
+  },
+  "workload": {
+    "sampleCount": 15,
+    "isolation": "One fresh Playwright browser context per sample.",
+    "tableRowCount": 100,
+    "tablePageSize": 50
+  },
+  "adapters": {
+    "rowan": [
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 10.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 8,
+            "transferBytes": 144990
+          },
+          "firstRender": {
+            "durationMs": 3,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 19.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 12.5,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 2.6,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 9.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.1,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 9.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.4,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 5.8,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.5,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.5,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 11,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 6.8,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 1.8,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.1,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.5,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 1.9,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 9.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 6.1,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.5,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.5,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 11.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 6.9,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 1.8,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 6.9,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.4,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 9.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.1,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.5,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 154317
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 10.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.4,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.2,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      },
+      {
+        "adapter": {
+          "id": "rowan",
+          "label": "Rowan",
+          "scope": "Source ESM button, checkbox, and switch components"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 8,
+            "transferBytes": 144990
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": true,
+          "rowCount": 100,
+          "pageSize": 50,
+          "importDefinition": {
+            "durationMs": 9.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 7,
+            "transferBytes": 355941
+          },
+          "firstRender": {
+            "durationMs": 7.3,
+            "heapGrowthBytes": 0
+          },
+          "selection": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "sort": {
+            "durationMs": 1.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 100
+          },
+          "page": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0,
+            "reusedRowsPercent": 0
+          }
+        }
+      }
+    ],
+    "lit": [
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 79127
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.9,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 79127
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 79127
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 5.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 79127
+          },
+          "firstRender": {
+            "durationMs": 1,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.9,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "lit",
+          "label": "Lit",
+          "scope": "Minimal Lit button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 3,
+            "transferBytes": 88536
+          },
+          "firstRender": {
+            "durationMs": 0.9,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      }
+    ],
+    "fast": [
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 1,
+            "transferBytes": 214881
+          },
+          "firstRender": {
+            "durationMs": 2.1,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 3.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.6,
+            "heapGrowthBytes": 0,
+            "resourceCount": 1,
+            "transferBytes": 214881
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 1,
+            "transferBytes": 214881
+          },
+          "firstRender": {
+            "durationMs": 0.7,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 6.7,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.8,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      },
+      {
+        "adapter": {
+          "id": "fast",
+          "label": "FAST Element",
+          "scope": "Minimal FAST Element button, checkbox, and switch custom elements"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 3.6,
+            "heapGrowthBytes": 0,
+            "resourceCount": 2,
+            "transferBytes": 224363
+          },
+          "firstRender": {
+            "durationMs": 0.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+        }
+      }
+    ],
+    "webawesome": [
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 10.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 8,
+            "transferBytes": 262159
+          },
+          "firstRender": {
+            "durationMs": 6.3,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 3.5,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.4,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.3,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.1,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.2,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.1,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 7.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 8,
+            "transferBytes": 262159
+          },
+          "firstRender": {
+            "durationMs": 4.1,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 8,
+            "transferBytes": 262159
+          },
+          "firstRender": {
+            "durationMs": 3.4,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.4,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.5,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.6,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.3,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.3,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.1,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.6,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 3.9,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.8,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 3.9,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.9,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4.2,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.2,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      },
+      {
+        "adapter": {
+          "id": "webawesome",
+          "label": "Web Awesome",
+          "scope": "Direct button, checkbox, and switch component imports"
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "foundation": {
+          "importDefinition": {
+            "durationMs": 8.2,
+            "heapGrowthBytes": 0,
+            "resourceCount": 9,
+            "transferBytes": 269387
+          },
+          "firstRender": {
+            "durationMs": 4,
+            "heapGrowthBytes": 0
+          },
+          "reconnect": {
+            "durationMs": 0.1,
+            "heapGrowthBytes": 0,
+            "shadowDomReusePercent": 100
+          }
+        },
+        "table": {
+          "supported": false,
+          "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+        }
+      }
+    ]
+  },
+  "summary": {
+    "rowan": {
+      "label": "Rowan",
+      "scope": "Source ESM button, checkbox, and switch components",
+      "foundation": {
+        "importDefinitionMs": {
+          "count": 15,
+          "p50": 7.3,
+          "p95": 8.86
+        },
+        "importTransferBytes": {
+          "count": 15,
+          "p50": 154317,
+          "p95": 154317
+        },
+        "importHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "firstRenderMs": {
+          "count": 15,
+          "p50": 0.7,
+          "p95": 1.46
+        },
+        "firstRenderHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "reconnectMs": {
+          "count": 15,
+          "p50": 0.1,
+          "p95": 0.2
+        },
+        "reconnectShadowDomReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "reconnectHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        }
+      },
+      "table": {
+        "supported": true,
+        "rowCount": 100,
+        "pageSize": 50,
+        "importDefinitionMs": {
+          "count": 15,
+          "p50": 10.2,
+          "p95": 13.96
+        },
+        "importTransferBytes": {
+          "count": 15,
+          "p50": 355941,
+          "p95": 355941
+        },
+        "importHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "firstRenderMs": {
+          "count": 15,
+          "p50": 7.1,
+          "p95": 8.93
+        },
+        "firstRenderHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "selectionMs": {
+          "count": 15,
+          "p50": 0.3,
+          "p95": 0.4
+        },
+        "selectionReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "selectionHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "sortMs": {
+          "count": 15,
+          "p50": 1.4,
+          "p95": 1.83
+        },
+        "sortReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "sortHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "pageMs": {
+          "count": 15,
+          "p50": 2.1,
+          "p95": 2.33
+        },
+        "pageReusePercent": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "pageHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        }
+      }
+    },
+    "lit": {
+      "label": "Lit",
+      "scope": "Minimal Lit button, checkbox, and switch custom elements",
+      "foundation": {
+        "importDefinitionMs": {
+          "count": 15,
+          "p50": 6.4,
+          "p95": 6.82
+        },
+        "importTransferBytes": {
+          "count": 15,
+          "p50": 88536,
+          "p95": 88536
+        },
+        "importHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "firstRenderMs": {
+          "count": 15,
+          "p50": 0.8,
+          "p95": 0.93
+        },
+        "firstRenderHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "reconnectMs": {
+          "count": 15,
+          "p50": 0.1,
+          "p95": 0.1
+        },
+        "reconnectShadowDomReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "reconnectHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        }
+      },
+      "table": {
+        "supported": false,
+        "reason": "Lit is an element authoring runtime; this harness does not substitute a third-party table component."
+      }
+    },
+    "fast": {
+      "label": "FAST Element",
+      "scope": "Minimal FAST Element button, checkbox, and switch custom elements",
+      "foundation": {
+        "importDefinitionMs": {
+          "count": 15,
+          "p50": 6.7,
+          "p95": 7.5
+        },
+        "importTransferBytes": {
+          "count": 15,
+          "p50": 224363,
+          "p95": 224363
+        },
+        "importHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "firstRenderMs": {
+          "count": 15,
+          "p50": 0.7,
+          "p95": 1.19
+        },
+        "firstRenderHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "reconnectMs": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0.1
+        },
+        "reconnectShadowDomReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "reconnectHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        }
+      },
+      "table": {
+        "supported": false,
+        "reason": "FAST Element is an element authoring runtime; this harness does not substitute a third-party table component."
+      }
+    },
+    "webawesome": {
+      "label": "Web Awesome",
+      "scope": "Direct button, checkbox, and switch component imports",
+      "foundation": {
+        "importDefinitionMs": {
+          "count": 15,
+          "p50": 8.4,
+          "p95": 9.47
+        },
+        "importTransferBytes": {
+          "count": 15,
+          "p50": 269387,
+          "p95": 269387
+        },
+        "importHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "firstRenderMs": {
+          "count": 15,
+          "p50": 4.1,
+          "p95": 5.11
+        },
+        "firstRenderHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        },
+        "reconnectMs": {
+          "count": 15,
+          "p50": 0.2,
+          "p95": 0.33
+        },
+        "reconnectShadowDomReusePercent": {
+          "count": 15,
+          "p50": 100,
+          "p95": 100
+        },
+        "reconnectHeapGrowthBytes": {
+          "count": 15,
+          "p50": 0,
+          "p95": 0
+        }
+      },
+      "table": {
+        "supported": false,
+        "reason": "Web Awesome 3.12.0 has no verified table or data-table component import for this workload."
+      }
+    }
+  }
+}

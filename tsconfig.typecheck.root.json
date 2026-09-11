@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.typecheck.json",
+  "include": ["type-tests/root-exports.ts"]
+}

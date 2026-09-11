@@ -6,6 +6,7 @@ let calendarId = 0;
 
 const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH_VALUE_PATTERN = /^\d{4}-\d{2}$/;
+const SELECTION_MODES = new Set(["single", "range"]);
 
 function pad(number) {
   return String(number).padStart(2, "0");
@@ -45,6 +46,26 @@ function normalizeMonthValue(value) {
   }
 
   return `${year}-${pad(month)}`;
+}
+
+function normalizeSelectionMode(value) {
+  const mode = String(value ?? "").trim();
+  return SELECTION_MODES.has(mode) ? mode : "single";
+}
+
+function serializeRangeState(start, end) {
+  return `${start}|${end}`;
+}
+
+function parseRangeState(state) {
+  const text = String(state ?? "");
+  if (!text.includes("|")) return { start: "", end: "" };
+
+  const [startValue, endValue] = text.split("|", 2);
+  return {
+    start: normalizeDateValue(startValue),
+    end: normalizeDateValue(endValue),
+  };
 }
 
 function toDateFromValue(dateValue) {
@@ -88,7 +109,9 @@ function moveDateByMonths(dateValue, amount) {
 
   const originalDay = source.getUTCDate();
   const target = new Date(Date.UTC(source.getUTCFullYear(), source.getUTCMonth() + amount, 1));
-  const maxDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  const maxDay = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0),
+  ).getUTCDate();
   target.setUTCDate(Math.min(originalDay, maxDay));
 
   return toDateValue(target);
@@ -129,12 +152,17 @@ function buildCalendarCells(monthValue) {
  * Calendar grid for date selection with keyboard navigation.
  * @tag rowan-calendar
  * @attr {string} name
+ * @attr {string} name-start
+ * @attr {string} name-end
  * @attr {string} value
  * @attr {string} month
  * @attr {string} label
  * @attr {string} locale
  * @attr {string} min
  * @attr {string} max
+ * @attr {"single"|"range"} selection-mode
+ * @attr {string} start
+ * @attr {string} end
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
@@ -151,24 +179,34 @@ export class RowanCalendar extends BaseElement {
   static styleUrl = new URL("./calendar.css", import.meta.url).href;
   static observedAttributes = [
     "name",
+    "name-start",
+    "name-end",
     "value",
     "month",
     "label",
     "locale",
     "min",
     "max",
+    "selection-mode",
+    "start",
+    "end",
     "disabled",
     "required",
     "invalid",
   ];
   static upgradeProperties = [
     "name",
+    "nameStart",
+    "nameEnd",
     "value",
     "month",
     "label",
     "locale",
     "min",
     "max",
+    "selectionMode",
+    "start",
+    "end",
     "disabled",
     "required",
     "invalid",
@@ -179,6 +217,8 @@ export class RowanCalendar extends BaseElement {
   #weekdayRow = null;
   #grid = null;
   #defaultValue = null;
+  #defaultStart = null;
+  #defaultEnd = null;
   #calendarId = "";
   #autoInvalid = false;
   #focusedDate = "";
@@ -188,6 +228,14 @@ export class RowanCalendar extends BaseElement {
 
     if (this.#defaultValue === null) {
       this.#defaultValue = this.value;
+    }
+
+    if (this.#defaultStart === null) {
+      this.#defaultStart = this.start;
+    }
+
+    if (this.#defaultEnd === null) {
+      this.#defaultEnd = this.end;
     }
 
     if (!this.id) {
@@ -202,12 +250,53 @@ export class RowanCalendar extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if (oldValue === newValue) return;
+
+    if (["selection-mode", "start", "end", "value"].includes(name)) {
+      this.#syncSelectionFocus();
+    }
+
+    if (["selection-mode", "name", "name-start", "name-end", "start", "end"].includes(name)) {
+      this.#syncFormValue();
+      this.#syncValidity();
+    }
+  }
+
   get name() {
     return this.readString("name", "");
   }
 
   set name(value) {
     this.reflectString("name", value);
+    this.#syncFormValue();
+  }
+
+  get nameStart() {
+    const configured = this.readString("name-start", "").trim();
+    if (configured) return configured;
+
+    return this.name ? `${this.name}-start` : "";
+  }
+
+  set nameStart(value) {
+    const next = String(value ?? "").trim();
+    this.reflectString("name-start", next || null);
+    this.#syncFormValue();
+  }
+
+  get nameEnd() {
+    const configured = this.readString("name-end", "").trim();
+    if (configured) return configured;
+
+    return this.name ? `${this.name}-end` : "";
+  }
+
+  set nameEnd(value) {
+    const next = String(value ?? "").trim();
+    this.reflectString("name-end", next || null);
+    this.#syncFormValue();
   }
 
   get value() {
@@ -234,7 +323,8 @@ export class RowanCalendar extends BaseElement {
     const attrValue = normalizeMonthValue(this.readString("month", ""));
     if (attrValue) return attrValue;
 
-    const valueMonth = this.value ? this.value.slice(0, 7) : "";
+    const selectedDate = this.#selectedDate();
+    const valueMonth = selectedDate ? selectedDate.slice(0, 7) : "";
     if (normalizeMonthValue(valueMonth)) return valueMonth;
 
     return todayDateValue().slice(0, 7);
@@ -288,6 +378,39 @@ export class RowanCalendar extends BaseElement {
     this.#syncValidity();
   }
 
+  get selectionMode() {
+    return normalizeSelectionMode(this.readString("selection-mode", "single"));
+  }
+
+  set selectionMode(value) {
+    const normalized = normalizeSelectionMode(value);
+    this.reflectString("selection-mode", normalized === "single" ? null : normalized);
+    this.#syncFormValue();
+    this.#syncValidity();
+  }
+
+  get start() {
+    return normalizeDateValue(this.readString("start", ""));
+  }
+
+  set start(value) {
+    const normalized = normalizeDateValue(value);
+    this.reflectString("start", normalized || null);
+    this.#syncFormValue();
+    this.#syncValidity();
+  }
+
+  get end() {
+    return normalizeDateValue(this.readString("end", ""));
+  }
+
+  set end(value) {
+    const normalized = normalizeDateValue(value);
+    this.reflectString("end", normalized || null);
+    this.#syncFormValue();
+    this.#syncValidity();
+  }
+
   get disabled() {
     return this.readBoolean("disabled");
   }
@@ -315,9 +438,26 @@ export class RowanCalendar extends BaseElement {
   }
 
   setFormValue(value = this.value) {
-    if (this.internals && typeof this.internals.setFormValue === "function") {
+    if (!this.internals || typeof this.internals.setFormValue !== "function") return;
+
+    if (this.selectionMode !== "range") {
       this.internals.setFormValue(value);
+      return;
     }
+
+    const startName = this.nameStart;
+    const endName = this.nameEnd;
+    const state = serializeRangeState(this.start, this.end);
+
+    if (startName || endName) {
+      const formData = new FormData();
+      if (startName) formData.append(startName, this.start);
+      if (endName) formData.append(endName, this.end);
+      this.internals.setFormValue(formData, state);
+      return;
+    }
+
+    this.internals.setFormValue(state, state);
   }
 
   setValidity(flags = {}, message = "", anchor = this.#grid) {
@@ -331,12 +471,23 @@ export class RowanCalendar extends BaseElement {
   }
 
   formResetCallback() {
-    this.value = this.#defaultValue ?? "";
+    if (this.selectionMode === "range") {
+      this.start = this.#defaultStart ?? "";
+      this.end = this.#defaultEnd ?? "";
+    } else {
+      this.value = this.#defaultValue ?? "";
+    }
     this.requestRender();
   }
 
   formStateRestoreCallback(state) {
-    this.value = state == null ? "" : String(state);
+    if (this.selectionMode === "range") {
+      const restored = parseRangeState(state);
+      this.start = restored.start;
+      this.end = restored.end;
+    } else {
+      this.value = state == null ? "" : String(state);
+    }
     this.requestRender();
   }
 
@@ -454,7 +605,22 @@ export class RowanCalendar extends BaseElement {
 
   #ensureInitialState() {
     if (!this.#focusedDate) {
-      this.#focusedDate = this.value || `${this.month}-01`;
+      this.#focusedDate = this.#selectedDate() || `${this.month}-01`;
+    }
+  }
+
+  #selectedDate() {
+    if (this.selectionMode === "range") {
+      return this.end || this.start || this.value;
+    }
+
+    return this.value;
+  }
+
+  #syncSelectionFocus() {
+    const selectedDate = this.#selectedDate();
+    if (selectedDate) {
+      this.#focusedDate = selectedDate;
     }
   }
 
@@ -502,12 +668,27 @@ export class RowanCalendar extends BaseElement {
         button.classList.add("outside-month");
       }
 
-      if (cell.dateValue === this.value) {
+      const isRangeMode = this.selectionMode === "range";
+      const isRangeStart = isRangeMode && cell.dateValue === this.start;
+      const isRangeEnd = isRangeMode && cell.dateValue === this.end;
+      const isInRange =
+        isRangeMode &&
+        Boolean(this.start) &&
+        Boolean(this.end) &&
+        cell.dateValue > this.start &&
+        cell.dateValue < this.end;
+      const isSelected = isRangeMode ? isRangeStart || isRangeEnd : cell.dateValue === this.value;
+
+      if (isSelected) {
         button.classList.add("selected");
         button.setAttribute("aria-pressed", "true");
       } else {
         button.setAttribute("aria-pressed", "false");
       }
+
+      if (isRangeStart) button.classList.add("range-start");
+      if (isRangeEnd) button.classList.add("range-end");
+      if (isInRange) button.classList.add("in-range");
 
       fragment.append(button);
     }
@@ -529,12 +710,14 @@ export class RowanCalendar extends BaseElement {
       return "";
     }
 
-    const preferred = normalizeDateValue(this.#focusedDate) || this.value;
+    const preferred = normalizeDateValue(this.#focusedDate) || this.#selectedDate();
     if (preferred && enabledDates.includes(preferred)) {
       return preferred;
     }
 
-    const currentMonthDate = enabledDates.find((dateValue) => dateValue.startsWith(`${this.month}-`));
+    const currentMonthDate = enabledDates.find((dateValue) =>
+      dateValue.startsWith(`${this.month}-`),
+    );
     return currentMonthDate || enabledDates[0];
   }
 
@@ -569,6 +752,37 @@ export class RowanCalendar extends BaseElement {
       return;
     }
 
+    if (this.selectionMode === "range") {
+      const currentStart = this.start;
+      const currentEnd = this.end;
+      let nextStart = normalized;
+      let nextEnd = "";
+
+      if (currentStart && !currentEnd) {
+        if (normalized < currentStart) {
+          nextStart = normalized;
+          nextEnd = currentStart;
+        } else {
+          nextStart = currentStart;
+          nextEnd = normalized;
+        }
+      }
+
+      if (currentStart === nextStart && currentEnd === nextEnd) return;
+
+      this.start = nextStart;
+      this.end = nextEnd;
+      this.#focusedDate = normalized;
+
+      emit(this, "rowan-change", {
+        value: { start: this.start, end: this.end },
+        start: this.start,
+        end: this.end,
+        source,
+      });
+      return;
+    }
+
     if (this.value === normalized) return;
 
     this.value = normalized;
@@ -586,6 +800,52 @@ export class RowanCalendar extends BaseElement {
 
   #syncValidity() {
     if (!this.#grid) return;
+
+    if (this.selectionMode === "range") {
+      if (this.required && (!this.start || !this.end)) {
+        this.setValidity({ valueMissing: true }, "Please select a start and end date.", this.#grid);
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      if (this.start && this.min && this.start < this.min) {
+        this.setValidity({ rangeUnderflow: true }, "Start date is before minimum.", this.#grid);
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      if (this.end && this.min && this.end < this.min) {
+        this.setValidity({ rangeUnderflow: true }, "End date is before minimum.", this.#grid);
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      if (this.start && this.max && this.start > this.max) {
+        this.setValidity({ rangeOverflow: true }, "Start date is after maximum.", this.#grid);
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      if (this.end && this.max && this.end > this.max) {
+        this.setValidity({ rangeOverflow: true }, "End date is after maximum.", this.#grid);
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      if (this.start && this.end && this.start > this.end) {
+        this.setValidity(
+          { customError: true },
+          "End date must be on or after start date.",
+          this.#grid,
+        );
+        this.#setAutoInvalid(true);
+        return;
+      }
+
+      this.setValidity({}, "", this.#grid);
+      this.#setAutoInvalid(false);
+      return;
+    }
 
     if (this.required && this.value.length === 0) {
       this.setValidity({ valueMissing: true }, "Please select a date.", this.#grid);

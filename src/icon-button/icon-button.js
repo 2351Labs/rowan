@@ -12,6 +12,11 @@ import { emit } from "../lib/events.js";
  * @attr {"button"|"submit"|"reset"} type
  * @slot - Icon glyph
  * @csspart button
+ * @cssprop --rowan-button-bg
+ * @cssprop --rowan-button-border-width
+ * @cssprop --rowan-button-ghost-bg
+ * @cssprop --rowan-button-focus-ring
+ * @cssprop --rowan-button-radius
  * @event rowan-click - Fired on activation (not when disabled)
  */
 export class RowanIconButton extends BaseElement {
@@ -19,6 +24,7 @@ export class RowanIconButton extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["label", "variant", "size", "disabled", "type"];
   static upgradeProperties = ["label", "variant", "size", "disabled", "type"];
+  static componentTokenPrefixes = ["--rowan-button-"];
 
   #button = null;
 

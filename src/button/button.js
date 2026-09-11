@@ -14,7 +14,19 @@ import { emit } from "../lib/events.js";
  * @slot prefix
  * @slot suffix
  * @csspart button
+ * @csspart prefix
+ * @csspart suffix
+ * @csspart spinner
  * @cssprop --rowan-button-bg
+ * @cssprop --rowan-button-border-width
+ * @cssprop --rowan-button-hover-bg
+ * @cssprop --rowan-button-active-bg
+ * @cssprop --rowan-button-secondary-bg
+ * @cssprop --rowan-button-ghost-bg
+ * @cssprop --rowan-button-danger-bg
+ * @cssprop --rowan-button-focus-ring
+ * @cssprop --rowan-button-radius
+ * @cssprop --rowan-button-padding-inline
  * @event rowan-click - Fired on activation (not when disabled)
  */
 export class RowanButton extends BaseElement {
@@ -22,6 +34,7 @@ export class RowanButton extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["variant", "size", "disabled", "loading", "type"];
   static upgradeProperties = ["variant", "size", "disabled", "loading", "type"];
+  static componentTokenPrefixes = ["--rowan-button-"];
 
   #button = null;
 
@@ -72,11 +85,11 @@ export class RowanButton extends BaseElement {
   render() {
     if (!this.#button) {
       this.renderRoot.innerHTML = `
-        <button part="button" type="button">
-          <span class="spinner" aria-hidden="true"></span>
-          <span class="prefix"><slot name="prefix"></slot></span>
+        <button class="button" part="button" type="button">
+          <span class="spinner" part="spinner" aria-hidden="true"></span>
+          <span class="prefix" part="prefix"><slot name="prefix"></slot></span>
           <slot></slot>
-          <span class="suffix"><slot name="suffix"></slot></span>
+          <span class="suffix" part="suffix"><slot name="suffix"></slot></span>
         </button>
       `;
 
@@ -96,6 +109,7 @@ export class RowanButton extends BaseElement {
 
     this.#button.type = this.#normalizedType(this.type);
     this.#button.disabled = this.disabled || this.loading;
+    this.#button.setAttribute("aria-busy", this.loading ? "true" : "false");
   }
 
   #normalizedType(type) {

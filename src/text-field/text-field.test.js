@@ -37,6 +37,28 @@ describe("rowan-text-field", () => {
     expect(eventCount).to.equal(1);
   });
 
+  it("keeps user input handling after reconnecting", async () => {
+    const element = document.createElement("rowan-text-field");
+    document.body.append(element);
+    await nextMicrotask();
+
+    let eventCount = 0;
+    element.addEventListener("rowan-change", () => {
+      eventCount += 1;
+    });
+
+    element.remove();
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('input[type="text"]');
+    input.value = "alpine";
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(element.value).to.equal("alpine");
+    expect(eventCount).to.equal(1);
+  });
+
   it("does not emit rowan-change when parent sets value", async () => {
     const element = document.createElement("rowan-text-field");
     document.body.append(element);

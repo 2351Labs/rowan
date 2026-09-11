@@ -12,7 +12,15 @@ export default {
   },
   argTypes: {
     name: { control: "text" },
+    nameStart: { control: "text" },
+    nameEnd: { control: "text" },
     value: { control: "text" },
+    selectionMode: {
+      control: "select",
+      options: ["single", "range"],
+    },
+    start: { control: "text" },
+    end: { control: "text" },
     month: { control: "text" },
     label: { control: "text" },
     locale: { control: "text" },
@@ -27,7 +35,12 @@ export default {
 function renderCalendar(args) {
   const element = document.createElement("rowan-calendar");
   if (args.name != null) element.name = args.name;
+  if (args.nameStart != null) element.nameStart = args.nameStart;
+  if (args.nameEnd != null) element.nameEnd = args.nameEnd;
+  if (args.selectionMode != null) element.selectionMode = args.selectionMode;
   if (args.value != null) element.value = args.value;
+  if (args.start != null) element.start = args.start;
+  if (args.end != null) element.end = args.end;
   if (args.month != null) element.month = args.month;
   if (args.label != null) element.label = args.label;
   if (args.locale != null) element.locale = args.locale;
@@ -45,7 +58,10 @@ export const Default = {
 
 export const DateRange = {
   args: {
-    value: "2026-10-15",
+    label: "Choose a service window",
+    name: "serviceDate",
+    selectionMode: "range",
+    start: "2026-10-12",
     month: "2026-10",
     min: "2026-10-10",
     max: "2026-10-20",

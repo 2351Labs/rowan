@@ -26,4 +26,26 @@ describe("rowan-menu", () => {
     item.shadowRoot.querySelector("button").click();
     expect(detail.value).to.equal("edit");
   });
+
+  it("keeps one selection listener after reconnecting", async () => {
+    const menu = document.createElement("rowan-menu");
+    const item = document.createElement("rowan-menu-item");
+    item.value = "edit";
+    item.textContent = "Edit";
+    menu.append(item);
+    document.body.append(menu);
+    await nextMicrotask();
+
+    let eventCount = 0;
+    menu.addEventListener("rowan-change", () => {
+      eventCount += 1;
+    });
+
+    menu.remove();
+    document.body.append(menu);
+    await nextMicrotask();
+
+    item.shadowRoot.querySelector("button").click();
+    expect(eventCount).to.equal(1);
+  });
 });

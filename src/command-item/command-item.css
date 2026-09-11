@@ -1,0 +1,127 @@
+:host {
+  --_command-item-fg: var(--rowan-command-item-fg, var(--rowan-color-fg));
+  --_command-item-muted-fg: var(--rowan-command-item-muted-fg, var(--rowan-color-muted));
+  --_command-item-hover-bg: var(--rowan-command-item-hover-bg, transparent);
+  --_command-item-active-bg: var(--rowan-command-item-active-bg, transparent);
+  --_command-item-active-fg: var(--rowan-command-item-active-fg, var(--rowan-color-fg));
+  --_command-item-shortcut-bg: var(--rowan-command-item-shortcut-bg, var(--rowan-color-bg));
+  --_command-item-shortcut-border: var(
+    --rowan-command-item-shortcut-border,
+    var(--rowan-color-border)
+  );
+  --_command-item-shortcut-radius: var(
+    --rowan-command-item-shortcut-radius,
+    var(--rowan-radius-sm)
+  );
+  --_command-item-focus-ring: var(--rowan-command-item-focus-ring, var(--rowan-focus-ring));
+  --_command-item-radius: var(--rowan-command-item-radius, var(--rowan-radius-sm));
+  --_command-item-font-family: var(--rowan-command-item-font-family, var(--rowan-font-family));
+  --_command-item-font-size: var(--rowan-command-item-font-size, var(--rowan-font-size-sm));
+  --_command-item-muted-font-size: var(--rowan-command-item-muted-font-size, 0.75rem);
+  --_command-item-shortcut-font-size: var(--rowan-command-item-shortcut-font-size, 0.7rem);
+  --_command-item-line-height: var(--rowan-command-item-line-height, var(--rowan-line-height));
+  --_command-item-border-width: var(--rowan-command-item-border-width, var(--rowan-border-width));
+  --_command-item-gap: var(--rowan-command-item-gap, var(--rowan-space-3));
+  --_command-item-meta-gap: var(--rowan-command-item-meta-gap, var(--rowan-space-2));
+  --_command-item-content-gap: var(--rowan-command-item-content-gap, 0.1rem);
+  --_command-item-min-block-size: var(--rowan-command-item-min-block-size, 2.75rem);
+  --_command-item-padding: var(
+    --rowan-command-item-padding,
+    var(--rowan-space-2) var(--rowan-space-3)
+  );
+  --_command-item-shortcut-line-height: var(--rowan-command-item-shortcut-line-height, 1);
+  --_command-item-shortcut-padding: var(--rowan-command-item-shortcut-padding, 0.2rem 0.32rem);
+  display: block;
+}
+
+:host([hidden]),
+:host([data-rowan-command-hidden]) {
+  display: none;
+}
+
+.item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--_command-item-radius);
+  color: var(--_command-item-fg);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--_command-item-font-family);
+  font-size: var(--_command-item-font-size);
+  gap: var(--_command-item-gap);
+  min-block-size: var(--_command-item-min-block-size);
+  padding: var(--_command-item-padding);
+  text-align: left;
+  width: 100%;
+}
+
+.item:hover:not(:disabled) {
+  background: var(--_command-item-hover-bg);
+}
+
+.item:focus-visible {
+  box-shadow: var(--_command-item-focus-ring);
+  outline: none;
+}
+
+:host([data-rowan-command-active]) .item {
+  background: var(--_command-item-active-bg);
+  color: var(--_command-item-active-fg);
+}
+
+.item:disabled {
+  color: var(--_command-item-muted-fg);
+  cursor: not-allowed;
+}
+
+.prefix {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.content {
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--_command-item-content-gap);
+  min-inline-size: 0;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.description,
+.group {
+  color: var(--_command-item-muted-fg);
+  font-size: var(--_command-item-muted-font-size);
+  line-height: var(--_command-item-line-height);
+}
+
+.description[hidden],
+.group[hidden],
+.shortcut[hidden] {
+  display: none;
+}
+
+.meta {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: var(--_command-item-meta-gap);
+}
+
+.shortcut {
+  background: var(--_command-item-shortcut-bg);
+  border: var(--_command-item-border-width) solid var(--_command-item-shortcut-border);
+  border-radius: var(--_command-item-shortcut-radius);
+  color: var(--_command-item-muted-fg);
+  font-family: var(--_command-item-font-family);
+  font-size: var(--_command-item-shortcut-font-size);
+  line-height: var(--_command-item-shortcut-line-height);
+  padding: var(--_command-item-shortcut-padding);
+  white-space: nowrap;
+}

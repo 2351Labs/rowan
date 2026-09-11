@@ -50,6 +50,105 @@ table.config = {
   ],
 };`;
 
+const TABLE_UPDATE_SNIPPET = `// Replace the entire model. Omitted values reset to defaults.
+table.config = {
+  rowId: "id",
+  columns: nextColumns,
+  rows: nextRows,
+};
+
+// Update one part of the existing model.
+table.rows = nextRows;
+table.selected = selectedIds;
+table.sort = { id: "name", dir: "asc" };`;
+
+const TABLE_TOOLBAR_SNIPPET = `<rowan-table id="members-table">
+  <rowan-table-toolbar slot="toolbar" label="Member table controls">
+    <span slot="start">Active members</span>
+  </rowan-table-toolbar>
+</rowan-table>
+
+<script type="module">
+  const table = document.querySelector("#members-table");
+  table.config = {
+    selectable: "multiple",
+    rowId: "id",
+    columns: [{ id: "name", header: "Name" }],
+    rows: [{ id: "1", name: "Ada" }],
+  };
+</script>`;
+
+const BULK_ACTIONS_BAR_SNIPPET = `<rowan-table id="members-table">
+  <rowan-bulk-actions-bar id="member-actions" slot="toolbar"></rowan-bulk-actions-bar>
+</rowan-table>
+
+<script type="module">
+  const actions = document.querySelector("#member-actions");
+  actions.actions = [
+    { id: "archive", label: "Archive", variant: "secondary" },
+    { id: "remove", label: "Remove", variant: "danger" },
+  ];
+
+  actions.addEventListener("rowan-bulk-action", (event) => {
+    console.log(event.detail.action, event.detail.selectedRows);
+  });
+</script>`;
+
+const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
+  <rowan-filter-builder id="member-filters" slot="toolbar"></rowan-filter-builder>
+</rowan-table>
+
+<script type="module">
+  const rows = [
+    { id: "1", name: "Ada", role: "Admin" },
+    { id: "2", name: "Alan", role: "Editor" },
+  ];
+  const table = document.querySelector("#members-table");
+  const filters = document.querySelector("#member-filters");
+
+  table.config = {
+    rowId: "id",
+    columns: [
+      { id: "name", header: "Name" },
+      { id: "role", header: "Role" },
+    ],
+    rows,
+  };
+
+  filters.fields = [
+    { id: "name", label: "Name", operators: ["contains"] },
+    { id: "role", label: "Role", options: ["Admin", "Editor"], operators: ["equals"] },
+  ];
+
+  filters.addEventListener("rowan-filter-change", (event) => {
+    table.rows = rows.filter((row) =>
+      event.detail.filters.every((filter) => {
+        const value = String(row[filter.field] ?? "").toLowerCase();
+        const expected = filter.value.toLowerCase();
+        return filter.operator === "equals" ? value === expected : value.includes(expected);
+      }),
+    );
+  });
+</script>`;
+
+const ROW_DETAILS_PANEL_SNIPPET = `<rowan-table id="members-table"></rowan-table>
+<rowan-row-details-panel for-table="members-table"></rowan-row-details-panel>
+
+<script type="module">
+  const table = document.querySelector("#members-table");
+
+  table.config = {
+    rowId: "id",
+    columns: [
+      { id: "name", header: "Name" },
+      { id: "role", header: "Role" },
+    ],
+    rows: [{ id: "1", name: "Ada", role: "Admin" }],
+  };
+
+  // Double-click a row or press Enter on its focused row.
+</script>`;
+
 const ALERT_SNIPPET = `<rowan-alert tone="info">Heads up: deployment starts at 4pm.</rowan-alert>
 <rowan-alert tone="success">Your profile was saved.</rowan-alert>
 <rowan-alert tone="warning">Review required fields before continuing.</rowan-alert>
@@ -58,7 +157,16 @@ const ALERT_SNIPPET = `<rowan-alert tone="info">Heads up: deployment starts at 4
 const BUTTON_SNIPPET = `<rowan-button>Primary action</rowan-button>
 <rowan-button variant="secondary">Secondary action</rowan-button>
 <rowan-button variant="ghost" size="sm">Quiet action</rowan-button>
+<rowan-button><span slot="prefix" aria-hidden="true">+</span>Create project</rowan-button>
 <rowan-button loading>Saving</rowan-button>`;
+
+const BUTTON_TOKENS_SNIPPET = `:root {
+  --rowan-button-bg: #1d432f;
+  --rowan-button-border-width: 1px;
+  --rowan-button-hover-bg: #153224;
+  --rowan-button-active-bg: #10261c;
+  --rowan-button-radius: 0.5rem;
+}`;
 
 const DIALOG_SNIPPET = `<rowan-button id="open-dialog">Open dialog</rowan-button>
 <rowan-dialog id="confirm-dialog">
@@ -123,6 +231,62 @@ const STEPPER_SNIPPET = `<rowan-stepper
   steps="Draft,Review,Publish,Complete"
 ></rowan-stepper>`;
 
+const TREE_SNIPPET = `<rowan-tree id="docs-tree" label="Documentation">
+  <rowan-tree-item value="guides" expanded>
+    Guides
+    <rowan-tree-item slot="children" value="getting-started">
+      Getting started
+    </rowan-tree-item>
+  </rowan-tree-item>
+  <rowan-tree-item value="reference">Reference</rowan-tree-item>
+</rowan-tree>
+
+<script type="module">
+  import "@rowan-ui/core/tree";
+
+  const tree = document.querySelector("#docs-tree");
+  tree.selected = ["getting-started"];
+
+  tree.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.selected);
+  });
+</script>`;
+
+const COMMAND_PALETTE_SNIPPET = `<rowan-button id="open-commands">Open commands</rowan-button>
+
+<rowan-command-palette
+  id="workspace-commands"
+  label="Workspace commands"
+  hotkey="mod+k"
+>
+  <rowan-command-item
+    value="open-settings"
+    label="Open settings"
+    description="Update workspace preferences"
+    keywords="workspace preferences account"
+    shortcut="G S"
+  ></rowan-command-item>
+  <rowan-command-item
+    value="invite-member"
+    label="Invite member"
+    keywords="team people invite"
+    shortcut="I"
+  ></rowan-command-item>
+</rowan-command-palette>
+
+<script type="module">
+  import "@rowan-ui/core/button";
+  import "@rowan-ui/core/command-palette";
+
+  const trigger = document.querySelector("#open-commands");
+  const palette = document.querySelector("#workspace-commands");
+
+  trigger.addEventListener("rowan-click", () => palette.show());
+  palette.addEventListener("rowan-command", (event) => {
+    console.log(event.detail.value, event.detail.item);
+  });
+</script>`;
+
 const VALIDATION_SUMMARY_SNIPPET = `<form id="profile-form">
   <label for="profile-name">Name</label>
   <input id="profile-name" name="name" required />
@@ -136,6 +300,27 @@ const VALIDATION_SUMMARY_SNIPPET = `<form id="profile-form">
   heading="Please fix these fields"
 ></rowan-validation-summary>`;
 
+const FORM_WIZARD_SNIPPET = `<rowan-form-wizard id="onboarding-wizard">
+  <section slot="step-account" data-step-label="Account">
+    <rowan-text-field name="organization" label="Organization" required></rowan-text-field>
+  </section>
+  <section slot="step-review" data-step-label="Review">
+    Confirm the account details before completing setup.
+  </section>
+</rowan-form-wizard>
+
+<script type="module">
+  const wizard = document.querySelector("#onboarding-wizard");
+  wizard.steps = [
+    { id: "account", label: "Account" },
+    { id: "review", label: "Review" },
+  ];
+
+  wizard.addEventListener("rowan-invalid", (event) => {
+    console.log(event.detail.errors);
+  });
+</script>`;
+
 const NUMBER_FIELD_SNIPPET = `<rowan-number-field
   name="minimumUnits"
   label="Minimum units"
@@ -147,9 +332,11 @@ const NUMBER_FIELD_SNIPPET = `<rowan-number-field
 
 const CALENDAR_SNIPPET = `<rowan-calendar
   name="serviceDate"
-  label="Service date"
+  selection-mode="range"
+  label="Service window"
   month="2026-10"
-  value="2026-10-15"
+  start="2026-10-12"
+  end="2026-10-18"
   min="2026-10-10"
   max="2026-10-20"
   required
@@ -211,6 +398,7 @@ const COMPONENT_CATEGORY_SETS = {
     "date-range-picker",
     "dropzone",
     "file-upload",
+    "form-wizard",
     "number-field",
     "radio",
     "radio-group",
@@ -221,9 +409,35 @@ const COMPONENT_CATEGORY_SETS = {
     "time-picker",
     "validation-summary",
   ]),
-  Overlays: new Set(["dialog", "drawer", "dropdown", "menu", "menu-item", "popover", "tooltip"]),
-  Navigation: new Set(["accordion", "breadcrumb", "pagination", "stepper", "tab", "tab-panel", "tabs"]),
-  "Data Display": new Set(["table"]),
+  Overlays: new Set([
+    "command-item",
+    "command-palette",
+    "dialog",
+    "drawer",
+    "dropdown",
+    "menu",
+    "menu-item",
+    "popover",
+    "tooltip",
+  ]),
+  Navigation: new Set([
+    "accordion",
+    "breadcrumb",
+    "pagination",
+    "stepper",
+    "tab",
+    "tab-panel",
+    "tabs",
+    "tree",
+    "tree-item",
+  ]),
+  "Data Display": new Set([
+    "bulk-actions-bar",
+    "filter-builder",
+    "row-details-panel",
+    "table",
+    "table-toolbar",
+  ]),
 };
 
 const COMPONENT_CATEGORY_ORDER = [
@@ -302,7 +516,9 @@ function collectManifestSlots(slots) {
 }
 
 function collectSupportedComponents() {
-  const modules = Array.isArray(customElementsManifest.modules) ? customElementsManifest.modules : [];
+  const modules = Array.isArray(customElementsManifest.modules)
+    ? customElementsManifest.modules
+    : [];
   const byTagName = new Map();
 
   for (const moduleEntry of modules) {
@@ -455,7 +671,10 @@ const DOC_PAGES = [
         <p class="docs-token-hint">Source of truth files:</p>
         <ul class="docs-token-source-list">
           ${tokenSourcePaths
-            .map((sourcePath) => `<li><span class="docs-token-name">${escapeHtml(sourcePath)}</span></li>`)
+            .map(
+              (sourcePath) =>
+                `<li><span class="docs-token-name">${escapeHtml(sourcePath)}</span></li>`,
+            )
             .join("")}
         </ul>
       </section>
@@ -533,8 +752,7 @@ const DOC_PAGES = [
     id: "components",
     group: "Components",
     title: "Component Gallery",
-    summary:
-      "Compose actions, feedback, and layout primitives without framework wrappers.",
+    summary: "Compose actions, feedback, and layout primitives without framework wrappers.",
     tags: ["composition", "primitives", "a11y"],
     keywords: ["button", "card", "alert", "accordion", "gallery"],
     content: () => `
@@ -618,16 +836,27 @@ const DOC_PAGES = [
           <rowan-button size="md">Medium</rowan-button>
           <rowan-button size="lg">Large</rowan-button>
         </div>
+        <div class="demo-row">
+          <rowan-button><span slot="prefix" aria-hidden="true">+</span>Create project</rowan-button>
+          <rowan-button variant="secondary">Continue<span slot="suffix" aria-hidden="true">&gt;</span></rowan-button>
+        </div>
       </section>
 
       <section class="doc-section" data-doc-section id="button-states">
         <h2>State examples</h2>
+        <p>Hover, pressed, focus, disabled, and loading states use the same variant hierarchy in light and dark themes.</p>
         <div class="demo-row">
           <rowan-button loading>Saving</rowan-button>
           <rowan-button disabled>Disabled</rowan-button>
           <rowan-button variant="secondary" disabled>Disabled secondary</rowan-button>
         </div>
         ${codeBlock(BUTTON_SNIPPET, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="button-tokens">
+        <h2>Visual tokens</h2>
+        <p>Use the button token layer to tune visual hierarchy while preserving the component's state behavior.</p>
+        ${codeBlock(BUTTON_TOKENS_SNIPPET, "css")}
       </section>
     `,
   },
@@ -748,18 +977,21 @@ const DOC_PAGES = [
     group: "Components",
     title: "Rowan Calendar",
     summary:
-      "Form-associated calendar grid with keyboard navigation, month controls, and min/max range validation.",
+      "Form-associated calendar grid with keyboard navigation, month controls, and two-click range selection.",
     tags: ["forms", "calendar", "validation"],
-    keywords: ["calendar", "date grid", "keyboard", "min", "max", "rowan-change"],
+    keywords: ["calendar", "date grid", "date range", "keyboard", "min", "max", "rowan-change"],
     content: () => `
       <section class="doc-section" data-doc-section id="calendar-navigation">
         <h2>Keyboard and month navigation</h2>
-        <p>Arrow keys move day focus, Enter selects a date, and month navigation supports range-bounded planning workflows.</p>
+        <p>Arrow keys move day focus, Enter selects a date, and range mode chooses a start followed by an end date.</p>
         <div class="demo-row">
           <rowan-calendar
-            label="Schedule date"
+            name="scheduleDate"
+            selection-mode="range"
+            label="Schedule window"
             month="2026-10"
-            value="2026-10-15"
+            start="2026-10-12"
+            end="2026-10-18"
             min="2026-10-10"
             max="2026-10-20"
           ></rowan-calendar>
@@ -768,7 +1000,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="calendar-contract">
         <h2>Behavior contract</h2>
-        <p>rowan-calendar emits rowan-change only for user selection actions and synchronizes its selected date through form association.</p>
+        <p>rowan-calendar emits rowan-change only for user selection actions. In range mode, start and end reflect the selected endpoints and submit as name-start and name-end.</p>
         ${codeBlock(CALENDAR_SNIPPET, "html")}
       </section>
     `,
@@ -807,8 +1039,7 @@ const DOC_PAGES = [
     id: "dropzone",
     group: "Components",
     title: "Rowan Dropzone",
-    summary:
-      "Drag-and-drop file selection surface with keyboard activation and picker fallback.",
+    summary: "Drag-and-drop file selection surface with keyboard activation and picker fallback.",
     tags: ["forms", "upload", "drag-drop"],
     keywords: ["dropzone", "files", "upload", "picker", "rowan-files-add"],
     content: () => `
@@ -865,8 +1096,7 @@ const DOC_PAGES = [
     id: "file-upload",
     group: "Components",
     title: "Rowan File Upload",
-    summary:
-      "Composed upload workflow component that combines dropzone input and queue rendering.",
+    summary: "Composed upload workflow component that combines dropzone input and queue rendering.",
     tags: ["forms", "upload", "composition"],
     keywords: ["file upload", "dropzone", "queue", "retry", "remove"],
     content: () => `
@@ -918,6 +1148,105 @@ const DOC_PAGES = [
     `,
   },
   {
+    id: "tree",
+    group: "Components",
+    title: "Rowan Tree",
+    summary:
+      "Hierarchical navigation composed from nested tree items with roving focus, disclosure, and controlled selection.",
+    tags: ["navigation", "keyboard", "selection"],
+    keywords: ["tree", "tree item", "hierarchy", "arrow keys", "rowan-change", "rowan-toggle"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="tree-overview">
+        <h2>Hierarchical navigation</h2>
+        <p>Compose nested rowan-tree-item nodes through the children slot. The tree keeps one visible node in the tab order and supports standard tree navigation with Arrow, Home, and End keys.</p>
+        <div class="demo-row" style="width: 100%; max-width: 28rem;">
+          <rowan-tree id="docs-tree-demo" label="Documentation navigation">
+            <rowan-tree-item value="guides" expanded>
+              Guides
+              <rowan-tree-item slot="children" value="getting-started">Getting started</rowan-tree-item>
+              <rowan-tree-item slot="children" value="theming">Theming</rowan-tree-item>
+            </rowan-tree-item>
+            <rowan-tree-item value="components">Components</rowan-tree-item>
+            <rowan-tree-item value="tokens">Tokens</rowan-tree-item>
+          </rowan-tree>
+        </div>
+        <pre id="tree-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="tree-contract">
+        <h2>Selection and disclosure</h2>
+        <p>Set selection to none, single, or multiple. Assign selected values through the property; user selection emits rowan-change and user disclosure emits rowan-toggle.</p>
+        ${codeBlock(TREE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupTreeDemo,
+  },
+  {
+    id: "command-palette",
+    group: "Components",
+    title: "Rowan Command Palette",
+    summary:
+      "Keyboard-first modal command surface with filtered slotted actions, focus containment, and explicit activation events.",
+    tags: ["overlay", "keyboard", "commands"],
+    keywords: ["command palette", "command item", "hotkey", "search", "rowan-command"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="command-palette-overview">
+        <h2>Keyboard-first commands</h2>
+        <p>Compose rowan-command-item actions in the palette. Users can filter labels, descriptions, values, groups, and keywords; Arrow Up and Arrow Down move through enabled matches, and Enter activates the active command.</p>
+        <div class="demo-row">
+          <rowan-button id="docs-command-palette-trigger" size="sm">Open command palette</rowan-button>
+        </div>
+        <rowan-command-palette
+          id="docs-command-palette"
+          label="Workspace commands"
+          placeholder="Search workspace commands"
+          hotkey="mod+k"
+        >
+          <rowan-command-item
+            value="open-settings"
+            label="Open settings"
+            description="Update workspace preferences"
+            group="Workspace"
+            shortcut="G S"
+            keywords="workspace preferences account"
+          ></rowan-command-item>
+          <rowan-command-item
+            value="invite-member"
+            label="Invite member"
+            description="Send a workspace invitation"
+            group="Workspace"
+            shortcut="I"
+            keywords="team people invite"
+          ></rowan-command-item>
+          <rowan-command-item
+            value="open-reports"
+            label="Open reports"
+            description="Review workspace activity"
+            group="Navigation"
+            shortcut="G R"
+            keywords="analytics activity usage"
+          ></rowan-command-item>
+          <rowan-command-item
+            value="delete-workspace"
+            label="Delete workspace"
+            description="Unavailable in this example"
+            group="Workspace"
+            keywords="remove"
+            disabled
+          ></rowan-command-item>
+        </rowan-command-palette>
+        <pre id="command-palette-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="command-palette-contract">
+        <h2>Composition and events</h2>
+        <p>The optional hotkey uses mod for Command on macOS and Control elsewhere. Programmatic open, hide, and query updates are silent; user activation emits rowan-command, while Escape, backdrop, and close-control dismissal emit rowan-close.</p>
+        ${codeBlock(COMMAND_PALETTE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupCommandPaletteDemo,
+  },
+  {
     id: "validation-summary",
     group: "Components",
     title: "Rowan Validation Summary",
@@ -953,6 +1282,38 @@ const DOC_PAGES = [
       </section>
     `,
     afterRender: setupValidationSummaryDemo,
+  },
+  {
+    id: "form-wizard",
+    group: "Components",
+    title: "Rowan Form Wizard",
+    summary:
+      "Guided multi-step form workflow with slotted panels, scoped validation recovery, and explicit transition events.",
+    tags: ["forms", "workflow", "validation"],
+    keywords: ["form wizard", "steps", "validation", "rowan-invalid", "rowan-complete"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="form-wizard-overview">
+        <h2>Guarded form progression</h2>
+        <p>rowan-form-wizard validates only the active panel before users move forward, then exposes invalid controls through a local summary.</p>
+        <rowan-form-wizard id="docs-form-wizard">
+          <section slot="step-1" data-step-label="Account" class="demo-column">
+            <label for="docs-wizard-organization">Organization</label>
+            <input id="docs-wizard-organization" name="organization" required />
+          </section>
+          <section slot="step-2" data-step-label="Review" class="demo-column">
+            <p>Review the organization details and complete setup.</p>
+          </section>
+        </rowan-form-wizard>
+        <pre id="form-wizard-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="form-wizard-contract">
+        <h2>Behavior contract</h2>
+        <p>Configure semantic step IDs with the steps property, map panels through step-ID slots, and react to user-only transition, validation, and completion events.</p>
+        ${codeBlock(FORM_WIZARD_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupFormWizardDemo,
   },
   {
     id: "toast",
@@ -1038,6 +1399,13 @@ const DOC_PAGES = [
         ${codeBlock(TABLE_SNIPPET)}
       </section>
 
+      <section class="doc-section" data-doc-section id="table-updates">
+        <h2>Configuration updates</h2>
+        <p>Assigning config replaces the complete table model and resets omitted settings. Assign rows, columns, selected, sort, or page directly when only that part should change.</p>
+        ${codeBlock(TABLE_UPDATE_SNIPPET)}
+        <p>In local development, Rowan warns about missing or duplicate column IDs, unsupported cell types, and invalid or duplicate row IDs. Invalid columns are omitted, unsupported cells render as text, and duplicate row IDs use a full render.</p>
+      </section>
+
       <section class="doc-section" data-doc-section id="table-demo">
         <h2>Live table demo</h2>
         <p>Interact with sorting, selection, and cell actions. Recent events appear below the table.</p>
@@ -1048,6 +1416,119 @@ const DOC_PAGES = [
       </section>
     `,
     afterRender: setupTableDemo,
+  },
+  {
+    id: "table-toolbar",
+    group: "Components",
+    title: "Rowan Table Toolbar",
+    summary:
+      "Composable table controls surface that tracks selected rows from an adjacent or explicitly referenced Rowan table.",
+    tags: ["table", "selection", "composition"],
+    keywords: ["table toolbar", "selected rows", "for-table", "rowan-select"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="table-toolbar-overview">
+        <h2>Selection-aware table controls</h2>
+        <p>Place rowan-table-toolbar in the table toolbar slot to keep filters, view context, and the selected-row count in one operational surface.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-table-toolbar-demo">
+            <rowan-table-toolbar slot="toolbar" label="Member table controls">
+              <span slot="start">Active members</span>
+            </rowan-table-toolbar>
+          </rowan-table>
+        </div>
+        <pre id="table-toolbar-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="table-toolbar-contract">
+        <h2>Behavior contract</h2>
+        <p>The toolbar reads selected IDs and rows as properties, responds to table selection updates, and stays silent when application code updates the table state.</p>
+        ${codeBlock(TABLE_TOOLBAR_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupTableToolbarDemo,
+  },
+  {
+    id: "bulk-actions-bar",
+    group: "Components",
+    title: "Rowan Bulk Actions Bar",
+    summary:
+      "Contextual action bar for selected table rows with property-only action configuration and explicit user events.",
+    tags: ["table", "selection", "actions"],
+    keywords: ["bulk actions", "selected rows", "clear selection", "rowan-bulk-action"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bulk-actions-bar-overview">
+        <h2>Act on selected rows</h2>
+        <p>rowan-bulk-actions-bar remains out of the way until rows are selected, then emits an explicit event for each configured operation without mutating consumer data.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-bulk-actions-demo">
+            <rowan-bulk-actions-bar id="docs-bulk-actions-bar" slot="toolbar"></rowan-bulk-actions-bar>
+          </rowan-table>
+        </div>
+        <pre id="bulk-actions-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bulk-actions-bar-contract">
+        <h2>Behavior contract</h2>
+        <p>Pass actions through the property, listen for rowan-bulk-action to persist work, and use the built-in clear action to return the table to an unselected state.</p>
+        ${codeBlock(BULK_ACTIONS_BAR_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupBulkActionsBarDemo,
+  },
+  {
+    id: "filter-builder",
+    group: "Components",
+    title: "Rowan Filter Builder",
+    summary:
+      "Configurable table filter controls that report a user-owned filter model without mutating table rows.",
+    tags: ["table", "filters", "composition"],
+    keywords: ["filter builder", "filters", "table rows", "rowan-filter-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="filter-builder-overview">
+        <h2>Filter with application-owned rows</h2>
+        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state; application code decides how to derive and assign the resulting rows.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-filter-builder-demo">
+            <rowan-filter-builder id="docs-filter-builder" slot="toolbar"></rowan-filter-builder>
+          </rowan-table>
+        </div>
+        <pre id="filter-builder-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="filter-builder-contract">
+        <h2>Behavior contract</h2>
+        <p>Pass field and filter arrays through properties. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupFilterBuilderDemo,
+  },
+  {
+    id: "row-details-panel",
+    group: "Components",
+    title: "Rowan Row Details Panel",
+    summary:
+      "A read-only detail panel that opens from table row activation or controlled row properties.",
+    tags: ["table", "details", "overlay"],
+    keywords: ["row details", "panel", "row activation", "rowan-row-activate"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="row-details-panel-overview">
+        <h2>Inspect an activated row</h2>
+        <p>Double-click a row or press Enter on a focused row to open its details. The panel reads the row record and does not mutate consumer data.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-row-details-table"></rowan-table>
+        </div>
+        <rowan-row-details-panel id="docs-row-details-panel" for-table="docs-row-details-table"></rowan-row-details-panel>
+        <pre id="row-details-panel-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="row-details-panel-contract">
+        <h2>Behavior contract</h2>
+        <p>The panel can be controlled through row, rowId, and open properties or bound to table activation through for-table. It emits rowan-close only for user dismissal.</p>
+        ${codeBlock(ROW_DETAILS_PANEL_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupRowDetailsPanelDemo,
   },
   {
     id: "quality",
@@ -1096,6 +1577,7 @@ const NAV_SECTIONS = [
       { pageId: "alert", label: "Alert" },
       { pageId: "button", label: "Button" },
       { pageId: "dialog", label: "Dialog" },
+      { pageId: "command-palette", label: "Command Palette" },
       { pageId: "date-picker", label: "Date Picker" },
       { pageId: "time-picker", label: "Time Picker" },
       { pageId: "date-range-picker", label: "Date Range Picker" },
@@ -1105,10 +1587,16 @@ const NAV_SECTIONS = [
       { pageId: "file-item", label: "File Item" },
       { pageId: "file-upload", label: "File Upload" },
       { pageId: "stepper", label: "Stepper" },
+      { pageId: "tree", label: "Tree" },
       { pageId: "validation-summary", label: "Validation Summary" },
+      { pageId: "form-wizard", label: "Form Wizard" },
       { pageId: "toast", label: "Toast" },
       { pageId: "toaster", label: "Toaster" },
       { pageId: "table", label: "Data Table" },
+      { pageId: "table-toolbar", label: "Table Toolbar" },
+      { pageId: "bulk-actions-bar", label: "Bulk Actions Bar" },
+      { pageId: "filter-builder", label: "Filter Builder" },
+      { pageId: "row-details-panel", label: "Row Details Panel" },
     ],
   },
   {
@@ -1327,7 +1815,13 @@ function renderComponentGroups() {
 function pageMatchesFilter(page, query) {
   if (!query) return true;
 
-  const haystack = [page.title, page.summary, page.group, ...(page.tags || []), ...(page.keywords || [])]
+  const haystack = [
+    page.title,
+    page.summary,
+    page.group,
+    ...(page.tags || []),
+    ...(page.keywords || []),
+  ]
     .join(" ")
     .toLowerCase();
 
@@ -1657,6 +2151,157 @@ function setupTableDemo() {
   }
 }
 
+function createTableOperationsConfig() {
+  return {
+    selectable: "multiple",
+    rowId: "id",
+    columns: [
+      { id: "name", header: "Name", type: "text" },
+      { id: "team", header: "Team", type: "text" },
+    ],
+    rows: [
+      { id: "1", name: "Ada", team: "Platform" },
+      { id: "2", name: "Alan", team: "Research" },
+      { id: "3", name: "Grace", team: "Operations" },
+    ],
+  };
+}
+
+function filterOperationRows(rows, filters) {
+  return rows.filter((row) =>
+    filters.every((filter) => {
+      const value = String(row[filter.field] ?? "").toLocaleLowerCase();
+      const expected = String(filter.value ?? "").toLocaleLowerCase();
+
+      if (filter.operator === "is-empty") return value.length === 0;
+      if (filter.operator === "is-not-empty") return value.length > 0;
+      if (filter.operator === "equals") return value === expected;
+      if (filter.operator === "not-equals") return value !== expected;
+      if (filter.operator === "starts-with") return value.startsWith(expected);
+      if (filter.operator === "ends-with") return value.endsWith(expected);
+      return value.includes(expected);
+    }),
+  );
+}
+
+function setupTableToolbarDemo() {
+  const table = mainEl.querySelector("#docs-table-toolbar-demo");
+  const output = mainEl.querySelector("#table-toolbar-events");
+
+  if (!(table instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  table.config = createTableOperationsConfig();
+  output.textContent =
+    "Select rows to observe rowan-table-toolbar synchronization with rowan-select.";
+
+  table.addEventListener("rowan-select", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-select\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupBulkActionsBarDemo() {
+  const table = mainEl.querySelector("#docs-bulk-actions-demo");
+  const bar = mainEl.querySelector("#docs-bulk-actions-bar");
+  const output = mainEl.querySelector("#bulk-actions-events");
+
+  if (
+    !(table instanceof HTMLElement) ||
+    !(bar instanceof HTMLElement) ||
+    !(output instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  table.config = createTableOperationsConfig();
+  bar.actions = [
+    { id: "archive", label: "Archive", variant: "secondary" },
+    { id: "assign", label: "Assign owner" },
+    { id: "remove", label: "Remove", variant: "danger" },
+  ];
+  output.textContent = "Select rows, then trigger a bulk action or clear the current selection.";
+
+  const pushLog = (type, detail) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] ${type}\n${formatEventDetail(detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  };
+
+  table.addEventListener("rowan-select", (event) => {
+    pushLog("rowan-select", event.detail);
+  });
+
+  for (const eventType of ["rowan-bulk-action", "rowan-clear-selection"]) {
+    bar.addEventListener(eventType, (event) => {
+      pushLog(eventType, event.detail);
+    });
+  }
+}
+
+function setupFilterBuilderDemo() {
+  const table = mainEl.querySelector("#docs-filter-builder-demo");
+  const builder = mainEl.querySelector("#docs-filter-builder");
+  const output = mainEl.querySelector("#filter-builder-events");
+
+  if (
+    !(table instanceof HTMLElement) ||
+    !(builder instanceof HTMLElement) ||
+    !(output instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  const config = createTableOperationsConfig();
+  const sourceRows = config.rows.map((row) => ({ ...row }));
+  table.config = config;
+  builder.fields = [
+    { id: "name", label: "Name" },
+    { id: "team", label: "Team", options: ["Platform", "Research", "Operations"] },
+  ];
+  output.textContent = "Add or update filters to derive the table rows in application code.";
+
+  builder.addEventListener("rowan-filter-change", (event) => {
+    table.rows = filterOperationRows(sourceRows, event.detail.filters).map((row) => ({ ...row }));
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-filter-change\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupRowDetailsPanelDemo() {
+  const table = mainEl.querySelector("#docs-row-details-table");
+  const panel = mainEl.querySelector("#docs-row-details-panel");
+  const output = mainEl.querySelector("#row-details-panel-events");
+
+  if (
+    !(table instanceof HTMLElement) ||
+    !(panel instanceof HTMLElement) ||
+    !(output instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  table.config = createTableOperationsConfig();
+  output.textContent = "Double-click a row or focus it and press Enter to inspect its details.";
+
+  const pushLog = (type, detail) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] ${type}\n${formatEventDetail(detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  };
+
+  table.addEventListener("rowan-row-activate", (event) => {
+    pushLog("rowan-row-activate", event.detail);
+  });
+
+  panel.addEventListener("rowan-close", (event) => {
+    pushLog("rowan-close", event.detail);
+  });
+}
+
 function setupValidationSummaryDemo() {
   const summary = mainEl.querySelector("#docs-validation-summary");
   const form = mainEl.querySelector("#docs-validation-form");
@@ -1672,7 +2317,8 @@ function setupValidationSummaryDemo() {
     return;
   }
 
-  output.textContent = "Select Validate form to collect errors. Activate an error to focus its field.";
+  output.textContent =
+    "Select Validate form to collect errors. Activate an error to focus its field.";
 
   const runValidation = () => {
     summary.collectFromForm();
@@ -1692,6 +2338,76 @@ function setupValidationSummaryDemo() {
   });
 
   runValidation();
+}
+
+function setupFormWizardDemo() {
+  const wizard = mainEl.querySelector("#docs-form-wizard");
+  const output = mainEl.querySelector("#form-wizard-events");
+
+  if (!(wizard instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  output.textContent = "Progress through the workflow to inspect rowan-form-wizard event payloads.";
+
+  for (const eventType of ["rowan-step-change", "rowan-invalid", "rowan-complete"]) {
+    wizard.addEventListener(eventType, (event) => {
+      const stamp = new Date().toLocaleTimeString();
+      const next = `[${stamp}] ${eventType}\n${formatEventDetail(event.detail)}\n`;
+      output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+    });
+  }
+}
+
+function setupTreeDemo() {
+  const tree = mainEl.querySelector("#docs-tree-demo");
+  const output = mainEl.querySelector("#tree-events");
+
+  if (!(tree instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  output.textContent = "Select a node or expand a branch to inspect rowan-tree event payloads.";
+
+  for (const eventType of ["rowan-change", "rowan-toggle"]) {
+    tree.addEventListener(eventType, (event) => {
+      const stamp = new Date().toLocaleTimeString();
+      const next = `[${stamp}] ${eventType}\n${formatEventDetail(event.detail)}\n`;
+      output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+    });
+  }
+}
+
+function setupCommandPaletteDemo() {
+  const palette = mainEl.querySelector("#docs-command-palette");
+  const trigger = mainEl.querySelector("#docs-command-palette-trigger");
+  const output = mainEl.querySelector("#command-palette-events");
+
+  if (
+    !(palette instanceof HTMLElement) ||
+    !(trigger instanceof HTMLElement) ||
+    !(output instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  output.textContent = "Open the palette, filter commands, then activate an enabled result.";
+
+  trigger.addEventListener("rowan-click", () => {
+    palette.show();
+  });
+
+  for (const eventType of ["rowan-command", "rowan-close"]) {
+    palette.addEventListener(eventType, (event) => {
+      const detail =
+        eventType === "rowan-command"
+          ? { query: event.detail?.query, value: event.detail?.value }
+          : event.detail;
+      const stamp = new Date().toLocaleTimeString();
+      const next = `[${stamp}] ${eventType}\n${formatEventDetail(detail)}\n`;
+      output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+    });
+  }
 }
 
 function applyTheme(theme) {
