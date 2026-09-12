@@ -6,7 +6,7 @@ Last updated: 2026-09-11
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 64 components
+- Current implemented catalog includes 68 components
 
 ## Completed Sprints
 
@@ -413,13 +413,30 @@ Verification completed at sprint close:
 
 ### Sprint 18: Application Workspaces
 
-Status: Planned
+Status: Completed
 
-Planned components:
+Delivered:
 
-- `rowan-split-pane` with start/end slots, a keyboard-operable separator, orientation, constraints, snap points, and a user-only resize event
-- `rowan-app-layout` for responsive header, navigation, and content composition
-- `rowan-side-nav` and `rowan-side-nav-item` for application navigation without overloading `rowan-tree`
+- `rowan-split-pane` with start/end slots, horizontal and vertical modes, percentage constraints, property-only snap points, pointer resizing, and keyboard-operable separator controls
+- `rowan-app-layout` as a responsive header, navigation, and default-content shell with compact off-canvas navigation, inert closed-state protection, and user-only navigation state events
+- `rowan-side-nav` and `rowan-side-nav-item` for flat application navigation with roving Arrow, Home, End, Enter, and Space interaction without overloading tree hierarchy semantics
+- Safe link handling, active destination state, prefix/suffix composition, native landmark semantics, guarded definitions, visual hidden states, and component-token layers
+- Storybook stories, static documentation routes and live event demos, README workspace guidance, root and subpath exports, declaration bridges, global tag mappings, CEM entries, and public contract coverage
+
+Verification completed at sprint close:
+
+- Focused workspace contracts: 8 passing
+- `npm run tokens:sync` and `npm run tokens:check`
+- `npm run lint`
+- `npm run types`
+- `npm run typecheck`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests
+- `npm test` (70 files, 284 passing contracts)
+- Chromium, Firefox, and WebKit each passed 70 files and 284 public contracts
+- `npm run build-storybook`
+- `npm pack --dry-run --json` includes the ESM source and declarations without documentation artifacts
+- Desktop and 390px static documentation checks confirmed semantic application landmarks, compact navigation state, keyboard split-pane resizing, event logging, and no horizontal overflow
+- Scoped Prettier validation of all authored Sprint 18 files and `git diff --check` passed
 
 ### Sprint 19: Contextual Actions
 

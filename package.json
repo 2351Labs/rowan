@@ -20,6 +20,10 @@
       "types": "./src/alert/alert.d.ts",
       "default": "./src/alert/alert.js"
     },
+    "./app-layout": {
+      "types": "./src/app-layout/app-layout.d.ts",
+      "default": "./src/app-layout/app-layout.js"
+    },
     "./avatar": {
       "types": "./src/avatar/avatar.d.ts",
       "default": "./src/avatar/avatar.js"
@@ -188,6 +192,14 @@
       "types": "./src/segmented-control/segmented-control.d.ts",
       "default": "./src/segmented-control/segmented-control.js"
     },
+    "./side-nav": {
+      "types": "./src/side-nav/side-nav.d.ts",
+      "default": "./src/side-nav/side-nav.js"
+    },
+    "./side-nav-item": {
+      "types": "./src/side-nav-item/side-nav-item.d.ts",
+      "default": "./src/side-nav-item/side-nav-item.js"
+    },
     "./slider": {
       "types": "./src/slider/slider.d.ts",
       "default": "./src/slider/slider.js"
@@ -195,6 +207,10 @@
     "./spinner": {
       "types": "./src/spinner/spinner.d.ts",
       "default": "./src/spinner/spinner.js"
+    },
+    "./split-pane": {
+      "types": "./src/split-pane/split-pane.d.ts",
+      "default": "./src/split-pane/split-pane.js"
     },
     "./stepper": {
       "types": "./src/stepper/stepper.d.ts",
@@ -315,6 +331,7 @@
   "sideEffects": [
     "./src/accordion/accordion.js",
     "./src/alert/alert.js",
+    "./src/app-layout/app-layout.js",
     "./src/avatar/avatar.js",
     "./src/bulk-actions-bar/bulk-actions-bar.js",
     "./src/filter-builder/filter-builder.js",
@@ -357,8 +374,11 @@
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",
     "./src/segmented-control/segmented-control.js",
+    "./src/side-nav/side-nav.js",
+    "./src/side-nav-item/side-nav-item.js",
     "./src/slider/slider.js",
     "./src/spinner/spinner.js",
+    "./src/split-pane/split-pane.js",
     "./src/stepper/stepper.js",
     "./src/switch/switch.js",
     "./src/tab/tab.js",

@@ -455,6 +455,103 @@ html[data-theme="dark"] body {
   margin-top: 0.65rem;
 }
 
+.docs-app-layout-frame {
+  border: 1px solid var(--docs-border);
+  border-radius: 0.85rem;
+  margin-top: 0.65rem;
+  overflow: hidden;
+}
+
+.docs-app-layout-demo {
+  block-size: 30rem;
+}
+
+.docs-app-layout-header {
+  align-items: center;
+  display: flex;
+  gap: var(--rowan-space-3);
+  inline-size: 100%;
+}
+
+.docs-app-layout-header rowan-button {
+  margin-inline-start: auto;
+}
+
+.docs-app-layout-content {
+  max-inline-size: 42rem;
+}
+
+.docs-app-layout-content h3 {
+  font-family: "Fraunces", "Iowan Old Style", serif;
+  font-size: 1.45rem;
+  margin: 0.2rem 0 0.45rem;
+}
+
+.docs-app-layout-content p {
+  color: var(--docs-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.docs-app-layout-eyebrow {
+  color: var(--rowan-color-accent) !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-split-pane {
+  block-size: 20rem;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.85rem;
+  margin-top: 0.65rem;
+  overflow: hidden;
+}
+
+.docs-split-pane rowan-split-pane {
+  block-size: 100%;
+}
+
+.docs-split-pane-start,
+.docs-split-pane-end {
+  display: grid;
+  gap: var(--rowan-space-2);
+  min-block-size: 100%;
+  padding: var(--rowan-space-4);
+}
+
+.docs-split-pane-start {
+  background: color-mix(in srgb, var(--rowan-color-accent) 6%, var(--rowan-color-bg));
+  border-inline-end: 1px solid var(--docs-border);
+}
+
+.docs-split-pane-start span,
+.docs-split-pane-end span {
+  color: var(--docs-muted);
+  font-size: var(--rowan-font-size-sm);
+  line-height: 1.5;
+}
+
+.docs-side-nav-demo,
+.docs-side-nav-item-demo {
+  inline-size: min(100%, 20rem);
+  margin-top: 0.65rem;
+}
+
+.docs-side-nav-item-mark {
+  background: var(--rowan-color-accent);
+  block-size: 0.55rem;
+  border-radius: 50%;
+  inline-size: 0.55rem;
+}
+
+.docs-side-nav-item-meta {
+  color: var(--docs-muted);
+  font-size: 0.75rem;
+  margin-inline-start: auto;
+}
+
 .table-events {
   background: color-mix(in srgb, var(--rowan-color-bg) 82%, #ffffff 18%);
   border: 1px solid var(--docs-border);
@@ -829,5 +926,13 @@ html[data-theme="dark"] body {
   .docs-component-meta {
     white-space: normal;
     word-break: break-word;
+  }
+
+  .docs-app-layout-demo {
+    block-size: 32rem;
+  }
+
+  .docs-split-pane {
+    block-size: 24rem;
   }
 }

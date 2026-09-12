@@ -1,0 +1,53 @@
+:host {
+  display: block;
+  min-block-size: 0;
+  min-inline-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.layout {
+  block-size: 100%;
+  display: grid;
+  gap: var(--rowan-split-pane-gap, 0);
+  inline-size: 100%;
+  min-block-size: 0;
+  min-inline-size: 0;
+}
+
+.pane {
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: auto;
+}
+
+.separator {
+  align-items: center;
+  background: var(--rowan-split-pane-separator-color, var(--rowan-color-border));
+  display: flex;
+  justify-content: center;
+  outline: none;
+  touch-action: none;
+  transition: background-color 140ms ease;
+}
+
+:host(:not([orientation="vertical"])) .separator {
+  cursor: col-resize;
+}
+
+:host([orientation="vertical"]) .separator {
+  cursor: row-resize;
+}
+
+.separator:hover,
+.separator:focus-visible {
+  background: var(--rowan-split-pane-separator-active-color, var(--rowan-color-accent));
+  box-shadow: var(--rowan-split-pane-focus-ring, var(--rowan-focus-ring));
+}
+
+.separator[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--rowan-split-pane-disabled-opacity, 0.55);
+}

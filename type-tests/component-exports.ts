@@ -1,5 +1,6 @@
 import { RowanAccordion } from "@rowan-ui/core/accordion";
 import { RowanAlert } from "@rowan-ui/core/alert";
+import { RowanAppLayout } from "@rowan-ui/core/app-layout";
 import { RowanAvatar } from "@rowan-ui/core/avatar";
 import { RowanBadge } from "@rowan-ui/core/badge";
 import { RowanBreadcrumb } from "@rowan-ui/core/breadcrumb";
@@ -42,9 +43,12 @@ import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect } from "@rowan-ui/core/select";
 import { RowanSegmentedControl } from "@rowan-ui/core/segmented-control";
+import { RowanSideNav } from "@rowan-ui/core/side-nav";
+import { RowanSideNavItem } from "@rowan-ui/core/side-nav-item";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
+import { RowanSplitPane } from "@rowan-ui/core/split-pane";
 import { RowanStepper } from "@rowan-ui/core/stepper";
 import { RowanSwitch } from "@rowan-ui/core/switch";
 import { RowanTab } from "@rowan-ui/core/tab";
@@ -65,6 +69,7 @@ import { RowanVirtualList } from "@rowan-ui/core/virtual-list";
 
 const accordion: RowanAccordion = document.createElement("rowan-accordion");
 const alert: RowanAlert = document.createElement("rowan-alert");
+const appLayout: RowanAppLayout = document.createElement("rowan-app-layout");
 const avatar: RowanAvatar = document.createElement("rowan-avatar");
 const badge: RowanBadge = document.createElement("rowan-badge");
 const breadcrumb: RowanBreadcrumb = document.createElement("rowan-breadcrumb");
@@ -109,9 +114,12 @@ const radioGroup: RowanRadioGroup = document.createElement("rowan-radio-group");
 const rowDetailsPanel: RowanRowDetailsPanel = document.createElement("rowan-row-details-panel");
 const select: RowanSelect = document.createElement("rowan-select");
 const segmentedControl: RowanSegmentedControl = document.createElement("rowan-segmented-control");
+const sideNav: RowanSideNav = document.createElement("rowan-side-nav");
+const sideNavItem: RowanSideNavItem = document.createElement("rowan-side-nav-item");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
+const splitPane: RowanSplitPane = document.createElement("rowan-split-pane");
 const stepper: RowanStepper = document.createElement("rowan-stepper");
 const switchControl: RowanSwitch = document.createElement("rowan-switch");
 const tab: RowanTab = document.createElement("rowan-tab");
@@ -143,14 +151,21 @@ virtualList.renderItem = (item, _index, itemEl) => {
 table.virtualized = true;
 table.virtualItemSize = 44;
 table.virtualOverscan = 4;
+appLayout.navigationOpen = true;
+sideNav.value = "overview";
+sideNavItem.active = true;
 
 const virtualListItemSize: number = virtualList.itemSize;
 const tableVirtualItemSize: number = table.virtualItemSize;
 const tableVirtualized: boolean = table.virtualized;
+const appLayoutNavigationOpen: boolean = appLayout.navigationOpen;
+const sideNavValue: string = sideNav.value;
+const sideNavItemActive: boolean = sideNavItem.active;
 
 void [
   accordion,
   alert,
+  appLayout,
   avatar,
   badge,
   breadcrumb,
@@ -193,9 +208,12 @@ void [
   rowDetailsPanel,
   select,
   segmentedControl,
+  sideNav,
+  sideNavItem,
   skeleton,
   slider,
   spinner,
+  splitPane,
   stepper,
   switchControl,
   tab,
@@ -216,4 +234,7 @@ void [
   virtualListItemSize,
   tableVirtualItemSize,
   tableVirtualized,
+  appLayoutNavigationOpen,
+  sideNavValue,
+  sideNavItemActive,
 ];

@@ -1,0 +1,172 @@
+:host {
+  --_app-layout-bg: var(--rowan-app-layout-bg, var(--rowan-color-bg));
+  --_app-layout-fg: var(--rowan-app-layout-fg, var(--rowan-color-fg));
+  --_app-layout-header-bg: var(--rowan-app-layout-header-bg, var(--rowan-color-bg));
+  --_app-layout-header-border: var(--rowan-app-layout-header-border, var(--rowan-color-border));
+  --_app-layout-navigation-bg: var(--rowan-app-layout-navigation-bg, var(--rowan-color-bg));
+  --_app-layout-navigation-border: var(
+    --rowan-app-layout-navigation-border,
+    var(--rowan-color-border)
+  );
+  --_app-layout-navigation-width: var(--rowan-app-layout-navigation-width, 17rem);
+  --_app-layout-content-padding: var(--rowan-app-layout-content-padding, var(--rowan-space-5));
+  --_app-layout-focus-ring: var(--rowan-app-layout-focus-ring, var(--rowan-focus-ring));
+  --_app-layout-backdrop: var(--rowan-app-layout-backdrop, rgb(16 38 28 / 44%));
+  display: block;
+  min-block-size: var(--rowan-app-layout-min-block-size, 100dvh);
+  min-inline-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.layout {
+  background: var(--_app-layout-bg);
+  color: var(--_app-layout-fg);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-block-size: inherit;
+  min-inline-size: 0;
+}
+
+.header {
+  align-items: center;
+  background: var(--_app-layout-header-bg);
+  border-block-end: var(--rowan-border-width) solid var(--_app-layout-header-border);
+  display: flex;
+  gap: var(--rowan-space-3);
+  min-block-size: var(--rowan-app-layout-header-min-block-size, 3.75rem);
+  min-inline-size: 0;
+  padding: var(--rowan-app-layout-header-padding, var(--rowan-space-3) var(--rowan-space-5));
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, var(--_app-layout-navigation-width)) minmax(0, 1fr);
+  min-block-size: 0;
+  min-inline-size: 0;
+}
+
+.navigation {
+  background: var(--_app-layout-navigation-bg);
+  border-inline-end: var(--rowan-border-width) solid var(--_app-layout-navigation-border);
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: auto;
+  padding: var(--rowan-app-layout-navigation-padding, var(--rowan-space-4));
+}
+
+.content {
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: auto;
+  padding: var(--_app-layout-content-padding);
+}
+
+.navigation-toggle,
+.backdrop {
+  display: none;
+}
+
+.navigation-toggle {
+  align-items: center;
+  background: transparent;
+  border: var(--rowan-border-width) solid var(--_app-layout-header-border);
+  border-radius: var(--rowan-radius-sm);
+  color: inherit;
+  cursor: pointer;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-block-size: 2.25rem;
+  min-inline-size: 2.25rem;
+  padding: 0;
+}
+
+.navigation-toggle:focus-visible {
+  box-shadow: var(--_app-layout-focus-ring);
+  outline: none;
+}
+
+.navigation-toggle-icon,
+.navigation-toggle-icon::before,
+.navigation-toggle-icon::after {
+  background: currentColor;
+  block-size: 0.125rem;
+  content: "";
+  display: block;
+  inline-size: 1rem;
+}
+
+.navigation-toggle-icon {
+  position: relative;
+}
+
+.navigation-toggle-icon::before,
+.navigation-toggle-icon::after {
+  inset-inline-start: 0;
+  position: absolute;
+}
+
+.navigation-toggle-icon::before {
+  inset-block-start: -0.35rem;
+}
+
+.navigation-toggle-icon::after {
+  inset-block-start: 0.35rem;
+}
+
+@media (max-width: 48rem) {
+  .header {
+    padding-inline: var(--rowan-space-3);
+  }
+
+  .body {
+    display: block;
+  }
+
+  .navigation-toggle {
+    display: inline-flex;
+  }
+
+  .navigation {
+    block-size: 100dvh;
+    border-block-end: 0;
+    box-shadow: 0 12px 28px rgb(16 38 28 / 18%);
+    inline-size: min(var(--rowan-app-layout-mobile-navigation-width, 21rem), 86vw);
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    position: fixed;
+    transform: translateX(-105%);
+    transition:
+      transform 180ms ease,
+      visibility 180ms ease;
+    visibility: hidden;
+    z-index: 2;
+  }
+
+  :host(:dir(rtl)) .navigation {
+    transform: translateX(105%);
+  }
+
+  :host([navigation-open]) .navigation {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .backdrop {
+    background: var(--_app-layout-backdrop);
+    inset: 0;
+    position: fixed;
+    z-index: 1;
+  }
+
+  .backdrop:not([hidden]) {
+    display: block;
+  }
+
+  .content {
+    min-block-size: 100%;
+    padding: var(--rowan-app-layout-mobile-content-padding, var(--rowan-space-4));
+  }
+}

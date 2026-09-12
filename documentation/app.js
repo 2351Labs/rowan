@@ -455,6 +455,60 @@ const FORM_LAYOUT_SNIPPET = `<rowan-form-layout columns="2" label-position="star
   </rowan-form-field>
 </rowan-form-layout>`;
 
+const SPLIT_PANE_SNIPPET = `<rowan-split-pane id="workspace-pane" position="32" min="20" max="80">
+  <aside slot="start">Navigation</aside>
+  <main slot="end">Workspace content</main>
+</rowan-split-pane>
+
+<script type="module">
+  import "@rowan-ui/core/split-pane";
+
+  const pane = document.querySelector("#workspace-pane");
+  pane.snapPoints = [25, 50, 75];
+
+  pane.addEventListener("rowan-resize", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
+const APP_LAYOUT_SNIPPET = `<rowan-app-layout id="project-shell">
+  <header slot="header">Northstar</header>
+  <rowan-side-nav slot="navigation" label="Project navigation" value="overview">
+    <rowan-side-nav-item value="overview" href="/overview">Overview</rowan-side-nav-item>
+    <rowan-side-nav-item value="members" href="/members">Members</rowan-side-nav-item>
+  </rowan-side-nav>
+  <main>Project overview</main>
+</rowan-app-layout>
+
+<script type="module">
+  import "@rowan-ui/core/app-layout";
+  import "@rowan-ui/core/side-nav";
+
+  const shell = document.querySelector("#project-shell");
+  shell.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.navigationOpen);
+  });
+</script>`;
+
+const SIDE_NAV_SNIPPET = `<rowan-side-nav id="project-nav" label="Project navigation" value="overview">
+  <rowan-side-nav-item value="overview" href="/overview">Overview</rowan-side-nav-item>
+  <rowan-side-nav-item value="activity" href="/activity">Activity</rowan-side-nav-item>
+  <rowan-side-nav-item value="settings" href="/settings">Settings</rowan-side-nav-item>
+</rowan-side-nav>
+
+<script type="module">
+  import "@rowan-ui/core/side-nav";
+
+  const nav = document.querySelector("#project-nav");
+  nav.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
+const SIDE_NAV_ITEM_SNIPPET = `<rowan-side-nav-item value="overview" href="/overview" active>
+  Overview
+</rowan-side-nav-item>`;
+
 const CALENDAR_SNIPPET = `<rowan-calendar
   name="serviceDate"
   selection-mode="range"
@@ -551,8 +605,12 @@ const COMPONENT_CATEGORY_SETS = {
   ]),
   Navigation: new Set([
     "accordion",
+    "app-layout",
     "breadcrumb",
     "pagination",
+    "side-nav",
+    "side-nav-item",
+    "split-pane",
     "stepper",
     "tab",
     "tab-panel",
@@ -1542,6 +1600,142 @@ const DOC_PAGES = [
     afterRender: setupTreeDemo,
   },
   {
+    id: "app-layout",
+    group: "Components",
+    title: "Rowan App Layout",
+    summary:
+      "Responsive application shell that composes a header, primary navigation, and focused workspace content.",
+    tags: ["layout", "navigation", "responsive"],
+    keywords: ["app layout", "application shell", "navigation open", "workspace", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="app-layout-overview">
+        <h2>Application composition</h2>
+        <p>Place header and navigation content in their named slots, then use the default slot for main workspace content. At compact widths, the built-in navigation control opens an accessible off-canvas panel.</p>
+        <div class="docs-app-layout-frame">
+          <rowan-app-layout id="docs-app-layout-demo" class="docs-app-layout-demo">
+            <div slot="header" class="docs-app-layout-header">
+              <strong>Northstar</strong>
+              <rowan-button size="sm">New project</rowan-button>
+            </div>
+            <rowan-side-nav slot="navigation" label="Northstar navigation" value="overview">
+              <rowan-side-nav-item value="overview">Overview</rowan-side-nav-item>
+              <rowan-side-nav-item value="activity">Activity</rowan-side-nav-item>
+              <rowan-side-nav-item value="members">Members</rowan-side-nav-item>
+              <rowan-side-nav-item value="settings">Settings</rowan-side-nav-item>
+            </rowan-side-nav>
+            <section class="docs-app-layout-content">
+              <p class="docs-app-layout-eyebrow">Project workspace</p>
+              <h3>Delivery health</h3>
+              <p>Use the default slot for durable workspace views without coupling their state to the shell.</p>
+            </section>
+          </rowan-app-layout>
+        </div>
+        <pre id="app-layout-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="app-layout-contract">
+        <h2>Responsive navigation state</h2>
+        <p>navigation-open reflects the shell state for declarative control. Parent assignments remain silent; user use of the compact toggle, backdrop, or Escape emits rowan-change.</p>
+        ${codeBlock(APP_LAYOUT_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupAppLayoutDemo,
+  },
+  {
+    id: "split-pane",
+    group: "Components",
+    title: "Rowan Split Pane",
+    summary:
+      "Keyboard-operable two-pane workspace layout with constrained, snapping separator positions.",
+    tags: ["layout", "keyboard", "resizable"],
+    keywords: ["split pane", "resizable", "separator", "snap points", "rowan-resize"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="split-pane-overview">
+        <h2>Constrained workspace panes</h2>
+        <p>Use start and end slots for independently scrolling workspace regions. Drag the separator, or focus it and use Arrow keys, Home, and End to adjust the start-pane percentage.</p>
+        <div class="docs-split-pane">
+          <rowan-split-pane id="docs-split-pane-demo" position="34" min="20" max="80">
+            <aside slot="start" class="docs-split-pane-start">
+              <strong>Project navigation</strong>
+              <span>Resize handles stay available to keyboard users.</span>
+            </aside>
+            <section slot="end" class="docs-split-pane-end">
+              <strong>Workspace</strong>
+              <span>Content remains composed rather than owned by the pane.</span>
+            </section>
+          </rowan-split-pane>
+        </div>
+        <pre id="split-pane-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="split-pane-contract">
+        <h2>Position and snap points</h2>
+        <p>position, min, max, and step are reflected numeric APIs. snapPoints is property-only, so structured layout values never serialize into markup. User resizing emits rowan-resize; parent-set position remains silent.</p>
+        ${codeBlock(SPLIT_PANE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupSplitPaneDemo,
+  },
+  {
+    id: "side-nav",
+    group: "Components",
+    title: "Rowan Side Navigation",
+    summary:
+      "Flat application navigation controller with active-item state and roving keyboard focus.",
+    tags: ["navigation", "keyboard", "selection"],
+    keywords: ["side nav", "navigation", "roving focus", "active", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="side-nav-overview">
+        <h2>Flat application navigation</h2>
+        <p>Compose direct rowan-side-nav-item children for workspace destinations. Arrow keys move the sole tab stop between enabled items, and Enter or Space activates the focused item.</p>
+        <div class="docs-side-nav-demo">
+          <rowan-side-nav id="docs-side-nav-demo" label="Project navigation" value="overview">
+            <rowan-side-nav-item value="overview">Overview</rowan-side-nav-item>
+            <rowan-side-nav-item value="activity">Activity</rowan-side-nav-item>
+            <rowan-side-nav-item value="members">Members</rowan-side-nav-item>
+            <rowan-side-nav-item value="settings" disabled>Settings</rowan-side-nav-item>
+          </rowan-side-nav>
+        </div>
+        <pre id="side-nav-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="side-nav-contract">
+        <h2>Controlled active value</h2>
+        <p>Set value from application state to update the active item without an event. User activation updates value and emits one composed rowan-change event with the selected item.</p>
+        ${codeBlock(SIDE_NAV_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupSideNavDemo,
+  },
+  {
+    id: "side-nav-item",
+    group: "Components",
+    title: "Rowan Side Navigation Item",
+    summary:
+      "Composable navigation destination with link semantics, active-state styling, and prefix or suffix slots.",
+    tags: ["navigation", "link", "composition"],
+    keywords: ["side nav item", "navigation item", "active", "href", "prefix", "suffix"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="side-nav-item-overview">
+        <h2>Destination content</h2>
+        <p>Use href for navigation destinations, or omit it for controller-managed action items. The item works standalone and receives roving focus behavior when it is a direct child of rowan-side-nav.</p>
+        <div class="docs-side-nav-item-demo">
+          <rowan-side-nav-item value="overview" href="#side-nav-item-contract" active>
+            <span slot="prefix" class="docs-side-nav-item-mark" aria-hidden="true"></span>
+            Overview
+            <span slot="suffix" class="docs-side-nav-item-meta">Current</span>
+          </rowan-side-nav-item>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="side-nav-item-contract">
+        <h2>Link and state contract</h2>
+        <p>active reflects the current destination and maps to an internal aria-current page marker. disabled items are removed from the tab order and skipped by the side navigation controller.</p>
+        ${codeBlock(SIDE_NAV_ITEM_SNIPPET, "html")}
+      </section>
+    `,
+  },
+  {
     id: "command-palette",
     group: "Components",
     title: "Rowan Command Palette",
@@ -1990,6 +2184,10 @@ const NAV_SECTIONS = [
       { pageId: "slider", label: "Slider" },
       { pageId: "form-field", label: "Form Field" },
       { pageId: "form-layout", label: "Form Layout" },
+      { pageId: "app-layout", label: "App Layout" },
+      { pageId: "split-pane", label: "Split Pane" },
+      { pageId: "side-nav", label: "Side Navigation" },
+      { pageId: "side-nav-item", label: "Side Navigation Item" },
       { pageId: "dropzone", label: "Dropzone" },
       { pageId: "file-item", label: "File Item" },
       { pageId: "file-upload", label: "File Upload" },
@@ -2598,6 +2796,53 @@ function setupVirtualListDemo() {
       list.scrollToIndex(250, { align: "center" });
     });
   }
+}
+
+function setupWorkspaceEventLog(target, output, eventTypes, message) {
+  if (!(target instanceof HTMLElement) || !(output instanceof HTMLElement)) return;
+
+  output.textContent = message;
+  for (const eventType of eventTypes) {
+    target.addEventListener(eventType, (event) => {
+      const stamp = new Date().toLocaleTimeString();
+      const next = `[${stamp}] ${eventType}\n${formatEventDetail(event.detail)}\n`;
+      output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+    });
+  }
+}
+
+function setupAppLayoutDemo() {
+  const layout = mainEl.querySelector("#docs-app-layout-demo");
+  const output = mainEl.querySelector("#app-layout-events");
+  setupWorkspaceEventLog(
+    layout,
+    output,
+    ["rowan-change"],
+    "Use the compact navigation control to inspect rowan-change payloads.",
+  );
+}
+
+function setupSplitPaneDemo() {
+  const pane = mainEl.querySelector("#docs-split-pane-demo");
+  const output = mainEl.querySelector("#split-pane-events");
+  if (pane instanceof HTMLElement) pane.snapPoints = [25, 50, 75];
+  setupWorkspaceEventLog(
+    pane,
+    output,
+    ["rowan-resize"],
+    "Resize the separator to inspect user-originated rowan-resize payloads.",
+  );
+}
+
+function setupSideNavDemo() {
+  const navigation = mainEl.querySelector("#docs-side-nav-demo");
+  const output = mainEl.querySelector("#side-nav-events");
+  setupWorkspaceEventLog(
+    navigation,
+    output,
+    ["rowan-change"],
+    "Activate a destination to inspect rowan-change payloads.",
+  );
 }
 
 function setupVirtualTableDemo() {

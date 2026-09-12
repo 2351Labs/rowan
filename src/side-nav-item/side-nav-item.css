@@ -1,0 +1,70 @@
+:host {
+  --_side-nav-item-fg: var(--rowan-side-nav-item-fg, var(--rowan-color-fg));
+  --_side-nav-item-muted-fg: var(--rowan-side-nav-item-muted-fg, var(--rowan-color-muted));
+  --_side-nav-item-hover-bg: var(
+    --rowan-side-nav-item-hover-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 8%, transparent)
+  );
+  --_side-nav-item-active-bg: var(
+    --rowan-side-nav-item-active-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 15%, transparent)
+  );
+  --_side-nav-item-active-fg: var(--rowan-side-nav-item-active-fg, var(--rowan-color-fg));
+  --_side-nav-item-focus-ring: var(--rowan-side-nav-item-focus-ring, var(--rowan-focus-ring));
+  --_side-nav-item-radius: var(--rowan-side-nav-item-radius, var(--rowan-radius-sm));
+  --_side-nav-item-font-family: var(--rowan-side-nav-item-font-family, var(--rowan-font-family));
+  --_side-nav-item-font-size: var(--rowan-side-nav-item-font-size, var(--rowan-font-size-sm));
+  --_side-nav-item-gap: var(--rowan-side-nav-item-gap, var(--rowan-space-2));
+  --_side-nav-item-min-block-size: var(--rowan-side-nav-item-min-block-size, 2.5rem);
+  --_side-nav-item-padding: var(--rowan-side-nav-item-padding, 0.45rem var(--rowan-space-3));
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.item {
+  align-items: center;
+  background: transparent;
+  border-radius: var(--_side-nav-item-radius);
+  box-sizing: border-box;
+  color: var(--_side-nav-item-fg);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--_side-nav-item-font-family);
+  font-size: var(--_side-nav-item-font-size);
+  gap: var(--_side-nav-item-gap);
+  min-block-size: var(--_side-nav-item-min-block-size);
+  padding: var(--_side-nav-item-padding);
+  text-align: start;
+  text-decoration: none;
+}
+
+.item:hover:not([aria-disabled="true"]) {
+  background: var(--_side-nav-item-hover-bg);
+}
+
+.item:focus-visible {
+  box-shadow: var(--_side-nav-item-focus-ring);
+  outline: none;
+}
+
+:host([active]) .item {
+  background: var(--_side-nav-item-active-bg);
+  color: var(--_side-nav-item-active-fg);
+}
+
+.item[aria-disabled="true"] {
+  color: var(--_side-nav-item-muted-fg);
+  cursor: not-allowed;
+}
+
+.prefix:empty,
+.suffix:empty {
+  display: none;
+}
+
+.label {
+  min-inline-size: 0;
+}

@@ -1,5 +1,6 @@
 import type { RowanAlert } from "../types/alert/alert.js";
 import type { RowanAccordion } from "../types/accordion/accordion.js";
+import type { RowanAppLayout } from "../types/app-layout/app-layout.js";
 import type { RowanAvatar } from "../types/avatar/avatar.js";
 import type { RowanBadge } from "../types/badge/badge.js";
 import type { RowanBreadcrumb } from "../types/breadcrumb/breadcrumb.js";
@@ -42,9 +43,12 @@ import type { RowanRadioGroup } from "../types/radio-group/radio-group.js";
 import type { RowanRowDetailsPanel } from "../types/row-details-panel/row-details-panel.js";
 import type { RowanSelect } from "../types/select/select.js";
 import type { RowanSegmentedControl } from "../types/segmented-control/segmented-control.js";
+import type { RowanSideNav } from "../types/side-nav/side-nav.js";
+import type { RowanSideNavItem } from "../types/side-nav-item/side-nav-item.js";
 import type { RowanSkeleton } from "../types/skeleton/skeleton.js";
 import type { RowanSlider } from "../types/slider/slider.js";
 import type { RowanSpinner } from "../types/spinner/spinner.js";
+import type { RowanSplitPane } from "../types/split-pane/split-pane.js";
 import type { RowanStepper } from "../types/stepper/stepper.js";
 import type { RowanSwitch } from "../types/switch/switch.js";
 import type { RowanTab } from "../types/tab/tab.js";
@@ -67,6 +71,7 @@ declare global {
   interface HTMLElementTagNameMap {
     "rowan-accordion": RowanAccordion;
     "rowan-alert": RowanAlert;
+    "rowan-app-layout": RowanAppLayout;
     "rowan-avatar": RowanAvatar;
     "rowan-badge": RowanBadge;
     "rowan-breadcrumb": RowanBreadcrumb;
@@ -109,9 +114,12 @@ declare global {
     "rowan-row-details-panel": RowanRowDetailsPanel;
     "rowan-select": RowanSelect;
     "rowan-segmented-control": RowanSegmentedControl;
+    "rowan-side-nav": RowanSideNav;
+    "rowan-side-nav-item": RowanSideNavItem;
     "rowan-skeleton": RowanSkeleton;
     "rowan-slider": RowanSlider;
     "rowan-spinner": RowanSpinner;
+    "rowan-split-pane": RowanSplitPane;
     "rowan-stepper": RowanStepper;
     "rowan-switch": RowanSwitch;
     "rowan-tab": RowanTab;
