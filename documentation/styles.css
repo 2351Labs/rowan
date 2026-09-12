@@ -412,6 +412,13 @@ html[data-theme="dark"] body {
   gap: 0.6rem;
 }
 
+.docs-form-stack {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  max-inline-size: 44rem;
+}
+
 .docs-alert-showcase {
   display: grid;
   gap: 0.6rem;

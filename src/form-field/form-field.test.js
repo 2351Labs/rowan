@@ -104,9 +104,9 @@ describe("rowan-form-field", () => {
     await nextMicrotask();
     await nextMicrotask();
 
-    expect(field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid")).to.equal(
-      true,
-    );
+    expect(
+      field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid"),
+    ).to.equal(true);
   });
 });
 

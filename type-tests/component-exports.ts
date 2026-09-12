@@ -23,6 +23,8 @@ import { RowanEmptyState } from "@rowan-ui/core/empty-state";
 import { RowanFileItem } from "@rowan-ui/core/file-item";
 import { RowanFileUpload } from "@rowan-ui/core/file-upload";
 import { RowanFilterBuilder } from "@rowan-ui/core/filter-builder";
+import { RowanFormField } from "@rowan-ui/core/form-field";
+import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
 import { RowanIconButton } from "@rowan-ui/core/icon-button";
 import { RowanLink } from "@rowan-ui/core/link";
@@ -37,6 +39,7 @@ import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect } from "@rowan-ui/core/select";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
+import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
 import { RowanStepper } from "@rowan-ui/core/stepper";
 import { RowanSwitch } from "@rowan-ui/core/switch";
@@ -80,6 +83,8 @@ const emptyState: RowanEmptyState = document.createElement("rowan-empty-state");
 const fileItem: RowanFileItem = document.createElement("rowan-file-item");
 const fileUpload: RowanFileUpload = document.createElement("rowan-file-upload");
 const filterBuilder: RowanFilterBuilder = document.createElement("rowan-filter-builder");
+const formField: RowanFormField = document.createElement("rowan-form-field");
+const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");
 const iconButton: RowanIconButton = document.createElement("rowan-icon-button");
 const link: RowanLink = document.createElement("rowan-link");
@@ -94,6 +99,7 @@ const radioGroup: RowanRadioGroup = document.createElement("rowan-radio-group");
 const rowDetailsPanel: RowanRowDetailsPanel = document.createElement("rowan-row-details-panel");
 const select: RowanSelect = document.createElement("rowan-select");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
+const slider: RowanSlider = document.createElement("rowan-slider");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
 const stepper: RowanStepper = document.createElement("rowan-stepper");
 const switchControl: RowanSwitch = document.createElement("rowan-switch");
@@ -140,6 +146,8 @@ void [
   fileItem,
   fileUpload,
   filterBuilder,
+  formField,
+  formLayout,
   formWizard,
   iconButton,
   link,
@@ -154,6 +162,7 @@ void [
   rowDetailsPanel,
   select,
   skeleton,
+  slider,
   spinner,
   stepper,
   switchControl,

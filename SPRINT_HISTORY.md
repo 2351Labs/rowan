@@ -331,13 +331,30 @@ Verification completed at sprint close:
 
 ### Sprint 15: Dense Forms
 
-Status: Planned
+Status: Completed
 
-Planned components:
+Delivered:
 
-- `rowan-slider`, including single-value and range modes with FACE, keyboard interaction, and a property-only value formatter
-- `rowan-form-field` for accessible label, hint, error, and description composition around custom or grouped controls
-- `rowan-form-layout` for responsive field grids, field spans, and deliberate label alignment
+- `rowan-slider` with reflected numeric state, single-value and ordered range modes, native range keyboard interaction, a property-only formatter, and `rowan-change` events only for user input
+- FACE support for slider form values, validity, reset, and state restoration, including independent `name-start` and `name-end` range submission values
+- `rowan-form-field` as a non-owning accessible wrapper for direct or externally associated controls, with label, hint, description, error, and action slots plus preserved author ARIA references
+- `rowan-form-layout` responsive field grids with bounded columns, direct-child `span` support, start/top label coordination, inline custom-property restoration, and nested-shadow mobile stacking without horizontal overflow
+- Dedicated component token layers, guarded element definitions, visual hidden states, CSS parts, Storybook composition stories, static documentation routes, and README usage guidance
+- Root and subpath exports, declaration bridges, generated type definitions, global tag mappings, CEM entries, and regression coverage for slider endpoints, field support text, spans, and responsive layout behavior
+
+Verification completed at sprint close:
+
+- Focused Dense Forms contracts: 17 passing
+- `npm run tokens:sync` and `npm run tokens:check`
+- `npm run lint`
+- `npm run types`
+- `npm run typecheck`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests
+- `npm test` (61 files, 256 passing contracts)
+- `npm run build-storybook` (Vite chunk-size advisory only)
+- `npm pack --dry-run --json` excludes documentation and build artifacts
+- Chromium, Firefox, and WebKit each passed 61 files and 256 public contracts
+- Static documentation checks at desktop and 390px mobile widths confirmed spans, formatted slider output, field stacking, and no horizontal overflow
 
 ### Sprint 16: Structured Selection
 

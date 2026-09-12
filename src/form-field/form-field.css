@@ -36,6 +36,7 @@
   font-size: var(--rowan-form-field-label-font-size, 0.875rem);
   font-weight: 600;
   min-inline-size: 0;
+  text-align: var(--rowan-form-field-label-align, start);
 }
 
 .required-indicator {
@@ -82,10 +83,8 @@
 
 :host([label-position="start"]) .field {
   --rowan-form-field-layout-areas: "label control" ". support";
-  --rowan-form-field-layout-columns: minmax(
-      var(--rowan-form-field-label-width, 9rem),
-      0.45fr
-    ) minmax(0, 1fr);
+  --rowan-form-field-layout-columns: minmax(var(--rowan-form-field-label-width, 9rem), 0.45fr)
+    minmax(0, 1fr);
   align-items: start;
 }
 
@@ -94,4 +93,13 @@
     --rowan-form-field-layout-areas: "label" "control" "support";
     --rowan-form-field-layout-columns: minmax(0, 1fr);
   }
+}
+
+:host([data-rowan-form-layout-stacked]) .field {
+  --rowan-form-field-layout-areas: "label" "control" "support";
+  --rowan-form-field-layout-columns: minmax(0, 1fr);
+}
+
+:host([data-rowan-form-layout-stacked]) .label {
+  text-align: start;
 }

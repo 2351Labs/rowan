@@ -74,6 +74,17 @@ describe("rowan-slider", () => {
     expect(new FormData(form).get("price-end")).to.equal("80");
   });
 
+  it("uses its range bounds for omitted endpoints", async () => {
+    const element = document.createElement("rowan-slider");
+    element.range = true;
+    element.min = 25;
+    element.max = 75;
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.value).to.deep.equal({ start: 25, end: 75 });
+  });
+
   it("keeps range handles ordered through keyboard interaction", async () => {
     const element = document.createElement("rowan-slider");
     element.range = true;

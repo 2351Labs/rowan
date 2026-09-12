@@ -146,6 +146,34 @@ export const tokenCssText = `
   --rowan-form-wizard-button-min-height: 2.5rem;
   --rowan-form-wizard-button-padding: var(--rowan-space-4);
   --rowan-form-wizard-focus-ring: var(--rowan-focus-ring);
+  --rowan-slider-fg: var(--rowan-color-fg);
+  --rowan-slider-track-bg: var(--rowan-color-sand-100);
+  --rowan-slider-range-bg: var(--rowan-color-accent);
+  --rowan-slider-thumb-bg: #ffffff;
+  --rowan-slider-thumb-border: var(--rowan-color-border);
+  --rowan-slider-track-height: 0.375rem;
+  --rowan-slider-track-radius: 999px;
+  --rowan-slider-thumb-size: 1.125rem;
+  --rowan-slider-control-height: 2.75rem;
+  --rowan-slider-gap: var(--rowan-space-3);
+  --rowan-slider-value-fg: var(--rowan-color-muted);
+  --rowan-slider-value-font-size: var(--rowan-font-size-sm);
+  --rowan-slider-focus-ring: var(--rowan-focus-ring);
+  --rowan-form-field-fg: var(--rowan-color-fg);
+  --rowan-form-field-gap: var(--rowan-space-2);
+  --rowan-form-field-label-fg: var(--rowan-color-fg);
+  --rowan-form-field-label-font-size: var(--rowan-font-size-sm);
+  --rowan-form-field-label-gap: var(--rowan-space-2);
+  --rowan-form-field-label-align: start;
+  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-font-size: 0.75rem;
+  --rowan-form-field-hint-fg: var(--rowan-color-muted);
+  --rowan-form-field-error-fg: var(--rowan-color-danger);
+  --rowan-form-field-support-gap: var(--rowan-space-1);
+  --rowan-form-field-support-font-size: 0.8125rem;
+  --rowan-form-layout-gap: var(--rowan-space-5);
+  --rowan-form-layout-min-column-width: 14rem;
+  --rowan-form-layout-label-width: 10rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -405,6 +433,34 @@ export const componentTokenCssText = `
   --rowan-form-wizard-button-min-height: 2.5rem;
   --rowan-form-wizard-button-padding: var(--rowan-space-4);
   --rowan-form-wizard-focus-ring: var(--rowan-focus-ring);
+  --rowan-slider-fg: var(--rowan-color-fg);
+  --rowan-slider-track-bg: var(--rowan-color-sand-100);
+  --rowan-slider-range-bg: var(--rowan-color-accent);
+  --rowan-slider-thumb-bg: #ffffff;
+  --rowan-slider-thumb-border: var(--rowan-color-border);
+  --rowan-slider-track-height: 0.375rem;
+  --rowan-slider-track-radius: 999px;
+  --rowan-slider-thumb-size: 1.125rem;
+  --rowan-slider-control-height: 2.75rem;
+  --rowan-slider-gap: var(--rowan-space-3);
+  --rowan-slider-value-fg: var(--rowan-color-muted);
+  --rowan-slider-value-font-size: var(--rowan-font-size-sm);
+  --rowan-slider-focus-ring: var(--rowan-focus-ring);
+  --rowan-form-field-fg: var(--rowan-color-fg);
+  --rowan-form-field-gap: var(--rowan-space-2);
+  --rowan-form-field-label-fg: var(--rowan-color-fg);
+  --rowan-form-field-label-font-size: var(--rowan-font-size-sm);
+  --rowan-form-field-label-gap: var(--rowan-space-2);
+  --rowan-form-field-label-align: start;
+  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-font-size: 0.75rem;
+  --rowan-form-field-hint-fg: var(--rowan-color-muted);
+  --rowan-form-field-error-fg: var(--rowan-color-danger);
+  --rowan-form-field-support-gap: var(--rowan-space-1);
+  --rowan-form-field-support-font-size: 0.8125rem;
+  --rowan-form-layout-gap: var(--rowan-space-5);
+  --rowan-form-layout-min-column-width: 14rem;
+  --rowan-form-layout-label-width: 10rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -847,6 +903,34 @@ export const unregisteredTokenNames = [
   "--rowan-form-wizard-button-min-height",
   "--rowan-form-wizard-button-padding",
   "--rowan-form-wizard-focus-ring",
+  "--rowan-slider-fg",
+  "--rowan-slider-track-bg",
+  "--rowan-slider-range-bg",
+  "--rowan-slider-thumb-bg",
+  "--rowan-slider-thumb-border",
+  "--rowan-slider-track-height",
+  "--rowan-slider-track-radius",
+  "--rowan-slider-thumb-size",
+  "--rowan-slider-control-height",
+  "--rowan-slider-gap",
+  "--rowan-slider-value-fg",
+  "--rowan-slider-value-font-size",
+  "--rowan-slider-focus-ring",
+  "--rowan-form-field-fg",
+  "--rowan-form-field-gap",
+  "--rowan-form-field-label-fg",
+  "--rowan-form-field-label-font-size",
+  "--rowan-form-field-label-gap",
+  "--rowan-form-field-label-align",
+  "--rowan-form-field-required-fg",
+  "--rowan-form-field-required-font-size",
+  "--rowan-form-field-hint-fg",
+  "--rowan-form-field-error-fg",
+  "--rowan-form-field-support-gap",
+  "--rowan-form-field-support-font-size",
+  "--rowan-form-layout-gap",
+  "--rowan-form-layout-min-column-width",
+  "--rowan-form-layout-label-width",
   "--rowan-table-toolbar-bg",
   "--rowan-table-toolbar-fg",
   "--rowan-table-toolbar-border",

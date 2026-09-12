@@ -108,6 +108,14 @@
       "types": "./src/file-upload/file-upload.d.ts",
       "default": "./src/file-upload/file-upload.js"
     },
+    "./form-field": {
+      "types": "./src/form-field/form-field.d.ts",
+      "default": "./src/form-field/form-field.js"
+    },
+    "./form-layout": {
+      "types": "./src/form-layout/form-layout.d.ts",
+      "default": "./src/form-layout/form-layout.js"
+    },
     "./form-wizard": {
       "types": "./src/form-wizard/form-wizard.d.ts",
       "default": "./src/form-wizard/form-wizard.js"
@@ -163,6 +171,10 @@
     "./select": {
       "types": "./src/select/select.d.ts",
       "default": "./src/select/select.js"
+    },
+    "./slider": {
+      "types": "./src/slider/slider.d.ts",
+      "default": "./src/slider/slider.js"
     },
     "./spinner": {
       "types": "./src/spinner/spinner.d.ts",
@@ -305,6 +317,8 @@
     "./src/empty-state/empty-state.js",
     "./src/file-item/file-item.js",
     "./src/file-upload/file-upload.js",
+    "./src/form-field/form-field.js",
+    "./src/form-layout/form-layout.js",
     "./src/form-wizard/form-wizard.js",
     "./src/icon-button/icon-button.js",
     "./src/link/link.js",
@@ -319,6 +333,7 @@
     "./src/row-details-panel/row-details-panel.js",
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",
+    "./src/slider/slider.js",
     "./src/spinner/spinner.js",
     "./src/stepper/stepper.js",
     "./src/switch/switch.js",

@@ -124,7 +124,10 @@
 }
 
 .rail:focus-within .track {
-  box-shadow: var(--rowan-slider-focus-ring, var(--rowan-focus-ring, 0 0 0 2px rgb(47 106 77 / 32%)));
+  box-shadow: var(
+    --rowan-slider-focus-ring,
+    var(--rowan-focus-ring, 0 0 0 2px rgb(47 106 77 / 32%))
+  );
 }
 
 .value {

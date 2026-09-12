@@ -164,7 +164,12 @@ export class RowanFormField extends BaseElement {
   }
 
   set labelPosition(value) {
-    const next = String(value ?? "").trim().toLowerCase() === "start" ? "start" : "top";
+    const next =
+      String(value ?? "")
+        .trim()
+        .toLowerCase() === "start"
+        ? "start"
+        : "top";
     this.reflectString("label-position", next === "top" ? null : next);
   }
 
@@ -253,11 +258,13 @@ export class RowanFormField extends BaseElement {
 
     const hasLabel = assignedContent(this.#labelSlot) || this.label.trim().length > 0;
     const hasHint = assignedContent(this.#hintSlot) || this.hint.trim().length > 0;
-    const hasDescription = assignedContent(this.#descriptionSlot) || this.description.trim().length > 0;
+    const hasDescription =
+      assignedContent(this.#descriptionSlot) || this.description.trim().length > 0;
     const hasError = assignedContent(this.#errorSlot) || this.error.trim().length > 0;
     const hasActions = assignedContent(this.#actionsSlot);
     const controls = this.#resolveControls();
-    const isRequired = this.required || controls.some((control) => control.hasAttribute("required"));
+    const isRequired =
+      this.required || controls.some((control) => control.hasAttribute("required"));
     const isInvalid =
       this.invalid ||
       controls.some(

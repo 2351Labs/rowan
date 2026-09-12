@@ -31,7 +31,8 @@ function normalizeStep(value) {
 }
 
 function normalizeValue(value, min, max, step, fallback) {
-  const numeric = finiteNumber(value, fallback);
+  const text = String(value ?? "").trim();
+  const numeric = text ? finiteNumber(text, fallback) : fallback;
   const clamped = Math.min(max, Math.max(min, numeric));
 
   if (clamped === min || clamped === max) return clamped;
@@ -515,7 +516,6 @@ export class RowanSlider extends BaseElement {
   #handleKeydown(event, input) {
     if (this.disabled) return;
 
-    const endpoint = input.dataset.endpoint;
     const current = Number(input.value);
     const pageStep = this.step * 10;
     let next = null;

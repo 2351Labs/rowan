@@ -95,7 +95,7 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 Implemented components currently include:
 
 - Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
-- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
+- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
 - Data display and operations: `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
@@ -389,6 +389,41 @@ Keep the source rows in application state. The filter builder reports user chang
   wizard.addEventListener("rowan-complete", () => {
     console.log("Persist the completed workflow.");
   });
+</script>
+```
+
+## Dense Forms
+
+Use `rowan-form-field` to compose a visible label, hint, description, and error message around a control without taking ownership of that control's value. It attaches managed accessible references while preserving author-provided `aria-labelledby` and `aria-describedby` values.
+
+Use `rowan-form-layout` to arrange direct child fields into a responsive grid. Direct children can declare `span` to occupy multiple columns; `label-position="start"` coordinates start-aligned field labels across the layout.
+
+```html
+<rowan-form-layout columns="2" label-position="start" label-align="end">
+  <rowan-form-field label="Workspace name" hint="Shown in navigation.">
+    <rowan-text-field name="workspace"></rowan-text-field>
+  </rowan-form-field>
+
+  <rowan-form-field label="Monthly budget" span="2">
+    <rowan-slider name="budget" min="0" max="500" step="25"></rowan-slider>
+  </rowan-form-field>
+</rowan-form-layout>
+
+<script type="module">
+  const slider = document.querySelector("rowan-slider");
+  slider.formatValue = (value) => "$" + value;
+</script>
+```
+
+`rowan-slider` is form-associated in both modes. Set `range` and pass `{ start, end }` to its `value` property for an ordered pair of handles. In range mode, a `name` produces `name-start` and `name-end` form entries by default.
+
+```html
+<rowan-slider name="price" range min="0" max="500" step="25"></rowan-slider>
+
+<script type="module">
+  const slider = document.querySelector("rowan-slider");
+  slider.value = { start: 100, end: 300 };
+  slider.formatValue = ({ start, end }) => "$" + start + " - $" + end;
 </script>
 ```
 

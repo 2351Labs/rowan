@@ -330,6 +330,39 @@ const NUMBER_FIELD_SNIPPET = `<rowan-number-field
   step="5"
 ></rowan-number-field>`;
 
+const SLIDER_SNIPPET = `<rowan-slider name="capacity" min="0" max="100" step="5"></rowan-slider>
+
+<script type="module">
+  const slider = document.querySelector("rowan-slider");
+  slider.value = 65;
+  slider.formatValue = (value) => String(value) + "% capacity";
+</script>`;
+
+const RANGE_SLIDER_SNIPPET = `<rowan-slider name="budget" range min="0" max="500" step="25"></rowan-slider>
+
+<script type="module">
+  const slider = document.querySelector("rowan-slider");
+  slider.value = { start: 100, end: 300 };
+  slider.formatValue = ({ start, end }) => "$" + start + " - $" + end;
+</script>`;
+
+const FORM_FIELD_SNIPPET = `<rowan-form-field
+  label="Workspace name"
+  hint="Used in workspace URLs."
+  description="Choose a concise, recognizable name."
+>
+  <rowan-text-field name="workspace"></rowan-text-field>
+</rowan-form-field>`;
+
+const FORM_LAYOUT_SNIPPET = `<rowan-form-layout columns="2" label-position="start" label-align="end">
+  <rowan-form-field label="Project name">
+    <rowan-text-field name="project"></rowan-text-field>
+  </rowan-form-field>
+  <rowan-form-field label="Monthly budget" span="2">
+    <rowan-slider name="budget" min="0" max="500" step="25"></rowan-slider>
+  </rowan-form-field>
+</rowan-form-layout>`;
+
 const CALENDAR_SNIPPET = `<rowan-calendar
   name="serviceDate"
   selection-mode="range"
@@ -1036,6 +1069,110 @@ const DOC_PAGES = [
     `,
   },
   {
+    id: "slider",
+    group: "Components",
+    title: "Rowan Slider",
+    summary:
+      "Form-associated numeric slider with keyboard operation, property-only formatting, and ordered dual-handle ranges.",
+    tags: ["forms", "numeric", "range", "validation"],
+    keywords: ["slider", "range", "keyboard", "FACE", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="slider-values">
+        <h2>Single values and formatted output</h2>
+        <p>Use the value property for a numeric control. A formatter stays property-only, so application code can localize display text without serializing functions into markup.</p>
+        <div class="demo-row">
+          <rowan-slider id="docs-capacity-slider" label="Capacity" min="0" max="100" step="5" value="65"></rowan-slider>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="slider-range">
+        <h2>Ordered ranges</h2>
+        <p>Range mode keeps endpoints ordered, submits separate start and end values, and exposes a keyboard-operable native range control for each handle.</p>
+        <div class="demo-row">
+          <rowan-slider id="docs-budget-slider" label="Monthly budget" name="budget" range min="0" max="500" step="25" start="100" end="300"></rowan-slider>
+        </div>
+        ${codeBlock(RANGE_SLIDER_SNIPPET, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="slider-contract">
+        <h2>Behavior contract</h2>
+        <p>rowan-slider emits rowan-change for user-originated input only. Parent value assignments remain silent and form association stays synchronized in single and range modes.</p>
+        ${codeBlock(SLIDER_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: () => {
+      const capacity = document.querySelector("#docs-capacity-slider");
+      const budget = document.querySelector("#docs-budget-slider");
+      if (capacity) capacity.formatValue = (value) => String(value) + "% capacity";
+      if (budget) budget.formatValue = ({ start, end }) => "$" + start + " - $" + end;
+    },
+  },
+  {
+    id: "form-field",
+    group: "Components",
+    title: "Rowan Form Field",
+    summary:
+      "Accessible label and support-text composition around native, custom, and grouped form controls.",
+    tags: ["forms", "accessibility", "labels", "validation"],
+    keywords: ["form field", "label", "hint", "description", "error", "aria"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="form-field-composition">
+        <h2>Control composition</h2>
+        <p>Place a Rowan control or native control in the default slot. Rowan adds label and support references while retaining any references the application has already supplied.</p>
+        <form class="docs-form-stack">
+          <rowan-form-field label="Workspace name" hint="Used in workspace URLs." description="Choose a concise, recognizable name.">
+            <rowan-text-field name="workspace" placeholder="northstar"></rowan-text-field>
+          </rowan-form-field>
+          <rowan-form-field label="Launch notification" hint="Sent only to workspace owners." required>
+            <rowan-checkbox name="launch-notice">Email the owner when the workspace launches</rowan-checkbox>
+          </rowan-form-field>
+        </form>
+      </section>
+
+      <section class="doc-section" data-doc-section id="form-field-contract">
+        <h2>Behavior contract</h2>
+        <p>Slots replace the label, hint, description, or error attributes where richer content is needed. Use for to associate a visible field wrapper with an external control.</p>
+        ${codeBlock(FORM_FIELD_SNIPPET, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "form-layout",
+    group: "Components",
+    title: "Rowan Form Layout",
+    summary:
+      "Responsive field grid with direct-child spans and coordinated top or start-aligned labels.",
+    tags: ["forms", "layout", "responsive", "labels"],
+    keywords: ["form layout", "grid", "span", "label alignment", "responsive"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="form-layout-grid">
+        <h2>Dense operational forms</h2>
+        <p>Use direct-child span values for fields that need the full row. At narrower container widths the layout resolves to one column without changing the form markup.</p>
+        <rowan-form-layout columns="2" label-position="start" label-align="end" label-width="10rem">
+          <rowan-form-field label="Project name" hint="Shown in workspace navigation.">
+            <rowan-text-field name="project" value="Northstar"></rowan-text-field>
+          </rowan-form-field>
+          <rowan-form-field label="Owner email" hint="Receives project notices.">
+            <rowan-text-field name="owner" type="email" value="owner@example.com"></rowan-text-field>
+          </rowan-form-field>
+          <rowan-form-field label="Monthly budget" hint="Set an operating threshold." span="2">
+            <rowan-slider id="docs-layout-slider" name="budget" min="0" max="500" step="25" value="250"></rowan-slider>
+          </rowan-form-field>
+        </rowan-form-layout>
+      </section>
+
+      <section class="doc-section" data-doc-section id="form-layout-contract">
+        <h2>Behavior contract</h2>
+        <p>The layout is visual only: field controls retain their own values, validation, form association, and user events.</p>
+        ${codeBlock(FORM_LAYOUT_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: () => {
+      const slider = document.querySelector("#docs-layout-slider");
+      if (slider) slider.formatValue = (value) => "$" + value;
+    },
+  },
+  {
     id: "dropzone",
     group: "Components",
     title: "Rowan Dropzone",
@@ -1583,6 +1720,9 @@ const NAV_SECTIONS = [
       { pageId: "date-range-picker", label: "Date Range Picker" },
       { pageId: "calendar", label: "Calendar" },
       { pageId: "number-field", label: "Number Field" },
+      { pageId: "slider", label: "Slider" },
+      { pageId: "form-field", label: "Form Field" },
+      { pageId: "form-layout", label: "Form Layout" },
       { pageId: "dropzone", label: "Dropzone" },
       { pageId: "file-item", label: "File Item" },
       { pageId: "file-upload", label: "File Upload" },
