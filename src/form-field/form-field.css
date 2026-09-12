@@ -1,0 +1,97 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+  color: var(--rowan-form-field-fg, var(--rowan-color-fg, #1f2421));
+  font-family: var(--rowan-font-family, "Avenir Next", "Segoe UI", sans-serif);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.field {
+  display: grid;
+  gap: var(--rowan-form-field-gap, var(--rowan-space-2, 0.5rem));
+  grid-template-areas: var(
+    --rowan-form-field-layout-areas,
+    var(--rowan-form-layout-field-areas, "label" "control" "support")
+  );
+  grid-template-columns: var(
+    --rowan-form-field-layout-columns,
+    var(--rowan-form-layout-field-columns, minmax(0, 1fr))
+  );
+}
+
+.label-row {
+  align-items: baseline;
+  display: flex;
+  gap: var(--rowan-form-field-label-gap, var(--rowan-space-2, 0.5rem));
+  grid-area: label;
+  min-inline-size: 0;
+}
+
+.label {
+  color: var(--rowan-form-field-label-fg, var(--rowan-color-fg, #1f2421));
+  cursor: pointer;
+  font-size: var(--rowan-form-field-label-font-size, 0.875rem);
+  font-weight: 600;
+  min-inline-size: 0;
+}
+
+.required-indicator {
+  color: var(--rowan-form-field-required-fg, var(--rowan-color-danger, #b4392d));
+  font-size: var(--rowan-form-field-required-font-size, 0.75rem);
+  font-weight: 600;
+}
+
+.actions {
+  margin-inline-start: auto;
+}
+
+.control {
+  grid-area: control;
+  min-inline-size: 0;
+}
+
+.support {
+  display: grid;
+  gap: var(--rowan-form-field-support-gap, 0.25rem);
+  grid-area: support;
+  min-inline-size: 0;
+}
+
+.hint,
+.description,
+.error {
+  font-size: var(--rowan-form-field-support-font-size, 0.8125rem);
+  line-height: 1.45;
+}
+
+.hint,
+.description {
+  color: var(--rowan-form-field-hint-fg, var(--rowan-color-muted, #5c665d));
+}
+
+.error {
+  color: var(--rowan-form-field-error-fg, var(--rowan-color-danger, #b4392d));
+}
+
+.field.is-invalid .label {
+  color: var(--rowan-form-field-error-fg, var(--rowan-color-danger, #b4392d));
+}
+
+:host([label-position="start"]) .field {
+  --rowan-form-field-layout-areas: "label control" ". support";
+  --rowan-form-field-layout-columns: minmax(
+      var(--rowan-form-field-label-width, 9rem),
+      0.45fr
+    ) minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (max-width: 36rem) {
+  :host([label-position="start"]) .field {
+    --rowan-form-field-layout-areas: "label" "control" "support";
+    --rowan-form-field-layout-columns: minmax(0, 1fr);
+  }
+}
