@@ -611,6 +611,10 @@ html[data-theme="dark"] body {
   text-transform: uppercase;
 }
 
+.docs-selection-control {
+  inline-size: min(100%, 34rem);
+}
+
 .docs-component-groups {
   display: grid;
   gap: 0.85rem;

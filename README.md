@@ -95,10 +95,55 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 Implemented components currently include:
 
 - Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
-- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
+- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
 - Data display and operations: `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+
+## Rowan Selection Controls
+
+`rowan-listbox` composes light-DOM `rowan-option` children for accessible single or multiple selection. Its scalar `value` reflects for declarative single-selection bindings; its `selected` array is property-only for multiple values. User selection emits `rowan-change` with the activated value, selected values, and option reference. Form-associated listboxes submit one value per selected option in multiple mode.
+
+`rowan-multi-select-combobox` uses property-only `options` and `selected` arrays. It filters available choices, preserves selections outside the active query, provides removable chips, and emits one outer `rowan-change` event for user additions or removals. Its FACE value is a repeated form entry under `name`.
+
+`rowan-segmented-control` is a compact, property-configured radio-group for mutually exclusive modes. Set its `options` array and reflected `value`; user click and Arrow-key changes emit `rowan-change`, while parent-assigned values remain silent.
+
+```html
+<rowan-listbox id="team-list" name="team" label="Teams" selection="multiple">
+  <rowan-option value="design">Design</rowan-option>
+  <rowan-option value="engineering">Engineering</rowan-option>
+</rowan-listbox>
+
+<rowan-multi-select-combobox
+  id="teams"
+  name="assigned-team"
+  label="Assigned teams"
+></rowan-multi-select-combobox>
+<rowan-segmented-control id="view-mode" name="view" label="View mode"></rowan-segmented-control>
+
+<script type="module">
+  import "@rowan-ui/core/listbox";
+  import "@rowan-ui/core/multi-select-combobox";
+  import "@rowan-ui/core/segmented-control";
+
+  const listbox = document.querySelector("#team-list");
+  listbox.selected = ["design"];
+
+  const teams = document.querySelector("#teams");
+  teams.options = [
+    { value: "design", label: "Design" },
+    { value: "engineering", label: "Engineering" },
+  ];
+  teams.selected = ["design"];
+
+  const viewMode = document.querySelector("#view-mode");
+  viewMode.options = [
+    { value: "board", label: "Board" },
+    { value: "list", label: "List" },
+  ];
+  viewMode.value = "board";
+</script>
+```
 
 ## Rowan Command Palette
 

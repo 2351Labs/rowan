@@ -1,0 +1,69 @@
+:host {
+  --_option-bg: var(--rowan-option-bg, transparent);
+  --_option-fg: var(--rowan-option-fg, var(--rowan-color-fg));
+  --_option-muted-fg: var(--rowan-option-muted-fg, var(--rowan-color-muted));
+  --_option-hover-bg: var(--rowan-option-hover-bg, transparent);
+  --_option-selected-bg: var(--rowan-option-selected-bg, transparent);
+  --_option-selected-fg: var(--rowan-option-selected-fg, var(--rowan-color-fg));
+  --_option-focus-ring: var(--rowan-option-focus-ring, var(--rowan-focus-ring));
+  --_option-radius: var(--rowan-option-radius, var(--rowan-radius-sm));
+  --_option-font-family: var(--rowan-option-font-family, var(--rowan-font-family));
+  --_option-font-size: var(--rowan-option-font-size, var(--rowan-font-size-sm));
+  --_option-gap: var(--rowan-option-gap, var(--rowan-space-2));
+  --_option-min-block-size: var(--rowan-option-min-block-size, 2.25rem);
+  --_option-padding: var(--rowan-option-padding, var(--rowan-space-2) var(--rowan-space-3));
+  display: block;
+  min-inline-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.option {
+  align-items: center;
+  background: var(--_option-bg);
+  border-radius: var(--_option-radius);
+  color: var(--_option-fg);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--_option-font-family);
+  font-size: var(--_option-font-size);
+  gap: var(--_option-gap);
+  min-block-size: var(--_option-min-block-size);
+  padding: var(--_option-padding);
+}
+
+:host(:hover:not([disabled]):not([data-rowan-listbox-disabled])) .option {
+  background: var(--_option-hover-bg);
+}
+
+:host(:focus-visible) .option {
+  box-shadow: var(--_option-focus-ring);
+  outline: none;
+}
+
+:host([selected]) .option {
+  background: var(--_option-selected-bg);
+  color: var(--_option-selected-fg);
+}
+
+:host([disabled]) .option,
+:host([data-rowan-listbox-disabled]) .option {
+  color: var(--_option-muted-fg);
+  cursor: not-allowed;
+}
+
+.prefix:empty,
+.suffix:empty,
+.label-fallback[hidden] {
+  display: none;
+}
+
+.label {
+  min-inline-size: 0;
+}
+
+.suffix {
+  margin-inline-start: auto;
+}

@@ -6,7 +6,7 @@ Last updated: 2026-09-11
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 56 components
+- Current implemented catalog includes 63 components
 
 ## Completed Sprints
 
@@ -358,13 +358,30 @@ Verification completed at sprint close:
 
 ### Sprint 16: Structured Selection
 
-Status: Planned
+Status: Completed
 
-Planned components:
+Delivered:
 
 - `rowan-listbox` and `rowan-option` as reusable accessible single- and multi-selection primitives
-- `rowan-multi-select-combobox` with property-only options and selected values, chip presentation, keyboard removal, and FACE form submission
-- `rowan-segmented-control` for compact mutually exclusive application modes
+- Light-DOM option composition with default, prefix, and suffix slots; primitive reflected option state; roving tab stops; keyboard selection; disabled-option skipping; and preserved author tab-index state
+- FACE form values, required validity, reset, and state restoration for listbox selection, including repeated `FormData` entries in multiple mode
+- `rowan-multi-select-combobox` with property-only `options` and `selected` arrays, query filtering, removable chips, keyboard removal, focus transfer, outside dismissal, repeated FACE form submission, and one user-only outer `rowan-change` event
+- `rowan-segmented-control` for compact mutually exclusive application modes, with property-only options, reflected scalar values, radiogroup keyboard conventions, FACE form support, reset, restore, and user-only `rowan-change` events
+- Reconnect-safe compound-control document listener ownership, component token layers, dark-theme active-state contrast, guarded definitions, visual hidden states, CSS parts, Storybook stories, static documentation routes, README guidance, root and subpath exports, declaration bridges, global tag mappings, CEM entries, and contract tests
+
+Verification completed at sprint close:
+
+- Focused Structured Selection contracts: 17 passing
+- `npm run tokens:sync` and `npm run tokens:check`
+- `npm run lint`
+- `npm run types`
+- `npm run typecheck`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests
+- `npm test` (65 files, 273 passing contracts)
+- `npm run build-storybook`
+- `npm pack --dry-run --json` includes Sprint 16 source modules, declaration bridges, and CEM without documentation or development artifacts
+- Chromium, Firefox, and WebKit each passed 65 files and 273 public contracts
+- Static documentation checks at desktop and 390px mobile widths confirmed all four routes, property-driven demo data, user selection interactions, dark-theme active-state contrast, and no horizontal overflow
 
 ### Sprint 17: Large Collections
 

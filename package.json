@@ -128,6 +128,10 @@
       "types": "./src/link/link.d.ts",
       "default": "./src/link/link.js"
     },
+    "./listbox": {
+      "types": "./src/listbox/listbox.d.ts",
+      "default": "./src/listbox/listbox.js"
+    },
     "./menu": {
       "types": "./src/menu/menu.d.ts",
       "default": "./src/menu/menu.js"
@@ -136,9 +140,17 @@
       "types": "./src/menu-item/menu-item.d.ts",
       "default": "./src/menu-item/menu-item.js"
     },
+    "./multi-select-combobox": {
+      "types": "./src/multi-select-combobox/multi-select-combobox.d.ts",
+      "default": "./src/multi-select-combobox/multi-select-combobox.js"
+    },
     "./number-field": {
       "types": "./src/number-field/number-field.d.ts",
       "default": "./src/number-field/number-field.js"
+    },
+    "./option": {
+      "types": "./src/option/option.d.ts",
+      "default": "./src/option/option.js"
     },
     "./pagination": {
       "types": "./src/pagination/pagination.d.ts",
@@ -171,6 +183,10 @@
     "./select": {
       "types": "./src/select/select.d.ts",
       "default": "./src/select/select.js"
+    },
+    "./segmented-control": {
+      "types": "./src/segmented-control/segmented-control.d.ts",
+      "default": "./src/segmented-control/segmented-control.js"
     },
     "./slider": {
       "types": "./src/slider/slider.d.ts",
@@ -322,9 +338,12 @@
     "./src/form-wizard/form-wizard.js",
     "./src/icon-button/icon-button.js",
     "./src/link/link.js",
+    "./src/listbox/listbox.js",
     "./src/menu/menu.js",
     "./src/menu-item/menu-item.js",
+    "./src/multi-select-combobox/multi-select-combobox.js",
     "./src/number-field/number-field.js",
+    "./src/option/option.js",
     "./src/pagination/pagination.js",
     "./src/popover/popover.js",
     "./src/progress/progress.js",
@@ -333,6 +352,7 @@
     "./src/row-details-panel/row-details-panel.js",
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",
+    "./src/segmented-control/segmented-control.js",
     "./src/slider/slider.js",
     "./src/spinner/spinner.js",
     "./src/stepper/stepper.js",

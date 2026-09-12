@@ -252,6 +252,64 @@ const TREE_SNIPPET = `<rowan-tree id="docs-tree" label="Documentation">
   });
 </script>`;
 
+const LISTBOX_SNIPPET = `<rowan-listbox id="team-list" name="team" label="Teams" selection="multiple">
+  <rowan-option value="design">Design</rowan-option>
+  <rowan-option value="engineering">Engineering</rowan-option>
+  <rowan-option value="operations">Operations</rowan-option>
+</rowan-listbox>
+
+<script type="module">
+  import "@rowan-ui/core/listbox";
+
+  const listbox = document.querySelector("#team-list");
+  listbox.selected = ["design", "operations"];
+
+  listbox.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.selected);
+  });
+</script>`;
+
+const MULTI_SELECT_COMBOBOX_SNIPPET = `<rowan-multi-select-combobox
+  id="assigned-teams"
+  name="team"
+  label="Assigned teams"
+  placeholder="Search teams"
+></rowan-multi-select-combobox>
+
+<script type="module">
+  import "@rowan-ui/core/multi-select-combobox";
+
+  const teams = document.querySelector("#assigned-teams");
+  teams.options = [
+    { value: "design", label: "Design" },
+    { value: "engineering", label: "Engineering" },
+    { value: "operations", label: "Operations" },
+  ];
+  teams.selected = ["design", "operations"];
+
+  teams.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.selected);
+  });
+</script>`;
+
+const SEGMENTED_CONTROL_SNIPPET = `<rowan-segmented-control id="view-mode" name="view" label="View mode"></rowan-segmented-control>
+
+<script type="module">
+  import "@rowan-ui/core/segmented-control";
+
+  const viewMode = document.querySelector("#view-mode");
+  viewMode.options = [
+    { value: "board", label: "Board" },
+    { value: "list", label: "List" },
+    { value: "timeline", label: "Timeline" },
+  ];
+  viewMode.value = "board";
+
+  viewMode.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
 const COMMAND_PALETTE_SNIPPET = `<rowan-button id="open-commands">Open commands</rowan-button>
 
 <rowan-command-palette
@@ -432,10 +490,14 @@ const COMPONENT_CATEGORY_SETS = {
     "dropzone",
     "file-upload",
     "form-wizard",
+    "listbox",
+    "multi-select-combobox",
     "number-field",
+    "option",
     "radio",
     "radio-group",
     "select",
+    "segmented-control",
     "switch",
     "text-field",
     "textarea",
@@ -1173,6 +1235,132 @@ const DOC_PAGES = [
     },
   },
   {
+    id: "listbox",
+    group: "Components",
+    title: "Rowan Listbox",
+    summary:
+      "Form-associated single- or multi-selection list control with slotted options and roving keyboard focus.",
+    tags: ["forms", "selection", "keyboard", "FACE"],
+    keywords: ["listbox", "option", "selected", "multiple", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="listbox-selection">
+        <h2>Slotted selection</h2>
+        <p>Compose rowan-option children for a native custom-element list. In multiple mode, selected values stay property-only while the form receives one entry per selected value.</p>
+        <div class="docs-selection-control">
+          <rowan-listbox id="docs-listbox-demo" label="Teams" selection="multiple">
+            <rowan-option value="design" selected>Design</rowan-option>
+            <rowan-option value="engineering">Engineering</rowan-option>
+            <rowan-option value="operations" selected>Operations</rowan-option>
+          </rowan-listbox>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="listbox-contract">
+        <h2>Keyboard and form contract</h2>
+        <p>Arrow keys move the single tab stop between available options. Space and Enter update selection, while parent assignments remain silent.</p>
+        ${codeBlock(LISTBOX_SNIPPET, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "option",
+    group: "Components",
+    title: "Rowan Option",
+    summary:
+      "Selectable listbox child with reflected value, selected, disabled, and label state plus prefix and suffix slots.",
+    tags: ["forms", "selection", "listbox"],
+    keywords: ["option", "listbox", "selected", "disabled", "value"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="option-composition">
+        <h2>Listbox item composition</h2>
+        <p>Use rowan-option inside rowan-listbox. The label attribute supplies a text fallback, while default, prefix, and suffix slots support richer option content.</p>
+        <div class="docs-selection-control">
+          <rowan-listbox label="Teams">
+            <rowan-option value="design" selected>Design</rowan-option>
+            <rowan-option value="engineering" label="Engineering"></rowan-option>
+          </rowan-listbox>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="option-contract">
+        <h2>Selection ownership</h2>
+        <p>The surrounding listbox owns roving focus and selection changes. Options preserve their standalone reflected state when moved out of a listbox.</p>
+        ${codeBlock('<rowan-option value="engineering" label="Engineering"></rowan-option>', "html")}
+      </section>
+    `,
+  },
+  {
+    id: "multi-select-combobox",
+    group: "Components",
+    title: "Rowan Multi-select Combobox",
+    summary:
+      "Filterable form-associated multi-selection control with removable chips and property-only option data.",
+    tags: ["forms", "selection", "combobox", "FACE"],
+    keywords: ["multi-select", "combobox", "chips", "options", "selected", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="multi-select-combobox-selection">
+        <h2>Filter and retain selections</h2>
+        <p>Provide options and selected values as properties. Filtering does not discard selected values that are outside the current query, and Backspace removes the final chip when the query is empty.</p>
+        <div class="docs-selection-control">
+          <rowan-multi-select-combobox id="docs-multi-select-demo" label="Assigned teams" placeholder="Search teams"></rowan-multi-select-combobox>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="multi-select-combobox-contract">
+        <h2>Property data and FACE values</h2>
+        <p>Each selected value submits under the configured name. User changes emit one rowan-change event from the outer control, not an additional internal listbox event.</p>
+        ${codeBlock(MULTI_SELECT_COMBOBOX_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: () => {
+      const control = document.querySelector("#docs-multi-select-demo");
+      if (!control) return;
+
+      control.options = [
+        { value: "design", label: "Design" },
+        { value: "engineering", label: "Engineering" },
+        { value: "operations", label: "Operations" },
+        { value: "support", label: "Support" },
+      ];
+      control.selected = ["design", "operations"];
+    },
+  },
+  {
+    id: "segmented-control",
+    group: "Components",
+    title: "Rowan Segmented Control",
+    summary:
+      "Compact form-associated radio-group control for mutually exclusive workspace or display modes.",
+    tags: ["forms", "selection", "modes", "keyboard"],
+    keywords: ["segmented control", "modes", "radio group", "options", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="segmented-control-modes">
+        <h2>Mutually exclusive modes</h2>
+        <p>Set the available modes through the property and bind the active mode through value. Arrow keys move and select the next enabled mode using radio-group conventions.</p>
+        <div class="docs-selection-control">
+          <rowan-segmented-control id="docs-segmented-control-demo" label="Project view"></rowan-segmented-control>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="segmented-control-contract">
+        <h2>Scalar value contract</h2>
+        <p>The selected value reflects as an attribute for declarative bindings, while the options array remains a property-only configuration surface.</p>
+        ${codeBlock(SEGMENTED_CONTROL_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: () => {
+      const control = document.querySelector("#docs-segmented-control-demo");
+      if (!control) return;
+
+      control.options = [
+        { value: "board", label: "Board" },
+        { value: "list", label: "List" },
+        { value: "timeline", label: "Timeline" },
+      ];
+      control.value = "board";
+    },
+  },
+  {
     id: "dropzone",
     group: "Components",
     title: "Rowan Dropzone",
@@ -1719,6 +1907,10 @@ const NAV_SECTIONS = [
       { pageId: "time-picker", label: "Time Picker" },
       { pageId: "date-range-picker", label: "Date Range Picker" },
       { pageId: "calendar", label: "Calendar" },
+      { pageId: "listbox", label: "Listbox" },
+      { pageId: "option", label: "Option" },
+      { pageId: "multi-select-combobox", label: "Multi-select Combobox" },
+      { pageId: "segmented-control", label: "Segmented Control" },
       { pageId: "number-field", label: "Number Field" },
       { pageId: "slider", label: "Slider" },
       { pageId: "form-field", label: "Form Field" },

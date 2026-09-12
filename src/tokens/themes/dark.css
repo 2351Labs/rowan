@@ -20,6 +20,7 @@
   --rowan-calendar-border: var(--rowan-color-border);
   --rowan-calendar-accent: var(--rowan-color-accent);
   --rowan-calendar-accent-contrast: #10261c;
+  --rowan-segmented-control-active-fg: #10261c;
   --rowan-toast-bg: var(--rowan-card-bg);
   --rowan-toast-fg: var(--rowan-color-fg);
   --rowan-toast-border: var(--rowan-color-border);

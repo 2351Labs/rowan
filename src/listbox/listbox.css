@@ -1,0 +1,25 @@
+:host {
+  --_listbox-bg: var(--rowan-listbox-bg, var(--rowan-field-bg, #ffffff));
+  --_listbox-border: var(--rowan-listbox-border, var(--rowan-color-border));
+  --_listbox-radius: var(--rowan-listbox-radius, var(--rowan-radius-md));
+  --_listbox-padding: var(--rowan-listbox-padding, var(--rowan-space-1));
+  --_listbox-disabled-opacity: var(--rowan-listbox-disabled-opacity, 0.55);
+  display: block;
+  min-inline-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.listbox {
+  background: var(--_listbox-bg);
+  border: var(--rowan-border-width) solid var(--_listbox-border);
+  border-radius: var(--_listbox-radius);
+  min-inline-size: 0;
+  padding: var(--_listbox-padding);
+}
+
+:host([disabled]) .listbox {
+  opacity: var(--_listbox-disabled-opacity);
+}

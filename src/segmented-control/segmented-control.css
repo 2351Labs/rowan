@@ -1,0 +1,121 @@
+:host {
+  --_segmented-control-bg: var(--rowan-segmented-control-bg, var(--rowan-field-bg, #ffffff));
+  --_segmented-control-border: var(--rowan-segmented-control-border, var(--rowan-color-border));
+  --_segmented-control-fg: var(--rowan-segmented-control-fg, var(--rowan-color-fg));
+  --_segmented-control-muted-fg: var(--rowan-segmented-control-muted-fg, var(--rowan-color-muted));
+  --_segmented-control-active-bg: var(
+    --rowan-segmented-control-active-bg,
+    var(--rowan-color-accent)
+  );
+  --_segmented-control-active-fg: var(--rowan-segmented-control-active-fg, #ffffff);
+  --_segmented-control-hover-bg: var(
+    --rowan-segmented-control-hover-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 8%, transparent)
+  );
+  --_segmented-control-focus-ring: var(
+    --rowan-segmented-control-focus-ring,
+    var(--rowan-focus-ring)
+  );
+  --_segmented-control-radius: var(--rowan-segmented-control-radius, var(--rowan-radius-md));
+  --_segmented-control-font-family: var(
+    --rowan-segmented-control-font-family,
+    var(--rowan-font-family)
+  );
+  --_segmented-control-font-size: var(
+    --rowan-segmented-control-font-size,
+    var(--rowan-font-size-sm)
+  );
+  --_segmented-control-font-weight: var(--rowan-segmented-control-font-weight, 600);
+  --_segmented-control-gap: var(--rowan-segmented-control-gap, var(--rowan-space-1));
+  --_segmented-control-padding: var(--rowan-segmented-control-padding, var(--rowan-space-1));
+  --_segmented-control-button-padding: var(
+    --rowan-segmented-control-button-padding,
+    0.4rem var(--rowan-space-3)
+  );
+  --_segmented-control-min-block-size: var(--rowan-segmented-control-min-block-size, 2.25rem);
+  display: inline-block;
+  max-inline-size: 100%;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  background: var(--_segmented-control-bg);
+  border: var(--rowan-border-width) solid var(--_segmented-control-border);
+  border-radius: var(--_segmented-control-radius);
+  display: inline-flex;
+  gap: var(--_segmented-control-gap);
+  max-inline-size: 100%;
+  overflow: auto;
+  padding: var(--_segmented-control-padding);
+}
+
+.button {
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--_segmented-control-radius) - 0.125rem);
+  color: var(--_segmented-control-fg);
+  cursor: pointer;
+  font-family: var(--_segmented-control-font-family);
+  font-size: var(--_segmented-control-font-size);
+  font-weight: var(--_segmented-control-font-weight);
+  line-height: 1.2;
+  min-block-size: var(--_segmented-control-min-block-size);
+  padding: var(--_segmented-control-button-padding);
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--_segmented-control-hover-bg);
+}
+
+.button[aria-checked="true"] {
+  background: var(--_segmented-control-active-bg);
+  color: var(--_segmented-control-active-fg);
+}
+
+.button:focus-visible {
+  box-shadow: var(--_segmented-control-focus-ring);
+  outline: none;
+}
+
+.button:disabled {
+  color: var(--_segmented-control-muted-fg);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+:host([disabled]) {
+  opacity: 0.55;
+}
+
+:host([size="sm"]) {
+  --_segmented-control-font-size: 0.8125rem;
+  --_segmented-control-min-block-size: 2rem;
+  --_segmented-control-button-padding: 0.3rem var(--rowan-space-2);
+}
+
+:host([size="lg"]) {
+  --_segmented-control-font-size: var(--rowan-font-size-md);
+  --_segmented-control-min-block-size: 2.625rem;
+  --_segmented-control-button-padding: 0.5rem var(--rowan-space-4);
+}
+
+.sr-only[hidden] {
+  display: none;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

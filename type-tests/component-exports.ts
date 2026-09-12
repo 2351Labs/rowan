@@ -28,9 +28,12 @@ import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
 import { RowanIconButton } from "@rowan-ui/core/icon-button";
 import { RowanLink } from "@rowan-ui/core/link";
+import { RowanListbox } from "@rowan-ui/core/listbox";
 import { RowanMenu } from "@rowan-ui/core/menu";
 import { RowanMenuItem } from "@rowan-ui/core/menu-item";
+import { RowanMultiSelectCombobox } from "@rowan-ui/core/multi-select-combobox";
 import { RowanNumberField } from "@rowan-ui/core/number-field";
+import { RowanOption } from "@rowan-ui/core/option";
 import { RowanPagination } from "@rowan-ui/core/pagination";
 import { RowanPopover } from "@rowan-ui/core/popover";
 import { RowanProgress } from "@rowan-ui/core/progress";
@@ -38,6 +41,7 @@ import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect } from "@rowan-ui/core/select";
+import { RowanSegmentedControl } from "@rowan-ui/core/segmented-control";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
@@ -88,9 +92,14 @@ const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");
 const iconButton: RowanIconButton = document.createElement("rowan-icon-button");
 const link: RowanLink = document.createElement("rowan-link");
+const listbox: RowanListbox = document.createElement("rowan-listbox");
 const menu: RowanMenu = document.createElement("rowan-menu");
 const menuItem: RowanMenuItem = document.createElement("rowan-menu-item");
+const multiSelectCombobox: RowanMultiSelectCombobox = document.createElement(
+  "rowan-multi-select-combobox",
+);
 const numberField: RowanNumberField = document.createElement("rowan-number-field");
+const option: RowanOption = document.createElement("rowan-option");
 const pagination: RowanPagination = document.createElement("rowan-pagination");
 const popover: RowanPopover = document.createElement("rowan-popover");
 const progress: RowanProgress = document.createElement("rowan-progress");
@@ -98,6 +107,7 @@ const radio: RowanRadio = document.createElement("rowan-radio");
 const radioGroup: RowanRadioGroup = document.createElement("rowan-radio-group");
 const rowDetailsPanel: RowanRowDetailsPanel = document.createElement("rowan-row-details-panel");
 const select: RowanSelect = document.createElement("rowan-select");
+const segmentedControl: RowanSegmentedControl = document.createElement("rowan-segmented-control");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
@@ -151,9 +161,12 @@ void [
   formWizard,
   iconButton,
   link,
+  listbox,
   menu,
   menuItem,
+  multiSelectCombobox,
   numberField,
+  option,
   pagination,
   popover,
   progress,
@@ -161,6 +174,7 @@ void [
   radioGroup,
   rowDetailsPanel,
   select,
+  segmentedControl,
   skeleton,
   slider,
   spinner,

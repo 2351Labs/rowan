@@ -174,6 +174,59 @@ export const tokenCssText = `
   --rowan-form-layout-gap: var(--rowan-space-5);
   --rowan-form-layout-min-column-width: 14rem;
   --rowan-form-layout-label-width: 10rem;
+  --rowan-listbox-bg: var(--rowan-field-bg);
+  --rowan-listbox-border: var(--rowan-color-border);
+  --rowan-listbox-radius: var(--rowan-radius-md);
+  --rowan-listbox-padding: var(--rowan-space-1);
+  --rowan-listbox-disabled-opacity: 0.55;
+  --rowan-option-bg: transparent;
+  --rowan-option-fg: var(--rowan-color-fg);
+  --rowan-option-muted-fg: var(--rowan-color-muted);
+  --rowan-option-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-option-selected-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
+  --rowan-option-selected-fg: var(--rowan-color-fg);
+  --rowan-option-focus-ring: var(--rowan-focus-ring);
+  --rowan-option-radius: var(--rowan-radius-sm);
+  --rowan-option-font-family: var(--rowan-font-family);
+  --rowan-option-font-size: var(--rowan-font-size-sm);
+  --rowan-option-gap: var(--rowan-space-2);
+  --rowan-option-min-block-size: 2.25rem;
+  --rowan-option-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-focus-ring: var(--rowan-focus-ring);
+  --rowan-multi-select-combobox-radius: var(--rowan-radius-md);
+  --rowan-multi-select-combobox-font-family: var(--rowan-font-family);
+  --rowan-multi-select-combobox-font-size: var(--rowan-font-size-sm);
+  --rowan-multi-select-combobox-gap: var(--rowan-space-2);
+  --rowan-multi-select-combobox-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-chip-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-multi-select-combobox-chip-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-panel-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-panel-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-panel-max-block-size: 16rem;
+  --rowan-multi-select-combobox-empty-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-bg: var(--rowan-field-bg);
+  --rowan-segmented-control-border: var(--rowan-color-border);
+  --rowan-segmented-control-fg: var(--rowan-color-fg);
+  --rowan-segmented-control-muted-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-active-bg: var(--rowan-color-accent);
+  --rowan-segmented-control-active-fg: #ffffff;
+  --rowan-segmented-control-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-segmented-control-focus-ring: var(--rowan-focus-ring);
+  --rowan-segmented-control-radius: var(--rowan-radius-md);
+  --rowan-segmented-control-font-family: var(--rowan-font-family);
+  --rowan-segmented-control-font-size: var(--rowan-font-size-sm);
+  --rowan-segmented-control-font-weight: 600;
+  --rowan-segmented-control-gap: var(--rowan-space-1);
+  --rowan-segmented-control-padding: var(--rowan-space-1);
+  --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
+  --rowan-segmented-control-min-block-size: 2.25rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -461,6 +514,59 @@ export const componentTokenCssText = `
   --rowan-form-layout-gap: var(--rowan-space-5);
   --rowan-form-layout-min-column-width: 14rem;
   --rowan-form-layout-label-width: 10rem;
+  --rowan-listbox-bg: var(--rowan-field-bg);
+  --rowan-listbox-border: var(--rowan-color-border);
+  --rowan-listbox-radius: var(--rowan-radius-md);
+  --rowan-listbox-padding: var(--rowan-space-1);
+  --rowan-listbox-disabled-opacity: 0.55;
+  --rowan-option-bg: transparent;
+  --rowan-option-fg: var(--rowan-color-fg);
+  --rowan-option-muted-fg: var(--rowan-color-muted);
+  --rowan-option-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-option-selected-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
+  --rowan-option-selected-fg: var(--rowan-color-fg);
+  --rowan-option-focus-ring: var(--rowan-focus-ring);
+  --rowan-option-radius: var(--rowan-radius-sm);
+  --rowan-option-font-family: var(--rowan-font-family);
+  --rowan-option-font-size: var(--rowan-font-size-sm);
+  --rowan-option-gap: var(--rowan-space-2);
+  --rowan-option-min-block-size: 2.25rem;
+  --rowan-option-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-focus-ring: var(--rowan-focus-ring);
+  --rowan-multi-select-combobox-radius: var(--rowan-radius-md);
+  --rowan-multi-select-combobox-font-family: var(--rowan-font-family);
+  --rowan-multi-select-combobox-font-size: var(--rowan-font-size-sm);
+  --rowan-multi-select-combobox-gap: var(--rowan-space-2);
+  --rowan-multi-select-combobox-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-chip-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-multi-select-combobox-chip-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-panel-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-panel-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-panel-max-block-size: 16rem;
+  --rowan-multi-select-combobox-empty-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-bg: var(--rowan-field-bg);
+  --rowan-segmented-control-border: var(--rowan-color-border);
+  --rowan-segmented-control-fg: var(--rowan-color-fg);
+  --rowan-segmented-control-muted-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-active-bg: var(--rowan-color-accent);
+  --rowan-segmented-control-active-fg: #ffffff;
+  --rowan-segmented-control-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-segmented-control-focus-ring: var(--rowan-focus-ring);
+  --rowan-segmented-control-radius: var(--rowan-radius-md);
+  --rowan-segmented-control-font-family: var(--rowan-font-family);
+  --rowan-segmented-control-font-size: var(--rowan-font-size-sm);
+  --rowan-segmented-control-font-weight: 600;
+  --rowan-segmented-control-gap: var(--rowan-space-1);
+  --rowan-segmented-control-padding: var(--rowan-space-1);
+  --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
+  --rowan-segmented-control-min-block-size: 2.25rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -931,6 +1037,55 @@ export const unregisteredTokenNames = [
   "--rowan-form-layout-gap",
   "--rowan-form-layout-min-column-width",
   "--rowan-form-layout-label-width",
+  "--rowan-listbox-bg",
+  "--rowan-listbox-border",
+  "--rowan-listbox-radius",
+  "--rowan-listbox-padding",
+  "--rowan-listbox-disabled-opacity",
+  "--rowan-option-bg",
+  "--rowan-option-fg",
+  "--rowan-option-muted-fg",
+  "--rowan-option-hover-bg",
+  "--rowan-option-selected-bg",
+  "--rowan-option-selected-fg",
+  "--rowan-option-focus-ring",
+  "--rowan-option-radius",
+  "--rowan-option-font-family",
+  "--rowan-option-font-size",
+  "--rowan-option-gap",
+  "--rowan-option-min-block-size",
+  "--rowan-option-padding",
+  "--rowan-multi-select-combobox-bg",
+  "--rowan-multi-select-combobox-fg",
+  "--rowan-multi-select-combobox-border",
+  "--rowan-multi-select-combobox-focus-ring",
+  "--rowan-multi-select-combobox-radius",
+  "--rowan-multi-select-combobox-font-family",
+  "--rowan-multi-select-combobox-font-size",
+  "--rowan-multi-select-combobox-gap",
+  "--rowan-multi-select-combobox-padding",
+  "--rowan-multi-select-combobox-chip-bg",
+  "--rowan-multi-select-combobox-chip-fg",
+  "--rowan-multi-select-combobox-panel-bg",
+  "--rowan-multi-select-combobox-panel-border",
+  "--rowan-multi-select-combobox-panel-max-block-size",
+  "--rowan-multi-select-combobox-empty-fg",
+  "--rowan-segmented-control-bg",
+  "--rowan-segmented-control-border",
+  "--rowan-segmented-control-fg",
+  "--rowan-segmented-control-muted-fg",
+  "--rowan-segmented-control-active-bg",
+  "--rowan-segmented-control-active-fg",
+  "--rowan-segmented-control-hover-bg",
+  "--rowan-segmented-control-focus-ring",
+  "--rowan-segmented-control-radius",
+  "--rowan-segmented-control-font-family",
+  "--rowan-segmented-control-font-size",
+  "--rowan-segmented-control-font-weight",
+  "--rowan-segmented-control-gap",
+  "--rowan-segmented-control-padding",
+  "--rowan-segmented-control-button-padding",
+  "--rowan-segmented-control-min-block-size",
   "--rowan-table-toolbar-bg",
   "--rowan-table-toolbar-fg",
   "--rowan-table-toolbar-border",
