@@ -64,6 +64,79 @@ button.disabled = true;
 table.config = config;
 ```
 
+## React
+
+Rowan remains a Web Component library. The optional `@rowan-ui/core/react` entry adds JSX types and the `useRowanElement()` binding helper; it does not ship React wrappers or register any elements.
+
+```tsx
+import { useEffect, useRef, useState } from "react";
+import { useRowanElement } from "@rowan-ui/core/react";
+import type { RowanTable } from "@rowan-ui/core/table";
+
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+export function MembersTable() {
+  const tableRef = useRef<RowanTable>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  useEffect(() => {
+    void import("@rowan-ui/core/table");
+  }, []);
+
+  useRowanElement(tableRef, {
+    properties: { config, selected },
+    events: {
+      "rowan-select": (event) => {
+        const detail = (event as CustomEvent<{ selected: string[] }>).detail;
+        setSelected(detail.selected);
+      },
+    },
+  });
+
+  return <rowan-table ref={tableRef} caption="Members" />;
+}
+```
+
+Use JSX for scalar attributes such as `caption`, `disabled`, and `sticky-header`. Pass arrays, objects, callbacks, and other property-only values through `useRowanElement(ref, { properties })`; the helper assigns them directly after the host exists rather than serializing them as attributes. Its `events` map uses native `addEventListener()` and removes outdated listeners on rerender and unmount:
+
+```tsx
+useRowanElement(fieldRef, {
+  events: {
+    "rowan-change": (event) => {
+      const detail = (event as CustomEvent<{ value: string }>).detail;
+      updateName(detail.value);
+    },
+  },
+});
+
+useRowanElement(buttonRef, {
+  events: { "rowan-click": () => save() },
+});
+```
+
+For Next.js, import the React facade from a client component, but register Rowan components inside a client effect. Do not import registration modules from server-rendered code:
+
+```tsx
+"use client";
+
+import { useEffect } from "react";
+import { useRowanElement } from "@rowan-ui/core/react";
+
+export function RowanClientBoundary() {
+  useEffect(() => {
+    void import("@rowan-ui/core/table");
+    void import("@rowan-ui/core/button");
+  }, []);
+
+  return null;
+}
+```
+
 ## Theming
 
 Rowan tokens are layered so teams can theme once and keep component APIs stable.
@@ -94,9 +167,9 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 
 Implemented components currently include:
 
-- Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
+- Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
-- Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
+- Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
 - Data display and operations: `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
@@ -172,6 +245,48 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
   document.querySelector("#open-commands").addEventListener("rowan-click", () => palette.show());
 
   palette.addEventListener("rowan-command", (event) => {
+    console.log(event.detail.value);
+  });
+</script>
+```
+
+## Rowan Contextual Actions
+
+`rowan-confirm-dialog` composes the modal behavior of `rowan-dialog` with explicit outcomes for consequential actions. Parent changes to `open` remain silent. A user selection emits `rowan-confirm` or `rowan-cancel`, while Escape, the dialog close control, and backdrop dismissal emit `rowan-close`.
+
+`rowan-context-menu` binds to an element through its `for` attribute or `target` property. It intercepts the target's native context menu, also opens from `Shift+F10` or the Context Menu key, manages Arrow/Home/End menu focus, and emits `rowan-change` when a user selects a `rowan-menu-item`.
+
+`rowan-status-indicator` is a compact persistent status marker. Use its `tone`, `size`, `label`, and optional `pulse` state; visible text comes from the default slot or `label` attribute.
+
+```html
+<rowan-button id="archive-project" variant="danger">Archive</rowan-button>
+<rowan-confirm-dialog id="archive-dialog" confirm-label="Archive" confirm-variant="danger">
+  <span slot="title">Archive this project?</span>
+  Archived projects remain available to workspace administrators.
+</rowan-confirm-dialog>
+
+<button id="project-target" type="button">Trail map</button>
+<rowan-context-menu for="project-target" label="Trail map actions">
+  <rowan-menu-item value="rename">Rename</rowan-menu-item>
+  <rowan-menu-item value="archive">Archive</rowan-menu-item>
+</rowan-context-menu>
+
+<rowan-status-indicator tone="success" label="Operational"></rowan-status-indicator>
+
+<script type="module">
+  import "@rowan-ui/core/button";
+  import "@rowan-ui/core/confirm-dialog";
+  import "@rowan-ui/core/context-menu";
+  import "@rowan-ui/core/menu-item";
+  import "@rowan-ui/core/status-indicator";
+
+  const dialog = document.querySelector("#archive-dialog");
+  document.querySelector("#archive-project").addEventListener("rowan-click", () => dialog.show());
+  dialog.addEventListener("rowan-confirm", () => {
+    // Persist the archive action.
+  });
+
+  document.querySelector("rowan-context-menu").addEventListener("rowan-change", (event) => {
     console.log(event.detail.value);
   });
 </script>

@@ -6,7 +6,7 @@ Last updated: 2026-09-11
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 68 components
+- Current implemented catalog includes 71 components
 
 ## Completed Sprints
 
@@ -440,17 +440,141 @@ Verification completed at sprint close:
 
 ### Sprint 19: Contextual Actions
 
-Status: Planned
+Status: Completed
 
-Planned components:
+Delivered:
 
-- `rowan-confirm-dialog`, composed from `rowan-dialog` for destructive and consequential decisions
-- `rowan-context-menu`, composed from Rowan's menu and overlay primitives with pointer and keyboard invocation
-- `rowan-status-indicator` for concise semantic status display
+- `rowan-confirm-dialog`, composed from `rowan-dialog` for consequential decisions with reflected state, configurable labels and confirm variant, and explicit user-only confirm, cancel, and passive-dismiss events
+- `rowan-context-menu`, composed from Rowan menu primitives with `for` and property target binding, native context-click and keyboard invocation, Arrow/Home/End focus movement, selection handling, outside/Escape dismissal, and focus return
+- Roving-focus hooks on `rowan-menu-item` so contextual composition uses supported element behavior instead of component shadow-root reach-through
+- `rowan-status-indicator` for concise persistent semantic status with neutral, info, success, warning, and danger tones; label fallback or slot content; size; restrained optional pulse; and default status accessibility
+- Component token layers, guarded definitions, visual hidden states, CSS parts, Storybook stories, static documentation routes and live event demos, README guidance, root and subpath exports, declaration bridges, global tag mapping, CEM entries, and public contract coverage
+
+Verification completed at sprint close:
+
+- Focused contextual-action contracts: 14 passing
+- `npm run tokens:sync` and `npm run tokens:check`
+- `npm run types` and `npm run typecheck`
+- `npm run lint`
+- `npm test` (73 files, 297 passing contracts)
+- Two consecutive `npm run analyze` runs produced byte-identical manifests
+- `npm run build-storybook`
+- `npm pack --dry-run --json` includes source ESM, declarations, generated tokens, and CEM without documentation artifacts
+- Chromium, Firefox, and WebKit public-contract runs passed
+- Static documentation checks at desktop and 390px widths confirmed confirmation outcomes, contextual selection and keyboard movement, semantic status variants, viewport-safe overlays, and no horizontal overflow
+- Scoped Prettier validation and `git diff --check` passed
+
+### Sprint 20: React Interoperability
+
+Status: Completed
+
+Delivered:
+
+- An opt-in `@rowan-ui/core/react` facade with no effect on the framework-neutral root runtime, an optional React peer dependency, and development-only React 18 and React 19 test baselines
+- `useRowanElement(ref, { properties, events })` for direct property assignment, native custom-event subscription cleanup, React host replacement, and client-only registration patterns without component wrappers or synthetic event props
+- JSX declarations derived from the existing global Rowan tag map, preserving typed refs and scalar attributes across all 71 public tags, plus a separately typed `useRowanElement` property surface for structured values, render callbacks, and the public `for` exception
+- Separate React 18 and React 19 TSX fixtures that verify all Rowan tags are represented, real table property binding is typed, invalid property values are rejected, and both JSX namespace conventions work
+- Browser contracts for complex table data assignment, stale listener replacement and unmount cleanup, host replacement through a stable React ref, and hydration-safe client registration
+- README and static documentation guidance for JSX scalars, ref-bound structured data, native `rowan-change` and `rowan-click` listeners, per-component client registration, and Next.js server-rendering boundaries
+
+Verification completed at sprint close:
+
+- Focused React facade browser contracts: 3 passing
+- `npm run lint`, `npm run types`, and `npm run typecheck`
+- `npm test` (74 files, 300 passing contracts)
+- Two consecutive `npm run analyze` runs produced byte-identical manifests with 71 unique Rowan tags
+- `npm run build-storybook`
+- `npm pack --dry-run --json`: 616 files and 2,979,295 unpacked bytes; includes React facade source and declarations while excluding documentation and Storybook output
+- Chromium, Firefox, and WebKit each passed 74 files and 300 public contracts
+- Static React documentation checks at desktop and 390px mobile widths, including route rendering, navigation, and no page-level horizontal overflow
+- Scoped Prettier validation and `git diff --check`
+
+#### DS-09: Typed React JSX and Native Event Interop
+
+**User story:** As a React and TypeScript team, I want official, SSR-safe guidance, typed Rowan JSX tags, and a small binding helper so I can use Rowan Web Components confidently without adopting a parallel React component library.
+
+**Scope:** Add a concise Framework Usage / React section to the README and static documentation covering client-only element registration, scalar JSX attributes, property-only values through refs, native custom-event listeners, and Next.js SSR boundaries. Publish an opt-in `@rowan-ui/core/react` facade with JSX declarations for all public `rowan-*` tags and a small `useRowanElement()` helper for property assignment and native-event subscription cleanup.
+
+**Acceptance bar:**
+
+- Core elements, tags, events, and data contracts remain framework-neutral; no React wrappers, alternate component APIs, or React runtime import may enter the root `@rowan-ui/core` entry point.
+- `@rowan-ui/core/react` augments React's `JSX.IntrinsicElements` for every public Rowan tag, supports typed refs and documented scalar attributes, and types property-only values such as `config`, `columns`, `rows`, `options`, `selected`, `items`, and render callbacks without serializing them to attributes.
+- `useRowanElement(ref, { properties, events })` assigns properties after the host exists, attaches native `addEventListener()` listeners, cleans up stale listeners on dependency changes and unmount, and does not translate Rowan custom events into synthetic React event props.
+- The helper facade is SSR-safe to import and has React only as an optional peer for its hook entry point; registration modules remain explicitly browser-only through a client effect or equivalent client-only boundary.
+- Documentation includes a client-only per-component registration example, a ref-driven `rowan-table` example, native `rowan-change` / `rowan-click` listener cleanup, and a Next.js example that avoids registering custom elements during server rendering.
+- Type fixtures compile representative React 18 and React 19 TSX usage, and browser coverage verifies registration, complex property assignment, event cleanup, and hydration-safe client activation without claiming support beyond the tested baselines.
 
 Deferred unless a product use case requires them:
 
 - Color picker, rating, rich-text editing, charting, maps, carousels, bundled iconography, and display-only `Intl` formatter elements
+
+### Deferred Backlog Stories
+
+Status: Unscheduled. These are planning stories only; they do not add tags, exports, CEM declarations, or placeholder Storybook entries until a product use case selects them.
+
+#### DS-01: Semantic Color Selection
+
+**User story:** As a workspace administrator, I want to select an approved brand or status color so I can configure a project without manually entering CSS values.
+
+**Ready when:** A form workflow establishes whether the value is opaque sRGB only or needs alpha/channel editing, and identifies an approved palette source.
+
+**Acceptance bar:** A future `rowan-color-picker` must be FACE, reflect a scalar `value`, keep palette data property-only, provide keyboard-operable swatches and a native color-entry fallback, preserve author labels and descriptions, and emit a user-only `rowan-change` event.
+
+#### DS-02: Structured Rating Input
+
+**User story:** As a reviewer, I want to assign a bounded rating with the keyboard or pointer so I can record a consistent evaluation quickly.
+
+**Ready when:** A workflow needs user input rather than a display-only score and defines whether fractional ratings are meaningful.
+
+**Acceptance bar:** A future `rowan-rating` must be FACE, expose scalar min, max, step, and value state, provide an accessible name and clear value text, support Arrow/Home/End interaction, preserve a no-rating state where required, and emit one user-only `rowan-change` event.
+
+#### DS-03: Safe Rich-Text Authoring
+
+**User story:** As a content author, I want to apply a constrained set of text formatting controls so I can create operational guidance without relying on external editors.
+
+**Ready when:** The product defines a storage model, sanitization policy, allowed formatting set, collaboration expectations, and paste behavior.
+
+**Acceptance bar:** A future editor must never stamp untrusted HTML with `innerHTML`, must expose rich document state through explicit property APIs rather than attributes, must preserve native selection and undo behavior, provide keyboard-operable formatting controls, offer a plain-text fallback, and document a sanitization boundary before events or persistence are added.
+
+#### DS-04: Accessible Data Visualization
+
+**User story:** As an operations analyst, I want to compare a small set of metrics visually so I can spot trends that are cumbersome to scan in a table alone.
+
+**Ready when:** A product surface demonstrates that Rowan table, progress, and status primitives cannot satisfy the comparison task, and an accessible rendering strategy is selected.
+
+**Acceptance bar:** Any charting work must keep configuration and data property-only, expose an equivalent textual or tabular summary, make series and data points keyboard discoverable where interactive, respect reduced motion, avoid a mandatory core runtime dependency without an explicit package decision, and include deterministic visual and interaction coverage.
+
+#### DS-05: Provider-Aware Maps
+
+**User story:** As a dispatcher, I want to inspect location-based work items on a map so I can make routing and coverage decisions in context.
+
+**Ready when:** A product owner selects a map provider, approves cost, attribution, privacy, offline, and geocoding policies, and defines the fallback when provider access fails.
+
+**Acceptance bar:** Any map integration must keep locations and layers property-only, render accessible list or table alternatives, preserve provider attribution, support keyboard navigation to mapped records, avoid shipping provider credentials in Rowan, and live in an optional integration package rather than the core component bundle unless that boundary is deliberately revised.
+
+#### DS-06: Controlled Content Carousel
+
+**User story:** As a user reviewing a bounded sequence of related items, I want to move between panels predictably so I can compare them without losing context.
+
+**Ready when:** A product workflow establishes that tabs, pagination, or virtual-list navigation cannot communicate the sequence more clearly.
+
+**Acceptance bar:** A future carousel must use named or default slots for panels, expose a reflected scalar active index, provide previous and next controls with keyboard support, never auto-advance by default, respect reduced motion, announce the active position, and emit a user-only change event without serializing panel data.
+
+#### DS-07: Optional Icon Package
+
+**User story:** As a product team, I want a coherent, licensed icon set so I can compose familiar controls without maintaining ad hoc SVG assets in every application.
+
+**Ready when:** Licensing, visual ownership, icon naming, and distribution boundaries are approved, including whether icons belong in a separately versioned package.
+
+**Acceptance bar:** Iconography must remain optional to `@rowan-ui/core`, tree-shake at individual-icon granularity, provide accessible-name guidance for decorative and meaningful icons, avoid a stringly typed runtime icon registry in core components, and include license and source attribution in the package documentation.
+
+#### DS-08: Locale-Aware Display Formatting
+
+**User story:** As an international user, I want dates, numbers, currencies, and relative values presented in my locale so I can understand dashboard data without manual conversion.
+
+**Ready when:** A product surface needs reusable declarative formatting beyond application-level native `Intl` calls, and locale/time-zone ownership is defined.
+
+**Acceptance bar:** Formatter candidates must first justify a custom element over a small documented utility. If adopted, values and structured `Intl` options stay property-only where non-scalar, rendered output uses `textContent`, locale/time-zone changes update predictably, and the component documents fallback behavior for unsupported locales and invalid values.
 
 ## Notes
 

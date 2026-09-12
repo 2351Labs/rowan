@@ -13,6 +13,8 @@ import { RowanChip } from "@rowan-ui/core/chip";
 import { RowanCombobox } from "@rowan-ui/core/combobox";
 import { RowanCommandItem } from "@rowan-ui/core/command-item";
 import { RowanCommandPalette } from "@rowan-ui/core/command-palette";
+import { RowanConfirmDialog } from "@rowan-ui/core/confirm-dialog";
+import { RowanContextMenu } from "@rowan-ui/core/context-menu";
 import { RowanDatePicker } from "@rowan-ui/core/date-picker";
 import { RowanDateRangePicker } from "@rowan-ui/core/date-range-picker";
 import { RowanDialog } from "@rowan-ui/core/dialog";
@@ -49,6 +51,7 @@ import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
 import { RowanSplitPane } from "@rowan-ui/core/split-pane";
+import { RowanStatusIndicator } from "@rowan-ui/core/status-indicator";
 import { RowanStepper } from "@rowan-ui/core/stepper";
 import { RowanSwitch } from "@rowan-ui/core/switch";
 import { RowanTab } from "@rowan-ui/core/tab";
@@ -82,6 +85,8 @@ const chip: RowanChip = document.createElement("rowan-chip");
 const combobox: RowanCombobox = document.createElement("rowan-combobox");
 const commandItem: RowanCommandItem = document.createElement("rowan-command-item");
 const commandPalette: RowanCommandPalette = document.createElement("rowan-command-palette");
+const confirmDialog: RowanConfirmDialog = document.createElement("rowan-confirm-dialog");
+const contextMenu: RowanContextMenu = document.createElement("rowan-context-menu");
 const datePicker: RowanDatePicker = document.createElement("rowan-date-picker");
 const dateRangePicker: RowanDateRangePicker = document.createElement("rowan-date-range-picker");
 const dialog: RowanDialog = document.createElement("rowan-dialog");
@@ -120,6 +125,7 @@ const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
 const splitPane: RowanSplitPane = document.createElement("rowan-split-pane");
+const statusIndicator: RowanStatusIndicator = document.createElement("rowan-status-indicator");
 const stepper: RowanStepper = document.createElement("rowan-stepper");
 const switchControl: RowanSwitch = document.createElement("rowan-switch");
 const tab: RowanTab = document.createElement("rowan-tab");
@@ -154,6 +160,9 @@ table.virtualOverscan = 4;
 appLayout.navigationOpen = true;
 sideNav.value = "overview";
 sideNavItem.active = true;
+confirmDialog.confirmVariant = "danger";
+contextMenu.target = button;
+statusIndicator.tone = "success";
 
 const virtualListItemSize: number = virtualList.itemSize;
 const tableVirtualItemSize: number = table.virtualItemSize;
@@ -161,6 +170,9 @@ const tableVirtualized: boolean = table.virtualized;
 const appLayoutNavigationOpen: boolean = appLayout.navigationOpen;
 const sideNavValue: string = sideNav.value;
 const sideNavItemActive: boolean = sideNavItem.active;
+const confirmDialogOpen: boolean = confirmDialog.open;
+const contextMenuLabel: string = contextMenu.label;
+const statusIndicatorTone: string = statusIndicator.tone;
 
 void [
   accordion,
@@ -178,6 +190,8 @@ void [
   combobox,
   commandItem,
   commandPalette,
+  confirmDialog,
+  contextMenu,
   datePicker,
   dateRangePicker,
   dialog,
@@ -214,6 +228,7 @@ void [
   slider,
   spinner,
   splitPane,
+  statusIndicator,
   stepper,
   switchControl,
   tab,
@@ -237,4 +252,7 @@ void [
   appLayoutNavigationOpen,
   sideNavValue,
   sideNavItemActive,
+  confirmDialogOpen,
+  contextMenuLabel,
+  statusIndicatorTone,
 ];

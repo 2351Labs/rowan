@@ -64,6 +64,14 @@
       "types": "./src/combobox/combobox.d.ts",
       "default": "./src/combobox/combobox.js"
     },
+    "./confirm-dialog": {
+      "types": "./src/confirm-dialog/confirm-dialog.d.ts",
+      "default": "./src/confirm-dialog/confirm-dialog.js"
+    },
+    "./context-menu": {
+      "types": "./src/context-menu/context-menu.d.ts",
+      "default": "./src/context-menu/context-menu.js"
+    },
     "./command-item": {
       "types": "./src/command-item/command-item.d.ts",
       "default": "./src/command-item/command-item.js"
@@ -212,6 +220,10 @@
       "types": "./src/split-pane/split-pane.d.ts",
       "default": "./src/split-pane/split-pane.js"
     },
+    "./status-indicator": {
+      "types": "./src/status-indicator/status-indicator.d.ts",
+      "default": "./src/status-indicator/status-indicator.js"
+    },
     "./stepper": {
       "types": "./src/stepper/stepper.d.ts",
       "default": "./src/stepper/stepper.js"
@@ -288,6 +300,10 @@
       "types": "./src/tokens/tokens.css.d.ts",
       "default": "./src/tokens/tokens.css"
     },
+    "./react": {
+      "types": "./src/react/index.d.ts",
+      "default": "./src/react/index.js"
+    },
     "./tokens/light": {
       "types": "./src/tokens/themes/light.css.d.ts",
       "default": "./src/tokens/themes/light.css"
@@ -340,6 +356,8 @@
     "./src/combobox/combobox.js",
     "./src/command-item/command-item.js",
     "./src/command-palette/command-palette.js",
+    "./src/confirm-dialog/confirm-dialog.js",
+    "./src/context-menu/context-menu.js",
     "./src/card/card.js",
     "./src/button/button.js",
     "./src/calendar/calendar.js",
@@ -379,6 +397,7 @@
     "./src/slider/slider.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",
+    "./src/status-indicator/status-indicator.js",
     "./src/stepper/stepper.js",
     "./src/switch/switch.js",
     "./src/tab/tab.js",
@@ -399,18 +418,26 @@
     "./src/badge/badge.js"
   ],
   "customElements": "custom-elements.json",
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "scripts": {
     "analyze": "cem analyze --config custom-elements-manifest.config.js",
     "storybook": "storybook dev -p 6006",
     "documentation": "vite --open /documentation/index.html",
     "build-storybook": "storybook build",
-    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --concurrency=1",
+    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.config.js --concurrency=1",
     "test:browser": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
     "benchmark": "node ./scripts/run-benchmarks.mjs && prettier --write benchmarks/RESULTS.md benchmarks/results/latest.json",
     "tokens:sync": "node ./scripts/sync-token-sheet.mjs",
     "tokens:check": "node ./scripts/sync-token-sheet.mjs --check",
     "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",
-    "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json",
+    "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json && tsc --project tsconfig.typecheck.react-18.json && tsc --project tsconfig.typecheck.react-19.json",
     "lint": "npm run tokens:check && eslint \"src/**/*.js\"",
     "format": "prettier --write \"**/*.{js,css,md,mdx,json}\"",
     "format:check": "prettier --check \"**/*.{js,css,md,mdx,json}\""
@@ -420,16 +447,24 @@
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@microsoft/fast-element": "^3.0.3",
+    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-replace": "^6.0.3",
     "@storybook/addon-a11y": "^8.6.14",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/web-components": "^8.6.14",
     "@storybook/web-components-vite": "^8.6.14",
+    "@types/react": "^19.3.0",
+    "@types/react-18": "npm:@types/react@^18.3.31",
+    "@types/react-dom": "^19.3.0",
+    "@web/dev-server-rollup": "^0.6.4",
     "@web/test-runner": "^0.18.2",
     "@web/test-runner-playwright": "^0.11.0",
     "eslint": "^8.57.1",
     "lit": "^3.3.3",
     "playwright": "^1.63.0",
     "prettier": "^3.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "storybook": "^8.6.14",
     "typescript": "~5.4.5",
     "vite": "^5.4.10"

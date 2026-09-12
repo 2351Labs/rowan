@@ -13,10 +13,12 @@ export class RowanMenuItem extends BaseElement {
   static styleUrl = new URL("./menu-item.css", import.meta.url).href;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["value", "disabled"];
+  static observedAttributes = ["value", "disabled", "tabindex"];
   static upgradeProperties = ["value", "disabled"];
 
   #button = null;
+  #rovingTabIndex = null;
+  #rovingOwner = null;
 
   get value() {
     return this.readString("value", "");
@@ -34,6 +36,35 @@ export class RowanMenuItem extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  focus(options) {
+    if (this.#button) {
+      this.#button.focus(options);
+      return;
+    }
+
+    super.focus(options);
+  }
+
+  /** @internal */
+  activate() {
+    if (!this.disabled) this.#button?.click();
+  }
+
+  /** @internal */
+  setRovingTabIndex(value, owner = null) {
+    const isClearing = value == null;
+    if (isClearing && owner && this.#rovingOwner !== owner) return;
+
+    const nextTabIndex = isClearing ? null : Number(value) === 0 ? 0 : -1;
+    const nextOwner = isClearing ? null : owner;
+    if (this.#rovingTabIndex === nextTabIndex && this.#rovingOwner === nextOwner) return;
+
+    this.#rovingTabIndex = nextTabIndex;
+    this.#rovingOwner = nextOwner;
+    if (this.#button) this.#button.tabIndex = this.#resolvedTabIndex();
+    this.requestRender();
+  }
+
   render() {
     if (!this.#button) {
       this.renderRoot.innerHTML =
@@ -42,10 +73,16 @@ export class RowanMenuItem extends BaseElement {
     }
 
     this.#button.disabled = this.disabled;
+    this.#button.tabIndex = this.#resolvedTabIndex();
 
     if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {
       this.internals.role = "menuitem";
     }
+  }
+
+  #resolvedTabIndex() {
+    if (this.disabled) return -1;
+    return this.#rovingTabIndex ?? (this.hasAttribute("tabindex") ? this.tabIndex : 0);
   }
 }
 

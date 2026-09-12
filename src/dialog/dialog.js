@@ -9,6 +9,9 @@ const FOCUSABLE_SELECTOR = [
   "select:not([disabled])",
   "textarea:not([disabled])",
   "[tabindex]:not([tabindex='-1'])",
+  "rowan-button:not([disabled])",
+  "rowan-icon-button:not([disabled])",
+  "rowan-link",
 ].join(",");
 
 /**
@@ -184,7 +187,10 @@ export class RowanDialog extends BaseElement {
 
     const first = focusableElements[0];
     const last = focusableElements[focusableElements.length - 1];
-    const active = this.shadowRoot.activeElement || document.activeElement;
+    const active =
+      event.composedPath().find((node) => focusableElements.includes(node)) ||
+      this.shadowRoot.activeElement ||
+      document.activeElement;
 
     if (event.shiftKey) {
       if (active === first || active === this.#panel) {

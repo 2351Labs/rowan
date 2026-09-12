@@ -1,0 +1,83 @@
+:host {
+  display: inline-flex;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.status {
+  align-items: center;
+  color: var(--rowan-status-indicator-fg, var(--rowan-color-fg));
+  display: inline-flex;
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-status-indicator-font-size, var(--rowan-font-size-sm));
+  gap: var(--rowan-status-indicator-gap, var(--rowan-space-2));
+  line-height: 1.2;
+}
+
+.indicator {
+  background: var(--rowan-status-indicator-color, var(--rowan-color-muted));
+  border-radius: 50%;
+  flex: 0 0 auto;
+  inline-size: var(--rowan-status-indicator-size, 0.625rem);
+  block-size: var(--rowan-status-indicator-size, 0.625rem);
+}
+
+:host([tone="info"]) .indicator {
+  background: var(--rowan-status-indicator-info-color, var(--rowan-color-accent));
+}
+
+:host([tone="success"]) .indicator {
+  background: var(--rowan-status-indicator-success-color, #2f7a4d);
+}
+
+:host([tone="warning"]) .indicator {
+  background: var(--rowan-status-indicator-warning-color, #9b7018);
+}
+
+:host([tone="danger"]) .indicator {
+  background: var(--rowan-status-indicator-danger-color, var(--rowan-color-danger));
+}
+
+:host([size="sm"]) .status {
+  font-size: var(--rowan-status-indicator-sm-font-size, 0.75rem);
+}
+
+:host([size="sm"]) .indicator {
+  block-size: var(--rowan-status-indicator-sm-size, 0.5rem);
+  inline-size: var(--rowan-status-indicator-sm-size, 0.5rem);
+}
+
+:host([size="lg"]) .status {
+  font-size: var(--rowan-status-indicator-lg-font-size, var(--rowan-font-size-md));
+}
+
+:host([size="lg"]) .indicator {
+  block-size: var(--rowan-status-indicator-lg-size, 0.75rem);
+  inline-size: var(--rowan-status-indicator-lg-size, 0.75rem);
+}
+
+:host([pulse]) .indicator {
+  animation: rowan-status-indicator-pulse 1.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([pulse]) .indicator {
+    animation: none;
+  }
+}
+
+@keyframes rowan-status-indicator-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 32%, transparent);
+  }
+
+  70% {
+    box-shadow: 0 0 0 0.4rem transparent;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

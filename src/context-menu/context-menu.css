@@ -1,0 +1,37 @@
+:host {
+  display: contents;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.overlay {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: var(--rowan-context-menu-z-index, 1000);
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.backdrop {
+  inset: 0;
+  pointer-events: auto;
+  position: fixed;
+}
+
+.panel {
+  left: var(--rowan-context-menu-x, 0px);
+  max-inline-size: calc(100vw - 1rem);
+  min-inline-size: min(12rem, calc(100vw - 1rem));
+  pointer-events: auto;
+  position: fixed;
+  top: var(--rowan-context-menu-y, 0px);
+}
+
+.menu {
+  box-shadow: var(--rowan-context-menu-shadow, 0 0.5rem 1.25rem rgb(16 28 22 / 14%));
+}

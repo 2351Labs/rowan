@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.typecheck.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "paths": {
+      "react": ["node_modules/@types/react-18"],
+      "react/jsx-runtime": ["node_modules/@types/react-18/jsx-runtime"],
+      "react/jsx-dev-runtime": ["node_modules/@types/react-18/jsx-dev-runtime"]
+    },
+    "types": []
+  },
+  "include": ["type-tests/react-18.tsx"]
+}

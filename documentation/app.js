@@ -26,6 +26,65 @@ import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";`;
 
+const REACT_TABLE_SNIPPET = `import { useEffect, useRef, useState } from "react";
+import { useRowanElement } from "@rowan-ui/core/react";
+import type { RowanTable } from "@rowan-ui/core/table";
+
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+export function MembersTable() {
+  const tableRef = useRef<RowanTable>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  useEffect(() => {
+    void import("@rowan-ui/core/table");
+  }, []);
+
+  useRowanElement(tableRef, {
+    properties: { config, selected },
+    events: {
+      "rowan-select": (event) => {
+        const detail = (event as CustomEvent<{ selected: string[] }>).detail;
+        setSelected(detail.selected);
+      },
+    },
+  });
+
+  return <rowan-table ref={tableRef} caption="Members" />;
+}`;
+
+const REACT_EVENTS_SNIPPET = `useRowanElement(fieldRef, {
+  events: {
+    "rowan-change": (event) => {
+      const detail = (event as CustomEvent<{ value: string }>).detail;
+      updateName(detail.value);
+    },
+  },
+});
+
+useRowanElement(buttonRef, {
+  events: { "rowan-click": () => save() },
+});`;
+
+const NEXT_JS_SNIPPET = `"use client";
+
+import { useEffect } from "react";
+import { useRowanElement } from "@rowan-ui/core/react";
+
+export function RowanClientBoundary() {
+  useEffect(() => {
+    void import("@rowan-ui/core/table");
+    void import("@rowan-ui/core/button");
+  }, []);
+
+  return null;
+}`;
+
 const TABLE_SNIPPET = `const table = document.querySelector("rowan-table");
 
 table.config = {
@@ -509,6 +568,49 @@ const SIDE_NAV_ITEM_SNIPPET = `<rowan-side-nav-item value="overview" href="/over
   Overview
 </rowan-side-nav-item>`;
 
+const CONFIRM_DIALOG_SNIPPET = `<rowan-confirm-dialog
+  id="archive-dialog"
+  label="Archive project"
+  confirm-label="Archive"
+  confirm-variant="danger"
+>
+  <span slot="title">Archive this project?</span>
+  Archived projects remain available to workspace administrators.
+</rowan-confirm-dialog>
+
+<script type="module">
+  import "@rowan-ui/core/confirm-dialog";
+
+  const dialog = document.querySelector("#archive-dialog");
+  dialog.addEventListener("rowan-confirm", () => {
+    // Persist the archive action.
+  });
+</script>`;
+
+const CONTEXT_MENU_SNIPPET = `<button id="project-target" type="button">Trail map</button>
+
+<rowan-context-menu for="project-target" label="Project actions">
+  <rowan-menu-item value="rename">Rename</rowan-menu-item>
+  <rowan-menu-item value="archive">Archive</rowan-menu-item>
+</rowan-context-menu>
+
+<script type="module">
+  import "@rowan-ui/core/context-menu";
+  import "@rowan-ui/core/menu-item";
+
+  const menu = document.querySelector("rowan-context-menu");
+  menu.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
+const STATUS_INDICATOR_SNIPPET = `<rowan-status-indicator tone="success" label="Operational"></rowan-status-indicator>
+<rowan-status-indicator tone="info" label="Syncing" pulse></rowan-status-indicator>
+
+<script type="module">
+  import "@rowan-ui/core/status-indicator";
+</script>`;
+
 const CALENDAR_SNIPPET = `<rowan-calendar
   name="serviceDate"
   selection-mode="range"
@@ -566,6 +668,7 @@ const COMPONENT_CATEGORY_SETS = {
     "progress",
     "skeleton",
     "spinner",
+    "status-indicator",
     "toast",
     "toaster",
   ]),
@@ -595,6 +698,8 @@ const COMPONENT_CATEGORY_SETS = {
   Overlays: new Set([
     "command-item",
     "command-palette",
+    "confirm-dialog",
+    "context-menu",
     "dialog",
     "drawer",
     "dropdown",
@@ -776,6 +881,34 @@ const DOC_PAGES = [
             <p>Custom events follow rowan-verb naming and emit with bubbles and composed enabled.</p>
           </rowan-card>
         </div>
+      </section>
+    `,
+  },
+  {
+    id: "react",
+    group: "Overview",
+    title: "React",
+    summary:
+      "Use the optional JSX facade and native ref bindings while keeping Rowan elements framework-neutral.",
+    tags: ["react", "tsx", "ssr", "events"],
+    keywords: ["react", "tsx", "next.js", "ssr", "useRowanElement", "native events"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="react-overview">
+        <h2>Typed React usage</h2>
+        <p>The optional React entry adds JSX declarations for every Rowan tag and a ref helper. It does not provide component wrappers or register custom elements.</p>
+        ${codeBlock(REACT_TABLE_SNIPPET, "tsx")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="react-properties-events">
+        <h2>Properties and native events</h2>
+        <p>Use scalar JSX attributes for declarative state. Assign arrays, objects, callbacks, and other structured values through the helper so they remain properties. Its native subscriptions are replaced on rerender and cleaned up on unmount.</p>
+        ${codeBlock(REACT_EVENTS_SNIPPET, "tsx")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="react-ssr">
+        <h2>Next.js and SSR</h2>
+        <p>The React facade is safe to import during server rendering because it does not touch browser globals or register elements. Keep component registration inside a client effect or equivalent client-only boundary.</p>
+        ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
       </section>
     `,
   },
@@ -1068,6 +1201,100 @@ const DOC_PAGES = [
       <section class="doc-section" data-doc-section id="dialog-snippet">
         <h2>Usage snippet</h2>
         ${codeBlock(DIALOG_SNIPPET, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "confirm-dialog",
+    group: "Components",
+    title: "Rowan Confirm Dialog",
+    summary:
+      "Composed confirmation surface for consequential actions with explicit confirm, cancel, and passive-dismiss events.",
+    tags: ["overlay", "confirmation", "focus"],
+    keywords: ["confirm dialog", "destructive action", "rowan-confirm", "rowan-cancel", "modal"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="confirm-dialog-overview">
+        <h2>Consequential actions</h2>
+        <p>Use the built-in confirmation and cancellation controls for decisions that need a clear outcome. The component delegates modal focus handling to rowan-dialog while keeping outcome events explicit.</p>
+        <div class="demo-row">
+          <rowan-button id="docs-confirm-dialog-trigger" size="sm" variant="danger">Archive project</rowan-button>
+        </div>
+        <rowan-confirm-dialog
+          id="docs-confirm-dialog-demo"
+          label="Archive project"
+          confirm-label="Archive"
+          confirm-variant="danger"
+        >
+          <span slot="title">Archive this project?</span>
+          Archived projects remain available to workspace administrators.
+        </rowan-confirm-dialog>
+        <pre id="confirm-dialog-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="confirm-dialog-contract">
+        <h2>Outcome events</h2>
+        <p>Parent changes to open remain silent. The default controls emit rowan-confirm or rowan-cancel, while Escape, the close control, and backdrop dismissal emit rowan-close.</p>
+        ${codeBlock(CONFIRM_DIALOG_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupConfirmDialogDemo,
+  },
+  {
+    id: "context-menu",
+    group: "Components",
+    title: "Rowan Context Menu",
+    summary:
+      "Target-bound contextual action menu with native pointer and keyboard invocation plus managed menu focus.",
+    tags: ["overlay", "menu", "keyboard"],
+    keywords: ["context menu", "right click", "shift f10", "menu actions", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="context-menu-overview">
+        <h2>Contextual actions</h2>
+        <p>Bind the menu with for or the target property. Users can invoke it with a context click or by focusing the target and pressing Shift+F10 or the Context Menu key.</p>
+        <div class="docs-context-menu-demo">
+          <button id="docs-context-menu-target" class="docs-context-menu-target" type="button">Trail map</button>
+          <rowan-context-menu id="docs-context-menu-demo" for="docs-context-menu-target" label="Trail map actions">
+            <rowan-menu-item value="rename">Rename</rowan-menu-item>
+            <rowan-menu-item value="duplicate">Duplicate</rowan-menu-item>
+            <rowan-menu-item value="archive">Archive</rowan-menu-item>
+          </rowan-context-menu>
+        </div>
+        <pre id="context-menu-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="context-menu-contract">
+        <h2>Target and selection contract</h2>
+        <p>Context-menu opens are user interactions, while open remains available for silent parent-driven control. Selecting a rowan-menu-item emits rowan-change; Escape and outside dismissal emit rowan-close.</p>
+        ${codeBlock(CONTEXT_MENU_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupContextMenuDemo,
+  },
+  {
+    id: "status-indicator",
+    group: "Components",
+    title: "Rowan Status Indicator",
+    summary:
+      "Concise semantic status marker with toned visual state, visible labels, and optional restrained pulse.",
+    tags: ["status", "feedback", "semantic"],
+    keywords: ["status indicator", "operational", "syncing", "tone", "pulse"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="status-indicator-overview">
+        <h2>Persistent status</h2>
+        <p>Use the indicator when a compact, continuously visible state is more useful than a transient alert. Supply text with the default slot or label attribute so the status remains understandable without color.</p>
+        <div class="docs-status-indicator-demo">
+          <rowan-status-indicator tone="neutral" label="Offline"></rowan-status-indicator>
+          <rowan-status-indicator tone="info" label="Syncing" pulse></rowan-status-indicator>
+          <rowan-status-indicator tone="success" label="Operational"></rowan-status-indicator>
+          <rowan-status-indicator tone="warning" label="Needs attention"></rowan-status-indicator>
+          <rowan-status-indicator tone="danger" label="Unavailable"></rowan-status-indicator>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="status-indicator-contract">
+        <h2>Semantic tone</h2>
+        <p>tone accepts neutral, info, success, warning, and danger. The component provides status semantics by default without replacing author-provided role or aria-label values.</p>
+        ${codeBlock(STATUS_INDICATOR_SNIPPET, "html")}
       </section>
     `,
   },
@@ -2157,6 +2384,7 @@ const NAV_SECTIONS = [
     defaultOpen: true,
     items: [
       { pageId: "getting-started", label: "What is Rowan?" },
+      { pageId: "react", label: "React" },
       { pageId: "theming", label: "Theming" },
       { pageId: "tokens", label: "Tokens" },
     ],
@@ -2169,8 +2397,11 @@ const NAV_SECTIONS = [
       { pageId: "all-components", label: "All Components" },
       { pageId: "components", label: "Overview" },
       { pageId: "alert", label: "Alert" },
+      { pageId: "status-indicator", label: "Status Indicator" },
       { pageId: "button", label: "Button" },
       { pageId: "dialog", label: "Dialog" },
+      { pageId: "confirm-dialog", label: "Confirm Dialog" },
+      { pageId: "context-menu", label: "Context Menu" },
       { pageId: "command-palette", label: "Command Palette" },
       { pageId: "date-picker", label: "Date Picker" },
       { pageId: "time-picker", label: "Time Picker" },
@@ -2842,6 +3073,36 @@ function setupSideNavDemo() {
     output,
     ["rowan-change"],
     "Activate a destination to inspect rowan-change payloads.",
+  );
+}
+
+function setupConfirmDialogDemo() {
+  const trigger = mainEl.querySelector("#docs-confirm-dialog-trigger");
+  const dialog = mainEl.querySelector("#docs-confirm-dialog-demo");
+  const output = mainEl.querySelector("#confirm-dialog-events");
+
+  if (trigger instanceof HTMLElement && dialog instanceof HTMLElement) {
+    trigger.addEventListener("rowan-click", () => dialog.show());
+  }
+
+  setupWorkspaceEventLog(
+    dialog,
+    output,
+    ["rowan-confirm", "rowan-cancel", "rowan-close"],
+    "Confirm, cancel, or dismiss the dialog to inspect its user-originated event payload.",
+  );
+}
+
+function setupContextMenuDemo() {
+  const menu = mainEl.querySelector("#docs-context-menu-demo");
+  const output = mainEl.querySelector("#context-menu-events");
+
+  if (menu instanceof HTMLElement) menu.refresh();
+  setupWorkspaceEventLog(
+    menu,
+    output,
+    ["rowan-change", "rowan-close"],
+    "Open the menu from the trail map, then select or dismiss an action to inspect its event payload.",
   );
 }
 

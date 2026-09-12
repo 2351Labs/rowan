@@ -267,6 +267,23 @@ export const tokenCssText = `
   --rowan-side-nav-item-gap: var(--rowan-space-2);
   --rowan-side-nav-item-min-block-size: 2.5rem;
   --rowan-side-nav-item-padding: 0.45rem var(--rowan-space-3);
+  --rowan-confirm-dialog-action-gap: var(--rowan-space-2);
+  --rowan-context-menu-offset: var(--rowan-space-2);
+  --rowan-context-menu-shadow: 0 0.5rem 1.25rem rgb(16 28 22 / 14%);
+  --rowan-context-menu-z-index: 1000;
+  --rowan-status-indicator-color: var(--rowan-color-muted);
+  --rowan-status-indicator-fg: var(--rowan-color-fg);
+  --rowan-status-indicator-font-size: var(--rowan-font-size-sm);
+  --rowan-status-indicator-gap: var(--rowan-space-2);
+  --rowan-status-indicator-size: 0.625rem;
+  --rowan-status-indicator-info-color: var(--rowan-color-accent);
+  --rowan-status-indicator-success-color: #2f7a4d;
+  --rowan-status-indicator-warning-color: #9b7018;
+  --rowan-status-indicator-danger-color: var(--rowan-color-danger);
+  --rowan-status-indicator-sm-font-size: 0.75rem;
+  --rowan-status-indicator-sm-size: 0.5rem;
+  --rowan-status-indicator-lg-font-size: var(--rowan-font-size-md);
+  --rowan-status-indicator-lg-size: 0.75rem;
   --rowan-table-virtual-height: 32rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
@@ -648,6 +665,23 @@ export const componentTokenCssText = `
   --rowan-side-nav-item-gap: var(--rowan-space-2);
   --rowan-side-nav-item-min-block-size: 2.5rem;
   --rowan-side-nav-item-padding: 0.45rem var(--rowan-space-3);
+  --rowan-confirm-dialog-action-gap: var(--rowan-space-2);
+  --rowan-context-menu-offset: var(--rowan-space-2);
+  --rowan-context-menu-shadow: 0 0.5rem 1.25rem rgb(16 28 22 / 14%);
+  --rowan-context-menu-z-index: 1000;
+  --rowan-status-indicator-color: var(--rowan-color-muted);
+  --rowan-status-indicator-fg: var(--rowan-color-fg);
+  --rowan-status-indicator-font-size: var(--rowan-font-size-sm);
+  --rowan-status-indicator-gap: var(--rowan-space-2);
+  --rowan-status-indicator-size: 0.625rem;
+  --rowan-status-indicator-info-color: var(--rowan-color-accent);
+  --rowan-status-indicator-success-color: #2f7a4d;
+  --rowan-status-indicator-warning-color: #9b7018;
+  --rowan-status-indicator-danger-color: var(--rowan-color-danger);
+  --rowan-status-indicator-sm-font-size: 0.75rem;
+  --rowan-status-indicator-sm-size: 0.5rem;
+  --rowan-status-indicator-lg-font-size: var(--rowan-font-size-md);
+  --rowan-status-indicator-lg-size: 0.75rem;
   --rowan-table-virtual-height: 32rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
@@ -1208,6 +1242,23 @@ export const unregisteredTokenNames = [
   "--rowan-side-nav-item-gap",
   "--rowan-side-nav-item-min-block-size",
   "--rowan-side-nav-item-padding",
+  "--rowan-confirm-dialog-action-gap",
+  "--rowan-context-menu-offset",
+  "--rowan-context-menu-shadow",
+  "--rowan-context-menu-z-index",
+  "--rowan-status-indicator-color",
+  "--rowan-status-indicator-fg",
+  "--rowan-status-indicator-font-size",
+  "--rowan-status-indicator-gap",
+  "--rowan-status-indicator-size",
+  "--rowan-status-indicator-info-color",
+  "--rowan-status-indicator-success-color",
+  "--rowan-status-indicator-warning-color",
+  "--rowan-status-indicator-danger-color",
+  "--rowan-status-indicator-sm-font-size",
+  "--rowan-status-indicator-sm-size",
+  "--rowan-status-indicator-lg-font-size",
+  "--rowan-status-indicator-lg-size",
   "--rowan-table-virtual-height",
   "--rowan-table-toolbar-bg",
   "--rowan-table-toolbar-fg",

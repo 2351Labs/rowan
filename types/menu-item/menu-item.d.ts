@@ -15,6 +15,11 @@ export class RowanMenuItem extends BaseElement {
     get value(): string;
     set disabled(value: boolean);
     get disabled(): boolean;
+    focus(options: any): void;
+    /** @internal */
+    activate(): void;
+    /** @internal */
+    setRovingTabIndex(value: any, owner?: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

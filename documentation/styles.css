@@ -552,6 +552,34 @@ html[data-theme="dark"] body {
   margin-inline-start: auto;
 }
 
+.docs-context-menu-demo {
+  margin-top: 0.65rem;
+}
+
+.docs-context-menu-target {
+  background: color-mix(in srgb, var(--rowan-color-bg) 92%, var(--rowan-color-accent) 8%);
+  border: 1px solid var(--docs-border);
+  border-radius: var(--rowan-radius-md);
+  color: var(--rowan-color-fg);
+  cursor: context-menu;
+  font: inherit;
+  min-inline-size: 14rem;
+  padding: var(--rowan-space-3) var(--rowan-space-4);
+  text-align: start;
+}
+
+.docs-context-menu-target:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+.docs-status-indicator-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-3) var(--rowan-space-5);
+  margin-top: 0.65rem;
+}
+
 .table-events {
   background: color-mix(in srgb, var(--rowan-color-bg) 82%, #ffffff 18%);
   border: 1px solid var(--docs-border);
