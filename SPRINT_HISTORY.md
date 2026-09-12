@@ -6,7 +6,7 @@ Last updated: 2026-09-11
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 63 components
+- Current implemented catalog includes 64 components
 
 ## Completed Sprints
 
@@ -385,12 +385,31 @@ Verification completed at sprint close:
 
 ### Sprint 17: Large Collections
 
-Status: Planned
+Status: Completed
 
-Planned components and enhancements:
+Delivered:
 
-- `rowan-virtual-list` with property-only item data, stable item keys, render callbacks, and native `ResizeObserver` sizing
-- A virtualized body mode for `rowan-table` that reuses the collection primitive without introducing a separate data-grid API
+- `rowan-virtual-list` with property-only item data, stable string or callback keys, render callbacks, estimated item sizing, overscan, `scrollToIndex()`, and native `ResizeObserver` row measurement
+- Shared keyed `VirtualCollection` layout infrastructure for bounded DOM windows, measured variable-height items, and stable key reconciliation
+- Opt-in `rowan-table` virtualized body mode through `virtualized`, `virtualItemSize`, and `virtualOverscan`, including equivalent configuration fields and declarative attributes
+- Semantic table virtualization with mounted `<tr>` rows between accessible spacer rows, a bounded scroll viewport, native row measurement, and unchanged selection, sorting, paging, row activation, and cell-event contracts
+- Safe full-body fallback for duplicate row IDs, retaining existing validation and reconciliation guarantees
+- Component and table viewport token hooks, Storybook large-collection stories, static documentation demos, responsive docs navigation, README guidance, public subpath/root exports, declarations, global tag mapping, CEM coverage, and contract tests
+
+Verification completed at sprint close:
+
+- Focused virtual-list and table contracts: 23 passing
+- `npm run tokens:sync` and `npm run tokens:check`
+- `npm run lint`
+- `npm run types`
+- `npm run typecheck`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests
+- `npm test` (66 files, 276 passing contracts)
+- `npm run build-storybook` (Vite chunk-size advisory only)
+- `npm pack --dry-run --json` includes source ESM, declarations, tokens, and CEM without documentation or development artifacts
+- Chromium, Firefox, and WebKit each passed 66 files and 276 public contracts
+- Static documentation checks at desktop and 390px mobile widths confirmed bounded 500-item and 500-row windows, programmatic list navigation, semantic table rows, independently scrollable mobile navigation, and no horizontal overflow
+- `git diff --check` passed; the repository-wide Prettier check still reports 66 pre-existing, unrelated files outside the Sprint 17 surface
 
 ### Sprint 18: Application Workspaces
 

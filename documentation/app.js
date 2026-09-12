@@ -62,6 +62,40 @@ table.rows = nextRows;
 table.selected = selectedIds;
 table.sort = { id: "name", dir: "asc" };`;
 
+const VIRTUAL_LIST_SNIPPET = `<rowan-virtual-list id="member-list" item-size="44" overscan="4"></rowan-virtual-list>
+
+<script type="module">
+  import "@rowan-ui/core/virtual-list";
+
+  const list = document.querySelector("#member-list");
+  list.items = Array.from({ length: 500 }, (_value, index) => ({
+    id: "member-" + (index + 1),
+    name: "Member " + (index + 1),
+  }));
+  list.itemKey = "id";
+  list.renderItem = (item) => {
+    const row = document.createElement("div");
+    row.textContent = item.name;
+    return row;
+  };
+</script>`;
+
+const TABLE_VIRTUALIZED_SNIPPET = `const table = document.querySelector("#member-table");
+
+table.config = {
+  rowId: "id",
+  selectable: "multiple",
+  stickyHeader: true,
+  virtualized: true,
+  virtualItemSize: 40,
+  virtualOverscan: 4,
+  columns: [
+    { id: "name", header: "Member", sortable: true },
+    { id: "team", header: "Team", type: "badge" },
+  ],
+  rows: members,
+};`;
+
 const TABLE_TOOLBAR_SNIPPET = `<rowan-table id="members-table">
   <rowan-table-toolbar slot="toolbar" label="Member table controls">
     <span slot="start">Active members</span>
@@ -532,6 +566,7 @@ const COMPONENT_CATEGORY_SETS = {
     "row-details-panel",
     "table",
     "table-toolbar",
+    "virtual-list",
   ]),
 };
 
@@ -1710,13 +1745,41 @@ const DOC_PAGES = [
     afterRender: setupToasterDemo,
   },
   {
+    id: "virtual-list",
+    group: "Components",
+    title: "Rowan Virtual List",
+    summary:
+      "Keyed, property-driven collection rendering that mounts a measured window for large item sets.",
+    tags: ["collections", "performance", "ResizeObserver"],
+    keywords: ["virtual list", "large collections", "items", "item key", "render item"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="virtual-list-window">
+        <h2>Measured item window</h2>
+        <p>Pass item data, stable keys, and a renderer as properties. Only the visible rows and a small overscan buffer are mounted while native ResizeObserver measurements refine variable row heights.</p>
+        <div class="docs-virtual-list">
+          <rowan-virtual-list id="docs-virtual-list-demo" item-size="44" overscan="4"></rowan-virtual-list>
+        </div>
+        <div class="demo-row">
+          <rowan-button id="docs-virtual-list-jump" size="sm" variant="secondary">Jump to member 251</rowan-button>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="virtual-list-contract">
+        <h2>Property data contract</h2>
+        <p>items, itemKey, and renderItem are property-only APIs. Use item-size as the estimate before the list measures visible content, and use scrollToIndex when application flow needs to reveal a record.</p>
+        ${codeBlock(VIRTUAL_LIST_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupVirtualListDemo,
+  },
+  {
     id: "table",
     group: "Components",
     title: "Rowan Table",
     summary:
-      "The table supports config-driven rendering, typed cells, sorting, selection, pagination, and action events.",
-    tags: ["config", "selection", "events"],
-    keywords: ["table", "rows", "columns", "selection", "sort", "pagination"],
+      "The table supports config-driven rendering, typed cells, sorting, selection, pagination, and virtualized large collections.",
+    tags: ["config", "selection", "events", "virtualization"],
+    keywords: ["table", "rows", "columns", "selection", "sort", "pagination", "virtualized"],
     content: () => `
       <section class="doc-section" data-doc-section id="table-config">
         <h2>Config-first API</h2>
@@ -1731,6 +1794,15 @@ const DOC_PAGES = [
         <p>In local development, Rowan warns about missing or duplicate column IDs, unsupported cell types, and invalid or duplicate row IDs. Invalid columns are omitted, unsupported cells render as text, and duplicate row IDs use a full render.</p>
       </section>
 
+      <section class="doc-section" data-doc-section id="table-virtualized">
+        <h2>Large collection mode</h2>
+        <p>Set virtualized for a bounded, measured body viewport. Sorting, selection, row activation, and cell events retain the existing table contract because mounted rows remain semantic table rows.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-virtual-table-demo" caption="500 member records"></rowan-table>
+        </div>
+        ${codeBlock(TABLE_VIRTUALIZED_SNIPPET)}
+      </section>
+
       <section class="doc-section" data-doc-section id="table-demo">
         <h2>Live table demo</h2>
         <p>Interact with sorting, selection, and cell actions. Recent events appear below the table.</p>
@@ -1740,7 +1812,10 @@ const DOC_PAGES = [
         <pre id="table-events" class="table-events"></pre>
       </section>
     `,
-    afterRender: setupTableDemo,
+    afterRender: () => {
+      setupTableDemo();
+      setupVirtualTableDemo();
+    },
   },
   {
     id: "table-toolbar",
@@ -1924,6 +1999,7 @@ const NAV_SECTIONS = [
       { pageId: "form-wizard", label: "Form Wizard" },
       { pageId: "toast", label: "Toast" },
       { pageId: "toaster", label: "Toaster" },
+      { pageId: "virtual-list", label: "Virtual List" },
       { pageId: "table", label: "Data Table" },
       { pageId: "table-toolbar", label: "Table Toolbar" },
       { pageId: "bulk-actions-bar", label: "Bulk Actions Bar" },
@@ -2481,6 +2557,72 @@ function setupTableDemo() {
       pushLog(eventType, event.detail);
     });
   }
+}
+
+function setupVirtualListDemo() {
+  const list = mainEl.querySelector("#docs-virtual-list-demo");
+  const jumpButton = mainEl.querySelector("#docs-virtual-list-jump");
+
+  if (!(list instanceof HTMLElement)) return;
+
+  list.items = Array.from({ length: 500 }, (_value, index) => ({
+    id: `member-${index + 1}`,
+    name: `Member ${index + 1}`,
+    team: index % 3 === 0 ? "Operations" : index % 3 === 1 ? "Design" : "Engineering",
+  }));
+  list.itemKey = "id";
+  list.renderItem = (item) => {
+    const row = document.createElement("div");
+    row.style.alignItems = "center";
+    row.style.borderBottom = "1px solid var(--rowan-color-border)";
+    row.style.boxSizing = "border-box";
+    row.style.display = "flex";
+    row.style.gap = "var(--rowan-space-3)";
+    row.style.minHeight = "44px";
+    row.style.padding = "var(--rowan-space-2) var(--rowan-space-3)";
+
+    const name = document.createElement("strong");
+    name.textContent = item.name;
+
+    const team = document.createElement("span");
+    team.textContent = item.team;
+    team.style.color = "var(--rowan-color-muted)";
+    team.style.fontSize = "var(--rowan-font-size-sm)";
+
+    row.append(name, team);
+    return row;
+  };
+
+  if (jumpButton instanceof HTMLElement) {
+    jumpButton.addEventListener("rowan-click", () => {
+      list.scrollToIndex(250, { align: "center" });
+    });
+  }
+}
+
+function setupVirtualTableDemo() {
+  const table = mainEl.querySelector("#docs-virtual-table-demo");
+  if (!(table instanceof HTMLElement)) return;
+
+  table.config = {
+    rowId: "id",
+    selectable: "multiple",
+    stickyHeader: true,
+    virtualized: true,
+    virtualItemSize: 40,
+    virtualOverscan: 4,
+    columns: [
+      { id: "name", header: "Member", sortable: true },
+      { id: "team", header: "Team", type: "badge" },
+      { id: "score", header: "Readiness", type: "number", align: "end", sortable: true },
+    ],
+    rows: Array.from({ length: 500 }, (_value, index) => ({
+      id: `member-${index + 1}`,
+      name: `Member ${index + 1}`,
+      team: index % 3 === 0 ? "Operations" : index % 3 === 1 ? "Design" : "Engineering",
+      score: 50 + (index % 51),
+    })),
+  };
 }
 
 function createTableOperationsConfig() {

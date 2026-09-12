@@ -98,7 +98,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
-- Data display and operations: `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ## Rowan Selection Controls
 
@@ -204,6 +204,30 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 </script>
 ```
 
+## Rowan Virtual List
+
+`rowan-virtual-list` renders a bounded, keyed window from property-only item data. Set `items`, `itemKey`, and `renderItem` in application code; `item-size` is the initial estimate, while visible items are measured with `ResizeObserver`. Use `scrollToIndex(index, { align })` to reveal an item programmatically.
+
+```html
+<rowan-virtual-list id="members" item-size="44" overscan="4"></rowan-virtual-list>
+
+<script type="module">
+  import "@rowan-ui/core/virtual-list";
+
+  const members = document.querySelector("#members");
+  members.items = Array.from({ length: 500 }, (_value, index) => ({
+    id: `member-${index + 1}`,
+    name: `Member ${index + 1}`,
+  }));
+  members.itemKey = "id";
+  members.renderItem = (member) => {
+    const row = document.createElement("div");
+    row.textContent = member.name;
+    return row;
+  };
+</script>
+```
+
 ## Rowan Table
 
 `rowan-table` supports:
@@ -212,6 +236,7 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 - Selection: `none | single | multiple`
 - Sorting: `rowan-sort` event and `.sortBy(id, dir)`
 - Pagination model with `rowan-page-change`
+- Optional virtualized body mode that retains real table markup and existing selection, sort, activation, and cell-event contracts
 - Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `custom`
 
 ### Configuration updates
@@ -227,6 +252,25 @@ table.sort = { id: "name", dir: "asc" };
 ```
 
 In local development, Rowan warns when column IDs are missing or repeated, when a cell type is unsupported, or when row IDs are invalid or duplicated. Invalid and later duplicate columns are omitted; unsupported cell types render as text; duplicate row IDs render safely without keyed reuse.
+
+### Virtualized body
+
+Set `virtualized` for large local row collections. `virtualItemSize` is the initial row-height estimate, `virtualOverscan` adds rows around the visible viewport, and `--rowan-table-virtual-height` controls the viewport height. The table remains a real semantic `<table>` with mounted `<tr>` rows, so the existing cell, selection, sort, and row-activation APIs do not change. Tables with duplicate row IDs retain Rowan's full-render safety fallback.
+
+```js
+table.config = {
+  rowId: "id",
+  selectable: "multiple",
+  virtualized: true,
+  virtualItemSize: 40,
+  virtualOverscan: 4,
+  columns: [
+    { id: "name", header: "Member", sortable: true },
+    { id: "team", header: "Team", type: "badge" },
+  ],
+  rows: members,
+};
+```
 
 ### Exact config example
 

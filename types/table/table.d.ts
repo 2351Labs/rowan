@@ -6,10 +6,16 @@
  * @attr {boolean} sticky-header
  * @attr {boolean} loading
  * @attr {string} caption
+ * @attr {boolean} virtualized
+ * @attr {number} virtual-item-size
+ * @attr {number} virtual-overscan
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
  * @property {Array<object>} rows - Updates rows without replacing other configuration.
  * @property {Array<string>} selected - Updates selected row IDs without replacing other configuration.
+ * @property {boolean} virtualized - Renders a measured, bounded row window inside the table viewport.
+ * @property {number} virtualItemSize - Estimated row height used before a row is measured.
+ * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @slot toolbar
  * @slot caption
  * @slot empty
@@ -22,6 +28,9 @@
  * @csspart td
  * @csspart caption
  * @csspart toolbar
+ * @csspart viewport
+ * @csspart spacer
+ * @cssprop --rowan-table-virtual-height
  * @event rowan-sort - Fired when a sortable header changes direction
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
@@ -30,6 +39,7 @@
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
  */
 export class RowanTable extends BaseElement {
+    static componentTokenPrefixes: string[];
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     /** @param {RowanTableConfig | null | undefined} value */
     set config(value: RowanTableConfig);
@@ -45,6 +55,18 @@ export class RowanTable extends BaseElement {
     get stickyHeader(): boolean;
     set loading(value: boolean);
     get loading(): boolean;
+    /** @param {boolean} value */
+    set virtualized(value: boolean);
+    /** @returns {boolean} */
+    get virtualized(): boolean;
+    /** @param {number} value */
+    set virtualItemSize(value: number);
+    /** @returns {number} */
+    get virtualItemSize(): number;
+    /** @param {number} value */
+    set virtualOverscan(value: number);
+    /** @returns {number} */
+    get virtualOverscan(): number;
     /** @param {RowanTableColumn[]} value */
     set columns(value: RowanTableColumn[]);
     /** @returns {RowanTableColumn[]} */
@@ -142,5 +164,8 @@ export type RowanTableConfig = {
     stickyHeader?: boolean;
     loading?: boolean;
     page?: RowanTablePage | null;
+    virtualized?: boolean;
+    virtualItemSize?: number;
+    virtualOverscan?: number;
 };
 import { BaseElement } from "../lib/base-element.js";

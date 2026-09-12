@@ -227,6 +227,12 @@ export const tokenCssText = `
   --rowan-segmented-control-padding: var(--rowan-space-1);
   --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
   --rowan-segmented-control-min-block-size: 2.25rem;
+  --rowan-virtual-list-bg: var(--rowan-color-bg);
+  --rowan-virtual-list-fg: var(--rowan-color-fg);
+  --rowan-virtual-list-border-color: var(--rowan-color-border);
+  --rowan-virtual-list-radius: var(--rowan-radius-md);
+  --rowan-virtual-list-height: 20rem;
+  --rowan-table-virtual-height: 32rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -567,6 +573,12 @@ export const componentTokenCssText = `
   --rowan-segmented-control-padding: var(--rowan-space-1);
   --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
   --rowan-segmented-control-min-block-size: 2.25rem;
+  --rowan-virtual-list-bg: var(--rowan-color-bg);
+  --rowan-virtual-list-fg: var(--rowan-color-fg);
+  --rowan-virtual-list-border-color: var(--rowan-color-border);
+  --rowan-virtual-list-radius: var(--rowan-radius-md);
+  --rowan-virtual-list-height: 20rem;
+  --rowan-table-virtual-height: 32rem;
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);
@@ -1086,6 +1098,12 @@ export const unregisteredTokenNames = [
   "--rowan-segmented-control-padding",
   "--rowan-segmented-control-button-padding",
   "--rowan-segmented-control-min-block-size",
+  "--rowan-virtual-list-bg",
+  "--rowan-virtual-list-fg",
+  "--rowan-virtual-list-border-color",
+  "--rowan-virtual-list-radius",
+  "--rowan-virtual-list-height",
+  "--rowan-table-virtual-height",
   "--rowan-table-toolbar-bg",
   "--rowan-table-toolbar-fg",
   "--rowan-table-toolbar-border",

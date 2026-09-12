@@ -119,6 +119,13 @@ const FUNCTION_COMPARE_ROWS = [
   { id: "3", name: "Grace", role: "Editor", score: 89, active: true },
 ];
 
+const VIRTUALIZED_ROWS = Array.from({ length: 500 }, (_value, index) => ({
+  id: `member-${index + 1}`,
+  name: `Member ${index + 1}`,
+  team: index % 3 === 0 ? "Operations" : index % 3 === 1 ? "Design" : "Engineering",
+  score: 50 + (index % 51),
+}));
+
 const SLOT_TEMPLATE_DEFAULT =
   '<span class="price-pill" style="font-weight: 600; color: var(--rowan-color-accent)">Price</span>';
 
@@ -759,5 +766,49 @@ export const FunctionColumnsComparison = {
       sourceConfig,
       controlsConfig,
     });
+  },
+};
+
+export const VirtualizedBody = {
+  parameters: createEventScriptParameters({
+    steps: [
+      "Scroll through the bounded table viewport.",
+      "Select a visible member row.",
+      "Click a sortable header to retain the same table API.",
+    ],
+    events: ["rowan-select", "rowan-sort"],
+  }),
+  args: {
+    virtualItemSize: 40,
+    virtualOverscan: 4,
+  },
+  argTypes: {
+    virtualItemSize: {
+      control: { type: "number", min: 1, step: 1 },
+      description: "Estimated row height before a visible row is measured.",
+    },
+    virtualOverscan: {
+      control: { type: "number", min: 0, step: 1 },
+      description: "Extra mounted rows before and after the visible window.",
+    },
+  },
+  render: (args) => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "500 member records",
+      rowId: "id",
+      selectable: "multiple",
+      stickyHeader: true,
+      virtualized: true,
+      virtualItemSize: normalizeNumber(args.virtualItemSize, 40, 1),
+      virtualOverscan: normalizeNumber(args.virtualOverscan, 4, 0),
+      columns: [
+        { id: "name", header: "Member", sortable: true },
+        { id: "team", header: "Team", type: "badge" },
+        { id: "score", header: "Readiness", type: "number", align: "end", sortable: true },
+      ],
+      rows: cloneRows(VIRTUALIZED_ROWS),
+    };
+    return table;
   },
 };

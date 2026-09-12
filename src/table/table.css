@@ -16,6 +16,16 @@
   display: block;
 }
 
+.table-scroll {
+  min-inline-size: 0;
+  overflow-x: auto;
+}
+
+:host([virtualized]) .table-scroll {
+  block-size: var(--rowan-table-virtual-height, 32rem);
+  overflow: auto;
+}
+
 .table {
   border-collapse: separate;
   border-spacing: 0;
@@ -96,6 +106,12 @@
 
 .tbody tr:last-child .td {
   border-bottom: none;
+}
+
+.virtual-spacer .td {
+  block-size: inherit;
+  border-bottom: none;
+  padding: 0;
 }
 
 .tbody tr:focus-visible {

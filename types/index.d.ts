@@ -66,4 +66,5 @@ export { RowanToast } from "./toast/toast.js";
 export { RowanToaster } from "./toaster/toaster.js";
 export { RowanTooltip } from "./tooltip/tooltip.js";
 export { RowanValidationSummary } from "./validation-summary/validation-summary.js";
+export { RowanVirtualList } from "./virtual-list/virtual-list.js";
 export { readBooleanAttribute, readNumberAttribute, readStringAttribute, reflectBooleanAttribute, reflectNumberAttribute, reflectStringAttribute } from "./lib/reflect.js";

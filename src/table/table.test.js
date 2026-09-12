@@ -6,6 +6,7 @@ import "../checkbox/checkbox.js";
 import "./table.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 function createConfig() {
   return {
@@ -748,5 +749,47 @@ describe("rowan-table", () => {
     await nextMicrotask();
 
     expect(table.selectedRows.map((item) => item.id)).to.deep.equal(["1"]);
+  });
+
+  it("renders a bounded semantic row window when virtualized", async () => {
+    const rows = Array.from({ length: 120 }, (_value, index) => ({
+      id: `row-${index}`,
+      name: `Row ${index}`,
+    }));
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      selectable: "multiple",
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.style.height = "60px";
+    viewport.style.overflow = "auto";
+    await nextFrame();
+    await nextMicrotask();
+
+    const initialRows = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
+    expect(initialRows.length).to.be.lessThan(rows.length);
+    expect(table.shadowRoot.querySelectorAll("tbody .virtual-spacer").length).to.equal(2);
+
+    viewport.scrollTop = 800;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+
+    const row = table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]');
+    expect(row).to.not.equal(null);
+
+    row.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: " " }));
+    await nextMicrotask();
+
+    expect(table.selected).to.deep.equal(["row-40"]);
   });
 });

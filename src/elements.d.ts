@@ -61,6 +61,7 @@ import type { RowanToast } from "../types/toast/toast.js";
 import type { RowanToaster } from "../types/toaster/toaster.js";
 import type { RowanTooltip } from "../types/tooltip/tooltip.js";
 import type { RowanValidationSummary } from "../types/validation-summary/validation-summary.js";
+import type { RowanVirtualList } from "../types/virtual-list/virtual-list.js";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -127,6 +128,7 @@ declare global {
     "rowan-toaster": RowanToaster;
     "rowan-tooltip": RowanTooltip;
     "rowan-validation-summary": RowanValidationSummary;
+    "rowan-virtual-list": RowanVirtualList;
   }
 }
 

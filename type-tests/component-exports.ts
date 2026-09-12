@@ -61,6 +61,7 @@ import { RowanTooltip } from "@rowan-ui/core/tooltip";
 import { RowanTree } from "@rowan-ui/core/tree";
 import { RowanTreeItem } from "@rowan-ui/core/tree-item";
 import { RowanValidationSummary } from "@rowan-ui/core/validation-summary";
+import { RowanVirtualList } from "@rowan-ui/core/virtual-list";
 
 const accordion: RowanAccordion = document.createElement("rowan-accordion");
 const alert: RowanAlert = document.createElement("rowan-alert");
@@ -129,6 +130,23 @@ const treeItem: RowanTreeItem = document.createElement("rowan-tree-item");
 const validationSummary: RowanValidationSummary = document.createElement(
   "rowan-validation-summary",
 );
+const virtualList: RowanVirtualList = document.createElement("rowan-virtual-list");
+
+virtualList.items = [{ id: "member-1", name: "Ada" }];
+virtualList.itemKey = "id";
+virtualList.itemSize = 44;
+virtualList.overscan = 4;
+virtualList.renderItem = (item, _index, itemEl) => {
+  itemEl.textContent = String(item);
+};
+
+table.virtualized = true;
+table.virtualItemSize = 44;
+table.virtualOverscan = 4;
+
+const virtualListItemSize: number = virtualList.itemSize;
+const tableVirtualItemSize: number = table.virtualItemSize;
+const tableVirtualized: boolean = table.virtualized;
 
 void [
   accordion,
@@ -194,4 +212,8 @@ void [
   tree,
   treeItem,
   validationSummary,
+  virtualList,
+  virtualListItemSize,
+  tableVirtualItemSize,
+  tableVirtualized,
 ];

@@ -449,6 +449,12 @@ html[data-theme="dark"] body {
   overflow: hidden;
 }
 
+.docs-virtual-list {
+  --rowan-virtual-list-height: 20rem;
+  inline-size: min(100%, 46rem);
+  margin-top: 0.65rem;
+}
+
 .table-events {
   background: color-mix(in srgb, var(--rowan-color-bg) 82%, #ffffff 18%);
   border: 1px solid var(--docs-border);
@@ -803,7 +809,12 @@ html[data-theme="dark"] body {
   }
 
   .sidebar {
+    block-size: min(18rem, calc(100vh - 10rem));
     max-height: none;
+  }
+
+  .sidebar-shell {
+    block-size: 100%;
   }
 
   .info-grid {

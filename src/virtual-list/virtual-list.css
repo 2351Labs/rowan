@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  min-block-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.viewport {
+  background: var(--rowan-virtual-list-bg, var(--rowan-color-bg));
+  block-size: var(--rowan-virtual-list-height, 20rem);
+  border: var(--rowan-border-width) solid
+    var(--rowan-virtual-list-border-color, var(--rowan-color-border));
+  border-radius: var(--rowan-virtual-list-radius, var(--rowan-radius-md));
+  box-sizing: border-box;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.content {
+  min-block-size: 100%;
+  position: relative;
+}
+
+.items {
+  inset: 0;
+  position: absolute;
+}
+
+.item {
+  box-sizing: border-box;
+  color: var(--rowan-virtual-list-fg, var(--rowan-color-fg));
+  inline-size: 100%;
+  position: absolute;
+}

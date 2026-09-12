@@ -260,6 +260,10 @@
       "types": "./src/validation-summary/validation-summary.d.ts",
       "default": "./src/validation-summary/validation-summary.js"
     },
+    "./virtual-list": {
+      "types": "./src/virtual-list/virtual-list.d.ts",
+      "default": "./src/virtual-list/virtual-list.js"
+    },
     "./badge": {
       "types": "./src/badge/badge.d.ts",
       "default": "./src/badge/badge.js"
@@ -371,6 +375,7 @@
     "./src/toaster/toaster.js",
     "./src/tooltip/tooltip.js",
     "./src/validation-summary/validation-summary.js",
+    "./src/virtual-list/virtual-list.js",
     "./src/badge/badge.js"
   ],
   "customElements": "custom-elements.json",

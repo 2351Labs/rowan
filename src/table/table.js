@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { VirtualCollection } from "../lib/virtual-collection.js";
 
 import "../badge/badge.js";
 import "../button/button.js";
@@ -30,6 +31,18 @@ const CELL_TYPES = new Set([
 
 const SELECT_COLUMN_ID = "__select";
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
+const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
+const DEFAULT_VIRTUAL_OVERSCAN = 3;
+
+function positiveNumber(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : fallback;
+}
+
+function nonNegativeInteger(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric >= 0 ? Math.trunc(numeric) : fallback;
+}
 
 /**
  * @typedef {"text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "custom"} RowanTableCellType
@@ -98,6 +111,9 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * @property {boolean} [stickyHeader]
  * @property {boolean} [loading]
  * @property {RowanTablePage | null} [page]
+ * @property {boolean} [virtualized]
+ * @property {number} [virtualItemSize]
+ * @property {number} [virtualOverscan]
  */
 
 function isDevelopmentEnvironment() {
@@ -116,10 +132,16 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} sticky-header
  * @attr {boolean} loading
  * @attr {string} caption
+ * @attr {boolean} virtualized
+ * @attr {number} virtual-item-size
+ * @attr {number} virtual-overscan
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
  * @property {Array<object>} rows - Updates rows without replacing other configuration.
  * @property {Array<string>} selected - Updates selected row IDs without replacing other configuration.
+ * @property {boolean} virtualized - Renders a measured, bounded row window inside the table viewport.
+ * @property {number} virtualItemSize - Estimated row height used before a row is measured.
+ * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @slot toolbar
  * @slot caption
  * @slot empty
@@ -132,6 +154,9 @@ function isDevelopmentEnvironment() {
  * @csspart td
  * @csspart caption
  * @csspart toolbar
+ * @csspart viewport
+ * @csspart spacer
+ * @cssprop --rowan-table-virtual-height
  * @event rowan-sort - Fired when a sortable header changes direction
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
@@ -141,7 +166,17 @@ function isDevelopmentEnvironment() {
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
-  static observedAttributes = ["selectable", "density", "sticky-header", "loading", "caption"];
+  static componentTokenPrefixes = ["--rowan-table-"];
+  static observedAttributes = [
+    "selectable",
+    "density",
+    "sticky-header",
+    "loading",
+    "caption",
+    "virtualized",
+    "virtual-item-size",
+    "virtual-overscan",
+  ];
   static upgradeProperties = [
     "config",
     "columns",
@@ -154,6 +189,9 @@ export class RowanTable extends BaseElement {
     "stickyHeader",
     "loading",
     "caption",
+    "virtualized",
+    "virtualItemSize",
+    "virtualOverscan",
   ];
 
   #state = {
@@ -166,6 +204,7 @@ export class RowanTable extends BaseElement {
   };
 
   #root = null;
+  #tableViewport = null;
   #captionSlotEl = null;
   #captionTextEl = null;
   #theadRow = null;
@@ -182,12 +221,34 @@ export class RowanTable extends BaseElement {
   #lastSelectedIndex = -1;
   #selectionModifiers = new WeakMap();
   #validationWarnings = new Set();
+  #virtualCollection = new VirtualCollection();
+  #virtualStartSpacer = null;
+  #virtualEndSpacer = null;
+  #virtualViewportHeight = 0;
+  #virtualResizeObserver = null;
+  #virtualObservingViewport = false;
+  #virtualObservedRows = new Set();
+  #virtualResizeRenderQueued = false;
+
+  constructor() {
+    super();
+    this.#virtualCollection.itemKey = "rowId";
+  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
 
-    if (name === "selectable" || name === "loading") {
+    if (
+      name === "selectable" ||
+      name === "loading" ||
+      name === "virtualized" ||
+      name === "virtual-item-size"
+    ) {
       this.#bodyNeedsRender = true;
+    }
+
+    if (name === "virtual-item-size") {
+      this.#virtualCollection.clearMeasurements();
     }
 
     super.attributeChangedCallback(name, oldValue, newValue);
@@ -207,6 +268,9 @@ export class RowanTable extends BaseElement {
       stickyHeader: this.stickyHeader,
       loading: this.loading,
       caption: this.caption,
+      virtualized: this.virtualized,
+      virtualItemSize: this.virtualItemSize,
+      virtualOverscan: this.virtualOverscan,
     };
   }
 
@@ -235,6 +299,9 @@ export class RowanTable extends BaseElement {
     this.selectable = next.selectable;
     this.stickyHeader = Boolean(next.stickyHeader);
     this.loading = Boolean(next.loading);
+    this.virtualized = Boolean(next.virtualized);
+    this.virtualItemSize = next.virtualItemSize;
+    this.virtualOverscan = next.virtualOverscan;
 
     this.requestRender();
   }
@@ -347,6 +414,44 @@ export class RowanTable extends BaseElement {
     this.reflectString("caption", value);
   }
 
+  /** @returns {boolean} */
+  get virtualized() {
+    return this.readBoolean("virtualized");
+  }
+
+  /** @param {boolean} value */
+  set virtualized(value) {
+    this.reflectBoolean("virtualized", Boolean(value));
+  }
+
+  /** @returns {number} */
+  get virtualItemSize() {
+    return positiveNumber(
+      this.readNumber("virtual-item-size", DEFAULT_VIRTUAL_ITEM_SIZE),
+      DEFAULT_VIRTUAL_ITEM_SIZE,
+    );
+  }
+
+  /** @param {number} value */
+  set virtualItemSize(value) {
+    const next = positiveNumber(value, DEFAULT_VIRTUAL_ITEM_SIZE);
+    this.reflectNumber("virtual-item-size", next === DEFAULT_VIRTUAL_ITEM_SIZE ? null : next);
+  }
+
+  /** @returns {number} */
+  get virtualOverscan() {
+    return nonNegativeInteger(
+      this.readNumber("virtual-overscan", DEFAULT_VIRTUAL_OVERSCAN),
+      DEFAULT_VIRTUAL_OVERSCAN,
+    );
+  }
+
+  /** @param {number} value */
+  set virtualOverscan(value) {
+    const next = nonNegativeInteger(value, DEFAULT_VIRTUAL_OVERSCAN);
+    this.reflectNumber("virtual-overscan", next === DEFAULT_VIRTUAL_OVERSCAN ? null : next);
+  }
+
   /** @returns {RowanTableRow[]} */
   get selectedRows() {
     const selectedIds = new Set(this.#state.selected);
@@ -391,16 +496,18 @@ export class RowanTable extends BaseElement {
       this.renderRoot.innerHTML = `
         <div class="wrapper">
           <div class="toolbar" part="toolbar"><slot name="toolbar"></slot></div>
-          <table class="table" part="table" aria-busy="false">
-            <caption class="caption" part="caption">
-              <slot name="caption"></slot>
-              <span class="caption-text"></span>
-            </caption>
-            <thead class="thead" part="thead">
-              <tr part="tr"></tr>
-            </thead>
-            <tbody class="tbody" part="tbody"></tbody>
-          </table>
+          <div class="table-scroll" part="viewport">
+            <table class="table" part="table" aria-busy="false">
+              <caption class="caption" part="caption">
+                <slot name="caption"></slot>
+                <span class="caption-text"></span>
+              </caption>
+              <thead class="thead" part="thead">
+                <tr part="tr"></tr>
+              </thead>
+              <tbody class="tbody" part="tbody"></tbody>
+            </table>
+          </div>
           <div class="footer" part="footer">
             <slot name="footer"></slot>
             <div class="pagination" part="pagination" hidden>
@@ -413,6 +520,7 @@ export class RowanTable extends BaseElement {
       `;
 
       this.#root = this.renderRoot.firstElementChild;
+      this.#tableViewport = this.renderRoot.querySelector(".table-scroll");
       this.#captionSlotEl = this.renderRoot.querySelector('caption slot[name="caption"]');
       this.#captionTextEl = this.renderRoot.querySelector(".caption-text");
       this.#theadRow = this.renderRoot.querySelector("thead tr");
@@ -429,6 +537,15 @@ export class RowanTable extends BaseElement {
       this.listen(this.#paginationNextButton, "click", () => {
         this.#changePage((this.page?.index ?? 0) + 1);
       });
+
+      this.listen(
+        this.#tableViewport,
+        "scroll",
+        () => {
+          if (this.virtualized) this.requestRender();
+        },
+        { passive: true },
+      );
 
       this.listen(this.#theadRow, "click", (event) => {
         this.#handleHeaderClick(event);
@@ -565,6 +682,7 @@ export class RowanTable extends BaseElement {
 
   #renderBody(viewRows, hasDuplicateRowIds) {
     if (this.loading || !viewRows.length) {
+      this.#deactivateVirtualization();
       this.#tbody.replaceChildren();
       this.#renderedBodyRows.clear();
 
@@ -585,6 +703,13 @@ export class RowanTable extends BaseElement {
       this.#selectionNeedsSync = false;
       return;
     }
+
+    if (this.virtualized && !hasDuplicateRowIds) {
+      this.#renderVirtualBody(viewRows);
+      return;
+    }
+
+    this.#deactivateVirtualization();
 
     const canReconcile = !this.#bodyNeedsRender && !hasDuplicateRowIds;
     const staleRows = canReconcile
@@ -632,7 +757,19 @@ export class RowanTable extends BaseElement {
       this.#bodyNeedsRender ||
       this.#viewNeedsReconciliation ||
       !this.#selectionNeedsSync ||
-      hasDuplicateRowIds ||
+      hasDuplicateRowIds
+    ) {
+      return false;
+    }
+
+    if (this.virtualized) {
+      return [...this.#renderedBodyRows.values()].every((rendered) => {
+        const entry = viewRows.find((candidate) => candidate.rowId === rendered.rowId);
+        return entry && rendered.row === entry.row && rendered.rowIndex === entry.rowIndex;
+      });
+    }
+
+    if (
       this.#renderedBodyRows.size !== viewRows.length ||
       this.#tbody.children.length !== viewRows.length
     ) {
@@ -642,6 +779,221 @@ export class RowanTable extends BaseElement {
     return viewRows.every((entry) => {
       const rendered = this.#renderedBodyRows.get(entry.rowId);
       return rendered && rendered.row === entry.row && rendered.rowIndex === entry.rowIndex;
+    });
+  }
+
+  #renderVirtualBody(viewRows) {
+    this.#virtualCollection.items = viewRows;
+    this.#virtualCollection.estimatedItemSize = this.virtualItemSize;
+
+    const range = this.#virtualCollection.range(
+      this.#tableViewport.scrollTop,
+      this.#readVirtualViewportHeight(),
+      this.virtualOverscan,
+    );
+    const canReconcile = !this.#bodyNeedsRender;
+    const staleRows = canReconcile
+      ? new Set([...this.#renderedBodyRows.values()].map((rendered) => rendered.element))
+      : new Set();
+    const nextRows = new Map();
+
+    if (!canReconcile) {
+      this.#tbody.replaceChildren();
+      this.#renderedBodyRows.clear();
+    }
+
+    const startSpacer = this.#ensureVirtualSpacer("start");
+    const endSpacer = this.#ensureVirtualSpacer("end");
+    const firstEntry = range.entries[0] ?? null;
+    const lastEntry = range.entries.at(-1) ?? null;
+    const startSize = firstEntry?.offset ?? 0;
+    const endSize = lastEntry
+      ? Math.max(0, range.totalSize - lastEntry.offset - lastEntry.size)
+      : range.totalSize;
+
+    this.#updateVirtualSpacer(startSpacer, startSize);
+    this.#updateVirtualSpacer(endSpacer, endSize);
+
+    const orderedElements = [startSpacer];
+
+    for (const entry of range.entries) {
+      const rendered = canReconcile ? this.#renderedBodyRows.get(entry.rowId) : null;
+      const canReuse =
+        rendered && rendered.row === entry.item.row && rendered.rowIndex === entry.item.rowIndex;
+      const element = canReuse ? rendered.element : this.#createBodyRow(entry.item);
+
+      staleRows.delete(element);
+      nextRows.set(entry.rowId, {
+        element,
+        row: entry.item.row,
+        rowIndex: entry.item.rowIndex,
+        rowId: entry.rowId,
+      });
+      orderedElements.push(element);
+    }
+
+    orderedElements.push(endSpacer);
+
+    orderedElements.forEach((element, index) => {
+      const reference = this.#tbody.children[index];
+      if (element !== reference) {
+        this.#tbody.insertBefore(element, reference ?? null);
+      }
+    });
+
+    for (const staleRow of staleRows) {
+      staleRow.remove();
+    }
+
+    this.#renderedBodyRows = nextRows;
+    this.#bodyNeedsRender = false;
+    this.#viewNeedsReconciliation = false;
+    this.#selectionNeedsSync = false;
+    this.#syncSelectionControls();
+    this.#syncVirtualResizeObserver();
+  }
+
+  #ensureVirtualSpacer(position) {
+    const isStart = position === "start";
+    const current = isStart ? this.#virtualStartSpacer : this.#virtualEndSpacer;
+    if (current) return current;
+
+    const spacer = document.createElement("tr");
+    spacer.className = `virtual-spacer virtual-spacer-${position}`;
+    spacer.part = "spacer";
+    spacer.setAttribute("aria-hidden", "true");
+
+    const cell = document.createElement("td");
+    cell.className = "td";
+    cell.part = "td";
+    cell.setAttribute("aria-hidden", "true");
+    spacer.append(cell);
+
+    if (isStart) {
+      this.#virtualStartSpacer = spacer;
+    } else {
+      this.#virtualEndSpacer = spacer;
+    }
+
+    return spacer;
+  }
+
+  #updateVirtualSpacer(spacer, size) {
+    const height = Math.max(0, Number(size) || 0);
+    const cell = spacer.firstElementChild;
+
+    spacer.style.height = `${height}px`;
+    if (cell instanceof HTMLTableCellElement) {
+      cell.colSpan = this.#visibleColumnCount();
+      cell.style.height = `${height}px`;
+    }
+  }
+
+  #readVirtualViewportHeight() {
+    const measured =
+      this.#tableViewport.clientHeight || this.#tableViewport.getBoundingClientRect().height;
+    if (measured > 0) this.#virtualViewportHeight = measured;
+
+    return this.#virtualViewportHeight || this.virtualItemSize;
+  }
+
+  #deactivateVirtualization() {
+    this.#virtualStartSpacer = null;
+    this.#virtualEndSpacer = null;
+    this.#stopVirtualResizeObserver();
+  }
+
+  #syncVirtualResizeObserver() {
+    if (!this.virtualized || !this.#tableViewport || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    if (!this.#virtualResizeObserver) {
+      this.#virtualResizeObserver = new ResizeObserver((entries) => {
+        let changed = false;
+
+        for (const entry of entries) {
+          if (entry.target === this.#tableViewport) {
+            const height = entry.contentRect.height;
+            if (height > 0 && height !== this.#virtualViewportHeight) {
+              this.#virtualViewportHeight = height;
+              changed = true;
+            }
+            continue;
+          }
+
+          const row = entry.target;
+          const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
+          if (
+            row instanceof HTMLTableRowElement &&
+            row.dataset.rowId &&
+            this.#virtualCollection.setMeasuredSize(row.dataset.rowId, height)
+          ) {
+            changed = true;
+          }
+        }
+
+        if (changed) this.#queueVirtualResizeRender();
+      });
+
+      this.observe(this.#virtualResizeObserver, () => this.#restoreVirtualResizeObserver());
+    }
+
+    this.#observeVirtualElements();
+  }
+
+  #restoreVirtualResizeObserver() {
+    if (!this.#virtualResizeObserver) return;
+
+    this.#virtualResizeObserver.disconnect();
+    this.#virtualObservingViewport = false;
+    this.#virtualObservedRows.clear();
+
+    if (this.virtualized) this.#observeVirtualElements();
+  }
+
+  #stopVirtualResizeObserver() {
+    if (!this.#virtualResizeObserver) return;
+
+    this.#virtualResizeObserver.disconnect();
+    this.#virtualObservingViewport = false;
+    this.#virtualObservedRows.clear();
+  }
+
+  #observeVirtualElements() {
+    if (!this.#virtualResizeObserver || !this.#tableViewport) return;
+
+    if (!this.#virtualObservingViewport) {
+      this.#virtualResizeObserver.observe(this.#tableViewport);
+      this.#virtualObservingViewport = true;
+    }
+
+    const activeRows = new Set(
+      [...this.#renderedBodyRows.values()].map((rendered) => rendered.element),
+    );
+
+    for (const row of this.#virtualObservedRows) {
+      if (!activeRows.has(row)) {
+        this.#virtualResizeObserver.unobserve(row);
+        this.#virtualObservedRows.delete(row);
+      }
+    }
+
+    for (const row of activeRows) {
+      if (this.#virtualObservedRows.has(row)) continue;
+
+      this.#virtualResizeObserver.observe(row);
+      this.#virtualObservedRows.add(row);
+    }
+  }
+
+  #queueVirtualResizeRender() {
+    if (this.#virtualResizeRenderQueued) return;
+
+    this.#virtualResizeRenderQueued = true;
+    setTimeout(() => {
+      this.#virtualResizeRenderQueued = false;
+      if (this.isConnected) this.requestRender();
     });
   }
 
