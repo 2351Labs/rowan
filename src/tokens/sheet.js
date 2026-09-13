@@ -239,6 +239,41 @@ export const tokenCssText = `
   --rowan-segmented-control-padding: var(--rowan-space-1);
   --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
   --rowan-segmented-control-min-block-size: 2.25rem;
+  --rowan-rating-bg: var(--rowan-field-bg);
+  --rowan-rating-fg: var(--rowan-color-fg);
+  --rowan-rating-muted-fg: var(--rowan-color-muted);
+  --rowan-rating-border: var(--rowan-color-border);
+  --rowan-rating-active: var(--rowan-color-accent);
+  --rowan-rating-inactive: var(--rowan-color-muted);
+  --rowan-rating-hover: color-mix(in srgb, var(--rowan-color-accent) 12%, transparent);
+  --rowan-rating-focus-ring: var(--rowan-focus-ring);
+  --rowan-rating-radius: var(--rowan-radius-md);
+  --rowan-rating-gap: var(--rowan-space-2);
+  --rowan-rating-star-size: 2.25rem;
+  --rowan-rating-font-family: var(--rowan-font-family);
+  --rowan-rating-value-font-size: var(--rowan-font-size-sm);
+  --rowan-rating-invalid-border: var(--rowan-color-danger);
+  --rowan-rich-text-editor-bg: var(--rowan-field-bg);
+  --rowan-rich-text-editor-fg: var(--rowan-color-fg);
+  --rowan-rich-text-editor-muted-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-border: var(--rowan-color-border);
+  --rowan-rich-text-editor-toolbar-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 5%,
+    var(--rowan-color-bg)
+  );
+  --rowan-rich-text-editor-focus-ring: var(--rowan-focus-ring);
+  --rowan-rich-text-editor-radius: var(--rowan-radius-md);
+  --rowan-rich-text-editor-font-family: var(--rowan-font-family);
+  --rowan-rich-text-editor-min-block-size: 9rem;
+  --rowan-rich-text-editor-placeholder-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-button-active-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 14%,
+    transparent
+  );
+  --rowan-rich-text-editor-button-active-fg: var(--rowan-color-accent);
+  --rowan-rich-text-editor-invalid-border: var(--rowan-color-danger);
   --rowan-virtual-list-bg: var(--rowan-color-bg);
   --rowan-virtual-list-fg: var(--rowan-color-fg);
   --rowan-virtual-list-border-color: var(--rowan-color-border);
@@ -649,6 +684,41 @@ export const componentTokenCssText = `
   --rowan-segmented-control-padding: var(--rowan-space-1);
   --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
   --rowan-segmented-control-min-block-size: 2.25rem;
+  --rowan-rating-bg: var(--rowan-field-bg);
+  --rowan-rating-fg: var(--rowan-color-fg);
+  --rowan-rating-muted-fg: var(--rowan-color-muted);
+  --rowan-rating-border: var(--rowan-color-border);
+  --rowan-rating-active: var(--rowan-color-accent);
+  --rowan-rating-inactive: var(--rowan-color-muted);
+  --rowan-rating-hover: color-mix(in srgb, var(--rowan-color-accent) 12%, transparent);
+  --rowan-rating-focus-ring: var(--rowan-focus-ring);
+  --rowan-rating-radius: var(--rowan-radius-md);
+  --rowan-rating-gap: var(--rowan-space-2);
+  --rowan-rating-star-size: 2.25rem;
+  --rowan-rating-font-family: var(--rowan-font-family);
+  --rowan-rating-value-font-size: var(--rowan-font-size-sm);
+  --rowan-rating-invalid-border: var(--rowan-color-danger);
+  --rowan-rich-text-editor-bg: var(--rowan-field-bg);
+  --rowan-rich-text-editor-fg: var(--rowan-color-fg);
+  --rowan-rich-text-editor-muted-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-border: var(--rowan-color-border);
+  --rowan-rich-text-editor-toolbar-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 5%,
+    var(--rowan-color-bg)
+  );
+  --rowan-rich-text-editor-focus-ring: var(--rowan-focus-ring);
+  --rowan-rich-text-editor-radius: var(--rowan-radius-md);
+  --rowan-rich-text-editor-font-family: var(--rowan-font-family);
+  --rowan-rich-text-editor-min-block-size: 9rem;
+  --rowan-rich-text-editor-placeholder-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-button-active-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 14%,
+    transparent
+  );
+  --rowan-rich-text-editor-button-active-fg: var(--rowan-color-accent);
+  --rowan-rich-text-editor-invalid-border: var(--rowan-color-danger);
   --rowan-virtual-list-bg: var(--rowan-color-bg);
   --rowan-virtual-list-fg: var(--rowan-color-fg);
   --rowan-virtual-list-border-color: var(--rowan-color-border);
@@ -1238,6 +1308,33 @@ export const unregisteredTokenNames = [
   "--rowan-segmented-control-padding",
   "--rowan-segmented-control-button-padding",
   "--rowan-segmented-control-min-block-size",
+  "--rowan-rating-bg",
+  "--rowan-rating-fg",
+  "--rowan-rating-muted-fg",
+  "--rowan-rating-border",
+  "--rowan-rating-active",
+  "--rowan-rating-inactive",
+  "--rowan-rating-hover",
+  "--rowan-rating-focus-ring",
+  "--rowan-rating-radius",
+  "--rowan-rating-gap",
+  "--rowan-rating-star-size",
+  "--rowan-rating-font-family",
+  "--rowan-rating-value-font-size",
+  "--rowan-rating-invalid-border",
+  "--rowan-rich-text-editor-bg",
+  "--rowan-rich-text-editor-fg",
+  "--rowan-rich-text-editor-muted-fg",
+  "--rowan-rich-text-editor-border",
+  "--rowan-rich-text-editor-toolbar-bg",
+  "--rowan-rich-text-editor-focus-ring",
+  "--rowan-rich-text-editor-radius",
+  "--rowan-rich-text-editor-font-family",
+  "--rowan-rich-text-editor-min-block-size",
+  "--rowan-rich-text-editor-placeholder-fg",
+  "--rowan-rich-text-editor-button-active-bg",
+  "--rowan-rich-text-editor-button-active-fg",
+  "--rowan-rich-text-editor-invalid-border",
   "--rowan-virtual-list-bg",
   "--rowan-virtual-list-fg",
   "--rowan-virtual-list-border-color",

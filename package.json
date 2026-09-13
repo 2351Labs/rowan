@@ -188,6 +188,14 @@
       "types": "./src/radio-group/radio-group.d.ts",
       "default": "./src/radio-group/radio-group.js"
     },
+    "./rating": {
+      "types": "./src/rating/rating.d.ts",
+      "default": "./src/rating/rating.js"
+    },
+    "./rich-text-editor": {
+      "types": "./src/rich-text-editor/rich-text-editor.d.ts",
+      "default": "./src/rich-text-editor/rich-text-editor.js"
+    },
     "./row-details-panel": {
       "types": "./src/row-details-panel/row-details-panel.d.ts",
       "default": "./src/row-details-panel/row-details-panel.js"
@@ -393,6 +401,8 @@
     "./src/progress/progress.js",
     "./src/radio/radio.js",
     "./src/radio-group/radio-group.js",
+    "./src/rating/rating.js",
+    "./src/rich-text-editor/rich-text-editor.js",
     "./src/row-details-panel/row-details-panel.js",
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",

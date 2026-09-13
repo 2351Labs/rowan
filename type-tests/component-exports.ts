@@ -42,6 +42,8 @@ import { RowanPopover } from "@rowan-ui/core/popover";
 import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
+import { RowanRating } from "@rowan-ui/core/rating";
+import { RowanRichTextEditor } from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect } from "@rowan-ui/core/select";
 import { RowanSegmentedControl } from "@rowan-ui/core/segmented-control";
@@ -116,6 +118,8 @@ const popover: RowanPopover = document.createElement("rowan-popover");
 const progress: RowanProgress = document.createElement("rowan-progress");
 const radio: RowanRadio = document.createElement("rowan-radio");
 const radioGroup: RowanRadioGroup = document.createElement("rowan-radio-group");
+const rating: RowanRating = document.createElement("rowan-rating");
+const richTextEditor: RowanRichTextEditor = document.createElement("rowan-rich-text-editor");
 const rowDetailsPanel: RowanRowDetailsPanel = document.createElement("rowan-row-details-panel");
 const select: RowanSelect = document.createElement("rowan-select");
 const segmentedControl: RowanSegmentedControl = document.createElement("rowan-segmented-control");
@@ -163,6 +167,12 @@ sideNavItem.active = true;
 confirmDialog.confirmVariant = "danger";
 contextMenu.target = button;
 statusIndicator.tone = "success";
+rating.value = 4;
+rating.value = "";
+richTextEditor.value = {
+  blocks: [{ type: "paragraph", children: [{ text: "Dispatch checklist" }] }],
+};
+richTextEditor.mode = "plain";
 
 const virtualListItemSize: number = virtualList.itemSize;
 const tableVirtualItemSize: number = table.virtualItemSize;
@@ -173,6 +183,8 @@ const sideNavItemActive: boolean = sideNavItem.active;
 const confirmDialogOpen: boolean = confirmDialog.open;
 const contextMenuLabel: string = contextMenu.label;
 const statusIndicatorTone: string = statusIndicator.tone;
+const ratingValue: number | "" = rating.value;
+const richTextValue = richTextEditor.value;
 
 void [
   accordion,
@@ -219,6 +231,8 @@ void [
   progress,
   radio,
   radioGroup,
+  rating,
+  richTextEditor,
   rowDetailsPanel,
   select,
   segmentedControl,
@@ -255,4 +269,6 @@ void [
   confirmDialogOpen,
   contextMenuLabel,
   statusIndicatorTone,
+  ratingValue,
+  richTextValue,
 ];

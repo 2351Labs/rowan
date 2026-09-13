@@ -3,9 +3,10 @@ import "./button.js";
 
 const nextMicrotask = () => Promise.resolve();
 
-async function waitForComponentStyles(element) {
+async function waitForComponentStyles(element, expectedBackground = "") {
   const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
+  const button = element.shadowRoot.querySelector("button");
+  if (!stylesheet || !button) return;
 
   const hasLoadedRules = () => {
     try {
@@ -15,24 +16,17 @@ async function waitForComponentStyles(element) {
     }
   };
 
-  if (!hasLoadedRules()) {
-    await new Promise((resolve, reject) => {
-      stylesheet.addEventListener("load", resolve, { once: true });
-      stylesheet.addEventListener(
-        "error",
-        () => reject(new Error("Button stylesheet failed to load.")),
-        {
-          once: true,
-        },
-      );
+  for (let frame = 0; frame < 60; frame += 1) {
+    const styles = getComputedStyle(button);
+    const backgroundMatches = !expectedBackground || styles.backgroundColor === expectedBackground;
+    if (hasLoadedRules() && styles.display === "inline-flex" && backgroundMatches) {
+      return;
+    }
 
-      if (hasLoadedRules()) {
-        resolve();
-      }
-    });
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  throw new Error("Button styles did not apply within 60 animation frames.");
 }
 
 describe("rowan-button", () => {
@@ -78,7 +72,7 @@ describe("rowan-button", () => {
       const element = document.createElement("rowan-button");
       document.body.append(element);
       await nextMicrotask();
-      await waitForComponentStyles(element);
+      await waitForComponentStyles(element, "rgb(12, 34, 56)");
 
       const internalButton = element.shadowRoot.querySelector("button");
       expect(getComputedStyle(element).getPropertyValue("--rowan-color-accent").trim()).to.equal(
@@ -101,7 +95,7 @@ describe("rowan-button", () => {
       const element = document.createElement("rowan-button");
       document.body.append(element);
       await nextMicrotask();
-      await waitForComponentStyles(element);
+      await waitForComponentStyles(element, "rgb(12, 34, 56)");
 
       const internalButton = element.shadowRoot.querySelector("button");
       expect(getComputedStyle(internalButton).backgroundColor).to.equal("rgb(12, 34, 56)");

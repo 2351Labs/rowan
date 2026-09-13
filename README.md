@@ -168,7 +168,7 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 Implemented components currently include:
 
 - Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
-- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
+- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
 - Data display and operations: `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
@@ -247,6 +247,68 @@ Assign application-approved swatches with the property-only `palette` array. Use
   });
 </script>
 ```
+
+## Rowan Rating
+
+`rowan-rating` is a form-associated whole-star rating control. Its scalar `value` is an empty string for no rating or an integer normalized within `min`, `max`, and `step`; the default scale is one through five. When `required` is present, an unset value is invalid. User input through stars, Arrow keys, Home, End, or the clear control emits one `rowan-change` event; parent-assigned values remain silent.
+
+```html
+<rowan-rating
+  id="service-quality"
+  name="serviceQuality"
+  label="Service quality"
+  value="4"
+  required
+></rowan-rating>
+
+<script type="module">
+  import "@rowan-ui/core/rating";
+
+  const rating = document.querySelector("#service-quality");
+  rating.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>
+```
+
+## Rowan Rich Text Editor
+
+`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a normalized document object with paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. It never accepts an HTML value or reflects document data to an attribute.
+
+Rich mode uses the browser editing surface and native undo behavior. Rich clipboard data is inserted as literal plain text, not interpreted as markup. Use `mode="plain"` when the workflow must use a textarea fallback; it still emits the same document object. The submitted FACE value is the JSON serialization of that document.
+
+```html
+<rowan-rich-text-editor
+  id="incident-guidance"
+  name="incidentGuidance"
+  label="Incident guidance"
+  placeholder="Describe the response steps"
+></rowan-rich-text-editor>
+
+<script type="module">
+  import "@rowan-ui/core/rich-text-editor";
+
+  const editor = document.querySelector("#incident-guidance");
+  editor.value = {
+    blocks: [
+      {
+        type: "paragraph",
+        children: [{ text: "Escalate to the incident lead.", bold: true }],
+      },
+      {
+        type: "unordered-list",
+        items: [[{ text: "Open the incident record" }], [{ text: "Notify the on-call team" }]],
+      },
+    ],
+  };
+
+  editor.addEventListener("rowan-change", (event) => {
+    persistGuidance(event.detail.value);
+  });
+</script>
+```
+
+This component's security boundary ends at its normalized document value: applications own authorization, persistence, rendering outside the component, and any collaboration or merge model. Do not turn event data into HTML; render its text runs through DOM text nodes or an application-owned trusted renderer.
 
 ## Rowan Command Palette
 

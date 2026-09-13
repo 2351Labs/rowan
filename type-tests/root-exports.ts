@@ -2,6 +2,8 @@ import {
   RowanButton,
   RowanCommandItem,
   RowanCommandPalette,
+  RowanRating,
+  RowanRichTextEditor,
   RowanTable,
   RowanTree,
   RowanTreeItem,
@@ -26,6 +28,8 @@ import "@rowan-ui/core/tokens/light";
 const rootButton: RowanButton = document.createElement("rowan-button");
 const rootCommandItem: RowanCommandItem = document.createElement("rowan-command-item");
 const rootCommandPalette: RowanCommandPalette = document.createElement("rowan-command-palette");
+const rootRating: RowanRating = document.createElement("rowan-rating");
+const rootRichTextEditor: RowanRichTextEditor = document.createElement("rowan-rich-text-editor");
 const rootTable: RowanTable = document.createElement("rowan-table");
 const rootTree: RowanTree = document.createElement("rowan-tree");
 const rootTreeItem: RowanTreeItem = document.createElement("rowan-tree-item");
@@ -34,15 +38,26 @@ const baseElement: typeof BaseElement = BaseElement;
 rootButton.disabled = true;
 rootCommandItem.label = "Open settings";
 rootCommandPalette.open = true;
+rootRating.value = 4;
+rootRating.value = "";
+rootRichTextEditor.value = {
+  blocks: [{ type: "paragraph", children: [{ text: "Operational guidance", bold: true }] }],
+};
 rootTable.config = { columns: [], rows: [] };
 rootTree.selected = ["guides"];
 rootTreeItem.expanded = true;
 const selectedTreeItems: HTMLElement[] = rootTree.selectedItems;
+const rootRatingValue: number | "" = rootRating.value;
+const rootRichText: string = rootRichTextEditor.text;
 
 void [
   baseElement,
   rootCommandItem,
   rootCommandPalette,
+  rootRating,
+  rootRatingValue,
+  rootRichTextEditor,
+  rootRichText,
   rootTree,
   rootTreeItem,
   selectedTreeItems,

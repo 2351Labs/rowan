@@ -310,6 +310,55 @@ const COLOR_PICKER_SNIPPET = `<rowan-color-picker
   });
 </script>`;
 
+const RATING_SNIPPET = `<rowan-rating
+  id="service-quality"
+  name="serviceQuality"
+  label="Service quality"
+  value="4"
+  required
+></rowan-rating>
+
+<script type="module">
+  import "@rowan-ui/core/rating";
+
+  const rating = document.querySelector("#service-quality");
+  rating.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
+const RICH_TEXT_EDITOR_SNIPPET = `<rowan-rich-text-editor
+  id="incident-guidance"
+  name="incidentGuidance"
+  label="Incident guidance"
+  placeholder="Describe the response steps"
+></rowan-rich-text-editor>
+
+<script type="module">
+  import "@rowan-ui/core/rich-text-editor";
+
+  const editor = document.querySelector("#incident-guidance");
+  editor.value = {
+    blocks: [
+      {
+        type: "paragraph",
+        children: [{ text: "Escalate to the incident lead.", bold: true }],
+      },
+      {
+        type: "unordered-list",
+        items: [
+          [{ text: "Open the incident record" }],
+          [{ text: "Notify the on-call team" }],
+        ],
+      },
+    ],
+  };
+
+  editor.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
 const DATE_RANGE_PICKER_SNIPPET = `<rowan-date-range-picker
   name="reportDate"
   label="Report range"
@@ -1413,6 +1462,70 @@ const DOC_PAGES = [
     afterRender: setupColorPickerDemo,
   },
   {
+    id: "rating",
+    group: "Components",
+    title: "Rowan Rating",
+    summary:
+      "Form-associated whole-star rating with a clearable state and complete keyboard selection.",
+    tags: ["forms", "rating", "validation"],
+    keywords: ["rating", "stars", "required", "keyboard", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rating-control">
+        <h2>Whole-star selection</h2>
+        <p>Use the default one-to-five scale for quick reviews. An unset value remains available until the field is marked required.</p>
+        <div class="demo-row">
+          <rowan-rating
+            id="docs-rating"
+            name="serviceQuality"
+            label="Service quality"
+            description="Choose a rating or clear the current value."
+            value="3"
+          ></rowan-rating>
+        </div>
+        <pre id="rating-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rating-contract">
+        <h2>Value and event contract</h2>
+        <p>value reflects an integer within min, max, and step, or an empty value for no rating. Arrow keys, Home, and End select ratings; the clear control restores the no-rating state. rowan-change fires only after user interaction.</p>
+        ${codeBlock(RATING_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupRatingDemo,
+  },
+  {
+    id: "rich-text-editor",
+    group: "Components",
+    title: "Rowan Rich Text Editor",
+    summary:
+      "Constrained, form-associated authoring for operational guidance with safe document data and native editing behavior.",
+    tags: ["forms", "authoring", "content", "validation"],
+    keywords: ["rich text", "editor", "runbook", "paste", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rich-text-editor-control">
+        <h2>Constrained operational guidance</h2>
+        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
+        <div class="demo-row">
+          <rowan-rich-text-editor
+            id="docs-rich-text-editor"
+            name="incidentGuidance"
+            label="Incident response guidance"
+            description="Record the steps an operator should take."
+            placeholder="Describe the response steps"
+          ></rowan-rich-text-editor>
+        </div>
+        <pre id="rich-text-editor-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rich-text-editor-boundary">
+        <h2>Storage and sanitization boundary</h2>
+        <p>The component never accepts HTML as a value. It emits a normalized block-and-run document object, and rich clipboard data is inserted as plain text. Form submission serializes that document as JSON; applications own persistence, authorization, collaboration, and any rendering outside the component.</p>
+        ${codeBlock(RICH_TEXT_EDITOR_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupRichTextEditorDemo,
+  },
+  {
     id: "date-range-picker",
     group: "Components",
     title: "Rowan Date Range Picker",
@@ -2461,6 +2574,8 @@ const NAV_SECTIONS = [
       { pageId: "date-picker", label: "Date Picker" },
       { pageId: "time-picker", label: "Time Picker" },
       { pageId: "color-picker", label: "Color Picker" },
+      { pageId: "rating", label: "Rating" },
+      { pageId: "rich-text-editor", label: "Rich Text Editor" },
       { pageId: "date-range-picker", label: "Date Range Picker" },
       { pageId: "calendar", label: "Calendar" },
       { pageId: "listbox", label: "Listbox" },
@@ -2936,6 +3051,59 @@ function setupColorPickerDemo() {
     "Choose a swatch or adjust the custom color to inspect rowan-change payloads.";
 
   picker.addEventListener("rowan-change", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-change\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupRatingDemo() {
+  const rating = mainEl.querySelector("#docs-rating");
+  const output = mainEl.querySelector("#rating-events");
+
+  if (!(rating instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  output.textContent = "Choose a star or clear the rating to inspect rowan-change payloads.";
+
+  rating.addEventListener("rowan-change", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-change\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupRichTextEditorDemo() {
+  const editor = mainEl.querySelector("#docs-rich-text-editor");
+  const output = mainEl.querySelector("#rich-text-editor-events");
+
+  if (!(editor instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  editor.value = {
+    blocks: [
+      {
+        type: "paragraph",
+        children: [
+          { text: "Escalation guidance: ", bold: true },
+          { text: "notify the incident lead before changing service routing." },
+        ],
+      },
+      {
+        type: "unordered-list",
+        items: [
+          [{ text: "Open the incident record" }],
+          [{ text: "Record the current customer impact", italic: true }],
+          [{ text: "Page the assigned on-call team" }],
+        ],
+      },
+    ],
+  };
+  output.textContent = "Edit the guidance to inspect normalized rowan-change payloads.";
+
+  editor.addEventListener("rowan-change", (event) => {
     const stamp = new Date().toLocaleTimeString();
     const next = `[${stamp}] rowan-change\n${formatEventDetail(event.detail)}\n`;
     output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);

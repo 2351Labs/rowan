@@ -1,12 +1,12 @@
 # Rowan Sprint History
 
-Last updated: 2026-09-11
+Last updated: 2026-09-12
 
 ## Current Product Snapshot
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 72 components
+- Current implemented catalog includes 74 components
 
 ## Completed Sprints
 
@@ -506,7 +506,7 @@ Verification completed at sprint close:
 
 Deferred unless a product use case requires them:
 
-- Rating, rich-text editing, charting, maps, carousels, bundled iconography, and display-only `Intl` formatter elements
+- Rich-text editing, charting, maps, carousels, bundled iconography, and display-only `Intl` formatter elements
 
 ### Sprint 21: Semantic Color Selection
 
@@ -534,25 +534,60 @@ Verification completed at sprint close:
 - Static color-picker documentation checks at 1440px and 390px confirmed custom-palette rendering, dark-theme legibility, user-originated alpha changes, and no horizontal overflow
 - Scoped Prettier validation and `git diff --check`
 
+### Sprint 22: Structured Rating Input
+
+Status: Completed
+
+Delivered:
+
+- `rowan-rating` as a form-associated whole-star rating input with scalar `min`, `max`, `step`, and `value` APIs; the default scale is one through five
+- A clearable no-rating state represented by an empty `value`, with parent-driven assignments remaining silent and user-only `rowan-change` events for star selection or clearing
+- Keyboard-operable radio stars using Arrow, Home, End, Enter, and Space behavior, including correct zero-based scale focus handling and visible current-value text
+- FACE form value, required validity, reset, and state-restoration support with ElementInternals defaults that preserve author-provided ARIA
+- Component tokens, guarded registration, visual hidden states, CSS parts, Storybook stories, static documentation with a live event demo, README guidance, root and subpath exports, declarations, generated type definitions, global tag mapping, CEM coverage, and public contract tests
+- Strict root and subpath type fixtures for the clearable `number | ""` value API
+
+Verification completed at sprint close:
+
+- Focused rating contracts: 7 passing
+- `npm run tokens:sync`, `npm run types`, `npm run typecheck`, `npm run lint`, and `npm run analyze`
+- `npm test` (76 files, 313 passing contracts)
+- Two consecutive `npm run analyze` runs produced byte-identical manifests with 73 unique Rowan tags
+- `npm run build-storybook`
+- `npm pack --dry-run --json`: 632 files and 3,106,710 unpacked bytes; includes rating source, stylesheet, subpath declaration, and generated types
+- Chromium, Firefox, and WebKit each passed 76 files and 313 public contracts
+- Static rating documentation checks at 1440px and 390px confirmed five accessible star radios, selection and clearing event details, dark-theme legibility, and no horizontal overflow
+- Scoped Prettier validation and `git diff --check`
+
+### Sprint 23: Safe Rich-Text Authoring
+
+Status: Completed
+
+Delivered:
+
+- `rowan-rich-text-editor` as a form-associated, constrained authoring control for operational guidance
+- A property-only `value` document model with paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs; a `text` convenience property; and no HTML or document-data attributes
+- Native rich editing, selection, and undo behavior with semantic toolbar buttons, including a private projected editing surface for WebKit compatibility
+- Plain-text-only paste and drop handling, safe DOM-node rendering, normalized event payloads, and documented application-owned persistence, rendering, authorization, collaboration, and merge boundaries
+- A `mode="plain"` textarea fallback that retains the same normalized document event and form contract
+- FACE JSON submission, required validity, default-value reset, state restoration, default ElementInternals ARIA, and preserved author ARIA
+- Component tokens, guarded registration, visual hidden states, CSS parts, Storybook stories, static documentation with a live event demo, README security guidance, root and subpath exports, declaration bridges, generated types, global tag mapping, CEM coverage, React JSX propagation, and contract tests
+
+Verification completed at sprint close:
+
+- Focused rich-text editor contracts: 5 passing in Chromium, Firefox, and WebKit
+- `npm run tokens:sync`, `npm run tokens:check`, `npm run lint`, `npm run types`, and `npm run typecheck`
+- `npm test` (77 files, 318 passing contracts)
+- Two consecutive `npm run analyze` runs produced byte-identical manifests with 74 unique Rowan tags
+- `npm run build-storybook`
+- `npm pack --dry-run --json`: 642 files and 3,205,686 unpacked bytes; includes rich-text source, stylesheet, declaration bridge, document helper, and generated types
+- Chromium, Firefox, and WebKit each passed 77 files and 318 public contracts
+- Static rich-text documentation checks at 1440px and 390px confirmed keyboard formatting, normalized event payloads, dark-theme legibility, and no horizontal overflow
+- Scoped Prettier validation and `git diff --check`
+
 ### Deferred Backlog Stories
 
 Status: Unscheduled. These are planning stories only; they do not add tags, exports, CEM declarations, or placeholder Storybook entries until a product use case selects them.
-
-#### DS-02: Structured Rating Input
-
-**User story:** As a reviewer, I want to assign a bounded rating with the keyboard or pointer so I can record a consistent evaluation quickly.
-
-**Ready when:** A workflow needs user input rather than a display-only score and defines whether fractional ratings are meaningful.
-
-**Acceptance bar:** A future `rowan-rating` must be FACE, expose scalar min, max, step, and value state, provide an accessible name and clear value text, support Arrow/Home/End interaction, preserve a no-rating state where required, and emit one user-only `rowan-change` event.
-
-#### DS-03: Safe Rich-Text Authoring
-
-**User story:** As a content author, I want to apply a constrained set of text formatting controls so I can create operational guidance without relying on external editors.
-
-**Ready when:** The product defines a storage model, sanitization policy, allowed formatting set, collaboration expectations, and paste behavior.
-
-**Acceptance bar:** A future editor must never stamp untrusted HTML with `innerHTML`, must expose rich document state through explicit property APIs rather than attributes, must preserve native selection and undo behavior, provide keyboard-operable formatting controls, offer a plain-text fallback, and document a sanitization boundary before events or persistence are added.
 
 #### DS-04: Accessible Data Visualization
 

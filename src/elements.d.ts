@@ -43,6 +43,8 @@ import type { RowanPopover } from "../types/popover/popover.js";
 import type { RowanProgress } from "../types/progress/progress.js";
 import type { RowanRadio } from "../types/radio/radio.js";
 import type { RowanRadioGroup } from "../types/radio-group/radio-group.js";
+import type { RowanRating } from "../types/rating/rating.js";
+import type { RowanRichTextEditor } from "../types/rich-text-editor/rich-text-editor.js";
 import type { RowanRowDetailsPanel } from "../types/row-details-panel/row-details-panel.js";
 import type { RowanSelect } from "../types/select/select.js";
 import type { RowanSegmentedControl } from "../types/segmented-control/segmented-control.js";
@@ -118,6 +120,8 @@ declare global {
     "rowan-progress": RowanProgress;
     "rowan-radio": RowanRadio;
     "rowan-radio-group": RowanRadioGroup;
+    "rowan-rating": RowanRating;
+    "rowan-rich-text-editor": RowanRichTextEditor;
     "rowan-row-details-panel": RowanRowDetailsPanel;
     "rowan-select": RowanSelect;
     "rowan-segmented-control": RowanSegmentedControl;

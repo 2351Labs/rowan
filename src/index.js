@@ -51,6 +51,8 @@ export { RowanPopover } from "./popover/popover.js";
 export { RowanProgress } from "./progress/progress.js";
 export { RowanRadio } from "./radio/radio.js";
 export { RowanRadioGroup } from "./radio-group/radio-group.js";
+export { RowanRating } from "./rating/rating.js";
+export { RowanRichTextEditor } from "./rich-text-editor/rich-text-editor.js";
 export { RowanRowDetailsPanel } from "./row-details-panel/row-details-panel.js";
 export { RowanSkeleton } from "./skeleton/skeleton.js";
 export { RowanSelect } from "./select/select.js";
