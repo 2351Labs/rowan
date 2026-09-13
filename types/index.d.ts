@@ -22,6 +22,7 @@ export { RowanAccordion } from "./accordion/accordion.js";
 export { RowanAvatar } from "./avatar/avatar.js";
 export { RowanBreadcrumb } from "./breadcrumb/breadcrumb.js";
 export { RowanCalendar } from "./calendar/calendar.js";
+export { RowanCarousel } from "./carousel/carousel.js";
 export { RowanColorPicker } from "./color-picker/color-picker.js";
 export { RowanChip } from "./chip/chip.js";
 export { RowanCombobox } from "./combobox/combobox.js";

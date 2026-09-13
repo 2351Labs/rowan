@@ -1,0 +1,7 @@
+/**
+ * Creates the alarm-plus icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function AlarmPlus(options?: import("../icon.js").IconOptions | undefined): SVGSVGElement;
+export default AlarmPlus;

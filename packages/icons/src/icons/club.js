@@ -1,0 +1,30 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "club",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M17.28 9.05a5.5 5.5 0 1 0-10.56 0A5.5 5.5 0 1 0 12 17.66a5.5 5.5 0 1 0 5.28-8.6Z",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M12 17.66L12 22",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the club icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Club(options) {
+  return createIcon(definition, options);
+}
+
+export default Club;

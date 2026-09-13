@@ -39,6 +39,42 @@ Rowan publishes its source ESM modules directly. A release must contain the `src
    npm pack --dry-run
    ```
 
+## Optional Integration Packages
+
+Optional packages publish separately from `@rowan-ui/core`. Before releasing one,
+install from the workspace lockfile and run its own package gate. For the MapLibre
+adapter, this verifies that the provider remains a peer dependency rather than
+entering the core package:
+
+```sh
+npm run lint --workspace=@rowan-ui/maplibre
+npm run types --workspace=@rowan-ui/maplibre
+npm run typecheck --workspace=@rowan-ui/maplibre
+npm run test --workspace=@rowan-ui/maplibre
+npm run analyze --workspace=@rowan-ui/maplibre
+npm pack --dry-run --workspace=@rowan-ui/maplibre
+```
+
+For the icon package, this verifies that the generated source and declarations
+remain complete, directly importable, and source-attributed without introducing a
+runtime dependency into core:
+
+```sh
+npm run lint --workspace=@rowan-ui/icons
+npm run verify --workspace=@rowan-ui/icons
+npm run types --workspace=@rowan-ui/icons
+npm run typecheck --workspace=@rowan-ui/icons
+npm run test --workspace=@rowan-ui/icons
+npm pack --dry-run --workspace=@rowan-ui/icons
+```
+
+Commit each optional package's generated `types/` artifacts with its source.
+Packages defining custom elements must also commit `custom-elements.json`. Before
+publishing MapLibre, verify that provider tokens, default tile URLs, and
+application-owned credentials are absent. Before publishing icons, verify that
+the generated icon count, `NOTICE`, and Lucide source-license attribution are
+present in the packed file set.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
@@ -49,7 +85,7 @@ Rowan publishes its source ESM modules directly. A release must contain the `src
    npm publish --access public
    ```
 
-4. Verify the npm package contains `LICENSE`, `README.md`, `custom-elements.json`, `src/`, and `types/`.
+4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`.
 5. Publish release notes with the version tag and any browser-support changes.
 
 ## Browser Baseline

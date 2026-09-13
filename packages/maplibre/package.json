@@ -1,0 +1,55 @@
+{
+  "name": "@rowan-ui/maplibre",
+  "version": "0.1.0",
+  "description": "Optional MapLibre integration for Rowan Web Components.",
+  "license": "MIT",
+  "type": "module",
+  "customElements": "custom-elements.json",
+  "types": "./src/index.d.ts",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./map": {
+      "types": "./src/map/map.d.ts",
+      "default": "./src/map/map.js"
+    }
+  },
+  "files": [
+    "src",
+    "types",
+    "custom-elements.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./src/map/map.js"
+  ],
+  "peerDependencies": {
+    "@rowan-ui/core": "^0.1.0",
+    "maplibre-gl": "^5.0.0"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@rowan-ui/core": "file:../..",
+    "@web/test-runner": "^0.18.2",
+    "@web/test-runner-playwright": "^0.11.0",
+    "eslint": "^8.57.1",
+    "maplibre-gl": "^5.24.0",
+    "prettier": "^3.0.0",
+    "typescript": "~5.4.5"
+  },
+  "scripts": {
+    "analyze": "cem analyze --config custom-elements-manifest.config.js",
+    "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.config.js --concurrency=1",
+    "test:browser": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
+    "lint": "eslint \"src/**/*.js\"",
+    "format:check": "prettier --check \"**/*.{js,css,md,json}\""
+  }
+}

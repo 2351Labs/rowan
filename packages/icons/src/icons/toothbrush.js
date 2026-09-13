@@ -1,0 +1,30 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "toothbrush",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M15 11c-2 2-4 2-6 4l-7 7",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "m22 4-7.414 7.414-2-2A2 2 0 0114 6c0-.512.196-1.024.586-1.414A2 2 0 0116 4a2 2 0 013.262-1.552l2.152 2.138",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the toothbrush icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Toothbrush(options) {
+  return createIcon(definition, options);
+}
+
+export default Toothbrush;

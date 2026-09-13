@@ -1,0 +1,36 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "sailboat",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M10 2v15",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M7 22a4 4 0 0 1-4-4 1 1 0 0 1 1-1h16a1 1 0 0 1 1 1 4 4 0 0 1-4 4z",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M9.159 2.46a1 1 0 0 1 1.521-.193l9.977 8.98A1 1 0 0 1 20 13H4a1 1 0 0 1-.824-1.567z",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the sailboat icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Sailboat(options) {
+  return createIcon(definition, options);
+}
+
+export default Sailboat;

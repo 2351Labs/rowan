@@ -1,0 +1,42 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "trending-up-down",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M14.828 14.828 21 21",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M21 16v5h-5",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "m21 3-9 9-4-4-6 6",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M21 8V3h-5",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the trending-up-down icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function TrendingUpDown(options) {
+  return createIcon(definition, options);
+}
+
+export default TrendingUpDown;

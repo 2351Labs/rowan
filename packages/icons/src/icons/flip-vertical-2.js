@@ -1,0 +1,54 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "flip-vertical-2",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M12 14v2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M12 20v2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M12 2v2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M12 8v2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M20.288 16.703A1 1 0 0022 16V8a1 1 0 00-1.712-.703l-3.99 3.991a1 1 0 00-.001 1.424z",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M3.712 16.703A1 1 0 012 16V8a1 1 0 011.712-.703l3.99 3.991a1 1 0 01.001 1.424z",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the flip-vertical-2 icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function FlipVertical2(options) {
+  return createIcon(definition, options);
+}
+
+export default FlipVertical2;

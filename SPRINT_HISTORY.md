@@ -7,6 +7,7 @@ Last updated: 2026-09-12
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
 - Current implemented catalog includes 75 components
+- Optional integration: `@rowan-ui/maplibre` with `rowan-maplibre-map`
 
 ## Completed Sprints
 
@@ -610,41 +611,100 @@ Verification completed at sprint close:
 - Static trend-chart documentation checks at 1440px and 390px confirmed visible SVG and text legend, equivalent table data, keyboard point activation payloads, dark-theme contrast, responsive axis labels, and no page-level horizontal overflow
 - Scoped Prettier validation and `git diff --check`
 
+### Sprint 25: Provider-Aware Maps
+
+Status: Completed
+
+Delivered:
+
+- A separately publishable `@rowan-ui/maplibre` workspace package with `rowan-maplibre-map`, leaving MapLibre out of the `@rowan-ui/core` export and runtime dependency surface
+- Application-owned, property-only `locations`, marker `layers`, `mapStyle`, and provider `attribution` inputs, with finite coordinate normalization, deterministic duplicate IDs, detached style/data snapshots, and no structured-data attributes
+- A MapLibre peer boundary with dynamic provider loading or an injected adapter, no default tile endpoint, credential, or geocoding path, and provider startup gated on application-supplied style plus visible attribution
+- Safe visible HTTP(S) attribution links, focusable custom map markers, keyboard-operable location-list controls, and a matching semantic location table that remain usable when the provider is absent or fails
+- User-only composed `rowan-location-activate` details from marker/list/table activation and `rowan-layer-change` details from marker-layer visibility controls, with parent-driven updates remaining silent
+- Package-local CEM, generated declarations, type contracts, release guidance, Storybook integration/fallback stories, root documentation using a tile-free application-owned style, CI package inspection, and README guidance for provider, privacy, offline, and coordinate-only boundaries
+
+Verification completed at sprint close:
+
+- Focused optional MapLibre contracts: 7 passing in Chromium
+- `npm run lint`, `npm run types`, and `npm run typecheck`
+- `npm test` (80 files, 330 passing contracts)
+- Chromium, Firefox, and WebKit each passed 80 files and 330 public contracts
+- Two consecutive CEM generations produced byte-identical manifests: core SHA-256 `6e03cccd4df5ba5c125d3ca43335043f09a3ecdd62bd70f8b1bcbe5161179b5d`; MapLibre SHA-256 `7e7b641febf07c58b0ee653e3e40b778a9c2d1c2a953ea364dfd21eeab98abe0` with exactly one `rowan-maplibre-map` tag
+- `npm run build-storybook`, root package dry run, and optional MapLibre package dry run; core excludes the optional integration and the adapter includes source, generated types, CEM, README, and LICENSE
+- Static MapLibre documentation checks at desktop and 390px confirmed visible local-style markers, visible attribution, fallback list/table data, keyboard activation payloads, dark-theme contrast, and no page-level horizontal overflow
+- Scoped Prettier validation, CI workflow YAML validation, and `git diff --check`
+
+### Sprint 26: Optional Icon Package
+
+Status: Completed
+
+Delivered:
+
+- A separately publishable `@rowan-ui/icons` workspace package with no dependency on `@rowan-ui/core`, no custom-element registration, and no runtime name-to-icon registry
+- 2,098 Lucide Static 1.45.0 icon modules generated as individually importable ESM files, plus an explicit barrel export for editor discovery and convenience imports
+- A small DOM SVG factory with `currentColor` styling, configurable size and stroke width, decorative-by-default output, and explicit labeled `role="img"` output for meaningful icons
+- Direct module-path package exports and matching generated declarations, allowing narrow imports such as `@rowan-ui/icons/icons/arrow-right` without importing the full catalog
+- Package README guidance for icon-button slot composition, decorative versus meaningful accessibility use, styling, source attribution, and direct imports
+- MIT license coverage for Rowan package code plus bundled ISC source attribution and license text for Lucide icon geometry
+- Storybook composition examples, static documentation with desktop/mobile coverage, catalog integrity validation, package release inspection, and CI quality/browser-matrix integration
+
+Verification completed at sprint close:
+
+- Generated catalog verification: 2,098 icon modules and 2,098 barrel exports
+- Focused public contracts: 4 passing in Chromium, Firefox, and WebKit
+- Package lint, Prettier, declaration generation, and public type checks
+- Root documentation Prettier validation and CI workflow YAML validation
+- `npm run build-storybook`
+- Optional package dry run: 4,206 files and 2,311,698 unpacked bytes; includes source, declarations, LICENSE, NOTICE, and README while excluding tests, stories, and generator tooling
+- Static icon documentation checks at 1440px and 390px confirmed direct module rendering, decorative and meaningful accessibility states, responsive gallery layout, and no page-level horizontal overflow
+- `git diff --check`
+
+### Sprint 27: Locale-Aware Display Formatting
+
+Status: Completed
+
+Delivered:
+
+- A small, side-effect-free `@rowan-ui/core/format` utility rather than a display-only custom element, keeping locale and time-zone policy in application code
+- Typed `formatNumber`, `formatCurrency`, `formatDate`, and `formatRelativeTime` functions available from the formatter subpath and the browser-oriented core entry
+- Explicit locale, date time-zone, and native `Intl` options objects with no attribute serialization, no HTML rendering path, and caller-owned `textContent` placement
+- Finite numeric and date normalization, ISO currency validation, supported-locale checks, and a consistent caller-provided fallback for invalid values, locale tags, time zones, currencies, or option sets
+- README and static documentation guidance, including a live text-only locale preview, table `format` callback composition, fallback policy, and responsive dark-theme coverage
+
+Verification completed at sprint close:
+
+- Focused formatter contracts: 4 passing in Chromium, Firefox, and WebKit
+- `npm run types` and `npm run typecheck`
+- `npm run tokens:check` and scoped ESLint for formatter source
+- Two consecutive `npm run analyze` runs produced byte-identical core manifests with 76 Rowan tags and SHA-256 `fa06db1532d0b72536cb4fc23fc82e69a9a5cb0e9208176e1390346e3c86113a`; no `rowan-format` tag was added
+- `npm run build-storybook` and root package dry run, including the formatter source and declarations
+- Static locale-formatting documentation checks at 1440px and 390px confirmed localized text output, dark-theme legibility, navigation, and no page-level horizontal overflow
+- Scoped Prettier validation
+
+### Sprint 28: Controlled Content Carousel
+
+Status: Completed
+
+Delivered:
+
+- `rowan-carousel` as a controlled default-slot panel sequence with a reflected, zero-based `active-index` and silent `goTo`, `previous`, and `next` application APIs
+- Explicit previous and next controls, boundary-disabled states, viewport Arrow, Page, Home, and End keyboard movement, and a polite live status announcement of the active position
+- User-only composed `rowan-change` details containing `activeIndex` and `previousIndex`, with no serialized panel data and no automatic progression
+- Reduced-motion-safe panel entrance styling, component token hooks, guarded registration, open delegated-focus shadow root, documented CSS parts, and restoration of host panel state on release
+- Root and subpath exports, declaration bridge, global element mapping, explicit registration side effect metadata, Storybook composition and boundary stories, README usage, and a live documentation route with event tracing
+
+Verification completed at sprint close:
+
+- Focused carousel contracts: 5 passing in Chromium, Firefox, and WebKit
+- `npm run types`, `npm run typecheck`, `npm run tokens:sync`, and `npm run tokens:check`
+- Two consecutive `npm run analyze` runs produced a byte-identical core manifest containing `rowan-carousel`
+- `npm run build-storybook` and static documentation checks at desktop and 390px, including dark-theme legibility, keyboard activation, event output, no autoplay, and no page-level horizontal overflow
+- Scoped Prettier validation and `git diff --check`
+
 ### Deferred Backlog Stories
 
 Status: Unscheduled. These are planning stories only; they do not add tags, exports, CEM declarations, or placeholder Storybook entries until a product use case selects them.
-
-#### DS-05: Provider-Aware Maps
-
-**User story:** As a dispatcher, I want to inspect location-based work items on a map so I can make routing and coverage decisions in context.
-
-**Ready when:** A product owner selects a map provider, approves cost, attribution, privacy, offline, and geocoding policies, and defines the fallback when provider access fails.
-
-**Acceptance bar:** Any map integration must keep locations and layers property-only, render accessible list or table alternatives, preserve provider attribution, support keyboard navigation to mapped records, avoid shipping provider credentials in Rowan, and live in an optional integration package rather than the core component bundle unless that boundary is deliberately revised.
-
-#### DS-06: Controlled Content Carousel
-
-**User story:** As a user reviewing a bounded sequence of related items, I want to move between panels predictably so I can compare them without losing context.
-
-**Ready when:** A product workflow establishes that tabs, pagination, or virtual-list navigation cannot communicate the sequence more clearly.
-
-**Acceptance bar:** A future carousel must use named or default slots for panels, expose a reflected scalar active index, provide previous and next controls with keyboard support, never auto-advance by default, respect reduced motion, announce the active position, and emit a user-only change event without serializing panel data.
-
-#### DS-07: Optional Icon Package
-
-**User story:** As a product team, I want a coherent, licensed icon set so I can compose familiar controls without maintaining ad hoc SVG assets in every application.
-
-**Ready when:** Licensing, visual ownership, icon naming, and distribution boundaries are approved, including whether icons belong in a separately versioned package.
-
-**Acceptance bar:** Iconography must remain optional to `@rowan-ui/core`, tree-shake at individual-icon granularity, provide accessible-name guidance for decorative and meaningful icons, avoid a stringly typed runtime icon registry in core components, and include license and source attribution in the package documentation.
-
-#### DS-08: Locale-Aware Display Formatting
-
-**User story:** As an international user, I want dates, numbers, currencies, and relative values presented in my locale so I can understand dashboard data without manual conversion.
-
-**Ready when:** A product surface needs reusable declarative formatting beyond application-level native `Intl` calls, and locale/time-zone ownership is defined.
-
-**Acceptance bar:** Formatter candidates must first justify a custom element over a small documented utility. If adopted, values and structured `Intl` options stay property-only where non-scalar, rendered output uses `textContent`, locale/time-zone changes update predictably, and the component documents fallback behavior for unsupported locales and invalid values.
 
 ## Notes
 

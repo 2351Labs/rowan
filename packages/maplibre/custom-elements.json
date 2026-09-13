@@ -1,0 +1,952 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanMapLibreMap",
+          "declaration": {
+            "name": "RowanMapLibreMap",
+            "module": "./map/map.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/define.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "define",
+          "parameters": [
+            {
+              "name": "tag"
+            },
+            {
+              "name": "Class"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/lib/define.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "tag",
+          "declaration": {
+            "name": "Class",
+            "module": "src/lib/define.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/map/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanMapLibreMap",
+          "declaration": {
+            "name": "RowanMapLibreMap",
+            "module": "./map.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/map/map.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Optional MapLibre map with application-owned styles and accessible location alternatives.",
+          "name": "RowanMapLibreMap",
+          "cssProperties": [
+            {
+              "name": "--rowan-maplibre-map-height"
+            },
+            {
+              "name": "--rowan-maplibre-map-bg"
+            },
+            {
+              "name": "--rowan-maplibre-map-border"
+            },
+            {
+              "name": "--rowan-maplibre-map-marker-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "map"
+            },
+            {
+              "name": "marker"
+            },
+            {
+              "name": "attribution"
+            },
+            {
+              "name": "layers"
+            },
+            {
+              "name": "list"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#root",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#labelElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#descriptionElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#mapCanvas",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#mapStatus",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#attributionElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#layersElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#listElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableElement",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#selectionStatus",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#locations",
+              "privacy": "private",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "#layers",
+              "privacy": "private",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "#layerVisibility",
+              "privacy": "private",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "#mapStyle",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#attribution",
+              "privacy": "private",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "#maplibre",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#map",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#provider",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#markers",
+              "privacy": "private",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "#markerElements",
+              "privacy": "private",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "#providerVersion",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#providerLoading",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#providerState",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"fallback\""
+            },
+            {
+              "kind": "field",
+              "name": "#providerMessage",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "#activeLocationId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "#renderQueued",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#resizeObserver",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locations",
+              "return": {
+                "type": {
+                  "text": "Array<RowanMapLocation>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanMapLocation>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanMapLocation>"
+              },
+              "description": "Property-only coordinate records."
+            },
+            {
+              "kind": "field",
+              "name": "layers",
+              "return": {
+                "type": {
+                  "text": "Array<RowanMapLayer>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanMapLayer>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanMapLayer>"
+              },
+              "description": "Property-only marker layer metadata."
+            },
+            {
+              "kind": "field",
+              "name": "mapStyle",
+              "return": {
+                "type": {
+                  "text": "string | Record<string, unknown> | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string | Record<string, unknown> | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string | Record<string, unknown> | null"
+              },
+              "description": "Application-owned MapLibre style. This property is never reflected to an attribute."
+            },
+            {
+              "kind": "field",
+              "name": "attribution",
+              "return": {
+                "type": {
+                  "text": "Array<RowanMapAttribution>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanMapAttributionInput"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanMapAttributionInput"
+              },
+              "description": "Application-owned provider attribution. This property is never reflected to an attribute."
+            },
+            {
+              "kind": "field",
+              "name": "maplibre",
+              "return": {
+                "type": {
+                  "text": "object | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "object | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "object | null"
+              },
+              "description": "Optional MapLibre module injection for controlled loading and tests."
+            },
+            {
+              "kind": "method",
+              "name": "#upgradeProperty",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#requestRender",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#ensureRoot",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncHeading",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncAttribution",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncLayers",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncLocations",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#renderLocationList",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#renderLocationTable",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncProvider",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#canStartProvider",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#fallbackMessage",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#resolveProvider",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#createMap",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "provider"
+                },
+                {
+                  "name": "version"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleProviderFailure",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "version"
+                },
+                {
+                  "name": "map",
+                  "default": "this.#map"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#restartProvider",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#disposeMap",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncMarkers",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#createMarker",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "location"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#syncMarkerElement",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "markerElement"
+                },
+                {
+                  "name": "location"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#fitLocations",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncProviderStatus",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#handleLocationAction",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                },
+                {
+                  "name": "source"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleLayerChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#activateLocation",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "location"
+                },
+                {
+                  "name": "source"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#syncActiveLocation",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#visibleLocations",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#isLayerVisible",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "id"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#locationCoordinates",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "location"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#locationAccessibleName",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "location"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#observeSize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#applyDefaultA11y",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "rowan-layer-change",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when a user changes a visible marker layer."
+            },
+            {
+              "name": "rowan-location-activate",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when a user activates a map marker, list item, or table action."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "rowan-maplibre-map",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanMapLibreMap",
+          "declaration": {
+            "name": "RowanMapLibreMap",
+            "module": "src/map/map.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/map/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizeMapLocations",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Normalizes a property-only location collection and omits invalid coordinates.",
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapLocation[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "normalizeMapLayers",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Normalizes optional marker layer metadata without interpreting source or tile data.",
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapLayer[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "normalizeMapAttribution",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "RowanMapAttributionInput"
+              }
+            }
+          ],
+          "description": "Normalizes attribution into text and safe HTTP(S) links for map and fallback views.",
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapAttribution[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "cloneMapStyle",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Takes a detached snapshot of an application-owned MapLibre style.",
+          "return": {
+            "type": {
+              "text": "string | Record<string, unknown> | null"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "cloneMapLocations",
+          "parameters": [
+            {
+              "name": "locations",
+              "type": {
+                "text": "RowanNormalizedMapLocation[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapLocation[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "cloneMapLayers",
+          "parameters": [
+            {
+              "name": "layers",
+              "type": {
+                "text": "RowanNormalizedMapLayer[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapLayer[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "cloneMapAttribution",
+          "parameters": [
+            {
+              "name": "attribution",
+              "type": {
+                "text": "RowanNormalizedMapAttribution[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "RowanNormalizedMapAttribution[]"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizeMapLocations",
+          "declaration": {
+            "name": "normalizeMapLocations",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeMapLayers",
+          "declaration": {
+            "name": "normalizeMapLayers",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeMapAttribution",
+          "declaration": {
+            "name": "normalizeMapAttribution",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneMapStyle",
+          "declaration": {
+            "name": "cloneMapStyle",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneMapLocations",
+          "declaration": {
+            "name": "cloneMapLocations",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneMapLayers",
+          "declaration": {
+            "name": "cloneMapLayers",
+            "module": "src/map/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneMapAttribution",
+          "declaration": {
+            "name": "cloneMapAttribution",
+            "module": "src/map/model.js"
+          }
+        }
+      ]
+    }
+  ]
+}

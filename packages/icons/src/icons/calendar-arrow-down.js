@@ -1,0 +1,54 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "calendar-arrow-down",
+  nodes: [
+    [
+      "path",
+      {
+        d: "m14 17 4 4 4-4",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M16 2v3",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M18 13v8",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M21 10.354V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h7.343",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M3 9h18",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M8 2v3",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the calendar-arrow-down icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function CalendarArrowDown(options) {
+  return createIcon(definition, options);
+}
+
+export default CalendarArrowDown;

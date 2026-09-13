@@ -1,10 +1,14 @@
 import { setCustomElementsManifest } from "@storybook/web-components";
 import customElements from "../custom-elements.json";
+import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
 import "../src/tokens/tokens.css";
 import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 
-setCustomElementsManifest(customElements);
+setCustomElementsManifest({
+  ...customElements,
+  modules: [...customElements.modules, ...maplibreCustomElements.modules],
+});
 
 function isLikelyHtmlSource(source) {
   if (typeof source !== "string") {
@@ -83,6 +87,8 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-page-change",
   "rowan-row-activate",
   "rowan-point-activate",
+  "rowan-location-activate",
+  "rowan-layer-change",
 ];
 
 function describeEventTarget(target) {

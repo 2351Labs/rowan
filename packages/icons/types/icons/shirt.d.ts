@@ -1,0 +1,7 @@
+/**
+ * Creates the shirt icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Shirt(options?: import("../icon.js").IconOptions | undefined): SVGSVGElement;
+export default Shirt;

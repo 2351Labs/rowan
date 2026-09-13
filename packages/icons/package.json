@@ -1,0 +1,55 @@
+{
+  "name": "@rowan-ui/icons",
+  "version": "0.1.0",
+  "description": "Optional, tree-shakable SVG icons for Rowan.",
+  "license": "MIT AND ISC",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./icons": {
+      "types": "./types/icons/index.d.ts",
+      "default": "./src/icons/index.js"
+    },
+    "./icons/*": {
+      "types": "./types/icons/*.d.ts",
+      "default": "./src/icons/*.js"
+    }
+  },
+  "files": [
+    "src/index.js",
+    "src/icon.js",
+    "src/icons",
+    "types",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@web/test-runner": "^0.18.2",
+    "@web/test-runner-playwright": "^0.11.0",
+    "@xmldom/xmldom": "^0.8.10",
+    "eslint": "^8.57.1",
+    "lucide-static": "^1.45.0",
+    "prettier": "^3.0.0",
+    "typescript": "~5.4.5"
+  },
+  "scripts": {
+    "generate": "node ./scripts/generate-icons.mjs",
+    "verify": "node ./scripts/verify-icons.mjs",
+    "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --concurrency=1",
+    "test:browser": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
+    "lint": "eslint \"src/**/*.js\" \"scripts/**/*.mjs\"",
+    "format:check": "prettier --check \"**/*.{js,mjs,md,json}\"",
+    "pack:check": "npm pack --dry-run --json"
+  }
+}

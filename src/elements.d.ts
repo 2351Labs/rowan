@@ -8,6 +8,7 @@ import type { RowanBulkActionsBar } from "../types/bulk-actions-bar/bulk-actions
 import type { RowanButton } from "../types/button/button.js";
 import type { RowanFilterBuilder } from "../types/filter-builder/filter-builder.js";
 import type { RowanCalendar } from "../types/calendar/calendar.js";
+import type { RowanCarousel } from "../types/carousel/carousel.js";
 import type { RowanColorPicker } from "../types/color-picker/color-picker.js";
 import type { RowanCard } from "../types/card/card.js";
 import type { RowanCheckbox } from "../types/checkbox/checkbox.js";
@@ -86,6 +87,7 @@ declare global {
     "rowan-button": RowanButton;
     "rowan-filter-builder": RowanFilterBuilder;
     "rowan-calendar": RowanCalendar;
+    "rowan-carousel": RowanCarousel;
     "rowan-color-picker": RowanColorPicker;
     "rowan-card": RowanCard;
     "rowan-checkbox": RowanCheckbox;

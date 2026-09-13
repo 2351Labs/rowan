@@ -1,0 +1,7 @@
+/**
+ * Creates the circle-slash icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function CircleSlash(options?: import("../icon.js").IconOptions | undefined): SVGSVGElement;
+export default CircleSlash;

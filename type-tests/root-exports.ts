@@ -1,5 +1,10 @@
 import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatRelativeTime,
   RowanButton,
+  RowanCarousel,
   RowanCommandItem,
   RowanCommandPalette,
   RowanRating,
@@ -9,6 +14,13 @@ import {
   RowanTree,
   RowanTreeItem,
 } from "@rowan-ui/core";
+import {
+  formatDate as formatDateFromSubpath,
+  type CurrencyFormatConfig,
+  type DateFormatConfig,
+  type NumberFormatConfig,
+  type RelativeTimeFormatConfig,
+} from "@rowan-ui/core/format";
 import { BaseElement } from "@rowan-ui/core/lib/base-element";
 import { debounce } from "@rowan-ui/core/lib/debounce";
 import { define } from "@rowan-ui/core/lib/define";
@@ -27,6 +39,7 @@ import "@rowan-ui/core/tokens/dark";
 import "@rowan-ui/core/tokens/light";
 
 const rootButton: RowanButton = document.createElement("rowan-button");
+const rootCarousel: RowanCarousel = document.createElement("rowan-carousel");
 const rootCommandItem: RowanCommandItem = document.createElement("rowan-command-item");
 const rootCommandPalette: RowanCommandPalette = document.createElement("rowan-command-palette");
 const rootRating: RowanRating = document.createElement("rowan-rating");
@@ -36,8 +49,18 @@ const rootTrendChart: RowanTrendChart = document.createElement("rowan-trend-char
 const rootTree: RowanTree = document.createElement("rowan-tree");
 const rootTreeItem: RowanTreeItem = document.createElement("rowan-tree-item");
 const baseElement: typeof BaseElement = BaseElement;
+const numberFormat: NumberFormatConfig = { locale: "de-DE", options: { maximumFractionDigits: 1 } };
+const currencyFormat: CurrencyFormatConfig = { currency: "USD", locale: "en-US" };
+const dateFormat: DateFormatConfig = { locale: "en-GB", timeZone: "UTC" };
+const relativeTimeFormat: RelativeTimeFormatConfig = { locale: "en-US", unit: "day" };
+const formattedNumber: string = formatNumber(1234.5, numberFormat);
+const formattedCurrency: string = formatCurrency(1234.5, currencyFormat);
+const formattedDate: string = formatDate("2026-09-13T12:00:00Z", dateFormat);
+const formattedSubpathDate: string = formatDateFromSubpath("2026-09-13T12:00:00Z", dateFormat);
+const formattedRelativeTime: string = formatRelativeTime(-1, relativeTimeFormat);
 
 rootButton.disabled = true;
+rootCarousel.activeIndex = 1;
 rootCommandItem.label = "Open settings";
 rootCommandPalette.open = true;
 rootRating.value = 4;
@@ -57,7 +80,13 @@ const rootRichText: string = rootRichTextEditor.text;
 
 void [
   baseElement,
+  formattedCurrency,
+  formattedDate,
+  formattedNumber,
+  formattedRelativeTime,
+  formattedSubpathDate,
   rootCommandItem,
+  rootCarousel,
   rootCommandPalette,
   rootRating,
   rootRatingValue,

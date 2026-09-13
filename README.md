@@ -163,6 +163,50 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 }
 ```
 
+## Locale-Aware Formatting
+
+Locale formatting is a pure utility, not a display-only custom element. Import it from
+`@rowan-ui/core/format`, keep locale and time-zone policy in application state, then
+assign the returned string with `textContent`. Structured `Intl` options remain ordinary
+JavaScript objects and are never serialized to attributes.
+
+```js
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatRelativeTime,
+} from "@rowan-ui/core/format";
+
+const total = formatCurrency(1234.56, {
+  currency: "EUR",
+  locale: "de-DE",
+  options: { currencyDisplay: "code" },
+});
+const deploymentDate = formatDate("2026-09-13T14:30:00Z", {
+  locale: "en-GB",
+  timeZone: "UTC",
+  options: { dateStyle: "long", timeStyle: "short" },
+});
+const yesterday = formatRelativeTime(-1, { locale: "en-US", unit: "day" });
+const unavailable = formatNumber("unknown", { fallback: "Not available" });
+```
+
+`formatNumber`, `formatCurrency`, `formatDate`, and `formatRelativeTime` return the
+caller-provided `fallback` for invalid input, locale, time zone, currency, or `Intl`
+options; the default fallback is an empty string. Run a formatter again whenever the
+application's locale or time zone changes. Table columns can use the same utility through
+their existing `format` callback:
+
+```js
+{
+  id: "total",
+  header: "Total",
+  type: "number",
+  format: (value) => formatCurrency(value, { currency: "USD", locale: "en-US" }),
+}
+```
+
 ## Component Catalog
 
 Implemented components currently include:
@@ -170,8 +214,55 @@ Implemented components currently include:
 - Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
-- Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
+- Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
 - Data display and operations: `rowan-trend-chart`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+
+## Rowan Carousel
+
+`rowan-carousel` presents a bounded sequence of directly slotted panels. Its scalar
+`active-index` is zero-based and reflected; setting `activeIndex` or calling `goTo()`,
+`previous()`, or `next()` is silent application control. Only user use of the controls
+or Arrow, Page, Home, and End keys emits the composed `rowan-change` event. Rowan does
+not autoplay or serialize panel data.
+
+```html
+<rowan-carousel id="release-highlights" label="Release highlights" active-index="1">
+  <article>
+    <h3>Release readiness</h3>
+    <p>Rollback coverage is in place for the deployment window.</p>
+  </article>
+  <article>
+    <h3>Service coverage</h3>
+    <p>Confirm the weekend handoff before the window opens.</p>
+  </article>
+</rowan-carousel>
+
+<script type="module">
+  import "@rowan-ui/core/carousel";
+
+  const carousel = document.querySelector("#release-highlights");
+  carousel.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.activeIndex, event.detail.previousIndex);
+  });
+</script>
+```
+
+## Optional Integrations
+
+`@rowan-ui/icons` provides 2,098 individually importable SVG icon modules without
+adding icon assets or a name-to-icon registry to `@rowan-ui/core`. Icons are
+decorative by default and become meaningful only when callers pass an explicit
+accessible label. See the `@rowan-ui/icons` package README for direct-import,
+accessibility, and Lucide source-license guidance.
+
+`@rowan-ui/maplibre` provides `rowan-maplibre-map` without adding a map runtime to
+`@rowan-ui/core`. Install it with `maplibre-gl` only in applications that need map
+rendering. Applications own the style or permitted tiles, provider attribution,
+credentials, cost and privacy decisions, and offline policy. The adapter accepts
+coordinates only; it does not geocode or look up addresses. Locations and marker
+layers are property-only, and accessible list and table alternatives remain
+available when map rendering cannot start. See the `@rowan-ui/maplibre` package
+README for the application-owned setup contract.
 
 ## Rowan Selection Controls
 

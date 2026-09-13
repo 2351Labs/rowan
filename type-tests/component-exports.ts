@@ -7,6 +7,7 @@ import { RowanBreadcrumb } from "@rowan-ui/core/breadcrumb";
 import { RowanBulkActionsBar } from "@rowan-ui/core/bulk-actions-bar";
 import { RowanButton } from "@rowan-ui/core/button";
 import { RowanCalendar } from "@rowan-ui/core/calendar";
+import { RowanCarousel } from "@rowan-ui/core/carousel";
 import { RowanCard } from "@rowan-ui/core/card";
 import { RowanCheckbox } from "@rowan-ui/core/checkbox";
 import { RowanChip } from "@rowan-ui/core/chip";
@@ -82,6 +83,7 @@ const breadcrumb: RowanBreadcrumb = document.createElement("rowan-breadcrumb");
 const bulkActionsBar: RowanBulkActionsBar = document.createElement("rowan-bulk-actions-bar");
 const button: RowanButton = document.createElement("rowan-button");
 const calendar: RowanCalendar = document.createElement("rowan-calendar");
+const carousel: RowanCarousel = document.createElement("rowan-carousel");
 const card: RowanCard = document.createElement("rowan-card");
 const checkbox: RowanCheckbox = document.createElement("rowan-checkbox");
 const chip: RowanChip = document.createElement("rowan-chip");
@@ -171,6 +173,8 @@ contextMenu.target = button;
 statusIndicator.tone = "success";
 rating.value = 4;
 rating.value = "";
+carousel.activeIndex = 1;
+carousel.goTo(0);
 richTextEditor.value = {
   blocks: [{ type: "paragraph", children: [{ text: "Dispatch checklist" }] }],
 };
@@ -206,6 +210,7 @@ void [
   bulkActionsBar,
   button,
   calendar,
+  carousel,
   card,
   checkbox,
   chip,

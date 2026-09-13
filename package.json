@@ -4,6 +4,9 @@
   "description": "Rowan vanilla Web Components design system.",
   "license": "MIT",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "types": "./src/index.d.ts",
   "main": "./src/index.js",
   "module": "./src/index.js",
@@ -40,6 +43,10 @@
       "types": "./src/filter-builder/filter-builder.d.ts",
       "default": "./src/filter-builder/filter-builder.js"
     },
+    "./format": {
+      "types": "./src/lib/format.d.ts",
+      "default": "./src/lib/format.js"
+    },
     "./breadcrumb": {
       "types": "./src/breadcrumb/breadcrumb.d.ts",
       "default": "./src/breadcrumb/breadcrumb.js"
@@ -47,6 +54,10 @@
     "./calendar": {
       "types": "./src/calendar/calendar.d.ts",
       "default": "./src/calendar/calendar.js"
+    },
+    "./carousel": {
+      "types": "./src/carousel/carousel.d.ts",
+      "default": "./src/carousel/carousel.js"
     },
     "./color-picker": {
       "types": "./src/color-picker/color-picker.d.ts",
@@ -377,6 +388,7 @@
     "./src/card/card.js",
     "./src/button/button.js",
     "./src/calendar/calendar.js",
+    "./src/carousel/carousel.js",
     "./src/color-picker/color-picker.js",
     "./src/date-picker/date-picker.js",
     "./src/date-range-picker/date-range-picker.js",
@@ -447,18 +459,18 @@
     }
   },
   "scripts": {
-    "analyze": "cem analyze --config custom-elements-manifest.config.js",
+    "analyze": "cem analyze --config custom-elements-manifest.config.js && npm run analyze --workspace=@rowan-ui/maplibre",
     "storybook": "storybook dev -p 6006",
     "documentation": "vite --open /documentation/index.html",
     "build-storybook": "storybook build",
-    "test": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.config.js --concurrency=1",
-    "test:browser": "web-test-runner \"src/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
+    "test": "web-test-runner \"{src,packages/*/src}/**/*.test.js\" --node-resolve --config web-test-runner.config.js --concurrency=1",
+    "test:browser": "web-test-runner \"{src,packages/*/src}/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
     "benchmark": "node ./scripts/run-benchmarks.mjs && prettier --write benchmarks/RESULTS.md benchmarks/results/latest.json",
     "tokens:sync": "node ./scripts/sync-token-sheet.mjs",
     "tokens:check": "node ./scripts/sync-token-sheet.mjs --check",
-    "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",
-    "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json && tsc --project tsconfig.typecheck.react-18.json && tsc --project tsconfig.typecheck.react-19.json",
-    "lint": "npm run tokens:check && eslint \"src/**/*.js\"",
+    "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json && npm run types --workspace=@rowan-ui/maplibre",
+    "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json && tsc --project tsconfig.typecheck.react-18.json && tsc --project tsconfig.typecheck.react-19.json && npm run typecheck --workspace=@rowan-ui/maplibre",
+    "lint": "npm run tokens:check && eslint \"src/**/*.js\" \"packages/*/src/**/*.js\"",
     "format": "prettier --write \"**/*.{js,css,md,mdx,json}\"",
     "format:check": "prettier --check \"**/*.{js,css,md,mdx,json}\""
   },
@@ -481,6 +493,7 @@
     "@web/test-runner-playwright": "^0.11.0",
     "eslint": "^8.57.1",
     "lit": "^3.3.3",
+    "maplibre-gl": "^5.24.0",
     "playwright": "^1.63.0",
     "prettier": "^3.0.0",
     "react": "^19.3.0",

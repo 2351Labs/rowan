@@ -1,0 +1,42 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "repeat",
+  nodes: [
+    [
+      "path",
+      {
+        d: "m17 2 4 4-4 4",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M3 11v-1a4 4 0 0 1 4-4h14",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "m7 22-4-4 4-4",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M21 13v1a4 4 0 0 1-4 4H3",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the repeat icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Repeat(options) {
+  return createIcon(definition, options);
+}
+
+export default Repeat;

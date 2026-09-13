@@ -115,6 +115,23 @@
   --rowan-field-border: var(--rowan-color-border);
   --rowan-card-bg: #ffffff;
   --rowan-card-border: var(--rowan-color-border);
+  --rowan-carousel-border: var(--rowan-color-border);
+  --rowan-carousel-surface: var(--rowan-card-bg);
+  --rowan-carousel-control-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 8%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-control-fg: var(--rowan-color-accent);
+  --rowan-carousel-control-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 16%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-focus-ring: var(--rowan-focus-ring);
+  --rowan-carousel-radius: var(--rowan-radius-md);
+  --rowan-carousel-font-family: var(--rowan-font-family);
+  --rowan-carousel-transition: 160ms ease;
   --rowan-dialog-bg: #ffffff;
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);

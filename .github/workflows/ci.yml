@@ -23,16 +23,23 @@ jobs:
       - run: npm run types
       - run: npm run typecheck
       - run: npm run analyze
+      - run: npm run lint --workspace=@rowan-ui/icons
+      - run: npm run verify --workspace=@rowan-ui/icons
+      - run: npm run types --workspace=@rowan-ui/icons
+      - run: npm run typecheck --workspace=@rowan-ui/icons
       - name: Verify generated artifacts
         run: |
-          changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types)"
+          changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types packages/icons/types packages/maplibre/custom-elements.json packages/maplibre/types)"
           if [[ -n "$changes" ]]; then
             printf '%s\n' "$changes"
             exit 1
           fi
       - run: npm test
+      - run: npm run test --workspace=@rowan-ui/icons
       - run: npm run build-storybook
       - run: npm pack --dry-run
+      - run: npm pack --dry-run --workspace=@rowan-ui/icons
+      - run: npm pack --dry-run --workspace=@rowan-ui/maplibre
 
   browser-compatibility:
     name: Browser (${{ matrix.browser }})
@@ -50,5 +57,8 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: npm run test:browser
+        env:
+          ROWAN_BROWSER: ${{ matrix.browser }}
+      - run: npm run test:browser --workspace=@rowan-ui/icons
         env:
           ROWAN_BROWSER: ${{ matrix.browser }}

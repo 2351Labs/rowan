@@ -117,6 +117,23 @@ export const tokenCssText = `
   --rowan-field-border: var(--rowan-color-border);
   --rowan-card-bg: #ffffff;
   --rowan-card-border: var(--rowan-color-border);
+  --rowan-carousel-border: var(--rowan-color-border);
+  --rowan-carousel-surface: var(--rowan-card-bg);
+  --rowan-carousel-control-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 8%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-control-fg: var(--rowan-color-accent);
+  --rowan-carousel-control-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 16%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-focus-ring: var(--rowan-focus-ring);
+  --rowan-carousel-radius: var(--rowan-radius-md);
+  --rowan-carousel-font-family: var(--rowan-font-family);
+  --rowan-carousel-transition: 160ms ease;
   --rowan-dialog-bg: #ffffff;
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);
@@ -581,6 +598,23 @@ export const componentTokenCssText = `
   --rowan-field-border: var(--rowan-color-border);
   --rowan-card-bg: #ffffff;
   --rowan-card-border: var(--rowan-color-border);
+  --rowan-carousel-border: var(--rowan-color-border);
+  --rowan-carousel-surface: var(--rowan-card-bg);
+  --rowan-carousel-control-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 8%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-control-fg: var(--rowan-color-accent);
+  --rowan-carousel-control-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 16%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-focus-ring: var(--rowan-focus-ring);
+  --rowan-carousel-radius: var(--rowan-radius-md);
+  --rowan-carousel-font-family: var(--rowan-font-family);
+  --rowan-carousel-transition: 160ms ease;
   --rowan-dialog-bg: #ffffff;
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);
@@ -1228,6 +1262,15 @@ export const unregisteredTokenNames = [
   "--rowan-field-border",
   "--rowan-card-bg",
   "--rowan-card-border",
+  "--rowan-carousel-border",
+  "--rowan-carousel-surface",
+  "--rowan-carousel-control-bg",
+  "--rowan-carousel-control-fg",
+  "--rowan-carousel-control-hover-bg",
+  "--rowan-carousel-focus-ring",
+  "--rowan-carousel-radius",
+  "--rowan-carousel-font-family",
+  "--rowan-carousel-transition",
   "--rowan-dialog-bg",
   "--rowan-calendar-bg",
   "--rowan-calendar-fg",

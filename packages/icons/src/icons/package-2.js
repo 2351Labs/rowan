@@ -1,0 +1,36 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "package-2",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M12 3v6",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M16.76 3a2 2 0 0 1 1.8 1.1l2.23 4.479a2 2 0 0 1 .21.891V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9.472a2 2 0 0 1 .211-.894L5.45 4.1A2 2 0 0 1 7.24 3z",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M3.054 9.013h17.893",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the package-2 icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Package2(options) {
+  return createIcon(definition, options);
+}
+
+export default Package2;

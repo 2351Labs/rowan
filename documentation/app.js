@@ -3,7 +3,19 @@ import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 
 import "../src/index.js";
+import "../packages/maplibre/src/map/map.js";
+import { ArrowRight } from "../packages/icons/src/icons/arrow-right.js";
+import { CalendarDays } from "../packages/icons/src/icons/calendar-days.js";
+import { CircleCheck } from "../packages/icons/src/icons/circle-check.js";
+import { Download } from "../packages/icons/src/icons/download.js";
+import { Menu } from "../packages/icons/src/icons/menu.js";
+import { Search } from "../packages/icons/src/icons/search.js";
+import { Settings2 } from "../packages/icons/src/icons/settings-2.js";
+import { ShieldCheck } from "../packages/icons/src/icons/shield-check.js";
+import { SlidersHorizontal } from "../packages/icons/src/icons/sliders-horizontal.js";
+import { X } from "../packages/icons/src/icons/x.js";
 import customElementsManifest from "../custom-elements.json";
+import { formatCurrency, formatDate, formatNumber, formatRelativeTime } from "../src/lib/format.js";
 import {
   componentTokens,
   primitiveColorTokens,
@@ -18,6 +30,40 @@ import {
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
+const OPEN_FREE_MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+const OPEN_FREE_MAP_ATTRIBUTION = [
+  { label: "OpenFreeMap", href: "https://openfreemap.org/" },
+  { label: "© OpenMapTiles", href: "https://www.openmaptiles.org/" },
+  {
+    label: "Data from OpenStreetMap",
+    href: "https://www.openstreetmap.org/copyright",
+  },
+];
+
+const ICON_IMPORT_SNIPPET = `import { ArrowRight } from "@rowan-ui/icons/icons/arrow-right";
+
+const button = document.querySelector("rowan-icon-button");
+button.label = "Continue";
+button.append(ArrowRight());`;
+
+const MEANINGFUL_ICON_SNIPPET = `import { CircleCheck } from "@rowan-ui/icons/icons/circle-check";
+
+const statusIcon = CircleCheck({
+  label: "Deployment completed",
+  size: 24,
+});`;
+
+const ICON_GALLERY = [
+  { create: ArrowRight, label: "Continue", name: "arrow-right" },
+  { create: CalendarDays, label: "Schedule", name: "calendar-days" },
+  { create: Download, label: "Download", name: "download" },
+  { create: Menu, label: "Open navigation", name: "menu" },
+  { create: Search, label: "Search", name: "search" },
+  { create: Settings2, label: "Settings", name: "settings-2" },
+  { create: ShieldCheck, label: "Security", name: "shield-check" },
+  { create: SlidersHorizontal, label: "Adjust filters", name: "sliders-horizontal" },
+  { create: X, label: "Close", name: "x" },
+];
 
 const QUICKSTART_SNIPPET = `npm install @rowan-ui/core
 
@@ -25,6 +71,29 @@ import "@rowan-ui/core";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";`;
+
+const FORMAT_SNIPPET = `import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatRelativeTime,
+} from "@rowan-ui/core/format";
+
+const locale = "de-DE";
+const amount = formatCurrency(1234.56, {
+  currency: "EUR",
+  locale,
+  options: { currencyDisplay: "code" },
+});
+
+const deploymentDate = formatDate("2026-09-13T14:30:00Z", {
+  locale: "en-GB",
+  timeZone: "UTC",
+  options: { dateStyle: "long", timeStyle: "short" },
+});
+
+const change = formatRelativeTime(-1, { locale: "en-US", unit: "day" });
+const fallback = formatNumber("unavailable", { fallback: "Not available" });`;
 
 const REACT_TABLE_SNIPPET = `import { useEffect, useRef, useState } from "react";
 import { useRowanElement } from "@rowan-ui/core/react";
@@ -382,6 +451,43 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
   };
 </script>`;
 
+const MAPLIBRE_MAP_SNIPPET = `<rowan-maplibre-map
+  id="dispatch-coverage"
+  label="Dispatch coverage"
+  description="Scheduled field work by coordinate."
+></rowan-maplibre-map>
+
+<script type="module">
+  import "@rowan-ui/core/tokens";
+  import "@rowan-ui/maplibre/map";
+
+  const map = document.querySelector("#dispatch-coverage");
+  map.mapStyle = "https://tiles.openfreemap.org/styles/liberty";
+  map.attribution = [
+    { label: "OpenFreeMap", href: "https://openfreemap.org/" },
+    { label: "© OpenMapTiles", href: "https://www.openmaptiles.org/" },
+    {
+      label: "Data from OpenStreetMap",
+      href: "https://www.openstreetmap.org/copyright",
+    },
+  ];
+  map.layers = [{ id: "scheduled", label: "Scheduled work", visible: true }];
+  map.locations = [
+    {
+      id: "dispatch-17",
+      label: "Generator inspection",
+      latitude: 47.6062,
+      longitude: -122.3321,
+      description: "Priority inspection",
+      layerId: "scheduled",
+    },
+  ];
+
+  map.addEventListener("rowan-location-activate", (event) => {
+    console.log(event.detail);
+  });
+</script>`;
+
 const DATE_RANGE_PICKER_SNIPPET = `<rowan-date-range-picker
   name="reportDate"
   label="Report range"
@@ -417,6 +523,30 @@ const STEPPER_SNIPPET = `<rowan-stepper
   current-step="2"
   steps="Draft,Review,Publish,Complete"
 ></rowan-stepper>`;
+
+const CAROUSEL_SNIPPET = `<rowan-carousel id="release-carousel" label="Release highlights" active-index="1">
+  <article>
+    <h3>Release readiness</h3>
+    <p>Rollback coverage is in place for the deployment window.</p>
+  </article>
+  <article>
+    <h3>Service coverage</h3>
+    <p>Confirm the weekend handoff before the window opens.</p>
+  </article>
+  <article>
+    <h3>Customer communication</h3>
+    <p>The customer notice is scheduled with the impact summary.</p>
+  </article>
+</rowan-carousel>
+
+<script type="module">
+  import "@rowan-ui/core/carousel";
+
+  const carousel = document.querySelector("#release-carousel");
+  carousel.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.activeIndex);
+  });
+</script>`;
 
 const TREE_SNIPPET = `<rowan-tree id="docs-tree" label="Documentation">
   <rowan-tree-item value="guides" expanded>
@@ -807,6 +937,7 @@ const COMPONENT_CATEGORY_SETS = {
     "accordion",
     "app-layout",
     "breadcrumb",
+    "carousel",
     "pagination",
     "side-nav",
     "side-nav-item",
@@ -1137,6 +1268,64 @@ const DOC_PAGES = [
         ${renderThemeComparisonTable()}
       </section>
     `,
+  },
+  {
+    id: "formatting",
+    group: "Foundations",
+    title: "Locale Formatting",
+    summary:
+      "Pure Intl-backed utilities for number, currency, date, and relative-time display with explicit locale and time-zone ownership.",
+    tags: ["intl", "locale", "time-zone", "formatting"],
+    keywords: ["format number", "currency", "date", "relative time", "locale", "time zone", "intl"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="formatting-preview-section">
+        <h2>Application-owned display formatting</h2>
+        <p>Rowan provides a small JavaScript utility rather than a display-only custom element. Call it where text is created, retain application ownership of locale and time zone, and write the returned string with textContent.</p>
+        <div class="docs-format-preview" id="formatting-preview" role="list"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="formatting-api">
+        <h2>Explicit locale and time zone</h2>
+        <p>All configuration is a JavaScript object, never an attribute. Omit locale to use the browser default. Supply timeZone to formatDate when a date must remain anchored to a known region or UTC.</p>
+        ${codeBlock(FORMAT_SNIPPET, "js")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="formatting-fallbacks">
+        <h2>Fallback behavior</h2>
+        <p>Invalid values, malformed or unsupported locale tags, invalid time zones, and invalid Intl option sets return fallback. The default fallback is an empty string so applications can provide localized absence text. Re-run the formatter with new configuration whenever locale or time-zone state changes.</p>
+      </section>
+    `,
+    afterRender: setupFormattingDemo,
+  },
+  {
+    id: "icons",
+    group: "Integrations",
+    title: "Icons",
+    summary:
+      "An optional, directly importable SVG icon set with deliberate accessibility defaults and no core registry.",
+    tags: ["icons", "svg", "accessibility", "optional-package"],
+    keywords: ["icons", "svg", "lucide", "decorative", "meaningful", "icon-button"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="icons-imports">
+        <h2>Individual imports</h2>
+        <p>Use the optional icon package when a product needs a shared visual vocabulary. Import an icon from its own module so core remains asset-free and the application keeps the narrowest bundle boundary.</p>
+        ${codeBlock(ICON_IMPORT_SNIPPET, "js")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="icons-accessibility">
+        <h2>Decorative and meaningful use</h2>
+        <p>Icons are hidden from assistive technology by default. Keep that default inside a labeled control or next to visible text. Give an icon an explicit label only when it communicates independent status or information.</p>
+        <div class="docs-icon-meaningful" id="docs-meaningful-icon"></div>
+        ${codeBlock(MEANINGFUL_ICON_SNIPPET, "js")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="icons-gallery">
+        <h2>Selected icon gallery</h2>
+        <p>The package ships 2,098 source icons from Lucide Static 1.45.0. This selection demonstrates direct module imports and composition with Rowan controls.</p>
+        <div class="docs-icon-gallery" id="docs-icons-gallery" role="list"></div>
+      </section>
+    `,
+    afterRender: setupIconDemo,
   },
   {
     id: "all-components",
@@ -1580,6 +1769,49 @@ const DOC_PAGES = [
     afterRender: setupTrendChartDemo,
   },
   {
+    id: "maplibre-map",
+    group: "Integrations",
+    title: "MapLibre Map",
+    summary:
+      "Optional, provider-aware map integration with application-owned styles, visible attribution, and accessible record alternatives.",
+    tags: ["maplibre", "maps", "coordinates", "accessibility"],
+    keywords: [
+      "maplibre",
+      "openfreemap",
+      "map",
+      "coordinates",
+      "location list",
+      "location table",
+      "rowan-location-activate",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="maplibre-map-coverage">
+        <h2>Dispatch coverage</h2>
+        <p>This live example uses OpenFreeMap's public Liberty style as application-owned configuration. The optional MapLibre package retains the same location records in keyboard-operable list and table alternatives.</p>
+        <div class="docs-maplibre-demo">
+          <rowan-maplibre-map
+            id="docs-maplibre-map"
+            label="OpenFreeMap dispatch coverage"
+            description="Scheduled field work by coordinate."
+          ></rowan-maplibre-map>
+        </div>
+        <pre id="maplibre-map-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="maplibre-map-boundary">
+        <h2>Provider and fallback boundary</h2>
+        <p>Install <code>@rowan-ui/maplibre</code> and <code>maplibre-gl</code> only where map rendering is needed. Applications supply the style, permitted tile source, attribution, cost and privacy policy. Rowan stores no provider credential and performs no geocoding or address lookup. Without an available provider, the location list and table remain usable.</p>
+        ${codeBlock(MAPLIBRE_MAP_SNIPPET, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="maplibre-map-scale">
+        <h2>Scale and motion</h2>
+        <p>The element preserves marker identity across routine updates and moves the camera only after an explicit location activation. It is intended for modest sets of individually actionable locations, not thousands of DOM markers or high-frequency feeds. For dense spatial data, use a MapLibre GeoJSON source/layer integration and retain an equivalent accessible record view.</p>
+      </section>
+    `,
+    afterRender: setupMapLibreMapDemo,
+  },
+  {
     id: "date-range-picker",
     group: "Components",
     title: "Rowan Date Range Picker",
@@ -2013,6 +2245,56 @@ const DOC_PAGES = [
         ${codeBlock(STEPPER_SNIPPET, "html")}
       </section>
     `,
+  },
+  {
+    id: "carousel",
+    group: "Components",
+    title: "Rowan Carousel",
+    summary:
+      "A controlled, slot-based sequence for bounded related content with explicit navigation and no autoplay.",
+    tags: ["navigation", "slots", "keyboard", "events"],
+    keywords: ["carousel", "panels", "active index", "previous", "next", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="carousel-overview">
+        <h2>Bounded panel navigation</h2>
+        <p>Place each panel directly in the default slot. Rowan keeps one panel available at a time, retains the active zero-based index, and leaves progression entirely under user or application control.</p>
+        <div class="docs-carousel-demo">
+          <rowan-carousel id="docs-carousel-demo" label="Release readiness highlights" active-index="1">
+            <article class="docs-carousel-panel" data-tone="ready">
+              <p class="docs-carousel-eyebrow">Release readiness</p>
+              <h3>Deploy with a clear rollback path</h3>
+              <p>The operations checklist is complete, with the previous build retained for a controlled rollback.</p>
+              <rowan-badge tone="success">Ready to deploy</rowan-badge>
+            </article>
+            <article class="docs-carousel-panel" data-tone="attention">
+              <p class="docs-carousel-eyebrow">Service coverage</p>
+              <h3>Two handoffs still need review</h3>
+              <p>Confirm the weekend support schedule before the release window opens for the regional team.</p>
+              <rowan-badge tone="warning">Attention needed</rowan-badge>
+            </article>
+            <article class="docs-carousel-panel" data-tone="scheduled">
+              <p class="docs-carousel-eyebrow">Customer communication</p>
+              <h3>Status update is scheduled</h3>
+              <p>The customer notice will publish with the maintenance time and a plain-language impact summary.</p>
+              <rowan-badge tone="info">Scheduled</rowan-badge>
+            </article>
+          </rowan-carousel>
+        </div>
+        <pre id="carousel-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="carousel-contract">
+        <h2>Controlled behavior</h2>
+        <p>Set activeIndex or call goTo, previous, and next from application code without emitting an event. User controls and viewport Arrow, Page, Home, and End keys emit rowan-change with only activeIndex and previousIndex. The component never advances automatically.</p>
+        ${codeBlock(CAROUSEL_SNIPPET, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="carousel-accessibility">
+        <h2>Keyboard and motion</h2>
+        <p>Previous and next controls remain keyboard-operable, the viewport supports directional and boundary keys, and the visible position is announced as panels change. Panel entry motion is disabled when reduced motion is requested.</p>
+      </section>
+    `,
+    afterRender: setupCarouselDemo,
   },
   {
     id: "tree",
@@ -2609,6 +2891,16 @@ const NAV_SECTIONS = [
       { pageId: "react", label: "React" },
       { pageId: "theming", label: "Theming" },
       { pageId: "tokens", label: "Tokens" },
+      { pageId: "formatting", label: "Locale Formatting" },
+    ],
+  },
+  {
+    id: "integrations",
+    label: "Integrations",
+    defaultOpen: true,
+    items: [
+      { pageId: "icons", label: "Icons" },
+      { pageId: "maplibre-map", label: "MapLibre Map" },
     ],
   },
   {
@@ -2649,6 +2941,7 @@ const NAV_SECTIONS = [
       { pageId: "file-item", label: "File Item" },
       { pageId: "file-upload", label: "File Upload" },
       { pageId: "stepper", label: "Stepper" },
+      { pageId: "carousel", label: "Carousel" },
       { pageId: "tree", label: "Tree" },
       { pageId: "validation-summary", label: "Validation Summary" },
       { pageId: "form-wizard", label: "Form Wizard" },
@@ -3187,6 +3480,162 @@ function setupTrendChartDemo() {
   chart.addEventListener("rowan-point-activate", (event) => {
     const stamp = new Date().toLocaleTimeString();
     const next = `[${stamp}] rowan-point-activate\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupCarouselDemo() {
+  const carousel = mainEl.querySelector("#docs-carousel-demo");
+  const output = mainEl.querySelector("#carousel-events");
+  setupWorkspaceEventLog(
+    carousel,
+    output,
+    ["rowan-change"],
+    "Use the previous or next control, or focus the panel area and use Arrow, Home, or End.",
+  );
+}
+
+function setupFormattingDemo() {
+  const preview = mainEl.querySelector("#formatting-preview");
+  if (!(preview instanceof HTMLElement)) return;
+
+  const examples = [
+    {
+      label: "Number",
+      detail: "de-DE with one decimal place",
+      value: formatNumber(1234567.89, {
+        locale: "de-DE",
+        options: { maximumFractionDigits: 1 },
+      }),
+    },
+    {
+      label: "Currency",
+      detail: "de-DE with an explicit EUR code",
+      value: formatCurrency(1234.56, {
+        currency: "EUR",
+        locale: "de-DE",
+        options: { currencyDisplay: "code" },
+      }),
+    },
+    {
+      label: "Date and time",
+      detail: "en-GB pinned to UTC",
+      value: formatDate("2026-09-13T14:30:00Z", {
+        locale: "en-GB",
+        timeZone: "UTC",
+        options: { dateStyle: "long", timeStyle: "short" },
+      }),
+    },
+    {
+      label: "Relative time",
+      detail: "en-US day with numeric auto",
+      value: formatRelativeTime(-1, { locale: "en-US", unit: "day" }),
+    },
+  ];
+
+  const fragment = document.createDocumentFragment();
+  for (const example of examples) {
+    const item = document.createElement("article");
+    item.className = "docs-format-preview-item";
+    item.setAttribute("role", "listitem");
+
+    const label = document.createElement("p");
+    label.className = "docs-format-preview-label";
+    label.textContent = example.label;
+
+    const value = document.createElement("output");
+    value.className = "docs-format-preview-value";
+    value.textContent = example.value;
+
+    const detail = document.createElement("p");
+    detail.className = "docs-format-preview-detail";
+    detail.textContent = example.detail;
+
+    item.append(label, value, detail);
+    fragment.append(item);
+  }
+
+  preview.replaceChildren(fragment);
+}
+
+function setupIconDemo() {
+  const gallery = mainEl.querySelector("#docs-icons-gallery");
+  const meaningful = mainEl.querySelector("#docs-meaningful-icon");
+
+  if (gallery instanceof HTMLElement) {
+    const fragment = document.createDocumentFragment();
+
+    for (const icon of ICON_GALLERY) {
+      const item = document.createElement("article");
+      item.className = "docs-icon-tile";
+      item.setAttribute("role", "listitem");
+
+      const button = document.createElement("rowan-icon-button");
+      button.label = icon.label;
+      button.title = icon.label;
+      button.append(icon.create({ size: 22 }));
+
+      const name = document.createElement("code");
+      name.textContent = icon.name;
+
+      item.append(button, name);
+      fragment.append(item);
+    }
+
+    gallery.replaceChildren(fragment);
+  }
+
+  if (meaningful instanceof HTMLElement) {
+    const icon = CircleCheck({ label: "Deployment completed", size: 26 });
+    const text = document.createElement("span");
+    text.textContent = "Deployment completed";
+    meaningful.replaceChildren(icon, text);
+  }
+}
+
+function setupMapLibreMapDemo() {
+  const map = mainEl.querySelector("#docs-maplibre-map");
+  const output = mainEl.querySelector("#maplibre-map-events");
+
+  if (!(map instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  map.mapStyle = OPEN_FREE_MAP_STYLE;
+  map.attribution = OPEN_FREE_MAP_ATTRIBUTION;
+  map.layers = [{ id: "scheduled", label: "Scheduled work", color: "#24543c", visible: true }];
+  map.locations = [
+    {
+      id: "dispatch-17",
+      label: "Generator inspection",
+      latitude: 47.6062,
+      longitude: -122.3321,
+      description: "Priority inspection",
+      layerId: "scheduled",
+      status: "assigned",
+    },
+    {
+      id: "dispatch-18",
+      label: "Signal check",
+      latitude: 47.6097,
+      longitude: -122.3331,
+      description: "Routine verification",
+      layerId: "scheduled",
+      status: "scheduled",
+    },
+  ];
+  output.textContent =
+    "Activate a marker, location-list item, or table action to inspect rowan-location-activate.";
+
+  map.addEventListener("rowan-location-activate", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-location-activate\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+
+  map.addEventListener("rowan-layer-change", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-layer-change\n${formatEventDetail(event.detail)}\n`;
     output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
   });
 }

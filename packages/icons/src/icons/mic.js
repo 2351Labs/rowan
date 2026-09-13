@@ -1,0 +1,40 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "mic",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M12 19v3",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M19 10v2a7 7 0 0 1-14 0v-2",
+      },
+    ],
+    [
+      "rect",
+      {
+        x: "9",
+        y: "2",
+        width: "6",
+        height: "13",
+        rx: "3",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the mic icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function Mic(options) {
+  return createIcon(definition, options);
+}
+
+export default Mic;

@@ -1,0 +1,54 @@
+import { createIcon } from "../icon.js";
+
+const definition = {
+  name: "book-open-text",
+  nodes: [
+    [
+      "path",
+      {
+        d: "M12 5v16",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M16 13h2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M16 9h2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M6 13h2",
+      },
+    ],
+    [
+      "path",
+      {
+        d: "M6 9h2",
+      },
+    ],
+  ],
+};
+
+/**
+ * Creates the book-open-text icon.
+ * @param {import("../icon.js").IconOptions} [options]
+ * @returns {SVGSVGElement}
+ */
+export function BookOpenText(options) {
+  return createIcon(definition, options);
+}
+
+export default BookOpenText;

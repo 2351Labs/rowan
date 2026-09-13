@@ -412,6 +412,144 @@ html[data-theme="dark"] body {
   gap: 0.6rem;
 }
 
+.docs-format-preview {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin-top: 0.8rem;
+}
+
+.docs-format-preview-item {
+  background: color-mix(in srgb, var(--docs-panel-bg) 90%, var(--rowan-color-accent) 10%);
+  border: 1px solid var(--docs-border);
+  border-radius: 0.6rem;
+  display: grid;
+  gap: 0.25rem;
+  min-inline-size: 0;
+  padding: 0.75rem 0.8rem;
+}
+
+.docs-format-preview-label,
+.docs-format-preview-detail,
+.docs-format-preview-value {
+  margin: 0;
+}
+
+.docs-format-preview-label {
+  color: var(--docs-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-format-preview-value {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 0.92rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.docs-format-preview-detail {
+  color: var(--docs-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.docs-carousel-demo {
+  inline-size: min(100%, 48rem);
+  margin-top: 0.7rem;
+}
+
+.docs-carousel-demo rowan-carousel {
+  --rowan-carousel-surface: var(--docs-panel-bg);
+  display: block;
+}
+
+.docs-carousel-panel {
+  align-content: start;
+  background: color-mix(in srgb, var(--rowan-color-bg) 90%, var(--rowan-color-accent) 10%);
+  display: grid;
+  gap: 0.7rem;
+  min-block-size: 13rem;
+  padding: var(--rowan-space-5);
+}
+
+.docs-carousel-panel[data-tone="attention"] {
+  background: color-mix(in srgb, var(--rowan-color-bg) 91%, #b9801e 9%);
+}
+
+.docs-carousel-panel[data-tone="scheduled"] {
+  background: color-mix(in srgb, var(--rowan-color-bg) 91%, #3972a8 9%);
+}
+
+.docs-carousel-panel h3 {
+  font-family: "Fraunces", "Iowan Old Style", serif;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.docs-carousel-panel p {
+  margin: 0;
+  max-inline-size: 42rem;
+}
+
+.docs-carousel-panel rowan-badge {
+  justify-self: start;
+}
+
+.docs-carousel-eyebrow {
+  color: var(--docs-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-icon-meaningful {
+  align-items: center;
+  background: color-mix(in srgb, var(--rowan-color-success, #267348) 10%, var(--docs-panel-bg));
+  border: 1px solid color-mix(in srgb, var(--rowan-color-success, #267348) 35%, var(--docs-border));
+  border-radius: 0.5rem;
+  color: var(--rowan-color-fg);
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.7rem 0;
+  padding: 0.7rem 0.8rem;
+}
+
+.docs-icon-meaningful svg {
+  color: var(--rowan-color-success, #267348);
+  flex: 0 0 auto;
+}
+
+.docs-icon-gallery {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fill, minmax(8.25rem, 1fr));
+  margin-top: 0.7rem;
+}
+
+.docs-icon-tile {
+  align-items: center;
+  background: var(--docs-panel-bg);
+  border: 1px solid var(--docs-border);
+  border-radius: 0.5rem;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  min-inline-size: 0;
+  padding: 0.7rem;
+}
+
+.docs-icon-tile code {
+  color: var(--docs-muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 .docs-form-stack {
   display: grid;
   gap: 1rem;
@@ -453,6 +591,17 @@ html[data-theme="dark"] body {
   --rowan-virtual-list-height: 20rem;
   inline-size: min(100%, 46rem);
   margin-top: 0.65rem;
+}
+
+.docs-maplibre-demo {
+  inline-size: min(100%, 64rem);
+  margin-top: 0.65rem;
+}
+
+.docs-maplibre-demo rowan-maplibre-map {
+  --rowan-maplibre-map-height: 20rem;
+  display: block;
+  inline-size: 100%;
 }
 
 .docs-app-layout-frame {
