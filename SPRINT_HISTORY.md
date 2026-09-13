@@ -6,7 +6,7 @@ Last updated: 2026-09-12
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 74 components
+- Current implemented catalog includes 75 components
 
 ## Completed Sprints
 
@@ -585,17 +585,34 @@ Verification completed at sprint close:
 - Static rich-text documentation checks at 1440px and 390px confirmed keyboard formatting, normalized event payloads, dark-theme legibility, and no horizontal overflow
 - Scoped Prettier validation and `git diff --check`
 
+### Sprint 24: Accessible Data Visualization
+
+Status: Completed
+
+Delivered:
+
+- `rowan-trend-chart` as a compact, multi-series operational trend visualization for comparisons that are cumbersome to scan in a table alone
+- Property-only `series`, `labels`, `config`, and `valueFormatter` APIs, with normalized finite numeric input, intentional null gaps, safe constrained series colors, and no structured-data attributes
+- Native SVG geometry built through DOM nodes, paired with a visible text-and-swatch legend and an always-available semantic data table containing the same values
+- Optional keyboard-discoverable data points with Arrow, Home, End, Enter, and Space interaction; user-only composed `rowan-point-activate` details; and a live detail announcement
+- Responsive HTML chart axes that remain readable at narrow widths, complete chart/table access without motion-dependent information, and theme-aware default series colors
+- Component tokens, guarded registration, visual hidden state, CSS parts, Storybook stories and event trace support, static documentation with a live event demo, README guidance, root and subpath exports, declaration bridge, generated types, global tag mapping, CEM coverage, React JSX propagation, and public contract tests
+
+Verification completed at sprint close:
+
+- Focused trend-chart contracts: 5 passing in Chromium, Firefox, and WebKit
+- `npm run tokens:sync`, `npm run tokens:check`, `npm run lint`, `npm run types`, and `npm run typecheck`
+- `npm test` (78 files, 323 passing contracts)
+- Chromium, Firefox, and WebKit each passed 78 files and 323 public contracts
+- Two consecutive `npm run analyze` runs produced byte-identical manifests with 75 unique Rowan tags and SHA-256 `6e03cccd4df5ba5c125d3ca43335043f09a3ecdd62bd70f8b1bcbe5161179b5d`
+- `npm run build-storybook`
+- `npm pack --dry-run --json`: 652 files and 3,297,188 unpacked bytes; includes trend-chart source, stylesheet, declaration bridge, generated types, and CEM while excluding documentation artifacts
+- Static trend-chart documentation checks at 1440px and 390px confirmed visible SVG and text legend, equivalent table data, keyboard point activation payloads, dark-theme contrast, responsive axis labels, and no page-level horizontal overflow
+- Scoped Prettier validation and `git diff --check`
+
 ### Deferred Backlog Stories
 
 Status: Unscheduled. These are planning stories only; they do not add tags, exports, CEM declarations, or placeholder Storybook entries until a product use case selects them.
-
-#### DS-04: Accessible Data Visualization
-
-**User story:** As an operations analyst, I want to compare a small set of metrics visually so I can spot trends that are cumbersome to scan in a table alone.
-
-**Ready when:** A product surface demonstrates that Rowan table, progress, and status primitives cannot satisfy the comparison task, and an accessible rendering strategy is selected.
-
-**Acceptance bar:** Any charting work must keep configuration and data property-only, expose an equivalent textual or tabular summary, make series and data points keyboard discoverable where interactive, respect reduced motion, avoid a mandatory core runtime dependency without an explicit package decision, and include deterministic visual and interaction coverage.
 
 #### DS-05: Provider-Aware Maps
 

@@ -61,6 +61,7 @@ import { RowanTabPanel } from "@rowan-ui/core/tab-panel";
 import { RowanTable } from "@rowan-ui/core/table";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
 import { RowanTabs } from "@rowan-ui/core/tabs";
+import { RowanTrendChart } from "@rowan-ui/core/trend-chart";
 import { RowanTextField } from "@rowan-ui/core/text-field";
 import { RowanTextarea } from "@rowan-ui/core/textarea";
 import { RowanTimePicker } from "@rowan-ui/core/time-picker";
@@ -137,6 +138,7 @@ const tabPanel: RowanTabPanel = document.createElement("rowan-tab-panel");
 const table: RowanTable = document.createElement("rowan-table");
 const tableToolbar: RowanTableToolbar = document.createElement("rowan-table-toolbar");
 const tabs: RowanTabs = document.createElement("rowan-tabs");
+const trendChart: RowanTrendChart = document.createElement("rowan-trend-chart");
 const textField: RowanTextField = document.createElement("rowan-text-field");
 const textarea: RowanTextarea = document.createElement("rowan-textarea");
 const timePicker: RowanTimePicker = document.createElement("rowan-time-picker");
@@ -173,6 +175,14 @@ richTextEditor.value = {
   blocks: [{ type: "paragraph", children: [{ text: "Dispatch checklist" }] }],
 };
 richTextEditor.mode = "plain";
+trendChart.config = {
+  labels: ["Mon", "Tue"],
+  interactive: true,
+  series: [{ id: "incidents", label: "Incidents", values: [4, 8] }],
+};
+trendChart.config = {
+  series: [{ id: "resolved", label: "Resolved", values: [null, 6] }],
+};
 
 const virtualListItemSize: number = virtualList.itemSize;
 const tableVirtualItemSize: number = table.virtualItemSize;
@@ -250,6 +260,7 @@ void [
   table,
   tableToolbar,
   tabs,
+  trendChart,
   textField,
   textarea,
   timePicker,

@@ -82,6 +82,7 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-cell-action",
   "rowan-page-change",
   "rowan-row-activate",
+  "rowan-point-activate",
 ];
 
 function describeEventTarget(target) {

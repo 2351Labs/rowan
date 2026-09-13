@@ -359,6 +359,29 @@ const RICH_TEXT_EDITOR_SNIPPET = `<rowan-rich-text-editor
   });
 </script>`;
 
+const TREND_CHART_SNIPPET = `<rowan-trend-chart
+  id="on-call-workload"
+  label="On-call workload"
+  description="Incoming and resolved incidents by day."
+  interactive
+></rowan-trend-chart>
+
+<script type="module">
+  import "@rowan-ui/core/trend-chart";
+
+  const chart = document.querySelector("#on-call-workload");
+  chart.config = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    interactive: true,
+    series: [
+      { id: "incoming", label: "Incoming incidents", values: [18, 24, 17, 12, 15, 9] },
+      { id: "resolved", label: "Resolved incidents", values: [13, 19, 20, 15, 16, 12] },
+    ],
+    valueFormatter: (value, context) =>
+      context.tick ? String(value) : \`\${value} incidents\`,
+  };
+</script>`;
+
 const DATE_RANGE_PICKER_SNIPPET = `<rowan-date-range-picker
   name="reportDate"
   label="Report range"
@@ -1526,6 +1549,37 @@ const DOC_PAGES = [
     afterRender: setupRichTextEditorDemo,
   },
   {
+    id: "trend-chart",
+    group: "Components",
+    title: "Rowan Trend Chart",
+    summary:
+      "Compact, accessible multi-series trend comparison with keyboard points and an equivalent data table.",
+    tags: ["data display", "trends", "keyboard", "svg"],
+    keywords: ["trend chart", "line chart", "metrics", "table summary", "rowan-point-activate"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="trend-chart-comparison">
+        <h2>Operational trend comparison</h2>
+        <p>Compare incoming and resolved incidents across the operational week. Every visual value is also available in the data table below the chart.</p>
+        <div class="demo-row">
+          <rowan-trend-chart
+            id="docs-trend-chart"
+            label="On-call workload"
+            description="Incoming and resolved incidents by day."
+            interactive
+          ></rowan-trend-chart>
+        </div>
+        <pre id="trend-chart-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="trend-chart-contract">
+        <h2>Accessible data contract</h2>
+        <p>series, labels, config, and valueFormatter are property-only. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information.</p>
+        ${codeBlock(TREND_CHART_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupTrendChartDemo,
+  },
+  {
     id: "date-range-picker",
     group: "Components",
     title: "Rowan Date Range Picker",
@@ -2576,6 +2630,7 @@ const NAV_SECTIONS = [
       { pageId: "color-picker", label: "Color Picker" },
       { pageId: "rating", label: "Rating" },
       { pageId: "rich-text-editor", label: "Rich Text Editor" },
+      { pageId: "trend-chart", label: "Trend Chart" },
       { pageId: "date-range-picker", label: "Date Range Picker" },
       { pageId: "calendar", label: "Calendar" },
       { pageId: "listbox", label: "Listbox" },
@@ -3106,6 +3161,32 @@ function setupRichTextEditorDemo() {
   editor.addEventListener("rowan-change", (event) => {
     const stamp = new Date().toLocaleTimeString();
     const next = `[${stamp}] rowan-change\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
+}
+
+function setupTrendChartDemo() {
+  const chart = mainEl.querySelector("#docs-trend-chart");
+  const output = mainEl.querySelector("#trend-chart-events");
+
+  if (!(chart instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  chart.config = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    interactive: true,
+    series: [
+      { id: "incoming", label: "Incoming incidents", values: [18, 24, 17, 12, 15, 9] },
+      { id: "resolved", label: "Resolved incidents", values: [13, 19, 20, 15, 16, 12] },
+    ],
+    valueFormatter: (value, context) => (context.tick ? String(value) : `${value} incidents`),
+  };
+  output.textContent = "Activate a point to inspect its rowan-point-activate payload.";
+
+  chart.addEventListener("rowan-point-activate", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-point-activate\n${formatEventDetail(event.detail)}\n`;
     output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
   });
 }

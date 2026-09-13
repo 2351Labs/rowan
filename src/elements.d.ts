@@ -62,6 +62,7 @@ import type { RowanTabPanel } from "../types/tab-panel/tab-panel.js";
 import type { RowanTable } from "../types/table/table.js";
 import type { RowanTableToolbar } from "../types/table-toolbar/table-toolbar.js";
 import type { RowanTabs } from "../types/tabs/tabs.js";
+import type { RowanTrendChart } from "../types/trend-chart/trend-chart.js";
 import type { RowanTree } from "../types/tree/tree.js";
 import type { RowanTreeItem } from "../types/tree-item/tree-item.js";
 import type { RowanTextField } from "../types/text-field/text-field.js";
@@ -139,6 +140,7 @@ declare global {
     "rowan-table": RowanTable;
     "rowan-table-toolbar": RowanTableToolbar;
     "rowan-tabs": RowanTabs;
+    "rowan-trend-chart": RowanTrendChart;
     "rowan-tree": RowanTree;
     "rowan-tree-item": RowanTreeItem;
     "rowan-text-field": RowanTextField;

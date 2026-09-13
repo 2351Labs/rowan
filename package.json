@@ -196,6 +196,10 @@
       "types": "./src/rich-text-editor/rich-text-editor.d.ts",
       "default": "./src/rich-text-editor/rich-text-editor.js"
     },
+    "./trend-chart": {
+      "types": "./src/trend-chart/trend-chart.d.ts",
+      "default": "./src/trend-chart/trend-chart.js"
+    },
     "./row-details-panel": {
       "types": "./src/row-details-panel/row-details-panel.d.ts",
       "default": "./src/row-details-panel/row-details-panel.js"
@@ -403,6 +407,7 @@
     "./src/radio-group/radio-group.js",
     "./src/rating/rating.js",
     "./src/rich-text-editor/rich-text-editor.js",
+    "./src/trend-chart/trend-chart.js",
     "./src/row-details-panel/row-details-panel.js",
     "./src/skeleton/skeleton.js",
     "./src/select/select.js",

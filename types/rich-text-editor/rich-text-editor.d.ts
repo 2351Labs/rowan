@@ -31,42 +31,42 @@
  * @event rowan-change - Fired when a user changes the normalized document.
  */
 export class RowanRichTextEditor extends BaseElement {
-  static shadowRootOptions: {
-    mode: string;
-    delegatesFocus: boolean;
-  };
-  static componentTokenPrefixes: string[];
-  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-  set name(value: string);
-  get name(): string;
-  set label(value: string);
-  get label(): string;
-  set description(value: string);
-  get description(): string;
-  set placeholder(value: string);
-  get placeholder(): string;
-  set mode(value: "plain" | "rich");
-  get mode(): "plain" | "rich";
-  set disabled(value: boolean);
-  get disabled(): boolean;
-  set required(value: boolean);
-  get required(): boolean;
-  set invalid(value: boolean);
-  get invalid(): boolean;
-  /** @param {import("./document.js").RowanRichTextDocument} value */
-  set value(value: import("./document.js").RowanRichTextDocument);
-  /** @returns {import("./document.js").RowanRichTextDocument} */
-  get value(): import("./document.js").RowanRichTextDocument;
-  set text(value: string);
-  get text(): string;
-  clear(): void;
-  focus(options: any): void;
-  setFormValue(value?: string, state?: string): void;
-  setValidity(flags?: {}, message?: string, anchor?: any): void;
-  formResetCallback(): void;
-  formStateRestoreCallback(state: any): void;
-  checkValidity(): boolean;
-  reportValidity(): boolean;
-  #private;
+    static shadowRootOptions: {
+        mode: string;
+        delegatesFocus: boolean;
+    };
+    static componentTokenPrefixes: string[];
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+    set name(value: string);
+    get name(): string;
+    set label(value: string);
+    get label(): string;
+    set description(value: string);
+    get description(): string;
+    set placeholder(value: string);
+    get placeholder(): string;
+    set mode(value: "plain" | "rich");
+    get mode(): "plain" | "rich";
+    set disabled(value: boolean);
+    get disabled(): boolean;
+    set required(value: boolean);
+    get required(): boolean;
+    set invalid(value: boolean);
+    get invalid(): boolean;
+    /** @param {import("./document.js").RowanRichTextDocument} value */
+    set value(value: import("./document.js").RowanRichTextDocument);
+    /** @returns {import("./document.js").RowanRichTextDocument} */
+    get value(): import("./document.js").RowanRichTextDocument;
+    set text(value: string);
+    get text(): string;
+    clear(): void;
+    focus(options: any): void;
+    setFormValue(value?: string, state?: string): void;
+    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    formResetCallback(): void;
+    formStateRestoreCallback(state: any): void;
+    checkValidity(): boolean;
+    reportValidity(): boolean;
+    #private;
 }
 import { BaseElement } from "../lib/base-element.js";

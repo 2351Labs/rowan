@@ -68,6 +68,7 @@ export { RowanSwitch } from "./switch/switch.js";
 export { RowanTab } from "./tab/tab.js";
 export { RowanTabPanel } from "./tab-panel/tab-panel.js";
 export { RowanTabs } from "./tabs/tabs.js";
+export { RowanTrendChart } from "./trend-chart/trend-chart.js";
 export { RowanTree } from "./tree/tree.js";
 export { RowanTreeItem } from "./tree-item/tree-item.js";
 export { RowanTextarea } from "./textarea/textarea.js";
@@ -77,11 +78,4 @@ export { RowanToaster } from "./toaster/toaster.js";
 export { RowanTooltip } from "./tooltip/tooltip.js";
 export { RowanValidationSummary } from "./validation-summary/validation-summary.js";
 export { RowanVirtualList } from "./virtual-list/virtual-list.js";
-export {
-  readBooleanAttribute,
-  readNumberAttribute,
-  readStringAttribute,
-  reflectBooleanAttribute,
-  reflectNumberAttribute,
-  reflectStringAttribute,
-} from "./lib/reflect.js";
+export { readBooleanAttribute, readNumberAttribute, readStringAttribute, reflectBooleanAttribute, reflectNumberAttribute, reflectStringAttribute } from "./lib/reflect.js";

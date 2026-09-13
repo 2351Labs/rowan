@@ -274,6 +274,25 @@ export const tokenCssText = `
   );
   --rowan-rich-text-editor-button-active-fg: var(--rowan-color-accent);
   --rowan-rich-text-editor-invalid-border: var(--rowan-color-danger);
+  --rowan-trend-chart-bg: var(--rowan-card-bg);
+  --rowan-trend-chart-fg: var(--rowan-color-fg);
+  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
+  --rowan-trend-chart-border: var(--rowan-color-border);
+  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
+  --rowan-trend-chart-focus-ring: var(--rowan-focus-ring);
+  --rowan-trend-chart-radius: var(--rowan-radius-md);
+  --rowan-trend-chart-font-family: var(--rowan-font-family);
+  --rowan-trend-chart-min-block-size: 12rem;
+  --rowan-trend-chart-series-1: var(--rowan-color-accent);
+  --rowan-trend-chart-series-2: var(--rowan-color-danger);
+  --rowan-trend-chart-series-3: var(--rowan-color-ink-700);
+  --rowan-trend-chart-series-4: var(--rowan-color-forest-500);
+  --rowan-trend-chart-point-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-trend-chart-active-point-ring: var(--rowan-color-fg);
   --rowan-virtual-list-bg: var(--rowan-color-bg);
   --rowan-virtual-list-fg: var(--rowan-color-fg);
   --rowan-virtual-list-border-color: var(--rowan-color-border);
@@ -719,6 +738,25 @@ export const componentTokenCssText = `
   );
   --rowan-rich-text-editor-button-active-fg: var(--rowan-color-accent);
   --rowan-rich-text-editor-invalid-border: var(--rowan-color-danger);
+  --rowan-trend-chart-bg: var(--rowan-card-bg);
+  --rowan-trend-chart-fg: var(--rowan-color-fg);
+  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
+  --rowan-trend-chart-border: var(--rowan-color-border);
+  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
+  --rowan-trend-chart-focus-ring: var(--rowan-focus-ring);
+  --rowan-trend-chart-radius: var(--rowan-radius-md);
+  --rowan-trend-chart-font-family: var(--rowan-font-family);
+  --rowan-trend-chart-min-block-size: 12rem;
+  --rowan-trend-chart-series-1: var(--rowan-color-accent);
+  --rowan-trend-chart-series-2: var(--rowan-color-danger);
+  --rowan-trend-chart-series-3: var(--rowan-color-ink-700);
+  --rowan-trend-chart-series-4: var(--rowan-color-forest-500);
+  --rowan-trend-chart-point-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-trend-chart-active-point-ring: var(--rowan-color-fg);
   --rowan-virtual-list-bg: var(--rowan-color-bg);
   --rowan-virtual-list-fg: var(--rowan-color-fg);
   --rowan-virtual-list-border-color: var(--rowan-color-border);
@@ -1335,6 +1373,21 @@ export const unregisteredTokenNames = [
   "--rowan-rich-text-editor-button-active-bg",
   "--rowan-rich-text-editor-button-active-fg",
   "--rowan-rich-text-editor-invalid-border",
+  "--rowan-trend-chart-bg",
+  "--rowan-trend-chart-fg",
+  "--rowan-trend-chart-muted-fg",
+  "--rowan-trend-chart-border",
+  "--rowan-trend-chart-grid",
+  "--rowan-trend-chart-focus-ring",
+  "--rowan-trend-chart-radius",
+  "--rowan-trend-chart-font-family",
+  "--rowan-trend-chart-min-block-size",
+  "--rowan-trend-chart-series-1",
+  "--rowan-trend-chart-series-2",
+  "--rowan-trend-chart-series-3",
+  "--rowan-trend-chart-series-4",
+  "--rowan-trend-chart-point-hover-bg",
+  "--rowan-trend-chart-active-point-ring",
   "--rowan-virtual-list-bg",
   "--rowan-virtual-list-fg",
   "--rowan-virtual-list-border-color",

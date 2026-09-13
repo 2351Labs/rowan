@@ -54,19 +54,19 @@ export function renderDocument(root: HTMLElement, value: unknown): void;
  */
 export function documentFromEditingSurface(root: HTMLElement): RowanRichTextDocument;
 export type RowanRichTextRun = {
-  text: string;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
+    text: string;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
 };
 export type RowanRichTextParagraph = {
-  type: "paragraph";
-  children: RowanRichTextRun[];
+    type: "paragraph";
+    children: RowanRichTextRun[];
 };
 export type RowanRichTextList = {
-  type: "unordered-list" | "ordered-list";
-  items: RowanRichTextRun[][];
+    type: "unordered-list" | "ordered-list";
+    items: RowanRichTextRun[][];
 };
 export type RowanRichTextDocument = {
-  blocks: Array<RowanRichTextParagraph | RowanRichTextList>;
+    blocks: Array<RowanRichTextParagraph | RowanRichTextList>;
 };

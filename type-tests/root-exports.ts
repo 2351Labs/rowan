@@ -5,6 +5,7 @@ import {
   RowanRating,
   RowanRichTextEditor,
   RowanTable,
+  RowanTrendChart,
   RowanTree,
   RowanTreeItem,
 } from "@rowan-ui/core";
@@ -31,6 +32,7 @@ const rootCommandPalette: RowanCommandPalette = document.createElement("rowan-co
 const rootRating: RowanRating = document.createElement("rowan-rating");
 const rootRichTextEditor: RowanRichTextEditor = document.createElement("rowan-rich-text-editor");
 const rootTable: RowanTable = document.createElement("rowan-table");
+const rootTrendChart: RowanTrendChart = document.createElement("rowan-trend-chart");
 const rootTree: RowanTree = document.createElement("rowan-tree");
 const rootTreeItem: RowanTreeItem = document.createElement("rowan-tree-item");
 const baseElement: typeof BaseElement = BaseElement;
@@ -43,6 +45,9 @@ rootRating.value = "";
 rootRichTextEditor.value = {
   blocks: [{ type: "paragraph", children: [{ text: "Operational guidance", bold: true }] }],
 };
+rootTrendChart.series = [{ id: "incidents", label: "Incidents", values: [4, 8, 3] }];
+rootTrendChart.labels = ["Mon", "Tue", "Wed"];
+rootTrendChart.valueFormatter = (value) => `${value} incidents`;
 rootTable.config = { columns: [], rows: [] };
 rootTree.selected = ["guides"];
 rootTreeItem.expanded = true;
@@ -58,6 +63,7 @@ void [
   rootRatingValue,
   rootRichTextEditor,
   rootRichText,
+  rootTrendChart,
   rootTree,
   rootTreeItem,
   selectedTreeItems,
