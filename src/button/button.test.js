@@ -7,7 +7,15 @@ async function waitForComponentStyles(element) {
   const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
   if (!stylesheet) return;
 
-  if (!stylesheet.sheet) {
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  if (!hasLoadedRules()) {
     await new Promise((resolve, reject) => {
       stylesheet.addEventListener("load", resolve, { once: true });
       stylesheet.addEventListener(
@@ -17,10 +25,14 @@ async function waitForComponentStyles(element) {
           once: true,
         },
       );
+
+      if (hasLoadedRules()) {
+        resolve();
+      }
     });
   }
 
-  await new Promise((resolve) => requestAnimationFrame(resolve));
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
 describe("rowan-button", () => {

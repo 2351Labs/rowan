@@ -48,6 +48,10 @@
       "types": "./src/calendar/calendar.d.ts",
       "default": "./src/calendar/calendar.js"
     },
+    "./color-picker": {
+      "types": "./src/color-picker/color-picker.d.ts",
+      "default": "./src/color-picker/color-picker.js"
+    },
     "./card": {
       "types": "./src/card/card.d.ts",
       "default": "./src/card/card.js"
@@ -361,6 +365,7 @@
     "./src/card/card.js",
     "./src/button/button.js",
     "./src/calendar/calendar.js",
+    "./src/color-picker/color-picker.js",
     "./src/date-picker/date-picker.js",
     "./src/date-range-picker/date-range-picker.js",
     "./src/divider/divider.js",

@@ -6,7 +6,7 @@ Last updated: 2026-09-11
 
 - Package: `@rowan-ui/core`
 - Architecture: vanilla Web Components (Custom Elements, Shadow DOM, slots, ElementInternals)
-- Current implemented catalog includes 71 components
+- Current implemented catalog includes 72 components
 
 ## Completed Sprints
 
@@ -506,19 +506,37 @@ Verification completed at sprint close:
 
 Deferred unless a product use case requires them:
 
-- Color picker, rating, rich-text editing, charting, maps, carousels, bundled iconography, and display-only `Intl` formatter elements
+- Rating, rich-text editing, charting, maps, carousels, bundled iconography, and display-only `Intl` formatter elements
+
+### Sprint 21: Semantic Color Selection
+
+Status: Completed
+
+Delivered:
+
+- `rowan-color-picker` as a form-associated semantic color control with a reflected, normalized lowercase `#rrggbb` or alpha-bearing `#rrggbbaa` value
+- An approved default palette based on Rowan forest, sand, ink, and danger primitives, plus property-only `palette` configuration for custom approved sets
+- Keyboard-operable radio swatches, disabled-option skipping, native custom color and opacity entry, preserved author labels and descriptions, and user-only `rowan-change` details
+- FACE form value, required validity, reset, and state-restoration behavior using ElementInternals defaults without overwriting author ARIA
+- Component token hooks, guarded registration, visual hidden states, Storybook stories, static documentation with a live event demo, README guidance, root and subpath exports, declaration bridges, generated type definitions, global tag mappings, CEM coverage, and contract tests
+- Deterministic Firefox button stylesheet readiness coverage for the existing document-level semantic-token contract
+
+Verification completed at sprint close:
+
+- Focused color-picker contracts: 6 passing
+- Focused Firefox button token contracts: 9 passing
+- `npm run tokens:sync`, `npm run tokens:check`, `npm run lint`, `npm run types`, and `npm run typecheck`
+- `npm test`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests with 72 unique Rowan tags
+- `npm run build-storybook`
+- `npm pack --dry-run --json` includes color-picker source and declarations without documentation or build artifacts
+- Chromium, Firefox, and WebKit each passed 75 files and 306 public contracts
+- Static color-picker documentation checks at 1440px and 390px confirmed custom-palette rendering, dark-theme legibility, user-originated alpha changes, and no horizontal overflow
+- Scoped Prettier validation and `git diff --check`
 
 ### Deferred Backlog Stories
 
 Status: Unscheduled. These are planning stories only; they do not add tags, exports, CEM declarations, or placeholder Storybook entries until a product use case selects them.
-
-#### DS-01: Semantic Color Selection
-
-**User story:** As a workspace administrator, I want to select an approved brand or status color so I can configure a project without manually entering CSS values.
-
-**Ready when:** A form workflow establishes whether the value is opaque sRGB only or needs alpha/channel editing, and identifies an approved palette source.
-
-**Acceptance bar:** A future `rowan-color-picker` must be FACE, reflect a scalar `value`, keep palette data property-only, provide keyboard-operable swatches and a native color-entry fallback, preserve author labels and descriptions, and emit a user-only `rowan-change` event.
 
 #### DS-02: Structured Rating Input
 

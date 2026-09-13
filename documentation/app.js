@@ -288,6 +288,28 @@ const TIME_PICKER_SNIPPET = `<rowan-time-picker
   step="900"
 ></rowan-time-picker>`;
 
+const COLOR_PICKER_SNIPPET = `<rowan-color-picker
+  id="project-color"
+  name="projectColor"
+  label="Project color"
+  value="#1d432f"
+></rowan-color-picker>
+
+<script type="module">
+  import "@rowan-ui/core/color-picker";
+
+  const picker = document.querySelector("#project-color");
+  picker.palette = [
+    { value: "#1d432f", label: "Forest" },
+    { value: "#24543c", label: "Canopy" },
+    { value: "#b4392d", label: "Signal" },
+  ];
+
+  picker.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
+</script>`;
+
 const DATE_RANGE_PICKER_SNIPPET = `<rowan-date-range-picker
   name="reportDate"
   label="Report range"
@@ -675,6 +697,7 @@ const COMPONENT_CATEGORY_SETS = {
   Forms: new Set([
     "calendar",
     "checkbox",
+    "color-picker",
     "combobox",
     "date-picker",
     "date-range-picker",
@@ -1356,6 +1379,38 @@ const DOC_PAGES = [
         ${codeBlock(TIME_PICKER_SNIPPET, "html")}
       </section>
     `,
+  },
+  {
+    id: "color-picker",
+    group: "Components",
+    title: "Rowan Color Picker",
+    summary:
+      "Form-associated semantic color selection with approved swatches and an alpha-enabled custom color fallback.",
+    tags: ["forms", "color", "validation"],
+    keywords: ["color picker", "palette", "alpha", "opacity", "rowan-change"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="color-picker-palette">
+        <h2>Approved palette with custom entry</h2>
+        <p>The default swatches use Rowan's forest, sand, ink, and danger primitive colors. Assign a custom palette through the palette property when a workflow has its own approved brand or status colors.</p>
+        <div class="demo-row">
+          <rowan-color-picker
+            id="docs-color-picker"
+            name="projectColor"
+            label="Project color"
+            description="Choose an approved swatch or tune a custom color."
+            value="#24543c80"
+          ></rowan-color-picker>
+        </div>
+        <pre id="color-picker-events" class="table-events"></pre>
+      </section>
+
+      <section class="doc-section" data-doc-section id="color-picker-contract">
+        <h2>Value and event contract</h2>
+        <p>value reflects as lowercase #rrggbb for opaque colors or #rrggbbaa when opacity is below 100%. palette remains property-only, and rowan-change fires only after user interaction.</p>
+        ${codeBlock(COLOR_PICKER_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: setupColorPickerDemo,
   },
   {
     id: "date-range-picker",
@@ -2405,6 +2460,7 @@ const NAV_SECTIONS = [
       { pageId: "command-palette", label: "Command Palette" },
       { pageId: "date-picker", label: "Date Picker" },
       { pageId: "time-picker", label: "Time Picker" },
+      { pageId: "color-picker", label: "Color Picker" },
       { pageId: "date-range-picker", label: "Date Range Picker" },
       { pageId: "calendar", label: "Calendar" },
       { pageId: "listbox", label: "Listbox" },
@@ -2860,6 +2916,30 @@ function formatEventDetail(detail) {
   } catch (_error) {
     return String(detail);
   }
+}
+
+function setupColorPickerDemo() {
+  const picker = mainEl.querySelector("#docs-color-picker");
+  const output = mainEl.querySelector("#color-picker-events");
+
+  if (!(picker instanceof HTMLElement) || !(output instanceof HTMLElement)) {
+    return;
+  }
+
+  picker.palette = [
+    { value: "#1d432f", label: "Forest" },
+    { value: "#24543c", label: "Canopy" },
+    { value: "#b4392d", label: "Signal" },
+    { value: "#424945", label: "Slate" },
+  ];
+  output.textContent =
+    "Choose a swatch or adjust the custom color to inspect rowan-change payloads.";
+
+  picker.addEventListener("rowan-change", (event) => {
+    const stamp = new Date().toLocaleTimeString();
+    const next = `[${stamp}] rowan-change\n${formatEventDetail(event.detail)}\n`;
+    output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+  });
 }
 
 function setupToasterDemo() {

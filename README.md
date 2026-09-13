@@ -168,7 +168,7 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
 Implemented components currently include:
 
 - Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
-- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
+- Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`
 - Data display and operations: `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
@@ -215,6 +215,36 @@ Implemented components currently include:
     { value: "list", label: "List" },
   ];
   viewMode.value = "board";
+</script>
+```
+
+## Rowan Color Picker
+
+`rowan-color-picker` is a form-associated semantic color control. Its default approved palette uses Rowan's existing forest, sand, ink, and danger primitive values. The reflected `value` normalizes to lowercase `#rrggbb` for opaque colors or `#rrggbbaa` when opacity is below 100%.
+
+Assign application-approved swatches with the property-only `palette` array. Users can also choose an arbitrary RGB color and opacity through the native fallback controls. Parent-assigned values stay silent; user selection emits `rowan-change` with `value`, `color`, `alpha`, `option`, and `source`.
+
+```html
+<rowan-color-picker
+  id="project-color"
+  name="projectColor"
+  label="Project color"
+  value="#1d432f"
+></rowan-color-picker>
+
+<script type="module">
+  import "@rowan-ui/core/color-picker";
+
+  const picker = document.querySelector("#project-color");
+  picker.palette = [
+    { value: "#1d432f", label: "Forest" },
+    { value: "#24543c", label: "Canopy" },
+    { value: "#b4392d", label: "Signal" },
+  ];
+
+  picker.addEventListener("rowan-change", (event) => {
+    console.log(event.detail.value);
+  });
 </script>
 ```
 
