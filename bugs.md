@@ -454,13 +454,47 @@ Reverted to the committed implementation; `dialog` and `confirm-dialog` return t
 passing in 1.7s. This is deliberately **not** a partial migration left in the tree: a
 half-migrated modal is worse than either endpoint.
 
-The attempt did sharpen the estimate. This is not a defect fix — it is a breaking change
-that has to land with reconnection semantics for `showModal()`, the `confirm-dialog`
-composition path understood, backdrop-click and animation semantics reworked, migration
-notes for `part="backdrop"` → `::backdrop` and `part="overlay"` now being the native
-element, and the same treatment extended to `drawer`, `command-palette`, and
-`row-details-panel` so overlay behaviour does not fork. Confirmed for the `1.0` milestone
-as its own piece of work.
+**Update — root cause isolated to the test harness, not the component.**
+
+A second, instrumented pass narrowed this considerably. Findings, in order:
+
+1. **The native implementation is correct.** A standalone probe page driving
+   `rowan-confirm-dialog` in a real browser ran clean: `showModal()` opened the native
+   dialog, focus moved into the panel, `close()` restored state, and no errors or
+   unhandled rejections fired.
+2. **There is no runaway render loop.** A render counter peaked at 11 across the whole
+   suite, killing the leading hypothesis. The related theory — that toggling `inert`
+   attributes re-triggers rendering — is also wrong: the only attribute-watching observer
+   is in `table-selection.js`, filtered to `id`, and the label observer in
+   `base-element.js` watches `characterData`/`childList` only. Neither reacts to `inert`.
+3. **The suite completes under WTR manual mode**: 3 passing, 2 failing. Both failures are
+   tests coupled to the implementation being removed, not product defects. One dispatches
+   a synthetic `keydown` Escape, which the native dialog ignores because it fires `cancel`
+   only for real user input. The other dispatches a synthetic `Tab` and asserts our custom
+   trap moved focus, which the platform now owns.
+4. **The hang is specific to WTR's controlled browser.** It reproduces in both headed and
+   headless Chrome, forwards no browser console output at all, and reports
+   `0 passed, 0 failed` — while the identical code completes in a manually driven browser
+   against the same dev server.
+
+So the blocker is not correctness and not the four dialog test failures, three of which
+were assertions on `.overlay` hidden-state that this migration legitimately invalidates,
+and one of which was a real reconcile bug in `#syncOpenState` (a dialog opened while
+disconnected never gets `showModal()` on reconnect) that was fixed during this pass.
+
+The blocker is that our test harness cannot run native modal dialogs in its controlled
+browser, and we would be shipping a focus- and pointer-affecting change with no CI
+coverage. That is a tooling problem to solve first — likely a Web Test Runner launcher or
+session-protocol interaction — and it should be fixed before, not alongside, the
+migration.
+
+Reverted again to keep the tree clean; `dialog` and `confirm-dialog` are back to 17
+passing in 1.7s. Remains on `1.0`, but the work is now well-bounded: fix the harness,
+rewrite the two synthetic-keyboard tests to use real key events, keep the
+`#syncOpenState` reconcile fix, close the native dialog on `disconnectedCallback` so a
+modal removed while open cannot linger in the top layer, and extend the same pattern to
+`drawer`, `command-palette`, and `row-details-panel`. The `part="backdrop"` → `::backdrop`
+change is still breaking and still needs migration notes.
 
 ---
 
