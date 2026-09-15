@@ -61039,6 +61039,24 @@
           "kind": "class",
           "description": "Toggle switch control with form association.",
           "name": "RowanSwitch",
+          "cssProperties": [
+            {
+              "description": "Track fill when off. Defaults to the border colour.",
+              "name": "--rowan-switch-track-bg"
+            },
+            {
+              "description": "Track fill when on. Defaults to the accent.",
+              "name": "--rowan-switch-track-checked-bg"
+            },
+            {
+              "description": "Thumb fill when off. Defaults to the muted colour.",
+              "name": "--rowan-switch-thumb-bg"
+            },
+            {
+              "description": "Thumb fill when on. Defaults to the accent contrast.",
+              "name": "--rowan-switch-thumb-checked-bg"
+            }
+          ],
           "cssParts": [
             {
               "name": "control"

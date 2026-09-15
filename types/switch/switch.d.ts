@@ -10,6 +10,10 @@
  * @slot - Label content
  * @csspart control
  * @csspart input
+ * @cssprop --rowan-switch-track-bg - Track fill when off. Defaults to the border colour.
+ * @cssprop --rowan-switch-track-checked-bg - Track fill when on. Defaults to the accent.
+ * @cssprop --rowan-switch-thumb-bg - Thumb fill when off. Defaults to the muted colour.
+ * @cssprop --rowan-switch-thumb-checked-bg - Thumb fill when on. Defaults to the accent contrast.
  * @event rowan-change - Fired when user toggles checked state
  */
 export class RowanSwitch extends BaseElement {

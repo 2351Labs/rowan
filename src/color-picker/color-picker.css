@@ -70,7 +70,11 @@
 }
 
 .swatch {
-  background: repeating-conic-gradient(#ffffff 0 25%, #e4e7e0 0 50%) 50% / 0.5rem 0.5rem;
+  background: repeating-conic-gradient(
+      var(--rowan-color-picker-checker-light, #ffffff) 0 25%,
+      var(--rowan-color-picker-checker-dark, #e4e7e0) 0 50%
+    )
+    50% / 0.5rem 0.5rem;
   border: var(--rowan-border-width) solid var(--_color-picker-swatch-border);
   border-radius: var(--_color-picker-swatch-radius);
   box-sizing: border-box;

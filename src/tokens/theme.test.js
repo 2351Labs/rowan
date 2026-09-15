@@ -4,6 +4,7 @@ import "../card/card.js";
 import "../chip/chip.js";
 import "../date-picker/date-picker.js";
 import "../dialog/dialog.js";
+import "../switch/switch.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
@@ -108,6 +109,39 @@ describe("Rowan themes", () => {
       ]) {
         const styles = getComputedStyle(element.shadowRoot.querySelector(selector));
         expect(contrastRatio(styles.color, styles.backgroundColor)).to.be.at.least(4.5);
+      }
+    } finally {
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("keeps the switch thumb distinguishable from its track in both themes", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css"].map(loadStylesheet),
+    );
+
+    try {
+      for (const themeName of ["light", "dark"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
+
+        const off = document.createElement("rowan-switch");
+        const on = document.createElement("rowan-switch");
+        on.checked = true;
+
+        theme.append(off, on);
+        document.body.append(theme);
+        await nextTask();
+        await Promise.all([off, on].map(waitForStyles));
+
+        // SC 1.4.11: the thumb is the affordance that conveys state, so it needs 3:1 on its track.
+        for (const element of [off, on]) {
+          const track = getComputedStyle(element.shadowRoot.querySelector(".track"));
+          const thumb = getComputedStyle(element.shadowRoot.querySelector(".thumb"));
+          expect(contrastRatio(thumb.backgroundColor, track.backgroundColor)).to.be.at.least(3);
+        }
+
+        theme.remove();
       }
     } finally {
       themeStylesheets.forEach((stylesheet) => stylesheet.remove());

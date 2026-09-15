@@ -8,7 +8,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | ID   | Title                                                                    | Severity | Status                                              |
 | ---- | ------------------------------------------------------------------------ | -------- | --------------------------------------------------- |
 | F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3                        |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)                   |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed**                                           |
 | F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                                           |
 | F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented                          |
 | F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                                           |
@@ -125,6 +125,45 @@ The thumb must contrast with both the accent-filled on-track and the neutral
 off-track, so a single derivation is not obviously correct; it needs a design
 decision rather than a mechanical substitution. It is not a readability failure
 today because the thumb also carries a border.
+
+> Superseded by the update below. The "not a readability failure" claim was wrong.
+
+**Update — switch thumb fixed; the deferral note was wrong.**
+
+The claim that this was "not a readability failure today because the thumb also carries a
+border" was incorrect on both counts. The thumb carries a `box-shadow`, not a border, and
+measured in a browser the white thumb sat at **1.39** contrast against the light off-track
+— a genuine SC 1.4.11 failure, not merely an unthemeable value.
+
+The reason a single derivation looked wrong is real, though: the accent inverts between
+themes (`#1d432f` dark in light theme, `#7fc095` light in dark theme), so the thumb's
+contrast partner flips. One colour cannot serve both tracks. The fix is that the thumb
+changes with the track:
+
+```css
+.thumb {
+  background: var(--rowan-switch-thumb-bg, var(--rowan-color-muted));
+}
+.input:checked + .track .thumb {
+  background: var(--rowan-switch-thumb-checked-bg, var(--rowan-color-accent-contrast));
+}
+```
+
+This also reads better: the thumb brightens as the track fills, so state is carried by
+position, track colour, _and_ thumb colour rather than position alone. The track gained
+`--rowan-switch-track-bg` / `--rowan-switch-track-checked-bg` hooks for layer-3 parity.
+Worst case is now **6.66**, up from 1.39, and all four theme/state combinations clear 3:1.
+
+**The lint rule this finding asked for now exists.** `scripts/check-css-tokens.mjs` runs in
+`npm run lint` as `css:check`. It strips `var()` expressions innermost-first and fails on
+any colour literal that remains, which encodes the actual contract: a hex is fine as a
+`var()` fallback, but never as the only value. Surveying the codebase found 53 hex literals
+of which 52 were legitimate `var(--token, #fallback)` fallbacks and exactly one — the switch
+thumb — was unreachable. The `rowan-color-picker` swatch checkerboard was also routed
+through `--rowan-color-picker-checker-light` / `-dark`.
+
+Both guards were verified to fail before being trusted: reintroducing `background: #ffffff`
+makes `css:check` exit 1 and makes the new theme test fail at 1.39.
 
 ### F-03: `useRowanElement` re-assigns properties and listeners every React render
 

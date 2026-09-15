@@ -27,7 +27,7 @@
 
 .track {
   align-items: center;
-  background: var(--rowan-color-border);
+  background: var(--rowan-switch-track-bg, var(--rowan-color-border));
   border-radius: 999px;
   box-sizing: border-box;
   display: inline-flex;
@@ -36,21 +36,25 @@
   transition: background-color 120ms ease;
 }
 
+/* The accent inverts between themes, so the thumb switches contrast partner with the track. */
 .thumb {
-  background: #ffffff;
+  background: var(--rowan-switch-thumb-bg, var(--rowan-color-muted));
   block-size: 0.95rem;
   border-radius: 50%;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
   inline-size: 0.95rem;
   transform: translateX(0);
-  transition: transform 120ms ease;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease;
 }
 
 .input:checked + .track {
-  background: var(--rowan-color-accent);
+  background: var(--rowan-switch-track-checked-bg, var(--rowan-color-accent));
 }
 
 .input:checked + .track .thumb {
+  background: var(--rowan-switch-thumb-checked-bg, var(--rowan-color-accent-contrast));
   transform: translateX(0.95rem);
 }
 
