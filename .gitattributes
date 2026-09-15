@@ -1,0 +1,3 @@
+# Generated static bundles retain upstream/minified whitespace.
+storybook-static/** whitespace=-trailing-space
+**/documentation-static-check/** whitespace=-trailing-space

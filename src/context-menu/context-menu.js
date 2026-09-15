@@ -113,10 +113,12 @@ export class RowanContextMenu extends BaseElement {
     this.reflectString("for", normalizeText(value) || null);
   }
 
+  /** @returns {HTMLElement | null} */
   get target() {
     return this.#targetOverride ?? this.#boundTarget;
   }
 
+  /** @param {HTMLElement | null} value */
   set target(value) {
     this.#targetOverride = isElement(value) ? value : null;
     this.#syncTarget();

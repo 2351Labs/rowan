@@ -147,6 +147,7 @@ export class RowanTimePicker extends BaseElement {
     const numeric = Number(value);
     const nextStep = Number.isFinite(numeric) && numeric > 0 ? Math.floor(numeric) : 60;
     this.reflectNumber("step", nextStep === 60 ? null : nextStep);
+    this.#syncValidity();
   }
 
   get disabled() {
@@ -292,8 +293,20 @@ export class RowanTimePicker extends BaseElement {
       return;
     }
 
+    if (valueSeconds != null && this.#hasStepMismatch(valueSeconds, minSeconds)) {
+      this.setValidity({ stepMismatch: true }, "Time does not align to step.", this.#input);
+      this.#setAutoInvalid(true);
+      return;
+    }
+
     this.setValidity({}, "", this.#input);
     this.#setAutoInvalid(false);
+  }
+
+  #hasStepMismatch(valueSeconds, minSeconds) {
+    const base = minSeconds ?? 0;
+    const ratio = (valueSeconds - base) / this.step;
+    return Math.abs(Math.round(ratio) - ratio) > 1e-9;
   }
 
   #setAutoInvalid(nextValue) {

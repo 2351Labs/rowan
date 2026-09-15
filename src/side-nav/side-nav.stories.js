@@ -24,7 +24,7 @@ function createSideNav({ value = "overview" } = {}) {
 }
 
 export default {
-  title: "Components/Side Navigation",
+  title: "Components/Navigation & Layout/Side Navigation",
   tags: ["autodocs"],
   args: { value: "overview" },
   argTypes: {

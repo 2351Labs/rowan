@@ -31,7 +31,9 @@ describe("rowan-stepper", () => {
     const items = element.shadowRoot.querySelectorAll('[data-part="step"]');
     expect(items.length).to.equal(3);
 
-    const current = element.shadowRoot.querySelector('[data-part="step-button"][aria-current="step"]');
+    const current = element.shadowRoot.querySelector(
+      '[data-part="step-button"][aria-current="step"]',
+    );
     expect(current.textContent.trim()).to.include("Review");
   });
 
@@ -75,6 +77,23 @@ describe("rowan-stepper", () => {
     await nextMicrotask();
 
     expect(eventCount).to.equal(0);
+  });
+
+  it("preserves a focused step control during parent-driven updates", async () => {
+    const element = document.createElement("rowan-stepper");
+    element.steps = ["Draft", "Review", "Publish"];
+    document.body.append(element);
+    await nextMicrotask();
+
+    const focusedButton = element.shadowRoot.querySelectorAll('[data-part="step-button"]')[1];
+    focusedButton.focus();
+    expect(element.shadowRoot.activeElement).to.equal(focusedButton);
+
+    element.currentStep = 3;
+    await nextMicrotask();
+
+    const restoredButton = element.shadowRoot.querySelector('[data-step="2"]');
+    expect(element.shadowRoot.activeElement).to.equal(restoredButton);
   });
 
   it("supports next, previous, and goTo methods", async () => {

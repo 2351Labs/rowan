@@ -1,4 +1,32 @@
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const SVG_NODE_NAMES = new Set([
+  "circle",
+  "ellipse",
+  "line",
+  "path",
+  "polygon",
+  "polyline",
+  "rect",
+]);
+const SVG_NODE_ATTRIBUTES = new Set([
+  "cx",
+  "cy",
+  "d",
+  "fill",
+  "height",
+  "points",
+  "r",
+  "rx",
+  "ry",
+  "width",
+  "x",
+  "x1",
+  "x2",
+  "y",
+  "y1",
+  "y2",
+]);
+const MAX_ICON_NODE_DEPTH = 16;
 
 /**
  * @typedef {[tagName: string, attributes: Record<string, string>, children?: IconNode[]]} IconNode
@@ -18,16 +46,35 @@ const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
  * @property {number|string} [strokeWidth]
  */
 
-function appendNode(parent, node) {
+function appendNode(parent, node, depth = 0) {
+  if (!Array.isArray(node) || node.length < 2 || node.length > 3) {
+    throw new TypeError("An icon node must be a tag, attribute map, and optional child nodes.");
+  }
+
   const [tagName, attributes, children = []] = node;
+  if (typeof tagName !== "string" || !SVG_NODE_NAMES.has(tagName)) {
+    throw new TypeError(`Unsupported SVG icon node: ${String(tagName)}.`);
+  }
+
+  if (!attributes || typeof attributes !== "object" || Array.isArray(attributes)) {
+    throw new TypeError("An icon node attribute map is required.");
+  }
+
+  if (!Array.isArray(children) || depth >= MAX_ICON_NODE_DEPTH) {
+    throw new TypeError("An icon node has unsupported child nodes.");
+  }
+
   const element = document.createElementNS(SVG_NAMESPACE, tagName);
 
   for (const [name, value] of Object.entries(attributes)) {
+    if (!SVG_NODE_ATTRIBUTES.has(name) || typeof value !== "string") {
+      throw new TypeError(`Unsupported SVG icon attribute: ${name}.`);
+    }
     element.setAttribute(name, value);
   }
 
   for (const child of children) {
-    appendNode(element, child);
+    appendNode(element, child, depth + 1);
   }
 
   parent.append(element);

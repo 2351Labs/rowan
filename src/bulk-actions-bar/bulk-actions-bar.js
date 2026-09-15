@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import {
   isRowanTable,
+  observeTableAvailability,
   observeTableSelection,
   readTableSelection,
   resolveRowanTable,
@@ -88,6 +89,7 @@ export class RowanBulkActionsBar extends BaseElement {
   #tableOverride = null;
   #boundTable = null;
   #tableCleanup = null;
+  #tableAvailabilityCleanup = null;
   #selected = [];
   #selectedRows = [];
   #actions = [];
@@ -263,7 +265,11 @@ export class RowanBulkActionsBar extends BaseElement {
   #syncTable() {
     const nextTable = resolveRowanTable(this, this.#tableOverride, this.forTable);
     if (nextTable === this.#boundTable) {
-      this.#readTableSelection();
+      if (nextTable) {
+        this.#readTableSelection();
+      } else {
+        this.#observeTableAvailability();
+      }
       return;
     }
 
@@ -272,6 +278,7 @@ export class RowanBulkActionsBar extends BaseElement {
 
     if (!nextTable) {
       this.#setSelection([], []);
+      this.#observeTableAvailability();
       return;
     }
 
@@ -287,7 +294,31 @@ export class RowanBulkActionsBar extends BaseElement {
   #unbindTable() {
     this.#tableCleanup?.();
     this.#tableCleanup = null;
+    this.#tableAvailabilityCleanup?.();
+    this.#tableAvailabilityCleanup = null;
     this.#boundTable = null;
+  }
+
+  #observeTableAvailability() {
+    if (!this.forTable) {
+      this.#tableAvailabilityCleanup?.();
+      this.#tableAvailabilityCleanup = null;
+      return;
+    }
+
+    if (!this.isConnected || this.#tableAvailabilityCleanup || this.#tableOverride) {
+      return;
+    }
+
+    this.#tableAvailabilityCleanup = observeTableAvailability(
+      this,
+      () => this.forTable,
+      () => {
+        this.#tableAvailabilityCleanup = null;
+        this.#syncTable();
+        this.requestRender();
+      },
+    );
   }
 
   #readTableSelection() {

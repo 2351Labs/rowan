@@ -4,6 +4,25 @@ import { emit } from "../lib/events.js";
 
 let textFieldId = 0;
 
+const validityFlags = [
+  "badInput",
+  "customError",
+  "patternMismatch",
+  "rangeOverflow",
+  "rangeUnderflow",
+  "stepMismatch",
+  "tooLong",
+  "tooShort",
+  "typeMismatch",
+  "valueMissing",
+];
+
+function validityStateToFlags(validity) {
+  return Object.fromEntries(
+    validityFlags.filter((flag) => validity[flag]).map((flag) => [flag, true]),
+  );
+}
+
 /**
  * Single-line text input with form association.
  * @tag rowan-text-field
@@ -12,6 +31,7 @@ let textFieldId = 0;
  * @attr {string} placeholder
  * @attr {string} label
  * @attr {"text"|"email"|"password"|"search"|"url"|"tel"} type
+ * @attr {string} pattern
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
@@ -29,6 +49,7 @@ export class RowanTextField extends BaseElement {
     "placeholder",
     "label",
     "type",
+    "pattern",
     "disabled",
     "required",
     "invalid",
@@ -40,6 +61,7 @@ export class RowanTextField extends BaseElement {
     "placeholder",
     "label",
     "type",
+    "pattern",
     "disabled",
     "required",
     "invalid",
@@ -105,12 +127,24 @@ export class RowanTextField extends BaseElement {
     this.reflectString("label", value);
   }
 
+  /** @returns {"text" | "email" | "password" | "search" | "url" | "tel"} */
   get type() {
     return this.readString("type", "text");
   }
 
+  /** @param {"text" | "email" | "password" | "search" | "url" | "tel"} value */
   set type(value) {
     this.reflectString("type", value);
+    this.#syncValidity();
+  }
+
+  get pattern() {
+    return this.readString("pattern", "");
+  }
+
+  set pattern(value) {
+    this.reflectString("pattern", value);
+    this.#syncValidity();
   }
 
   get autocomplete() {
@@ -215,6 +249,7 @@ export class RowanTextField extends BaseElement {
     this.#input.value = this.value;
     this.#input.placeholder = this.placeholder;
     this.#input.type = this.#normalizedType(this.type);
+    this.#syncPattern();
     this.#input.disabled = this.disabled;
     this.#input.required = this.required;
     this.#input.autocomplete = this.autocomplete;
@@ -242,14 +277,33 @@ export class RowanTextField extends BaseElement {
   #syncValidity() {
     if (!this.#input) return;
 
-    if (this.required && this.value.trim().length === 0) {
-      this.setValidity({ valueMissing: true }, "Please fill out this field.", this.#input);
+    this.#input.type = this.#normalizedType(this.type);
+    this.#syncPattern();
+    this.#input.required = this.required;
+    this.#input.disabled = this.disabled;
+    this.#input.value = this.value;
+
+    if (!this.#input.validity.valid) {
+      this.setValidity(
+        validityStateToFlags(this.#input.validity),
+        this.#input.validationMessage || "Please enter a valid value.",
+        this.#input,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     this.setValidity({}, "", this.#input);
     this.#setAutoInvalid(false);
+  }
+
+  #syncPattern() {
+    const pattern = this.pattern;
+    if (pattern) {
+      this.#input.pattern = pattern;
+    } else {
+      this.#input.removeAttribute("pattern");
+    }
   }
 
   #setAutoInvalid(nextValue) {

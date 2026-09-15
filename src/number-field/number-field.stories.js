@@ -2,7 +2,7 @@ import "./number-field.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Number Field",
+  title: "Components/Forms & Input/Number Field",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -2,7 +2,7 @@ import "./file-item.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/File Item",
+  title: "Components/Files & Uploads/File Item",
   tags: ["autodocs"],
   argTypes: {
     filename: { control: "text" },

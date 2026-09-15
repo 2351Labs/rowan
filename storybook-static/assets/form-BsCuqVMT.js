@@ -1,0 +1,1 @@
+function m(o){var t,e;const r=(t=o.getAttribute("form"))==null?void 0:t.trim();if(r){const n=(e=o.ownerDocument)==null?void 0:e.getElementById(r);return n instanceof HTMLFormElement?n:null}return o.closest("form")}function s(o,r){const t=m(o);t&&(r==="submit"?HTMLFormElement.prototype.requestSubmit.call(t):r==="reset"&&HTMLFormElement.prototype.reset.call(t))}export{s as t};

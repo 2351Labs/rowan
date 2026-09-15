@@ -13,6 +13,11 @@
   z-index: 50;
 }
 
+.backdrop[hidden],
+.panel[hidden] {
+  display: none;
+}
+
 .panel {
   background: var(--rowan-color-surface);
   border: var(--rowan-border-width) solid var(--rowan-color-border);

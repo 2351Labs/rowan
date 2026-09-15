@@ -92,11 +92,13 @@ export class RowanConfirmDialog extends BaseElement {
     this.reflectString("cancel-label", nextLabel && nextLabel !== "Cancel" ? nextLabel : null);
   }
 
+  /** @returns {"primary" | "danger"} */
   get confirmVariant() {
     const variant = this.readString("confirm-variant", "primary");
     return CONFIRM_VARIANTS.has(variant) ? variant : "primary";
   }
 
+  /** @param {"primary" | "danger"} value */
   set confirmVariant(value) {
     const nextVariant = CONFIRM_VARIANTS.has(value) ? value : "primary";
     this.reflectString("confirm-variant", nextVariant === "primary" ? null : nextVariant);

@@ -27,7 +27,7 @@ function createConfirmDialog({ open = false, confirmVariant = "danger" } = {}) {
 }
 
 export default {
-  title: "Components/Confirm Dialog",
+  title: "Components/Overlays & Menus/Confirm Dialog",
   tags: ["autodocs"],
   args: { open: false, confirmVariant: "danger" },
   argTypes: {

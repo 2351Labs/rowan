@@ -9,8 +9,10 @@
  * @event rowan-dismiss - Fired when dismissed by user interaction
  */
 export class RowanAlert extends BaseElement {
-    set tone(value: string);
-    get tone(): string;
+    /** @param {"info" | "success" | "warning" | "danger"} value */
+    set tone(value: "info" | "success" | "warning" | "danger");
+    /** @returns {"info" | "success" | "warning" | "danger"} */
+    get tone(): "info" | "success" | "warning" | "danger";
     set dismissible(value: boolean);
     get dismissible(): boolean;
     #private;

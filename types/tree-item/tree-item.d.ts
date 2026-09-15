@@ -36,9 +36,9 @@ export class RowanTreeItem extends BaseElement {
     get hasChildren(): boolean;
     focus(options: any): void;
     /** @internal */
-    setRovingTabIndex(value: any, owner?: any): void;
+    setRovingTabIndex(value: any, owner?: null): void;
     /** @internal */
-    setTreePosition(position: any, setSize: any, owner?: any): void;
+    setTreePosition(position: any, setSize: any, owner?: null): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

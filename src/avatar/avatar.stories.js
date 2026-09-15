@@ -1,7 +1,7 @@
 import "./avatar.js";
 
 export default {
-  title: "Components/Avatar",
+  title: "Components/Data Display/Avatar",
   tags: ["autodocs"],
   argTypes: {
     name: { control: "text" },

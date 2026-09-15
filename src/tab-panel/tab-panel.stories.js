@@ -1,7 +1,7 @@
 import "./tab-panel.js";
 
 export default {
-  title: "Components/Tab Panel",
+  title: "Components/Navigation & Layout/Tab Panel",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -101,6 +101,34 @@ describe("rowan-validation-summary", () => {
     expect(errors[0].label).to.equal("Name");
   });
 
+  it("collects and focuses an invalid field without an id", async () => {
+    const form = document.createElement("form");
+    form.id = "signup";
+
+    const label = document.createElement("label");
+    label.textContent = "Email";
+    const input = document.createElement("input");
+    input.required = true;
+    label.append(input);
+    form.append(label);
+
+    const element = document.createElement("rowan-validation-summary");
+    element.forForm = "signup";
+    document.body.append(form, element);
+    await nextMicrotask();
+
+    const errors = element.collectFromForm();
+    await nextMicrotask();
+
+    expect(errors).to.have.length(1);
+    expect(errors[0].fieldId).to.match(/^rowan-validation-target-\d+$/);
+    expect(errors[0].label).to.equal("Email");
+    expect(input.id).to.equal("");
+
+    element.shadowRoot.querySelector('[data-part="error-button"]').click();
+    expect(document.activeElement).to.equal(input);
+  });
+
   it("syncs host a11y defaults", async () => {
     const element = document.createElement("rowan-validation-summary");
     element.heading = "Please fix these fields";

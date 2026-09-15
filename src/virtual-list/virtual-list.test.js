@@ -69,4 +69,16 @@ describe("rowan-virtual-list", () => {
 
     expect(list.shadowRoot.querySelector('[data-virtual-list-key="first"]')).to.equal(firstElement);
   });
+
+  it("clears key and renderer property bindings with null", () => {
+    const list = document.createElement("rowan-virtual-list");
+    list.itemKey = "id";
+    list.renderItem = (item) => String(item);
+
+    list.itemKey = null;
+    list.renderItem = null;
+
+    expect(list.itemKey).to.equal(null);
+    expect(list.renderItem).to.equal(null);
+  });
 });

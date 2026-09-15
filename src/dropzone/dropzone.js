@@ -29,8 +29,22 @@ export class RowanDropzone extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./dropzone.css", import.meta.url).href;
-  static observedAttributes = ["label", "description", "accept", "multiple", "disabled", "drag-active"];
-  static upgradeProperties = ["label", "description", "accept", "multiple", "disabled", "dragActive"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "accept",
+    "multiple",
+    "disabled",
+    "drag-active",
+  ];
+  static upgradeProperties = [
+    "label",
+    "description",
+    "accept",
+    "multiple",
+    "disabled",
+    "dragActive",
+  ];
 
   #surface = null;
   #labelEl = null;
@@ -193,8 +207,10 @@ export class RowanDropzone extends BaseElement {
   #emitFiles(files, source) {
     if (!Array.isArray(files) || files.length === 0) return;
 
+    const acceptedFiles = this.multiple ? files : files.slice(0, 1);
+
     emit(this, "rowan-files-add", {
-      files,
+      files: acceptedFiles,
       source,
     });
   }

@@ -49,4 +49,19 @@ describe("@rowan-ui/icons", () => {
     expect(() => createIcon(/** @type {any} */ (null))).to.throw(TypeError);
     expect(() => createIcon(/** @type {any} */ ({ name: "" }))).to.throw(TypeError);
   });
+
+  it("rejects executable SVG nodes and attributes", () => {
+    const unsafeAttribute = {
+      name: "unsafe-attribute",
+      nodes: [["path", { d: "M0 0", onclick: "globalThis.__rowanIconProbe = true" }]],
+    };
+    const unsafeNode = {
+      name: "unsafe-node",
+      nodes: [["script", { d: "globalThis.__rowanIconProbe = true" }]],
+    };
+
+    expect(() => createIcon(unsafeAttribute)).to.throw(TypeError, "Unsupported SVG icon attribute");
+    expect(() => createIcon(unsafeNode)).to.throw(TypeError, "Unsupported SVG icon node");
+    expect(globalThis.__rowanIconProbe).to.equal(undefined);
+  });
 });

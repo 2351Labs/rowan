@@ -13,10 +13,14 @@ export class RowanTab extends BaseElement {
   static styleUrl = new URL("./tab.css", import.meta.url).href;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["value", "active"];
+  static observedAttributes = ["value", "active", "aria-controls", "aria-selected"];
   static upgradeProperties = ["value", "active"];
 
   #button = null;
+  #rovingTabIndex = null;
+  #rovingOwner = null;
+  #panel = null;
+  #panelOwner = null;
 
   get value() {
     return this.readString("value", "");
@@ -32,6 +36,44 @@ export class RowanTab extends BaseElement {
 
   set active(value) {
     this.reflectBoolean("active", Boolean(value));
+  }
+
+  focus(options) {
+    if (this.#button) {
+      this.#button.focus(options);
+      return;
+    }
+
+    super.focus(options);
+  }
+
+  /** @internal */
+  setRovingTabIndex(value, owner = null) {
+    const isClearing = value == null;
+    if (isClearing && owner && this.#rovingOwner !== owner) return;
+
+    const nextTabIndex = isClearing ? null : Number(value) === 0 ? 0 : -1;
+    const nextOwner = isClearing ? null : owner;
+    if (this.#rovingTabIndex === nextTabIndex && this.#rovingOwner === nextOwner) return;
+
+    this.#rovingTabIndex = nextTabIndex;
+    this.#rovingOwner = nextOwner;
+    if (this.#button) this.#button.tabIndex = this.#resolvedTabIndex();
+    this.requestRender();
+  }
+
+  /** @internal */
+  setPanel(panel, owner = null) {
+    const isClearing = panel == null;
+    if (isClearing && owner && this.#panelOwner !== owner) return;
+
+    const nextPanel = panel instanceof HTMLElement ? panel : null;
+    const nextOwner = isClearing ? null : owner;
+    if (this.#panel === nextPanel && this.#panelOwner === nextOwner) return;
+
+    this.#panel = nextPanel;
+    this.#panelOwner = nextOwner;
+    this.requestRender();
   }
 
   render() {
@@ -56,8 +98,20 @@ export class RowanTab extends BaseElement {
       this.internals.ariaSelected = selected;
     }
 
+    if (this.internals && "ariaControlsElements" in this.internals) {
+      this.internals.ariaControlsElements =
+        !this.hasAttribute("role") && !this.hasAttribute("aria-controls") && this.#panel
+          ? [this.#panel]
+          : [];
+    }
+
     this.#button.setAttribute("aria-selected", selected);
-    this.#button.tabIndex = this.active ? 0 : -1;
+    this.#button.setAttribute("role", "tab");
+    this.#button.tabIndex = this.#resolvedTabIndex();
+  }
+
+  #resolvedTabIndex() {
+    return this.#rovingTabIndex ?? (this.active ? 0 : -1);
   }
 }
 

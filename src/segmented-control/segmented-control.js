@@ -10,6 +10,10 @@ function normalizeText(value) {
 }
 
 /**
+ * @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanSegmentedControlOption
+ */
+
+/**
  * Compact mutually exclusive mode control.
  * @tag rowan-segmented-control
  * @attr {string} name
@@ -52,10 +56,12 @@ export class RowanSegmentedControl extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  /** @returns {RowanSegmentedControlOption[]} */
   get options() {
     return this.#options;
   }
 
+  /** @param {RowanSegmentedControlOption[]} value */
   set options(value) {
     this.#options = Array.isArray(value) ? value : [];
     this.requestRender();
@@ -90,11 +96,13 @@ export class RowanSegmentedControl extends BaseElement {
     this.reflectString("label", value);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     const size = this.readString("size", "md").trim().toLowerCase();
     return SIZES.has(size) ? size : "md";
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     const next = String(value ?? "")
       .trim()

@@ -1,7 +1,7 @@
 import "./skeleton.js";
 
 export default {
-  title: "Components/Skeleton",
+  title: "Components/Actions & Feedback/Skeleton",
   tags: ["autodocs"],
   argTypes: {
     shape: {

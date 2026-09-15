@@ -8,7 +8,7 @@ const OPTIONS = [
 ];
 
 export default {
-  title: "Components/Segmented control",
+  title: "Components/Forms & Input/Segmented control",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -1,0 +1,1 @@
+const e=new Set(["http:","https:","mailto:","tel:"]);function i(){var t;const n=(t=globalThis.location)==null?void 0:t.href;return typeof n=="string"&&n.length>0?n:"https://rowan.invalid/"}function s(n,t="#"){const r=String(n??"").trim();if(!r)return t;try{const o=new URL(r,i());return e.has(o.protocol)?r:t}catch{return t}}export{s};

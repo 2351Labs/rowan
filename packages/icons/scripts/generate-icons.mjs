@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const packageRoot = dirname(require.resolve("lucide-static/package.json"));
 const sourceDirectory = resolve(packageRoot, "icons");
 const outputDirectory = new URL("../src/icons/", import.meta.url);
+const RESTRICTED_GLOBAL_EXPORT_NAMES = new Set(["Infinity"]);
 
 function toExportName(name) {
   const parts = name.split(/[^a-zA-Z0-9]+/).filter(Boolean);
@@ -20,6 +21,10 @@ function toExportName(name) {
       return `${prefix}${part.slice(0, 1).toUpperCase()}${part.slice(1)}`;
     })
     .join("");
+}
+
+function getImplementationName(exportName) {
+  return RESTRICTED_GLOBAL_EXPORT_NAMES.has(exportName) ? `create${exportName}` : exportName;
 }
 
 function serializeNode(element) {
@@ -65,7 +70,17 @@ async function writeIcon(fileName, definition, exportName) {
     null,
     2,
   )};\n\n/**\n * Creates the ${definition.name} icon.\n * @param {import("../icon.js").IconOptions} [options]\n * @returns {SVGSVGElement}\n */\nexport function ${exportName}(options) {\n  return createIcon(definition, options);\n}\n\nexport default ${exportName};\n`;
-  const formatted = await format(source, { parser: "babel" });
+    const implementationName = getImplementationName(exportName);
+    const generatedSource =
+      implementationName === exportName
+        ? source
+        : source
+            .replace(`export function ${exportName}`, `function ${implementationName}`)
+            .replace(
+              `export default ${exportName};`,
+              `export { ${implementationName} as ${exportName} };\n\nexport default ${implementationName};`,
+            );
+    const formatted = await format(generatedSource, { parser: "babel" });
   writeFileSync(new URL(fileName, outputDirectory), formatted);
 }
 

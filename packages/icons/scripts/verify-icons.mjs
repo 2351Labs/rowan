@@ -28,6 +28,14 @@ for (const iconName of REQUIRED_ICONS) {
     throw new Error(`Required generated icon ${fileName} is missing.`);
   }
 
+
+const infinitySource = readFileSync(new URL("infinity.js", ICON_DIRECTORY), "utf8");
+if (
+  infinitySource.includes("export function Infinity(") ||
+  !infinitySource.includes("export { createInfinity as Infinity };")
+) {
+  throw new Error("infinity.js must preserve its public export without a restricted binding.");
+}
   const source = readFileSync(new URL(fileName, ICON_DIRECTORY), "utf8");
   if (!source.includes('import { createIcon } from "../icon.js";')) {
     throw new Error(`${fileName} does not use the shared SVG factory.`);

@@ -216,6 +216,8 @@ export class RowanCalendar extends BaseElement {
   #monthLabel = null;
   #weekdayRow = null;
   #grid = null;
+  #previousMonthButton = null;
+  #nextMonthButton = null;
   #defaultValue = null;
   #defaultStart = null;
   #defaultEnd = null;
@@ -378,10 +380,12 @@ export class RowanCalendar extends BaseElement {
     this.#syncValidity();
   }
 
+  /** @returns {"single" | "range"} */
   get selectionMode() {
     return normalizeSelectionMode(this.readString("selection-mode", "single"));
   }
 
+  /** @param {"single" | "range"} value */
   set selectionMode(value) {
     const normalized = normalizeSelectionMode(value);
     this.reflectString("selection-mode", normalized === "single" ? null : normalized);
@@ -517,8 +521,9 @@ export class RowanCalendar extends BaseElement {
             <p class="month-label" part="month-label" aria-live="polite"></p>
             <button class="nav-button" type="button" data-action="next-month" aria-label="Next month">Next</button>
           </header>
-          <div class="weekday-row" part="weekday-row"></div>
-          <div class="grid" part="grid" role="grid"></div>
+          <div class="grid" part="grid" role="grid">
+            <div class="weekday-row" part="weekday-row" role="row"></div>
+          </div>
         </section>
       `;
 
@@ -526,12 +531,14 @@ export class RowanCalendar extends BaseElement {
       this.#monthLabel = this.renderRoot.querySelector(".month-label");
       this.#weekdayRow = this.renderRoot.querySelector(".weekday-row");
       this.#grid = this.renderRoot.querySelector(".grid");
+      this.#previousMonthButton = this.renderRoot.querySelector('[data-action="prev-month"]');
+      this.#nextMonthButton = this.renderRoot.querySelector('[data-action="next-month"]');
 
-      this.listen(this.renderRoot.querySelector('[data-action="prev-month"]'), "click", () => {
+      this.listen(this.#previousMonthButton, "click", () => {
         this.#navigateMonth(-1);
       });
 
-      this.listen(this.renderRoot.querySelector('[data-action="next-month"]'), "click", () => {
+      this.listen(this.#nextMonthButton, "click", () => {
         this.#navigateMonth(1);
       });
 
@@ -566,6 +573,12 @@ export class RowanCalendar extends BaseElement {
         if (event.key === "ArrowLeft") nextDate = addDays(currentDate, -1);
         if (event.key === "ArrowDown") nextDate = addDays(currentDate, 7);
         if (event.key === "ArrowUp") nextDate = addDays(currentDate, -7);
+        if (event.key === "Home") {
+          nextDate = addDays(currentDate, -(toDateFromValue(currentDate)?.getUTCDay() ?? 0));
+        }
+        if (event.key === "End") {
+          nextDate = addDays(currentDate, 6 - (toDateFromValue(currentDate)?.getUTCDay() ?? 0));
+        }
         if (event.key === "PageDown") nextDate = moveDateByMonths(currentDate, 1);
         if (event.key === "PageUp") nextDate = moveDateByMonths(currentDate, -1);
 
@@ -597,6 +610,10 @@ export class RowanCalendar extends BaseElement {
     this.#fallbackLabel.htmlFor = this.#calendarId;
 
     this.#grid.id = this.#calendarId;
+    this.#grid.setAttribute("aria-colcount", "7");
+    this.#grid.setAttribute("aria-label", fallbackLabelText || this.#monthLabel.textContent);
+    this.#previousMonthButton.disabled = !this.#canNavigateMonth(-1);
+    this.#nextMonthButton.disabled = !this.#canNavigateMonth(1);
 
     this.#syncFormValue();
     this.#syncValidity();
@@ -639,64 +656,83 @@ export class RowanCalendar extends BaseElement {
 
       const header = document.createElement("span");
       header.className = "weekday";
+      header.setAttribute("role", "columnheader");
       header.textContent = formatter.format(labelDate);
       this.#weekdayRow.append(header);
     }
   }
 
   #renderGrid() {
+    const focusedElement = this.shadowRoot.activeElement;
+    const shouldRestoreDayFocus =
+      focusedElement instanceof HTMLButtonElement &&
+      focusedElement.matches("button.day[data-date]");
     const fragment = document.createDocumentFragment();
     const cells = buildCalendarCells(this.month);
     const focusDate = this.#resolveFocusableDate(cells);
 
-    for (const cell of cells) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "day";
-      button.part = "day";
-      button.textContent = String(cell.day);
-      button.setAttribute("data-date", cell.dateValue);
-      button.setAttribute("aria-label", cell.dateValue);
+    for (let startIndex = 0; startIndex < cells.length; startIndex += 7) {
+      const row = document.createElement("div");
+      row.className = "week";
+      row.setAttribute("role", "row");
 
-      const disabled = this.disabled || !this.#isWithinRange(cell.dateValue);
-      button.disabled = disabled;
-      button.tabIndex = !disabled && cell.dateValue === focusDate ? 0 : -1;
+      for (const cell of cells.slice(startIndex, startIndex + 7)) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "day";
+        button.part = "day";
+        button.textContent = String(cell.day);
+        button.setAttribute("data-date", cell.dateValue);
+        button.setAttribute("aria-label", cell.dateValue);
 
-      if (cell.currentMonth) {
-        button.classList.add("current-month");
-      } else {
-        button.classList.add("outside-month");
+        const disabled = this.disabled || !this.#isWithinRange(cell.dateValue);
+        button.disabled = disabled;
+        button.tabIndex = !disabled && cell.dateValue === focusDate ? 0 : -1;
+
+        if (cell.currentMonth) {
+          button.classList.add("current-month");
+        } else {
+          button.classList.add("outside-month");
+        }
+
+        const isRangeMode = this.selectionMode === "range";
+        const isRangeStart = isRangeMode && cell.dateValue === this.start;
+        const isRangeEnd = isRangeMode && cell.dateValue === this.end;
+        const isInRange =
+          isRangeMode &&
+          Boolean(this.start) &&
+          Boolean(this.end) &&
+          cell.dateValue > this.start &&
+          cell.dateValue < this.end;
+        const isSelected = isRangeMode ? isRangeStart || isRangeEnd : cell.dateValue === this.value;
+
+        if (isSelected) {
+          button.classList.add("selected");
+          button.setAttribute("aria-pressed", "true");
+        } else {
+          button.setAttribute("aria-pressed", "false");
+        }
+
+        if (isRangeStart) button.classList.add("range-start");
+        if (isRangeEnd) button.classList.add("range-end");
+        if (isInRange) button.classList.add("in-range");
+
+        const gridCell = document.createElement("div");
+        gridCell.className = "gridcell";
+        gridCell.setAttribute("role", "gridcell");
+        gridCell.setAttribute("aria-selected", isSelected ? "true" : "false");
+        if (disabled) gridCell.setAttribute("aria-disabled", "true");
+        gridCell.append(button);
+        row.append(gridCell);
       }
 
-      const isRangeMode = this.selectionMode === "range";
-      const isRangeStart = isRangeMode && cell.dateValue === this.start;
-      const isRangeEnd = isRangeMode && cell.dateValue === this.end;
-      const isInRange =
-        isRangeMode &&
-        Boolean(this.start) &&
-        Boolean(this.end) &&
-        cell.dateValue > this.start &&
-        cell.dateValue < this.end;
-      const isSelected = isRangeMode ? isRangeStart || isRangeEnd : cell.dateValue === this.value;
-
-      if (isSelected) {
-        button.classList.add("selected");
-        button.setAttribute("aria-pressed", "true");
-      } else {
-        button.setAttribute("aria-pressed", "false");
-      }
-
-      if (isRangeStart) button.classList.add("range-start");
-      if (isRangeEnd) button.classList.add("range-end");
-      if (isInRange) button.classList.add("in-range");
-
-      fragment.append(button);
+      fragment.append(row);
     }
 
-    this.#grid.replaceChildren(fragment);
+    this.#grid.replaceChildren(this.#weekdayRow, fragment);
 
-    const active = this.#grid.querySelector('[tabindex="0"]');
-    if (active) {
+    const active = this.#grid.querySelector('button[tabindex="0"]');
+    if (shouldRestoreDayFocus && active) {
       active.focus({ preventScroll: true });
     }
   }
@@ -732,18 +768,26 @@ export class RowanCalendar extends BaseElement {
   }
 
   #navigateMonth(offset) {
-    if (this.disabled) return;
-
     const nextMonth = addMonths(this.month, offset);
-    if (!nextMonth) return;
-
-    this.month = nextMonth;
+    if (!nextMonth || !this.#canNavigateMonth(offset)) return;
 
     const focusBase = this.#focusedDate || `${this.month}-01`;
     const moved = moveDateByMonths(focusBase, offset);
+    this.month = nextMonth;
     if (moved) {
       this.#focusedDate = moved;
     }
+  }
+
+  #canNavigateMonth(offset) {
+    if (this.disabled) return false;
+
+    const nextMonth = addMonths(this.month, offset);
+    if (!nextMonth) return false;
+
+    return buildCalendarCells(nextMonth).some(
+      (cell) => cell.currentMonth && this.#isWithinRange(cell.dateValue),
+    );
   }
 
   #commitSelection(dateValue, source) {

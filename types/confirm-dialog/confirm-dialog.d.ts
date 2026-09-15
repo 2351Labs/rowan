@@ -29,8 +29,10 @@ export class RowanConfirmDialog extends BaseElement {
     get confirmLabel(): string;
     set cancelLabel(value: string);
     get cancelLabel(): string;
-    set confirmVariant(value: string);
-    get confirmVariant(): string;
+    /** @param {"primary" | "danger"} value */
+    set confirmVariant(value: "danger" | "primary");
+    /** @returns {"primary" | "danger"} */
+    get confirmVariant(): "danger" | "primary";
     set confirmDisabled(value: boolean);
     get confirmDisabled(): boolean;
     show(): void;

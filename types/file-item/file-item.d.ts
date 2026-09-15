@@ -24,8 +24,10 @@ export class RowanFileItem extends BaseElement {
     get filename(): string;
     set filesize(value: number);
     get filesize(): number;
-    set status(value: string);
-    get status(): string;
+    /** @param {"queued" | "uploading" | "success" | "failed"} value */
+    set status(value: "success" | "queued" | "uploading" | "failed");
+    /** @returns {"queued" | "uploading" | "success" | "failed"} */
+    get status(): "success" | "queued" | "uploading" | "failed";
     set progress(value: number);
     get progress(): number;
     set disabled(value: boolean);

@@ -100,6 +100,34 @@ describe("rowan-context-menu", () => {
     expect(detail).to.deep.equal({ value: "edit", item: edit });
   });
 
+  it("activates a focused action once from Enter and Space", async () => {
+    const parent = document.createElement("div");
+    const target = document.createElement("button");
+    const { menu, edit } = createMenu(target);
+    parent.append(target, menu);
+    document.body.append(parent);
+    await settle();
+
+    const changes = [];
+    parent.addEventListener("rowan-change", (event) => changes.push(event.detail));
+
+    for (const key of ["Enter", " "]) {
+      target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+      await settle();
+      edit.shadowRoot
+        .querySelector("button")
+        .dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
+      await settle();
+
+      expect(menu.open).to.equal(false);
+    }
+
+    expect(changes).to.deep.equal([
+      { value: "edit", item: edit },
+      { value: "edit", item: edit },
+    ]);
+  });
+
   it("closes on Escape, returns focus, and emits a user close event", async () => {
     const target = document.createElement("button");
     const { menu, edit } = createMenu(target);

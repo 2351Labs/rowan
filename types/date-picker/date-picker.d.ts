@@ -11,6 +11,8 @@
  * @attr {boolean} invalid
  * @csspart input
  * @cssprop --rowan-field-bg
+ * @cssprop --rowan-field-fg
+ * @cssprop --rowan-field-border
  * @event rowan-change - Fired when the user commits a changed date value
  */
 export class RowanDatePicker extends BaseElement {
@@ -35,7 +37,7 @@ export class RowanDatePicker extends BaseElement {
     set invalid(value: boolean);
     get invalid(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;

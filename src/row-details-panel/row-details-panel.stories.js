@@ -31,7 +31,7 @@ function createPanel() {
 }
 
 export default {
-  title: "Components/Row Details Panel",
+  title: "Components/Data Display/Row Details Panel",
   component: "rowan-row-details-panel",
   tags: ["autodocs"],
   argTypes: {

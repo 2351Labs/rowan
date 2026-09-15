@@ -39,7 +39,7 @@ function createEditor({
 }
 
 export default {
-  title: "Components/Rich Text Editor",
+  title: "Components/Forms & Input/Rich Text Editor",
   tags: ["autodocs"],
   argTypes: {
     mode: { control: "select", options: ["rich", "plain"] },

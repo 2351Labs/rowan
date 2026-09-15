@@ -47,8 +47,10 @@ export class RowanCalendar extends BaseElement {
     get min(): string;
     set max(value: string);
     get max(): string;
-    set selectionMode(value: string);
-    get selectionMode(): string;
+    /** @param {"single" | "range"} value */
+    set selectionMode(value: "single" | "range");
+    /** @returns {"single" | "range"} */
+    get selectionMode(): "single" | "range";
     set start(value: string);
     get start(): string;
     set end(value: string);
@@ -60,7 +62,7 @@ export class RowanCalendar extends BaseElement {
     set invalid(value: boolean);
     get invalid(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

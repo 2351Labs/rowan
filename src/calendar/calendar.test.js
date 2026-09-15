@@ -3,6 +3,15 @@ import "./calendar.js";
 
 const nextMicrotask = () => Promise.resolve();
 
+const settle = async () => {
+  await nextMicrotask();
+  await nextMicrotask();
+};
+
+function keydown(element, key) {
+  element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
+}
+
 describe("rowan-calendar", () => {
   afterEach(() => {
     document.body.innerHTML = "";
@@ -132,16 +141,86 @@ describe("rowan-calendar", () => {
     await nextMicrotask();
 
     const active = element.shadowRoot.querySelector('[data-date="2026-10-12"]');
-    active.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
-    await nextMicrotask();
+    active.focus();
+    keydown(active, "ArrowRight");
+    await settle();
 
     const moved = element.shadowRoot.querySelector('[tabindex="0"]');
     expect(moved.getAttribute("data-date")).to.equal("2026-10-13");
+    expect(element.shadowRoot.activeElement).to.equal(moved);
 
-    moved.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
+    keydown(moved, "Enter");
+    await settle();
 
     expect(element.value).to.equal("2026-10-13");
+  });
+
+  it("renders explicit grid rows, headers, and date cells", async () => {
+    const element = document.createElement("rowan-calendar");
+    element.month = "2026-10";
+    element.value = "2026-10-12";
+    document.body.append(element);
+    await settle();
+
+    const grid = element.shadowRoot.querySelector('[role="grid"]');
+    const rows = [...grid.children];
+    expect(rows).to.have.length(7);
+    expect(rows.every((row) => row.getAttribute("role") === "row")).to.equal(true);
+    expect(rows[0].querySelectorAll('[role="columnheader"]')).to.have.length(7);
+    expect(grid.querySelectorAll('[role="gridcell"]')).to.have.length(42);
+
+    const selectedCell = element.shadowRoot
+      .querySelector('[data-date="2026-10-12"]')
+      .closest('[role="gridcell"]');
+    expect(selectedCell.getAttribute("aria-selected")).to.equal("true");
+  });
+
+  it("retains navigation focus and supports Home and End date movement", async () => {
+    const element = document.createElement("rowan-calendar");
+    element.month = "2026-10";
+    element.value = "2026-10-14";
+    document.body.append(element);
+    await settle();
+
+    const nextMonth = element.shadowRoot.querySelector('[data-action="next-month"]');
+    nextMonth.focus();
+    nextMonth.click();
+    await settle();
+    expect(element.month).to.equal("2026-11");
+    expect(element.shadowRoot.activeElement).to.equal(nextMonth);
+
+    const focusedDay = element.shadowRoot.querySelector('[data-date="2026-11-14"]');
+    focusedDay.focus();
+    keydown(focusedDay, "Home");
+    await settle();
+    expect(element.shadowRoot.activeElement.getAttribute("data-date")).to.equal("2026-11-08");
+
+    keydown(element.shadowRoot.activeElement, "End");
+    await settle();
+    expect(element.shadowRoot.activeElement.getAttribute("data-date")).to.equal("2026-11-14");
+  });
+
+  it("disables unavailable month navigation", async () => {
+    const element = document.createElement("rowan-calendar");
+    element.month = "2026-10";
+    element.min = "2026-10-10";
+    element.max = "2026-10-20";
+    document.body.append(element);
+    await settle();
+
+    const previousMonth = element.shadowRoot.querySelector('[data-action="prev-month"]');
+    const nextMonth = element.shadowRoot.querySelector('[data-action="next-month"]');
+    expect(previousMonth.disabled).to.equal(true);
+    expect(nextMonth.disabled).to.equal(true);
+
+    nextMonth.click();
+    await settle();
+    expect(element.month).to.equal("2026-10");
+
+    element.disabled = true;
+    await settle();
+    expect(previousMonth.disabled).to.equal(true);
+    expect(nextMonth.disabled).to.equal(true);
   });
 
   it("submits value through FACE", async () => {

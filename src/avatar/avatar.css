@@ -38,6 +38,11 @@
   width: 100%;
 }
 
+.image[hidden],
+.initials[hidden] {
+  display: none;
+}
+
 .initials {
   line-height: 1;
 }

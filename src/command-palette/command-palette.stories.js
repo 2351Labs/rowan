@@ -54,7 +54,7 @@ function addWorkspaceCommands(palette) {
 }
 
 export default {
-  title: "Components/Command Palette",
+  title: "Components/Overlays & Menus/Command Palette",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

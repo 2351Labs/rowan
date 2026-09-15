@@ -1,7 +1,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { format, resolveConfig } from "prettier";
 
 const sourceFile = new URL("../src/tokens/tokens.css", import.meta.url);
 const sheetFile = new URL("../src/tokens/sheet.js", import.meta.url);
+const sheetPath = fileURLToPath(sheetFile);
 const shouldCheck = process.argv.includes("--check");
 const TOKEN_DECLARATION = /(--rowan-[\w-]+)\s*:\s*([^;]+);/g;
 const COMPONENT_LAYER_MARKER = "/* Component layer */";
@@ -54,15 +57,14 @@ function createUnregisteredTokenNames(source, propertyDefinitions) {
   return [...parseTokenDeclarations(source).keys()].filter((name) => !registeredNames.has(name));
 }
 
-function extractComponentTokenCss(source) {
+function createComponentTokenDeclarations(source) {
   const componentLayerIndex = source.indexOf(COMPONENT_LAYER_MARKER);
-  const closingBraceIndex = source.lastIndexOf("}");
 
-  if (componentLayerIndex === -1 || closingBraceIndex === -1) {
-    throw new Error("Unable to extract the component token layer from src/tokens/tokens.css.");
+  if (componentLayerIndex === -1) {
+    throw new Error("The component token layer is missing from src/tokens/tokens.css.");
   }
 
-  return `:host {\n${source.slice(componentLayerIndex, closingBraceIndex)}\n}`;
+  return [...parseTokenDeclarations(source.slice(componentLayerIndex)).entries()];
 }
 
 function formatStringLiteral(value) {
@@ -108,6 +110,16 @@ function formatStringArray(values) {
   return ["[", ...values.map((value) => `  ${JSON.stringify(value)},`), "]"].join("\n");
 }
 
+function formatComponentTokenDeclarations(declarations) {
+  return [
+    "[",
+    ...declarations.map(
+      ([name, value]) => `  [${JSON.stringify(name)}, ${formatStringLiteral(value)}],`,
+    ),
+    "]",
+  ].join("\n");
+}
+
 function escapeTemplateLiteral(value) {
   return value.replaceAll("\\", "\\\\").replaceAll("`", "\\`").replaceAll("${", "\\${");
 }
@@ -118,7 +130,9 @@ function renderSheet(css) {
   const unregisteredTokenNames = formatStringArray(
     createUnregisteredTokenNames(css, tokenPropertyDefinitions),
   );
-  const componentTokenCss = extractComponentTokenCss(css);
+  const componentTokenDeclarations = formatComponentTokenDeclarations(
+    createComponentTokenDeclarations(css),
+  );
 
   return [
     "// Generated from src/tokens/tokens.css by scripts/sync-token-sheet.mjs. Do not edit directly.",
@@ -126,13 +140,19 @@ function renderSheet(css) {
     escapeTemplateLiteral(css),
     "`;",
     "",
-    "export const componentTokenCssText = `",
-    escapeTemplateLiteral(componentTokenCss),
-    "`;",
-    "",
     `export const tokenPropertyDefinitions = ${propertyDefinitions};`,
     "",
     `export const unregisteredTokenNames = ${unregisteredTokenNames};`,
+    "",
+    `export const componentTokenDeclarations = ${componentTokenDeclarations};`,
+    "",
+    "export function componentTokenCssFor(prefixes = []) {",
+    "  const declarations = componentTokenDeclarations",
+    "    .filter(([name]) => prefixes.some((prefix) => name.startsWith(prefix)))",
+    '    .map(([name, value]) => "  " + name + ": " + value + ";");',
+    "",
+    '  return declarations.length === 0 ? "" : ":host {\\n" + declarations.join("\\n") + "\\n}";',
+    "}",
     "",
     "function registerTokenProperties() {",
     '  if (typeof CSS === "undefined" || typeof CSS.registerProperty !== "function") {',
@@ -161,17 +181,15 @@ function renderSheet(css) {
     "  rowanTokenStyleSheet.replaceSync(tokenCssText);",
     "}",
     "",
-    "export const rowanComponentTokenStyleSheet =",
-    '  typeof CSSStyleSheet === "undefined" ? null : new CSSStyleSheet();',
-    "",
-    "if (rowanComponentTokenStyleSheet) {",
-    "  rowanComponentTokenStyleSheet.replaceSync(componentTokenCssText);",
-    "}",
-    "",
   ].join("\n");
 }
 
-const expected = renderSheet(readFileSync(sourceFile, "utf8"));
+const prettierConfig = (await resolveConfig(sheetPath)) ?? {};
+const expected = await format(renderSheet(readFileSync(sourceFile, "utf8")), {
+  ...prettierConfig,
+  filepath: sheetPath,
+  parser: "babel",
+});
 const current = readFileSync(sheetFile, "utf8");
 
 if (shouldCheck) {

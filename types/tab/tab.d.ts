@@ -15,6 +15,11 @@ export class RowanTab extends BaseElement {
     get value(): string;
     set active(value: boolean);
     get active(): boolean;
+    focus(options: any): void;
+    /** @internal */
+    setRovingTabIndex(value: any, owner?: null): void;
+    /** @internal */
+    setPanel(panel: any, owner?: null): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

@@ -40,7 +40,7 @@ export class RowanSideNavItem extends BaseElement {
     /** @internal */
     activate(): void;
     /** @internal */
-    setRovingTabIndex(value: any, owner?: any): void;
+    setRovingTabIndex(value: any, owner?: null): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

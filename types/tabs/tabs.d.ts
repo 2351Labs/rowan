@@ -4,7 +4,7 @@
  * @attr {string} value
  * @slot - rowan-tab and rowan-tab-panel nodes
  * @csspart tabs
- * @event rowan-change - Fired when active tab changes
+ * @event rowan-change - Fired when a user activates a different tab
  */
 export class RowanTabs extends BaseElement {
     set value(value: string);

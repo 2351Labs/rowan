@@ -2,7 +2,7 @@ import "./date-picker.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Date Picker",
+  title: "Components/Forms & Input/Date Picker",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { triggerAssociatedFormAction } from "../lib/form.js";
 
 /**
  * Primary action control.
@@ -32,28 +33,39 @@ import { emit } from "../lib/events.js";
 export class RowanButton extends BaseElement {
   static styleUrl = new URL("./button.css", import.meta.url).href;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["variant", "size", "disabled", "loading", "type"];
+  static observedAttributes = [
+    "variant",
+    "size",
+    "disabled",
+    "loading",
+    "type",
+    "aria-expanded",
+    "aria-haspopup",
+  ];
   static upgradeProperties = ["variant", "size", "disabled", "loading", "type"];
   static componentTokenPrefixes = ["--rowan-button-"];
 
   #button = null;
-
   constructor() {
     super();
   }
 
+  /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
   get variant() {
     return this.readString("variant", "primary");
   }
 
+  /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
   set variant(value) {
     this.reflectString("variant", value === "primary" ? null : value);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     return this.readString("size", "md");
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     this.reflectString("size", value === "md" ? null : value);
   }
@@ -74,10 +86,12 @@ export class RowanButton extends BaseElement {
     this.reflectBoolean("loading", Boolean(value));
   }
 
+  /** @returns {"button" | "submit" | "reset"} */
   get type() {
     return this.readString("type", "button");
   }
 
+  /** @param {"button" | "submit" | "reset"} value */
   set type(value) {
     this.reflectString("type", value);
   }
@@ -101,15 +115,31 @@ export class RowanButton extends BaseElement {
           return;
         }
 
+        const type = this.#normalizedType(this.type);
+        if (type !== "button") event.preventDefault();
+
         emit(this, "rowan-click", {
           nativeEvent: event,
         });
+        triggerAssociatedFormAction(this, type);
       });
     }
 
     this.#button.type = this.#normalizedType(this.type);
     this.#button.disabled = this.disabled || this.loading;
     this.#button.setAttribute("aria-busy", this.loading ? "true" : "false");
+    this.#syncPopupState();
+  }
+
+  #syncPopupState() {
+    for (const attribute of ["aria-expanded", "aria-haspopup"]) {
+      const value = this.getAttribute(attribute);
+      if (value === null) {
+        this.#button.removeAttribute(attribute);
+      } else {
+        this.#button.setAttribute(attribute, value);
+      }
+    }
   }
 
   #normalizedType(type) {

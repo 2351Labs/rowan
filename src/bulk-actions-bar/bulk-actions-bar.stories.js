@@ -33,7 +33,7 @@ function createBar(actions) {
 }
 
 export default {
-  title: "Components/Bulk Actions Bar",
+  title: "Components/Data Display/Bulk Actions Bar",
   component: "rowan-bulk-actions-bar",
   tags: ["autodocs"],
   argTypes: {

@@ -10,7 +10,7 @@ function createOption(value, label, selected = false) {
 }
 
 export default {
-  title: "Components/Listbox",
+  title: "Components/Forms & Input/Listbox",
   tags: ["autodocs"],
   argTypes: {
     selection: { control: "select", options: ["single", "multiple"] },

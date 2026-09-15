@@ -22,7 +22,7 @@ function createShowcase() {
 }
 
 export default {
-  title: "Components/Icon Button",
+  title: "Components/Actions & Feedback/Icon Button",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

@@ -192,19 +192,29 @@ export class RowanRadio extends BaseElement {
   }
 
   #uncheckPeers() {
-    const scope = this.closest("rowan-radio-group") ?? this.parentElement;
-    if (!scope) return;
+    const root = this.getRootNode();
+    if (!(root instanceof Document || root instanceof ShadowRoot)) return;
 
-    const peers = Array.from(scope.querySelectorAll("rowan-radio"));
+    const formOwner = this.#formOwner();
+    const peers = Array.from(root.querySelectorAll("rowan-radio")).filter((radio) => {
+      return (
+        radio !== this &&
+        radio.name === this.name &&
+        radio.getRootNode() === root &&
+        radio.#formOwner() === formOwner
+      );
+    });
     this.#syncingPeers = true;
 
     for (const radio of peers) {
-      if (radio === this) continue;
-      if (this.name && radio.name && radio.name !== this.name) continue;
       radio.checked = false;
     }
 
     this.#syncingPeers = false;
+  }
+
+  #formOwner() {
+    return this.internals?.form ?? this.closest("form");
   }
 
   #syncFormValue() {

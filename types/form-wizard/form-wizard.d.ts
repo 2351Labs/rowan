@@ -33,8 +33,16 @@ export class RowanFormWizard extends BaseElement {
     };
     set currentStep(value: number);
     get currentStep(): number;
-    set steps(value: any[]);
-    get steps(): any[];
+    set steps(value: {
+        id: string;
+        label: string;
+        slot: any;
+    }[]);
+    get steps(): {
+        id: string;
+        label: string;
+        slot: any;
+    }[];
     set orientation(value: "horizontal" | "vertical");
     get orientation(): "horizontal" | "vertical";
     set label(value: string);

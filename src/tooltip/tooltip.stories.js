@@ -2,7 +2,7 @@ import "./tooltip.js";
 import "../button/button.js";
 
 export default {
-  title: "Components/Tooltip",
+  title: "Components/Overlays & Menus/Tooltip",
   tags: ["autodocs"],
   argTypes: {
     text: { control: "text" },

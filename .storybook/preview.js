@@ -20,7 +20,7 @@ function isLikelyHtmlSource(source) {
 }
 
 function escapeAttributeValue(value) {
-  return String(value).replace(/&/g, "&amp;").replace(/\"/g, "&quot;");
+  return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
 function formatHtmlNode(node, depth = 0) {
@@ -84,6 +84,7 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-select",
   "rowan-cell-change",
   "rowan-cell-action",
+  "rowan-cell-bind",
   "rowan-page-change",
   "rowan-row-activate",
   "rowan-point-activate",
@@ -389,6 +390,26 @@ export const decorators = [
 ];
 
 export const parameters = {
+  options: {
+    storySort: {
+      method: "alphabetical",
+      order: [
+        "Foundations",
+        "Integrations",
+        "Components",
+        [
+          "Actions & Feedback",
+          "Forms & Input",
+          "Files & Uploads",
+          "Overlays & Menus",
+          "Navigation & Layout",
+          "Data Display",
+          "Other",
+        ],
+        "Workflows",
+      ],
+    },
+  },
   a11y: {
     test: "error",
   },

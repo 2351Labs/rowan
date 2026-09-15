@@ -67,7 +67,7 @@ function createAppLayout({ navigationOpen = false } = {}) {
 }
 
 export default {
-  title: "Components/App Layout",
+  title: "Components/Navigation & Layout/App Layout",
   tags: ["autodocs"],
   args: { navigationOpen: false },
   argTypes: { navigationOpen: { control: "boolean" } },

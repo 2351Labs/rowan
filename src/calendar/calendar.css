@@ -62,8 +62,13 @@
   cursor: pointer;
 }
 
-.weekday-row,
 .grid {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.weekday-row,
+.week {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.3rem;
@@ -84,6 +89,7 @@
   font-size: 0.9rem;
   line-height: 1;
   min-block-size: 2rem;
+  width: 100%;
   background: transparent;
   color: var(--_calendar-fg);
   cursor: pointer;

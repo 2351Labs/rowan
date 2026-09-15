@@ -2,7 +2,7 @@ import "./combobox.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Combobox",
+  title: "Components/Forms & Input/Combobox",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

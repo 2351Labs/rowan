@@ -9,7 +9,7 @@ const OPTIONS = [
 ];
 
 export default {
-  title: "Components/Multi-select combobox",
+  title: "Components/Forms & Input/Multi-select combobox",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

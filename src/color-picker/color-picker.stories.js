@@ -9,7 +9,7 @@ const BRAND_PALETTE = [
 ];
 
 export default {
-  title: "Components/Color Picker",
+  title: "Components/Forms & Input/Color Picker",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

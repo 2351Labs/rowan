@@ -9,7 +9,9 @@ const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
 let uploadRecordId = 0;
 
 function normalizeStatus(value) {
-  const next = String(value ?? "").trim().toLowerCase();
+  const next = String(value ?? "")
+    .trim()
+    .toLowerCase();
   return FILE_STATUSES.has(next) ? next : "queued";
 }
 
@@ -228,7 +230,8 @@ export class RowanFileUpload extends BaseElement {
 
     const candidates = this.multiple ? incoming : incoming.slice(0, 1);
     const maxFiles = this.maxFiles;
-    const remaining = maxFiles > 0 ? Math.max(0, maxFiles - this.#files.length) : Number.POSITIVE_INFINITY;
+    const remaining =
+      maxFiles > 0 ? Math.max(0, maxFiles - this.#files.length) : Number.POSITIVE_INFINITY;
     const accepted = Number.isFinite(remaining) ? candidates.slice(0, remaining) : candidates;
 
     if (accepted.length === 0) return;

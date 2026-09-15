@@ -73,6 +73,7 @@ export class RowanMenuItem extends BaseElement {
     }
 
     this.#button.disabled = this.disabled;
+    this.#button.setAttribute("role", "menuitem");
     this.#button.tabIndex = this.#resolvedTabIndex();
 
     if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {

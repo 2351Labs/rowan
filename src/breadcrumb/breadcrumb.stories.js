@@ -1,7 +1,7 @@
 import "./breadcrumb.js";
 
 export default {
-  title: "Components/Breadcrumb",
+  title: "Components/Navigation & Layout/Breadcrumb",
   tags: ["autodocs"],
 };
 

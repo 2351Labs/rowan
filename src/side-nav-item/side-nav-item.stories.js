@@ -12,7 +12,7 @@ function createItem({ active = true, disabled = false, external = false } = {}) 
 }
 
 export default {
-  title: "Components/Side Navigation Item",
+  title: "Components/Navigation & Layout/Side Navigation Item",
   tags: ["autodocs"],
   args: { active: true, disabled: false, external: false },
   argTypes: {

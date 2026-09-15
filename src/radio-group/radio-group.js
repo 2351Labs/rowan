@@ -83,6 +83,7 @@ export class RowanRadioGroup extends BaseElement {
     if (!this.#slot) {
       this.renderRoot.innerHTML = '<div class="group" part="group"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
+      this.listen(this.#slot, "slotchange", () => this.requestRender());
     }
 
     if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {

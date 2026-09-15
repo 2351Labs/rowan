@@ -68,10 +68,10 @@ export class RowanSlider extends BaseElement {
     get required(): boolean;
     set invalid(value: boolean);
     get invalid(): boolean;
-    set formatValue(value: any);
-    get formatValue(): any;
+    set formatValue(value: null);
+    get formatValue(): null;
     setFormValue(): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

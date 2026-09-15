@@ -8,10 +8,10 @@
 
 .chip {
   align-items: center;
-  background: #eef3ef;
-  border: var(--rowan-border-width) solid #c9d6cb;
+  background: var(--rowan-chip-bg, #eef3ef);
+  border: var(--rowan-border-width) solid var(--rowan-chip-border, #c9d6cb);
   border-radius: 999px;
-  color: var(--rowan-color-fg);
+  color: var(--rowan-chip-fg, var(--rowan-color-fg));
   display: inline-flex;
   font-family: var(--rowan-font-family);
   font-size: var(--rowan-font-size-sm);
@@ -21,18 +21,18 @@
 }
 
 :host([tone="success"]) .chip {
-  background: #e5f1e8;
-  border-color: #b5cdbb;
+  background: var(--rowan-chip-success-bg, #e5f1e8);
+  border-color: var(--rowan-chip-success-border, #b5cdbb);
 }
 
 :host([tone="warning"]) .chip {
-  background: #f6eddc;
-  border-color: #d8c8a2;
+  background: var(--rowan-chip-warning-bg, #f6eddc);
+  border-color: var(--rowan-chip-warning-border, #d8c8a2);
 }
 
 :host([tone="danger"]) .chip {
-  background: #f7e4e1;
-  border-color: #dfb6b0;
+  background: var(--rowan-chip-danger-bg, #f7e4e1);
+  border-color: var(--rowan-chip-danger-border, #dfb6b0);
 }
 
 :host([size="sm"]) .chip {

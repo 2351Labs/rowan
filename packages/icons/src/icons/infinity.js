@@ -17,8 +17,10 @@ const definition = {
  * @param {import("../icon.js").IconOptions} [options]
  * @returns {SVGSVGElement}
  */
-export function Infinity(options) {
+function createInfinity(options) {
   return createIcon(definition, options);
 }
 
-export default Infinity;
+export { createInfinity as Infinity };
+
+export default createInfinity;

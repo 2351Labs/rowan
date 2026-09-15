@@ -1,7 +1,7 @@
 import "./tree-item.js";
 
 export default {
-  title: "Components/Tree Item",
+  title: "Components/Navigation & Layout/Tree Item",
   tags: ["autodocs"],
 };
 

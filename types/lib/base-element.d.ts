@@ -12,8 +12,9 @@ export class BaseElement extends HTMLElement {
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    get internals(): any;
-    get renderRoot(): any;
+    formDisabledCallback(disabled: any): void;
+    get internals(): null;
+    get renderRoot(): null;
     requestRender(): void;
     render(): void;
     setComponentStyles(cssText: any): void;

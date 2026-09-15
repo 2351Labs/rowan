@@ -39,7 +39,7 @@ function createVirtualList({ count = 500, itemSize = 44, overscan = 4 } = {}) {
 }
 
 export default {
-  title: "Components/Virtual List",
+  title: "Components/Data Display/Virtual List",
   tags: ["autodocs"],
   args: {
     count: 500,

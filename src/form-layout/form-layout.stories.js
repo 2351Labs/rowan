@@ -45,7 +45,7 @@ function createLayout({ columns = 2, labelPosition = "top", labelAlign = "start"
 }
 
 export default {
-  title: "Forms/Form Layout",
+  title: "Components/Forms & Input/Form Layout",
   tags: ["autodocs"],
   argTypes: {
     columns: { control: { type: "number", min: 1, max: 4 } },

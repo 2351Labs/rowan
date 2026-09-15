@@ -81,6 +81,7 @@ describe("rowan-date-picker", () => {
 
     element.value = "2026-09-08";
     await nextMicrotask();
+    expect(element.internals.validity.rangeUnderflow).to.equal(true);
     expect(element.checkValidity()).to.equal(false);
 
     element.value = "2026-09-14";
@@ -89,6 +90,7 @@ describe("rowan-date-picker", () => {
 
     element.value = "2026-09-24";
     await nextMicrotask();
+    expect(element.internals.validity.rangeOverflow).to.equal(true);
     expect(element.checkValidity()).to.equal(false);
   });
 

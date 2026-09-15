@@ -28,7 +28,7 @@ function createChart({ series = ON_CALL_SERIES, labels = DAILY_LABELS, interacti
 }
 
 export default {
-  title: "Components/Trend Chart",
+  title: "Components/Data Display/Trend Chart",
   tags: ["autodocs"],
   argTypes: {
     interactive: { control: "boolean" },
@@ -52,6 +52,29 @@ export const ServiceHealthComparison = {
     events: ["rowan-point-activate"],
   }),
   render: () => createChart(),
+};
+
+export const MissingData = {
+  parameters: createEventScriptParameters({
+    steps: ["Inspect the broken line and No data table cell, then focus an available point."],
+    events: ["rowan-point-activate"],
+  }),
+  render: () =>
+    createChart({
+      labels: DAILY_LABELS,
+      series: [
+        {
+          id: "incoming",
+          label: "Incoming incidents",
+          values: [18, 24, null, 12, 15, 9],
+        },
+        {
+          id: "resolved",
+          label: "Resolved incidents",
+          values: [13, 19, 20, 15, 16, 12],
+        },
+      ],
+    }),
 };
 
 export const NonInteractiveSnapshot = {

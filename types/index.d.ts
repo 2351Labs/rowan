@@ -1,4 +1,3 @@
-export { BaseElement } from "./lib/base-element.js";
 export { define } from "./lib/define.js";
 export { debounce } from "./lib/debounce.js";
 export { emit } from "./lib/events.js";

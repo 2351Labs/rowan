@@ -1,0 +1,179 @@
+:host {
+  --_multi-select-bg: var(--rowan-multi-select-combobox-bg, var(--rowan-field-bg, #ffffff));
+  --_multi-select-fg: var(--rowan-multi-select-combobox-fg, var(--rowan-color-fg));
+  --_multi-select-border: var(--rowan-multi-select-combobox-border, var(--rowan-color-border));
+  --_multi-select-focus-ring: var(
+    --rowan-multi-select-combobox-focus-ring,
+    var(--rowan-focus-ring)
+  );
+  --_multi-select-radius: var(--rowan-multi-select-combobox-radius, var(--rowan-radius-md));
+  --_multi-select-font-family: var(
+    --rowan-multi-select-combobox-font-family,
+    var(--rowan-font-family)
+  );
+  --_multi-select-font-size: var(
+    --rowan-multi-select-combobox-font-size,
+    var(--rowan-font-size-sm)
+  );
+  --_multi-select-gap: var(--rowan-multi-select-combobox-gap, var(--rowan-space-2));
+  --_multi-select-padding: var(
+    --rowan-multi-select-combobox-padding,
+    var(--rowan-space-2) var(--rowan-space-3)
+  );
+  --_multi-select-chip-bg: var(
+    --rowan-multi-select-combobox-chip-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 12%, transparent)
+  );
+  --_multi-select-chip-fg: var(--rowan-multi-select-combobox-chip-fg, var(--rowan-color-fg));
+  --_multi-select-panel-bg: var(--rowan-multi-select-combobox-panel-bg, var(--rowan-field-bg));
+  --_multi-select-panel-border: var(
+    --rowan-multi-select-combobox-panel-border,
+    var(--rowan-color-border)
+  );
+  --_multi-select-panel-max-block-size: var(
+    --rowan-multi-select-combobox-panel-max-block-size,
+    16rem
+  );
+  --_multi-select-empty-fg: var(--rowan-multi-select-combobox-empty-fg, var(--rowan-color-muted));
+  display: block;
+  min-inline-size: 0;
+  position: relative;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  align-items: center;
+  background: var(--_multi-select-bg);
+  border: var(--rowan-border-width) solid var(--_multi-select-border);
+  border-radius: var(--_multi-select-radius);
+  color: var(--_multi-select-fg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--_multi-select-gap);
+  min-block-size: 2.75rem;
+  padding: var(--_multi-select-padding);
+}
+
+.control:focus-within {
+  box-shadow: var(--_multi-select-focus-ring);
+}
+
+.chips {
+  display: contents;
+}
+
+.chip {
+  align-items: center;
+  background: var(--_multi-select-chip-bg);
+  border-radius: var(--rowan-radius-sm);
+  color: var(--_multi-select-chip-fg);
+  display: inline-flex;
+  font-family: var(--_multi-select-font-family);
+  font-size: var(--_multi-select-font-size);
+  gap: var(--rowan-space-1);
+  max-inline-size: 100%;
+  padding: 0.18rem 0.32rem 0.18rem 0.5rem;
+}
+
+.chip > span {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rowan-radius-sm);
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  line-height: 1;
+  min-block-size: 1.25rem;
+  min-inline-size: 1.25rem;
+  padding: 0;
+}
+
+.remove:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.remove:focus-visible {
+  box-shadow: var(--_multi-select-focus-ring);
+  outline: none;
+}
+
+.input {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  flex: 1 1 8rem;
+  font-family: var(--_multi-select-font-family);
+  font-size: var(--_multi-select-font-size);
+  min-block-size: 1.5rem;
+  min-inline-size: 4rem;
+  outline: none;
+  padding: 0;
+}
+
+.input::placeholder {
+  color: var(--rowan-color-muted);
+  opacity: 1;
+}
+
+.panel {
+  background: var(--_multi-select-panel-bg);
+  border: var(--rowan-border-width) solid var(--_multi-select-panel-border);
+  border-radius: var(--_multi-select-radius);
+  inset-inline: 0;
+  margin-block-start: var(--rowan-space-1);
+  max-block-size: var(--_multi-select-panel-max-block-size);
+  overflow: auto;
+  position: absolute;
+  z-index: 20;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.listbox {
+  --rowan-listbox-border: transparent;
+  --rowan-listbox-padding: 0;
+}
+
+.empty {
+  color: var(--_multi-select-empty-fg);
+  font-family: var(--_multi-select-font-family);
+  font-size: var(--_multi-select-font-size);
+  padding: var(--rowan-space-3);
+}
+
+.empty[hidden] {
+  display: none;
+}
+
+:host([disabled]) .control {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

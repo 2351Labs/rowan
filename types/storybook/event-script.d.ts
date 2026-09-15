@@ -1,6 +1,6 @@
 export function createEventScriptParameters({ steps, events }?: {
-    steps?: any[];
-    events?: any[];
+    steps?: any[] | undefined;
+    events?: any[] | undefined;
 }): {
     docs: {
         description: {

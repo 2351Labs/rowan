@@ -21,10 +21,12 @@ export class RowanAlert extends BaseElement {
   #container = null;
   #dismissButton = null;
 
+  /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
     return this.readString("tone", "info");
   }
 
+  /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
     this.reflectString("tone", value === "info" ? null : value);
   }

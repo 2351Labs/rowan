@@ -2,7 +2,7 @@ import "./text-field.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Text Field",
+  title: "Components/Forms & Input/Text Field",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { triggerAssociatedFormAction } from "../lib/form.js";
 
 /**
  * Icon-only action control.
@@ -36,18 +37,22 @@ export class RowanIconButton extends BaseElement {
     this.reflectString("label", value);
   }
 
+  /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
   get variant() {
     return this.readString("variant", "ghost");
   }
 
+  /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
   set variant(value) {
     this.reflectString("variant", value === "ghost" ? null : value);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     return this.readString("size", "md");
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     this.reflectString("size", value === "md" ? null : value);
   }
@@ -60,10 +65,12 @@ export class RowanIconButton extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  /** @returns {"button" | "submit" | "reset"} */
   get type() {
     return this.readString("type", "button");
   }
 
+  /** @param {"button" | "submit" | "reset"} value */
   set type(value) {
     this.reflectString("type", value);
   }
@@ -84,9 +91,13 @@ export class RowanIconButton extends BaseElement {
           return;
         }
 
+        const type = this.#normalizedType(this.type);
+        if (type !== "button") event.preventDefault();
+
         emit(this, "rowan-click", {
           nativeEvent: event,
         });
+        triggerAssociatedFormAction(this, type);
       });
     }
 

@@ -7,8 +7,8 @@
 export class VirtualCollection {
     set items(value: any[]);
     get items(): any[];
-    set itemKey(value: any);
-    get itemKey(): any;
+    set itemKey(value: null);
+    get itemKey(): null;
     set estimatedItemSize(value: number);
     get estimatedItemSize(): number;
     get entries(): any[];

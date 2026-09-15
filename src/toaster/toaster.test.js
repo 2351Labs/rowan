@@ -62,6 +62,20 @@ describe("rowan-toaster", () => {
     expect(eventDetail.tone).to.equal("success");
   });
 
+  it("rejects incomplete inputs and reports dismissal status", async () => {
+    const toaster = document.createElement("rowan-toaster");
+    toaster.duration = 0;
+    document.body.append(toaster);
+    await nextMicrotask();
+
+    expect(toaster.show({ title: "Missing message" })).to.equal(null);
+
+    const id = toaster.show("Workspace settings were saved.");
+    expect(typeof id).to.equal("string");
+    expect(toaster.dismiss("missing")).to.equal(false);
+    expect(toaster.dismiss(id)).to.equal(true);
+  });
+
   it("does not emit events when parent sets configuration properties", async () => {
     const toaster = document.createElement("rowan-toaster");
     document.body.append(toaster);
@@ -156,5 +170,68 @@ describe("rowan-toaster", () => {
     expect(renderedToasts.length).to.equal(1);
     expect(renderedToasts[0].textContent.includes("Second toast")).to.equal(true);
     expect(shownIds).to.deep.equal([firstId, secondId]);
+  });
+
+  it("preserves active toast nodes and focus as the queue changes", async () => {
+    const toaster = document.createElement("rowan-toaster");
+    toaster.duration = 0;
+    toaster.maxVisible = 2;
+    document.body.append(toaster);
+    await nextMicrotask();
+
+    const firstId = toaster.show({ id: "first", message: "First toast", dismissible: true });
+    await nextMicrotask();
+
+    const firstToast = toaster.shadowRoot.querySelector(`[data-toast-id="${firstId}"]`);
+    const firstClose = firstToast.shadowRoot.querySelector('[part="close"]');
+    firstClose.focus();
+
+    const secondId = toaster.show({ id: "second", message: "Second toast" });
+    await nextMicrotask();
+
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${firstId}"]`)).to.equal(firstToast);
+    expect(firstToast.shadowRoot.activeElement).to.equal(firstClose);
+    expect(
+      [...toaster.shadowRoot.querySelectorAll("rowan-toast")].map((toast) => toast.dataset.toastId),
+    ).to.deep.equal([firstId, secondId]);
+  });
+
+  it("enforces a changed visibility cap without replacing retained toasts", async () => {
+    const toaster = document.createElement("rowan-toaster");
+    toaster.duration = 0;
+    toaster.maxVisible = 3;
+    document.body.append(toaster);
+    await nextMicrotask();
+
+    const ids = [
+      toaster.show({ id: "first", message: "First toast", dismissible: true }),
+      toaster.show({ id: "second", message: "Second toast" }),
+      toaster.show({ id: "third", message: "Third toast" }),
+    ];
+    await nextMicrotask();
+
+    const firstToast = toaster.shadowRoot.querySelector(`[data-toast-id="${ids[0]}"]`);
+    const firstClose = firstToast.shadowRoot.querySelector('[part="close"]');
+    firstClose.focus();
+
+    const events = [];
+    toaster.addEventListener("rowan-toast-show", (event) => events.push(event.detail));
+    toaster.addEventListener("rowan-toast-dismiss", (event) => events.push(event.detail));
+
+    toaster.maxVisible = 1;
+    await nextMicrotask();
+
+    expect(toaster.shadowRoot.querySelectorAll("rowan-toast")).to.have.length(1);
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${ids[0]}"]`)).to.equal(firstToast);
+    expect(firstToast.shadowRoot.activeElement).to.equal(firstClose);
+    expect(events).to.deep.equal([]);
+
+    toaster.maxVisible = 3;
+    await nextMicrotask();
+
+    expect(
+      [...toaster.shadowRoot.querySelectorAll("rowan-toast")].map((toast) => toast.dataset.toastId),
+    ).to.deep.equal(ids);
+    expect(events).to.deep.equal([]);
   });
 });

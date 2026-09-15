@@ -4,6 +4,8 @@ import { emit } from "../lib/events.js";
 
 let comboboxId = 0;
 
+/** @typedef {string | { value: string, label?: string }} RowanComboboxOption */
+
 /**
  * Filterable text entry with suggestions.
  * @tag rowan-combobox
@@ -13,6 +15,7 @@ let comboboxId = 0;
  * @attr {string} placeholder
  * @attr {boolean} disabled
  * @attr {boolean} required
+ * @property {RowanComboboxOption[]} options - Available suggestions. Arrays are property-only.
  * @csspart input
  * @csspart list
  * @cssprop --rowan-field-bg
@@ -62,10 +65,12 @@ export class RowanCombobox extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  /** @returns {RowanComboboxOption[]} */
   get options() {
     return this.#options;
   }
 
+  /** @param {RowanComboboxOption[]} value */
   set options(value) {
     this.#options = Array.isArray(value) ? value : [];
     this.requestRender();

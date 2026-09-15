@@ -3,7 +3,7 @@ import "../radio/radio.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Radio Group",
+  title: "Components/Forms & Input/Radio Group",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

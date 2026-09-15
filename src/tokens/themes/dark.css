@@ -13,6 +13,17 @@
   --rowan-field-border: var(--rowan-color-border);
   --rowan-card-bg: #1a221d;
   --rowan-card-border: var(--rowan-color-border);
+  --rowan-chip-bg: #203329;
+  --rowan-chip-border: #42604d;
+  --rowan-chip-fg: var(--rowan-color-fg);
+  --rowan-chip-success-bg: #173126;
+  --rowan-chip-success-border: #427b5b;
+  --rowan-chip-warning-bg: #3a301e;
+  --rowan-chip-warning-border: #80693b;
+  --rowan-chip-danger-bg: #3a211f;
+  --rowan-chip-danger-border: #8e4b45;
+  --rowan-skeleton-base: #243029;
+  --rowan-skeleton-highlight: #34443a;
   --rowan-dialog-bg: #1a221d;
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);

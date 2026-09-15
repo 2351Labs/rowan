@@ -2,7 +2,7 @@ import "./checkbox.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Checkbox",
+  title: "Components/Forms & Input/Checkbox",
   tags: ["autodocs"],
   argTypes: {
     checked: { control: "boolean" },

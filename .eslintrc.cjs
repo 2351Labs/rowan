@@ -18,5 +18,13 @@ module.exports = {
         varsIgnorePattern: "^_"
       }
     ]
-  }
+  },
+  overrides: [
+    {
+      files: ["scripts/**/*.mjs", "packages/*/scripts/**/*.mjs"],
+      env: {
+        node: true
+      }
+    }
+  ]
 };

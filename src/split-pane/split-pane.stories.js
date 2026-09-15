@@ -41,7 +41,7 @@ function createSplitPane({ orientation = "horizontal", position = 34, disabled =
 }
 
 export default {
-  title: "Components/Split Pane",
+  title: "Components/Navigation & Layout/Split Pane",
   tags: ["autodocs"],
   args: {
     orientation: "horizontal",

@@ -1,4 +1,7 @@
 /**
+ * @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanSegmentedControlOption
+ */
+/**
  * Compact mutually exclusive mode control.
  * @tag rowan-segmented-control
  * @attr {string} name
@@ -21,16 +24,20 @@ export class RowanSegmentedControl extends BaseElement {
         delegatesFocus: boolean;
     };
     static componentTokenPrefixes: string[];
-    set options(value: any[]);
-    get options(): any[];
+    /** @param {RowanSegmentedControlOption[]} value */
+    set options(value: RowanSegmentedControlOption[]);
+    /** @returns {RowanSegmentedControlOption[]} */
+    get options(): RowanSegmentedControlOption[];
     set name(value: string);
     get name(): string;
     set value(value: string);
     get value(): string;
     set label(value: string);
     get label(): string;
-    set size(value: string);
-    get size(): string;
+    /** @param {"sm" | "md" | "lg"} value */
+    set size(value: "sm" | "md" | "lg");
+    /** @returns {"sm" | "md" | "lg"} */
+    get size(): "sm" | "md" | "lg";
     set disabled(value: boolean);
     get disabled(): boolean;
     set required(value: boolean);
@@ -39,13 +46,18 @@ export class RowanSegmentedControl extends BaseElement {
         value: string;
         label: string;
         disabled: boolean;
-    };
-    setFormValue(value?: any, state?: any): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    } | null;
+    setFormValue(value?: null, state?: undefined): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;
     reportValidity(): boolean;
     #private;
 }
+export type RowanSegmentedControlOption = string | {
+    value: string;
+    label?: string;
+    disabled?: boolean;
+};
 import { BaseElement } from "../lib/base-element.js";

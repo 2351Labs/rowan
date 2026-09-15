@@ -1,7 +1,11 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-import { isRowanTable, resolveRowanTable } from "../lib/table-selection.js";
+import {
+  isRowanTable,
+  observeTableAvailability,
+  resolveRowanTable,
+} from "../lib/table-selection.js";
 
 import "../icon-button/icon-button.js";
 
@@ -21,6 +25,14 @@ let rowDetailsPanelId = 0;
 
 function normalizeText(value) {
   return String(value ?? "").trim();
+}
+
+function normalizeRowId(value) {
+  return String(value ?? "");
+}
+
+function hasRowId(value) {
+  return value != null && normalizeRowId(value).trim().length > 0;
 }
 
 function isRecord(value) {
@@ -136,6 +148,7 @@ export class RowanRowDetailsPanel extends BaseElement {
   #boundTable = null;
   #tableController = null;
   #tableObserver = null;
+  #tableAvailabilityCleanup = null;
   #row = null;
   #rowIsExplicit = false;
   #fields = [];
@@ -223,8 +236,8 @@ export class RowanRowDetailsPanel extends BaseElement {
   }
 
   set rowId(value) {
-    const next = normalizeText(value);
-    this.reflectString("row-id", next || null);
+    const next = normalizeRowId(value);
+    this.reflectString("row-id", next.trim().length > 0 ? next : null);
   }
 
   get fields() {
@@ -371,12 +384,18 @@ export class RowanRowDetailsPanel extends BaseElement {
 
   #syncTable() {
     const nextTable = resolveRowanTable(this, this.#tableOverride, this.forTable);
-    if (nextTable === this.#boundTable) return;
+    if (nextTable === this.#boundTable) {
+      if (!nextTable) this.#observeTableAvailability();
+      return;
+    }
 
     this.#unbindTable();
     this.#boundTable = nextTable;
     this.#syncRowFromTable();
-    if (!nextTable) return;
+    if (!nextTable) {
+      this.#observeTableAvailability();
+      return;
+    }
 
     this.#tableController = new AbortController();
     nextTable.addEventListener(
@@ -389,7 +408,7 @@ export class RowanRowDetailsPanel extends BaseElement {
 
     if (nextTable.shadowRoot && typeof MutationObserver !== "undefined") {
       this.#tableObserver = new MutationObserver(() => {
-        if (!this.#hasExplicitFields) this.requestRender();
+        if (!this.#rowIsExplicit) this.requestRender();
       });
       this.#tableObserver.observe(nextTable.shadowRoot, { childList: true, subtree: true });
     }
@@ -400,7 +419,31 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#tableController = null;
     this.#tableObserver?.disconnect();
     this.#tableObserver = null;
+    this.#tableAvailabilityCleanup?.();
+    this.#tableAvailabilityCleanup = null;
     this.#boundTable = null;
+  }
+
+  #observeTableAvailability() {
+    if (!this.forTable) {
+      this.#tableAvailabilityCleanup?.();
+      this.#tableAvailabilityCleanup = null;
+      return;
+    }
+
+    if (!this.isConnected || this.#tableAvailabilityCleanup || this.#tableOverride) {
+      return;
+    }
+
+    this.#tableAvailabilityCleanup = observeTableAvailability(
+      this,
+      () => this.forTable,
+      () => {
+        this.#tableAvailabilityCleanup = null;
+        this.#syncTable();
+        this.requestRender();
+      },
+    );
   }
 
   #handleTableActivation(event) {
@@ -415,10 +458,15 @@ export class RowanRowDetailsPanel extends BaseElement {
   }
 
   #syncRowFromTable() {
-    if (this.#rowIsExplicit || !this.rowId || !this.#boundTable) return;
+    if (this.#rowIsExplicit) return;
+
+    const rowId = this.rowId;
+    if (!hasRowId(rowId) || !this.#boundTable) {
+      this.#row = null;
+      return;
+    }
 
     const rows = Array.isArray(this.#boundTable.rows) ? this.#boundTable.rows : [];
-    const rowId = this.rowId;
     const configuredRowId = this.#boundTable.config?.rowId;
     this.#row =
       rows.find(
@@ -428,14 +476,24 @@ export class RowanRowDetailsPanel extends BaseElement {
 
   #resolveTableRowId(row, rowIndex, configuredRowId) {
     if (typeof configuredRowId === "function") {
-      return normalizeText(configuredRowId(row, rowIndex) || rowIndex);
+      try {
+        const value = configuredRowId(row, rowIndex);
+        const normalized = normalizeRowId(value);
+        if (hasRowId(value)) return normalized;
+      } catch {
+        return normalizeRowId(rowIndex);
+      }
+
+      return normalizeRowId(rowIndex);
     }
 
-    if (typeof configuredRowId === "string" && row?.[configuredRowId] != null) {
-      return normalizeText(row[configuredRowId]);
+    if (typeof configuredRowId === "string" && configuredRowId.trim().length > 0) {
+      const value = row?.[configuredRowId];
+      const normalized = normalizeRowId(value);
+      if (hasRowId(value)) return normalized;
     }
 
-    return normalizeText(rowIndex);
+    return normalizeRowId(rowIndex);
   }
 
   #renderDetails() {

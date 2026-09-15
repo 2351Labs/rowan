@@ -89,6 +89,31 @@ describe("rowan-table-toolbar", () => {
     expect(getComputedStyle(selection).display).to.equal("none");
   });
 
+  it("binds a declarative table reference that becomes available later", async () => {
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.forTable = "missing-orders-table";
+
+    document.body.append(toolbar);
+    await settle();
+
+    expect(toolbar.table).to.equal(null);
+
+    toolbar.forTable = "late-orders-table";
+    await settle();
+
+    const table = createTable();
+    table.id = "late-orders-table";
+    document.body.append(table);
+    await settle();
+
+    table.selected = ["order-2"];
+    await settle();
+
+    expect(toolbar.table).to.equal(table);
+    expect(toolbar.selected).to.deep.equal(["order-2"]);
+    expect(toolbar.selectedRows.map((row) => row.name)).to.deep.equal(["Cedar"]);
+  });
+
   it("reflects its primitive table reference and applies default a11y", async () => {
     const toolbar = document.createElement("rowan-table-toolbar");
     toolbar.forTable = "orders-table";

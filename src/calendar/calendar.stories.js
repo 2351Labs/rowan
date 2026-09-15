@@ -4,7 +4,7 @@ const today = new Date();
 const monthValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 
 export default {
-  title: "Forms/Calendar",
+  title: "Components/Forms & Input/Calendar",
   component: "rowan-calendar",
   args: {
     label: "Choose a date",

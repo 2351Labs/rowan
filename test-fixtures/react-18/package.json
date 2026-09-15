@@ -1,0 +1,10 @@
+{
+  "name": "@rowan-ui/react-18-test-fixture",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "devDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

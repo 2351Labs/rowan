@@ -22,7 +22,7 @@ function createRating({
 }
 
 export default {
-  title: "Components/Rating",
+  title: "Components/Forms & Input/Rating",
   tags: ["autodocs"],
   argTypes: {
     value: { control: { type: "number", min: 1, max: 5, step: 1 } },

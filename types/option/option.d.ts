@@ -24,9 +24,9 @@ export class RowanOption extends BaseElement {
     set disabled(value: boolean);
     get disabled(): boolean;
     /** @internal */
-    setRovingTabIndex(value: any, owner?: any): void;
+    setRovingTabIndex(value: any, owner?: null): void;
     /** @internal */
-    setListboxDisabled(disabled: any, owner?: any): void;
+    setListboxDisabled(disabled: any, owner?: null): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

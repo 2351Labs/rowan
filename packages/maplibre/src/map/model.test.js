@@ -49,7 +49,7 @@ describe("rowan-map model", () => {
     ]);
     const attribution = normalizeMapAttribution([
       { label: "Open source tiles", href: "https://tiles.example.test/terms" },
-      { label: "Unsafe", href: "javascript:alert(1)" },
+      { label: "Unsafe", href: "java\nscript:void(globalThis.__rowanMapProbe = true)" },
     ]);
 
     expect(layers).to.deep.equal([

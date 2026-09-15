@@ -65,6 +65,46 @@ describe("rowan-radio", () => {
     expect(formData.get("choice")).to.equal("north");
   });
 
+  it("groups radios with the same form owner and name across wrappers", async () => {
+    const form = document.createElement("form");
+    const firstWrapper = document.createElement("div");
+    const secondWrapper = document.createElement("div");
+    const first = document.createElement("rowan-radio");
+    const second = document.createElement("rowan-radio");
+    first.name = "region";
+    second.name = "region";
+    firstWrapper.append(first);
+    secondWrapper.append(second);
+    form.append(firstWrapper, secondWrapper);
+    document.body.append(form);
+    await nextMicrotask();
+
+    first.checked = true;
+    second.checked = true;
+
+    expect(first.checked).to.equal(false);
+    expect(second.checked).to.equal(true);
+  });
+
+  it("does not group same-name radios from separate forms", async () => {
+    const firstForm = document.createElement("form");
+    const secondForm = document.createElement("form");
+    const first = document.createElement("rowan-radio");
+    const second = document.createElement("rowan-radio");
+    first.name = "region";
+    second.name = "region";
+    firstForm.append(first);
+    secondForm.append(second);
+    document.body.append(firstForm, secondForm);
+    await nextMicrotask();
+
+    first.checked = true;
+    second.checked = true;
+
+    expect(first.checked).to.equal(true);
+    expect(second.checked).to.equal(true);
+  });
+
   it("resets to default checked state", async () => {
     const form = document.createElement("form");
     const el = document.createElement("rowan-radio");

@@ -458,8 +458,7 @@ story, plus a pagination story.
 7. README with install, theming, and table config examples.
 8. Tests for reflection, FACE, and table events.
 9. Create a static documentation website that we can serve with 'npm run documentation' similar to https://lit.dev/docs/. This shouldn't be included in the build, and as much as possible take advantage of the rowan components
-10.  Create a full tokens page in storybook an
-
+10. Create a full tokens page in storybook an
 
 After each component: JSDoc, story, CEM refresh, `:host` + hidden, define()
 guard.

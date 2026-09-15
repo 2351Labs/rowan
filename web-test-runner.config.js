@@ -2,15 +2,11 @@ import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
 import { nodeResolve, rollupBundlePlugin } from "@web/dev-server-rollup";
 
-export const reactTestPlugins = [
-  rollupBundlePlugin({
+function createReactTestPlugin(input, external) {
+  return rollupBundlePlugin({
     rollupConfig: {
-      input: "src/react/react.test.js",
-      external: [
-        "@esm-bundle/chai",
-        "../table/table.js",
-        "../status-indicator/status-indicator.js",
-      ],
+      input,
+      external,
       output: { format: "es" },
       plugins: [
         replace({
@@ -21,7 +17,19 @@ export const reactTestPlugins = [
         commonjs(),
       ],
     },
-  }),
+  });
+}
+
+export const reactTestPlugins = [
+  createReactTestPlugin("src/react/react.test.js", [
+    "@esm-bundle/chai",
+    "../table/table.js",
+    "../status-indicator/status-indicator.js",
+  ]),
+  createReactTestPlugin("test-fixtures/react-18/react-18-ssr.test.js", [
+    "@esm-bundle/chai",
+    "../../src/button/button.js",
+  ]),
 ];
 
 export default {

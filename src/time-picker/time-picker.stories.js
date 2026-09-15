@@ -2,7 +2,7 @@ import "./time-picker.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Time Picker",
+  title: "Components/Forms & Input/Time Picker",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -59,6 +59,13 @@ function normalizeText(value) {
 
 function normalizePoint(value, label) {
   const source = isObject(value) ? value : { value };
+  if (source.value === null) {
+    return {
+      value: null,
+      label: normalizeText(source.label) || label,
+    };
+  }
+
   const numeric = Number(source.value);
 
   return {

@@ -12,7 +12,7 @@ function createTextField() {
 }
 
 export default {
-  title: "Forms/Form Field",
+  title: "Components/Forms & Input/Form Field",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

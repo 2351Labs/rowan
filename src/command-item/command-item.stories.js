@@ -1,7 +1,7 @@
 import "./command-item.js";
 
 export default {
-  title: "Components/Command Item",
+  title: "Components/Overlays & Menus/Command Item",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

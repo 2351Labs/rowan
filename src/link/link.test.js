@@ -18,6 +18,17 @@ describe("rowan-link", () => {
     expect(anchor.getAttribute("href")).to.equal("#");
   });
 
+  it("blocks parser-normalized JavaScript URLs", async () => {
+    const el = document.createElement("rowan-link");
+    el.href = "java\nscript:void(globalThis.__rowanLinkProbe = true)";
+    document.body.append(el);
+    await nextMicrotask();
+
+    const anchor = el.shadowRoot.querySelector("a");
+    expect(anchor.getAttribute("href")).to.equal("#");
+    expect(new URL(anchor.href).protocol).to.not.equal("javascript:");
+  });
+
   it("emits rowan-click when activated", async () => {
     const el = document.createElement("rowan-link");
     el.href = "/paths";

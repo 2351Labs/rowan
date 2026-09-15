@@ -1,7 +1,7 @@
 import "./badge.js";
 
 export default {
-  title: "Components/Badge",
+  title: "Components/Actions & Feedback/Badge",
   tags: ["autodocs"],
   argTypes: {
     tone: {

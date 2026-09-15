@@ -1,7 +1,7 @@
 import "./divider.js";
 
 export default {
-  title: "Components/Divider",
+  title: "Components/Navigation & Layout/Divider",
   tags: ["autodocs"],
   argTypes: {
     orientation: {

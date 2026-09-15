@@ -47,7 +47,7 @@ export class RowanRating extends BaseElement {
     /** @returns {number} */
     get step(): number;
     /** @param {number | string | null | undefined} value */
-    set value(value: number | "");
+    set value(value: number | "" | null | undefined);
     /** @returns {number | ""} */
     get value(): number | "";
     set label(value: string);
@@ -61,8 +61,8 @@ export class RowanRating extends BaseElement {
     set invalid(value: boolean);
     get invalid(): boolean;
     clear(): void;
-    setFormValue(value?: string, state?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: string | null, state?: string | null): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

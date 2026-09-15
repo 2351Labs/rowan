@@ -1,16 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { sanitizeNavigationHref } from "../lib/url.js";
 
 function hasAssignedContent(slot) {
   return slot.assignedNodes({ flatten: true }).some((node) => {
     if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim().length > 0;
     return true;
   });
-}
-
-function sanitizeHref(value) {
-  const href = String(value ?? "").trim();
-  return /^javascript\s*:/i.test(href) ? "" : href;
 }
 
 /**
@@ -158,7 +154,7 @@ export class RowanSideNavItem extends BaseElement {
       });
     }
 
-    const href = sanitizeHref(this.href);
+    const href = sanitizeNavigationHref(this.href, "");
     const hasLabelContent = hasAssignedContent(this.#labelSlot);
     const accessibleLabel = this.getAttribute("aria-label") || (!hasLabelContent ? this.label : "");
 

@@ -2,7 +2,7 @@ import "./pagination.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Pagination",
+  title: "Components/Navigation & Layout/Pagination",
   tags: ["autodocs"],
   argTypes: {
     page: { control: { type: "number", min: 1 } },

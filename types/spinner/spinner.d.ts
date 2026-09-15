@@ -6,8 +6,10 @@
  * @csspart spinner
  */
 export class RowanSpinner extends BaseElement {
-    set size(value: string);
-    get size(): string;
+    /** @param {"sm" | "md" | "lg"} value */
+    set size(value: "sm" | "md" | "lg");
+    /** @returns {"sm" | "md" | "lg"} */
+    get size(): "sm" | "md" | "lg";
     set label(value: string);
     get label(): string;
     #private;

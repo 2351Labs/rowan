@@ -1,7 +1,7 @@
 import "./chip.js";
 
 export default {
-  title: "Components/Chip",
+  title: "Components/Actions & Feedback/Chip",
   tags: ["autodocs"],
   argTypes: {
     tone: {

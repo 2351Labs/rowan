@@ -23,8 +23,10 @@ export class RowanListbox extends BaseElement {
     get value(): string;
     set label(value: string);
     get label(): string;
-    set selection(value: string);
-    get selection(): string;
+    /** @param {"single" | "multiple"} value */
+    set selection(value: "single" | "multiple");
+    /** @returns {"single" | "multiple"} */
+    get selection(): "single" | "multiple";
     set disabled(value: boolean);
     get disabled(): boolean;
     set required(value: boolean);
@@ -35,8 +37,8 @@ export class RowanListbox extends BaseElement {
     get selected(): string[];
     /** @returns {RowanOption[]} */
     get selectedOptions(): RowanOption[];
-    setFormValue(value?: any, state?: any): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: null, state?: undefined): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

@@ -38,7 +38,7 @@ export class RowanTimePicker extends BaseElement {
     set invalid(value: boolean);
     get invalid(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;

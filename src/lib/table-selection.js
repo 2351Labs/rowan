@@ -14,6 +14,34 @@ export function resolveRowanTable(host, table, tableId) {
   return isRowanTable(ancestor) ? ancestor : null;
 }
 
+export function observeTableAvailability(host, tableId, onAvailable) {
+  const root = host?.ownerDocument?.documentElement;
+
+  if (!root || typeof MutationObserver === "undefined" || typeof onAvailable !== "function") {
+    return () => {};
+  }
+
+  const resolveTableId =
+    typeof tableId === "function" ? tableId : () => String(tableId ?? "").trim();
+
+  const observer = new MutationObserver(() => {
+    const id = String(resolveTableId() ?? "").trim();
+    if (!resolveRowanTable(host, null, id)) return;
+
+    observer.disconnect();
+    onAvailable();
+  });
+
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["id"],
+  });
+
+  return () => observer.disconnect();
+}
+
 export function readTableSelection(table) {
   return {
     selected: Array.isArray(table?.selected) ? table.selected.map((item) => String(item)) : [],

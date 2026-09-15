@@ -56,7 +56,7 @@ export class RowanDateRangePicker extends BaseElement {
     get invalid(): boolean;
     clear(): void;
     setFormValue(): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

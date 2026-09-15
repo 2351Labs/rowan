@@ -2,7 +2,7 @@ import "./link.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Link",
+  title: "Components/Actions & Feedback/Link",
   tags: ["autodocs"],
   argTypes: {
     href: { control: "text" },

@@ -227,10 +227,10 @@ export class RowanCommandPalette extends BaseElement {
         <div class="overlay" part="overlay" hidden>
           <div class="backdrop" part="backdrop"></div>
           <section class="panel" part="panel" tabindex="-1">
-            <header class="header">
+            <div class="header">
               <h2 class="title"></h2>
               <button class="close" part="close" type="button" aria-label="Close command palette">×</button>
-            </header>
+            </div>
             <input class="input" part="input" type="search" autocomplete="off" role="combobox" />
             <div class="list" part="list" role="listbox"><slot></slot></div>
             <div class="empty" part="empty" role="status" hidden>
@@ -473,22 +473,37 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #applyDefaultA11y() {
+    this.#panel.setAttribute("role", "dialog");
+    this.#panel.setAttribute("aria-modal", "true");
+    this.#panel.setAttribute("aria-labelledby", this.#titleId);
+
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "dialog";
+      this.internals.role = this.open ? "dialog" : null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
       this.internals.ariaModal = this.open ? "true" : null;
     }
 
-    if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = this.label || null;
+    if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
+      this.internals.ariaHidden = this.open ? "false" : "true";
+    }
+
+    if (
+      !this.hasAttribute("aria-label") &&
+      !this.hasAttribute("aria-labelledby") &&
+      "ariaLabel" in this.internals
+    ) {
+      this.internals.ariaLabel = this.open ? this.label || "Command palette" : null;
     }
   }
 
   #syncOpenState() {
+    this.#overlay.hidden = !this.open;
+    this.inert = !this.open;
+
     if (this.open === this.#isOpen) {
       if (this.open) this.#installFocusContainment();
       return;
@@ -505,7 +520,6 @@ export class RowanCommandPalette extends BaseElement {
   #onOpen() {
     this.#lastFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    this.#overlay.hidden = false;
     this.#installFocusContainment();
 
     queueMicrotask(() => {
@@ -514,7 +528,6 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #onClose() {
-    this.#overlay.hidden = true;
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 

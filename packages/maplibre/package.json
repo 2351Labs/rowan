@@ -26,6 +26,7 @@
     "LICENSE"
   ],
   "sideEffects": [
+    "./src/index.js",
     "./src/map/map.js"
   ],
   "peerDependencies": {

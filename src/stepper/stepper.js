@@ -92,7 +92,12 @@ export class RowanStepper extends BaseElement {
   }
 
   set orientation(value) {
-    const next = String(value ?? "").trim().toLowerCase() === "vertical" ? "vertical" : "horizontal";
+    const next =
+      String(value ?? "")
+        .trim()
+        .toLowerCase() === "vertical"
+        ? "vertical"
+        : "horizontal";
     this.reflectString("orientation", next === "horizontal" ? null : next);
   }
 
@@ -192,6 +197,11 @@ export class RowanStepper extends BaseElement {
 
     const steps = this.#resolvedSteps();
     const current = this.#normalizedCurrentStep(steps.length);
+    const activeElement = this.shadowRoot.activeElement;
+    const focusedStep =
+      activeElement instanceof HTMLButtonElement && this.#list.contains(activeElement)
+        ? activeElement.getAttribute("data-step")
+        : null;
 
     this.#list.textContent = "";
     this.#list.classList.toggle("vertical", this.orientation === "vertical");
@@ -239,6 +249,13 @@ export class RowanStepper extends BaseElement {
     });
 
     this.#list.append(fragment);
+
+    if (focusedStep && !this.disabled) {
+      this.#list
+        .querySelector(`button[data-step="${focusedStep}"]`)
+        ?.focus({ preventScroll: true });
+    }
+
     this.#applyDefaultA11y();
   }
 

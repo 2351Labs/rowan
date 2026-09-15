@@ -2,7 +2,7 @@ import "./card.js";
 import "../button/button.js";
 
 export default {
-  title: "Components/Card",
+  title: "Components/Data Display/Card",
   tags: ["autodocs"],
 };
 

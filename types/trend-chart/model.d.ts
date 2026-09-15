@@ -30,26 +30,26 @@ export function trendValueDomain(series: RowanNormalizedTrendSeries[]): {
 };
 export type RowanTrendChartPoint = {
     value: number | null;
-    label?: string;
+    label?: string | undefined;
 };
 export type RowanTrendChartSeries = {
     id: string;
     label: string;
     values: Array<number | null | RowanTrendChartPoint>;
-    color?: string;
+    color?: string | undefined;
 };
 export type RowanTrendChartFormatContext = {
-    series?: RowanNormalizedTrendSeries;
-    index?: number;
-    label?: string;
-    tick?: boolean;
+    series?: RowanNormalizedTrendSeries | undefined;
+    index?: number | undefined;
+    label?: string | undefined;
+    tick?: boolean | undefined;
 };
 export type RowanTrendChartValueFormatter = (value: number, context: RowanTrendChartFormatContext) => string;
 export type RowanTrendChartConfig = {
-    series?: RowanTrendChartSeries[];
-    labels?: string[];
-    interactive?: boolean;
-    valueFormatter?: RowanTrendChartValueFormatter | null;
+    series?: RowanTrendChartSeries[] | undefined;
+    labels?: string[] | undefined;
+    interactive?: boolean | undefined;
+    valueFormatter?: RowanTrendChartValueFormatter | null | undefined;
 };
 export type RowanNormalizedTrendPoint = {
     value: number | null;

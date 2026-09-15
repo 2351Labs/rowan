@@ -84,7 +84,7 @@ function createCarousel({ activeIndex = 0, label = "Release readiness highlights
 }
 
 export default {
-  title: "Components/Carousel",
+  title: "Components/Navigation & Layout/Carousel",
   component: "rowan-carousel",
   tags: ["autodocs"],
   argTypes: {

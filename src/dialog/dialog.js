@@ -25,6 +25,8 @@ const FOCUSABLE_SELECTOR = [
  * @csspart backdrop
  * @csspart panel
  * @csspart close
+ * @cssprop --rowan-dialog-bg
+ * @cssprop --rowan-overlay-backdrop
  * @event rowan-close - Fired when the user dismisses the dialog
  */
 export class RowanDialog extends BaseElement {
@@ -37,6 +39,7 @@ export class RowanDialog extends BaseElement {
   #overlay = null;
   #panel = null;
   #closeButton = null;
+  #titleSlot = null;
   #lastFocused = null;
   #removeDocumentFocusListener = null;
   #isOpen = false;
@@ -73,12 +76,12 @@ export class RowanDialog extends BaseElement {
         <div class="overlay" part="overlay" hidden>
           <div class="backdrop" part="backdrop"></div>
           <section class="panel" part="panel" tabindex="-1">
-            <header class="header" part="header">
+            <div class="header" part="header">
               <div class="title" part="title"><slot name="title"></slot></div>
               <button class="close" part="close" type="button" aria-label="Close dialog">×</button>
-            </header>
+            </div>
             <div class="body" part="body"><slot></slot></div>
-            <footer class="actions" part="actions"><slot name="actions"></slot></footer>
+            <div class="actions" part="actions"><slot name="actions"></slot></div>
           </section>
         </div>
       `;
@@ -86,6 +89,9 @@ export class RowanDialog extends BaseElement {
       this.#overlay = this.renderRoot.querySelector(".overlay");
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#closeButton = this.renderRoot.querySelector(".close");
+      this.#titleSlot = this.renderRoot.querySelector('[part="title"] slot');
+
+      this.listen(this.#titleSlot, "slotchange", () => this.requestRender());
 
       this.listen(this.#closeButton, "click", () => {
         this.#requestUserClose("close-button");
@@ -115,14 +121,30 @@ export class RowanDialog extends BaseElement {
   }
 
   #applyDefaultA11y() {
+    this.#panel.setAttribute("role", "dialog");
+    this.#panel.setAttribute("aria-modal", "true");
+    this.#panel.setAttribute("aria-label", this.#titleText() || "Dialog");
+
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "dialog";
+      this.internals.role = this.open ? "dialog" : null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
-      this.internals.ariaModal = "true";
+      this.internals.ariaModal = this.open ? "true" : null;
+    }
+
+    if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
+      this.internals.ariaHidden = this.open ? "false" : "true";
+    }
+
+    if (
+      !this.hasAttribute("aria-label") &&
+      !this.hasAttribute("aria-labelledby") &&
+      "ariaLabel" in this.internals
+    ) {
+      this.internals.ariaLabel = this.open ? this.#titleText() || "Dialog" : null;
     }
   }
 
@@ -134,6 +156,9 @@ export class RowanDialog extends BaseElement {
   }
 
   #syncOpenState() {
+    this.#overlay.hidden = !this.open;
+    this.inert = !this.open;
+
     if (this.open === this.#isOpen) return;
 
     this.#isOpen = this.open;
@@ -149,8 +174,6 @@ export class RowanDialog extends BaseElement {
   #onOpen() {
     this.#lastFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    this.#overlay.hidden = false;
-
     this.#removeDocumentFocusListener = this.listen(
       document,
       "focusin",
@@ -165,7 +188,6 @@ export class RowanDialog extends BaseElement {
   }
 
   #onClose() {
-    this.#overlay.hidden = true;
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 
@@ -174,6 +196,14 @@ export class RowanDialog extends BaseElement {
     }
 
     this.#lastFocused = null;
+  }
+
+  #titleText() {
+    return this.#titleSlot
+      .assignedNodes({ flatten: true })
+      .map((node) => node.textContent ?? "")
+      .join(" ")
+      .trim();
   }
 
   #trapTabFocus(event) {

@@ -1,3 +1,4 @@
+/** @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanSelectOption */
 /**
  * Select control with form association.
  * @tag rowan-select
@@ -7,6 +8,7 @@
  * @attr {string} placeholder
  * @attr {boolean} disabled
  * @attr {boolean} required
+ * @property {RowanSelectOption[]} options - Available options. Arrays are property-only.
  * @csspart select
  * @cssprop --rowan-field-bg
  * @event rowan-change - Fired when the selected value changes
@@ -16,8 +18,10 @@ export class RowanSelect extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
-    set options(value: any[]);
-    get options(): any[];
+    /** @param {RowanSelectOption[]} value */
+    set options(value: RowanSelectOption[]);
+    /** @returns {RowanSelectOption[]} */
+    get options(): RowanSelectOption[];
     set name(value: string);
     get name(): string;
     set value(value: string);
@@ -31,11 +35,16 @@ export class RowanSelect extends BaseElement {
     set required(value: boolean);
     get required(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;
     reportValidity(): any;
     #private;
 }
+export type RowanSelectOption = string | {
+    value: string;
+    label?: string;
+    disabled?: boolean;
+};
 import { BaseElement } from "../lib/base-element.js";

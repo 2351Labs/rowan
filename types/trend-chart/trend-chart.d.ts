@@ -49,13 +49,13 @@ export class RowanTrendChart extends BaseElement {
     /** @returns {string[]} */
     get labels(): string[];
     /** @param {import("./model.js").RowanTrendChartConfig | null | undefined} value */
-    set config(value: import("./model.js").RowanTrendChartConfig);
+    set config(value: import("./model.js").RowanTrendChartConfig | null | undefined);
     /** @returns {import("./model.js").RowanTrendChartConfig} */
     get config(): import("./model.js").RowanTrendChartConfig;
     /** @param {import("./model.js").RowanTrendChartValueFormatter | null} value */
-    set valueFormatter(value: import("./model.js").RowanTrendChartValueFormatter);
+    set valueFormatter(value: import("./model.js").RowanTrendChartValueFormatter | null);
     /** @returns {import("./model.js").RowanTrendChartValueFormatter | null} */
-    get valueFormatter(): import("./model.js").RowanTrendChartValueFormatter;
+    get valueFormatter(): import("./model.js").RowanTrendChartValueFormatter | null;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

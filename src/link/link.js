@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { sanitizeNavigationHref } from "../lib/url.js";
 
 /**
  * Text navigation link.
@@ -71,7 +72,7 @@ export class RowanLink extends BaseElement {
       });
     }
 
-    const safeHref = this.#sanitizeHref(this.href);
+    const safeHref = sanitizeNavigationHref(this.href);
     this.#anchor.setAttribute("href", safeHref);
 
     if (this.external) {
@@ -89,13 +90,6 @@ export class RowanLink extends BaseElement {
       this.#anchor.removeAttribute("aria-disabled");
       this.#anchor.removeAttribute("tabindex");
     }
-  }
-
-  #sanitizeHref(value) {
-    const href = String(value || "").trim();
-    if (href.length === 0) return "#";
-    if (/^javascript\s*:/i.test(href)) return "#";
-    return href;
   }
 }
 

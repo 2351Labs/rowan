@@ -44,9 +44,9 @@ export class RowanCommandItem extends BaseElement {
     focus(options: any): void;
     /** @internal */
     setCommandPaletteState({ active, visible }: {
-        active?: boolean;
-        visible?: boolean;
-    }, owner: any): string;
+        active?: boolean | undefined;
+        visible?: boolean | undefined;
+    } | undefined, owner: any): string;
     /** @internal */
     clearCommandPaletteState(owner: any): void;
     #private;

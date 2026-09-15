@@ -14,6 +14,8 @@
  * @csspart body
  * @csspart footer
  * @csspart actions
+ * @cssprop --rowan-card-bg
+ * @cssprop --rowan-card-border
  */
 export class RowanCard extends BaseElement {
 }

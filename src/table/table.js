@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { sanitizeNavigationHref } from "../lib/url.js";
 import { VirtualCollection } from "../lib/virtual-collection.js";
 
 import "../badge/badge.js";
@@ -116,6 +117,10 @@ function nonNegativeInteger(value, fallback) {
  * @property {number} [virtualOverscan]
  */
 
+/** @typedef {"sm" | "md" | "lg"} RowanTableDensity */
+
+/** @typedef {"none" | "single" | "multiple"} RowanTableSelectable */
+
 function isDevelopmentEnvironment() {
   const nodeEnvironment = globalThis.process?.env?.NODE_ENV;
   if (nodeEnvironment) return nodeEnvironment !== "production";
@@ -161,6 +166,7 @@ function isDevelopmentEnvironment() {
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
  * @event rowan-cell-action - Fired when link or button cell activates
+ * @event rowan-cell-bind - Fired once for each cloned custom slot cell
  * @event rowan-page-change - Fired when pagination changes
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
  */
@@ -332,10 +338,12 @@ export class RowanTable extends BaseElement {
     this.requestRender();
   }
 
+  /** @returns {RowanTableSelectable} */
   get selectable() {
     return this.readString("selectable", "none");
   }
 
+  /** @param {RowanTableSelectable} value */
   set selectable(value) {
     const next = value === "single" || value === "multiple" ? value : "none";
     this.reflectString("selectable", next === "none" ? null : next);
@@ -381,10 +389,12 @@ export class RowanTable extends BaseElement {
     this.requestRender();
   }
 
+  /** @returns {RowanTableDensity} */
   get density() {
     return this.readString("density", "md");
   }
 
+  /** @param {RowanTableDensity} value */
   set density(value) {
     const next = value === "sm" || value === "lg" ? value : "md";
     this.reflectString("density", next === "md" ? null : next);
@@ -620,6 +630,12 @@ export class RowanTable extends BaseElement {
       th.scope = "col";
       th.dataset.columnId = this.#normalizeText(column.id);
 
+      const tooltip = this.#normalizeText(column.headerCell?.tooltip);
+      if (tooltip) {
+        th.title = tooltip;
+        th.setAttribute("aria-description", tooltip);
+      }
+
       if (column.sortable) {
         const sortDir = this.#columnSortDirection(column);
         th.setAttribute(
@@ -817,17 +833,19 @@ export class RowanTable extends BaseElement {
     const orderedElements = [startSpacer];
 
     for (const entry of range.entries) {
-      const rendered = canReconcile ? this.#renderedBodyRows.get(entry.rowId) : null;
+      const rowEntry = entry.item;
+      const rendered = canReconcile ? this.#renderedBodyRows.get(entry.key) : null;
       const canReuse =
-        rendered && rendered.row === entry.item.row && rendered.rowIndex === entry.item.rowIndex;
-      const element = canReuse ? rendered.element : this.#createBodyRow(entry.item);
+        rendered && rendered.row === rowEntry.row && rendered.rowIndex === rowEntry.rowIndex;
+      const element = canReuse ? rendered.element : this.#createBodyRow(rowEntry);
 
       staleRows.delete(element);
-      nextRows.set(entry.rowId, {
+      element.dataset.virtualKey = entry.key;
+      nextRows.set(entry.key, {
         element,
-        row: entry.item.row,
-        rowIndex: entry.item.rowIndex,
-        rowId: entry.rowId,
+        row: rowEntry.row,
+        rowIndex: rowEntry.rowIndex,
+        rowId: rowEntry.rowId,
       });
       orderedElements.push(element);
     }
@@ -926,8 +944,8 @@ export class RowanTable extends BaseElement {
           const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
           if (
             row instanceof HTMLTableRowElement &&
-            row.dataset.rowId &&
-            this.#virtualCollection.setMeasuredSize(row.dataset.rowId, height)
+            row.dataset.virtualKey &&
+            this.#virtualCollection.setMeasuredSize(row.dataset.virtualKey, height)
           ) {
             changed = true;
           }
@@ -1377,6 +1395,14 @@ export class RowanTable extends BaseElement {
   }
 
   #renderCellContent(cell, context) {
+    const title = this.#normalizeText(
+      this.#resolveCellOption(context.column, "title", context.value, context.row),
+    );
+    if (title) {
+      cell.title = title;
+      cell.setAttribute("aria-description", title);
+    }
+
     const type = this.#resolveCellType(context.column);
 
     switch (type) {
@@ -1460,7 +1486,7 @@ export class RowanTable extends BaseElement {
     anchor.dataset.tableAction = "link";
 
     const href = this.#resolveCellOption(context.column, "href", context.value, context.row);
-    anchor.href = this.#safeUrl(href);
+    anchor.href = sanitizeNavigationHref(href);
 
     const target = this.#resolveCellOption(context.column, "target", context.value, context.row);
     if (typeof target === "string" && target.length > 0) {
@@ -1499,6 +1525,14 @@ export class RowanTable extends BaseElement {
 
     const checked = this.#resolveCellOption(context.column, "checked", context.value, context.row);
     checkbox.checked = Boolean(checked ?? context.value);
+
+    const indeterminate = this.#resolveCellOption(
+      context.column,
+      "indeterminate",
+      context.value,
+      context.row,
+    );
+    checkbox.indeterminate = Boolean(indeterminate);
 
     const disabled = this.#resolveCellOption(
       context.column,
@@ -1700,6 +1734,7 @@ export class RowanTable extends BaseElement {
         }
       }
       cell.append(fragment);
+      this.#emitCustomCellBind(cell, context);
       return;
     }
 
@@ -1712,10 +1747,23 @@ export class RowanTable extends BaseElement {
         clone.dataset.columnId = this.#normalizeText(context.column.id);
       }
       cell.append(clone);
+      this.#emitCustomCellBind(cell, context);
       return;
     }
 
     this.#renderTextCell(cell, context);
+  }
+
+  #emitCustomCellBind(cell, context) {
+    cell.dataset.rowId = context.rowId;
+    emit(this, "rowan-cell-bind", {
+      rowId: context.rowId,
+      columnId: context.column.id,
+      row: context.row,
+      rowIndex: context.rowIndex,
+      value: context.value,
+      cellEl: cell,
+    });
   }
 
   #emitCellChange(context, value) {
@@ -1917,6 +1965,13 @@ export class RowanTable extends BaseElement {
     const start = Math.min(index * size, totalRows);
     const end = Math.min(start + size, totalRows);
 
+    if (index !== page.index) {
+      this.#state.page = {
+        ...page,
+        index,
+      };
+    }
+
     return {
       index,
       size,
@@ -2058,33 +2113,6 @@ export class RowanTable extends BaseElement {
     }
 
     return this.#normalizeText(rowIndex);
-  }
-
-  #safeUrl(value) {
-    if (typeof value !== "string") return "#";
-
-    const trimmed = value.trim();
-    if (trimmed.length === 0) return "#";
-
-    const lower = trimmed.toLowerCase();
-    if (lower.startsWith("javascript:")) return "#";
-
-    try {
-      const url = new URL(trimmed, window.location.origin);
-      if (["http:", "https:", "mailto:", "tel:"].includes(url.protocol)) {
-        return url.toString();
-      }
-
-      if (!trimmed.includes(":")) {
-        return trimmed;
-      }
-    } catch {
-      if (trimmed.startsWith("/") || trimmed.startsWith("#")) {
-        return trimmed;
-      }
-    }
-
-    return "#";
   }
 
   #alignToCss(align) {

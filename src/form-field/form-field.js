@@ -9,11 +9,14 @@ function assignedContent(slot) {
   });
 }
 
-function tokens(value) {
-  return String(value ?? "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+function contentText(slot, fallback) {
+  const assignedText = slot
+    .assignedNodes({ flatten: true })
+    .map((node) => node.textContent ?? "")
+    .join(" ")
+    .trim();
+
+  return assignedText || fallback.textContent?.trim() || "";
 }
 
 /**
@@ -96,7 +99,8 @@ export class RowanFormField extends BaseElement {
   #descriptionId = "";
   #errorId = "";
   #managedControls = new Set();
-  #managedAttributes = new WeakMap();
+  #managedText = new WeakMap();
+  #managedReferences = new WeakMap();
   #controlObserver = null;
 
   constructor() {
@@ -263,6 +267,14 @@ export class RowanFormField extends BaseElement {
     const hasError = assignedContent(this.#errorSlot) || this.error.trim().length > 0;
     const hasActions = assignedContent(this.#actionsSlot);
     const controls = this.#resolveControls();
+    const labelText = hasLabel ? contentText(this.#labelSlot, this.#labelFallback) : "";
+    const descriptionText = [
+      hasHint ? contentText(this.#hintSlot, this.#hintFallback) : "",
+      hasDescription ? contentText(this.#descriptionSlot, this.#descriptionFallback) : "",
+      hasError ? contentText(this.#errorSlot, this.#errorFallback) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
     const isRequired =
       this.required || controls.some((control) => control.hasAttribute("required"));
     const isInvalid =
@@ -283,12 +295,14 @@ export class RowanFormField extends BaseElement {
     this.#field.classList.toggle("is-invalid", isInvalid);
 
     this.#syncControlAssociations(controls, {
-      labelId: hasLabel ? this.#labelId : "",
-      descriptionIds: [
-        hasHint ? this.#hintId : "",
-        hasDescription ? this.#descriptionId : "",
-        hasError ? this.#errorId : "",
+      label: hasLabel ? this.#label : null,
+      labelText,
+      descriptions: [
+        hasHint ? this.#hint : null,
+        hasDescription ? this.#description : null,
+        hasError ? this.#error : null,
       ].filter(Boolean),
+      descriptionText,
     });
     this.#observeControls(controls);
     this.#applyDefaultA11y(hasLabel, isInvalid);
@@ -316,7 +330,7 @@ export class RowanFormField extends BaseElement {
       .filter((element) => element instanceof HTMLElement);
   }
 
-  #syncControlAssociations(controls, { labelId, descriptionIds }) {
+  #syncControlAssociations(controls, { label, labelText, descriptions, descriptionText }) {
     const nextControls = new Set(controls);
 
     for (const control of this.#managedControls) {
@@ -324,27 +338,124 @@ export class RowanFormField extends BaseElement {
     }
 
     for (const control of controls) {
-      this.#setManagedTokens(control, "aria-labelledby", labelId ? [labelId] : []);
-      this.#setManagedTokens(control, "aria-describedby", descriptionIds);
+      this.#syncControlAssociation(control, {
+        fallbackAttribute: "aria-label",
+        property: "ariaLabelledByElements",
+        elements: label ? [label] : [],
+        text: labelText,
+        authorAttributes: ["aria-label", "aria-labelledby"],
+      });
+      this.#syncControlAssociation(control, {
+        fallbackAttribute: "aria-description",
+        property: "ariaDescribedByElements",
+        elements: descriptions,
+        text: descriptionText,
+        authorAttributes: ["aria-description", "aria-describedby"],
+      });
     }
   }
 
-  #setManagedTokens(control, attribute, nextTokens) {
-    const state = this.#managedAttributes.get(control) ?? {};
-    const previousTokens = state[attribute] ?? [];
-    const currentTokens = tokens(control.getAttribute(attribute));
-    const retainedTokens = currentTokens.filter((token) => !previousTokens.includes(token));
-    const value = [...retainedTokens, ...nextTokens].join(" ");
+  #syncControlAssociation(
+    control,
+    { fallbackAttribute, property, elements, text, authorAttributes },
+  ) {
+    const hasAuthorAssociation = authorAttributes.some((name) =>
+      this.#hasAuthorAttribute(control, name),
+    );
 
-    if (value) {
-      control.setAttribute(attribute, value);
-    } else {
+    if (!hasAuthorAssociation && this.#setManagedElementReferences(control, property, elements)) {
+      this.#clearManagedText(control, fallbackAttribute);
+      return;
+    }
+
+    this.#clearManagedElementReferences(control, property);
+    this.#setManagedText(control, fallbackAttribute, hasAuthorAssociation ? "" : text);
+  }
+
+  #hasAuthorAttribute(control, attribute) {
+    const state = this.#managedText.get(control);
+    return (
+      control.hasAttribute(attribute) && state?.[attribute] !== control.getAttribute(attribute)
+    );
+  }
+
+  #setManagedElementReferences(control, property, elements) {
+    const internals = control.internals;
+    if (!internals || !(property in internals)) return;
+
+    try {
+      internals[property] = elements;
+    } catch (_error) {
+      return false;
+    }
+
+    const appliedElements = Array.from(internals[property] ?? []);
+    const applied =
+      appliedElements.length === elements.length &&
+      appliedElements.every((element, index) => element === elements[index]);
+    if (!applied) {
+      internals[property] = [];
+      return false;
+    }
+
+    const state = this.#managedReferences.get(control) ?? {};
+    state[property] = elements;
+    this.#managedReferences.set(control, state);
+    this.#managedControls.add(control);
+    return true;
+  }
+
+  #clearManagedElementReferences(control, property) {
+    const state = this.#managedReferences.get(control);
+
+    const internals = control.internals;
+    if (internals && property in internals) {
+      internals[property] = [];
+    }
+
+    if (!state || !(property in state)) return;
+
+    delete state[property];
+    if (Object.keys(state).length === 0) this.#managedReferences.delete(control);
+  }
+
+  #setManagedText(control, attribute, value) {
+    const state = this.#managedText.get(control) ?? {};
+    const previousValue = state[attribute];
+    const currentValue = control.getAttribute(attribute);
+
+    if (previousValue === undefined && control.hasAttribute(attribute)) {
+      return;
+    }
+
+    if (previousValue !== undefined && currentValue !== previousValue) {
+      delete state[attribute];
+      if (Object.keys(state).length === 0) this.#managedText.delete(control);
+      return;
+    }
+
+    if (!value) {
+      this.#clearManagedText(control, attribute);
+      return;
+    }
+
+    control.setAttribute(attribute, value);
+    state[attribute] = value;
+    this.#managedText.set(control, state);
+    this.#managedControls.add(control);
+  }
+
+  #clearManagedText(control, attribute) {
+    const state = this.#managedText.get(control);
+    const managedValue = state?.[attribute];
+    if (managedValue === undefined) return;
+
+    if (control.getAttribute(attribute) === managedValue) {
       control.removeAttribute(attribute);
     }
 
-    state[attribute] = nextTokens;
-    this.#managedAttributes.set(control, state);
-    this.#managedControls.add(control);
+    delete state[attribute];
+    if (Object.keys(state).length === 0) this.#managedText.delete(control);
   }
 
   #clearManagedControls() {
@@ -354,22 +465,18 @@ export class RowanFormField extends BaseElement {
   }
 
   #clearControlAssociations(control) {
-    const state = this.#managedAttributes.get(control);
-    if (!state) return;
+    const text = this.#managedText.get(control);
+    if (text) {
+      Object.keys(text).forEach((attribute) => this.#clearManagedText(control, attribute));
+    }
 
-    Object.entries(state).forEach(([attribute, managedTokens]) => {
-      const value = tokens(control.getAttribute(attribute))
-        .filter((token) => !managedTokens.includes(token))
-        .join(" ");
+    const references = this.#managedReferences.get(control);
+    if (references) {
+      Object.keys(references).forEach((property) => {
+        this.#clearManagedElementReferences(control, property);
+      });
+    }
 
-      if (value) {
-        control.setAttribute(attribute, value);
-      } else {
-        control.removeAttribute(attribute);
-      }
-    });
-
-    this.#managedAttributes.delete(control);
     this.#managedControls.delete(control);
   }
 
@@ -401,7 +508,9 @@ export class RowanFormField extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = hasLabel ? this.#label.textContent.trim() : null;
+      this.internals.ariaLabel = hasLabel
+        ? contentText(this.#labelSlot, this.#labelFallback)
+        : null;
     }
 
     if (!this.hasAttribute("aria-invalid") && "ariaInvalid" in this.internals) {

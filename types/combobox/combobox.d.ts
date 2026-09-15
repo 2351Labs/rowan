@@ -1,3 +1,4 @@
+/** @typedef {string | { value: string, label?: string }} RowanComboboxOption */
 /**
  * Filterable text entry with suggestions.
  * @tag rowan-combobox
@@ -7,6 +8,7 @@
  * @attr {string} placeholder
  * @attr {boolean} disabled
  * @attr {boolean} required
+ * @property {RowanComboboxOption[]} options - Available suggestions. Arrays are property-only.
  * @csspart input
  * @csspart list
  * @cssprop --rowan-field-bg
@@ -17,8 +19,10 @@ export class RowanCombobox extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
-    set options(value: any[]);
-    get options(): any[];
+    /** @param {RowanComboboxOption[]} value */
+    set options(value: RowanComboboxOption[]);
+    /** @returns {RowanComboboxOption[]} */
+    get options(): RowanComboboxOption[];
     set name(value: string);
     get name(): string;
     set value(value: string);
@@ -32,11 +36,15 @@ export class RowanCombobox extends BaseElement {
     set required(value: boolean);
     get required(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;
     reportValidity(): any;
     #private;
 }
+export type RowanComboboxOption = string | {
+    value: string;
+    label?: string;
+};
 import { BaseElement } from "../lib/base-element.js";

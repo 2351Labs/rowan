@@ -16,10 +16,12 @@ export class RowanSpinner extends BaseElement {
 
   #label = null;
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     return this.readString("size", "md");
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     this.reflectString("size", value === "md" ? null : value);
   }

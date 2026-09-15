@@ -4,6 +4,11 @@ import { emit } from "../lib/events.js";
 
 import "../button/button.js";
 
+function positiveInteger(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? Math.max(1, Math.floor(numeric)) : 1;
+}
+
 /**
  * Pagination controls.
  * @tag rowan-pagination
@@ -32,37 +37,47 @@ export class RowanPagination extends BaseElement {
         .find((node) => node instanceof HTMLElement && node.matches("button[data-action]"));
       if (!button) return;
 
-      if (button.dataset.action === "prev") this.#setPage(this.page - 1);
-      if (button.dataset.action === "next") this.#setPage(this.page + 1);
+      const { page } = this.#pageState();
+      if (button.dataset.action === "prev") this.#setPage(page - 1);
+      if (button.dataset.action === "next") this.#setPage(page + 1);
     });
   }
 
   get page() {
-    return this.readNumber("page", 1);
+    return positiveInteger(this.readNumber("page", 1));
   }
 
   set page(value) {
-    this.reflectNumber("page", value);
+    this.reflectNumber("page", positiveInteger(value));
   }
 
   get totalPages() {
-    return this.readNumber("total-pages", 1);
+    return positiveInteger(this.readNumber("total-pages", 1));
   }
 
   set totalPages(value) {
-    this.reflectNumber("total-pages", value);
+    this.reflectNumber("total-pages", positiveInteger(value));
   }
 
   #setPage(value) {
-    const max = Math.max(1, this.totalPages || 1);
-    const next = Math.max(1, Math.min(max, Number(value) || 1));
-    if (next === this.page) return;
+    const { page, total } = this.#pageState();
+    const next = Math.max(1, Math.min(total, positiveInteger(value)));
+    if (this.page !== page) this.page = page;
+    if (next === page) return;
 
     this.page = next;
     emit(this, "rowan-page-change", {
       index: next,
       size: null,
     });
+  }
+
+  #pageState() {
+    const total = this.totalPages;
+    return {
+      page: Math.min(this.page, total),
+      total,
+    };
   }
 
   render() {
@@ -77,10 +92,11 @@ export class RowanPagination extends BaseElement {
       this.#container = this.renderRoot.querySelector(".container");
     }
 
-    const page = Math.max(1, this.page || 1);
-    const total = Math.max(1, this.totalPages || 1);
+    const { page, total } = this.#pageState();
+    if (this.page !== page) this.page = page;
+
     const status = this.renderRoot.querySelector(".status");
-    status.textContent = `Page ${Math.min(page, total)} of ${total}`;
+    status.textContent = `Page ${page} of ${total}`;
 
     const prev = this.renderRoot.querySelector('button[data-action="prev"]');
     const next = this.renderRoot.querySelector('button[data-action="next"]');

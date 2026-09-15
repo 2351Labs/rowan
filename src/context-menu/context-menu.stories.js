@@ -40,7 +40,7 @@ function createContextMenu() {
 }
 
 export default {
-  title: "Components/Context Menu",
+  title: "Components/Overlays & Menus/Context Menu",
   tags: ["autodocs"],
 };
 

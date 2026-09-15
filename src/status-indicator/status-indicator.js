@@ -40,21 +40,25 @@ export class RowanStatusIndicator extends BaseElement {
   #labelSlot = null;
   #labelFallback = null;
 
+  /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
   get tone() {
     const value = this.readString("tone", "neutral");
     return TONES.has(value) ? value : "neutral";
   }
 
+  /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
   set tone(value) {
     const nextTone = TONES.has(value) ? value : "neutral";
     this.reflectString("tone", nextTone === "neutral" ? null : nextTone);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     const value = this.readString("size", "md");
     return SIZES.has(value) ? value : "md";
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     const nextSize = SIZES.has(value) ? value : "md";
     this.reflectString("size", nextSize === "md" ? null : nextSize);

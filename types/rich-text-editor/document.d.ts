@@ -55,9 +55,9 @@ export function renderDocument(root: HTMLElement, value: unknown): void;
 export function documentFromEditingSurface(root: HTMLElement): RowanRichTextDocument;
 export type RowanRichTextRun = {
     text: string;
-    bold?: boolean;
-    italic?: boolean;
-    underline?: boolean;
+    bold?: boolean | undefined;
+    italic?: boolean | undefined;
+    underline?: boolean | undefined;
 };
 export type RowanRichTextParagraph = {
     type: "paragraph";

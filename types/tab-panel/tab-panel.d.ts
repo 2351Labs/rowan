@@ -11,6 +11,8 @@ export class RowanTabPanel extends BaseElement {
     get value(): string;
     set active(value: boolean);
     get active(): boolean;
+    /** @internal */
+    setTab(tab: any, owner?: null): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

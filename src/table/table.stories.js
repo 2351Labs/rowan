@@ -435,7 +435,7 @@ function createFunctionComparisonLayout({
 }
 
 export default {
-  title: "Components/Table",
+  title: "Components/Data Display/Table",
   tags: ["autodocs"],
   parameters: {
     controls: {
@@ -502,11 +502,12 @@ export const ExactConfig = {
 export const CustomSlotCell = {
   parameters: createEventScriptParameters({
     steps: [
+      "Inspect the custom-cell binding payload after template clones are rendered.",
       "Double-click a table row.",
       "Focus a row and press Enter.",
       "Observe row activation payload details in Event Trace.",
     ],
-    events: ["rowan-row-activate"],
+    events: ["rowan-cell-bind", "rowan-row-activate"],
   }),
   args: {
     liveTone: "success",
@@ -548,7 +549,8 @@ export const CustomSlotCell = {
           id: "price",
           header: "Price",
           type: "custom",
-          cell: { slot: "price-cell" },
+          headerCell: { tooltip: "Catalog price" },
+          cell: { slot: "price-cell", title: (value) => `Catalog price: ${value}` },
         },
         {
           id: "status",

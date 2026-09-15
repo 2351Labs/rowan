@@ -15,10 +15,12 @@ export class RowanDivider extends BaseElement {
 
   #line = null;
 
+  /** @returns {"horizontal" | "vertical"} */
   get orientation() {
     return this.readString("orientation", "horizontal");
   }
 
+  /** @param {"horizontal" | "vertical"} value */
   set orientation(value) {
     this.reflectString("orientation", value === "horizontal" ? null : value);
   }

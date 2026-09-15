@@ -6,7 +6,7 @@
  * @slot - Dropdown content
  * @csspart trigger
  * @csspart panel
- * @event rowan-change - Fired when open state changes
+ * @event rowan-change - Fired when a user toggles or dismisses the dropdown
  */
 export class RowanDropdown extends BaseElement {
     set open(value: boolean);

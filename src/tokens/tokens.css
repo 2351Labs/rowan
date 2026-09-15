@@ -115,6 +115,18 @@
   --rowan-field-border: var(--rowan-color-border);
   --rowan-card-bg: #ffffff;
   --rowan-card-border: var(--rowan-color-border);
+  --rowan-chip-bg: #eef3ef;
+  --rowan-chip-border: #c9d6cb;
+  --rowan-chip-fg: var(--rowan-color-fg);
+  --rowan-chip-success-bg: #e5f1e8;
+  --rowan-chip-success-border: #b5cdbb;
+  --rowan-chip-warning-bg: #f6eddc;
+  --rowan-chip-warning-border: #d8c8a2;
+  --rowan-chip-danger-bg: #f7e4e1;
+  --rowan-chip-danger-border: #dfb6b0;
+  --rowan-skeleton-base: #e6ebe5;
+  --rowan-skeleton-highlight: #f4f7f2;
+  --rowan-skeleton-shimmer-duration: 1.1s;
   --rowan-carousel-border: var(--rowan-color-border);
   --rowan-carousel-surface: var(--rowan-card-bg);
   --rowan-carousel-control-bg: color-mix(

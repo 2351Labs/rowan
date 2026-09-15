@@ -90,6 +90,15 @@ describe("rowan-time-picker", () => {
     element.value = "18:10";
     await nextMicrotask();
     expect(element.checkValidity()).to.equal(false);
+
+    element.value = "09:00:30";
+    await nextMicrotask();
+    expect(element.internals.validity.stepMismatch).to.equal(true);
+    expect(element.checkValidity()).to.equal(false);
+
+    element.value = "09:01";
+    await nextMicrotask();
+    expect(element.checkValidity()).to.equal(true);
   });
 
   it("syncs host a11y states for required, disabled, invalid, and label", async () => {

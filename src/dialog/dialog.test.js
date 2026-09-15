@@ -104,6 +104,33 @@ describe("rowan-dialog", () => {
     expect(getComputedStyle(overlay).display).to.equal("none");
   });
 
+  it("keeps closed dialogs out of modal semantics and names open dialogs", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const title = document.createElement("span");
+    title.slot = "title";
+    title.textContent = "Edit profile";
+    dialog.append(title);
+    document.body.append(dialog);
+    await wait();
+
+    expect(dialog.inert).to.equal(true);
+    expect(dialog.internals.role).to.equal(null);
+    expect(dialog.internals.ariaHidden).to.equal("true");
+
+    dialog.open = true;
+    await wait();
+
+    const panel = dialog.shadowRoot.querySelector(".panel");
+    expect(dialog.inert).to.equal(false);
+    expect(dialog.internals.role).to.equal("dialog");
+    expect(dialog.internals.ariaModal).to.equal("true");
+    expect(dialog.internals.ariaHidden).to.equal("false");
+    expect(dialog.internals.ariaLabel).to.equal("Edit profile");
+    expect(panel.getAttribute("role")).to.equal("dialog");
+    expect(panel.getAttribute("aria-modal")).to.equal("true");
+    expect(panel.getAttribute("aria-label")).to.equal("Edit profile");
+  });
+
   it("traps Tab focus within the panel", async () => {
     const dialog = document.createElement("rowan-dialog");
     document.body.append(dialog);

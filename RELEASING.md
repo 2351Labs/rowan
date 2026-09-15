@@ -13,6 +13,7 @@ Rowan publishes its source ESM modules directly. A release must contain the `src
    npm run types
    npm run typecheck
    npm test
+   npm run test:package
    npm run analyze
    npm run build-storybook
    ```

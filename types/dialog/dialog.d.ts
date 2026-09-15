@@ -9,6 +9,8 @@
  * @csspart backdrop
  * @csspart panel
  * @csspart close
+ * @cssprop --rowan-dialog-bg
+ * @cssprop --rowan-overlay-backdrop
  * @event rowan-close - Fired when the user dismisses the dialog
  */
 export class RowanDialog extends BaseElement {

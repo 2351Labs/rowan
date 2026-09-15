@@ -26,16 +26,25 @@ function TableView() {
       columns: tableConfig.columns,
       rows: tableConfig.rows,
       selected: ["1"],
+      sort: null,
+      page: null,
+      density: "lg",
+      selectable: "multiple",
     },
     events: {
       "rowan-select": (event) => event.type,
     },
   });
 
+  useRowanElement(tableRef, {
+    properties: { config: null },
+  });
+
   useRowanElement(listRef, {
     properties: {
       items: tableConfig.rows,
       renderItem: (_item, _index, itemElement) => itemElement,
+      itemKey: null,
     },
   });
 
@@ -43,10 +52,31 @@ function TableView() {
     properties: { options: comboboxOptions },
   });
 
+  useRowanElement(comboboxRef, {
+    properties: {
+      // @ts-expect-error Combobox options are strings or documented option records.
+      options: [42],
+    },
+  });
+
   useRowanElement(tableRef, {
     properties: {
       // @ts-expect-error Rows must be an array of record values.
       rows: "not a row collection",
+    },
+  });
+
+  useRowanElement(tableRef, {
+    properties: {
+      // @ts-expect-error Table selection supports none, single, and multiple only.
+      selectable: "all",
+    },
+  });
+
+  useRowanElement(listRef, {
+    properties: {
+      // @ts-expect-error Virtual List item keys are strings or key functions.
+      itemKey: 1,
     },
   });
 
@@ -67,7 +97,12 @@ const structuredTablePropertyRequiresRef = (
   // @ts-expect-error Structured values must use useRowanElement().
   <rowan-table config={tableConfig} />
 );
+const invalidTableDensityAttribute = (
+  // @ts-expect-error Table density supports sm, md, and lg only.
+  <rowan-table density="compact" />
+);
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
 void structuredTablePropertyRequiresRef;
+void invalidTableDensityAttribute;

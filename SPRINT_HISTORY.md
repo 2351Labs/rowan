@@ -1,6 +1,6 @@
 # Rowan Sprint History
 
-Last updated: 2026-09-12
+Last updated: 2026-09-14
 
 ## Current Product Snapshot
 
@@ -701,6 +701,290 @@ Verification completed at sprint close:
 - Two consecutive `npm run analyze` runs produced a byte-identical core manifest containing `rowan-carousel`
 - `npm run build-storybook` and static documentation checks at desktop and 390px, including dark-theme legibility, keyboard activation, event output, no autoplay, and no page-level horizontal overflow
 - Scoped Prettier validation and `git diff --check`
+
+## Review Remediation Roadmap
+
+These planned sprints address the production findings from the 2026-09-14 full code review. They are remediation work only; no new component catalog work is included. Sprint 29 is release-blocking. Sprints 30 through 35 can proceed independently after its package-security work is complete, and Sprint 36 closes the program.
+
+### Sprint 29: Security and Package Import Integrity
+
+Status: Completed; repository-wide lint gate remains deferred to Sprint 36
+
+Delivered:
+
+- Parser-based URL normalization for Link, Side Nav, and Table navigation sinks, with safe relative, hash, HTTP(S), mail, and phone links plus rejection of parser-normalized script protocols
+- A fail-closed icon factory restricted to the Lucide catalog's geometry element and attribute vocabulary, preventing unsupported SVG elements and executable attributes
+- Explicit root-entry `sideEffects` metadata for core and MapLibre plus a packed external-consumer esbuild registration guard that evaluates both bare imports
+- A private React 18 runtime fixture that verifies false boolean server markup, custom-element upgrade semantics, client-side property correction, and the safe conditional-omission pattern
+- React documentation that reserves JSX for string and number scalar attributes, describes the React 18 SSR boolean boundary, and demonstrates client-side property binding
+- Removal of the internal `BaseElement` from root and subpath package exports, with positive and negative public type assertions
+
+Acceptance outcomes:
+
+- Hostile URL and icon-definition regressions pass in Chromium, Firefox, and WebKit without executable script attributes or protocols entering the rendered output
+- Packed external-consumer esbuild checks prove bare root imports define `rowan-button` and `rowan-maplibre-map`
+- The React 18 fixture verifies the documented false-boolean upgrade and property-binding hydration outcome
+- README, static documentation, package metadata, type fixtures, and release guidance describe the supported import and React paths accurately
+
+Verification completed:
+
+- Focused security, package-entry, and React browser contracts: 41 passing in each of Chromium, Firefox, and WebKit
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, and `npm run test:package`
+- `npm test`: 84 test files and 352 passing contracts
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `533bf3c3f5c5a344c8c51d47db6558950c4969c09e26dfdc329d8d455f6aa380`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- `npm run build-storybook`, static documentation Vite build, root and MapLibre `npm pack --dry-run --json` inspections, scoped Prettier/ESLint, and `git diff --check`
+
+Deferred release condition:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint and formatting baseline
+
+### Sprint 30: Theme and Base Rendering Reliability
+
+Status: Completed; repository-wide lint baseline remains deferred to Sprint 36
+
+Delivered:
+
+- Scoped `BaseElement` fallback tokens to each component's declared prefix family, preventing one component's standalone aliases from masking document or nested component theme values
+- Adopted inline `static styles` and runtime `setComponentStyles()` constructable sheets alongside Rowan token sheets, with a browser-tested `<style>` fallback path
+- Restored document-level light/dark component token cascade behavior for Card, Date Picker, Calendar, Dialog, and other components without a local token prefix
+- Replaced Chip's hard-coded light surfaces with component tokens and shipped light/dark values for info, success, warning, and danger tones
+- Added tokenized Skeleton shimmer surfaces, an overridable duration, and a reduced-motion rule that disables animation
+- Made token-sheet generation run Prettier using the repository configuration so `tokens:sync`, `tokens:check`, and formatting checks share one canonical output
+- Documented the repaired Card, Dialog, Date Picker, Chip, and Skeleton public CSS properties through JSDoc and CEM
+
+Acceptance outcomes:
+
+- Dark Chip tones, Card, Date Picker, Calendar, and Dialog receive tokenized surfaces with AA text contrast; the live documentation specimen measured Chip at $11.62:1$ and Card, Date Picker, and Dialog at $14.11:1$
+- Inline static and runtime component styles render in both constructable-sheet and forced legacy `<style>` branches
+- Host overrides take precedence over wrapper values, wrapper values over `:root`, and nested light wrappers reset dark Chip and Skeleton aliases deterministically
+- Live documentation checks confirmed reduced-motion Skeleton rendering has no active animation and the dark specimen has no horizontal overflow at 390px
+
+Verification completed:
+
+- Focused BaseElement, token, Chip, Date Picker, Dialog, Card, and Skeleton contracts: 29 passing in each of Chromium, Firefox, and WebKit
+- `npm run tokens:sync`, `npm run tokens:check`, `npm run types`, `npm run typecheck`, `npm test`, and `npm run test:package`
+- `npm test`: 85 test files and 365 passing contracts
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `effe906d96bd9d074e15e204e85e0235d5f730cbf89bc2b1b42c8a5d35995eb2`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- `npm run build-storybook`, static documentation Vite build, root and MapLibre `npm pack --dry-run --json` inspections, scoped Prettier/ESLint, `npm ci --dry-run`, and `git diff --check`
+
+Deferred release condition:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint and formatting baseline
+
+### Sprint 31: Form Association and Input Correctness
+
+Status: Completed; repository-wide lint baseline remains deferred to Sprint 36
+
+Delivered:
+
+- Mirrored native email, URL, and pattern validation through Text Field's `ElementInternals`, including deterministic fallback messages for engines that omit a native message
+- Added Text Field's reflected `pattern` public API and verified range and step validity flags for Number Field, Date Picker, and Time Picker; Time Picker now preserves `stepMismatch`
+- Added inherited `formDisabledCallback()` handling in `BaseElement`, making every FACE host inert under `fieldset[disabled]`, disabling native shadow controls, suppressing user interaction events, and restoring its local rendered state when re-enabled
+- Aligned Radio peer reconciliation with matching tree scope, form owner, and name; Radio Group now reconciles late-added slotted radios
+- Replaced Form Field's cross-shadow IDREF defaults with verified `ElementInternals` element references where supported and managed `aria-label` / `aria-description` fallbacks where WebKit cannot retain those references
+- Routed Button and Icon Button `submit` and `reset` activation to their nearest or explicitly referenced light-DOM form without double-submitting the shadow button
+- Added reconnect-safe light-DOM option observation to Select, enforced single-file emissions in standalone Dropzone, and gave Validation Summary a private stable target map for identifier-less invalid controls
+
+Acceptance outcomes:
+
+- Rowan hosts reject invalid email, URL, pattern, date, time, number, required, range, and step values while exposing the expected validity flags through FACE
+- All 19 FACE declarations were smoke-tested in a disabled fieldset: each matches `:disabled`, has an inert shadow interaction surface, and disables every native shadow control
+- Radio ownership, dynamic Radio Group children, Select mutations, Dropzone single-file drops, Form Field accessible naming/description, Validation Summary focus jumps, and Button/Icon Button submit/reset are covered as public contracts
+- Programmatic value and configuration updates remain silent; controls do not mutate consumer-owned option or row data
+
+Verification completed:
+
+- Focused FACE, form-data, accessibility, keyboard, and dynamic-light-DOM suite: 176 passing contracts in each of Chromium, Firefox, and WebKit
+- `npm test`: 85 test files and 378 passing contracts
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, `npm run analyze`, `npm run test:package`, `npm run build-storybook`, static documentation Vite build, root and MapLibre `npm pack --dry-run --json` inspections, and `npm ci --dry-run`
+- Scoped Prettier and ESLint, editor diagnostics, and `git diff --check`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `264489d8ab7c723277df6f4bcb6e4f36b9af6bd3fbba7bcec602370690817736`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+
+Deferred release condition:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint and formatting baseline
+
+### Sprint 32: Overlay and Keyboard Accessibility
+
+Status: Completed; repository-wide lint and generated-output whitespace baselines remain deferred to Sprint 36
+
+Delivered:
+
+- Named, rendered Dialog, Drawer, and Command Palette modal semantics with inert closed hosts, hidden panels, Escape/backdrop dismissal, focus containment, and focus return
+- Standalone Menu and Tabs controllers with roving focus, Arrow/Home/End/Enter/Space interaction, dynamic-child reconciliation, and clean relationship release; Context Menu now supports reprojected Menu items without duplicate keyboard activation
+- Popover, Dropdown, and Tooltip trigger/dismissal behavior with author-owned ARIA protection; Rowan Button forwards popup state to its exposed native control without an invalid cross-shadow IDREF
+- Calendar focus retention, disabled month navigation, week-boundary Home/End keys, and labelled grid, row, columnheader, and gridcell semantics
+- Popover Storybook controls for its `label` API and user-driven `rowan-change` event tracing
+
+Acceptance outcomes:
+
+- Open overlays are named, keyboard-dismissible where appropriate, and contain focus; closed Dialog, Drawer, Command Palette, and Popover surfaces are absent from the browser accessibility tree
+- Tabs, menus, Context Menu, and Calendar handle their declared Arrow/Home/End/Enter/Space behavior with dynamic children covered by browser contracts
+- Browser snapshots confirm named modal dialogs, menu/menuitem, tablist/tab/tabpanel, tooltip, repaired expanded Dropdown trigger, and Calendar grid semantics
+
+Verification completed:
+
+- Focused Sprint 32 suite: 13 files and 65 passing contracts; Chromium, Firefox, and WebKit each pass all 65
+- `npm test`: 85 test files and 402 passing contracts
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, and `npm run test:package`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `33ba2590718a52634a63805605d2132a06f7a86ffb117b8711630cdaacc01312`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- `npm run build-storybook` and static documentation Vite build; Vite reported only its existing chunk-size advisory
+- Documentation browser checks at 1440px and 390px with no horizontal overflow, plus browser accessibility snapshots for open and closed overlay states
+- Root and MapLibre `npm pack --dry-run --json` inspections and `npm ci --dry-run`
+- Scoped Prettier/ESLint, editor diagnostics, and Sprint 32/public-artifact `git diff --check`
+
+Deferred release conditions:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint baseline
+- Repository-wide `git diff --check` remains blocked by trailing whitespace in regenerated `storybook-static/assets/maplibre-gl-CI-yoIxS.js`; the scoped Sprint 32/public-artifact check passes, and Sprint 36 owns the generated-output formatting baseline
+
+### Sprint 33: Table and Virtual Collection Contract Recovery
+
+Status: Completed; repository-wide lint and generated-output whitespace baselines remain deferred to Sprint 36
+
+Delivered:
+
+- Reconciled virtual Table rows using `VirtualCollection` entry keys while preserving public row IDs for selection and events; ResizeObserver measurements now remain owned by generated virtual keys
+- Made duplicate virtual keys collision-proof when consumer IDs resemble generated suffixes, with distinct measured sizes retained for every generated key
+- Normalized stored Table page state after out-of-range input and retained selection and selected-row records across page changes
+- Rendered documented header tooltips, cell titles, checkbox indeterminate state, and one `rowan-cell-bind` event for each newly cloned custom slot cell; added a public contract for `cell.render` text and Node results
+- Aligned Row Details row-ID resolution with Table, including valid falsy and meaningful whitespace IDs, and refreshed table-owned detail records after controlled row replacement
+- Added bounded declarative `for-table` retry binding for Table Toolbar, Bulk Actions, Filter Builder, and Row Details, including retargeting before a table enters the document and releasing unresolved observers when references clear
+- Normalized Boolean Filter Builder defaults to the stored value displayed by its Boolean control
+- Documented normalized paging, custom-cell metadata and binding behavior in README and static docs, and made `rowan-cell-bind` observable in the Table custom-slot Storybook event trace
+
+Acceptance bar:
+
+- Virtualized 100-, 1,000-, and 5,000-row Tables retain unique public row IDs, bounded semantic DOM, and stable overlapping row identity through selection-only and repeated scroll renders
+- Selection, sorting, paging, custom cells, Row Details, Toolbar, Bulk Actions, and Filter Builder preserve documented controlled-data behavior
+- Custom slots emit `rowan-cell-bind` exactly once per cloned cell, and header tooltip, cell title, checkbox indeterminate, and custom renderer configuration paths have public behavior coverage
+- Duplicate or missing row IDs retain safe fallback behavior without corrupting the visible Table
+
+Verification at sprint close:
+
+- Focused virtual collection, Table, Table Toolbar, Bulk Actions, Filter Builder, and Row Details suite: 7 files and 49 passing contracts in Chromium, Firefox, and WebKit
+- `npm test`: 86 test files and 414 passing contracts
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, and `npm run test:package`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `87c913dd9b0810c7ff1744d7086b8e5d0ba599c0142c306f66b08feda98d3d1a`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`; generated core CEM includes `rowan-cell-bind`
+- Static documentation Vite build and Storybook build; Vite reported only its existing chunk-size advisory
+- Documentation browser checks at 1440px and 390px: the 500-row virtual Table kept 15 and 14 mounted semantic rows respectively, all row IDs were unique, the custom-cell documentation section rendered, and neither viewport overflowed horizontally
+- Root and MapLibre `npm pack --dry-run --json` inspections and `npm ci --dry-run`: core packed 670 files; MapLibre packed 21 files; no package warnings
+- Scoped Prettier/ESLint, editor diagnostics, and Sprint 33/public-artifact `git diff --check`
+
+Deferred release conditions:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint baseline
+- Repository-wide `git diff --check` remains blocked by trailing whitespace in regenerated `storybook-static/assets/maplibre-gl-CI-yoIxS.js`; the scoped Sprint 33/public-artifact check passes, and Sprint 36 owns the generated-output formatting baseline
+
+### Sprint 34: Primitive State and Data Integrity
+
+Status: Completed; repository-wide lint and formatting baselines remain deferred to Sprint 36
+
+Delivered:
+
+- Preserved Avatar initials fallback after an image failure through unrelated `alt` and `size` renders, with explicit hidden-state styling
+- Gave Progress a default ElementInternals accessible name from `label`, without overriding author-provided `aria-label` or `aria-labelledby`
+- Reconciled active Toaster records by ID so retained toast hosts and focused close controls survive queue updates; live `max-visible` reductions now return overflow to the queue in order and later increases promote it without synthetic events
+- Restored Stepper focus to the corresponding rebuilt control after parent-driven updates and allowed horizontal controls to wrap in constrained layouts
+- Retained explicit Trend Chart `null` values as no-data gaps across SVG path geometry, interactive point controls, and semantic table output
+- Normalized standalone Pagination page state to its visible range before navigation so status, controls, property state, and `rowan-page-change` detail agree
+- Added nullable Trend Chart and live Toaster-cap behavior to README/static documentation, plus a Storybook Missing Data scenario
+
+Acceptance outcomes:
+
+- Feedback primitives retain their fallback, accessibility, focus, and node-identity behavior through user actions and parent-driven renders
+- Toaster preserves mounted notifications where possible, keeps focus usable, and enforces a changed visibility cap immediately without falsely reporting configuration as user activity
+- Trend Chart `null` values break visual series segments, omit an unavailable interactive control, and render as `No data` in its equivalent table
+- Stepper and Pagination interactions start from the visible normalized state rather than stale internal values
+
+Verification completed:
+
+- Focused Avatar, Progress, Toaster, Stepper, Pagination, and Trend Chart suite: 6 files and 28 passing contracts in the default runner and in Chromium, Firefox, and WebKit; the final responsive Stepper CSS also passes its 7 focused contracts in all three engines
+- `npm test`: 86 test files and 421 passing contracts
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, and `npm run test:package`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `e46b476552f97a532df5bd1886a3eb728995a0aeca9717b90a8a2934fb7aaf76`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- Static documentation Vite build and Storybook build; Vite reported only its existing chunk-size advisory
+- Documentation browser checks at 1440px and 390px: live Toaster caps held, light and dark tokens rendered, Stepper and Trend Chart fit without horizontal overflow, and the nullable Trend Chart demo rendered one broken series segment, 11 available controls, and `No data` in its semantic table
+- Root and MapLibre `npm pack --dry-run --json` inspections and `npm ci --dry-run`: core packed 670 files; MapLibre packed 21 files; no package warnings
+- Scoped Prettier/ESLint, editor diagnostics, and Sprint 34/public-artifact `git diff --check`
+
+Deferred release conditions:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint baseline
+- Direct ESLint on `documentation/app.js` still reports the pre-existing `no-useless-escape` and unused `pageMatchesFilter` diagnostics outside Sprint 34's changed blocks
+- Repository-wide `git diff --check` remains blocked by existing space-before-tab indentation in `stories/foundations.mdx` and trailing whitespace in `storybook-static/assets/maplibre-gl-CI-yoIxS.js`; the scoped Sprint 34/public-artifact check passes, and Sprint 36 owns the repository-wide formatting baseline
+
+### Sprint 35: Documentation and Storybook Navigation Migration
+
+Status: Completed; repository-wide lint and formatting baselines remain deferred to Sprint 36
+
+Delivered:
+
+- Added `STORYBOOK_URL_MIGRATION.md`, a versioned 0.1.0 migration note with verified legacy-to-current URL examples, category rules, and an explicit no-runtime-redirect policy
+- Parsed static documentation hashes as independent page and optional section IDs, so copied table-of-contents links retain `#page:section` through reload and invalid sections canonicalize to their page-only hash
+- Deferred section restoration until queued component renders settle, preventing compact layouts from scrolling against a stale document height
+- Centralized static documentation category classification, explicit Other fallback, duplicate suppression, and search matching in `documentation/taxonomy.js`
+- Limited component category navigation to manifest-backed element routes, so catalog pages do not appear twice and an uncategorized real element receives exactly one Other home
+- Included category labels in navigation search and configured deterministic Storybook root and nested-category ordering with Storybook's serializable declarative sort format
+- Added five documentation-navigation contracts for route parsing, fallback, Other coverage, category search, and taxonomy ordering; verified all 76 component story files use the shared category label convention
+
+Acceptance outcomes:
+
+- Current Storybook IDs resolve, while superseded IDs have a factual public migration path instead of speculative runtime aliases
+- Static documentation preserves desktop and mobile deep links, TOC section targets, and canonical invalid-section fallbacks
+- Category queries expose the expected navigation group, component catalog routes have no duplicate visible links, and Other remains available for future uncategorized element pages
+- Storybook and static docs use the same category labels and deterministic component sequence
+
+Verification completed:
+
+- Focused documentation-navigation suite: 5 passing contracts in the default runner and in Chromium, Firefox, and WebKit
+- Documentation browser checks at 1440px and 390px: TOC click/reload retained `#toaster:toaster-queue`; direct `#toaster:toaster-demo` resolved at both sizes; the mobile target remained visible after render with no horizontal overflow; invalid `#toaster:missing-section` canonicalized to `#toaster`; `data display` showed only the Data Display navigation group
+- Storybook browser checks on a fresh server: current migration-note URLs all existed in `index.json`; the rendered tree ordered Foundations, Integrations, Components and Workflows, with component categories ordered `Actions & Feedback`, `Forms & Input`, `Files & Uploads`, `Overlays & Menus`, `Navigation & Layout`, and `Data Display`
+- `npm test`: 87 test files and 426 passing contracts
+- `npm run tokens:check`, `npm run types`, `npm run typecheck`, and `npm run test:package`
+- Two consecutive `npm run analyze` runs produced byte-identical manifests: core SHA-256 `e46b476552f97a532df5bd1886a3eb728995a0aeca9717b90a8a2934fb7aaf76`; MapLibre SHA-256 `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- Static documentation Vite build and Storybook build, both with only their chunk-size advisories; the Storybook build restored `storybook-static/index.json`
+- Root and MapLibre `npm pack --dry-run --json` inspections and `npm ci --dry-run`: core packed 670 files; MapLibre packed 21 files; no package warnings
+- Scoped Prettier, editor diagnostics, taxonomy-to-story-title consistency check, and Sprint 35 `git diff --check`
+
+Deferred release conditions:
+
+- `npm run lint` remains blocked solely by the pre-existing `no-shadow-restricted-names` violation in `packages/icons/src/icons/infinity.js`; Sprint 36 owns the repository-wide lint baseline
+- Direct ESLint on `documentation/app.js` still reports the pre-existing `no-useless-escape` and unused `pageMatchesFilter` diagnostics outside Sprint 35's changed blocks
+- `npm run format:check` remains blocked by existing generated documentation artifacts under `documentation/documentation-static-check/assets/`; Sprint 36 owns the repository-wide formatting baseline
+- Repository-wide `git diff --check` remains blocked by existing space-before-tab indentation in `stories/foundations.mdx` and trailing whitespace in `storybook-static/assets/maplibre-gl-CI-yoIxS.js`; the scoped Sprint 35 check passes
+- The fresh Storybook server reports the existing `@storybook/addon-essentials` 8.6.14 and Storybook core 8.6.18 version advisory; Sprint 36 owns package-version alignment
+
+### Sprint 36: Public Type and Release Gate Hardening
+
+Status: Completed
+
+Delivered:
+
+- Replaced broad public declaration surfaces with literal unions for documented component variants, sizes, tones, orientations, selection modes, and Table density/selectable contracts; added structured option inputs for Combobox, Select, Multi-select Combobox, and Segmented Control
+- Added public Table, Toaster, and option type aliases at their package subpaths; Toaster now exposes typed placement, input, `show`, `dismiss`, and `clear` contracts, including `show(): string | null`
+- Enabled strict null declaration generation and preserved documented nullable setter inputs for Table configuration, Trend Chart configuration, Rating value, and Virtual List clearing; React property bindings now accept `RowanTable.config = null`
+- Kept Context Menu target clearing explicit: `null` is the documented public unbind value, while defensive `undefined` normalization remains an implementation detail
+- Added negative root and React type fixtures for literals, toast inputs, Table and Virtual List clearing, structured option inputs, and icon named/default imports; added runtime regressions for Table, Virtual List, and Toaster return behavior
+- Repaired the generated `Infinity` icon export at its generator source, preserving the public name through a safe local implementation alias; regenerated and verified all 2,098 icon modules
+- Established authored-source lint/format baselines while excluding generated static verification output, fixed the remaining authored diagnostics, and aligned all direct Storybook packages to `8.6.18`
+- Disabled Storybook's generated telemetry `project.json`, which contains a timestamp and made otherwise identical static builds nondeterministic
+
+Acceptance outcomes:
+
+- Public TypeScript contracts reject invalid enum values and structured inputs while accepting each documented nullable clear operation; runtime normalization is not promoted to a public type without a documented contract
+- Root lint and formatting gates pass without suppressing authored source violations
+- Declarations, root and MapLibre CEM artifacts, token sheets, and isolated Storybook output are reproducible across consecutive generation
+- A clean lockfile install, default and browser contract suites, package inspections, documentation production build, and Storybook production build all pass
+
+Verification completed:
+
+- `npm ci --no-audit --no-fund`, `npm run tokens:check`, `npm run lint`, `npm run format:check`, `npm run types`, `npm run typecheck`, `npm test`, `npm run test:package`, and `git diff --check` all pass; the default suite has 87 test files and 429 passing contracts
+- Full browser matrix after the clean install: Chromium, Firefox, and WebKit each pass 85 test files and 421 contracts; the only reported network diagnostic is the expected `missing-avatar.png` 404 coverage path
+- Root, MapLibre, and Icons dry-run tarballs contain 670, 21, and 4,206 files respectively, with no bundled dependencies, fixtures, generated sites, or secret-like paths; Icons generation, verification, types, typecheck, and five tests pass
+- Two consecutive declaration generations produced combined SHA-256 `5f0c306ec5cf5fd59dff2b2475618c33f4cb5917b28ae1cb0279b67aac0878db`; root CEM matched at `8147a0b3e895a8899759c74c6b734a4d163839fba2359628aeda64c00418073d`, and MapLibre CEM matched at `a82c9ba468389c875cb7f607f3842f78581de87786ee390d3bcf24bf71c91739`
+- Temporary documentation and Storybook production builds pass from the clean install; Storybook reports no package-version mismatch, and two post-config static outputs are byte-identical with no `project.json`
+- `npm ls --depth=0` resolves `storybook`, `@storybook/addon-a11y`, `@storybook/addon-essentials`, `@storybook/web-components`, and `@storybook/web-components-vite` to `8.6.18`
 
 ### Deferred Backlog Stories
 

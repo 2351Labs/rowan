@@ -1,3 +1,3 @@
 import "../elements.js";
 
-export { RowanCombobox } from "../../types/combobox/combobox.js";
+export { RowanCombobox, type RowanComboboxOption } from "../../types/combobox/combobox.js";

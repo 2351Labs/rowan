@@ -48,4 +48,30 @@ describe("rowan-icon-button", () => {
     el.shadowRoot.querySelector("button").click();
     expect(count).to.equal(0);
   });
+
+  it("submits and resets its associated light-DOM form", async () => {
+    const form = document.createElement("form");
+    const input = document.createElement("input");
+    const submit = document.createElement("rowan-icon-button");
+    const reset = document.createElement("rowan-icon-button");
+    input.defaultValue = "Pine";
+    input.value = "Cedar";
+    submit.type = "submit";
+    reset.type = "reset";
+    form.append(input, submit, reset);
+    document.body.append(form);
+    await nextMicrotask();
+
+    let submitCount = 0;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitCount += 1;
+    });
+
+    submit.shadowRoot.querySelector("button").click();
+    reset.shadowRoot.querySelector("button").click();
+
+    expect(submitCount).to.equal(1);
+    expect(input.value).to.equal("Pine");
+  });
 });

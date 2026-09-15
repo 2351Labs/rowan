@@ -28,8 +28,8 @@ export class RowanBulkActionsBar extends BaseElement {
         delegatesFocus: boolean;
     };
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set table(value: any);
-    get table(): any;
+    set table(value: null);
+    get table(): null;
     set forTable(value: string);
     get forTable(): string;
     set label(value: string);

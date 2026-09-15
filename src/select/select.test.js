@@ -35,6 +35,32 @@ describe("rowan-select", () => {
     expect(el.shadowRoot.querySelector("select").value).to.equal("b");
   });
 
+  it("synchronizes light-DOM option changes", async () => {
+    const el = document.createElement("rowan-select");
+    const first = document.createElement("option");
+    first.value = "north";
+    first.textContent = "North";
+    el.append(first);
+    document.body.append(el);
+    await nextMicrotask();
+
+    const second = document.createElement("option");
+    second.value = "south";
+    second.label = "South";
+    el.append(second);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelectorAll("option")).to.have.length(2);
+    expect(el.shadowRoot.querySelectorAll("option")[1].textContent).to.equal("South");
+
+    second.disabled = true;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelectorAll("option")[1].disabled).to.equal(true);
+  });
+
   it("emits rowan-change when user changes selected value", async () => {
     const el = document.createElement("rowan-select");
     el.options = [

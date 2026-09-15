@@ -17,6 +17,8 @@ import { define } from "../lib/define.js";
  * @csspart body
  * @csspart footer
  * @csspart actions
+ * @cssprop --rowan-card-bg
+ * @cssprop --rowan-card-border
  */
 export class RowanCard extends BaseElement {
   static styleUrl = new URL("./card.css", import.meta.url).href;

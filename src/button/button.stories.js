@@ -41,7 +41,7 @@ function createShowcase() {
 }
 
 export default {
-  title: "Components/Button",
+  title: "Components/Actions & Feedback/Button",
   tags: ["autodocs"],
   argTypes: {
     variant: {

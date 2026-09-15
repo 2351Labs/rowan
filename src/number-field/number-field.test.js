@@ -82,14 +82,17 @@ describe("rowan-number-field", () => {
 
     element.value = "-1";
     await nextMicrotask();
+    expect(element.internals.validity.rangeUnderflow).to.equal(true);
     expect(element.checkValidity()).to.equal(false);
 
     element.value = "11";
     await nextMicrotask();
+    expect(element.internals.validity.rangeOverflow).to.equal(true);
     expect(element.checkValidity()).to.equal(false);
 
     element.value = "1.25";
     await nextMicrotask();
+    expect(element.internals.validity.stepMismatch).to.equal(true);
     expect(element.checkValidity()).to.equal(false);
 
     element.value = "1.5";

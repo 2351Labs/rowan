@@ -14,18 +14,22 @@ export class RowanBadge extends BaseElement {
   static observedAttributes = ["tone", "size"];
   static upgradeProperties = ["tone", "size"];
 
+  /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
     return this.readString("tone", "info");
   }
 
+  /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
     this.reflectString("tone", value === "info" ? null : value);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     return this.readString("size", "md");
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     this.reflectString("size", value === "md" ? null : value);
   }

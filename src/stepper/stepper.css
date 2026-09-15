@@ -14,6 +14,7 @@
 .list {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--rowan-space-3, 0.75rem);
   margin: 0;
   padding: 0;
@@ -53,7 +54,10 @@
 
 .step.is-current .step-button {
   border-color: var(--rowan-stepper-current-border, var(--rowan-color-accent));
-  background: var(--rowan-stepper-current-bg, color-mix(in srgb, var(--rowan-color-accent) 12%, white));
+  background: var(
+    --rowan-stepper-current-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 12%, white)
+  );
 }
 
 .step.is-complete .marker {

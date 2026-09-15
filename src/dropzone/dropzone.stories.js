@@ -2,7 +2,7 @@ import "./dropzone.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Dropzone",
+  title: "Components/Files & Uploads/Dropzone",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

@@ -5,7 +5,9 @@ import { emit } from "../lib/events.js";
 const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
 
 function normalizeStatus(value) {
-  const next = String(value ?? "").trim().toLowerCase();
+  const next = String(value ?? "")
+    .trim()
+    .toLowerCase();
   return FILE_STATUSES.has(next) ? next : "queued";
 }
 
@@ -100,10 +102,12 @@ export class RowanFileItem extends BaseElement {
     this.reflectNumber("filesize", Math.round(numeric));
   }
 
+  /** @returns {"queued" | "uploading" | "success" | "failed"} */
   get status() {
     return normalizeStatus(this.readString("status", "queued"));
   }
 
+  /** @param {"queued" | "uploading" | "success" | "failed"} value */
   set status(value) {
     this.reflectString("status", normalizeStatus(value));
   }

@@ -102,7 +102,7 @@ export function MembersTable() {
 }
 ```
 
-Use JSX for scalar attributes such as `caption`, `disabled`, and `sticky-header`. Pass arrays, objects, callbacks, and other property-only values through `useRowanElement(ref, { properties })`; the helper assigns them directly after the host exists rather than serializing them as attributes. Its `events` map uses native `addEventListener()` and removes outdated listeners on rerender and unmount:
+Use JSX for string and number scalar attributes such as `caption`. Pass arrays, objects, callbacks, and other property-only values through `useRowanElement(ref, { properties })`; the helper assigns them directly after the host exists rather than serializing them as attributes. Its `events` map uses native `addEventListener()` and removes outdated listeners on rerender and unmount:
 
 ```tsx
 useRowanElement(fieldRef, {
@@ -115,8 +115,20 @@ useRowanElement(fieldRef, {
 });
 
 useRowanElement(buttonRef, {
+  properties: { disabled },
   events: { "rowan-click": () => save() },
 });
+```
+
+React 18 server rendering serializes a false custom-element boolean as a present
+attribute such as `disabled="false"`. Rowan follows HTML boolean semantics, so that
+attribute is true after the element upgrades. For React 18 SSR, omit false boolean
+attributes from server markup or assign the boolean through a client-side ref:
+
+```tsx
+const booleanAttributes = disabled ? { disabled: true } : {};
+
+return <rowan-button {...booleanAttributes}>Save</rowan-button>;
 ```
 
 For Next.js, import the React facade from a client component, but register Rowan components inside a client effect. Do not import registration modules from server-rendered code:
@@ -405,7 +417,7 @@ This component's security boundary ends at its normalized document value: applic
 
 `rowan-trend-chart` is a compact multi-series line visualization for operational comparisons such as incoming versus resolved incidents. It is intentionally scoped to small data sets where a trend is faster to scan than a table or progress indicator. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes.
 
-The component always provides the same values in a semantic table beneath the chart. Set `interactive` to expose each data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
+The component always provides the same values in a semantic table beneath the chart. A `null` value is an intentional no-data gap: it breaks the visual line, has no interactive point control, and appears as `No data` in the table. Set `interactive` to expose each available data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
 
 ```html
 <rowan-trend-chart
@@ -423,7 +435,7 @@ The component always provides the same values in a semantic table beneath the ch
     labels: ["Mon", "Tue", "Wed"],
     interactive: true,
     series: [
-      { id: "incoming", label: "Incoming incidents", values: [18, 24, 17] },
+      { id: "incoming", label: "Incoming incidents", values: [18, null, 17] },
       { id: "resolved", label: "Resolved incidents", values: [13, 19, 20] },
     ],
     valueFormatter: (value, context) => (context.tick ? String(value) : `${value} incidents`),
@@ -600,7 +612,7 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 - Config mode through `.config`, `.columns`, and `.rows`
 - Selection: `none | single | multiple`
 - Sorting: `rowan-sort` event and `.sortBy(id, dir)`
-- Pagination model with `rowan-page-change`
+- Pagination model with `rowan-page-change` and normalized page indexes
 - Optional virtualized body mode that retains real table markup and existing selection, sort, activation, and cell-event contracts
 - Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `custom`
 
@@ -614,9 +626,12 @@ Use flattened properties for partial updates that retain the rest of the current
 table.rows = nextRows;
 table.selected = selectedIds;
 table.sort = { id: "name", dir: "asc" };
+table.page = { index: 0, size: 25, total: totalMembers };
 ```
 
 In local development, Rowan warns when column IDs are missing or repeated, when a cell type is unsupported, or when row IDs are invalid or duplicated. Invalid and later duplicate columns are omitted; unsupported cell types render as text; duplicate row IDs render safely without keyed reuse.
+
+An out-of-range `page.index` resolves to the last available page and updates the public `.page` value to match. Selection belongs to the full table data set, so selected row IDs and `.selectedRows` remain available when the visible page changes.
 
 ### Virtualized body
 
@@ -696,6 +711,12 @@ table.config = {
 </script>
 ```
 
+### Cell metadata and custom cells
+
+Use `headerCell.tooltip` to provide a header description, `cell.title` for a per-cell description, and `cell.indeterminate` for checkbox cells. Each can be a static value or a row-aware callback where supported.
+
+For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cell.slot` clones authored light-DOM markup per cell. Each newly cloned slot cell emits `rowan-cell-bind` with its `rowId`, `columnId`, row data, value, and mounted `cellEl`; selection-only updates retain existing clones and do not emit the event again.
+
 ### Slot-based custom cell example
 
 ```html
@@ -726,6 +747,11 @@ table.config = {
       { id: "o-101", order: "#101", status: "Pending" },
     ],
   };
+
+  ordersTable.addEventListener("rowan-cell-bind", (event) => {
+    const { rowId, columnId, row, cellEl } = event.detail;
+    console.log("hydrate", rowId, columnId, row, cellEl);
+  });
 </script>
 ```
 
@@ -908,6 +934,9 @@ npm run storybook
 - `npm run lint` runs ESLint on source files
 - `npm run format` formats JS, CSS, JSON, MD, and MDX via Prettier
 - `npm run format:check` verifies formatting
+
+See [Storybook URL migration](STORYBOOK_URL_MIGRATION.md) before upgrading externally shared
+Storybook links to the taxonomy hierarchy.
 
 ## Documentation Source Of Truth
 

@@ -4,6 +4,8 @@ import { emit } from "../lib/events.js";
 
 let selectId = 0;
 
+/** @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanSelectOption */
+
 /**
  * Select control with form association.
  * @tag rowan-select
@@ -13,6 +15,7 @@ let selectId = 0;
  * @attr {string} placeholder
  * @attr {boolean} disabled
  * @attr {boolean} required
+ * @property {RowanSelectOption[]} options - Available options. Arrays are property-only.
  * @csspart select
  * @cssprop --rowan-field-bg
  * @event rowan-change - Fired when the selected value changes
@@ -37,6 +40,7 @@ export class RowanSelect extends BaseElement {
   #defaultValue = null;
   #selectId = "";
   #options = [];
+  #optionObserver = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -51,16 +55,19 @@ export class RowanSelect extends BaseElement {
     }
 
     this.#selectId = `${this.id}__select`;
+    this.#observeLightDomOptions();
 
     this.#syncFormValue();
     this.#syncValidity();
     this.#applyDefaultA11y();
   }
 
+  /** @returns {RowanSelectOption[]} */
   get options() {
     return this.#options;
   }
 
+  /** @param {RowanSelectOption[]} value */
   set options(value) {
     this.#options = Array.isArray(value) ? value : [];
     this.requestRender();
@@ -252,9 +259,30 @@ export class RowanSelect extends BaseElement {
   #readLightDomOptions() {
     return Array.from(this.querySelectorAll("option")).map((option) => ({
       value: option.value,
-      label: option.textContent ?? option.value,
+      label: option.label || option.textContent || option.value,
       disabled: option.disabled,
     }));
+  }
+
+  #observeLightDomOptions() {
+    if (this.#optionObserver || typeof MutationObserver === "undefined") return;
+
+    const observer = new MutationObserver(() => {
+      if (this.#options.length === 0) this.requestRender();
+    });
+    const observeOptions = () => {
+      observer.observe(this, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ["disabled", "label", "selected", "value"],
+      });
+    };
+
+    observeOptions();
+    this.#optionObserver = observer;
+    this.observe(observer, observeOptions);
   }
 
   #syncFormValue() {

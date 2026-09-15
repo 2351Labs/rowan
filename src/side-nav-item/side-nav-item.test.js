@@ -24,6 +24,17 @@ describe("rowan-side-nav-item", () => {
     expect(control.getAttribute("aria-label")).to.equal("Workspace");
   });
 
+  it("blocks parser-normalized JavaScript URLs", async () => {
+    const item = document.createElement("rowan-side-nav-item");
+    item.href = "java\nscript:void(globalThis.__rowanSideNavProbe = true)";
+    document.body.append(item);
+    await nextMicrotask();
+
+    const control = item.shadowRoot.querySelector("a");
+    expect(control.getAttribute("href")).to.equal(null);
+    expect(control.getAttribute("role")).to.equal("button");
+  });
+
   it("preserves an author tab index while standalone", async () => {
     const item = document.createElement("rowan-side-nav-item");
     item.tabIndex = -1;

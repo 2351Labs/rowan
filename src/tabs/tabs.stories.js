@@ -4,7 +4,7 @@ import "../tab-panel/tab-panel.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Tabs",
+  title: "Components/Navigation & Layout/Tabs",
   tags: ["autodocs"],
 };
 

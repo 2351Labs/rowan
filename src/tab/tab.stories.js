@@ -1,7 +1,7 @@
 import "./tab.js";
 
 export default {
-  title: "Components/Tab",
+  title: "Components/Navigation & Layout/Tab",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

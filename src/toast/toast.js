@@ -28,11 +28,13 @@ export class RowanToast extends BaseElement {
   #actionsSlot = null;
   #closeButton = null;
 
+  /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
     const value = this.readString("tone", "info");
     return TONE_VALUES.has(value) ? value : "info";
   }
 
+  /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
     const nextTone = TONE_VALUES.has(value) ? value : "info";
     this.reflectString("tone", nextTone === "info" ? null : nextTone);

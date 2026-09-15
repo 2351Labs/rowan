@@ -16,6 +16,22 @@ const VALID_PLACEMENTS = new Set([
 ]);
 const VALID_TONES = new Set(["info", "success", "warning", "danger"]);
 
+/** @typedef {"info" | "success" | "warning" | "danger"} RowanToastTone */
+
+/**
+ * @typedef {"top-start" | "top-end" | "bottom-start" | "bottom-end" | "bottom-center"} RowanToasterPlacement
+ */
+
+/**
+ * @typedef {object} RowanToastInput
+ * @property {string} message
+ * @property {string} [id]
+ * @property {string} [title]
+ * @property {RowanToastTone} [tone]
+ * @property {boolean} [dismissible]
+ * @property {number} [duration]
+ */
+
 /**
  * Toast queue manager with mobile-first placement and auto-dismiss handling.
  * @tag rowan-toaster
@@ -36,6 +52,17 @@ export class RowanToaster extends BaseElement {
   #queue = [];
   #active = [];
   #timers = new Map();
+  #renderedToasts = new Map();
+  #pendingShowEvents = new Set();
+  #flushPendingShowsOnRender = false;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (this.#pendingShowEvents.size > 0) {
+      this.#flushPendingShowsOnRender = true;
+    }
+  }
 
   disconnectedCallback() {
     super.disconnectedCallback();
@@ -47,11 +74,13 @@ export class RowanToaster extends BaseElement {
     this.#timers.clear();
   }
 
+  /** @returns {RowanToasterPlacement} */
   get placement() {
     const value = this.readString("placement", DEFAULT_PLACEMENT);
     return VALID_PLACEMENTS.has(value) ? value : DEFAULT_PLACEMENT;
   }
 
+  /** @param {RowanToasterPlacement} value */
   set placement(value) {
     const nextPlacement = VALID_PLACEMENTS.has(value) ? value : DEFAULT_PLACEMENT;
     this.reflectString("placement", nextPlacement === DEFAULT_PLACEMENT ? null : nextPlacement);
@@ -76,27 +105,40 @@ export class RowanToaster extends BaseElement {
 
   set duration(value) {
     const numeric = Number(value);
-    const nextValue = Number.isFinite(numeric) ? Math.max(0, Math.floor(numeric)) : DEFAULT_DURATION;
+    const nextValue = Number.isFinite(numeric)
+      ? Math.max(0, Math.floor(numeric))
+      : DEFAULT_DURATION;
 
     this.reflectNumber("duration", nextValue === DEFAULT_DURATION ? null : nextValue);
   }
 
+  /**
+   * @param {string | RowanToastInput} input
+   * @returns {string | null}
+   */
   show(input) {
     const nextToast = this.#normalizeToastInput(input);
     if (!nextToast) return null;
 
     this.#queue.push(nextToast);
+    this.#pendingShowEvents.add(nextToast.id);
 
     if (this.isConnected && this.#stack) {
-      this.#flushQueue();
+      this.#flushQueue({ emitShowEvents: true });
       this.#renderActiveToasts();
     } else {
+      this.#flushPendingShowsOnRender = true;
       this.requestRender();
     }
 
     return nextToast.id;
   }
 
+  /**
+   * @param {string} id
+   * @param {string} [reason]
+   * @returns {boolean}
+   */
   dismiss(id, reason = "programmatic") {
     if (typeof id !== "string" || id.trim().length === 0) {
       return false;
@@ -105,12 +147,14 @@ export class RowanToaster extends BaseElement {
     const queuedIndex = this.#queue.findIndex((toast) => toast.id === id);
     if (queuedIndex >= 0) {
       this.#queue.splice(queuedIndex, 1);
+      this.#pendingShowEvents.delete(id);
       return true;
     }
 
     return this.#dismissActive(id, reason);
   }
 
+  /** @param {string} [reason] */
   clear(reason = "programmatic") {
     this.#queue = [];
 
@@ -141,7 +185,9 @@ export class RowanToaster extends BaseElement {
       });
     }
 
-    this.#flushQueue();
+    const emitShowEvents = this.#flushPendingShowsOnRender;
+    this.#flushPendingShowsOnRender = false;
+    this.#flushQueue({ emitShowEvents });
     this.#renderActiveToasts();
 
     for (const toast of this.#active) {
@@ -149,20 +195,35 @@ export class RowanToaster extends BaseElement {
     }
   }
 
-  #flushQueue() {
+  #flushQueue({ emitShowEvents = false } = {}) {
+    this.#enforceMaxVisible();
+
     while (this.#active.length < this.maxVisible && this.#queue.length > 0) {
       const nextToast = this.#queue.shift();
       this.#active.push(nextToast);
       this.#ensureDismissTimer(nextToast);
 
-      emit(this, "rowan-toast-show", {
-        id: nextToast.id,
-        tone: nextToast.tone,
-        title: nextToast.title,
-        message: nextToast.message,
-        duration: nextToast.duration,
-      });
+      const shouldEmitShow = this.#pendingShowEvents.delete(nextToast.id);
+      if (emitShowEvents && shouldEmitShow) this.#emitToastShow(nextToast);
     }
+  }
+
+  #enforceMaxVisible() {
+    if (this.#active.length <= this.maxVisible) return;
+
+    const overflow = this.#active.splice(this.maxVisible);
+    overflow.forEach((toast) => this.#clearDismissTimer(toast.id));
+    this.#queue = [...overflow, ...this.#queue];
+  }
+
+  #emitToastShow(toast) {
+    emit(this, "rowan-toast-show", {
+      id: toast.id,
+      tone: toast.tone,
+      title: toast.title,
+      message: toast.message,
+      duration: toast.duration,
+    });
   }
 
   #dismissActive(id, reason) {
@@ -173,7 +234,7 @@ export class RowanToaster extends BaseElement {
 
     const [toast] = this.#active.splice(activeIndex, 1);
     this.#clearDismissTimer(id);
-    this.#flushQueue();
+    this.#flushQueue({ emitShowEvents: true });
     this.#renderActiveToasts();
 
     emit(this, "rowan-toast-dismiss", {
@@ -190,13 +251,25 @@ export class RowanToaster extends BaseElement {
   #renderActiveToasts() {
     if (!this.#stack) return;
 
-    const fragment = document.createDocumentFragment();
+    const staleToasts = new Set(this.#renderedToasts.values());
+    const nextToasts = new Map();
 
-    for (const toastData of this.#active) {
-      fragment.append(this.#createToastElement(toastData));
+    for (const [index, toastData] of this.#active.entries()) {
+      const toast = this.#renderedToasts.get(toastData.id) ?? this.#createToastElement(toastData);
+      staleToasts.delete(toast);
+      nextToasts.set(toastData.id, toast);
+
+      const reference = this.#stack.children[index];
+      if (toast !== reference) {
+        this.#stack.insertBefore(toast, reference ?? null);
+      }
     }
 
-    this.#stack.replaceChildren(fragment);
+    for (const toast of staleToasts) {
+      toast.remove();
+    }
+
+    this.#renderedToasts = nextToasts;
   }
 
   #createToastElement(toastData) {
@@ -293,7 +366,9 @@ export class RowanToaster extends BaseElement {
   }
 
   #hasToastId(id) {
-    return this.#active.some((toast) => toast.id === id) || this.#queue.some((toast) => toast.id === id);
+    return (
+      this.#active.some((toast) => toast.id === id) || this.#queue.some((toast) => toast.id === id)
+    );
   }
 
   #nextToastId() {

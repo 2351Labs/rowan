@@ -71,6 +71,15 @@ export class RowanProgress extends BaseElement {
       this.internals.role = "progressbar";
     }
 
+    if (
+      this.internals &&
+      !this.hasAttribute("aria-label") &&
+      !this.hasAttribute("aria-labelledby") &&
+      "ariaLabel" in this.internals
+    ) {
+      this.internals.ariaLabel = this.label.trim() || "Progress";
+    }
+
     if (this.internals && !this.hasAttribute("aria-valuemin") && "ariaValueMin" in this.internals) {
       this.internals.ariaValueMin = "0";
     }
@@ -83,7 +92,11 @@ export class RowanProgress extends BaseElement {
       this.internals.ariaValueNow = String(value);
     }
 
-    if (this.internals && !this.hasAttribute("aria-valuetext") && "ariaValueText" in this.internals) {
+    if (
+      this.internals &&
+      !this.hasAttribute("aria-valuetext") &&
+      "ariaValueText" in this.internals
+    ) {
       this.internals.ariaValueText = valueText;
     }
   }

@@ -158,6 +158,28 @@ describe("rowan-table", () => {
     expect(firstTextCell.textContent.trim()).to.equal("Ada");
   });
 
+  it("blocks parser-normalized JavaScript URLs in link cells", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      columns: [
+        {
+          id: "profile",
+          header: "Profile",
+          type: "link",
+          cell: { href: () => "java\nscript:void(globalThis.__rowanTableLinkProbe = true)" },
+        },
+      ],
+      rows: [{ id: "1", profile: "Open" }],
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const link = table.shadowRoot.querySelector('a[part="link"]');
+    expect(link.getAttribute("href")).to.equal("#");
+    expect(new URL(link.href).protocol).to.not.equal("javascript:");
+  });
+
   it("emits rowan-cell-change from checkbox interactions", async () => {
     const table = document.createElement("rowan-table");
     table.config = createConfig();
@@ -276,6 +298,31 @@ describe("rowan-table", () => {
     expect(table.rows).to.deep.equal([{ id: "4", name: "Grace" }]);
   });
 
+  it("clears configuration with null and undefined", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = createStepFiveConfig();
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    table.config = null;
+    await nextMicrotask();
+
+    expect(table.columns).to.deep.equal([]);
+    expect(table.rows).to.deep.equal([]);
+    expect(table.selected).to.deep.equal([]);
+    expect(table.sort).to.equal(null);
+    expect(table.page).to.equal(null);
+
+    table.config = createConfig();
+    table.config = undefined;
+    await nextMicrotask();
+
+    expect(table.columns).to.deep.equal([]);
+    expect(table.rows).to.deep.equal([]);
+    expect(table.selected).to.deep.equal([]);
+  });
+
   it("warns for invalid configuration and keeps valid data usable", async () => {
     const warnings = [];
     const originalWarning = console.warn;
@@ -352,6 +399,112 @@ describe("rowan-table", () => {
     expect(table.shadowRoot.querySelectorAll("rowan-chip").length).to.equal(2);
     expect(table.shadowRoot.querySelectorAll("rowan-progress").length).to.equal(2);
     expect(table.shadowRoot.querySelectorAll(".price-pill").length).to.equal(2);
+  });
+
+  it("renders custom cell callbacks with the documented context", async () => {
+    const table = document.createElement("rowan-table");
+    const contexts = [];
+    table.config = {
+      rowId: "id",
+      columns: [
+        {
+          id: "name",
+          header: "Name",
+          type: "custom",
+          cell: {
+            render: (context) => {
+              contexts.push(context);
+              const value = document.createElement("strong");
+              value.className = "custom-name";
+              value.textContent = `${context.rowIndex}: ${context.value}`;
+              return value;
+            },
+          },
+        },
+        {
+          id: "status",
+          header: "Status",
+          type: "custom",
+          cell: { render: ({ value }) => `Current: ${value}` },
+        },
+      ],
+      rows: [{ id: "member-1", name: "Ada", status: "Active" }],
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const nameCell = table.shadowRoot.querySelector('td[data-column-id="name"]');
+    const statusCell = table.shadowRoot.querySelector('td[data-column-id="status"]');
+    expect(contexts).to.have.length(1);
+    expect(contexts[0]).to.include({
+      value: "Ada",
+      row: table.rows[0],
+      rowIndex: 0,
+      column: table.columns[0],
+      cellEl: nameCell,
+    });
+    expect(nameCell.querySelector(".custom-name").textContent).to.equal("0: Ada");
+    expect(statusCell.textContent.trim()).to.equal("Current: Active");
+  });
+
+  it("renders documented header and cell configuration metadata", async () => {
+    const table = document.createElement("rowan-table");
+    const template = document.createElement("template");
+    template.slot = "custom-status";
+    template.innerHTML = '<button class="hydrate">Hydrate</button>';
+    table.append(template);
+
+    const bindings = [];
+    table.addEventListener("rowan-cell-bind", (event) => bindings.push(event.detail));
+    table.config = {
+      rowId: "id",
+      selectable: "multiple",
+      columns: [
+        {
+          id: "approval",
+          header: "Approval",
+          type: "checkbox",
+          headerCell: { tooltip: "Current approval status" },
+          cell: { indeterminate: true, title: (value) => `Approval: ${value}` },
+        },
+        {
+          id: "status",
+          header: "Status",
+          type: "custom",
+          cell: { slot: "custom-status", title: "Hydrate this status" },
+        },
+      ],
+      rows: [{ id: "order-1", approval: true, status: "Pending" }],
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const approvalHeader = table.shadowRoot.querySelector('th[data-column-id="approval"]');
+    const approvalCell = table.shadowRoot.querySelector('td[data-column-id="approval"]');
+    const checkbox = approvalCell.querySelector("rowan-checkbox");
+    const statusCell = table.shadowRoot.querySelector('td[data-column-id="status"]');
+
+    expect(approvalHeader.title).to.equal("Current approval status");
+    expect(approvalHeader.getAttribute("aria-description")).to.equal("Current approval status");
+    expect(approvalCell.title).to.equal("Approval: true");
+    expect(checkbox.indeterminate).to.equal(true);
+    expect(statusCell.title).to.equal("Hydrate this status");
+    expect(statusCell.dataset.rowId).to.equal("order-1");
+    expect(statusCell.querySelector(".hydrate").dataset.rowId).to.equal("order-1");
+    expect(bindings).to.have.length(1);
+    expect(bindings[0]).to.include({
+      rowId: "order-1",
+      columnId: "status",
+      rowIndex: 0,
+      value: "Pending",
+      cellEl: statusCell,
+    });
+
+    table.selected = ["order-1"];
+    await nextMicrotask();
+    expect(bindings).to.have.length(1);
   });
 
   it("auto-injects a selection column and emits rowan-select", async () => {
@@ -617,6 +770,37 @@ describe("rowan-table", () => {
     expect(table.shadowRoot.querySelectorAll("tbody tr").length).to.equal(1);
   });
 
+  it("normalizes out-of-range page state and retains selection across pages", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      page: { index: 99, size: 2, total: 3 },
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    expect(table.page).to.deep.equal({ index: 1, size: 2, total: 3 });
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.equal(1);
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="3"]')).to.not.equal(null);
+
+    const selector = table.shadowRoot.querySelector(
+      'tbody tr[data-row-id="3"] td[data-column-id="__select"] rowan-checkbox',
+    );
+    selector.checked = true;
+    selector.dispatchEvent(new CustomEvent("rowan-change", { bubbles: true, composed: true }));
+    await nextMicrotask();
+
+    expect(table.selected).to.deep.equal(["3"]);
+
+    table.page = { index: 0, size: 2, total: 3 };
+    await nextMicrotask();
+
+    expect(table.selected).to.deep.equal(["3"]);
+    expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["3"]);
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.equal(2);
+  });
+
   it("emits rowan-row-activate on double-click and Enter", async () => {
     const table = document.createElement("rowan-table");
     table.config = createStepFiveConfig();
@@ -791,5 +975,115 @@ describe("rowan-table", () => {
     await nextMicrotask();
 
     expect(table.selected).to.deep.equal(["row-40"]);
+  });
+
+  it("reconciles overlapping virtual windows by collection key", async () => {
+    const rows = Array.from({ length: 120 }, (_value, index) => ({
+      id: `row-${index}`,
+      name: `Row ${index}`,
+    }));
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.style.height = "60px";
+    viewport.style.overflow = "auto";
+    await nextFrame();
+    await nextMicrotask();
+
+    viewport.scrollTop = 800;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+
+    const rowForty = table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]');
+    expect(rowForty).to.not.equal(null);
+    expect(rowForty.dataset.virtualKey).to.equal("row-40");
+
+    viewport.scrollTop = 820;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]')).to.equal(rowForty);
+
+    const mountedRows = [...table.shadowRoot.querySelectorAll("tbody tr[data-row-id]")];
+    expect(mountedRows.length).to.be.lessThan(10);
+    expect(new Set(mountedRows.map((row) => row.dataset.rowId)).size).to.equal(mountedRows.length);
+
+    viewport.scrollTop = 0;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.be.lessThan(10);
+  });
+
+  it("keeps large virtualized tables bounded and stable across repeated renders", async () => {
+    for (const rowCount of [100, 1000, 5000]) {
+      const rows = Array.from({ length: rowCount }, (_value, index) => ({
+        id: `row-${index}`,
+        name: `Row ${index}`,
+      }));
+      const table = document.createElement("rowan-table");
+      table.config = {
+        rowId: "id",
+        selectable: "multiple",
+        virtualized: true,
+        virtualItemSize: 20,
+        virtualOverscan: 1,
+        columns: [{ id: "name", header: "Name" }],
+        rows,
+      };
+
+      document.body.append(table);
+      await nextMicrotask();
+
+      const viewport = table.shadowRoot.querySelector(".table-scroll");
+      viewport.style.height = "60px";
+      viewport.style.overflow = "auto";
+      await nextFrame();
+      await nextMicrotask();
+
+      viewport.scrollTop = 800;
+      viewport.dispatchEvent(new Event("scroll"));
+      await nextMicrotask();
+
+      const initialMountedRows = [...table.shadowRoot.querySelectorAll("tbody tr[data-row-id]")];
+      const targetRow = initialMountedRows.at(-1);
+      expect(targetRow, `${rowCount} rows should render a scrolled record`).to.not.equal(null);
+      const targetRowId = targetRow.dataset.rowId;
+
+      table.selected = [targetRowId];
+      await nextMicrotask();
+      expect(table.shadowRoot.querySelector(`tbody tr[data-row-id="${targetRowId}"]`)).to.equal(
+        targetRow,
+      );
+
+      viewport.scrollTop = 810;
+      viewport.dispatchEvent(new Event("scroll"));
+      await nextMicrotask();
+
+      const mountedRows = [...table.shadowRoot.querySelectorAll("tbody tr[data-row-id]")];
+      expect(mountedRows.length, `${rowCount} rows should retain a bounded window`).to.be.lessThan(
+        10,
+      );
+      expect(
+        new Set(mountedRows.map((row) => row.dataset.rowId)).size,
+        `${rowCount} rows should not mount duplicate public row IDs`,
+      ).to.equal(mountedRows.length);
+      expect(table.shadowRoot.querySelector(`tbody tr[data-row-id="${targetRowId}"]`)).to.equal(
+        targetRow,
+      );
+
+      table.remove();
+    }
   });
 });

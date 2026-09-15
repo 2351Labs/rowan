@@ -19,6 +19,11 @@ function TableView() {
       columns: [{ id: "name", header: "Name" }],
       rows,
       selected: ["1"],
+      config: null,
+      sort: null,
+      page: null,
+      density: "lg",
+      selectable: "multiple",
     },
     events: {
       "rowan-select": (event) => event.type,
@@ -29,6 +34,21 @@ function TableView() {
     properties: {
       items: rows,
       renderItem: (_item, _index, itemElement) => itemElement,
+      itemKey: null,
+    },
+  });
+
+  useRowanElement(tableRef, {
+    properties: {
+      // @ts-expect-error Table density supports sm, md, and lg only.
+      density: "compact",
+    },
+  });
+
+  useRowanElement(listRef, {
+    properties: {
+      // @ts-expect-error Virtual List renderers are functions or null.
+      renderItem: "render",
     },
   });
 
@@ -45,7 +65,12 @@ const structuredTablePropertyRequiresRef = (
   // @ts-expect-error Structured values must use useRowanElement().
   <rowan-table rows={rows} />
 );
+const invalidTableDensityAttribute = (
+  // @ts-expect-error Table density supports sm, md, and lg only.
+  <rowan-table density="compact" />
+);
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
 void structuredTablePropertyRequiresRef;
+void invalidTableDensityAttribute;

@@ -651,10 +651,16 @@ export class RowanTrendChart extends BaseElement {
   }
 
   #pathData(entries) {
+    let hasPreviousEntry = false;
+    let previousIndex = -1;
+
     return entries
-      .map(
-        (entry, index) => `${index === 0 ? "M" : "L"}${entry.x.toFixed(2)},${entry.y.toFixed(2)}`,
-      )
+      .map((entry) => {
+        const command = hasPreviousEntry && entry.index === previousIndex + 1 ? "L" : "M";
+        hasPreviousEntry = true;
+        previousIndex = entry.index;
+        return `${command}${entry.x.toFixed(2)},${entry.y.toFixed(2)}`;
+      })
       .join(" ");
   }
 

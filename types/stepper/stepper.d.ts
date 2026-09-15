@@ -21,8 +21,14 @@ export class RowanStepper extends BaseElement {
     get currentStep(): number;
     set orientation(value: "horizontal" | "vertical");
     get orientation(): "horizontal" | "vertical";
-    set steps(value: any[]);
-    get steps(): any[];
+    set steps(value: {
+        id: string;
+        label: string;
+    }[]);
+    get steps(): {
+        id: string;
+        label: string;
+    }[];
     set disabled(value: boolean);
     get disabled(): boolean;
     next(): void;

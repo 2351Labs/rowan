@@ -6,6 +6,7 @@
  * @attr {string} placeholder
  * @attr {string} label
  * @attr {"text"|"email"|"password"|"search"|"url"|"tel"} type
+ * @attr {string} pattern
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
@@ -26,8 +27,12 @@ export class RowanTextField extends BaseElement {
     get placeholder(): string;
     set label(value: string);
     get label(): string;
-    set type(value: string);
-    get type(): string;
+    /** @param {"text" | "email" | "password" | "search" | "url" | "tel"} value */
+    set type(value: "search" | "text" | "email" | "tel" | "password" | "url");
+    /** @returns {"text" | "email" | "password" | "search" | "url" | "tel"} */
+    get type(): "search" | "text" | "email" | "tel" | "password" | "url";
+    set pattern(value: string);
+    get pattern(): string;
     set autocomplete(value: string);
     get autocomplete(): string;
     set disabled(value: boolean);
@@ -37,7 +42,7 @@ export class RowanTextField extends BaseElement {
     set invalid(value: boolean);
     get invalid(): boolean;
     setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;

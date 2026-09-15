@@ -8,6 +8,19 @@ function normalizeKey(value, index) {
   return text || String(index);
 }
 
+function uniqueKey(baseKey, occurrence, usedKeys) {
+  if (occurrence === 0 && !usedKeys.has(baseKey)) return baseKey;
+
+  let suffix = Math.max(1, occurrence);
+  let key = `${baseKey}--${suffix}`;
+  while (usedKeys.has(key)) {
+    suffix += 1;
+    key = `${baseKey}--${suffix}`;
+  }
+
+  return key;
+}
+
 /**
  * Keyed variable-size collection layout shared by collection views.
  *
@@ -164,7 +177,7 @@ export class VirtualCollection {
         duplicateKeys.push(baseKey);
       }
 
-      const key = occurrence === 0 ? baseKey : `${baseKey}--${occurrence}`;
+      const key = uniqueKey(baseKey, occurrence, liveKeys);
       const size = this.#measuredSizes.get(key) ?? this.#estimatedItemSize;
       const entry = { item, index, key, offset, size };
 

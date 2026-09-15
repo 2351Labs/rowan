@@ -15,10 +15,14 @@
  */
 export class RowanStatusIndicator extends BaseElement {
     static componentTokenPrefixes: string[];
-    set tone(value: string);
-    get tone(): string;
-    set size(value: string);
-    get size(): string;
+    /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
+    set tone(value: "info" | "success" | "warning" | "danger" | "neutral");
+    /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
+    get tone(): "info" | "success" | "warning" | "danger" | "neutral";
+    /** @param {"sm" | "md" | "lg"} value */
+    set size(value: "sm" | "md" | "lg");
+    /** @returns {"sm" | "md" | "lg"} */
+    get size(): "sm" | "md" | "lg";
     set label(value: string);
     get label(): string;
     set pulse(value: boolean);

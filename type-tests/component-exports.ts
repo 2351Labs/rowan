@@ -11,7 +11,7 @@ import { RowanCarousel } from "@rowan-ui/core/carousel";
 import { RowanCard } from "@rowan-ui/core/card";
 import { RowanCheckbox } from "@rowan-ui/core/checkbox";
 import { RowanChip } from "@rowan-ui/core/chip";
-import { RowanCombobox } from "@rowan-ui/core/combobox";
+import { RowanCombobox, type RowanComboboxOption } from "@rowan-ui/core/combobox";
 import { RowanCommandItem } from "@rowan-ui/core/command-item";
 import { RowanCommandPalette } from "@rowan-ui/core/command-palette";
 import { RowanConfirmDialog } from "@rowan-ui/core/confirm-dialog";
@@ -35,7 +35,10 @@ import { RowanLink } from "@rowan-ui/core/link";
 import { RowanListbox } from "@rowan-ui/core/listbox";
 import { RowanMenu } from "@rowan-ui/core/menu";
 import { RowanMenuItem } from "@rowan-ui/core/menu-item";
-import { RowanMultiSelectCombobox } from "@rowan-ui/core/multi-select-combobox";
+import {
+  RowanMultiSelectCombobox,
+  type RowanMultiSelectComboboxOption,
+} from "@rowan-ui/core/multi-select-combobox";
 import { RowanNumberField } from "@rowan-ui/core/number-field";
 import { RowanOption } from "@rowan-ui/core/option";
 import { RowanPagination } from "@rowan-ui/core/pagination";
@@ -46,8 +49,11 @@ import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRating } from "@rowan-ui/core/rating";
 import { RowanRichTextEditor } from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
-import { RowanSelect } from "@rowan-ui/core/select";
-import { RowanSegmentedControl } from "@rowan-ui/core/segmented-control";
+import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
+import {
+  RowanSegmentedControl,
+  type RowanSegmentedControlOption,
+} from "@rowan-ui/core/segmented-control";
 import { RowanSideNav } from "@rowan-ui/core/side-nav";
 import { RowanSideNavItem } from "@rowan-ui/core/side-nav-item";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
@@ -59,7 +65,12 @@ import { RowanStepper } from "@rowan-ui/core/stepper";
 import { RowanSwitch } from "@rowan-ui/core/switch";
 import { RowanTab } from "@rowan-ui/core/tab";
 import { RowanTabPanel } from "@rowan-ui/core/tab-panel";
-import { RowanTable } from "@rowan-ui/core/table";
+import {
+  RowanTable,
+  type RowanTableConfig,
+  type RowanTableDensity,
+  type RowanTableSelectable,
+} from "@rowan-ui/core/table";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
 import { RowanTabs } from "@rowan-ui/core/tabs";
 import { RowanTrendChart } from "@rowan-ui/core/trend-chart";
@@ -67,7 +78,11 @@ import { RowanTextField } from "@rowan-ui/core/text-field";
 import { RowanTextarea } from "@rowan-ui/core/textarea";
 import { RowanTimePicker } from "@rowan-ui/core/time-picker";
 import { RowanToast } from "@rowan-ui/core/toast";
-import { RowanToaster } from "@rowan-ui/core/toaster";
+import {
+  RowanToaster,
+  type RowanToastInput,
+  type RowanToasterPlacement,
+} from "@rowan-ui/core/toaster";
 import { RowanTooltip } from "@rowan-ui/core/tooltip";
 import { RowanTree } from "@rowan-ui/core/tree";
 import { RowanTreeItem } from "@rowan-ui/core/tree-item";
@@ -161,10 +176,18 @@ virtualList.overscan = 4;
 virtualList.renderItem = (item, _index, itemEl) => {
   itemEl.textContent = String(item);
 };
+virtualList.itemKey = null;
+virtualList.renderItem = null;
 
 table.virtualized = true;
 table.virtualItemSize = 44;
 table.virtualOverscan = 4;
+table.config = null;
+table.config = undefined;
+table.sort = null;
+table.page = null;
+table.density = "lg";
+table.selectable = "multiple";
 appLayout.navigationOpen = true;
 sideNav.value = "overview";
 sideNavItem.active = true;
@@ -173,6 +196,8 @@ contextMenu.target = button;
 statusIndicator.tone = "success";
 rating.value = 4;
 rating.value = "";
+rating.value = null;
+rating.value = undefined;
 carousel.activeIndex = 1;
 carousel.goTo(0);
 richTextEditor.value = {
@@ -187,6 +212,116 @@ trendChart.config = {
 trendChart.config = {
   series: [{ id: "resolved", label: "Resolved", values: [null, 6] }],
 };
+trendChart.config = null;
+trendChart.config = undefined;
+
+const tableConfig: RowanTableConfig = {
+  density: "md",
+  selectable: "single",
+};
+const tableDensity: RowanTableDensity = "sm";
+const tableSelectable: RowanTableSelectable = "none";
+const multiSelectOption: RowanMultiSelectComboboxOption = {
+  value: "ada",
+  label: "Ada",
+};
+const segmentedOption: RowanSegmentedControlOption = "weekly";
+const comboboxOption: RowanComboboxOption = { value: "ada", label: "Ada" };
+const selectOption: RowanSelectOption = { value: "ada", label: "Ada", disabled: false };
+const toastInput: RowanToastInput = {
+  message: "Changes saved.",
+  tone: "success",
+};
+const toasterPlacement: RowanToasterPlacement = "bottom-center";
+const toastId: string | null = toaster.show(toastInput);
+const stringToastId: string | null = toaster.show("Changes saved.");
+
+multiSelectCombobox.options = [multiSelectOption];
+multiSelectCombobox.selected = ["ada"];
+segmentedControl.options = [segmentedOption];
+combobox.options = [comboboxOption];
+select.options = [selectOption];
+
+// @ts-expect-error Table density supports sm, md, and lg only.
+table.density = "compact";
+// @ts-expect-error Table selection supports none, single, and multiple only.
+table.selectable = "all";
+// @ts-expect-error Table sort direction supports asc and desc only.
+table.sort = { id: "name", dir: "up" };
+// @ts-expect-error Table configuration uses the documented density values.
+table.config = { density: "compact" };
+// @ts-expect-error Virtual List item keys are strings or key functions.
+virtualList.itemKey = 1;
+// @ts-expect-error Virtual List renderers are functions or null.
+virtualList.renderItem = "render";
+// @ts-expect-error Toaster placement uses the documented placement values.
+toaster.placement = "center";
+// @ts-expect-error Toast tones use the documented tone values.
+toaster.show({ message: "Changes saved.", tone: "urgent" });
+// @ts-expect-error Toast object inputs require a message.
+toaster.show({ title: "Saved" });
+// @ts-expect-error Toast identifiers are strings.
+toaster.dismiss(1);
+// @ts-expect-error Multi-Select options are strings or documented option records.
+multiSelectCombobox.options = [42];
+// @ts-expect-error Multi-Select selected values are strings.
+multiSelectCombobox.selected = [42];
+// @ts-expect-error Segmented Control options are strings or documented option records.
+segmentedControl.options = [42];
+// @ts-expect-error Combobox options are strings or documented option records.
+combobox.options = [42];
+// @ts-expect-error Select options are strings or documented option records.
+select.options = [42];
+// @ts-expect-error Alert tone uses the documented tone values.
+alert.tone = "notice";
+// @ts-expect-error Avatar size supports sm, md, and lg only.
+avatar.size = "xl";
+// @ts-expect-error Badge tone uses the documented tone values.
+badge.tone = "neutral";
+// @ts-expect-error Badge size supports sm, md, and lg only.
+badge.size = "xl";
+// @ts-expect-error Button variant uses the documented variant values.
+button.variant = "outline";
+// @ts-expect-error Button size supports sm, md, and lg only.
+button.size = "xl";
+// @ts-expect-error Button type supports button, submit, and reset only.
+button.type = "menu";
+// @ts-expect-error Calendar selection mode supports single and range only.
+calendar.selectionMode = "multiple";
+// @ts-expect-error Chip tone uses the documented tone values.
+chip.tone = "neutral";
+// @ts-expect-error Chip size supports sm, md, and lg only.
+chip.size = "xl";
+// @ts-expect-error Confirm Dialog variant supports primary and danger only.
+confirmDialog.confirmVariant = "secondary";
+// @ts-expect-error Divider orientation supports horizontal and vertical only.
+divider.orientation = "diagonal";
+// @ts-expect-error Drawer side supports start and end only.
+drawer.side = "left";
+// @ts-expect-error File Item status uses the documented status values.
+fileItem.status = "paused";
+// @ts-expect-error Icon Button variant uses the documented variant values.
+iconButton.variant = "outline";
+// @ts-expect-error Icon Button size supports sm, md, and lg only.
+iconButton.size = "xl";
+// @ts-expect-error Icon Button type supports button, submit, and reset only.
+iconButton.type = "menu";
+// @ts-expect-error Listbox selection supports single and multiple only.
+listbox.selection = "range";
+// @ts-expect-error Segmented Control size supports sm, md, and lg only.
+segmentedControl.size = "xl";
+// @ts-expect-error Skeleton shape supports text, rect, and circle only.
+skeleton.shape = "line";
+// @ts-expect-error Spinner size supports sm, md, and lg only.
+spinner.size = "xl";
+// @ts-expect-error Status Indicator tone uses the documented tone values.
+statusIndicator.tone = "pending";
+// @ts-expect-error Status Indicator size supports sm, md, and lg only.
+statusIndicator.size = "xl";
+// @ts-expect-error Text Field type uses the documented input types.
+textField.type = "number";
+// @ts-expect-error Toast tone uses the documented tone values.
+toast.tone = "neutral";
 
 const virtualListItemSize: number = virtualList.itemSize;
 const tableVirtualItemSize: number = table.virtualItemSize;
@@ -199,6 +334,13 @@ const contextMenuLabel: string = contextMenu.label;
 const statusIndicatorTone: string = statusIndicator.tone;
 const ratingValue: number | "" = rating.value;
 const richTextValue = richTextEditor.value;
+
+type Assert<Condition extends true> = Condition;
+type Equal<Left, Right> =
+  (<Value>() => Value extends Left ? 1 : 2) extends <Value>() => Value extends Right ? 1 : 2
+    ? true
+    : false;
+type ToasterShowReturnIsExact = Assert<Equal<ReturnType<RowanToaster["show"]>, string | null>>;
 
 void [
   accordion,
@@ -287,4 +429,15 @@ void [
   statusIndicatorTone,
   ratingValue,
   richTextValue,
+  tableConfig,
+  tableDensity,
+  tableSelectable,
+  multiSelectOption,
+  segmentedOption,
+  comboboxOption,
+  selectOption,
+  toastId,
+  stringToastId,
+  toasterPlacement,
+  null as unknown as ToasterShowReturnIsExact,
 ];

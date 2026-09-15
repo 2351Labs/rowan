@@ -5,6 +5,9 @@ export default {
     name: "@storybook/web-components-vite",
     options: {},
   },
+  core: {
+    disableProjectJson: true,
+  },
   docs: {
     autodocs: "tag",
   },

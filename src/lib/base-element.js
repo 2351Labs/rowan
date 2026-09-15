@@ -7,8 +7,7 @@ import {
   reflectStringAttribute,
 } from "./reflect.js";
 import {
-  componentTokenCssText,
-  rowanComponentTokenStyleSheet,
+  componentTokenCssFor,
   rowanTokenStyleSheet,
   tokenCssText,
   tokenPropertiesRegistered,
@@ -17,13 +16,30 @@ import {
 
 const supportsAdoptedStyleSheets =
   typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
+const componentTokenStyleSheets = new Map();
+
+function componentTokenPrefixesFor(element) {
+  return element.constructor.componentTokenPrefixes ?? [];
+}
+
+function componentTokenStyleSheetFor(cssText) {
+  if (!cssText) return null;
+
+  let stylesheet = componentTokenStyleSheets.get(cssText);
+  if (stylesheet) return stylesheet;
+
+  stylesheet = new CSSStyleSheet();
+  stylesheet.replaceSync(cssText);
+  componentTokenStyleSheets.set(cssText, stylesheet);
+  return stylesheet;
+}
 
 function elementSuppliesComponentTokens(element) {
   if (typeof getComputedStyle !== "function") {
     return false;
   }
 
-  const tokenPrefixes = element.constructor.componentTokenPrefixes ?? [];
+  const tokenPrefixes = componentTokenPrefixesFor(element);
   if (tokenPrefixes.length === 0) {
     return false;
   }
@@ -49,6 +65,7 @@ function documentSuppliesRowanTokens() {
     "--rowan-color-border",
     "--rowan-font-family",
     "--rowan-space-1",
+    ...unregisteredTokenNames,
   ].some((name) => getComputedStyle(root).getPropertyValue(name).trim().length > 0);
 }
 
@@ -70,10 +87,12 @@ export class BaseElement extends HTMLElement {
   #didFirstRender = false;
   #pendingUpgrades = [];
   #componentSheet = supportsAdoptedStyleSheets ? new CSSStyleSheet() : null;
+  #componentTokenSheet = null;
   #componentLink = null;
   #tokenStyleTag = null;
   #componentStyleTag = null;
   #renderRoot = null;
+  #formDisabled = false;
 
   constructor() {
     super();
@@ -96,6 +115,7 @@ export class BaseElement extends HTMLElement {
 
     this.#applyStyleSheets();
     this.#createRenderRoot();
+    this.#listenForDisabledInteractions();
   }
 
   connectedCallback() {
@@ -119,6 +139,13 @@ export class BaseElement extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    if (name === "disabled") this.#syncFormDisabledState();
+    this.requestRender();
+  }
+
+  formDisabledCallback(disabled) {
+    this.#formDisabled = Boolean(disabled);
+    this.#syncFormDisabledState();
     this.requestRender();
   }
 
@@ -139,6 +166,7 @@ export class BaseElement extends HTMLElement {
       if (!this.isConnected) return;
 
       this.render();
+      this.#syncFormDisabledState();
       this.#didFirstRender = true;
     });
   }
@@ -288,35 +316,46 @@ export class BaseElement extends HTMLElement {
   #refreshTokenStyles() {
     if (supportsAdoptedStyleSheets) {
       const componentSheets = this.shadowRoot.adoptedStyleSheets.filter(
-        (sheet) => sheet !== rowanComponentTokenStyleSheet && sheet !== rowanTokenStyleSheet,
+        (sheet) => sheet !== this.#componentTokenSheet && sheet !== rowanTokenStyleSheet,
       );
+
+      if (this.#componentSheet && !componentSheets.includes(this.#componentSheet)) {
+        componentSheets.push(this.#componentSheet);
+      }
+
       this.shadowRoot.adoptedStyleSheets = componentSheets;
 
+      const componentTokenCss = componentTokenCssFor(componentTokenPrefixesFor(this));
       const shouldApplyComponentTokenDefaults =
-        tokenPropertiesRegistered && !elementSuppliesComponentTokens(this);
+        tokenPropertiesRegistered &&
+        componentTokenCss.length > 0 &&
+        !elementSuppliesComponentTokens(this);
       const shouldApplyLegacyTokenDefaults =
         !tokenPropertiesRegistered && !documentSuppliesRowanTokens();
-      const tokenSheet = shouldApplyComponentTokenDefaults
-        ? rowanComponentTokenStyleSheet
-        : shouldApplyLegacyTokenDefaults
-          ? rowanTokenStyleSheet
-          : null;
+      this.#componentTokenSheet = shouldApplyComponentTokenDefaults
+        ? componentTokenStyleSheetFor(componentTokenCss)
+        : null;
 
-      this.shadowRoot.adoptedStyleSheets = tokenSheet
-        ? [tokenSheet, ...componentSheets]
-        : componentSheets;
+      this.shadowRoot.adoptedStyleSheets = [
+        ...(shouldApplyLegacyTokenDefaults ? [rowanTokenStyleSheet] : []),
+        ...(this.#componentTokenSheet ? [this.#componentTokenSheet] : []),
+        ...componentSheets,
+      ];
       return;
     }
 
     this.#tokenStyleTag?.remove();
     this.#tokenStyleTag = null;
 
+    const componentTokenCss = componentTokenCssFor(componentTokenPrefixesFor(this));
     const shouldApplyComponentTokenDefaults =
-      tokenPropertiesRegistered && !elementSuppliesComponentTokens(this);
+      tokenPropertiesRegistered &&
+      componentTokenCss.length > 0 &&
+      !elementSuppliesComponentTokens(this);
     const shouldApplyLegacyTokenDefaults =
       !tokenPropertiesRegistered && !documentSuppliesRowanTokens();
     const fallbackTokenCss = shouldApplyComponentTokenDefaults
-      ? componentTokenCssText
+      ? componentTokenCss
       : shouldApplyLegacyTokenDefaults
         ? tokenCssText
         : "";
@@ -333,6 +372,41 @@ export class BaseElement extends HTMLElement {
     this.#renderRoot = document.createElement("div");
     this.#renderRoot.setAttribute("data-rowan-render-root", "");
     this.shadowRoot.append(this.#renderRoot);
+  }
+
+  #listenForDisabledInteractions() {
+    const preventInteraction = (event) => {
+      if (!this.#isEffectivelyDisabled()) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+
+    ["beforeinput", "click", "input", "change", "keydown"].forEach((type) => {
+      this.listen(this.shadowRoot, type, preventInteraction, true);
+    });
+  }
+
+  #isEffectivelyDisabled() {
+    return this.#formDisabled || this.hasAttribute("disabled");
+  }
+
+  #syncFormDisabledState() {
+    const disabled = this.#isEffectivelyDisabled();
+    this.#renderRoot.inert = disabled;
+
+    if (disabled) {
+      this.shadowRoot.querySelectorAll("input, select, textarea, button").forEach((control) => {
+        control.disabled = true;
+      });
+    }
+
+    if (
+      !this.hasAttribute("aria-disabled") &&
+      this.#internals &&
+      "ariaDisabled" in this.#internals
+    ) {
+      this.#internals.ariaDisabled = disabled ? "true" : "false";
+    }
   }
 
   #capturePreUpgradeProperties() {

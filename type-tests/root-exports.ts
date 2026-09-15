@@ -14,6 +14,9 @@ import {
   RowanTree,
   RowanTreeItem,
 } from "@rowan-ui/core";
+type Assert<T extends true> = T;
+type RootExports = typeof import("@rowan-ui/core");
+type BaseElementIsInternal = Assert<"BaseElement" extends keyof RootExports ? false : true>;
 import {
   formatDate as formatDateFromSubpath,
   type CurrencyFormatConfig,
@@ -21,7 +24,8 @@ import {
   type NumberFormatConfig,
   type RelativeTimeFormatConfig,
 } from "@rowan-ui/core/format";
-import { BaseElement } from "@rowan-ui/core/lib/base-element";
+// @ts-expect-error BaseElement is an internal implementation detail.
+type InternalBaseElement = import("@rowan-ui/core/lib/base-element").BaseElement;
 import { debounce } from "@rowan-ui/core/lib/debounce";
 import { define } from "@rowan-ui/core/lib/define";
 import { emit } from "@rowan-ui/core/lib/events";
@@ -48,7 +52,6 @@ const rootTable: RowanTable = document.createElement("rowan-table");
 const rootTrendChart: RowanTrendChart = document.createElement("rowan-trend-chart");
 const rootTree: RowanTree = document.createElement("rowan-tree");
 const rootTreeItem: RowanTreeItem = document.createElement("rowan-tree-item");
-const baseElement: typeof BaseElement = BaseElement;
 const numberFormat: NumberFormatConfig = { locale: "de-DE", options: { maximumFractionDigits: 1 } };
 const currencyFormat: CurrencyFormatConfig = { currency: "USD", locale: "en-US" };
 const dateFormat: DateFormatConfig = { locale: "en-GB", timeZone: "UTC" };
@@ -79,7 +82,7 @@ const rootRatingValue: number | "" = rootRating.value;
 const rootRichText: string = rootRichTextEditor.text;
 
 void [
-  baseElement,
+  null as unknown as BaseElementIsInternal,
   formattedCurrency,
   formattedDate,
   formattedNumber,

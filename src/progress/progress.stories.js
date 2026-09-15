@@ -1,7 +1,7 @@
 import "./progress.js";
 
 export default {
-  title: "Components/Progress",
+  title: "Components/Actions & Feedback/Progress",
   tags: ["autodocs"],
   argTypes: {
     value: { control: { type: "number", min: 0, step: 1 } },

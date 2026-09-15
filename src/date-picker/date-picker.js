@@ -24,6 +24,8 @@ function normalizeDateValue(value) {
  * @attr {boolean} invalid
  * @csspart input
  * @cssprop --rowan-field-bg
+ * @cssprop --rowan-field-fg
+ * @cssprop --rowan-field-border
  * @event rowan-change - Fired when the user commits a changed date value
  */
 export class RowanDatePicker extends BaseElement {

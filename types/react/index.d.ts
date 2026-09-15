@@ -9,6 +9,6 @@
 export function useRowanElement(ref: {
     current: HTMLElement | null;
 }, options?: {
-    properties?: Record<string, unknown>;
-    events?: Record<string, EventListener | undefined>;
-}): void;
+    properties?: Record<string, unknown> | undefined;
+    events?: Record<string, EventListener | undefined> | undefined;
+} | undefined): void;

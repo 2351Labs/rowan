@@ -5,7 +5,7 @@
  * @param {NumberFormatConfig} [config]
  * @returns {string}
  */
-export function formatNumber(value: number | string, config?: NumberFormatConfig): string;
+export function formatNumber(value: number | string, config?: NumberFormatConfig | undefined): string;
 /**
  * Formats a finite number as an ISO 4217 currency using the requested locale.
  * Invalid values, currencies, locales, or options return `fallback`, which defaults to an empty string.
@@ -21,7 +21,7 @@ export function formatCurrency(value: number | string, config: CurrencyFormatCon
  * @param {DateFormatConfig} [config]
  * @returns {string}
  */
-export function formatDate(value: Date | number | string, config?: DateFormatConfig): string;
+export function formatDate(value: Date | number | string, config?: DateFormatConfig | undefined): string;
 /**
  * Formats a signed relative value using the requested locale.
  * Invalid values, units, locales, or options return `fallback`, which defaults to an empty string.
@@ -29,7 +29,7 @@ export function formatDate(value: Date | number | string, config?: DateFormatCon
  * @param {RelativeTimeFormatConfig} [config]
  * @returns {string}
  */
-export function formatRelativeTime(value: number | string, config?: RelativeTimeFormatConfig): string;
+export function formatRelativeTime(value: number | string, config?: RelativeTimeFormatConfig | undefined): string;
 export type RowanLocale = string | readonly string[] | undefined;
 export type NumberFormatConfig = {
     locale?: RowanLocale;

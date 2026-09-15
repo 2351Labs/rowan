@@ -16,8 +16,10 @@ export class RowanAvatar extends BaseElement {
     get src(): string;
     set alt(value: string);
     get alt(): string;
-    set size(value: string);
-    get size(): string;
+    /** @param {"sm" | "md" | "lg"} value */
+    set size(value: "sm" | "md" | "lg");
+    /** @returns {"sm" | "md" | "lg"} */
+    get size(): "sm" | "md" | "lg";
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

@@ -2,7 +2,7 @@ import "./date-range-picker.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Date Range Picker",
+  title: "Components/Forms & Input/Date Range Picker",
   tags: ["autodocs"],
   argTypes: {
     name: { control: "text" },

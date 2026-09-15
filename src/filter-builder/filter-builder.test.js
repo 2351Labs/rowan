@@ -119,4 +119,36 @@ describe("rowan-filter-builder", () => {
       { id: "parent-filter", field: "name", operator: "contains", value: "Ada" },
     ]);
   });
+
+  it("binds a declarative table reference that becomes available later", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.forTable = "late-members-table";
+
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.table).to.equal(null);
+
+    const table = document.createElement("rowan-table");
+    table.id = "late-members-table";
+    table.config = {
+      columns: [{ id: "active", header: "Active", type: "switch" }],
+      rows: [{ id: "1", active: false }],
+    };
+    document.body.append(table);
+    await settle();
+
+    const filter = builder.addFilter({ field: "active" });
+    await settle();
+
+    expect(builder.table).to.equal(table);
+    expect(filter).to.deep.equal({
+      id: "filter-1",
+      field: "active",
+      operator: "equals",
+      value: "true",
+    });
+    expect(builder.filters).to.deep.equal([filter]);
+    expect(builder.shadowRoot.querySelector('[data-filter-part="value"]').value).to.equal("true");
+  });
 });

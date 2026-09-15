@@ -27,6 +27,13 @@ import {
   themeComparisonTokens,
   tokenSourcePaths,
 } from "../src/tokens/token-data.js";
+import { formatDocumentationRoute, parseDocumentationRoute } from "./navigation.js";
+import {
+  COMPONENT_CATEGORY_ORDER,
+  createComponentNavigationSections,
+  getComponentCategoryLabel,
+  matchesDocumentationNavigationItem,
+} from "./taxonomy.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -137,8 +144,13 @@ const REACT_EVENTS_SNIPPET = `useRowanElement(fieldRef, {
 });
 
 useRowanElement(buttonRef, {
+  properties: { disabled },
   events: { "rowan-click": () => save() },
 });`;
+
+const REACT_18_BOOLEAN_SNIPPET = `const booleanAttributes = disabled ? { disabled: true } : {};
+
+return <rowan-button {...booleanAttributes}>Save</rowan-button>;`;
 
 const NEXT_JS_SNIPPET = `"use client";
 
@@ -188,7 +200,44 @@ table.config = {
 // Update one part of the existing model.
 table.rows = nextRows;
 table.selected = selectedIds;
-table.sort = { id: "name", dir: "asc" };`;
+table.sort = { id: "name", dir: "asc" };
+table.page = { index: 0, size: 25, total: totalMembers };`;
+
+const TABLE_CUSTOM_CELL_SNIPPET = `const table = document.querySelector("#orders-table");
+
+const template = document.createElement("template");
+template.slot = "status-cell";
+template.innerHTML = '<span data-status></span>';
+table.append(template);
+
+table.addEventListener("rowan-cell-bind", (event) => {
+  const { row, cellEl } = event.detail;
+  cellEl.querySelector("[data-status]").textContent = row.status;
+});
+
+table.config = {
+  rowId: "id",
+  columns: [
+    {
+      id: "approval",
+      header: "Approval",
+      type: "checkbox",
+      headerCell: { tooltip: "Current approval status" },
+      cell: {
+        indeterminate: (_value, row) => row.pending,
+        title: (_value, row) => "Approval for " + row.name,
+      },
+    },
+    { id: "status", header: "Status", type: "custom", cell: { slot: "status-cell" } },
+    {
+      id: "name",
+      header: "Name",
+      type: "custom",
+      cell: { render: ({ value }) => "Member: " + value },
+    },
+  ],
+  rows: [{ id: "1", name: "Ada", status: "Pending", pending: true }],
+};`;
 
 const VIRTUAL_LIST_SNIPPET = `<rowan-virtual-list id="member-list" item-size="44" overscan="4"></rowan-virtual-list>
 
@@ -443,7 +492,7 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     interactive: true,
     series: [
-      { id: "incoming", label: "Incoming incidents", values: [18, 24, 17, 12, 15, 9] },
+      { id: "incoming", label: "Incoming incidents", values: [18, 24, null, 12, 15, 9] },
       { id: "resolved", label: "Resolved incidents", values: [13, 19, 20, 15, 16, 12] },
     ],
     valueFormatter: (value, context) =>
@@ -876,116 +925,12 @@ const PRIMITIVE_TOKEN_TOTAL =
   primitiveTypographyTokens.length +
   primitiveStructuralTokens.length;
 
-const COMPONENT_CATEGORY_SETS = {
-  Primitives: new Set([
-    "alert",
-    "avatar",
-    "badge",
-    "button",
-    "card",
-    "chip",
-    "divider",
-    "empty-state",
-    "file-item",
-    "icon-button",
-    "link",
-    "progress",
-    "skeleton",
-    "spinner",
-    "status-indicator",
-    "toast",
-    "toaster",
-  ]),
-  Forms: new Set([
-    "calendar",
-    "checkbox",
-    "color-picker",
-    "combobox",
-    "date-picker",
-    "date-range-picker",
-    "dropzone",
-    "file-upload",
-    "form-wizard",
-    "listbox",
-    "multi-select-combobox",
-    "number-field",
-    "option",
-    "radio",
-    "radio-group",
-    "select",
-    "segmented-control",
-    "switch",
-    "text-field",
-    "textarea",
-    "time-picker",
-    "validation-summary",
-  ]),
-  Overlays: new Set([
-    "command-item",
-    "command-palette",
-    "confirm-dialog",
-    "context-menu",
-    "dialog",
-    "drawer",
-    "dropdown",
-    "menu",
-    "menu-item",
-    "popover",
-    "tooltip",
-  ]),
-  Navigation: new Set([
-    "accordion",
-    "app-layout",
-    "breadcrumb",
-    "carousel",
-    "pagination",
-    "side-nav",
-    "side-nav-item",
-    "split-pane",
-    "stepper",
-    "tab",
-    "tab-panel",
-    "tabs",
-    "tree",
-    "tree-item",
-  ]),
-  "Data Display": new Set([
-    "bulk-actions-bar",
-    "filter-builder",
-    "row-details-panel",
-    "table",
-    "table-toolbar",
-    "virtual-list",
-  ]),
-};
-
-const COMPONENT_CATEGORY_ORDER = [
-  "Primitives",
-  "Forms",
-  "Overlays",
-  "Navigation",
-  "Data Display",
-  "Other",
-];
-
 function titleFromTagName(tagName) {
   return tagName
     .replace(/^rowan-/, "")
     .split("-")
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(" ");
-}
-
-function inferComponentCategory(tagName) {
-  const key = tagName.replace(/^rowan-/, "");
-
-  for (const [category, values] of Object.entries(COMPONENT_CATEGORY_SETS)) {
-    if (values.has(key)) {
-      return category;
-    }
-  }
-
-  return "Other";
 }
 
 function normalizeComponentDescription(description, tagName) {
@@ -1054,7 +999,7 @@ function collectSupportedComponents() {
         className: declaration.name || `Rowan${titleFromTagName(tagName).replace(/\s+/g, "")}`,
         description: normalizeComponentDescription(declaration.description, tagName),
         modulePath: moduleEntry.path || "",
-        category: inferComponentCategory(tagName),
+        category: getComponentCategoryLabel(tagName),
         attributes: collectManifestAttributes(declaration.attributes),
         events: collectManifestEvents(declaration.events),
         slots: collectManifestSlots(declaration.slots),
@@ -1066,6 +1011,9 @@ function collectSupportedComponents() {
 }
 
 const SUPPORTED_COMPONENTS = collectSupportedComponents();
+const SUPPORTED_COMPONENT_TAG_NAMES = new Set(
+  SUPPORTED_COMPONENTS.map((component) => component.tagName),
+);
 const COMPONENTS_BY_CATEGORY = SUPPORTED_COMPONENTS.reduce((groups, component) => {
   if (!groups[component.category]) {
     groups[component.category] = [];
@@ -1127,13 +1075,19 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="react-properties-events">
         <h2>Properties and native events</h2>
-        <p>Use scalar JSX attributes for declarative state. Assign arrays, objects, callbacks, and other structured values through the helper so they remain properties. Its native subscriptions are replaced on rerender and cleaned up on unmount.</p>
+        <p>Use JSX for string and number scalar attributes. Assign boolean state, arrays, objects, callbacks, and other structured values through the helper so they remain properties. Its native subscriptions are replaced on rerender and cleaned up on unmount.</p>
         ${codeBlock(REACT_EVENTS_SNIPPET, "tsx")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="react-18-booleans">
+        <h2>React 18 boolean attributes</h2>
+        <p>React 18 server rendering serializes false custom-element booleans as present attributes such as disabled=&quot;false&quot;. Rowan follows HTML boolean presence semantics, so omit false booleans from server markup or set them through a client-side ref after hydration.</p>
+        ${codeBlock(REACT_18_BOOLEAN_SNIPPET, "tsx")}
       </section>
 
       <section class="doc-section" data-doc-section id="react-ssr">
         <h2>Next.js and SSR</h2>
-        <p>The React facade is safe to import during server rendering because it does not touch browser globals or register elements. Keep component registration inside a client effect or equivalent client-only boundary.</p>
+        <p>The React facade is safe to import during server rendering because it does not touch browser globals or register elements. Keep component registration inside a client effect or equivalent client-only boundary, and use the React 18 boolean boundary above when rendering Rowan controls on the server.</p>
         ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
       </section>
     `,
@@ -1762,7 +1716,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="trend-chart-contract">
         <h2>Accessible data contract</h2>
-        <p>series, labels, config, and valueFormatter are property-only. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information.</p>
+        <p>series, labels, config, and valueFormatter are property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information.</p>
         ${codeBlock(TREND_CHART_SNIPPET, "html")}
       </section>
     `,
@@ -2651,6 +2605,7 @@ const DOC_PAGES = [
       <section class="doc-section" data-doc-section id="toaster-queue">
         <h2>Queue and placement behavior</h2>
         <p>rowan-toaster manages queueing and timeout dismissal while keeping at most max-visible notifications onscreen.</p>
+        <p>Changing max-visible reconciles the visible stack immediately while preserving the order of queued notifications.</p>
         <p>For mobile-first behavior, default placement keeps notifications anchored to the bottom edge with safe-area support, while larger screens support directional placement options.</p>
         ${codeBlock(TOASTER_SNIPPET)}
       </section>
@@ -2703,8 +2658,18 @@ const DOC_PAGES = [
     title: "Rowan Table",
     summary:
       "The table supports config-driven rendering, typed cells, sorting, selection, pagination, and virtualized large collections.",
-    tags: ["config", "selection", "events", "virtualization"],
-    keywords: ["table", "rows", "columns", "selection", "sort", "pagination", "virtualized"],
+    tags: ["config", "selection", "events", "virtualization", "custom cells"],
+    keywords: [
+      "table",
+      "rows",
+      "columns",
+      "selection",
+      "sort",
+      "pagination",
+      "virtualized",
+      "custom cells",
+      "rowan-cell-bind",
+    ],
     content: () => `
       <section class="doc-section" data-doc-section id="table-config">
         <h2>Config-first API</h2>
@@ -2714,9 +2679,15 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="table-updates">
         <h2>Configuration updates</h2>
-        <p>Assigning config replaces the complete table model and resets omitted settings. Assign rows, columns, selected, sort, or page directly when only that part should change.</p>
+        <p>Assigning config replaces the complete table model and resets omitted settings. Assign rows, columns, selected, sort, or page directly when only that part should change. Out-of-range page indexes normalize to the last available page, while selection remains available across page changes.</p>
         ${codeBlock(TABLE_UPDATE_SNIPPET)}
         <p>In local development, Rowan warns about missing or duplicate column IDs, unsupported cell types, and invalid or duplicate row IDs. Invalid columns are omitted, unsupported cells render as text, and duplicate row IDs use a full render.</p>
+      </section>
+
+      <section class="doc-section" data-doc-section id="table-custom-cells">
+        <h2>Custom cells and metadata</h2>
+        <p>Use headerCell.tooltip for a header description, cell.title for a cell description, and cell.indeterminate for checkbox state. Custom render callbacks return text or a Node. Slot templates emit rowan-cell-bind once for each newly cloned cell so application code can hydrate the clone with its row context.</p>
+        ${codeBlock(TABLE_CUSTOM_CELL_SNIPPET)}
       </section>
 
       <section class="doc-section" data-doc-section id="table-virtualized">
@@ -2881,6 +2852,10 @@ const DOC_PAGES = [
   },
 ];
 
+function getComponentNavigationLabel(page) {
+  return page.title.replace(/^Rowan\s+/, "");
+}
+
 const NAV_SECTIONS = [
   {
     id: "introduction",
@@ -2910,54 +2885,16 @@ const NAV_SECTIONS = [
     items: [
       { pageId: "all-components", label: "All Components" },
       { pageId: "components", label: "Overview" },
-      { pageId: "alert", label: "Alert" },
-      { pageId: "status-indicator", label: "Status Indicator" },
-      { pageId: "button", label: "Button" },
-      { pageId: "dialog", label: "Dialog" },
-      { pageId: "confirm-dialog", label: "Confirm Dialog" },
-      { pageId: "context-menu", label: "Context Menu" },
-      { pageId: "command-palette", label: "Command Palette" },
-      { pageId: "date-picker", label: "Date Picker" },
-      { pageId: "time-picker", label: "Time Picker" },
-      { pageId: "color-picker", label: "Color Picker" },
-      { pageId: "rating", label: "Rating" },
-      { pageId: "rich-text-editor", label: "Rich Text Editor" },
-      { pageId: "trend-chart", label: "Trend Chart" },
-      { pageId: "date-range-picker", label: "Date Range Picker" },
-      { pageId: "calendar", label: "Calendar" },
-      { pageId: "listbox", label: "Listbox" },
-      { pageId: "option", label: "Option" },
-      { pageId: "multi-select-combobox", label: "Multi-select Combobox" },
-      { pageId: "segmented-control", label: "Segmented Control" },
-      { pageId: "number-field", label: "Number Field" },
-      { pageId: "slider", label: "Slider" },
-      { pageId: "form-field", label: "Form Field" },
-      { pageId: "form-layout", label: "Form Layout" },
-      { pageId: "app-layout", label: "App Layout" },
-      { pageId: "split-pane", label: "Split Pane" },
-      { pageId: "side-nav", label: "Side Navigation" },
-      { pageId: "side-nav-item", label: "Side Navigation Item" },
-      { pageId: "dropzone", label: "Dropzone" },
-      { pageId: "file-item", label: "File Item" },
-      { pageId: "file-upload", label: "File Upload" },
-      { pageId: "stepper", label: "Stepper" },
-      { pageId: "carousel", label: "Carousel" },
-      { pageId: "tree", label: "Tree" },
-      { pageId: "validation-summary", label: "Validation Summary" },
-      { pageId: "form-wizard", label: "Form Wizard" },
-      { pageId: "toast", label: "Toast" },
-      { pageId: "toaster", label: "Toaster" },
-      { pageId: "virtual-list", label: "Virtual List" },
-      { pageId: "table", label: "Data Table" },
-      { pageId: "table-toolbar", label: "Table Toolbar" },
-      { pageId: "bulk-actions-bar", label: "Bulk Actions Bar" },
-      { pageId: "filter-builder", label: "Filter Builder" },
-      { pageId: "row-details-panel", label: "Row Details Panel" },
     ],
   },
+  ...createComponentNavigationSections(
+    DOC_PAGES,
+    getComponentNavigationLabel,
+    SUPPORTED_COMPONENT_TAG_NAMES,
+  ),
   {
-    id: "tools-workflow",
-    label: "Tools and Workflows",
+    id: "quality",
+    label: "Quality",
     defaultOpen: false,
     items: [{ pageId: "quality", label: "Accessibility and Verification" }],
   },
@@ -2981,13 +2918,14 @@ const quickstartCodeEl = document.querySelector("#quickstart-code");
 
 let activeFilter = "";
 let openNavSections = new Set(DEFAULT_OPEN_SECTION_IDS);
+let pendingSectionScroll = 0;
 
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -3168,53 +3106,24 @@ function renderComponentGroups() {
   }).join("");
 }
 
-function pageMatchesFilter(page, query) {
-  if (!query) return true;
-
-  const haystack = [
-    page.title,
-    page.summary,
-    page.group,
-    ...(page.tags || []),
-    ...(page.keywords || []),
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  return haystack.includes(query);
+function getRouteId() {
+  return getRoute().pageId;
 }
 
-function getRouteId() {
-  const hash = window.location.hash.replace(/^#/, "").trim();
-  return PAGES_BY_ID.has(hash) ? hash : DEFAULT_PAGE_ID;
+function getRoute() {
+  return parseDocumentationRoute(window.location.hash, PAGES_BY_ID, DEFAULT_PAGE_ID);
 }
 
 function navigateTo(pageId) {
   if (!PAGES_BY_ID.has(pageId)) return;
 
-  if (window.location.hash === `#${pageId}`) {
+  const nextHash = formatDocumentationRoute(pageId);
+  if (window.location.hash === nextHash) {
     renderCurrentPage();
     return;
   }
 
-  window.location.hash = pageId;
-}
-
-function navItemMatchesFilter(item, page, query) {
-  if (!query) return true;
-
-  const haystack = [
-    item.label,
-    page.title,
-    page.group,
-    page.summary,
-    ...(page.tags || []),
-    ...(page.keywords || []),
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  return haystack.includes(query);
+  window.location.hash = nextHash;
 }
 
 function renderNavigation() {
@@ -3227,9 +3136,13 @@ function renderNavigation() {
     const sectionItems = section.items
       .map((item) => {
         const page = PAGES_BY_ID.get(item.pageId);
-        return page ? { ...item, page } : null;
+        return page ? { ...item, page, categoryLabel: section.label } : null;
       })
-      .filter((entry) => entry && navItemMatchesFilter(entry, entry.page, activeFilter));
+      .filter(
+        (entry) =>
+          entry &&
+          matchesDocumentationNavigationItem(entry, entry.page, entry.categoryLabel, activeFilter),
+      );
 
     if (sectionItems.length === 0) continue;
     renderedItemCount += sectionItems.length;
@@ -3331,17 +3244,49 @@ function renderToc() {
     if (!section || !section.id) continue;
 
     const anchor = document.createElement("a");
-    anchor.href = `#${getRouteId()}:${section.id}`;
+    const nextHash = formatDocumentationRoute(getRouteId(), section.id);
+    anchor.href = nextHash;
     anchor.textContent = heading.textContent;
 
     anchor.addEventListener("click", (event) => {
       event.preventDefault();
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.replaceState(null, "", `#${getRouteId()}`);
+      if (window.location.hash === nextHash) {
+        scrollToRouteSection(getRouteId());
+        return;
+      }
+
+      window.location.hash = nextHash;
     });
 
     tocEl.append(anchor);
   }
+}
+
+function scrollToRouteSection(pageId) {
+  const route = getRoute();
+  window.clearTimeout(pendingSectionScroll);
+  pendingSectionScroll = 0;
+
+  if (route.pageId !== pageId || !route.sectionId) return;
+
+  const sectionId = route.sectionId;
+  pendingSectionScroll = window.setTimeout(() => {
+    pendingSectionScroll = 0;
+
+    const currentRoute = getRoute();
+    if (currentRoute.pageId !== pageId || currentRoute.sectionId !== sectionId) return;
+
+    const section = Array.from(mainEl.querySelectorAll("section[data-doc-section]")).find(
+      (candidate) => candidate.id === sectionId,
+    );
+
+    if (!section) {
+      history.replaceState(null, "", formatDocumentationRoute(pageId));
+      return;
+    }
+
+    section.scrollIntoView({ behavior: "auto", block: "start" });
+  }, 0);
 }
 
 function renderCurrentPage() {
@@ -3371,6 +3316,7 @@ function renderCurrentPage() {
   renderNavigation();
   renderToc();
   page.afterRender?.();
+  scrollToRouteSection(page.id);
 }
 
 function formatEventDetail(detail) {
@@ -3470,7 +3416,7 @@ function setupTrendChartDemo() {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     interactive: true,
     series: [
-      { id: "incoming", label: "Incoming incidents", values: [18, 24, 17, 12, 15, 9] },
+      { id: "incoming", label: "Incoming incidents", values: [18, 24, null, 12, 15, 9] },
       { id: "resolved", label: "Resolved incidents", values: [13, 19, 20, 15, 16, 12] },
     ],
     valueFormatter: (value, context) => (context.tick ? String(value) : `${value} incidents`),
@@ -4222,8 +4168,10 @@ function wireQuickstartDialog() {
 }
 
 function initialize() {
-  if (!window.location.hash || !PAGES_BY_ID.has(window.location.hash.replace(/^#/, ""))) {
-    history.replaceState(null, "", `#${DEFAULT_PAGE_ID}`);
+  const route = getRoute();
+  const canonicalHash = formatDocumentationRoute(route.pageId, route.sectionId);
+  if (window.location.hash !== canonicalHash) {
+    history.replaceState(null, "", canonicalHash);
   }
 
   wireSearch();

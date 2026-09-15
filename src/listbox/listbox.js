@@ -125,11 +125,13 @@ export class RowanListbox extends BaseElement {
     this.reflectString("label", value);
   }
 
+  /** @returns {"single" | "multiple"} */
   get selection() {
     const selection = this.readString("selection", "single").trim().toLowerCase();
     return SELECTION_MODES.has(selection) ? selection : "single";
   }
 
+  /** @param {"single" | "multiple"} value */
   set selection(value) {
     const next = String(value ?? "")
       .trim()

@@ -21,8 +21,10 @@ export class RowanContextMenu extends BaseElement {
     get open(): boolean;
     set forTarget(value: string);
     get forTarget(): string;
-    set target(value: any);
-    get target(): any;
+    /** @param {HTMLElement | null} value */
+    set target(value: HTMLElement | null);
+    /** @returns {HTMLElement | null} */
+    get target(): HTMLElement | null;
     set label(value: string);
     get label(): string;
     showAt(x: any, y: any): void;

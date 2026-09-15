@@ -131,6 +131,27 @@ describe("rowan-button", () => {
     expect(internalButton.getAttribute("aria-busy")).to.equal("false");
   });
 
+  it("forwards popup state from the host to its native control", async () => {
+    const element = document.createElement("rowan-button");
+    document.body.append(element);
+    await nextMicrotask();
+
+    const internalButton = element.shadowRoot.querySelector("button");
+    element.setAttribute("aria-expanded", "false");
+    element.setAttribute("aria-haspopup", "menu");
+    await nextMicrotask();
+
+    expect(internalButton.getAttribute("aria-expanded")).to.equal("false");
+    expect(internalButton.getAttribute("aria-haspopup")).to.equal("menu");
+
+    element.removeAttribute("aria-expanded");
+    element.removeAttribute("aria-haspopup");
+    await nextMicrotask();
+
+    expect(internalButton.hasAttribute("aria-expanded")).to.equal(false);
+    expect(internalButton.hasAttribute("aria-haspopup")).to.equal(false);
+  });
+
   it("emits rowan-click on activation", async () => {
     const element = document.createElement("rowan-button");
     document.body.append(element);
@@ -195,5 +216,31 @@ describe("rowan-button", () => {
     internalButton.click();
 
     expect(eventCount).to.equal(0);
+  });
+
+  it("submits and resets its associated light-DOM form", async () => {
+    const form = document.createElement("form");
+    const input = document.createElement("input");
+    const submit = document.createElement("rowan-button");
+    const reset = document.createElement("rowan-button");
+    input.defaultValue = "Pine";
+    input.value = "Cedar";
+    submit.type = "submit";
+    reset.type = "reset";
+    form.append(input, submit, reset);
+    document.body.append(form);
+    await nextMicrotask();
+
+    let submitCount = 0;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitCount += 1;
+    });
+
+    submit.shadowRoot.querySelector("button").click();
+    reset.shadowRoot.querySelector("button").click();
+
+    expect(submitCount).to.equal(1);
+    expect(input.value).to.equal("Pine");
   });
 });

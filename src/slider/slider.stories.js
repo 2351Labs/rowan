@@ -21,7 +21,7 @@ function createSlider({
 }
 
 export default {
-  title: "Components/Slider",
+  title: "Components/Forms & Input/Slider",
   tags: ["autodocs"],
   argTypes: {
     value: { control: { type: "number", min: 0, max: 100 } },

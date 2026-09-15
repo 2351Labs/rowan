@@ -60,6 +60,27 @@ describe("rowan-command-palette", () => {
     expect(closeCount).to.equal(0);
   });
 
+  it("keeps closed palettes out of modal semantics and names open palettes", async () => {
+    const palette = await renderPalette();
+
+    expect(palette.inert).to.equal(true);
+    expect(palette.internals.role).to.equal(null);
+    expect(palette.internals.ariaHidden).to.equal("true");
+
+    palette.open = true;
+    await nextMicrotask();
+
+    const panel = palette.shadowRoot.querySelector(".panel");
+    expect(palette.inert).to.equal(false);
+    expect(palette.internals.role).to.equal("dialog");
+    expect(palette.internals.ariaModal).to.equal("true");
+    expect(palette.internals.ariaHidden).to.equal("false");
+    expect(palette.internals.ariaLabel).to.equal("Command palette");
+    expect(panel.getAttribute("role")).to.equal("dialog");
+    expect(panel.getAttribute("aria-modal")).to.equal("true");
+    expect(panel.getAttribute("aria-labelledby")).to.not.equal(null);
+  });
+
   it("filters command items from labels, descriptions, and keywords", async () => {
     const palette = await renderPalette({ open: true });
     const input = palette.shadowRoot.querySelector("input");

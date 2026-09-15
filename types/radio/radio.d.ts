@@ -29,8 +29,8 @@ export class RowanRadio extends BaseElement {
     get value(): string;
     set label(value: string);
     get label(): string;
-    setFormValue(value?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: string | null): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): any;

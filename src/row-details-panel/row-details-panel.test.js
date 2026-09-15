@@ -129,6 +129,81 @@ describe("rowan-row-details-panel", () => {
     expect(closeEventCount).to.equal(0);
   });
 
+  it("matches Table rowId functions and refreshes a controlled row after table updates", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "function-row-id-table";
+    table.config = {
+      rowId: (row) => row.key,
+      columns: [{ id: "name", header: "Name", type: "text" }],
+      rows: [
+        { key: "first", name: "Ada" },
+        { key: 0, name: "Grace" },
+      ],
+    };
+
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.forTable = "function-row-id-table";
+    panel.rowId = "0";
+    panel.fields = [{ id: "name", label: "Member name" }];
+    panel.open = true;
+
+    document.body.append(table, panel);
+    await settle();
+
+    expect(panel.row).to.equal(table.rows[1]);
+    expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Grace");
+
+    const refreshedRow = { key: 0, name: "Linus" };
+    table.rows = [table.rows[0], refreshedRow];
+    await settle();
+
+    expect(panel.row).to.equal(refreshedRow);
+    expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Linus");
+  });
+
+  it("preserves significant rowId whitespace from a bound table", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "whitespace-row-id-table";
+    table.config = {
+      rowId: (row) => row.key,
+      columns: [{ id: "name", header: "Name", type: "text" }],
+      rows: [{ key: " member-1 ", name: "Ada" }],
+    };
+
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.forTable = "whitespace-row-id-table";
+    panel.rowId = " member-1 ";
+    panel.open = true;
+
+    document.body.append(table, panel);
+    await settle();
+
+    expect(panel.getAttribute("row-id")).to.equal(" member-1 ");
+    expect(panel.row).to.equal(table.rows[0]);
+    expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Ada");
+  });
+
+  it("binds a controlled row when a declarative table reference becomes available later", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.forTable = "late-members-table";
+    panel.rowId = "member-1";
+    panel.open = true;
+
+    document.body.append(panel);
+    await settle();
+
+    expect(panel.table).to.equal(null);
+
+    const table = createTable();
+    table.id = "late-members-table";
+    document.body.append(table);
+    await settle();
+
+    expect(panel.table).to.equal(table);
+    expect(panel.row).to.equal(table.rows[0]);
+    expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Ada");
+  });
+
   it("restores controls and focus containment after reconnecting while open", async () => {
     const outside = document.createElement("button");
     outside.textContent = "Outside";

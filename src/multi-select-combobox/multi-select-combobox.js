@@ -35,6 +35,10 @@ function parseRestoredSelection(state) {
 }
 
 /**
+ * @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanMultiSelectComboboxOption
+ */
+
+/**
  * Filterable multi-select control with removable selected values.
  * @tag rowan-multi-select-combobox
  * @attr {string} name
@@ -119,19 +123,23 @@ export class RowanMultiSelectCombobox extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  /** @returns {RowanMultiSelectComboboxOption[]} */
   get options() {
     return this.#options;
   }
 
+  /** @param {RowanMultiSelectComboboxOption[]} value */
   set options(value) {
     this.#options = Array.isArray(value) ? value : [];
     this.requestRender();
   }
 
+  /** @returns {string[]} */
   get selected() {
     return [...this.#selected];
   }
 
+  /** @param {string[]} value */
   set selected(value) {
     this.#selected = normalizeSelected(value);
     this.requestRender();

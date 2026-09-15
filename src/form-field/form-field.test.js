@@ -46,11 +46,23 @@ describe("rowan-form-field", () => {
     const hint = field.shadowRoot.querySelector('[part="hint"]');
     const description = field.shadowRoot.querySelector('[part="description"]');
 
-    expect(control.getAttribute("aria-labelledby")).to.equal(label.id);
-    expect(tokens(control.getAttribute("aria-describedby"))).to.deep.equal([
-      hint.id,
-      description.id,
-    ]);
+    const labelledBy = Array.from(control.internals.ariaLabelledByElements);
+    const describedBy = Array.from(control.internals.ariaDescribedByElements);
+    if (labelledBy.length > 0) {
+      expect(labelledBy).to.deep.equal([label]);
+      expect(describedBy).to.deep.equal([hint, description]);
+    } else {
+      expect(control.getAttribute("aria-label")).to.equal("Workspace name");
+      expect(control.getAttribute("aria-description")).to.equal(
+        "Used in workspace URLs. Choose a concise, recognizable name.",
+      );
+    }
+
+    field.remove();
+    expect(Array.from(control.internals.ariaLabelledByElements)).to.deep.equal([]);
+    expect(Array.from(control.internals.ariaDescribedByElements)).to.deep.equal([]);
+    expect(control.hasAttribute("aria-label")).to.equal(false);
+    expect(control.hasAttribute("aria-description")).to.equal(false);
   });
 
   it("preserves author-provided accessibility references", async () => {
@@ -62,11 +74,7 @@ describe("rowan-form-field", () => {
     document.body.append(field);
     await nextMicrotask();
 
-    const hint = field.shadowRoot.querySelector('[part="hint"]');
-    expect(tokens(control.getAttribute("aria-describedby"))).to.deep.equal([
-      "existing-help",
-      hint.id,
-    ]);
+    expect(tokens(control.getAttribute("aria-describedby"))).to.deep.equal(["existing-help"]);
 
     field.remove();
     expect(control.getAttribute("aria-describedby")).to.equal("existing-help");
@@ -83,9 +91,8 @@ describe("rowan-form-field", () => {
 
     field.shadowRoot.querySelector('[part="label"]').click();
 
-    expect(control.getAttribute("aria-labelledby")).to.equal(
-      field.shadowRoot.querySelector('[part="label"]').id,
-    );
+    expect(control.getAttribute("aria-label")).to.equal("Workspace name");
+    expect(control.hasAttribute("aria-labelledby")).to.equal(false);
     expect(document.activeElement).to.equal(control);
   });
 

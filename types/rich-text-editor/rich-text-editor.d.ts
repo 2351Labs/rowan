@@ -61,8 +61,8 @@ export class RowanRichTextEditor extends BaseElement {
     get text(): string;
     clear(): void;
     focus(options: any): void;
-    setFormValue(value?: string, state?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: string | null, state?: string): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;

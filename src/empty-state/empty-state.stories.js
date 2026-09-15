@@ -2,7 +2,7 @@ import "./empty-state.js";
 import "../button/button.js";
 
 export default {
-  title: "Components/Empty State",
+  title: "Components/Actions & Feedback/Empty State",
   tags: ["autodocs"],
 };
 

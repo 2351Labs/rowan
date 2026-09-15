@@ -2,6 +2,8 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 
+let generatedTargetId = 0;
+
 function toArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -26,12 +28,14 @@ function normalizeError(error, index) {
 }
 
 function queryLabelForElement(element) {
-  if (!element || !element.id) return "";
+  if (!element) return "";
 
-  const escapedId = CSS.escape(element.id);
-  const fromFor = element.ownerDocument?.querySelector(`label[for="${escapedId}"]`);
-  if (fromFor && fromFor.textContent) {
-    return fromFor.textContent.trim();
+  if (element.id) {
+    const escapedId = CSS.escape(element.id);
+    const fromFor = element.ownerDocument?.querySelector(`label[for="${escapedId}"]`);
+    if (fromFor && fromFor.textContent) {
+      return fromFor.textContent.trim();
+    }
   }
 
   const wrapperLabel = element.closest("label");
@@ -42,7 +46,7 @@ function queryLabelForElement(element) {
   const ariaLabel = element.getAttribute("aria-label");
   if (ariaLabel) return ariaLabel.trim();
 
-  return element.id;
+  return element.id || "";
 }
 
 /**
@@ -72,6 +76,8 @@ export class RowanValidationSummary extends BaseElement {
   #list = null;
   #empty = null;
   #heading = null;
+  #generatedTargetIds = new WeakMap();
+  #fieldTargets = new Map();
 
   get heading() {
     return this.readString("heading", "Please fix the following fields");
@@ -120,18 +126,20 @@ export class RowanValidationSummary extends BaseElement {
     );
 
     const nextErrors = [];
+    this.#fieldTargets.clear();
 
     controls.forEach((control) => {
       if (!("checkValidity" in control)) return;
-      if (control.disabled) return;
-      if (!control.id) return;
+      if (control.matches(":disabled")) return;
 
       if (!control.checkValidity()) {
+        const fieldId = control.id || this.#targetIdFor(control);
         const label = queryLabelForElement(control);
+        this.#fieldTargets.set(fieldId, control);
         nextErrors.push({
-          fieldId: control.id,
+          fieldId,
           label,
-          message: control.validationMessage || `${label || control.id} is invalid`,
+          message: control.validationMessage || `${label || fieldId} is invalid`,
         });
       }
     });
@@ -163,7 +171,7 @@ export class RowanValidationSummary extends BaseElement {
       this.listen(this.#list, "click", (event) => {
         const button = event
           .composedPath()
-          .find((node) => node instanceof HTMLElement && node.matches('button[data-field-id]'));
+          .find((node) => node instanceof HTMLElement && node.matches("button[data-field-id]"));
 
         if (!button || this.disabled) return;
 
@@ -176,7 +184,7 @@ export class RowanValidationSummary extends BaseElement {
 
         const button = event
           .composedPath()
-          .find((node) => node instanceof HTMLElement && node.matches('button[data-field-id]'));
+          .find((node) => node instanceof HTMLElement && node.matches("button[data-field-id]"));
 
         if (!button || this.disabled) return;
 
@@ -229,7 +237,7 @@ export class RowanValidationSummary extends BaseElement {
   #jumpToField(fieldId) {
     if (!fieldId) return;
 
-    const target = this.ownerDocument?.getElementById(fieldId);
+    const target = this.#fieldTargets.get(fieldId) ?? this.ownerDocument?.getElementById(fieldId);
     if (!target) return;
 
     if (typeof target.focus === "function") {
@@ -244,6 +252,17 @@ export class RowanValidationSummary extends BaseElement {
       fieldId,
       target,
     });
+  }
+
+  #targetIdFor(control) {
+    let targetId = this.#generatedTargetIds.get(control);
+    if (!targetId) {
+      generatedTargetId += 1;
+      targetId = `rowan-validation-target-${generatedTargetId}`;
+      this.#generatedTargetIds.set(control, targetId);
+    }
+
+    return targetId;
   }
 
   #applyDefaultA11y() {

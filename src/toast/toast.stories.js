@@ -3,7 +3,7 @@ import "../button/button.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Toast",
+  title: "Components/Actions & Feedback/Toast",
   tags: ["autodocs"],
   argTypes: {
     tone: {
@@ -26,10 +26,7 @@ export default {
 
 export const Playground = {
   parameters: createEventScriptParameters({
-    steps: [
-      "Click the Dismiss button.",
-      "Confirm rowan-dismiss appears in Event Trace.",
-    ],
+    steps: ["Click the Dismiss button.", "Confirm rowan-dismiss appears in Event Trace."],
     events: ["rowan-dismiss"],
   }),
   render: ({ tone, dismissible, title, message, withAction }) => {

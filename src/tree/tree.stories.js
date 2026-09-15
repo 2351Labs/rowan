@@ -16,7 +16,7 @@ function createItem({ value, label, expanded = false, children = [] }) {
 }
 
 export default {
-  title: "Components/Tree",
+  title: "Components/Navigation & Layout/Tree",
   tags: ["autodocs"],
   argTypes: {
     selection: { control: "select", options: ["none", "single", "multiple"] },

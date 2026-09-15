@@ -50,8 +50,8 @@ export class RowanColorPicker extends BaseElement {
     get required(): boolean;
     set invalid(value: boolean);
     get invalid(): boolean;
-    setFormValue(value?: string, state?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: string | null, state?: string | null): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;
@@ -60,7 +60,7 @@ export class RowanColorPicker extends BaseElement {
 }
 export type RowanColorPickerPaletteEntry = {
     value: string;
-    label?: string;
-    disabled?: boolean;
+    label?: string | undefined;
+    disabled?: boolean | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

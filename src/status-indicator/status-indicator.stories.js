@@ -10,7 +10,7 @@ function createIndicator(tone, label, options = {}) {
 }
 
 export default {
-  title: "Components/Status Indicator",
+  title: "Components/Actions & Feedback/Status Indicator",
   tags: ["autodocs"],
 };
 

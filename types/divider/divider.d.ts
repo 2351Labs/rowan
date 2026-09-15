@@ -5,8 +5,10 @@
  * @csspart divider
  */
 export class RowanDivider extends BaseElement {
-    set orientation(value: string);
-    get orientation(): string;
+    /** @param {"horizontal" | "vertical"} value */
+    set orientation(value: "horizontal" | "vertical");
+    /** @returns {"horizontal" | "vertical"} */
+    get orientation(): "horizontal" | "vertical";
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

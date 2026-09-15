@@ -9,18 +9,24 @@ import { define } from "../lib/define.js";
  * @attr {string} height
  * @attr {boolean} animated
  * @csspart skeleton
+ * @cssprop --rowan-skeleton-base
+ * @cssprop --rowan-skeleton-highlight
+ * @cssprop --rowan-skeleton-shimmer-duration
  */
 export class RowanSkeleton extends BaseElement {
   static styleUrl = new URL("./skeleton.css", import.meta.url).href;
   static observedAttributes = ["shape", "width", "height", "animated"];
   static upgradeProperties = ["shape", "width", "height", "animated"];
+  static componentTokenPrefixes = ["--rowan-skeleton-"];
 
   #skeleton = null;
 
+  /** @returns {"text" | "rect" | "circle"} */
   get shape() {
     return this.readString("shape", "text");
   }
 
+  /** @param {"text" | "rect" | "circle"} value */
   set shape(value) {
     this.reflectString("shape", value === "text" ? null : value);
   }

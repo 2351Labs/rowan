@@ -140,6 +140,28 @@ describe("rowan-bulk-actions-bar", () => {
     expect(detail.selectedRows.map((row) => row.name)).to.deep.equal(["Cedar"]);
   });
 
+  it("binds a declarative table reference that becomes available later", async () => {
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.forTable = "late-orders-table";
+
+    document.body.append(bar);
+    await settle();
+
+    expect(bar.table).to.equal(null);
+
+    const table = createTable();
+    table.id = "late-orders-table";
+    document.body.append(table);
+    await settle();
+
+    table.selected = ["order-1"];
+    await settle();
+
+    expect(bar.table).to.equal(table);
+    expect(bar.selected).to.deep.equal(["order-1"]);
+    expect(bar.selectedRows.map((row) => row.name)).to.deep.equal(["Maple"]);
+  });
+
   it("reflects primitive configuration and applies default a11y", async () => {
     const bar = document.createElement("rowan-bulk-actions-bar");
     bar.forTable = "orders-table";

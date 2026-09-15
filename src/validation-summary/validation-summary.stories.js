@@ -1,7 +1,7 @@
 import "./validation-summary.js";
 
 const meta = {
-  title: "Forms/Validation Summary",
+  title: "Components/Forms & Input/Validation Summary",
   component: "rowan-validation-summary",
   tags: ["autodocs"],
   argTypes: {

@@ -32,12 +32,12 @@ export class RowanRowDetailsPanel extends BaseElement {
         delegatesFocus: boolean;
     };
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set table(value: any);
-    get table(): any;
+    set table(value: null);
+    get table(): null;
     set forTable(value: string);
     get forTable(): string;
-    set row(value: any);
-    get row(): any;
+    set row(value: null);
+    get row(): null;
     set rowId(value: string);
     get rowId(): string;
     set fields(value: any[]);
@@ -50,7 +50,7 @@ export class RowanRowDetailsPanel extends BaseElement {
     get label(): string;
     set closeLabel(value: string);
     get closeLabel(): string;
-    show(row?: any, rowId?: string): void;
+    show(row?: null, rowId?: string): void;
     hide(): void;
     refresh(): void;
     #private;

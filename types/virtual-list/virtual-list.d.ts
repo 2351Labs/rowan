@@ -24,13 +24,13 @@ export class RowanVirtualList extends BaseElement {
     /** @returns {unknown[]} */
     get items(): unknown[];
     /** @param {string | ((item: unknown, index: number) => string | number) | null} value */
-    set itemKey(value: string | ((item: unknown, index: number) => string | number));
+    set itemKey(value: string | ((item: unknown, index: number) => string | number) | null);
     /** @returns {string | ((item: unknown, index: number) => string | number) | null} */
-    get itemKey(): string | ((item: unknown, index: number) => string | number);
+    get itemKey(): string | ((item: unknown, index: number) => string | number) | null;
     /** @param {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} value */
-    set renderItem(value: (item: unknown, index: number, itemEl: HTMLElement) => Node | string | void);
+    set renderItem(value: ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null);
     /** @returns {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} */
-    get renderItem(): (item: unknown, index: number, itemEl: HTMLElement) => Node | string | void;
+    get renderItem(): ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null;
     /** @param {number} value */
     set itemSize(value: number);
     /** @returns {number} */
@@ -45,8 +45,8 @@ export class RowanVirtualList extends BaseElement {
      * @param {{ align?: "auto" | "start" | "center" | "end" }} [options]
      */
     scrollToIndex(index: number, options?: {
-        align?: "auto" | "start" | "center" | "end";
-    }): void;
+        align?: "center" | "start" | "end" | "auto" | undefined;
+    } | undefined): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

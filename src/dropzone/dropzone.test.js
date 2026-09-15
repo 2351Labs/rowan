@@ -65,6 +65,28 @@ describe("rowan-dropzone", () => {
     expect(element.hasAttribute("drag-active")).to.equal(false);
   });
 
+  it("emits only the first dropped file when multiple is disabled", async () => {
+    const element = document.createElement("rowan-dropzone");
+    document.body.append(element);
+    await nextMicrotask();
+
+    const first = new File(["first"], "first.csv", { type: "text/csv" });
+    const second = new File(["second"], "second.csv", { type: "text/csv" });
+    let detail = null;
+    element.addEventListener("rowan-files-add", (event) => {
+      detail = event.detail;
+    });
+
+    const event = new Event("drop", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "dataTransfer", {
+      value: { files: [first, second] },
+    });
+    element.shadowRoot.querySelector('[data-part="surface"]').dispatchEvent(event);
+
+    expect(detail.files).to.deep.equal([first]);
+    expect(detail.source).to.equal("drop");
+  });
+
   it("does not emit rowan-files-add when disabled", async () => {
     const element = document.createElement("rowan-dropzone");
     element.disabled = true;

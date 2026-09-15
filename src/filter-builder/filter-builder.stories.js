@@ -47,7 +47,7 @@ function filterRows(filters) {
 }
 
 export default {
-  title: "Components/Filter Builder",
+  title: "Components/Data Display/Filter Builder",
   component: "rowan-filter-builder",
   tags: ["autodocs"],
   argTypes: {

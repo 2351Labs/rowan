@@ -7,7 +7,12 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #e6ebe5 0%, #f4f7f2 45%, #e6ebe5 100%);
+  background: linear-gradient(
+    90deg,
+    var(--rowan-skeleton-base, #e6ebe5) 0%,
+    var(--rowan-skeleton-highlight, #f4f7f2) 45%,
+    var(--rowan-skeleton-base, #e6ebe5) 100%
+  );
   background-size: 200% 100%;
   border-radius: var(--rowan-radius-sm);
   display: block;
@@ -15,7 +20,7 @@
 }
 
 .skeleton.animated {
-  animation: rowan-skeleton-shimmer 1.1s linear infinite;
+  animation: rowan-skeleton-shimmer var(--rowan-skeleton-shimmer-duration, 1.1s) linear infinite;
 }
 
 :host([shape="rect"]) .skeleton {
@@ -36,5 +41,12 @@
 
   to {
     background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton.animated {
+    animation: none;
+    background-position: 100% 0;
   }
 }

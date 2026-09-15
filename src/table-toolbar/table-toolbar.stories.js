@@ -48,7 +48,7 @@ function createToolbar({ label, selectionLabel, customSelection = false }) {
 }
 
 export default {
-  title: "Components/Table Toolbar",
+  title: "Components/Data Display/Table Toolbar",
   component: "rowan-table-toolbar",
   tags: ["autodocs"],
   argTypes: {

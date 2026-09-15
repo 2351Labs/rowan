@@ -479,7 +479,11 @@ export class RowanDateRangePicker extends BaseElement {
     }
 
     if (this.start && this.end && this.start > this.end) {
-      this.setValidity({ customError: true }, "End date must be on or after start date.", this.#endInput);
+      this.setValidity(
+        { customError: true },
+        "End date must be on or after start date.",
+        this.#endInput,
+      );
       this.#setAutoInvalid(true);
       return;
     }

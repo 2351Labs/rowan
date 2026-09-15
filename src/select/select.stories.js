@@ -2,7 +2,7 @@ import "./select.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Select",
+  title: "Components/Forms & Input/Select",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

@@ -1,4 +1,7 @@
 /**
+ * @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanMultiSelectComboboxOption
+ */
+/**
  * Filterable multi-select control with removable selected values.
  * @tag rowan-multi-select-combobox
  * @attr {string} name
@@ -26,10 +29,14 @@ export class RowanMultiSelectCombobox extends BaseElement {
         delegatesFocus: boolean;
     };
     static componentTokenPrefixes: string[];
-    set options(value: any[]);
-    get options(): any[];
-    set selected(value: any[]);
-    get selected(): any[];
+    /** @param {RowanMultiSelectComboboxOption[]} value */
+    set options(value: RowanMultiSelectComboboxOption[]);
+    /** @returns {RowanMultiSelectComboboxOption[]} */
+    get options(): RowanMultiSelectComboboxOption[];
+    /** @param {string[]} value */
+    set selected(value: string[]);
+    /** @returns {string[]} */
+    get selected(): string[];
     get selectedOptions(): {
         value: string;
         label: string;
@@ -49,12 +56,17 @@ export class RowanMultiSelectCombobox extends BaseElement {
     get disabled(): boolean;
     set required(value: boolean);
     get required(): boolean;
-    setFormValue(value?: any, state?: any): void;
-    setValidity(flags?: {}, message?: string, anchor?: any): void;
+    setFormValue(value?: null, state?: undefined): void;
+    setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;
     formStateRestoreCallback(state: any): void;
     checkValidity(): boolean;
     reportValidity(): boolean;
     #private;
 }
+export type RowanMultiSelectComboboxOption = string | {
+    value: string;
+    label?: string;
+    disabled?: boolean;
+};
 import { BaseElement } from "../lib/base-element.js";

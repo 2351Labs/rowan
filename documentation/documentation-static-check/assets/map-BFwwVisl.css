@@ -1,0 +1,272 @@
+:host {
+  --_map-bg: var(--rowan-maplibre-map-bg, var(--rowan-color-bg, #ffffff));
+  --_map-fg: var(--rowan-maplibre-map-fg, var(--rowan-color-fg, #1f2421));
+  --_map-muted: var(--rowan-maplibre-map-muted-fg, var(--rowan-color-muted, #424945));
+  --_map-border: var(--rowan-maplibre-map-border, var(--rowan-color-border, #d8dcd5));
+  --_map-radius: var(--rowan-maplibre-map-radius, var(--rowan-radius-md, 0.5rem));
+  --_map-focus-ring: var(
+    --rowan-maplibre-map-focus-ring,
+    var(--rowan-focus-ring, 0 0 0 3px rgb(29 67 47 / 28%))
+  );
+  --_map-marker-bg: var(--rowan-maplibre-map-marker-bg, var(--rowan-color-accent, #1d432f));
+  color: var(--_map-fg);
+  display: block;
+  font-family: var(--rowan-maplibre-map-font-family, var(--rowan-font-family, sans-serif));
+  max-inline-size: 100%;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  background: var(--_map-bg);
+  border: var(--rowan-border-width, 1px) solid var(--_map-border);
+  border-radius: var(--_map-radius);
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--rowan-space-3, 0.75rem);
+  max-inline-size: 100%;
+  overflow: clip;
+  padding: var(--rowan-space-3, 0.75rem);
+}
+
+.heading {
+  display: grid;
+  gap: var(--rowan-space-1, 0.25rem);
+}
+
+.label {
+  font-size: var(--rowan-font-size-lg, 1.125rem);
+}
+
+.description,
+.map-status,
+.attribution,
+.coordinates,
+.location-description,
+.selection-status {
+  color: var(--_map-muted);
+  font-size: var(--rowan-font-size-sm, 0.875rem);
+}
+
+.description,
+.map-status,
+.attribution {
+  margin: 0;
+}
+
+.map-frame {
+  background: color-mix(in srgb, var(--_map-bg) 86%, var(--_map-border));
+  border: var(--rowan-border-width, 1px) solid var(--_map-border);
+  border-radius: calc(var(--_map-radius) - 0.125rem);
+  min-block-size: var(--rowan-maplibre-map-height, 22rem);
+  overflow: hidden;
+  position: relative;
+}
+
+.map-canvas {
+  block-size: var(--rowan-maplibre-map-height, 22rem);
+  inline-size: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-canvas .maplibregl-canvas-container {
+  block-size: 100%;
+  inline-size: 100%;
+  position: relative;
+}
+
+.map-canvas .maplibregl-canvas {
+  block-size: 100%;
+  inline-size: 100%;
+  inset: 0;
+  position: absolute;
+}
+
+.map-canvas[hidden],
+.map-status[hidden],
+.attribution[hidden],
+.layers[hidden],
+.label[hidden],
+.description[hidden] {
+  display: none;
+}
+.map-canvas .maplibregl-marker {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  position: absolute;
+  will-change: transform;
+  z-index: 1;
+}
+
+.map-status {
+  inset: auto var(--rowan-space-3, 0.75rem) var(--rowan-space-3, 0.75rem);
+  margin: 0;
+  position: absolute;
+}
+
+.attribution {
+  overflow-wrap: anywhere;
+}
+
+.attribution a {
+  color: var(--rowan-maplibre-map-link, var(--rowan-color-accent, #1d432f));
+}
+
+.layers {
+  align-items: center;
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-2, 0.5rem) var(--rowan-space-3, 0.75rem);
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+.layers legend {
+  font-size: var(--rowan-font-size-sm, 0.875rem);
+  font-weight: 600;
+  margin-block-end: var(--rowan-space-1, 0.25rem);
+  padding: 0;
+}
+
+.layers label {
+  align-items: center;
+  display: inline-flex;
+  font-size: var(--rowan-font-size-sm, 0.875rem);
+  gap: var(--rowan-space-1, 0.25rem);
+}
+
+.layers input {
+  accent-color: var(--rowan-color-accent, #1d432f);
+}
+
+.layer-swatch {
+  background: var(--_map-marker-bg);
+  border-radius: 50%;
+  block-size: 0.625rem;
+  inline-size: 0.625rem;
+}
+
+.alternatives {
+  display: grid;
+  gap: var(--rowan-space-3, 0.75rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fallback-section {
+  border-block-start: var(--rowan-border-width, 1px) solid var(--_map-border);
+  min-inline-size: 0;
+  padding-block-start: var(--rowan-space-3, 0.75rem);
+}
+
+.fallback-section h2 {
+  font-size: var(--rowan-font-size-md, 1rem);
+  margin: 0 0 var(--rowan-space-2, 0.5rem);
+}
+
+.location-list {
+  display: grid;
+  gap: var(--rowan-space-2, 0.5rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.location-list button {
+  background: transparent;
+  border: var(--rowan-border-width, 1px) solid var(--_map-border);
+  border-radius: var(--rowan-radius-sm, 0.375rem);
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 0.125rem;
+  inline-size: 100%;
+  padding: var(--rowan-space-2, 0.5rem);
+  text-align: start;
+}
+
+.location-list button:hover,
+.location-list button[data-active] {
+  background: color-mix(in srgb, var(--rowan-color-accent, #1d432f) 10%, transparent);
+}
+
+.location-list button:focus-visible,
+table button:focus-visible,
+.marker:focus-visible {
+  box-shadow: var(--_map-focus-ring);
+  outline: none;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  inline-size: 100%;
+  min-inline-size: 34rem;
+}
+
+th,
+td {
+  border-block-start: var(--rowan-border-width, 1px) solid var(--_map-border);
+  padding: var(--rowan-space-2, 0.5rem);
+  text-align: start;
+  vertical-align: top;
+}
+
+tbody tr[data-active] {
+  background: color-mix(in srgb, var(--rowan-color-accent, #1d432f) 10%, transparent);
+}
+
+table button {
+  background: transparent;
+  border: var(--rowan-border-width, 1px) solid var(--_map-border);
+  border-radius: var(--rowan-radius-sm, 0.375rem);
+  color: var(--rowan-color-accent, #1d432f);
+  cursor: pointer;
+  font: inherit;
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+}
+
+.marker {
+  background: var(--marker-color, var(--_map-marker-bg));
+  border: 2px solid var(--_map-bg);
+  border-radius: 50%;
+  block-size: 1.25rem;
+  box-shadow: 0 1px 2px rgb(16 38 28 / 24%);
+  cursor: pointer;
+  inline-size: 1.25rem;
+  padding: 0;
+}
+
+.marker[data-active] {
+  outline: 2px solid var(--_map-fg);
+  outline-offset: 2px;
+}
+
+.selection-status {
+  min-block-size: 1.2em;
+}
+
+.sr-only {
+  block-size: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .alternatives {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

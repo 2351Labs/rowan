@@ -2,7 +2,7 @@ import "./switch.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Switch",
+  title: "Components/Forms & Input/Switch",
   tags: ["autodocs"],
   argTypes: {
     checked: { control: "boolean" },

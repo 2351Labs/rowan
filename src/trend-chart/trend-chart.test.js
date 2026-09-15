@@ -155,6 +155,34 @@ describe("rowan-trend-chart", () => {
     );
   });
 
+  it("renders null values as visual gaps without interactive controls", async () => {
+    const chart = await renderChart({
+      labels: ["Mon", "Tue", "Wed"],
+      interactive: true,
+      series: [
+        {
+          id: "incidents",
+          label: "Incidents",
+          values: [4, null, 8],
+        },
+      ],
+    });
+
+    const path = chart.shadowRoot.querySelector("path.series-line");
+    const commands = path
+      .getAttribute("d")
+      .split(" ")
+      .map((command) => command[0]);
+
+    expect(commands).to.deep.equal(["M", "M"]);
+    expect(
+      [...chart.shadowRoot.querySelectorAll("button[data-point-key]")].map(
+        (button) => button.dataset.pointKey,
+      ),
+    ).to.deep.equal(["incidents::0", "incidents::2"]);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incidents4No data8");
+  });
+
   it("uses default chart ARIA without replacing an author-provided label", async () => {
     const chart = document.createElement("rowan-trend-chart");
     chart.label = "Workload trend";

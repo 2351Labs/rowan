@@ -2,7 +2,7 @@ import "./accordion.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Accordion",
+  title: "Components/Navigation & Layout/Accordion",
   tags: ["autodocs"],
   argTypes: {
     open: { control: "boolean" },

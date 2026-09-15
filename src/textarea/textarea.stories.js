@@ -2,7 +2,7 @@ import "./textarea.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Textarea",
+  title: "Components/Forms & Input/Textarea",
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },

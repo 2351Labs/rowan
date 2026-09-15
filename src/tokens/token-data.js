@@ -81,9 +81,15 @@ const darkThemeTokens = parseThemeTokens(darkThemeSource);
 
 const primitiveTokens = [...baseLayers.primitive];
 
-export const primitiveColorTokens = filterByPrefix(primitiveTokens, "--rowan-color-").sort(byNameSort);
-export const primitiveSpaceTokens = filterByPrefix(primitiveTokens, "--rowan-space-").sort(byNameSort);
-export const primitiveRadiusTokens = filterByPrefix(primitiveTokens, "--rowan-radius-").sort(byNameSort);
+export const primitiveColorTokens = filterByPrefix(primitiveTokens, "--rowan-color-").sort(
+  byNameSort,
+);
+export const primitiveSpaceTokens = filterByPrefix(primitiveTokens, "--rowan-space-").sort(
+  byNameSort,
+);
+export const primitiveRadiusTokens = filterByPrefix(primitiveTokens, "--rowan-radius-").sort(
+  byNameSort,
+);
 export const primitiveTypographyTokens = filterByOneOfPrefixes(primitiveTokens, [
   "--rowan-font-",
   "--rowan-line-height",
@@ -95,8 +101,8 @@ export const primitiveStructuralTokens = filterByPrefix(primitiveTokens, "--rowa
 export const semanticTokens = [...baseLayers.semantic].sort(byNameSort);
 export const componentTokens = [...baseLayers.component].sort(byNameSort);
 
-const themeTokenNames = [...new Set([...lightThemeTokens.keys(), ...darkThemeTokens.keys()])].sort((a, b) =>
-  a.localeCompare(b, undefined, { numeric: true }),
+const themeTokenNames = [...new Set([...lightThemeTokens.keys(), ...darkThemeTokens.keys()])].sort(
+  (a, b) => a.localeCompare(b, undefined, { numeric: true }),
 );
 
 export const themeComparisonTokens = themeTokenNames.map((name) => ({

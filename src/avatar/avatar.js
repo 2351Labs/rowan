@@ -19,6 +19,8 @@ export class RowanAvatar extends BaseElement {
 
   #image = null;
   #initials = null;
+  #renderedSrc = null;
+  #failedSrc = null;
 
   get name() {
     return this.readString("name", "");
@@ -44,10 +46,12 @@ export class RowanAvatar extends BaseElement {
     this.reflectString("alt", value);
   }
 
+  /** @returns {"sm" | "md" | "lg"} */
   get size() {
     return this.readString("size", "md");
   }
 
+  /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
     this.reflectString("size", value === "md" ? null : value);
   }
@@ -65,6 +69,7 @@ export class RowanAvatar extends BaseElement {
       this.#initials = this.renderRoot.querySelector(".initials");
 
       this.listen(this.#image, "error", () => {
+        this.#failedSrc = this.#renderedSrc;
         this.#image.hidden = true;
         this.#initials.hidden = false;
       });
@@ -74,15 +79,20 @@ export class RowanAvatar extends BaseElement {
     const src = this.src.trim();
     const altText = this.alt.trim() || this.name.trim() || "Avatar";
 
+    if (src !== this.#renderedSrc) {
+      this.#renderedSrc = src;
+      this.#failedSrc = null;
+    }
+
     this.#initials.textContent = initials;
     this.#image.alt = altText;
 
-    if (src.length > 0) {
+    if (src.length > 0 && this.#failedSrc !== src) {
       this.#image.hidden = false;
-      this.#image.src = src;
+      if (this.#image.getAttribute("src") !== src) this.#image.src = src;
       this.#initials.hidden = true;
     } else {
-      this.#image.removeAttribute("src");
+      if (src.length === 0) this.#image.removeAttribute("src");
       this.#image.hidden = true;
       this.#initials.hidden = false;
     }

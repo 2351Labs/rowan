@@ -1,7 +1,8 @@
+export { createInfinity as Infinity };
+export default createInfinity;
 /**
  * Creates the infinity icon.
  * @param {import("../icon.js").IconOptions} [options]
  * @returns {SVGSVGElement}
  */
-export function Infinity(options?: import("../icon.js").IconOptions | undefined): SVGSVGElement;
-export default Infinity;
+declare function createInfinity(options?: import("../icon.js").IconOptions | undefined): SVGSVGElement;

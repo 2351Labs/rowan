@@ -1,7 +1,7 @@
 import "./spinner.js";
 
 export default {
-  title: "Components/Spinner",
+  title: "Components/Actions & Feedback/Spinner",
   tags: ["autodocs"],
   argTypes: {
     size: {

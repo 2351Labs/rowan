@@ -2,7 +2,7 @@ import "./radio.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Radio",
+  title: "Components/Forms & Input/Radio",
   tags: ["autodocs"],
   argTypes: {
     checked: { control: "boolean" },

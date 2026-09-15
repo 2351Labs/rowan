@@ -1,7 +1,7 @@
 import "./menu-item.js";
 
 export default {
-  title: "Components/Menu Item",
+  title: "Components/Overlays & Menus/Menu Item",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

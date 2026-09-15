@@ -2,7 +2,7 @@ import "../listbox/listbox.js";
 import "./option.js";
 
 export default {
-  title: "Components/Option",
+  title: "Components/Forms & Input/Option",
   tags: ["autodocs"],
   argTypes: {
     value: { control: "text" },

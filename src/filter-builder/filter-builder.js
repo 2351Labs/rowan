@@ -1,7 +1,11 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-import { isRowanTable, resolveRowanTable } from "../lib/table-selection.js";
+import {
+  isRowanTable,
+  observeTableAvailability,
+  resolveRowanTable,
+} from "../lib/table-selection.js";
 
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
 const VALUELESS_OPERATORS = new Set(["is-empty", "is-not-empty"]);
@@ -183,6 +187,7 @@ export class RowanFilterBuilder extends BaseElement {
   #tableOverride = null;
   #boundTable = null;
   #tableObserver = null;
+  #tableAvailabilityCleanup = null;
   #fields = [];
   #hasExplicitFields = false;
   #filters = [];
@@ -374,12 +379,20 @@ export class RowanFilterBuilder extends BaseElement {
 
   #syncTable() {
     const nextTable = resolveRowanTable(this, this.#tableOverride, this.forTable);
-    if (nextTable === this.#boundTable) return;
+    if (nextTable === this.#boundTable) {
+      if (!nextTable) this.#observeTableAvailability();
+      return;
+    }
 
     this.#unbindTable();
     this.#boundTable = nextTable;
 
-    if (nextTable?.shadowRoot && typeof MutationObserver !== "undefined") {
+    if (!nextTable) {
+      this.#observeTableAvailability();
+      return;
+    }
+
+    if (nextTable.shadowRoot && typeof MutationObserver !== "undefined") {
       this.#tableObserver = new MutationObserver(() => {
         if (!this.#hasExplicitFields) this.requestRender();
       });
@@ -390,7 +403,31 @@ export class RowanFilterBuilder extends BaseElement {
   #unbindTable() {
     this.#tableObserver?.disconnect();
     this.#tableObserver = null;
+    this.#tableAvailabilityCleanup?.();
+    this.#tableAvailabilityCleanup = null;
     this.#boundTable = null;
+  }
+
+  #observeTableAvailability() {
+    if (!this.forTable) {
+      this.#tableAvailabilityCleanup?.();
+      this.#tableAvailabilityCleanup = null;
+      return;
+    }
+
+    if (!this.isConnected || this.#tableAvailabilityCleanup || this.#tableOverride) {
+      return;
+    }
+
+    this.#tableAvailabilityCleanup = observeTableAvailability(
+      this,
+      () => this.forTable,
+      () => {
+        this.#tableAvailabilityCleanup = null;
+        this.#syncTable();
+        this.requestRender();
+      },
+    );
   }
 
   #resolvedFields() {
@@ -449,11 +486,15 @@ export class RowanFilterBuilder extends BaseElement {
       id,
       field: fieldId,
       operator,
-      value: VALUELESS_OPERATORS.has(operator) ? "" : this.#normalizeValue(source.value),
+      value: VALUELESS_OPERATORS.has(operator) ? "" : this.#normalizeValue(source.value, field),
     };
   }
 
-  #normalizeValue(value) {
+  #normalizeValue(value, field = null) {
+    if (field?.type === "boolean") {
+      return String(value) === "false" ? "false" : "true";
+    }
+
     if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
       return String(value);
     }
@@ -655,7 +696,7 @@ export class RowanFilterBuilder extends BaseElement {
       next.operator = control.value;
       if (VALUELESS_OPERATORS.has(next.operator)) next.value = "";
     } else if (part === "value") {
-      next.value = this.#normalizeValue(control.value);
+      next.value = this.#normalizeValue(control.value, this.#fieldForId(current.field, fields));
     } else {
       return;
     }

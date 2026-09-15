@@ -12,10 +12,13 @@ import { define } from "../lib/define.js";
 export class RowanTabPanel extends BaseElement {
   static styleUrl = new URL("./tab-panel.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["value", "active"];
+  static observedAttributes = ["value", "active", "aria-hidden", "aria-labelledby"];
   static upgradeProperties = ["value", "active"];
 
   #panel = null;
+  #tab = null;
+  #tabOwner = null;
+  #inertByComponent = false;
 
   get value() {
     return this.readString("value", "");
@@ -33,10 +36,23 @@ export class RowanTabPanel extends BaseElement {
     this.reflectBoolean("active", Boolean(value));
   }
 
+  /** @internal */
+  setTab(tab, owner = null) {
+    const isClearing = tab == null;
+    if (isClearing && owner && this.#tabOwner !== owner) return;
+
+    const nextTab = tab instanceof HTMLElement ? tab : null;
+    const nextOwner = isClearing ? null : owner;
+    if (this.#tab === nextTab && this.#tabOwner === nextOwner) return;
+
+    this.#tab = nextTab;
+    this.#tabOwner = nextOwner;
+    this.requestRender();
+  }
+
   render() {
     if (!this.#panel) {
-      this.renderRoot.innerHTML =
-        '<section class="panel" part="panel"><slot></slot></section>';
+      this.renderRoot.innerHTML = '<section class="panel" part="panel"><slot></slot></section>';
       this.#panel = this.renderRoot.querySelector(".panel");
     }
 
@@ -44,7 +60,36 @@ export class RowanTabPanel extends BaseElement {
       this.internals.role = "tabpanel";
     }
 
+    if (this.internals && "ariaLabelledByElements" in this.internals) {
+      this.internals.ariaLabelledByElements =
+        !this.hasAttribute("role") && !this.hasAttribute("aria-labelledby") && this.#tab
+          ? [this.#tab]
+          : [];
+    }
+
+    if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
+      this.internals.ariaHidden = this.active ? "false" : "true";
+    }
+
+    this.#panel.setAttribute("role", "tabpanel");
+    this.#panel.setAttribute("aria-label", this.#tab?.textContent?.trim() || "Tab panel");
     this.#panel.hidden = !this.active;
+    this.#syncInertState();
+  }
+
+  #syncInertState() {
+    if (!this.active) {
+      if (!this.inert) {
+        this.inert = true;
+        this.#inertByComponent = true;
+      }
+      return;
+    }
+
+    if (this.#inertByComponent) {
+      this.inert = false;
+      this.#inertByComponent = false;
+    }
   }
 }
 

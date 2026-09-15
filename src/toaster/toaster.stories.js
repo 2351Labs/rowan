@@ -3,7 +3,7 @@ import "../button/button.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Toaster",
+  title: "Components/Actions & Feedback/Toaster",
   tags: ["autodocs"],
   argTypes: {
     placement: {

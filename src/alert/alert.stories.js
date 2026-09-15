@@ -2,7 +2,7 @@ import "./alert.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Alert",
+  title: "Components/Actions & Feedback/Alert",
   tags: ["autodocs"],
   argTypes: {
     tone: {

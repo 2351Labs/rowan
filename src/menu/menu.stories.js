@@ -3,7 +3,7 @@ import "../menu-item/menu-item.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
-  title: "Components/Menu",
+  title: "Components/Overlays & Menus/Menu",
   tags: ["autodocs"],
 };
 
