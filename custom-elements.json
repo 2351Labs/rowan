@@ -345,6 +345,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -414,6 +424,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -735,6 +755,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -1158,6 +1187,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -1227,6 +1266,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -1548,6 +1597,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -2050,6 +2108,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -2119,6 +2187,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -2440,6 +2518,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -2896,6 +2983,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -2965,6 +3062,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -3286,6 +3393,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -3707,6 +3823,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -3776,6 +3902,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -4097,6 +4233,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -4472,6 +4617,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -4541,6 +4696,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -4862,6 +5027,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -5454,6 +5628,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -5523,6 +5707,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -5844,6 +6038,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -6377,6 +6580,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -6446,6 +6659,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -6767,6 +6990,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -7511,6 +7743,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -7580,6 +7822,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -7901,6 +8153,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -8401,6 +8662,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -8470,6 +8741,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -8791,6 +9072,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -9370,6 +9660,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -9439,6 +9739,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -9760,6 +10070,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -10263,6 +10582,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -10332,6 +10661,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -10653,6 +10992,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -11124,6 +11472,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -11193,6 +11551,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -11514,6 +11882,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -12211,6 +12588,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -12280,6 +12667,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -12601,6 +12998,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -13216,6 +13622,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -13285,6 +13701,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -13606,6 +14032,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -14213,6 +14648,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -14282,6 +14727,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -14603,6 +15058,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -15396,6 +15860,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -15465,6 +15939,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -15786,6 +16270,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -16322,6 +16815,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -16391,6 +16894,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -16712,6 +17225,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -17470,6 +17992,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -17539,6 +18071,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -17860,6 +18402,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -18407,6 +18958,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -18476,6 +19037,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -18797,6 +19368,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -19438,6 +20018,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -19507,6 +20097,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -19828,6 +20428,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -20431,6 +21040,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -20500,6 +21119,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -20821,6 +21450,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -21216,6 +21854,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -21285,6 +21933,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -21606,6 +22264,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -22146,6 +22813,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -22215,6 +22892,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -22536,6 +23223,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -22989,6 +23685,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -23058,6 +23764,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -23379,6 +24095,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -23854,6 +24579,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -23923,6 +24658,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -24244,6 +24989,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -24670,6 +25424,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -24739,6 +25503,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -25060,6 +25834,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -25550,6 +26333,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -25619,6 +26412,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -25940,6 +26743,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -26479,6 +27291,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -26548,6 +27370,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -26869,6 +27701,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -27709,6 +28550,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -27778,6 +28629,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -28099,6 +28960,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -28990,6 +29860,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -29059,6 +29939,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -29380,6 +30270,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -29955,6 +30854,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -30024,6 +30933,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -30345,6 +31264,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -31103,6 +32031,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -31172,6 +32110,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -31493,6 +32441,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -32013,6 +32970,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -32082,6 +33049,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -32403,6 +33380,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -33422,6 +34408,12 @@
               "default": "\"\""
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()"
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -33463,6 +34455,12 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true
             },
             {
@@ -33692,6 +34690,11 @@
             },
             {
               "kind": "method",
+              "name": "#observeExternalLabels",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
               "name": "#capturePreUpgradeProperties",
               "privacy": "private"
             },
@@ -33705,6 +34708,11 @@
             "name": "HTMLElement"
           },
           "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "observer",
+          "default": "new MutationObserver(() => this.requestRender())"
         }
       ],
       "exports": [
@@ -34223,7 +35231,8 @@
             {
               "name": "value"
             }
-          ]
+          ],
+          "description": "Reflects a string to an attribute. An empty string removes the attribute, so\n\"explicitly empty\" and \"absent\" are the same state; every Rowan getter defaults\nto `\"\"`, so the property round-trips. Pass `value || null` when a call site\nwants that collapse to be explicit."
         },
         {
           "kind": "function",
@@ -34975,6 +35984,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -35044,6 +36063,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -35365,6 +36394,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -36144,6 +37182,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -36213,6 +37261,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -36534,6 +37592,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -36988,6 +38055,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -37057,6 +38134,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -37378,6 +38465,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -37892,6 +38988,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -37961,6 +39067,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -38282,6 +39398,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -39027,6 +40152,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -39096,6 +40231,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -39417,6 +40562,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -40051,6 +41205,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -40120,6 +41284,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -40441,6 +41615,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -40971,6 +42154,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -41040,6 +42233,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -41361,6 +42564,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -41792,6 +43004,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -41861,6 +43083,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -42182,6 +43414,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -42724,6 +43965,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -42793,6 +44044,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -43114,6 +44375,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -43534,6 +44804,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -43603,6 +44883,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -43924,6 +45214,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -44339,6 +45638,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -44408,6 +45717,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -44729,6 +46048,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -45259,6 +46587,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -45328,6 +46666,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -45649,6 +46997,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -46410,6 +47767,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -46479,6 +47846,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -46808,6 +48185,15 @@
             },
             {
               "kind": "method",
+              "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#capturePreUpgradeProperties",
               "privacy": "private",
               "inheritedFrom": {
@@ -46935,7 +48321,7 @@
               }
             }
           ],
-          "description": "Binds React state and native event listeners to a Rowan custom-element ref.\nThis hook does not register Rowan elements; import registration modules from\nclient-only React effects or another browser-only application boundary."
+          "description": "Binds React state and native event listeners to a Rowan custom-element ref.\nThis hook does not register Rowan elements; import registration modules from\nclient-only React effects or another browser-only application boundary.\n\nProperties are assigned only when their value changes, so the object and array\nAPIs Rowan exposes as property-only keep their identity across renders.\nListeners bind once per event type and dispatch to the latest handler."
         }
       ],
       "exports": [
@@ -48023,6 +49409,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -48092,6 +49488,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -48413,6 +49819,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -49261,6 +50676,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -49330,6 +50755,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -49651,6 +51086,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -50308,6 +51752,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -50377,6 +51831,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -50698,6 +52162,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -51285,6 +52758,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -51354,6 +52837,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -51675,6 +53168,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -52184,6 +53686,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -52253,6 +53765,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -52574,6 +54096,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -53175,6 +54706,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -53244,6 +54785,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -53565,6 +55116,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -53989,6 +55549,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -54058,6 +55628,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -54379,6 +55959,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -55119,6 +56708,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -55188,6 +56787,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -55509,6 +57118,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -55991,6 +57609,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -56060,6 +57688,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -56381,6 +58019,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -57007,6 +58654,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -57076,6 +58733,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -57397,6 +59064,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -57895,6 +59571,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -57964,6 +59650,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -58285,6 +59981,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -58759,6 +60464,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -58828,6 +60543,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -59149,6 +60874,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -59686,6 +61420,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -59755,6 +61499,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -60076,6 +61830,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -60530,6 +62293,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -60599,6 +62372,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -60920,6 +62703,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -61368,6 +63160,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -61437,6 +63239,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -61758,6 +63570,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -62331,6 +64152,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -62400,6 +64231,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -62721,6 +64562,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -64453,6 +66303,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -64522,6 +66382,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -64843,6 +66713,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -65481,6 +67360,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -65550,6 +67439,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -65879,6 +67778,15 @@
             },
             {
               "kind": "method",
+              "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#capturePreUpgradeProperties",
               "privacy": "private",
               "inheritedFrom": {
@@ -66071,6 +67979,15 @@
             },
             {
               "kind": "field",
+              "name": "#composing",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
               "name": "name"
             },
             {
@@ -66178,6 +68095,11 @@
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
               }
+            },
+            {
+              "kind": "method",
+              "name": "#writeInputValue",
+              "privacy": "private"
             },
             {
               "kind": "method",
@@ -66451,6 +68373,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -66520,6 +68452,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -66841,6 +68783,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -67428,6 +69379,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -67497,6 +69458,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -67818,6 +69789,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -68402,6 +70382,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -68471,6 +70461,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -68792,6 +70792,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -69320,6 +71329,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -69389,6 +71408,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -69710,6 +71739,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -70338,6 +72376,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -70407,6 +72455,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -70728,6 +72786,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -71438,6 +73505,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -71507,6 +73584,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -71828,6 +73915,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -72340,6 +74436,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -72409,6 +74515,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -72730,6 +74846,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -73449,6 +75574,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -73518,6 +75653,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -73839,6 +75984,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -74915,6 +77069,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -74975,6 +77139,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -75296,6 +77470,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -75807,6 +77990,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -75876,6 +78069,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -76197,6 +78400,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -76879,6 +79091,16 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#baseDisabledControls",
+              "privacy": "private",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -76948,6 +79170,16 @@
             {
               "kind": "field",
               "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
               "readonly": true,
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -77269,6 +79501,15 @@
             {
               "kind": "method",
               "name": "#syncFormDisabledState",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#observeExternalLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",

@@ -191,7 +191,7 @@ export class RowanCheckbox extends BaseElement {
     this.#input.required = this.required;
     this.#input.indeterminate = this.indeterminate;
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
 

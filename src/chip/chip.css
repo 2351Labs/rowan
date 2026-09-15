@@ -62,3 +62,9 @@
   align-items: center;
   display: inline-flex;
 }
+
+@media (forced-colors: active) {
+  .chip {
+    border-color: CanvasText;
+  }
+}

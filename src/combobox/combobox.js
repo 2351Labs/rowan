@@ -204,7 +204,7 @@ export class RowanCombobox extends BaseElement {
 
     this.#list.id = this.#listId;
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#inputId;

@@ -3,6 +3,10 @@
  * This hook does not register Rowan elements; import registration modules from
  * client-only React effects or another browser-only application boundary.
  *
+ * Properties are assigned only when their value changes, so the object and array
+ * APIs Rowan exposes as property-only keep their identity across renders.
+ * Listeners bind once per event type and dispatch to the latest handler.
+ *
  * @param {{ current: HTMLElement | null }} ref
  * @param {{ properties?: Record<string, unknown>, events?: Record<string, EventListener | undefined> }} [options]
  */

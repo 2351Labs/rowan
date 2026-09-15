@@ -604,7 +604,7 @@ export class RowanCalendar extends BaseElement {
     const monthDate = new Date(Date.UTC(Number(yearText), Number(monthText) - 1, 1));
     this.#monthLabel.textContent = monthLabelFormatter.format(monthDate);
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#calendarId;

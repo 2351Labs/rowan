@@ -94,6 +94,7 @@ export class BaseElement extends HTMLElement {
   #renderRoot = null;
   #formDisabled = false;
   #customValidityMessage = "";
+  #baseDisabledControls = new Set();
 
   constructor() {
     super();
@@ -124,6 +125,7 @@ export class BaseElement extends HTMLElement {
     this.#upgradePendingProperties();
     this.#restoreListeners();
     this.#restoreObservations();
+    this.#observeExternalLabels();
     this.requestRender();
   }
 
@@ -176,6 +178,17 @@ export class BaseElement extends HTMLElement {
 
   get willValidate() {
     return this.constructor.formAssociated ? (this.#internals?.willValidate ?? false) : false;
+  }
+
+  /** Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary. */
+  get externalLabelText() {
+    const labels = this.constructor.formAssociated ? this.#internals?.labels : null;
+    if (!labels || labels.length === 0) return "";
+
+    return [...labels]
+      .map((label) => label.textContent?.trim() ?? "")
+      .filter(Boolean)
+      .join(" ");
   }
 
   setCustomValidity(message) {
@@ -438,8 +451,18 @@ export class BaseElement extends HTMLElement {
 
     if (disabled) {
       this.shadowRoot.querySelectorAll("input, select, textarea, button").forEach((control) => {
+        // Leave controls the component disabled on its own so they are not re-enabled later.
+        if (control.disabled) return;
+
         control.disabled = true;
+        this.#baseDisabledControls.add(control);
       });
+    } else if (this.#baseDisabledControls.size > 0) {
+      for (const control of this.#baseDisabledControls) {
+        control.disabled = false;
+      }
+
+      this.#baseDisabledControls.clear();
     }
 
     if (
@@ -449,6 +472,20 @@ export class BaseElement extends HTMLElement {
     ) {
       this.#internals.ariaDisabled = disabled ? "true" : "false";
     }
+  }
+
+  #observeExternalLabels() {
+    if (!this.constructor.formAssociated || typeof MutationObserver === "undefined") return;
+
+    const labels = this.#internals?.labels;
+    if (!labels || labels.length === 0) return;
+
+    const observer = new MutationObserver(() => this.requestRender());
+    for (const label of labels) {
+      observer.observe(label, { characterData: true, childList: true, subtree: true });
+    }
+
+    this.addCleanup(() => observer.disconnect());
   }
 
   #capturePreUpgradeProperties() {

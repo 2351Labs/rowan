@@ -185,8 +185,9 @@ export class RowanSegmentedControl extends BaseElement {
       this.listen(this.#control, "keydown", (event) => this.#handleKeydown(event));
     }
 
-    this.#fallbackLabel.textContent = this.label;
-    this.#fallbackLabel.hidden = this.label.length === 0;
+    const fallbackLabelText = this.label || this.externalLabelText;
+    this.#fallbackLabel.textContent = fallbackLabelText;
+    this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#renderOptions();
     this.#syncFormValue();
     this.#syncValidity();

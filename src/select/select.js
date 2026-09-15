@@ -191,7 +191,7 @@ export class RowanSelect extends BaseElement {
     this.#select.required = this.required;
     this.#select.value = this.value;
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#selectId;

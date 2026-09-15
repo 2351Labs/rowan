@@ -50,6 +50,82 @@ describe("rowan-text-field", () => {
     expect(element.hasAttribute("value")).to.equal(false);
   });
 
+  it("takes its accessible name from an external label element", async () => {
+    document.body.innerHTML = `
+      <label for="external-email">Work email</label>
+      <rowan-text-field id="external-email"></rowan-text-field>
+    `;
+    const element = document.querySelector("rowan-text-field");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector("input");
+    expect(element.labels.length).to.equal(1);
+    expect(input.getAttribute("aria-label")).to.equal("Work email");
+
+    document.querySelector("label").textContent = "Personal email";
+    await nextMicrotask();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(input.getAttribute("aria-label")).to.equal("Personal email");
+  });
+
+  it("prefers the label attribute over an external label", async () => {
+    document.body.innerHTML = `
+      <label for="both-email">External</label>
+      <rowan-text-field id="both-email" label="Attribute"></rowan-text-field>
+    `;
+    const element = document.querySelector("rowan-text-field");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.shadowRoot.querySelector("input").getAttribute("aria-label")).to.equal(
+      "Attribute",
+    );
+  });
+
+  it("re-enables its inner control when a disabled fieldset is re-enabled", async () => {
+    const fieldset = document.createElement("fieldset");
+    const element = document.createElement("rowan-text-field");
+    fieldset.append(element);
+    document.body.append(fieldset);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector("input");
+
+    fieldset.disabled = true;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(input.disabled).to.equal(true);
+
+    fieldset.disabled = false;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(input.disabled).to.equal(false);
+  });
+
+  it("does not write back into the field during IME composition", async () => {
+    const element = document.createElement("rowan-text-field");
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector("input");
+
+    input.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
+    input.value = "にほん";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(input.value).to.equal("にほん");
+
+    input.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
+    await nextMicrotask();
+
+    expect(element.value).to.equal("にほん");
+  });
+
   it("exposes the standard validity surface", async () => {
     const form = document.createElement("form");
     const element = document.createElement("rowan-text-field");

@@ -148,4 +148,44 @@ describe("@rowan-ui/core/react", () => {
     expect(customElements.get("rowan-status-indicator")).to.not.equal(undefined);
     expect(indicator.constructor.name).to.equal("RowanStatusIndicator");
   });
+
+  it("does not reassign unchanged properties on re-render", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    const properties = { config: createConfig() };
+
+    await act(async () => {
+      root.render(createElement(TableHarness, { properties }));
+    });
+    await wait();
+
+    const table = container.querySelector("rowan-table");
+    let assignments = 0;
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(table), "config");
+    Object.defineProperty(table, "config", {
+      configurable: true,
+      get: () => descriptor.get.call(table),
+      set: (value) => {
+        assignments += 1;
+        descriptor.set.call(table, value);
+      },
+    });
+
+    await act(async () => {
+      root.render(createElement(TableHarness, { properties }));
+    });
+    await wait();
+
+    expect(assignments).to.equal(0);
+
+    await act(async () => {
+      root.render(createElement(TableHarness, { properties: { config: createConfig() } }));
+    });
+    await wait();
+
+    expect(assignments).to.equal(1);
+  });
 });

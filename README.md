@@ -241,6 +241,21 @@ Implemented components currently include:
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
 - Data display and operations: `rowan-trend-chart`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
+### API stability
+
+Rowan is `0.1.0`. Everything in the catalog above is usable, but the surfaces
+below carry the most implementation and are the most likely to change before
+`1.0`. Pin the version if you depend on them.
+
+| Surface                         | Status       | Notes                                                               |
+| ------------------------------- | ------------ | ------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.       |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.      |
+| Table virtualization            | Experimental | `virtualized`, `virtualItemSize`, and `virtualOverscan` may change. |
+| `rowan-rich-text-editor`        | Experimental | The document model may gain node types.                             |
+| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                         |
+| `rowan-trend-chart`             | Experimental | Config shape may change.                                            |
+
 ## Rowan Carousel
 
 `rowan-carousel` presents a bounded sequence of directly slotted panels. Its scalar

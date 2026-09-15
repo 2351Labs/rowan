@@ -176,7 +176,7 @@ export class RowanRadio extends BaseElement {
     this.#input.disabled = this.disabled;
     this.#input.required = this.required;
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
 

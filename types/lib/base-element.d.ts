@@ -20,6 +20,8 @@ export class BaseElement extends HTMLElement {
     get validity(): any;
     get validationMessage(): any;
     get willValidate(): any;
+    /** Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary. */
+    get externalLabelText(): string;
     setCustomValidity(message: any): void;
     /** Applies validity with the consumer's custom error merged in, so renders cannot erase it. */
     applyValidity(flags?: {}, message?: string, anchor?: undefined): void;

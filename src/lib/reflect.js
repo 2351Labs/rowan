@@ -15,6 +15,12 @@ export function readStringAttribute(element, attributeName, fallback = "") {
   return element.getAttribute(attributeName) ?? fallback;
 }
 
+/**
+ * Reflects a string to an attribute. An empty string removes the attribute, so
+ * "explicitly empty" and "absent" are the same state; every Rowan getter defaults
+ * to `""`, so the property round-trips. Pass `value || null` when a call site
+ * wants that collapse to be explicit.
+ */
 export function reflectStringAttribute(element, attributeName, value) {
   if (value == null || value === "") {
     element.removeAttribute(attributeName);

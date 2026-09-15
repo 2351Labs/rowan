@@ -408,7 +408,7 @@ export class RowanDateRangePicker extends BaseElement {
 
     this.#syncClearButtonState();
 
-    const fallbackLabelText = this.label.trim();
+    const fallbackLabelText = (this.label || this.externalLabelText).trim();
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#startInputId;

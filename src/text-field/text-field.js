@@ -74,6 +74,7 @@ export class RowanTextField extends BaseElement {
   #inputId = "";
   #autoInvalid = false;
   #value = null;
+  #composing = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -262,6 +263,15 @@ export class RowanTextField extends BaseElement {
         this.value = this.#input.value;
       });
 
+      this.listen(this.#input, "compositionstart", () => {
+        this.#composing = true;
+      });
+
+      this.listen(this.#input, "compositionend", () => {
+        this.#composing = false;
+        this.value = this.#input.value;
+      });
+
       this.listen(this.#input, "change", () => {
         this.value = this.#input.value;
 
@@ -273,7 +283,7 @@ export class RowanTextField extends BaseElement {
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
-    this.#input.value = this.value;
+    this.#writeInputValue();
     this.#input.placeholder = this.placeholder;
     this.#input.type = this.#normalizedType(this.type);
     this.#syncPattern();
@@ -281,7 +291,7 @@ export class RowanTextField extends BaseElement {
     this.#input.required = this.required;
     this.#input.autocomplete = this.autocomplete;
 
-    const fallbackLabelText = this.label;
+    const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#inputId;
@@ -295,6 +305,14 @@ export class RowanTextField extends BaseElement {
     this.#syncFormValue();
     this.#syncValidity();
     this.#applyDefaultA11y();
+  }
+
+  // Writing into the field the user is typing in cancels IME composition and can move the caret.
+  #writeInputValue() {
+    if (!this.#input || this.#composing) return;
+    if (this.#input.value === this.value) return;
+
+    this.#input.value = this.value;
   }
 
   #isSecret() {
@@ -319,7 +337,7 @@ export class RowanTextField extends BaseElement {
     this.#syncPattern();
     this.#input.required = this.required;
     this.#input.disabled = this.disabled;
-    this.#input.value = this.value;
+    this.#writeInputValue();
 
     if (!this.#input.validity.valid) {
       this.setValidity(

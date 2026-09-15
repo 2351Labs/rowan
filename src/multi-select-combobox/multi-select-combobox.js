@@ -300,11 +300,12 @@ export class RowanMultiSelectCombobox extends BaseElement {
     this.#input.setAttribute("aria-controls", this.#listboxId);
     this.#input.setAttribute("aria-expanded", this.open ? "true" : "false");
 
-    this.#fallbackLabel.textContent = this.label;
-    this.#fallbackLabel.hidden = this.label.length === 0;
+    const fallbackLabelText = this.label || this.externalLabelText;
+    this.#fallbackLabel.textContent = fallbackLabelText;
+    this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#fallbackLabel.htmlFor = this.#inputId;
-    if (this.label) {
-      this.#input.setAttribute("aria-label", this.label);
+    if (fallbackLabelText) {
+      this.#input.setAttribute("aria-label", fallbackLabelText);
     } else {
       this.#input.removeAttribute("aria-label");
     }

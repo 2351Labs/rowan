@@ -76,3 +76,21 @@
   white-space: nowrap;
   width: 1px;
 }
+
+@media (forced-colors: active) {
+  .track {
+    border: 1px solid CanvasText;
+  }
+
+  .input:checked + .track {
+    background: Highlight;
+  }
+
+  .thumb {
+    background: CanvasText;
+  }
+
+  .input:checked + .track .thumb {
+    background: HighlightText;
+  }
+}

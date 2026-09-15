@@ -68,3 +68,9 @@
   box-shadow: var(--rowan-focus-ring);
   outline: none;
 }
+
+@media (forced-colors: active) {
+  .alert {
+    border-color: CanvasText;
+  }
+}

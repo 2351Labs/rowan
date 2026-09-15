@@ -5,26 +5,26 @@ IDs `F-NN` are stable and referenced by the review write-up.
 
 ## Triage summary
 
-| ID   | Title                                                                    | Severity | Status                            |
-| ---- | ------------------------------------------------------------------------ | -------- | --------------------------------- |
-| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3      |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred) |
-| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | Open                              |
-| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | Open                              |
-| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | Open (latent)                     |
-| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                         |
-| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                         |
-| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                         |
-| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | Open (unreproduced)               |
-| F-10 | External `<label for>` never names the control                           | High     | Open                              |
-| F-11 | Four similar controls use four different interaction architectures       | Medium   | Open                              |
-| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                         |
-| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                         |
-| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** (scroll lock; see note) |
-| F-15 | No forced-colors support                                                 | Medium   | Open                              |
-| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | Open                              |
-| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                         |
-| F-18 | Untested axes                                                            | Medium   | Open                              |
+| ID   | Title                                                                    | Severity | Status                             |
+| ---- | ------------------------------------------------------------------------ | -------- | ---------------------------------- |
+| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3       |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)  |
+| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                          |
+| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented         |
+| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                          |
+| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                          |
+| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                          |
+| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                          |
+| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                          |
+| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                          |
+| F-11 | Four similar controls use four different interaction architectures       | Medium   | Deferred — documented              |
+| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                          |
+| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                          |
+| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** (scroll lock; see note)  |
+| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces) |
+| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                          |
+| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                          |
+| F-18 | Untested axes                                                            | Medium   | Open                               |
 
 ---
 
@@ -136,6 +136,12 @@ today because the thumb also carries a border.
 - **Fix:** Assign only when `element[name] !== value`, and give the event effect a dependency list derived from `Object.keys(events)` so listeners rebind only when handlers change.
 - **Test:** Render twice with an unchanged `config`; assert the property setter ran once and `addEventListener` was called once.
 
+**Resolution (fixed).** Properties are compared with `Object.is` against the last
+applied value and assigned only on change, so a property-only object keeps its
+identity across renders. The cache resets when React swaps the host element.
+Listeners now bind once per event type and dispatch through a ref to the latest
+handler, so a new inline handler no longer rebinds the listener.
+
 ### F-04: `reflectStringAttribute` cannot represent an empty string
 
 - **Severity:** Medium
@@ -146,6 +152,13 @@ today because the thumb also carries a border.
 - **Fix:** Remove only on `null`/`undefined`; set `""` explicitly. Preserve the current collapse where intentional by passing `value || null` at the call site, as several components already do.
 - **Test:** Set `el.value = ""` and assert `el.hasAttribute("value")` matches the documented intent.
 
+**Resolution (won't fix; documented).** Changing the default would add `value=""`
+and similar empty attributes across 76 components for no behavioural gain: every
+Rowan getter defaults to `""`, so the property already round-trips. The collapse is
+now stated in the `reflectStringAttribute` JSDoc, with the `value || null` idiom
+noted for call sites that want it to be explicit. Revisit only if a token appears
+where empty and absent must differ.
+
 ### F-05: `#syncFormDisabledState` disables inner controls but never re-enables
 
 - **Severity:** Medium (latent/conditional)
@@ -155,6 +168,10 @@ today because the thumb also carries a border.
 - **Impact:** Recovery depends on each component re-asserting `control.disabled = this.disabled` in `render()`. `text-field` does and recovers; any component that does not stays permanently disabled after a fieldset is re-enabled. The base-class asymmetry and the `text-field` recovery path were verified; all 19 controls were not audited.
 - **Fix:** Make it symmetric — track which controls the base class disabled and restore them, instead of relying on subclass discipline.
 - **Test:** Wrap each FACE control in `<fieldset disabled>`, re-enable it, and assert the inner control is interactive.
+
+**Resolution (fixed).** `BaseElement` now records which controls it disabled and
+re-enables exactly those, leaving controls the component disabled on its own
+untouched. Covered by a `<fieldset disabled>` round-trip test.
 
 ---
 
@@ -215,6 +232,11 @@ type keeps the documented attribute/property reflection unchanged.
 - **Fix:** Skip the write-back when the inner input already holds the value, and guard on `compositionstart`/`compositionend`.
 - **Test:** Dispatch a composition sequence; assert composed text survives and `input.value` is not reassigned mid-composition.
 
+**Resolution (fixed).** `rowan-text-field` tracks `compositionstart`/`compositionend`
+and routes every write-back through a helper that skips the assignment while
+composing, and skips it entirely when the input already holds the value. The value
+is committed on `compositionend`.
+
 ### F-10: External `<label for>` never names the control
 
 - **Severity:** High
@@ -225,6 +247,12 @@ type keeps the documented attribute/property reflection unchanged.
 - **Fix:** On connect, resolve `label[for=<host id>]`, mirror its text into the internal hidden label, and observe it for changes; or set `internals.ariaLabel` from it. Keep the `label` attribute as the override.
 - **Test:** Render an external `<label for>` with no `label` attribute; assert the computed accessible name equals the label text.
 
+**Resolution (fixed).** `BaseElement.externalLabelText` reads the native
+`internals.labels` association, which `<label for>` does establish for a
+form-associated custom element, and mirrors the text into the inner control's
+accessible name. Wired into 15 controls; the `label` attribute still wins. A
+`MutationObserver` re-renders when the external label's text changes.
+
 ### F-11: Four similar controls use four different interaction architectures
 
 - **Severity:** Medium
@@ -234,6 +262,12 @@ type keeps the documented attribute/property reflection unchanged.
 - **Impact:** Keyboard behavior, stylability, and event timing differ across controls that look like siblings in the docs. `rowan-combobox` inherits datalist's cross-browser inconsistency and near-zero stylability, and sets `internals.ariaExpanded` even though the browser owns that state. Teams needing a styled filterable single-select find only the multi-select variant has one.
 - **Fix:** Do not rewrite now. Document the divergence for `0.1.0`, and converge `combobox` onto the `multi-select-combobox` listbox as the single-select case.
 - **Test:** One shared keyboard conformance suite (Arrow/Home/End/Enter/Escape/typeahead) run against every list-like control.
+
+**Resolution (deferred, deliberately).** Converging these is a breaking change to
+four public keyboard contracts and is not appropriate as part of a defect sweep.
+The divergence is recorded here and should be scheduled against a `1.0` milestone,
+with `rowan-combobox` moving onto the `multi-select-combobox` listbox as the
+single-select case.
 
 ---
 
@@ -303,6 +337,13 @@ covers assistive technology, so this remains open for `drawer` and `command-pale
 - **Fix:** Add a `@media (forced-colors: active)` block for state-bearing components using system colors and `forced-color-adjust`. Audit remaining animated components for reduced motion.
 - **Test:** Emulate forced-colors and assert selected/unselected states remain distinguishable by border or outline, not background alone.
 
+**Resolution (fixed for state-bearing surfaces).** Added `@media (forced-colors: active)`
+blocks where state was carried by background alone: `rowan-switch` uses `Highlight`
+and `HighlightText` for its track and thumb, `rowan-segmented-control` outlines the
+checked segment, and `chip`, `badge`, and `alert` pin their borders to `CanvasText`
+so they stay visible. Tone distinctions still flatten, which is the intended
+behaviour of forced-colors rather than a defect.
+
 ---
 
 ## Packaging / types
@@ -315,6 +356,11 @@ covers assistive technology, so this remains open for `drawer` and `command-pale
 - **Impact:** Consumers cannot tell which APIs are safe to depend on. The riskiest components carry the most implementation surface and the highest likelihood of breaking changes.
 - **Fix:** Add an explicit stability table to the README and mark those four experimental for `0.1.0`.
 - **Test:** Documentation gate; not automatable.
+
+**Resolution (fixed).** Added an API stability table to the README. Primitives,
+forms, overlays, and the Table config/event surface are marked stable; table
+virtualization, `rich-text-editor`, `filter-builder`, and `trend-chart` are marked
+experimental for `0.1.0`.
 
 > Verified as passing, recorded so it is not regressed: all 76 component folders
 > have `exports` entries and correct `sideEffects` entries, `elements.d.ts`

@@ -431,7 +431,7 @@ export class RowanSlider extends BaseElement {
     this.#syncInput(this.#startInput, start, min, max, step, isRange, "start");
     this.#syncInput(this.#endInput, end, min, max, step, isRange, "end");
 
-    const fallbackLabelText = this.label.trim();
+    const fallbackLabelText = (this.label || this.externalLabelText).trim();
     this.#fallbackLabel.textContent = fallbackLabelText;
     this.#fallbackLabel.hidden = fallbackLabelText.length === 0;
     this.#valueOutput.textContent = this.#formattedValue();
