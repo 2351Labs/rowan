@@ -28,6 +28,33 @@ function createTable() {
 }
 
 describe("rowan-row-details-panel", () => {
+  it("makes background content inert while open", async () => {
+    const outside = document.createElement("button");
+    document.body.append(outside);
+
+    const panel = document.createElement("rowan-row-details-panel");
+    document.body.append(panel);
+    await settle();
+
+    panel.open = true;
+    await settle();
+
+    const overlay = panel.shadowRoot.querySelector("dialog");
+    expect(overlay.matches(":modal")).to.equal(true);
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(false);
+
+    panel.open = false;
+    await settle();
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(true);
+
+    panel.remove();
+    outside.remove();
+  });
+
   afterEach(() => {
     document.body.innerHTML = "";
   });

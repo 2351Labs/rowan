@@ -2,7 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
-import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import {
   isRowanTable,
   observeTableAvailability,
@@ -103,7 +103,6 @@ function formatDisplayValue(value) {
  * @slot - Supplemental detail content
  * @slot actions - Panel actions
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart header
  * @csspart title
@@ -152,14 +151,8 @@ export class RowanRowDetailsPanel extends BaseElement {
   #emptyState = null;
   #controlsController = null;
   #lastFocused = null;
-  #removeDocumentFocusListener = null;
   #isOpen = false;
   #titleId = "";
-  #handleDocumentFocusIn = (event) => {
-    if (!this.open || this.#isNodeInPanel(event.target)) return;
-    if (!isTopmostOverlay(this)) return;
-    this.#focusFirstElement();
-  };
 
   connectedCallback() {
     super.connectedCallback();
@@ -176,6 +169,12 @@ export class RowanRowDetailsPanel extends BaseElement {
   disconnectedCallback() {
     this.#controlsController?.abort();
     this.#controlsController = null;
+
+    // A modal removed while open would stay in the top layer and block the page.
+    if (this.#overlay?.open) {
+      this.#overlay.close();
+    }
+
     this.#unbindTable();
     super.disconnectedCallback();
   }
@@ -293,8 +292,7 @@ export class RowanRowDetailsPanel extends BaseElement {
   render() {
     if (!this.#panel) {
       this.renderRoot.innerHTML = `
-        <div class="overlay" part="overlay" hidden>
-          <div class="backdrop" part="backdrop"></div>
+        <dialog class="overlay" part="overlay">
           <aside class="panel" part="panel" tabindex="-1">
             <header class="header" part="header">
               <div class="heading">
@@ -309,10 +307,10 @@ export class RowanRowDetailsPanel extends BaseElement {
             </div>
             <footer class="actions" part="actions"><slot name="actions"></slot></footer>
           </aside>
-        </div>
+        </dialog>
       `;
 
-      this.#overlay = this.renderRoot.querySelector(".overlay");
+      this.#overlay = this.renderRoot.querySelector("dialog");
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#title = this.renderRoot.querySelector(".title");
       this.#titleText = this.renderRoot.querySelector(".title-text");
@@ -351,23 +349,18 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#overlay.addEventListener(
       "click",
       (event) => {
-        if (event.target === this.#overlay || event.target === this.#overlay.firstElementChild) {
+        if (event.target === this.#overlay) {
           this.#requestUserClose("backdrop");
         }
       },
       { signal },
     );
 
-    this.#panel.addEventListener(
-      "keydown",
+    this.#overlay.addEventListener(
+      "cancel",
       (event) => {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          this.#requestUserClose("escape");
-          return;
-        }
-
-        if (event.key === "Tab") this.#trapTabFocus(event);
+        event.preventDefault();
+        this.#requestUserClose("escape");
       },
       { signal },
     );
@@ -562,57 +555,42 @@ export class RowanRowDetailsPanel extends BaseElement {
   }
 
   #syncOpenState() {
+    // showModal() moves focus, so capture the restore target before reconciling.
+    if (this.open && !this.#isOpen) {
+      this.#lastFocused =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+
+    this.#reconcileNativeOpen();
+
     if (this.open === this.#isOpen) return;
 
     this.#isOpen = this.open;
     if (this.open) {
-      this.#lastFocused =
-        document.activeElement instanceof HTMLElement ? document.activeElement : null;
-      this.#overlay.hidden = false;
       pushOverlay(this);
-      this.#removeDocumentFocusListener = this.listen(
-        document,
-        "focusin",
-        this.#handleDocumentFocusIn,
-        true,
-      );
-      queueMicrotask(() => this.#focusFirstElement());
       return;
     }
 
-    this.#overlay.hidden = true;
     removeOverlay(this);
-    this.#removeDocumentFocusListener?.();
-    this.#removeDocumentFocusListener = null;
     if (this.#lastFocused?.isConnected) this.#lastFocused.focus();
     this.#lastFocused = null;
   }
 
-  #trapTabFocus(event) {
-    const focusable = this.#collectFocusableElements();
-    if (focusable.length === 0) {
-      event.preventDefault();
-      this.#panel.focus();
+  /** Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting. */
+  #reconcileNativeOpen() {
+    if (!this.#overlay) return;
+
+    if (this.open && this.isConnected && !this.#overlay.open) {
+      this.#overlay.showModal();
+      queueMicrotask(() => {
+        if (this.open) this.#focusFirstElement();
+      });
       return;
     }
 
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const active = this.shadowRoot.activeElement || document.activeElement;
-
-    if (event.shiftKey && (active === first || active === this.#panel)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault();
-      first.focus();
+    if (!this.open && this.#overlay.open) {
+      this.#overlay.close();
     }
-  }
-
-  #collectFocusableElements() {
-    const elements = new Set([this.#closeButton]);
-    collectFocusableElements(this.#panel).forEach((element) => elements.add(element));
-    return [...elements].filter((element) => element instanceof HTMLElement);
   }
 
   #focusFirstElement() {
@@ -620,11 +598,8 @@ export class RowanRowDetailsPanel extends BaseElement {
     (first ?? this.#panel).focus();
   }
 
-  #isNodeInPanel(node) {
-    return (
-      node instanceof Node &&
-      (this.contains(node) || Boolean(this.shadowRoot && this.shadowRoot.contains(node)))
-    );
+  #collectFocusableElements() {
+    return collectFocusableElements(this.#panel);
   }
 
   #applyDefaultA11y() {

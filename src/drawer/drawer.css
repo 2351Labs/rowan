@@ -6,15 +6,21 @@
   display: none;
 }
 
-.backdrop {
-  background: rgb(22 28 26 / 0.45);
+.overlay {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
   inset: 0;
-  position: fixed;
-  z-index: 50;
+  max-block-size: 100dvh;
+  max-inline-size: 100vw;
+  padding: 0;
 }
 
-.backdrop[hidden],
-.panel[hidden] {
+.overlay::backdrop {
+  background: rgb(22 28 26 / 0.45);
+}
+
+.overlay:not([open]) {
   display: none;
 }
 

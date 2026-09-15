@@ -12,7 +12,6 @@
  * @slot - Supplemental detail content
  * @slot actions - Panel actions
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart header
  * @csspart title

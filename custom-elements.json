@@ -15335,9 +15335,6 @@
               "name": "overlay"
             },
             {
-              "name": "backdrop"
-            },
-            {
               "name": "panel"
             },
             {
@@ -15549,12 +15546,12 @@
             },
             {
               "kind": "field",
-              "name": "#removeDocumentFocusListener",
+              "name": "#overlayPushed",
               "privacy": "private",
               "type": {
-                "text": "null"
+                "text": "boolean"
               },
-              "default": "null"
+              "default": "false"
             },
             {
               "kind": "field",
@@ -15564,11 +15561,6 @@
                 "text": "null"
               },
               "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "#handleDocumentFocusIn",
-              "privacy": "private"
             },
             {
               "kind": "field",
@@ -15661,16 +15653,6 @@
             },
             {
               "kind": "method",
-              "name": "#handlePanelKeydown",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "#handleInputKeydown",
               "privacy": "private",
               "parameters": [
@@ -15736,6 +15718,12 @@
             },
             {
               "kind": "method",
+              "name": "#reconcileNativeOpen",
+              "privacy": "private",
+              "description": "Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting."
+            },
+            {
+              "kind": "method",
               "name": "#onOpen",
               "privacy": "private"
             },
@@ -15756,16 +15744,6 @@
             },
             {
               "kind": "method",
-              "name": "#trapTabFocus",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "#focusFirstElement",
               "privacy": "private"
             },
@@ -15773,16 +15751,6 @@
               "kind": "method",
               "name": "#collectFocusableElements",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#isNodeInPalette",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "node"
-                }
-              ]
             },
             {
               "kind": "field",
@@ -22465,7 +22433,7 @@
           "name": "RowanDrawer",
           "cssParts": [
             {
-              "name": "backdrop"
+              "name": "overlay"
             },
             {
               "name": "panel"
@@ -22541,7 +22509,7 @@
             },
             {
               "kind": "field",
-              "name": "#backdrop",
+              "name": "#overlay",
               "privacy": "private",
               "type": {
                 "text": "null"
@@ -22586,26 +22554,12 @@
             },
             {
               "kind": "field",
-              "name": "#removeDocumentFocusListener",
-              "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "#isOpen",
               "privacy": "private",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "#handleDocumentFocusIn",
-              "privacy": "private"
             },
             {
               "kind": "field",
@@ -22643,16 +22597,6 @@
             },
             {
               "kind": "method",
-              "name": "#handlePanelKeydown",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "#applyDefaultA11y",
               "privacy": "private"
             },
@@ -22663,6 +22607,12 @@
             },
             {
               "kind": "method",
+              "name": "#reconcileNativeOpen",
+              "privacy": "private",
+              "description": "Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting."
+            },
+            {
+              "kind": "method",
               "name": "#onOpen",
               "privacy": "private"
             },
@@ -22670,16 +22620,6 @@
               "kind": "method",
               "name": "#onClose",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#trapTabFocus",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
             },
             {
               "kind": "method",
@@ -22695,16 +22635,6 @@
               "kind": "method",
               "name": "#titleText",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#isNodeInDrawer",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "node"
-                }
-              ]
             },
             {
               "kind": "field",
@@ -50096,9 +50026,6 @@
               "name": "overlay"
             },
             {
-              "name": "backdrop"
-            },
-            {
               "name": "panel"
             },
             {
@@ -50361,15 +50288,6 @@
             },
             {
               "kind": "field",
-              "name": "#removeDocumentFocusListener",
-              "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "#isOpen",
               "privacy": "private",
               "type": {
@@ -50385,11 +50303,6 @@
                 "text": "string"
               },
               "default": "\"\""
-            },
-            {
-              "kind": "field",
-              "name": "#handleDocumentFocusIn",
-              "privacy": "private"
             },
             {
               "kind": "field",
@@ -50553,18 +50466,9 @@
             },
             {
               "kind": "method",
-              "name": "#trapTabFocus",
+              "name": "#reconcileNativeOpen",
               "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#collectFocusableElements",
-              "privacy": "private"
+              "description": "Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting."
             },
             {
               "kind": "method",
@@ -50573,13 +50477,8 @@
             },
             {
               "kind": "method",
-              "name": "#isNodeInPanel",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "node"
-                }
-              ]
+              "name": "#collectFocusableElements",
+              "privacy": "private"
             },
             {
               "kind": "method",

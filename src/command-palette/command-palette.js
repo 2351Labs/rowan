@@ -3,7 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { collectFocusableElements } from "../lib/focus.js";
-import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import { RowanCommandItem } from "../command-item/command-item.js";
 
 let commandPaletteId = 0;
@@ -80,7 +80,6 @@ function isCommandItem(value) {
  * @slot - rowan-command-item nodes
  * @slot empty
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart input
  * @csspart list
@@ -113,17 +112,8 @@ export class RowanCommandPalette extends BaseElement {
   #isOpen = false;
   #listId = "";
   #titleId = "";
-  #removeDocumentFocusListener = null;
+  #overlayPushed = false;
   #removeDocumentHotkeyListener = null;
-  #handleDocumentFocusIn = (event) => {
-    if (!this.isConnected || !this.open || !(event.target instanceof Node)) {
-      return;
-    }
-
-    if (!isTopmostOverlay(this)) return;
-
-    if (!this.#isNodeInPalette(event.target)) this.#focusFirstElement();
-  };
 
   connectedCallback() {
     super.connectedCallback();
@@ -144,6 +134,12 @@ export class RowanCommandPalette extends BaseElement {
 
   disconnectedCallback() {
     this.#releaseFocusContainment();
+
+    // A modal removed while open would stay in the top layer and block the page.
+    if (this.#overlay?.open) {
+      this.#overlay.close();
+    }
+
     this.#removeDocumentHotkeyListener?.();
     this.#removeDocumentHotkeyListener = null;
     this.#clearManagedItems();
@@ -220,8 +216,7 @@ export class RowanCommandPalette extends BaseElement {
   render() {
     if (!this.#panel) {
       this.renderRoot.innerHTML = `
-        <div class="overlay" part="overlay" hidden>
-          <div class="backdrop" part="backdrop"></div>
+        <dialog class="overlay" part="overlay">
           <section class="panel" part="panel" tabindex="-1">
             <div class="header">
               <h2 class="title"></h2>
@@ -233,9 +228,9 @@ export class RowanCommandPalette extends BaseElement {
               <slot name="empty"><span class="empty-fallback"></span></slot>
             </div>
           </section>
-        </div>
+        </dialog>
       `;
-      this.#overlay = this.renderRoot.querySelector(".overlay");
+      this.#overlay = this.renderRoot.querySelector("dialog");
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#title = this.renderRoot.querySelector(".title");
       this.#input = this.renderRoot.querySelector(".input");
@@ -246,7 +241,10 @@ export class RowanCommandPalette extends BaseElement {
 
       this.listen(this.#closeButton, "click", () => this.#requestUserClose("close-button"));
       this.listen(this.#overlay, "click", (event) => this.#handleOverlayClick(event));
-      this.listen(this.#panel, "keydown", (event) => this.#handlePanelKeydown(event));
+      this.listen(this.#overlay, "cancel", (event) => {
+        event.preventDefault();
+        this.#requestUserClose("escape");
+      });
       this.listen(this.#input, "input", () => {
         this.query = this.#input.value;
         this.#syncCommandState();
@@ -356,7 +354,7 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #handleOverlayClick(event) {
-    if (event.target === this.#overlay || event.target === this.#overlay.firstElementChild) {
+    if (event.target === this.#overlay) {
       this.#requestUserClose("backdrop");
       return;
     }
@@ -365,16 +363,6 @@ export class RowanCommandPalette extends BaseElement {
       .composedPath()
       .find((node) => isCommandItem(node) && node.closest("rowan-command-palette") === this);
     if (item) this.#activateItem(item);
-  }
-
-  #handlePanelKeydown(event) {
-    if (event.key === keys.ESCAPE) {
-      event.preventDefault();
-      this.#requestUserClose("escape");
-      return;
-    }
-
-    if (event.key === keys.TAB) this.#trapTabFocus(event);
   }
 
   #handleInputKeydown(event) {
@@ -497,8 +485,15 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #syncOpenState() {
-    this.#overlay.hidden = !this.open;
     this.inert = !this.open;
+
+    // showModal() moves focus, so capture the restore target before reconciling.
+    if (this.open && !this.#isOpen) {
+      this.#lastFocused =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+
+    this.#reconcileNativeOpen();
 
     if (this.open === this.#isOpen) {
       if (this.open) this.#installFocusContainment();
@@ -513,14 +508,25 @@ export class RowanCommandPalette extends BaseElement {
     }
   }
 
-  #onOpen() {
-    this.#lastFocused =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    this.#installFocusContainment();
+  /** Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting. */
+  #reconcileNativeOpen() {
+    if (!this.#overlay) return;
 
-    queueMicrotask(() => {
-      if (this.open) this.#focusFirstElement();
-    });
+    if (this.open && this.isConnected && !this.#overlay.open) {
+      this.#overlay.showModal();
+      queueMicrotask(() => {
+        if (this.open) this.#focusFirstElement();
+      });
+      return;
+    }
+
+    if (!this.open && this.#overlay.open) {
+      this.#overlay.close();
+    }
+  }
+
+  #onOpen() {
+    this.#installFocusContainment();
   }
 
   #onClose() {
@@ -534,49 +540,17 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #releaseFocusContainment() {
-    if (!this.#removeDocumentFocusListener) return;
+    if (!this.#overlayPushed) return;
 
-    this.#removeDocumentFocusListener();
-    this.#removeDocumentFocusListener = null;
+    this.#overlayPushed = false;
     removeOverlay(this);
   }
 
   #installFocusContainment() {
-    if (this.#removeDocumentFocusListener) return;
+    if (this.#overlayPushed) return;
 
+    this.#overlayPushed = true;
     pushOverlay(this);
-    this.#removeDocumentFocusListener = this.listen(
-      document,
-      "focusin",
-      this.#handleDocumentFocusIn,
-      true,
-    );
-  }
-
-  #trapTabFocus(event) {
-    const focusableElements = this.#collectFocusableElements();
-    if (focusableElements.length === 0) {
-      event.preventDefault();
-      this.#panel.focus();
-      return;
-    }
-
-    const first = focusableElements[0];
-    const last = focusableElements[focusableElements.length - 1];
-    const active = this.shadowRoot.activeElement || document.activeElement;
-
-    if (event.shiftKey) {
-      if (active === first || active === this.#panel) {
-        event.preventDefault();
-        last.focus();
-      }
-      return;
-    }
-
-    if (active === last) {
-      event.preventDefault();
-      first.focus();
-    }
   }
 
   #focusFirstElement() {
@@ -589,10 +563,6 @@ export class RowanCommandPalette extends BaseElement {
   // Slotted command items are an arrow-navigated listbox, not Tab stops.
   #collectFocusableElements() {
     return collectFocusableElements(this.#panel, { includeSlotted: false });
-  }
-
-  #isNodeInPalette(node) {
-    return (node instanceof HTMLElement && this.contains(node)) || this.shadowRoot?.contains(node);
   }
 }
 

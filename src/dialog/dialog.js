@@ -168,6 +168,9 @@ export class RowanDialog extends BaseElement {
 
     if (this.open && this.isConnected && !this.#overlay.open) {
       this.#overlay.showModal();
+      queueMicrotask(() => {
+        if (this.open) this.#focusFirstElement();
+      });
       return;
     }
 
@@ -178,11 +181,6 @@ export class RowanDialog extends BaseElement {
 
   #onOpen() {
     pushOverlay(this);
-    queueMicrotask(() => {
-      if (this.open) {
-        this.#focusFirstElement();
-      }
-    });
   }
 
   #onClose() {

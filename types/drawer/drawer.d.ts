@@ -5,7 +5,7 @@
  * @attr {"start"|"end"} side
  * @slot - Drawer content
  * @slot title
- * @csspart backdrop
+ * @csspart overlay
  * @csspart panel
  * @csspart title
  * @csspart close

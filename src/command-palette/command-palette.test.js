@@ -161,7 +161,7 @@ describe("rowan-command-palette", () => {
     await nextMicrotask();
 
     expect(detail).to.include({ value: "invite-member", query: "" });
-    expect(detail.item).to.equal(invite);
+    expect(detail.item === invite).to.equal(true);
     expect(eventMeta).to.deep.equal({ bubbles: true, composed: true });
     expect(palette.open).to.equal(false);
   });
@@ -185,14 +185,18 @@ describe("rowan-command-palette", () => {
     await nextMicrotask();
 
     expect(palette.open).to.equal(true);
-    expect(palette.shadowRoot.activeElement).to.equal(palette.shadowRoot.querySelector("input"));
+    expect(palette.shadowRoot.activeElement === palette.shadowRoot.querySelector("input")).to.equal(
+      true,
+    );
 
-    keydown(palette.shadowRoot.querySelector(".panel"), "Escape");
+    palette.shadowRoot
+      .querySelector("dialog")
+      .dispatchEvent(new Event("cancel", { cancelable: true }));
     await nextMicrotask();
 
     expect(palette.open).to.equal(false);
     expect(closeReason).to.equal("escape");
-    expect(document.activeElement).to.equal(trigger);
+    expect(document.activeElement === trigger).to.equal(true);
   });
 
   it("emits a user close event when the backdrop is activated", async () => {
@@ -203,24 +207,24 @@ describe("rowan-command-palette", () => {
       closeReason = event.detail.reason;
     });
 
-    palette.shadowRoot.querySelector(".backdrop").click();
+    palette.shadowRoot.querySelector("dialog").click();
     await nextMicrotask();
 
     expect(palette.open).to.equal(false);
     expect(closeReason).to.equal("backdrop");
   });
 
-  it("traps Tab focus inside the palette panel", async () => {
+  it("contains focus in the native modal top layer", async () => {
+    const outsideButton = document.createElement("button");
+    document.body.append(outsideButton);
+
     const palette = await renderPalette({ open: true });
-    const input = palette.shadowRoot.querySelector("input");
-    const panel = palette.shadowRoot.querySelector(".panel");
-    const close = palette.shadowRoot.querySelector(".close");
+    const overlay = palette.shadowRoot.querySelector("dialog");
 
-    input.focus();
-    keydown(panel, "Tab");
-    await nextMicrotask();
+    expect(overlay.matches(":modal")).to.equal(true);
 
-    expect(palette.shadowRoot.activeElement).to.equal(close);
+    outsideButton.focus();
+    expect(document.activeElement === outsideButton).to.equal(false);
   });
 
   it("restores focus containment and a single activation listener after reconnecting", async () => {
@@ -244,7 +248,9 @@ describe("rowan-command-palette", () => {
     outside.focus();
     await nextMicrotask();
 
-    expect(palette.shadowRoot.activeElement).to.equal(palette.shadowRoot.querySelector("input"));
+    expect(palette.shadowRoot.activeElement === palette.shadowRoot.querySelector("input")).to.equal(
+      true,
+    );
 
     item.shadowRoot.querySelector("button").click();
     expect(eventCount).to.equal(1);

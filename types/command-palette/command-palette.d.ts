@@ -10,7 +10,6 @@
  * @slot - rowan-command-item nodes
  * @slot empty
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart input
  * @csspart list

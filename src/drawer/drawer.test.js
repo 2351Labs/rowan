@@ -14,16 +14,41 @@ describe("rowan-drawer", () => {
     document.body.innerHTML = "";
   });
 
-  it("hides backdrop when closed", async () => {
+  it("hides the overlay when closed", async () => {
     const drawer = document.createElement("rowan-drawer");
     document.body.append(drawer);
     await nextMicrotask();
 
-    const backdrop = drawer.shadowRoot.querySelector(".backdrop");
-    const panel = drawer.shadowRoot.querySelector(".panel");
-    expect(backdrop.hidden).to.equal(true);
-    expect(panel.hidden).to.equal(true);
-    expect(getComputedStyle(panel).display).to.equal("none");
+    const overlay = drawer.shadowRoot.querySelector("dialog");
+    expect(overlay.open).to.equal(false);
+    expect(getComputedStyle(overlay).display).to.equal("none");
+
+    drawer.open = true;
+    await nextMicrotask();
+
+    expect(overlay.open).to.equal(true);
+    expect(overlay.matches(":modal")).to.equal(true);
+  });
+
+  it("makes background content inert while open", async () => {
+    const outside = document.createElement("button");
+    document.body.append(outside);
+
+    const drawer = document.createElement("rowan-drawer");
+    document.body.append(drawer);
+    await nextMicrotask();
+
+    drawer.open = true;
+    await nextMicrotask();
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(false);
+
+    drawer.open = false;
+    await nextMicrotask();
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(true);
   });
 
   it("keeps closed drawers out of modal semantics and names open drawers", async () => {
@@ -70,7 +95,9 @@ describe("rowan-drawer", () => {
 
     drawer.open = true;
     await nextMicrotask();
-    keydown(drawer.shadowRoot.querySelector(".panel"), "Escape");
+    drawer.shadowRoot
+      .querySelector("dialog")
+      .dispatchEvent(new Event("cancel", { cancelable: true }));
     await nextMicrotask();
 
     expect(drawer.open).to.equal(false);

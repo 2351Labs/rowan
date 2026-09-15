@@ -5,26 +5,26 @@ IDs `F-NN` are stable and referenced by the review write-up.
 
 ## Triage summary
 
-| ID   | Title                                                                    | Severity | Status                                             |
-| ---- | ------------------------------------------------------------------------ | -------- | -------------------------------------------------- |
-| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3                       |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)                  |
-| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                                          |
-| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented                         |
-| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                                          |
-| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                                          |
-| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                                          |
-| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                                          |
-| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                                          |
-| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                                          |
-| F-11 | Four similar controls use four different interaction architectures       | Medium   | **Fixed** (combobox converged)                     |
-| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                                          |
-| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                                          |
-| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** for `rowan-dialog` via native `<dialog>` |
-| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)                 |
-| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                          |
-| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                          |
-| F-18 | Untested axes                                                            | Medium   | Open                                               |
+| ID   | Title                                                                    | Severity | Status                                              |
+| ---- | ------------------------------------------------------------------------ | -------- | --------------------------------------------------- |
+| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3                        |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)                   |
+| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                                           |
+| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented                          |
+| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                                           |
+| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                                           |
+| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                                           |
+| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                                           |
+| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                                           |
+| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                                           |
+| F-11 | Four similar controls use four different interaction architectures       | Medium   | **Fixed** (combobox converged)                      |
+| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                                           |
+| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                                           |
+| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** — all modal overlays on native `<dialog>` |
+| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)                  |
+| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                           |
+| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                           |
+| F-18 | Untested axes                                                            | Medium   | Open                                                |
 
 ---
 
@@ -536,6 +536,37 @@ the `--rowan-overlay-backdrop` token or `rowan-dialog::part(overlay)::backdrop`.
 
 Still open: `drawer`, `command-palette`, `row-details-panel`, and `context-menu` have not
 been migrated and continue to rely on `aria-modal` plus the scroll lock.
+
+**Update — migration completed across every modal overlay.**
+
+`rowan-drawer`, `rowan-command-palette`, and `rowan-row-details-panel` now use the same
+native `<dialog>` pattern: `showModal()` / `close()`, `::backdrop` in place of a backdrop
+`<div>`, the native `cancel` event in place of an Escape key handler, and deletion of each
+component's custom `#trapTabFocus`, `#isNodeIn*`, and document `focusin` recapture
+listener.
+
+One behavioural fix came out of this. `showModal()` focuses the first focusable element in
+DOM order, which is the close button — not the command palette's search input. Focus-on-open
+therefore moved to sit alongside the `showModal()` call rather than in `#onOpen()`, so it
+also runs when an already-open overlay is reconnected. That is applied consistently to
+`dialog`, `drawer`, and `command-palette`.
+
+Verified in a real browser for all three: `:modal` matches while open, `focus()` on a
+background button does not move focus, and `document.elementFromPoint()` over that button
+returns the overlay. All invert on close. Regression tests cover each one.
+
+**`rowan-context-menu` is deliberately excluded.** It wraps `<rowan-menu>` with `role="menu"`
+and is not a modal surface. Wrapping it in `showModal()` would impose dialog semantics
+around a menu and break the APG menu pattern, and a context menu should not inert the page
+behind it. If it needs the top layer later, the Popover API is the correct primitive — it
+gives top-layer stacking and light dismiss without modal semantics. It keeps its
+`part="backdrop"`.
+
+**Breaking, in addition to `rowan-dialog`:** `rowan-drawer`, `rowan-command-palette`, and
+`rowan-row-details-panel` no longer expose `part="backdrop"`. Style the backdrop with each
+component's existing backdrop token or `::part(overlay)::backdrop`. `part="overlay"` is now
+the native `<dialog>` element on all of them; `rowan-drawer` gains `part="overlay"`, which
+it did not previously have.
 
 ---
 
