@@ -7,23 +7,20 @@
 }
 
 .overlay {
-  align-items: center;
-  display: grid;
-  inset: 0;
-  justify-items: center;
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  max-block-size: 100dvh;
+  max-inline-size: 100vw;
   padding: var(--rowan-space-6);
-  position: fixed;
-  z-index: 1000;
 }
 
-.overlay[hidden] {
-  display: none;
-}
-
-.backdrop {
+.overlay::backdrop {
   background: var(--rowan-overlay-backdrop, rgb(16 28 22 / 48%));
-  inset: 0;
-  position: absolute;
+}
+
+.overlay:not([open]) {
+  display: none;
 }
 
 .panel {

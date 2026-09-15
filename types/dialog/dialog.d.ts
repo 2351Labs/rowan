@@ -6,7 +6,6 @@
  * @slot - Content
  * @slot actions
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart close
  * @cssprop --rowan-dialog-bg

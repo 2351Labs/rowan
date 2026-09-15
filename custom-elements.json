@@ -20737,9 +20737,6 @@
               "name": "overlay"
             },
             {
-              "name": "backdrop"
-            },
-            {
               "name": "panel"
             },
             {
@@ -20858,26 +20855,12 @@
             },
             {
               "kind": "field",
-              "name": "#removeDocumentFocusListener",
-              "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "#isOpen",
               "privacy": "private",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "#handleDocumentFocusIn",
-              "privacy": "private"
             },
             {
               "kind": "field",
@@ -20921,6 +20904,12 @@
             },
             {
               "kind": "method",
+              "name": "#reconcileNativeOpen",
+              "privacy": "private",
+              "description": "Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting."
+            },
+            {
+              "kind": "method",
               "name": "#onOpen",
               "privacy": "private"
             },
@@ -20936,16 +20925,6 @@
             },
             {
               "kind": "method",
-              "name": "#trapTabFocus",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "#focusFirstElement",
               "privacy": "private"
             },
@@ -20953,16 +20932,6 @@
               "kind": "method",
               "name": "#collectFocusableElements",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#isNodeInDialog",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "node"
-                }
-              ]
             },
             {
               "kind": "field",

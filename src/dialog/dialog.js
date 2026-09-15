@@ -2,7 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
-import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 
 /**
  * Modal dialog surface.
@@ -12,7 +12,6 @@ import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-sta
  * @slot - Content
  * @slot actions
  * @csspart overlay
- * @csspart backdrop
  * @csspart panel
  * @csspart close
  * @cssprop --rowan-dialog-bg
@@ -31,24 +30,17 @@ export class RowanDialog extends BaseElement {
   #closeButton = null;
   #titleSlot = null;
   #lastFocused = null;
-  #removeDocumentFocusListener = null;
   #isOpen = false;
-  #handleDocumentFocusIn = (event) => {
-    if (!this.open) return;
-    if (!isTopmostOverlay(this)) return;
-
-    const target = event.target;
-    if (!(target instanceof Node)) return;
-
-    if (!this.#isNodeInDialog(target)) {
-      this.#focusFirstElement();
-    }
-  };
 
   disconnectedCallback() {
     if (this.#isOpen) {
       removeOverlay(this);
       this.#isOpen = false;
+    }
+
+    // A modal removed while open would stay in the top layer and block the page.
+    if (this.#overlay?.open) {
+      this.#overlay.close();
     }
 
     super.disconnectedCallback();
@@ -73,8 +65,7 @@ export class RowanDialog extends BaseElement {
   render() {
     if (!this.#panel) {
       this.renderRoot.innerHTML = `
-        <div class="overlay" part="overlay" hidden>
-          <div class="backdrop" part="backdrop"></div>
+        <dialog class="overlay" part="overlay">
           <section class="panel" part="panel" tabindex="-1">
             <div class="header" part="header">
               <div class="title" part="title"><slot name="title"></slot></div>
@@ -83,10 +74,10 @@ export class RowanDialog extends BaseElement {
             <div class="body" part="body"><slot></slot></div>
             <div class="actions" part="actions"><slot name="actions"></slot></div>
           </section>
-        </div>
+        </dialog>
       `;
 
-      this.#overlay = this.renderRoot.querySelector(".overlay");
+      this.#overlay = this.renderRoot.querySelector("dialog");
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#closeButton = this.renderRoot.querySelector(".close");
       this.#titleSlot = this.renderRoot.querySelector('[part="title"] slot');
@@ -98,21 +89,14 @@ export class RowanDialog extends BaseElement {
       });
 
       this.listen(this.#overlay, "click", (event) => {
-        if (event.target === this.#overlay || event.target === this.#overlay.firstElementChild) {
+        if (event.target === this.#overlay) {
           this.#requestUserClose("backdrop");
         }
       });
 
-      this.listen(this.#panel, "keydown", (event) => {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          this.#requestUserClose("escape");
-          return;
-        }
-
-        if (event.key === "Tab") {
-          this.#trapTabFocus(event);
-        }
+      this.listen(this.#overlay, "cancel", (event) => {
+        event.preventDefault();
+        this.#requestUserClose("escape");
       });
     }
 
@@ -156,8 +140,15 @@ export class RowanDialog extends BaseElement {
   }
 
   #syncOpenState() {
-    this.#overlay.hidden = !this.open;
     this.inert = !this.open;
+
+    // showModal() moves focus, so capture the restore target before reconciling.
+    if (this.open && !this.#isOpen) {
+      this.#lastFocused =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+
+    this.#reconcileNativeOpen();
 
     if (this.open === this.#isOpen) return;
 
@@ -171,16 +162,22 @@ export class RowanDialog extends BaseElement {
     this.#onClose();
   }
 
+  /** Keeps the native dialog in sync even when `open` did not change, e.g. after reconnecting. */
+  #reconcileNativeOpen() {
+    if (!this.#overlay) return;
+
+    if (this.open && this.isConnected && !this.#overlay.open) {
+      this.#overlay.showModal();
+      return;
+    }
+
+    if (!this.open && this.#overlay.open) {
+      this.#overlay.close();
+    }
+  }
+
   #onOpen() {
-    this.#lastFocused =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     pushOverlay(this);
-    this.#removeDocumentFocusListener = this.listen(
-      document,
-      "focusin",
-      this.#handleDocumentFocusIn,
-      true,
-    );
     queueMicrotask(() => {
       if (this.open) {
         this.#focusFirstElement();
@@ -190,8 +187,6 @@ export class RowanDialog extends BaseElement {
 
   #onClose() {
     removeOverlay(this);
-    this.#removeDocumentFocusListener?.();
-    this.#removeDocumentFocusListener = null;
 
     if (this.#lastFocused && typeof this.#lastFocused.focus === "function") {
       this.#lastFocused.focus();
@@ -208,37 +203,6 @@ export class RowanDialog extends BaseElement {
       .trim();
   }
 
-  #trapTabFocus(event) {
-    const focusableElements = this.#collectFocusableElements();
-
-    if (focusableElements.length === 0) {
-      event.preventDefault();
-      this.#panel.focus();
-      return;
-    }
-
-    const first = focusableElements[0];
-    const last = focusableElements[focusableElements.length - 1];
-    const active =
-      event.composedPath().find((node) => focusableElements.includes(node)) ||
-      this.shadowRoot.activeElement ||
-      document.activeElement;
-
-    if (event.shiftKey) {
-      if (active === first || active === this.#panel) {
-        event.preventDefault();
-        last.focus();
-      }
-
-      return;
-    }
-
-    if (active === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-
   #focusFirstElement() {
     const focusableElements = this.#collectFocusableElements();
     const first = focusableElements[0] ?? this.#panel;
@@ -247,18 +211,6 @@ export class RowanDialog extends BaseElement {
 
   #collectFocusableElements() {
     return collectFocusableElements(this.#panel);
-  }
-
-  #isNodeInDialog(node) {
-    if (node instanceof HTMLElement && this.contains(node)) {
-      return true;
-    }
-
-    if (this.shadowRoot && this.shadowRoot.contains(node)) {
-      return true;
-    }
-
-    return false;
   }
 }
 

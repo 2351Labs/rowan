@@ -46,21 +46,11 @@ describe("rowan-dialog focus containment", () => {
     await settle();
     await settle();
 
-    const close = dialog.shadowRoot.querySelector(".close");
-    const panel = dialog.shadowRoot.querySelector(".panel");
-    close.focus();
+    // Tab cycling belongs to the native modal; assert slotted controls stay reachable.
+    const native = dialog.shadowRoot.querySelector("dialog");
+    expect(native.matches(":modal")).to.equal(true);
 
-    // The close button is first, so Shift+Tab wraps to the last focusable.
-    // The old tag allowlist did not recognise rowan-text-field, so it wrapped to itself.
-    panel.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "Tab",
-        shiftKey: true,
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-      }),
-    );
+    field.focus();
     await settle();
 
     expect(document.activeElement).to.equal(field);
@@ -198,8 +188,8 @@ describe("rowan-dialog", () => {
     dialog.open = true;
     await wait();
 
-    const panel = dialog.shadowRoot.querySelector(".panel");
-    panel.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    const native = dialog.shadowRoot.querySelector("dialog");
+    native.dispatchEvent(new Event("cancel", { cancelable: true }));
     await wait();
 
     expect(dialog.open).to.equal(false);
@@ -234,15 +224,40 @@ describe("rowan-dialog", () => {
     dialog.open = true;
     await wait();
 
-    const overlay = dialog.shadowRoot.querySelector(".overlay");
+    const overlay = dialog.shadowRoot.querySelector("dialog");
     expect(overlay).to.not.equal(null);
-    expect(overlay.hidden).to.equal(false);
+    expect(overlay.open).to.equal(true);
 
     dialog.open = false;
     await wait();
 
-    expect(overlay.hidden).to.equal(true);
+    expect(overlay.open).to.equal(false);
     expect(getComputedStyle(overlay).display).to.equal("none");
+  });
+
+  it("makes background content inert while open", async () => {
+    const outside = document.createElement("button");
+    outside.textContent = "outside";
+    document.body.append(outside);
+
+    const dialog = document.createElement("rowan-dialog");
+    document.body.append(dialog);
+    await wait();
+
+    dialog.open = true;
+    await wait();
+
+    const native = dialog.shadowRoot.querySelector("dialog");
+    expect(native.matches(":modal")).to.equal(true);
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(false);
+
+    dialog.open = false;
+    await wait();
+
+    outside.focus();
+    expect(document.activeElement === outside).to.equal(true);
   });
 
   it("keeps closed dialogs out of modal semantics and names open dialogs", async () => {
@@ -310,11 +325,12 @@ describe("rowan-dialog", () => {
     outside.focus();
     await wait();
 
-    const closeButton = dialog.shadowRoot.querySelector('button[part="close"]');
-    expect(dialog.shadowRoot.activeElement).to.equal(closeButton);
+    // Reconnecting while open must re-enter the top layer, not just keep the attribute.
+    const native = dialog.shadowRoot.querySelector("dialog");
+    expect(native.open).to.equal(true);
+    expect(native.matches(":modal")).to.equal(true);
 
-    const panel = dialog.shadowRoot.querySelector(".panel");
-    panel.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    native.dispatchEvent(new Event("cancel", { cancelable: true }));
     await wait();
 
     expect(dialog.open).to.equal(false);

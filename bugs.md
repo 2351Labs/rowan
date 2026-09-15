@@ -5,26 +5,26 @@ IDs `F-NN` are stable and referenced by the review write-up.
 
 ## Triage summary
 
-| ID   | Title                                                                    | Severity | Status                                       |
-| ---- | ------------------------------------------------------------------------ | -------- | -------------------------------------------- |
-| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3                 |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)            |
-| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                                    |
-| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented                   |
-| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                                    |
-| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                                    |
-| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                                    |
-| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                                    |
-| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                                    |
-| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                                    |
-| F-11 | Four similar controls use four different interaction architectures       | Medium   | **Fixed** (combobox converged)               |
-| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                                    |
-| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                                    |
-| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | Scroll lock **fixed**; inert deferred to 1.0 |
-| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)           |
-| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                    |
-| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                    |
-| F-18 | Untested axes                                                            | Medium   | Open                                         |
+| ID   | Title                                                                    | Severity | Status                                             |
+| ---- | ------------------------------------------------------------------------ | -------- | -------------------------------------------------- |
+| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3                       |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)                  |
+| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                                          |
+| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented                         |
+| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                                          |
+| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                                          |
+| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                                          |
+| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                                          |
+| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                                          |
+| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                                          |
+| F-11 | Four similar controls use four different interaction architectures       | Medium   | **Fixed** (combobox converged)                     |
+| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                                          |
+| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                                          |
+| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** for `rowan-dialog` via native `<dialog>` |
+| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)                 |
+| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                          |
+| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                          |
+| F-18 | Untested axes                                                            | Medium   | Open                                               |
 
 ---
 
@@ -488,13 +488,54 @@ coverage. That is a tooling problem to solve first — likely a Web Test Runner 
 session-protocol interaction — and it should be fixed before, not alongside, the
 migration.
 
-Reverted again to keep the tree clean; `dialog` and `confirm-dialog` are back to 17
-passing in 1.7s. Remains on `1.0`, but the work is now well-bounded: fix the harness,
-rewrite the two synthetic-keyboard tests to use real key events, keep the
-`#syncOpenState` reconcile fix, close the native dialog on `disconnectedCallback` so a
-modal removed while open cannot linger in the top layer, and extend the same pattern to
-`drawer`, `command-palette`, and `row-details-panel`. The `part="backdrop"` → `::backdrop`
-change is still breaking and still needs migration notes.
+**Resolved — background inert now ships for `rowan-dialog`.**
+
+The blocker was never the component. Attaching a Playwright listener directly to Web Test
+Runner's own browser page — instead of trusting WTR's log forwarding, which emitted
+nothing — produced the real error in one run:
+
+```
+DataCloneError: Failed to execute 'structuredClone' on 'Window':
+HTMLButtonElement object could not be cloned.
+```
+
+WTR serialises results back to Node with `structuredClone`. The obsolete focus-trap test
+asserted `expect(activeElement).to.equal(closeButton)`, so chai attached an
+`HTMLButtonElement` to the failing assertion's `expected` field. That error cannot be
+cloned, the session died before reporting, and the run surfaced as a 120s timeout with
+`0 passed, 0 failed`. **Every "hang" in this investigation was a failing assertion that
+compared DOM elements, not a product defect** — which retroactively explains the original
+`inert` hang in `command-palette` and `row-details-panel` too.
+
+This is a repo-wide hazard worth knowing: a failing assertion whose `actual`/`expected` is
+a DOM node hangs CI with no diagnostic output. Compare booleans
+(`expect(a === b).to.equal(true)`) or identifying strings instead.
+
+Shipped:
+
+- `rowan-dialog` renders a real `<dialog>` and uses `showModal()` / `close()`, so the top
+  layer, `::backdrop`, focus containment, and background inertness all come from the
+  platform rather than from DOM walking.
+- `#syncOpenState` reconciles native state even when `open` did not change, fixing a
+  dialog opened while disconnected never entering the top layer on reconnect.
+- `disconnectedCallback` closes the native dialog so a modal removed while open cannot
+  linger in the top layer and block the page.
+- The custom `#trapTabFocus`, `#isNodeInDialog`, and the document `focusin` recapture
+  listener are deleted.
+
+Verified in a real browser: with the dialog open, `:modal` matches, `outside.focus()`
+cannot move focus to background content, and `document.elementFromPoint()` over a
+background button returns the dialog rather than the button. All three invert on close.
+That behaviour is now locked in by a regression test, and the suite is green on Chromium,
+Firefox, and WebKit.
+
+**Breaking:** `rowan-dialog` no longer exposes `part="backdrop"`; style the backdrop with
+the `--rowan-overlay-backdrop` token or `rowan-dialog::part(overlay)::backdrop`.
+`part="overlay"` is now the native `<dialog>` element. Other overlays keep their existing
+`backdrop` part.
+
+Still open: `drawer`, `command-palette`, `row-details-panel`, and `context-menu` have not
+been migrated and continue to rely on `aria-modal` plus the scroll lock.
 
 ---
 

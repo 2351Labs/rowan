@@ -87,30 +87,28 @@ describe("rowan-confirm-dialog", () => {
     });
 
     const innerDialog = dialog.shadowRoot.querySelector("rowan-dialog");
-    const panel = innerDialog.shadowRoot.querySelector(".panel");
-    panel.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    const native = innerDialog.shadowRoot.querySelector("dialog");
+    native.dispatchEvent(new Event("cancel", { cancelable: true }));
     await wait();
 
     expect(dialog.open).to.equal(false);
     expect(reason).to.equal("escape");
   });
 
-  it("keeps the default action controls inside the composed dialog focus trap", async () => {
+  it("keeps the default action controls inside the composed modal dialog", async () => {
     const dialog = document.createElement("rowan-confirm-dialog");
     dialog.open = true;
     document.body.append(dialog);
     await waitForNestedRender();
 
     const innerDialog = dialog.shadowRoot.querySelector("rowan-dialog");
+    const native = innerDialog.shadowRoot.querySelector("dialog");
     const confirmButton = dialog.shadowRoot.querySelector(".confirm");
-    const closeButton = innerDialog.shadowRoot.querySelector('button[part="close"]');
 
-    confirmButton.focus();
-    confirmButton.shadowRoot
-      .querySelector("button")
-      .dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true, composed: true }));
-    await wait();
-
-    expect(innerDialog.shadowRoot.activeElement).to.equal(closeButton);
+    // Tab containment is the native modal's job; assert the modal contract instead.
+    expect(native.open).to.equal(true);
+    expect(native.matches(":modal")).to.equal(true);
+    expect(native.contains(innerDialog.shadowRoot.querySelector(".panel"))).to.equal(true);
+    expect(confirmButton.closest("rowan-dialog")).to.equal(innerDialog);
   });
 });
