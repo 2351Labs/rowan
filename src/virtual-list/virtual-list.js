@@ -76,8 +76,36 @@ export class RowanVirtualList extends BaseElement {
 
   /** @param {unknown[]} value */
   set items(value) {
+    const anchor = this.#captureScrollAnchor();
     this.#collection.items = value;
+    this.#applyScrollAnchor(anchor);
     this.requestRender();
+  }
+
+  /**
+   * Records which item sits at the top of the viewport, and how far above it is scrolled,
+   * so a reflow above that item can be compensated for instead of shifting the view.
+   */
+  #captureScrollAnchor() {
+    if (!this.#viewport) return null;
+
+    const scrollTop = this.#viewport.scrollTop;
+    if (scrollTop <= 0) return null;
+
+    const [entry] = this.#collection.range(scrollTop, this.#readViewportHeight(), 0).entries;
+    return entry ? { key: entry.key, distanceAbove: scrollTop - entry.offset } : null;
+  }
+
+  #applyScrollAnchor(anchor) {
+    if (!anchor || !this.#viewport) return;
+
+    const entry = this.#collection.entryForKey(anchor.key);
+    if (!entry) return;
+
+    const nextScrollTop = Math.max(0, entry.offset + anchor.distanceAbove);
+    if (Math.abs(nextScrollTop - this.#viewport.scrollTop) < 1) return;
+
+    this.#viewport.scrollTop = nextScrollTop;
   }
 
   /** @returns {string | ((item: unknown, index: number) => string | number) | null} */
@@ -266,6 +294,7 @@ export class RowanVirtualList extends BaseElement {
     if (!this.#resizeObserver) {
       this.#resizeObserver = new ResizeObserver((entries) => {
         let changed = false;
+        const anchor = this.#captureScrollAnchor();
 
         for (const entry of entries) {
           if (entry.target === this.#viewport) {
@@ -284,7 +313,10 @@ export class RowanVirtualList extends BaseElement {
           }
         }
 
-        if (changed) this.#queueResizeRender();
+        if (changed) {
+          this.#applyScrollAnchor(anchor);
+          this.#queueResizeRender();
+        }
       });
 
       this.observe(this.#resizeObserver, () => this.#restoreResizeObserver());

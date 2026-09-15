@@ -28,6 +28,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-19 | Audit of the previously uncleared components                             | High     | **Fixed** — stepper contrast, forced colours        |
 | F-20 | Second audit pass — keyboard, selection, virtualization                  | Medium   | **Fixed** — shift anchor, table row semantics       |
 | F-21 | Virtualization measurement and scroll restoration                        | Low      | **Covered** — no defects found                      |
+| F-22 | Scroll anchoring missing when rows change above the viewport             | Medium   | **Fixed** — table and virtual-list                  |
 
 ---
 
@@ -918,3 +919,34 @@ Scroll anchoring is still not implemented: if a row _above_ the viewport changes
 measurement, content below it shifts. In practice rows above the viewport have already been
 measured, so this is confined to rows whose content changes while scrolled past. Not
 observed, not fixed, and recorded here rather than claimed as covered.
+
+**Update — implemented, and the note above was wrong about the trigger.**
+
+The reasoning that this was "confined to rows whose content changes while scrolled past" was
+incorrect. Rows above the viewport are virtualized out of the DOM, so the `ResizeObserver`
+cannot remeasure them at all — that path was never the real risk.
+
+The actual trigger is **rows inserted or removed above the current scroll position**, which
+reflows every offset below them. That is not an edge case: it is what a live-updating table
+does whenever a row arrives at the top, and the result is the user's view jumping while they
+are reading. `clearMeasurements()` — reached by changing `virtual-item-size` — does the same
+thing.
+
+Implemented for both `rowan-table` and `rowan-virtual-list`, which had identical gaps:
+
+- `#captureScrollAnchor()` records the key of the row at the top of the viewport and how far
+  above it the container is scrolled, read from the layout **before** it is invalidated.
+- `#applyScrollAnchor()` looks that row up after the reflow and corrects `scrollTop` by the
+  difference, skipping adjustments below 1px so ordinary scrolling is untouched.
+- Wired into both mutation points: the `items` assignment and the `ResizeObserver` callback
+  that applies new measurements.
+- `VirtualCollection.entryForKey()` was added with a key-to-index map built during
+  `#ensureLayout`, so the lookup is O(1) rather than a scan of every row on each reflow.
+
+Both fixes were verified non-vacuous by disabling the anchor call and confirming the tests
+fail with exactly the expected shift: the table's top row moves from `21` to `19`, and the
+list's from `Item 20` to `Item 18` — the two-row jump from prepending two rows.
+
+Remaining genuine limit: anchoring corrects the scroll offset, it does not prevent a reflow.
+A row whose height changes _while rendered_ still reflows rows after it, which is correct
+behaviour. Anchoring only guarantees the row at the top of the viewport stays there.

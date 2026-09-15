@@ -33,6 +33,7 @@ export class VirtualCollection {
   #estimatedItemSize = 40;
   #measuredSizes = new Map();
   #entries = [];
+  #entryIndexByKey = new Map();
   #totalSize = 0;
   #needsLayout = true;
   #duplicateKeys = [];
@@ -125,6 +126,13 @@ export class VirtualCollection {
     return this.#entries[index] ?? null;
   }
 
+  /** @param {string} key */
+  entryForKey(key) {
+    this.#ensureLayout();
+    const index = this.#entryIndexByKey.get(String(key));
+    return index === undefined ? null : (this.#entries[index] ?? null);
+  }
+
   #indexAtOffset(offset) {
     let start = 0;
     let end = this.#entries.length - 1;
@@ -191,6 +199,7 @@ export class VirtualCollection {
     }
 
     this.#entries = entries;
+    this.#entryIndexByKey = new Map(entries.map((entry, index) => [entry.key, index]));
     this.#totalSize = offset;
     this.#duplicateKeys = duplicateKeys;
     this.#needsLayout = false;

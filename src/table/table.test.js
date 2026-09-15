@@ -1029,6 +1029,52 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("holds the visible row steady when rows are inserted above the viewport", async () => {
+    const rows = Array.from({ length: 60 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Person ${index + 1}`,
+    }));
+
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "100px");
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 0,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.scrollTop = 400;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const topRowBefore = table.shadowRoot.querySelector("tbody tr[data-row-id]").dataset.rowId;
+    const scrollBefore = viewport.scrollTop;
+
+    // Prepending shifts every offset below it; the anchored row must stay in view.
+    table.rows = [
+      { id: "new-1", name: "Inserted 1" },
+      { id: "new-2", name: "Inserted 2" },
+      ...rows,
+    ];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const topRowAfter = table.shadowRoot.querySelector("tbody tr[data-row-id]").dataset.rowId;
+    expect(topRowAfter).to.equal(topRowBefore);
+    expect(viewport.scrollTop).to.be.above(scrollBefore);
+
+    table.remove();
+  });
+
   it("exposes the full row count when rows are omitted from the DOM", async () => {
     const rows = Array.from({ length: 40 }, (_, index) => ({
       id: String(index + 1),

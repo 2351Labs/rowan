@@ -15,6 +15,45 @@ describe("rowan-virtual-list", () => {
     document.body.innerHTML = "";
   });
 
+  it("holds the visible item steady when items are inserted above the viewport", async () => {
+    const items = Array.from({ length: 100 }, (_value, index) => ({
+      id: `item-${index}`,
+      label: `Item ${index}`,
+    }));
+    const list = document.createElement("rowan-virtual-list");
+
+    list.items = items;
+    list.itemKey = "id";
+    list.itemSize = 20;
+    list.overscan = 0;
+    list.renderItem = (item) => item.label;
+    document.body.append(list);
+    await settle();
+
+    const viewport = list.shadowRoot.querySelector(".viewport");
+    viewport.style.height = "60px";
+    viewport.style.overflow = "auto";
+    await settle();
+
+    viewport.scrollTop = 400;
+    viewport.dispatchEvent(new Event("scroll"));
+    await settle();
+
+    const topBefore = list.shadowRoot.querySelector("[data-virtual-list-key]").textContent;
+    const scrollBefore = viewport.scrollTop;
+
+    list.items = [
+      { id: "inserted-a", label: "Inserted A" },
+      { id: "inserted-b", label: "Inserted B" },
+      ...items,
+    ];
+    await settle();
+
+    const topAfter = list.shadowRoot.querySelector("[data-virtual-list-key]").textContent;
+    expect(topAfter).to.equal(topBefore);
+    expect(viewport.scrollTop).to.be.above(scrollBefore);
+  });
+
   it("renders a bounded keyed window from property-only items", async () => {
     const items = Array.from({ length: 100 }, (_value, index) => ({
       id: `item-${index}`,

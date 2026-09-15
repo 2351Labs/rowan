@@ -35528,6 +35528,12 @@
             },
             {
               "kind": "field",
+              "name": "#entryIndexByKey",
+              "privacy": "private",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
               "name": "#totalSize",
               "privacy": "private",
               "type": {
@@ -35618,6 +35624,18 @@
               "parameters": [
                 {
                   "name": "index"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "entryForKey",
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
                 }
               ]
             },
@@ -65372,6 +65390,22 @@
             },
             {
               "kind": "method",
+              "name": "#captureScrollAnchor",
+              "privacy": "private",
+              "description": "Records which row sits at the top of the viewport, and how far above it is scrolled,\nso a reflow above that row can be compensated for instead of shifting the view."
+            },
+            {
+              "kind": "method",
+              "name": "#applyScrollAnchor",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "anchor"
+                }
+              ]
+            },
+            {
+              "kind": "method",
               "name": "#ensureVirtualSpacer",
               "privacy": "private",
               "parameters": [
@@ -78783,6 +78817,22 @@
                 "text": "Array<unknown>"
               },
               "description": "Property-only item data."
+            },
+            {
+              "kind": "method",
+              "name": "#captureScrollAnchor",
+              "privacy": "private",
+              "description": "Records which item sits at the top of the viewport, and how far above it is scrolled,\nso a reflow above that item can be compensated for instead of shifting the view."
+            },
+            {
+              "kind": "method",
+              "name": "#applyScrollAnchor",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "anchor"
+                }
+              ]
             },
             {
               "kind": "field",

@@ -825,8 +825,12 @@ export class RowanTable extends BaseElement {
   }
 
   #renderVirtualBody(viewRows) {
+    const anchor = this.#captureScrollAnchor();
+
     this.#virtualCollection.items = viewRows;
     this.#virtualCollection.estimatedItemSize = this.virtualItemSize;
+
+    this.#applyScrollAnchor(anchor);
 
     const range = this.#virtualCollection.range(
       this.#tableViewport.scrollTop,
@@ -897,6 +901,37 @@ export class RowanTable extends BaseElement {
     this.#syncVirtualResizeObserver();
   }
 
+  /**
+   * Records which row sits at the top of the viewport, and how far above it is scrolled,
+   * so a reflow above that row can be compensated for instead of shifting the view.
+   */
+  #captureScrollAnchor() {
+    if (!this.virtualized || !this.#tableViewport) return null;
+
+    const scrollTop = this.#tableViewport.scrollTop;
+    if (scrollTop <= 0) return null;
+
+    const [entry] = this.#virtualCollection.range(
+      scrollTop,
+      this.#readVirtualViewportHeight(),
+      0,
+    ).entries;
+
+    return entry ? { key: entry.key, distanceAbove: scrollTop - entry.offset } : null;
+  }
+
+  #applyScrollAnchor(anchor) {
+    if (!anchor || !this.#tableViewport) return;
+
+    const entry = this.#virtualCollection.entryForKey(anchor.key);
+    if (!entry) return;
+
+    const nextScrollTop = Math.max(0, entry.offset + anchor.distanceAbove);
+    if (Math.abs(nextScrollTop - this.#tableViewport.scrollTop) < 1) return;
+
+    this.#tableViewport.scrollTop = nextScrollTop;
+  }
+
   #ensureVirtualSpacer(position) {
     const isStart = position === "start";
     const current = isStart ? this.#virtualStartSpacer : this.#virtualEndSpacer;
@@ -955,6 +990,7 @@ export class RowanTable extends BaseElement {
     if (!this.#virtualResizeObserver) {
       this.#virtualResizeObserver = new ResizeObserver((entries) => {
         let changed = false;
+        const anchor = this.#captureScrollAnchor();
 
         for (const entry of entries) {
           if (entry.target === this.#tableViewport) {
@@ -977,7 +1013,10 @@ export class RowanTable extends BaseElement {
           }
         }
 
-        if (changed) this.#queueVirtualResizeRender();
+        if (changed) {
+          this.#applyScrollAnchor(anchor);
+          this.#queueVirtualResizeRender();
+        }
       });
 
       this.observe(this.#virtualResizeObserver, () => this.#restoreVirtualResizeObserver());

@@ -23,5 +23,7 @@ export class VirtualCollection {
         totalSize: number;
     };
     entryAt(index: any): any;
+    /** @param {string} key */
+    entryForKey(key: string): any;
     #private;
 }
