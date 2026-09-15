@@ -4,19 +4,51 @@ import "../card/card.js";
 import "../chip/chip.js";
 import "../date-picker/date-picker.js";
 import "../dialog/dialog.js";
+import "../stepper/stepper.js";
 import "../switch/switch.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
+// Waits for the shadow tree to exist and for style recalc to land, not just for the link.
 async function waitForStyles(element) {
-  const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (stylesheet.sheet) return;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
 
-  await new Promise((resolve, reject) => {
-    stylesheet.addEventListener("load", resolve, { once: true });
-    stylesheet.addEventListener("error", reject, { once: true });
-  });
+    if (stylesheet?.sheet) {
+      await nextFrame();
+      return;
+    }
+
+    if (stylesheet) {
+      await new Promise((resolve, reject) => {
+        stylesheet.addEventListener("load", resolve, { once: true });
+        stylesheet.addEventListener("error", reject, { once: true });
+      });
+      await nextFrame();
+      return;
+    }
+
+    await nextFrame();
+  }
+
+  throw new Error(`stylesheet never loaded for <${element.localName}>`);
+}
+
+// Waits for the value the assertion reads, rather than for a proxy like the link's sheet.
+async function paintedBackground(element, selector) {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    const { backgroundColor } = getComputedStyle(element.shadowRoot.querySelector(selector));
+
+    if (backgroundColor !== "rgba(0, 0, 0, 0)" && backgroundColor !== "transparent") {
+      return backgroundColor;
+    }
+
+    await nextFrame();
+  }
+
+  throw new Error(`background never painted for <${element.localName}> ${selector}`);
 }
 
 async function loadStylesheet(path) {
@@ -94,11 +126,13 @@ describe("Rowan themes", () => {
       const calendar = document.createElement("rowan-calendar");
       const dialog = document.createElement("rowan-dialog");
       dialog.textContent = "Dark dialog";
+      const stepper = document.createElement("rowan-stepper");
+      stepper.steps = ["One", "Two"];
 
-      theme.append(chip, card, datePicker, calendar, dialog);
+      theme.append(chip, card, datePicker, calendar, dialog, stepper);
       document.body.append(theme);
       await nextTask();
-      await Promise.all([chip, card, datePicker, calendar, dialog].map(waitForStyles));
+      await Promise.all([chip, card, datePicker, calendar, dialog, stepper].map(waitForStyles));
 
       for (const [element, selector] of [
         [chip, ".chip"],
@@ -106,6 +140,7 @@ describe("Rowan themes", () => {
         [datePicker, ".input"],
         [calendar, ".calendar"],
         [dialog, ".panel"],
+        [stepper, ".step.is-current .step-button"],
       ]) {
         const styles = getComputedStyle(element.shadowRoot.querySelector(selector));
         expect(contrastRatio(styles.color, styles.backgroundColor)).to.be.at.least(4.5);
@@ -132,13 +167,12 @@ describe("Rowan themes", () => {
         theme.append(off, on);
         document.body.append(theme);
         await nextTask();
-        await Promise.all([off, on].map(waitForStyles));
 
         // SC 1.4.11: the thumb is the affordance that conveys state, so it needs 3:1 on its track.
         for (const element of [off, on]) {
-          const track = getComputedStyle(element.shadowRoot.querySelector(".track"));
-          const thumb = getComputedStyle(element.shadowRoot.querySelector(".thumb"));
-          expect(contrastRatio(thumb.backgroundColor, track.backgroundColor)).to.be.at.least(3);
+          const track = await paintedBackground(element, ".track");
+          const thumb = await paintedBackground(element, ".thumb");
+          expect(contrastRatio(thumb, track)).to.be.at.least(3);
         }
 
         theme.remove();

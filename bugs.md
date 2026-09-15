@@ -25,6 +25,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                           |
 | F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                           |
 | F-18 | Untested axes                                                            | Medium   | **Fixed**                                           |
+| F-19 | Audit of the previously uncleared components                             | High     | **Fixed** — stepper contrast, forced colours        |
 
 ---
 
@@ -720,8 +721,100 @@ Not reviewed, and therefore not cleared: `table`, `virtual-list`, `tree`,
 `file-upload`, `color-picker`, `slider`, `rating`, `calendar`, and `form-wizard`
 internals.
 
+> **Audited — see F-19 below.** This list is no longer uncleared.
+
 Confirmed correct and intentionally left alone: the no-framework stance, the
 React boundary (no wrapping or auto-registration), the attribute/property split,
 rich-text plain-text-only clipboard handling, semantic `<table>` virtualization,
 roving-tabindex owner guards, the three-layer token architecture itself, and
 deterministic build outputs.
+
+---
+
+## F-19: Audit of the previously uncleared components
+
+Scope: the 16 components listed above, audited against the same non-negotiables as the
+original review — structural contract, event contract, FACE completeness, template safety,
+token layering, and forced-colors behaviour.
+
+### Clean, with evidence
+
+These were checked and found correct. Recording what was checked so the clearance means
+something:
+
+- **Structural contract** — all 16 declare `:host` display and `:host([hidden])`, and all
+  register through the `define()` guard.
+- **Event contract** — no component constructs a `CustomEvent` directly. `src/lib/events.js`
+  is the only construction site, and it sets `bubbles` and `composed`.
+- **Template safety** — no `innerHTML` assignment in any of the 16 interpolates dynamic
+  values. Row and item data goes through `textContent`.
+- **FACE completeness** — `color-picker`, `slider`, `rating`, and `calendar` are the four
+  form-associated components in this set. All four implement `setFormValue`, `setValidity`,
+  `formResetCallback`, `formStateRestoreCallback`, `checkValidity`, and `reportValidity`.
+  `formDisabledCallback` and the `validity` / `validationMessage` / `willValidate` /
+  `setCustomValidity` surface come from `BaseElement`, so an initial scan reporting them as
+  "missing" was a false positive from not accounting for inheritance.
+- **`rating` and forced colours** — initially suspected, then cleared. `.star.is-filled`
+  differs only by colour, but the glyph itself changes
+  (`star.textContent = isFilled ? "★" : "☆"`) and each star carries `role="radio"` with
+  `aria-checked`, so state survives both forced colours and assistive technology.
+
+### Defect: `rowan-stepper` current step is unreadable in dark mode
+
+- **Severity:** High
+- **Evidence:** `.step.is-current .step-button` defaulted to
+  `color-mix(in srgb, var(--rowan-color-accent) 12%, white)`. Mixing toward the literal
+  `white` produces a near-white background in every theme, while `color: inherit` resolves
+  to the dark theme's light foreground.
+- **Impact:** Measured **1.06** contrast in a dark theme wrapper — the same failure mode as
+  the original `rowan-alert` bug at 1.03. The current step, which is the one piece of state
+  a stepper exists to convey, is unreadable.
+- **Fix:** Mix toward the background instead: `color-mix(in srgb, var(--rowan-color-accent)
+12%, var(--rowan-color-bg))`, matching the pattern used by the F-02 fixes.
+- **Test:** `rowan-stepper` is now part of the dark-theme contrast test, which fails at 1.06
+  without the fix.
+
+Worth noting why the existing guards missed this. `css:check` passes because the literal is
+inside a `var()` fallback, which satisfies its contract — the token hook
+`--rowan-stepper-current-bg` genuinely exists. This is not F-02 (unthemeable) but F-01
+(the _default derivation_ is theme-broken). A line-based grep also missed it because
+Prettier had wrapped the declaration across lines. The behavioural contrast test is what
+actually catches this class, which is the better guard.
+
+### Defect: state-bearing surfaces collapse under forced colours
+
+- **Severity:** Medium
+- **Area:** `calendar`, `slider`, `tab`, `stepper`
+- **Evidence:** F-15 added forced-colors support to `alert`, `badge`, `chip`, `option`,
+  `segmented-control`, and `switch` only. None of the 16 audited components had a
+  `forced-colors` block.
+- **Impact:** In High Contrast, `background` and `color` are replaced by system colours, so
+  `calendar`'s selected day computes to an opaque Canvas white sitting on a Canvas-white
+  grid. The computed values differ from an unselected day, but the rendered pixels do not —
+  the selection is invisible. `slider`'s filled range, `tab`'s active underline, and
+  `stepper`'s current step degrade the same way, though each retains a secondary cue
+  (thumb position, `font-weight: 600`, and `aria-current` respectively).
+- **Fix:** `forced-colors` blocks using `Highlight` / `HighlightText` / `CanvasText`,
+  following the existing `switch.css` pattern.
+- **Verification:** Confirmed with Playwright `emulateMedia({ forcedColors: "active" })`.
+  The selected day and current step now resolve to `Highlight` and are distinct from their
+  neighbours.
+
+### Infrastructure: flaky contrast test
+
+The `waitForStyles` helper in `theme.test.js` resolved as soon as the stylesheet link had a
+`sheet`, before style recalculation had landed. That made the switch contrast test added in
+F-02 fail roughly 2 runs in 5, reporting a contrast of 1 because both colours still computed
+as transparent. It now waits for the shadow tree to exist and for a frame to pass, and
+throws a named error if the stylesheet never loads. Verified stable across 6 consecutive
+runs in Chromium. Firefox then exposed the same flake at a lower rate, because waiting a
+frame is still a proxy rather than the condition under test. The switch assertion now polls
+for the painted background it actually reads, and throws a named error if it never paints.
+Stable across 4 consecutive Firefox runs plus Chromium and WebKit. A flaky test is worse
+than no test, and this one was self-inflicted.
+
+### Still not covered
+
+This audit was a contract and theming pass. It did **not** assess keyboard interaction
+depth, virtualization correctness under scroll, `table` selection/sort edge cases, or
+`form-wizard` step validation. Those remain unaudited.

@@ -56,7 +56,7 @@
   border-color: var(--rowan-stepper-current-border, var(--rowan-color-accent));
   background: var(
     --rowan-stepper-current-bg,
-    color-mix(in srgb, var(--rowan-color-accent) 12%, white)
+    color-mix(in srgb, var(--rowan-color-accent) 12%, var(--rowan-color-bg))
   );
 }
 
@@ -83,4 +83,16 @@
 
 .label {
   white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .step.is-current .step-button {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  .step.is-complete .marker {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

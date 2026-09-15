@@ -173,3 +173,13 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .track {
+    border: 1px solid CanvasText;
+  }
+
+  .selected-range {
+    background: Highlight;
+  }
+}

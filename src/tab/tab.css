@@ -27,3 +27,10 @@
   box-shadow: var(--rowan-focus-ring);
   outline: none;
 }
+
+@media (forced-colors: active) {
+  :host([active]) .tab {
+    border-bottom-color: Highlight;
+    color: Highlight;
+  }
+}

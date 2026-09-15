@@ -144,3 +144,17 @@
 :host([invalid]) .calendar {
   border-color: var(--rowan-color-danger, #b93a32);
 }
+
+@media (forced-colors: active) {
+  .day.selected,
+  .day.range-start,
+  .day.range-end {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .day.in-range {
+    outline: 1px solid Highlight;
+    outline-offset: -2px;
+  }
+}
