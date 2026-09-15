@@ -327,6 +327,28 @@ of using active descendant, so it does not yet follow the rule. Converging it is
 second breaking change and should carry the shared keyboard conformance suite that
 F-11 originally called for.
 
+**Update — multi-select converged; F-11 closed.**
+
+`rowan-multi-select-combobox` now follows the same rule. It renders its own
+`role="listbox"` container with `aria-multiselectable="true"` and `rowan-option`
+children, keeps DOM focus in the input, and reports the highlight with
+`aria-activedescendant`. Arrow Up and Down, Home, and End move the highlight;
+Enter toggles the highlighted option and keeps the popup open; Escape closes;
+Backspace on an empty query still removes the last chip.
+
+It no longer embeds `rowan-listbox`. That composition brought a roving tab index
+inside a combobox, which put the options into the page tab order — a real defect,
+not only an inconsistency. Browser verification confirms no option is tabbable now.
+The host also stopped duplicating the `combobox` role that the inner input owns.
+
+`rowan-listbox.focusFirstOption()` added in phase 1 is kept: it is still the
+deterministic focus entry point for a standalone listbox.
+
+**Breaking changes for `0.1.0` consumers:** the multi-select `listbox` CSS part is
+a plain container rather than a `rowan-listbox` element, keyboard selection moved
+from focus-and-activate to Enter-on-highlight, and the host no longer exposes a
+`combobox` role.
+
 ---
 
 ## Overlays

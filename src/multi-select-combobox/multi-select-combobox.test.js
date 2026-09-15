@@ -2,7 +2,6 @@ import { expect } from "@esm-bundle/chai";
 import "./multi-select-combobox.js";
 
 const nextMicrotask = () => Promise.resolve();
-const nextTask = () => new Promise((resolve) => setTimeout(resolve));
 
 const OPTIONS = [
   { value: "design", label: "Design" },
@@ -105,40 +104,79 @@ describe("rowan-multi-select-combobox", () => {
     expect(combobox.checkValidity()).to.equal(false);
   });
 
-  it("opens from ArrowDown, forwards focus to an option, and exposes combobox a11y defaults", async () => {
+  it("opens from ArrowDown and tracks the active option without moving focus", async () => {
     const combobox = await renderCombobox();
     const input = combobox.shadowRoot.querySelector("input");
+    // Focusing the field opens the popup, so the highlight starts on the first option.
     input.focus();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const [first, second] = combobox.shadowRoot.querySelectorAll("rowan-option");
+    expect(combobox.open).to.equal(true);
+    expect(input.getAttribute("aria-expanded")).to.equal("true");
+    expect(combobox.shadowRoot.activeElement === input).to.equal(true);
+    expect(input.getAttribute("aria-activedescendant")).to.equal(first.id);
+    expect(input.getAttribute("aria-autocomplete")).to.equal("list");
+
     input.dispatchEvent(
       new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowDown" }),
     );
     await nextMicrotask();
     await nextMicrotask();
-    await nextTask();
 
-    const option = combobox.shadowRoot.querySelector("rowan-option");
-    expect(combobox.open).to.equal(true);
-    expect(document.activeElement === combobox).to.equal(true);
-    expect(combobox.shadowRoot.activeElement === option).to.equal(true);
-    expect(option.tabIndex).to.equal(0);
-    expect(combobox.internals.role).to.equal("combobox");
-    expect(combobox.internals.ariaAutoComplete).to.equal("list");
+    expect(input.getAttribute("aria-activedescendant")).to.equal(second.id);
+    expect(combobox.shadowRoot.activeElement === input).to.equal(true);
   });
 
-  it("moves focus into the listbox without waiting for a timer", async () => {
+  it("toggles the active option with Enter and keeps the popup open", async () => {
+    const combobox = await renderCombobox();
+    const input = combobox.shadowRoot.querySelector("input");
+    const changes = [];
+    combobox.addEventListener("rowan-change", (event) => changes.push(event.detail.value));
+
+    input.focus();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const activeId = input.getAttribute("aria-activedescendant");
+    const activeValue = combobox.shadowRoot.getElementById(activeId).value;
+
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "Enter" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(combobox.selected).to.deep.equal([activeValue]);
+    expect(changes).to.deep.equal([activeValue]);
+    expect(combobox.open).to.equal(true);
+
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "Enter" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(combobox.selected).to.deep.equal([]);
+    expect(changes).to.deep.equal([activeValue, activeValue]);
+  });
+
+  it("jumps to the last available option with End", async () => {
     const combobox = await renderCombobox();
     const input = combobox.shadowRoot.querySelector("input");
     input.focus();
+    await nextMicrotask();
+    await nextMicrotask();
+
     input.dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowDown" }),
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "End" }),
     );
-
-    await nextMicrotask();
     await nextMicrotask();
     await nextMicrotask();
 
-    const option = combobox.shadowRoot.querySelector("rowan-option");
-    expect(combobox.shadowRoot.activeElement === option).to.equal(true);
-    expect(option.tabIndex).to.equal(0);
+    const options = [...combobox.shadowRoot.querySelectorAll("rowan-option")];
+    const lastAvailable = options.filter((option) => !option.disabled).at(-1);
+    expect(input.getAttribute("aria-activedescendant")).to.equal(lastAvailable.id);
   });
 });

@@ -39816,6 +39816,15 @@
             },
             {
               "kind": "field",
+              "name": "#activeValue",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
               "name": "#hasDocumentPointerListener",
               "privacy": "private",
               "type": {
@@ -40001,11 +40010,31 @@
             },
             {
               "kind": "method",
-              "name": "#handleListboxChange",
+              "name": "#handleOptionClick",
               "privacy": "private",
               "parameters": [
                 {
                   "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#toggleValue",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#moveActive",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "step"
                 }
               ]
             },
@@ -40038,11 +40067,6 @@
                   "name": "event"
                 }
               ]
-            },
-            {
-              "kind": "method",
-              "name": "#firstAvailableOption",
-              "privacy": "private"
             },
             {
               "kind": "method",

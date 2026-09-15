@@ -2,7 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
-import "../listbox/listbox.js";
+import "../option/option.js";
 
 let multiSelectComboboxId = 0;
 
@@ -98,6 +98,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
   #options = [];
   #selected = [];
   #defaultSelected = null;
+  #activeValue = "";
   #hasDocumentPointerListener = false;
 
   connectedCallback() {
@@ -264,7 +265,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
           <input class="input" part="input" type="text" autocomplete="off" />
         </div>
         <div class="panel" part="panel" hidden>
-          <rowan-listbox class="listbox" part="listbox" selection="multiple"></rowan-listbox>
+          <div class="listbox" part="listbox" role="listbox" aria-multiselectable="true"></div>
           <div class="empty" part="empty" role="status" hidden>No matching options.</div>
         </div>
       `;
@@ -272,7 +273,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
       this.#chips = this.renderRoot.querySelector(".chips");
       this.#input = this.renderRoot.querySelector(".input");
       this.#panel = this.renderRoot.querySelector(".panel");
-      this.#listbox = this.renderRoot.querySelector("rowan-listbox");
+      this.#listbox = this.renderRoot.querySelector(".listbox");
       this.#empty = this.renderRoot.querySelector(".empty");
       this.#fallbackLabel = this.renderRoot.querySelector("label");
 
@@ -281,11 +282,12 @@ export class RowanMultiSelectCombobox extends BaseElement {
       });
       this.listen(this.#input, "input", () => {
         this.query = this.#input.value;
+        this.#activeValue = "";
         if (!this.disabled) this.open = true;
       });
       this.listen(this.#input, "keydown", (event) => this.#handleInputKeydown(event));
       this.listen(this.#chips, "click", (event) => this.#handleChipClick(event));
-      this.listen(this.#listbox, "rowan-change", (event) => this.#handleListboxChange(event));
+      this.listen(this.#listbox, "click", (event) => this.#handleOptionClick(event));
     }
 
     this.#renderChips();
@@ -377,20 +379,39 @@ export class RowanMultiSelectCombobox extends BaseElement {
     const options = this.#filteredOptions();
     this.#listbox.textContent = "";
     this.#listbox.id = this.#listboxId;
-    this.#listbox.label = this.label ? `${this.label} options` : "Options";
-    this.#listbox.disabled = this.disabled;
+    this.#listbox.setAttribute("aria-label", this.label ? `${this.label} options` : "Options");
 
-    for (const item of options) {
-      const option = document.createElement("rowan-option");
-      option.value = item.value;
-      option.label = item.label;
-      option.disabled = item.disabled;
-      this.#listbox.append(option);
+    const available = options.filter((item) => !item.disabled);
+    if (!available.some((item) => item.value === this.#activeValue)) {
+      this.#activeValue = available.at(0)?.value ?? "";
     }
 
-    this.#listbox.selected = this.selected;
+    let activeId = "";
+    const selected = new Set(this.selected);
+
+    options.forEach((item, index) => {
+      const option = document.createElement("rowan-option");
+      option.id = `${this.#listboxId}-option-${index}`;
+      option.value = item.value;
+      option.label = item.label;
+      option.disabled = item.disabled || this.disabled;
+      option.selected = selected.has(item.value);
+
+      const isActive = item.value === this.#activeValue && !option.disabled;
+      option.setActiveDescendant(isActive, this);
+      if (isActive) activeId = option.id;
+
+      this.#listbox.append(option);
+    });
+
     this.#listbox.hidden = options.length === 0;
     this.#empty.hidden = options.length > 0;
+
+    if (activeId && this.open) {
+      this.#input.setAttribute("aria-activedescendant", activeId);
+    } else {
+      this.#input.removeAttribute("aria-activedescendant");
+    }
   }
 
   #syncFormValue() {
@@ -424,10 +445,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
   #applyDefaultA11y() {
     if (!this.internals) return;
 
-    if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "combobox";
-    }
-
+    // The inner input owns the combobox role so the pattern is not announced twice.
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
       this.internals.ariaLabel = this.label || null;
     }
@@ -453,36 +471,42 @@ export class RowanMultiSelectCombobox extends BaseElement {
     }
   }
 
-  #handleListboxChange(event) {
-    event.stopPropagation();
-    if (this.disabled) return;
+  #handleOptionClick(event) {
+    const option = event
+      .composedPath()
+      .find((node) => node instanceof HTMLElement && node.localName === "rowan-option");
+    if (!option || option.disabled || this.disabled) return;
 
-    const visibleValues = new Set(this.#filteredOptions().map((option) => option.value));
+    event.preventDefault();
+    this.#toggleValue(option.value);
+    this.#input.focus();
+  }
+
+  #toggleValue(value) {
     const selected = new Set(this.selected);
-    const visibleSelected = new Set(event.detail.selected);
-
-    for (const value of visibleValues) {
-      if (visibleSelected.has(value)) {
-        selected.add(value);
-      } else {
-        selected.delete(value);
-      }
+    if (selected.has(value)) {
+      selected.delete(value);
+    } else {
+      selected.add(value);
     }
 
-    const next = normalizeSelected([...selected]);
-    if (
-      next.length === this.selected.length &&
-      next.every((value, index) => value === this.selected[index])
-    ) {
-      return;
-    }
-
-    this.#selected = next;
+    this.#selected = normalizeSelected([...selected]);
+    this.#activeValue = value;
     this.query = "";
     this.#syncFormValue();
     this.#syncValidity();
     this.requestRender();
-    this.#emitChange(event.detail.value);
+    this.#emitChange(value);
+  }
+
+  #moveActive(step) {
+    const available = this.#filteredOptions().filter((item) => !item.disabled);
+    if (available.length === 0) return;
+
+    const currentIndex = available.findIndex((item) => item.value === this.#activeValue);
+    const nextIndex = (currentIndex + step + available.length) % available.length;
+    this.#activeValue = available[currentIndex === -1 ? 0 : nextIndex].value;
+    this.requestRender();
   }
 
   #handleChipClick(event) {
@@ -498,19 +522,36 @@ export class RowanMultiSelectCombobox extends BaseElement {
   #handleInputKeydown(event) {
     if (this.disabled) return;
 
-    if (event.key === keys.ARROW_DOWN) {
+    if (event.key === keys.ARROW_DOWN || event.key === keys.ARROW_UP) {
       event.preventDefault();
-      this.open = true;
-      // Opening queues a render that recreates the options, so focus once it has settled.
-      queueMicrotask(() => this.#listbox?.focusFirstOption());
+
+      if (!this.open) {
+        this.open = true;
+        this.requestRender();
+        return;
+      }
+
+      this.#moveActive(event.key === keys.ARROW_DOWN ? 1 : -1);
+      return;
+    }
+
+    if (event.key === keys.HOME || event.key === keys.END) {
+      if (!this.open) return;
+
+      const available = this.#filteredOptions().filter((item) => !item.disabled);
+      if (available.length === 0) return;
+
+      event.preventDefault();
+      this.#activeValue = (event.key === keys.HOME ? available.at(0) : available.at(-1)).value;
+      this.requestRender();
       return;
     }
 
     if (event.key === keys.ENTER && this.open) {
-      const option = this.#firstAvailableOption();
-      if (!option) return;
+      if (!this.#activeValue) return;
+
       event.preventDefault();
-      option.click();
+      this.#toggleValue(this.#activeValue);
       return;
     }
 
@@ -532,12 +573,6 @@ export class RowanMultiSelectCombobox extends BaseElement {
     if (!this.open || !(event.target instanceof Node)) return;
     if (event.composedPath().includes(this)) return;
     this.open = false;
-  }
-
-  #firstAvailableOption() {
-    return [...this.#listbox.querySelectorAll("rowan-option")].find(
-      (option) => !option.disabled && !option.hidden,
-    );
   }
 
   #removeValue(value) {
