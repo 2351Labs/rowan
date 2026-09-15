@@ -64941,12 +64941,12 @@
             },
             {
               "kind": "field",
-              "name": "#lastSelectedIndex",
+              "name": "#selectionAnchorId",
               "privacy": "private",
               "type": {
-                "text": "number"
+                "text": "null"
               },
-              "default": "-1"
+              "default": "null"
             },
             {
               "kind": "field",
@@ -65304,6 +65304,20 @@
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
               }
+            },
+            {
+              "kind": "method",
+              "name": "#syncRowCountSemantics",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "table"
+                },
+                {
+                  "name": "view"
+                }
+              ],
+              "description": "Virtualized and paginated tables hold only a window of rows, so AT needs the real totals."
             },
             {
               "kind": "method",

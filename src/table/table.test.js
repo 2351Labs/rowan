@@ -912,6 +912,95 @@ describe("rowan-table", () => {
     expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["1", "2", "3"]);
   });
 
+  it("anchors a shift range to the selected row after sorting reorders it", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      selectable: "multiple",
+      page: null,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const idsInOrder = () =>
+      [...table.shadowRoot.querySelectorAll("tbody tr")].map((row) => row.dataset.rowId);
+
+    expect(idsInOrder()).to.deep.equal(["1", "2", "3"]);
+
+    table.shadowRoot
+      .querySelectorAll("tbody tr")[0]
+      .dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: " " }));
+    await nextMicrotask();
+    expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["1"]);
+
+    // Sorting moves the anchor row "1" from first to last, so the range must follow
+    // the row rather than the slot it used to occupy.
+    table.sortBy("name", "asc");
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(idsInOrder()).to.deep.equal(["2", "3", "1"]);
+
+    table.shadowRoot
+      .querySelectorAll("tbody tr")[0]
+      .dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: " ", shiftKey: true }));
+    await nextMicrotask();
+
+    expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["1", "2", "3"]);
+  });
+
+  it("exposes the full row count when rows are omitted from the DOM", async () => {
+    const rows = Array.from({ length: 40 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Person ${index + 1}`,
+    }));
+
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "80px");
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const domRows = table.shadowRoot.querySelectorAll("tbody tr:not(.virtual-spacer)");
+    expect(domRows.length).to.be.below(rows.length);
+
+    const tableElement = table.shadowRoot.querySelector("table");
+    // aria-rowcount counts the header row too, so 40 data rows means 41.
+    expect(tableElement.getAttribute("aria-rowcount")).to.equal("41");
+
+    const firstRendered = domRows[0];
+    expect(firstRendered.getAttribute("aria-rowindex")).to.equal("2");
+
+    table.remove();
+  });
+
+  it("numbers paginated rows against the full row set", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = { ...createStepFiveConfig(), page: { index: 1, size: 2 } };
+
+    document.body.append(table);
+    await nextMicrotask();
+
+    const tableElement = table.shadowRoot.querySelector("table");
+    expect(tableElement.getAttribute("aria-rowcount")).to.equal("4");
+
+    const rows = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
+    expect(rows.length).to.equal(1);
+    // Third data row overall, and aria-rowindex counts the header, so 4.
+    expect(rows[0].getAttribute("aria-rowindex")).to.equal("4");
+
+    table.remove();
+  });
+
   it("keeps row keyboard selection separate from nested control keyboard events", async () => {
     const table = document.createElement("rowan-table");
     table.config = {

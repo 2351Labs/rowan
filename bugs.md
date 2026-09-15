@@ -26,6 +26,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                           |
 | F-18 | Untested axes                                                            | Medium   | **Fixed**                                           |
 | F-19 | Audit of the previously uncleared components                             | High     | **Fixed** — stepper contrast, forced colours        |
+| F-20 | Second audit pass — keyboard, selection, virtualization                  | Medium   | **Fixed** — shift anchor, table row semantics       |
 
 ---
 
@@ -818,3 +819,64 @@ than no test, and this one was self-inflicted.
 This audit was a contract and theming pass. It did **not** assess keyboard interaction
 depth, virtualization correctness under scroll, `table` selection/sort edge cases, or
 `form-wizard` step validation. Those remain unaudited.
+
+## F-20: Second audit pass — keyboard, selection, virtualization, wizard validation
+
+Covers the four axes F-19 explicitly left open.
+
+### Clean, with evidence
+
+- **Keyboard depth** — `tree`, `menu`, `tabs`, `rating`, and `segmented-control` implement
+  arrows, `Home`/`End`, `Enter`, and `Space` through the shared `keys` helper. `slider` and
+  `calendar` add `PageUp`/`PageDown`. `menu` has no `Escape`, which is correct: both of its
+  wrappers (`dropdown`, `context-menu`) own dismissal, and a bare menu has nothing to
+  dismiss. `accordion` handles no keys because its trigger is a native `<button>` with
+  `aria-expanded`, so `Enter` and `Space` come from the platform. `tabs` has no vertical
+  orientation, so the absence of `ArrowUp`/`ArrowDown` is a scope decision rather than a gap.
+- **`form-wizard` validation** — forward navigation validates every intermediate step and
+  stops on the first invalid one, emitting `rowan-invalid`; backward navigation correctly
+  skips validation. Control discovery walks assigned elements, `form.elements`, and
+  descendants, so nested controls are found.
+- **Virtualization spacers** — the `<tr>`/`<td>` spacer pair that pads the scroll window is
+  already `aria-hidden="true"`, so it is not announced as an empty row.
+
+### Defect: shift-range selection anchored to a stale row position
+
+- **Severity:** Medium
+- **Area:** `src/table/table.js`
+- **Evidence:** Selection is stored by `rowId`, correctly surviving a sort, but the range
+  anchor was `#lastSelectedIndex` — an index into the visible rows. It was reset by the
+  `config` setter and `clearSelection()`, but **not** by `sortBy()` or `set page()`.
+- **Impact:** Select a row, sort the column, then shift-select: the range runs from whatever
+  row now occupies the old slot. In the added test the selection collapsed to `["1", "2"]`
+  where `["1", "2", "3"]` was correct. Silent, and it corrupts a bulk action the user
+  believes they scoped correctly.
+- **Fix:** Anchor to `#selectionAnchorId` and resolve the index at use time. Paging falls out
+  for free: when the anchor row is not on the current page the lookup returns `-1` and the
+  shift-click behaves as a plain click.
+- **Test:** "anchors a shift range to the selected row after sorting reorders it".
+
+### Defect: virtualized and paginated tables misreport row counts to assistive technology
+
+- **Severity:** Medium
+- **Area:** `src/table/table.js`
+- **Evidence:** `rowan-virtual-list` sets `aria-posinset` and `aria-setsize` on every
+  rendered item, but `rowan-table` set neither `aria-rowcount` nor `aria-rowindex`. With
+  `virtualized` or `page` active, only a window of `<tr>` exists in the DOM.
+- **Impact:** A screen reader announces the size of the window rather than the dataset — "row
+  2 of 6" on a 40-row table — so the user cannot tell where they are or how much remains.
+  The inconsistency with `virtual-list`, which does this correctly, indicates an oversight
+  rather than a decision.
+- **Fix:** `#syncRowCountSemantics()` sets `aria-rowcount` on the table and `aria-rowindex`
+  on the header and each rendered row, indexed against the full sorted set and offset by the
+  page start. Applied only when rows are actually omitted, and skipped when duplicate row ids
+  make the id-to-position mapping ambiguous. It runs as a post-render pass keyed by row id,
+  so it stays correct through row diffing rather than only at creation.
+- **Test:** "exposes the full row count when rows are omitted from the DOM" and "numbers
+  paginated rows against the full row set".
+
+### Still not covered
+
+Scroll-position restoration after data changes, and `virtual-collection` measurement
+behaviour with highly variable row heights, were not exercised beyond the existing unit
+tests.

@@ -224,7 +224,7 @@ export class RowanTable extends BaseElement {
   #bodyNeedsRender = true;
   #viewNeedsReconciliation = false;
   #selectionNeedsSync = false;
-  #lastSelectedIndex = -1;
+  #selectionAnchorId = null;
   #selectionModifiers = new WeakMap();
   #validationWarnings = new Set();
   #virtualCollection = new VirtualCollection();
@@ -297,7 +297,7 @@ export class RowanTable extends BaseElement {
     this.#bodyNeedsRender = true;
     this.#viewNeedsReconciliation = true;
     this.#selectionNeedsSync = false;
-    this.#lastSelectedIndex = -1;
+    this.#selectionAnchorId = null;
     this.#resetConfigurationWarnings();
 
     this.caption = next.caption == null ? "" : String(next.caption);
@@ -481,7 +481,7 @@ export class RowanTable extends BaseElement {
   clearSelection() {
     this.#state.selected = [];
     this.#selectionNeedsSync = true;
-    this.#lastSelectedIndex = -1;
+    this.#selectionAnchorId = null;
     this.requestRender();
   }
 
@@ -597,8 +597,34 @@ export class RowanTable extends BaseElement {
 
     const table = this.renderRoot.querySelector("table");
     table.setAttribute("aria-busy", this.loading ? "true" : "false");
+    this.#syncRowCountSemantics(table, view);
 
     this.#renderCaption();
+  }
+
+  /** Virtualized and paginated tables hold only a window of rows, so AT needs the real totals. */
+  #syncRowCountSemantics(table, view) {
+    const omitsRows = Boolean(view.pageInfo) || this.virtualized;
+    const renderedRows = this.#tbody.querySelectorAll("tr[data-row-id]");
+
+    if (!omitsRows || view.hasDuplicateRowIds) {
+      table.removeAttribute("aria-rowcount");
+      this.renderRoot.querySelector("thead tr")?.removeAttribute("aria-rowindex");
+      renderedRows.forEach((row) => row.removeAttribute("aria-rowindex"));
+      return;
+    }
+
+    // aria-rowindex is 1-based and counts the header row, so data rows start at 2.
+    table.setAttribute("aria-rowcount", String(view.entries.length + 1));
+    this.renderRoot.querySelector("thead tr")?.setAttribute("aria-rowindex", "1");
+
+    const offset = view.pageInfo ? view.pageInfo.start : 0;
+    const positions = new Map(view.rows.map((entry, index) => [entry.rowId, offset + index + 2]));
+
+    renderedRows.forEach((row) => {
+      const position = positions.get(row.dataset.rowId);
+      if (position !== undefined) row.setAttribute("aria-rowindex", String(position));
+    });
   }
 
   #renderCaption() {
@@ -1791,6 +1817,11 @@ export class RowanTable extends BaseElement {
     const selected = new Set(this.#state.selected);
     const shiftKey = Boolean(options.shiftKey);
     const currentIndex = entry.visibleIndex;
+    // Resolved per use: sorting and paging move the anchor row to a different index.
+    const anchorIndex =
+      this.#selectionAnchorId === null
+        ? -1
+        : this.#visibleRows.findIndex((row) => row.rowId === this.#selectionAnchorId);
 
     if (this.selectable === "single") {
       if (checked) {
@@ -1799,9 +1830,9 @@ export class RowanTable extends BaseElement {
       } else {
         selected.delete(entry.rowId);
       }
-    } else if (shiftKey && this.#lastSelectedIndex >= 0) {
-      const start = Math.min(this.#lastSelectedIndex, currentIndex);
-      const end = Math.max(this.#lastSelectedIndex, currentIndex);
+    } else if (shiftKey && anchorIndex >= 0) {
+      const start = Math.min(anchorIndex, currentIndex);
+      const end = Math.max(anchorIndex, currentIndex);
       for (let index = start; index <= end; index += 1) {
         const rangeEntry = this.#visibleRows[index];
         if (!rangeEntry) continue;
@@ -1819,7 +1850,7 @@ export class RowanTable extends BaseElement {
       }
     }
 
-    this.#lastSelectedIndex = currentIndex;
+    this.#selectionAnchorId = entry.rowId;
     this.#state.selected = this.#orderedSelection(selected);
     this.#selectionNeedsSync = true;
     this.requestRender();
