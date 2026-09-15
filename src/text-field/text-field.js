@@ -27,7 +27,7 @@ function validityStateToFlags(validity) {
  * Single-line text input with form association.
  * @tag rowan-text-field
  * @attr {string} name
- * @attr {string} value
+ * @attr {string} value - Not reflected when type is "password", so the secret never enters the DOM.
  * @attr {string} placeholder
  * @attr {string} label
  * @attr {"text"|"email"|"password"|"search"|"url"|"tel"} type
@@ -73,9 +73,12 @@ export class RowanTextField extends BaseElement {
   #defaultValue = null;
   #inputId = "";
   #autoInvalid = false;
+  #value = null;
 
   connectedCallback() {
     super.connectedCallback();
+
+    this.#evictSecretAttribute();
 
     if (this.#defaultValue === null) {
       this.#defaultValue = this.value;
@@ -93,6 +96,21 @@ export class RowanTextField extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if (oldValue === newValue) return;
+
+    if (name === "value" && !this.#isSecret()) {
+      this.#value = newValue ?? "";
+      this.#syncFormValue();
+      this.#syncValidity();
+    }
+
+    if (name === "type") {
+      this.#evictSecretAttribute();
+    }
+  }
+
   get name() {
     return this.readString("name", "");
   }
@@ -102,11 +120,19 @@ export class RowanTextField extends BaseElement {
   }
 
   get value() {
-    return this.readString("value", "");
+    return this.#value ?? this.readString("value", "");
   }
 
   set value(value) {
-    this.reflectString("value", value);
+    const next = String(value ?? "");
+    this.#value = next;
+
+    if (this.#isSecret()) {
+      this.removeAttribute("value");
+    } else {
+      this.reflectString("value", next);
+    }
+
     this.#syncFormValue();
     this.#syncValidity();
   }
@@ -135,6 +161,7 @@ export class RowanTextField extends BaseElement {
   /** @param {"text" | "email" | "password" | "search" | "url" | "tel"} value */
   set type(value) {
     this.reflectString("type", value);
+    this.#evictSecretAttribute();
     this.#syncValidity();
   }
 
@@ -189,7 +216,7 @@ export class RowanTextField extends BaseElement {
 
   setValidity(flags = {}, message = "", anchor = this.#input) {
     if (this.internals && typeof this.internals.setValidity === "function") {
-      this.internals.setValidity(flags, message, anchor);
+      this.applyValidity(flags, message, anchor);
     }
   }
 
@@ -268,6 +295,17 @@ export class RowanTextField extends BaseElement {
     this.#syncFormValue();
     this.#syncValidity();
     this.#applyDefaultA11y();
+  }
+
+  #isSecret() {
+    return this.type === "password";
+  }
+
+  #evictSecretAttribute() {
+    if (!this.#isSecret() || !this.hasAttribute("value")) return;
+
+    this.#value = this.getAttribute("value") ?? "";
+    this.removeAttribute("value");
   }
 
   #syncFormValue() {

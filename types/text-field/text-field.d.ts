@@ -2,7 +2,7 @@
  * Single-line text input with form association.
  * @tag rowan-text-field
  * @attr {string} name
- * @attr {string} value
+ * @attr {string} value - Not reflected when type is "password", so the secret never enters the DOM.
  * @attr {string} placeholder
  * @attr {string} label
  * @attr {"text"|"email"|"password"|"search"|"url"|"tel"} type
@@ -19,6 +19,7 @@ export class RowanTextField extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set name(value: string);
     get name(): string;
     set value(value: string);

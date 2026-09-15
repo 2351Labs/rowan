@@ -1125,17 +1125,20 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="theme-overrides">
         <h2>Theme override example</h2>
-        <p>Set semantic tokens at the document root. Component tokens can still point back to semantic values.</p>
+        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable.</p>
         ${codeBlock(`:root {
   --rowan-color-bg: #f7f6ef;
   --rowan-color-fg: #1c2320;
   --rowan-color-accent: #214d36;
+  --rowan-color-surface: #ffffff;
 }
 
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --rowan-color-bg: #0f1612;
   --rowan-color-fg: #ebf0ea;
   --rowan-color-accent: #7ec197;
+  --rowan-color-surface: #18211c;
+  --rowan-color-accent-contrast: #0f1612;
 }`)}
       </section>
     `,

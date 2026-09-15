@@ -314,11 +314,11 @@ export class RowanDateRangePicker extends BaseElement {
     }
 
     if (anchor instanceof HTMLElement) {
-      this.internals.setValidity(flags, message, anchor);
+      this.applyValidity(flags, message, anchor);
       return;
     }
 
-    this.internals.setValidity(flags, message);
+    this.applyValidity(flags, message);
   }
 
   formResetCallback() {

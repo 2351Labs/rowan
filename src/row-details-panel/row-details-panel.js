@@ -1,6 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { collectFocusableElements } from "../lib/focus.js";
+import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import {
   isRowanTable,
   observeTableAvailability,
@@ -8,18 +10,6 @@ import {
 } from "../lib/table-selection.js";
 
 import "../icon-button/icon-button.js";
-
-const FOCUSABLE_SELECTOR = [
-  "button:not([disabled])",
-  "[href]",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-  "rowan-button:not([disabled])",
-  "rowan-icon-button:not([disabled])",
-  "rowan-link",
-].join(",");
 
 let rowDetailsPanelId = 0;
 
@@ -167,6 +157,7 @@ export class RowanRowDetailsPanel extends BaseElement {
   #titleId = "";
   #handleDocumentFocusIn = (event) => {
     if (!this.open || this.#isNodeInPanel(event.target)) return;
+    if (!isTopmostOverlay(this)) return;
     this.#focusFirstElement();
   };
 
@@ -578,6 +569,7 @@ export class RowanRowDetailsPanel extends BaseElement {
       this.#lastFocused =
         document.activeElement instanceof HTMLElement ? document.activeElement : null;
       this.#overlay.hidden = false;
+      pushOverlay(this);
       this.#removeDocumentFocusListener = this.listen(
         document,
         "focusin",
@@ -589,6 +581,7 @@ export class RowanRowDetailsPanel extends BaseElement {
     }
 
     this.#overlay.hidden = true;
+    removeOverlay(this);
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
     if (this.#lastFocused?.isConnected) this.#lastFocused.focus();
@@ -618,13 +611,7 @@ export class RowanRowDetailsPanel extends BaseElement {
 
   #collectFocusableElements() {
     const elements = new Set([this.#closeButton]);
-    this.#panel.querySelectorAll(FOCUSABLE_SELECTOR).forEach((element) => elements.add(element));
-    this.#panel.querySelectorAll("slot").forEach((slot) => {
-      slot.assignedElements({ flatten: true }).forEach((element) => {
-        if (element.matches?.(FOCUSABLE_SELECTOR)) elements.add(element);
-        element.querySelectorAll?.(FOCUSABLE_SELECTOR).forEach((nested) => elements.add(nested));
-      });
-    });
+    collectFocusableElements(this.#panel).forEach((element) => elements.add(element));
     return [...elements].filter((element) => element instanceof HTMLElement);
   }
 

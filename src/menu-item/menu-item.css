@@ -21,7 +21,10 @@
 }
 
 .item:hover:not(:disabled) {
-  background: #eef3ef;
+  background: var(
+    --rowan-menu-item-hover-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg))
+  );
 }
 
 .item:focus-visible {

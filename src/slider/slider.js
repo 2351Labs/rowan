@@ -342,11 +342,11 @@ export class RowanSlider extends BaseElement {
     if (!this.internals || typeof this.internals.setValidity !== "function") return;
 
     if (anchor instanceof HTMLElement) {
-      this.internals.setValidity(flags, message, anchor);
+      this.applyValidity(flags, message, anchor);
       return;
     }
 
-    this.internals.setValidity(flags, message);
+    this.applyValidity(flags, message);
   }
 
   formResetCallback() {

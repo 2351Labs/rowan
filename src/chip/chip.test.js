@@ -124,17 +124,25 @@ describe("rowan-chip", () => {
       darkTheme.setAttribute("data-theme", "dark");
       const lightTheme = document.createElement("div");
       lightTheme.setAttribute("data-theme", "light");
-      const chip = document.createElement("rowan-chip");
-      lightTheme.append(chip);
+      const nestedChip = document.createElement("rowan-chip");
+      lightTheme.append(nestedChip);
       darkTheme.append(lightTheme);
-      document.body.append(darkTheme);
-      await nextMicrotask();
-      await waitForStyles(chip);
 
-      const styles = getComputedStyle(chip.shadowRoot.querySelector(".chip"));
-      expect(styles.backgroundColor).to.equal("rgb(238, 243, 239)");
-      expect(styles.borderTopColor).to.equal("rgb(201, 214, 203)");
-      expect(styles.color).to.equal("rgb(31, 36, 33)");
+      const referenceTheme = document.createElement("div");
+      referenceTheme.setAttribute("data-theme", "light");
+      const referenceChip = document.createElement("rowan-chip");
+      referenceTheme.append(referenceChip);
+
+      document.body.append(darkTheme, referenceTheme);
+      await nextMicrotask();
+      await Promise.all([nestedChip, referenceChip].map(waitForStyles));
+
+      const nestedStyles = getComputedStyle(nestedChip.shadowRoot.querySelector(".chip"));
+      const referenceStyles = getComputedStyle(referenceChip.shadowRoot.querySelector(".chip"));
+
+      expect(nestedStyles.backgroundColor).to.equal(referenceStyles.backgroundColor);
+      expect(nestedStyles.borderTopColor).to.equal(referenceStyles.borderTopColor);
+      expect(nestedStyles.color).to.equal(referenceStyles.color);
     } finally {
       themeStylesheets.forEach((stylesheet) => stylesheet.remove());
     }

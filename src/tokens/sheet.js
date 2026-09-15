@@ -42,10 +42,16 @@ export const tokenCssText = `
   --rowan-color-accent: var(--rowan-color-forest-700);
   --rowan-color-border: #d8dcd5;
   --rowan-color-danger: var(--rowan-color-danger-600);
+  --rowan-color-success: #2f7a4d;
+  --rowan-color-warning: #9b7018;
+  /* Raised surface; defaults to the page background so semantic-only themes stay readable. */
+  --rowan-color-surface: var(--rowan-color-bg);
+  /* Text drawn on an accent fill; the page background always contrasts with the accent. */
+  --rowan-color-accent-contrast: var(--rowan-color-bg);
 
   /* Component layer */
   --rowan-button-bg: var(--rowan-color-accent);
-  --rowan-button-fg: #ffffff;
+  --rowan-button-fg: var(--rowan-color-accent-contrast);
   --rowan-button-border: var(--rowan-button-bg);
   --rowan-button-border-width: var(--rowan-border-width);
   --rowan-button-hover-bg: color-mix(in srgb, var(--rowan-button-bg) 88%, black);
@@ -112,22 +118,42 @@ export const tokenCssText = `
   --rowan-button-lg-font-size: var(--rowan-font-size-md);
   --rowan-button-lg-min-block-size: 3rem;
   --rowan-button-lg-padding-inline: 1.125rem;
-  --rowan-field-bg: #ffffff;
+  --rowan-field-bg: var(--rowan-color-surface);
   --rowan-field-fg: var(--rowan-color-fg);
   --rowan-field-border: var(--rowan-color-border);
-  --rowan-card-bg: #ffffff;
+  --rowan-card-bg: var(--rowan-color-surface);
   --rowan-card-border: var(--rowan-color-border);
-  --rowan-chip-bg: #eef3ef;
-  --rowan-chip-border: #c9d6cb;
+  --rowan-chip-bg: color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg));
+  --rowan-chip-border: color-mix(in srgb, var(--rowan-color-accent) 30%, var(--rowan-color-border));
   --rowan-chip-fg: var(--rowan-color-fg);
-  --rowan-chip-success-bg: #e5f1e8;
-  --rowan-chip-success-border: #b5cdbb;
-  --rowan-chip-warning-bg: #f6eddc;
-  --rowan-chip-warning-border: #d8c8a2;
-  --rowan-chip-danger-bg: #f7e4e1;
-  --rowan-chip-danger-border: #dfb6b0;
-  --rowan-skeleton-base: #e6ebe5;
-  --rowan-skeleton-highlight: #f4f7f2;
+  --rowan-chip-success-bg: color-mix(
+    in srgb,
+    var(--rowan-color-success) 12%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-success-border: color-mix(
+    in srgb,
+    var(--rowan-color-success) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-warning-bg: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 14%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-warning-border: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 34%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-danger-bg: color-mix(in srgb, var(--rowan-color-danger) 12%, var(--rowan-color-bg));
+  --rowan-chip-danger-border: color-mix(
+    in srgb,
+    var(--rowan-color-danger) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-skeleton-base: color-mix(in srgb, var(--rowan-color-fg) 10%, var(--rowan-color-bg));
+  --rowan-skeleton-highlight: color-mix(in srgb, var(--rowan-color-fg) 4%, var(--rowan-color-bg));
   --rowan-skeleton-shimmer-duration: 1.1s;
   --rowan-carousel-border: var(--rowan-color-border);
   --rowan-carousel-surface: var(--rowan-card-bg);
@@ -146,13 +172,13 @@ export const tokenCssText = `
   --rowan-carousel-radius: var(--rowan-radius-md);
   --rowan-carousel-font-family: var(--rowan-font-family);
   --rowan-carousel-transition: 160ms ease;
-  --rowan-dialog-bg: #ffffff;
+  --rowan-dialog-bg: var(--rowan-color-surface);
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);
   --rowan-calendar-muted: var(--rowan-color-muted);
   --rowan-calendar-border: var(--rowan-color-border);
   --rowan-calendar-accent: var(--rowan-color-accent);
-  --rowan-calendar-accent-contrast: #ffffff;
+  --rowan-calendar-accent-contrast: var(--rowan-color-accent-contrast);
   --rowan-color-picker-bg: var(--rowan-field-bg);
   --rowan-color-picker-fg: var(--rowan-color-fg);
   --rowan-color-picker-muted-fg: var(--rowan-color-muted);
@@ -257,7 +283,7 @@ export const tokenCssText = `
   --rowan-segmented-control-fg: var(--rowan-color-fg);
   --rowan-segmented-control-muted-fg: var(--rowan-color-muted);
   --rowan-segmented-control-active-bg: var(--rowan-color-accent);
-  --rowan-segmented-control-active-fg: #ffffff;
+  --rowan-segmented-control-active-fg: var(--rowan-color-accent-contrast);
   --rowan-segmented-control-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
   --rowan-segmented-control-focus-ring: var(--rowan-focus-ring);
   --rowan-segmented-control-radius: var(--rowan-radius-md);
@@ -733,6 +759,30 @@ export const tokenPropertyDefinitions = [
     inherits: true,
     initialValue: "#b4392d",
   },
+  {
+    name: "--rowan-color-success",
+    syntax: "*",
+    inherits: true,
+    initialValue: "#2f7a4d",
+  },
+  {
+    name: "--rowan-color-warning",
+    syntax: "*",
+    inherits: true,
+    initialValue: "#9b7018",
+  },
+  {
+    name: "--rowan-color-surface",
+    syntax: "*",
+    inherits: true,
+    initialValue: "#f8f7f2",
+  },
+  {
+    name: "--rowan-color-accent-contrast",
+    syntax: "*",
+    inherits: true,
+    initialValue: "#f8f7f2",
+  },
 ];
 
 export const unregisteredTokenNames = [
@@ -1170,7 +1220,7 @@ export const unregisteredTokenNames = [
 
 export const componentTokenDeclarations = [
   ["--rowan-button-bg", "var(--rowan-color-accent)"],
-  ["--rowan-button-fg", "#ffffff"],
+  ["--rowan-button-fg", "var(--rowan-color-accent-contrast)"],
   ["--rowan-button-border", "var(--rowan-button-bg)"],
   ["--rowan-button-border-width", "var(--rowan-border-width)"],
   ["--rowan-button-hover-bg", "color-mix(in srgb, var(--rowan-button-bg) 88%, black)"],
@@ -1242,22 +1292,46 @@ export const componentTokenDeclarations = [
   ["--rowan-button-lg-font-size", "var(--rowan-font-size-md)"],
   ["--rowan-button-lg-min-block-size", "3rem"],
   ["--rowan-button-lg-padding-inline", "1.125rem"],
-  ["--rowan-field-bg", "#ffffff"],
+  ["--rowan-field-bg", "var(--rowan-color-surface)"],
   ["--rowan-field-fg", "var(--rowan-color-fg)"],
   ["--rowan-field-border", "var(--rowan-color-border)"],
-  ["--rowan-card-bg", "#ffffff"],
+  ["--rowan-card-bg", "var(--rowan-color-surface)"],
   ["--rowan-card-border", "var(--rowan-color-border)"],
-  ["--rowan-chip-bg", "#eef3ef"],
-  ["--rowan-chip-border", "#c9d6cb"],
+  ["--rowan-chip-bg", "color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg))"],
+  [
+    "--rowan-chip-border",
+    "color-mix(in srgb, var(--rowan-color-accent) 30%, var(--rowan-color-border))",
+  ],
   ["--rowan-chip-fg", "var(--rowan-color-fg)"],
-  ["--rowan-chip-success-bg", "#e5f1e8"],
-  ["--rowan-chip-success-border", "#b5cdbb"],
-  ["--rowan-chip-warning-bg", "#f6eddc"],
-  ["--rowan-chip-warning-border", "#d8c8a2"],
-  ["--rowan-chip-danger-bg", "#f7e4e1"],
-  ["--rowan-chip-danger-border", "#dfb6b0"],
-  ["--rowan-skeleton-base", "#e6ebe5"],
-  ["--rowan-skeleton-highlight", "#f4f7f2"],
+  [
+    "--rowan-chip-success-bg",
+    "color-mix(\n    in srgb,\n    var(--rowan-color-success) 12%,\n    var(--rowan-color-bg)\n  )",
+  ],
+  [
+    "--rowan-chip-success-border",
+    "color-mix(\n    in srgb,\n    var(--rowan-color-success) 32%,\n    var(--rowan-color-border)\n  )",
+  ],
+  [
+    "--rowan-chip-warning-bg",
+    "color-mix(\n    in srgb,\n    var(--rowan-color-warning) 14%,\n    var(--rowan-color-bg)\n  )",
+  ],
+  [
+    "--rowan-chip-warning-border",
+    "color-mix(\n    in srgb,\n    var(--rowan-color-warning) 34%,\n    var(--rowan-color-border)\n  )",
+  ],
+  [
+    "--rowan-chip-danger-bg",
+    "color-mix(in srgb, var(--rowan-color-danger) 12%, var(--rowan-color-bg))",
+  ],
+  [
+    "--rowan-chip-danger-border",
+    "color-mix(\n    in srgb,\n    var(--rowan-color-danger) 32%,\n    var(--rowan-color-border)\n  )",
+  ],
+  ["--rowan-skeleton-base", "color-mix(in srgb, var(--rowan-color-fg) 10%, var(--rowan-color-bg))"],
+  [
+    "--rowan-skeleton-highlight",
+    "color-mix(in srgb, var(--rowan-color-fg) 4%, var(--rowan-color-bg))",
+  ],
   ["--rowan-skeleton-shimmer-duration", "1.1s"],
   ["--rowan-carousel-border", "var(--rowan-color-border)"],
   ["--rowan-carousel-surface", "var(--rowan-card-bg)"],
@@ -1274,13 +1348,13 @@ export const componentTokenDeclarations = [
   ["--rowan-carousel-radius", "var(--rowan-radius-md)"],
   ["--rowan-carousel-font-family", "var(--rowan-font-family)"],
   ["--rowan-carousel-transition", "160ms ease"],
-  ["--rowan-dialog-bg", "#ffffff"],
+  ["--rowan-dialog-bg", "var(--rowan-color-surface)"],
   ["--rowan-calendar-bg", "var(--rowan-card-bg)"],
   ["--rowan-calendar-fg", "var(--rowan-color-fg)"],
   ["--rowan-calendar-muted", "var(--rowan-color-muted)"],
   ["--rowan-calendar-border", "var(--rowan-color-border)"],
   ["--rowan-calendar-accent", "var(--rowan-color-accent)"],
-  ["--rowan-calendar-accent-contrast", "#ffffff"],
+  ["--rowan-calendar-accent-contrast", "var(--rowan-color-accent-contrast)"],
   ["--rowan-color-picker-bg", "var(--rowan-field-bg)"],
   ["--rowan-color-picker-fg", "var(--rowan-color-fg)"],
   ["--rowan-color-picker-muted-fg", "var(--rowan-color-muted)"],
@@ -1384,7 +1458,7 @@ export const componentTokenDeclarations = [
   ["--rowan-segmented-control-fg", "var(--rowan-color-fg)"],
   ["--rowan-segmented-control-muted-fg", "var(--rowan-color-muted)"],
   ["--rowan-segmented-control-active-bg", "var(--rowan-color-accent)"],
-  ["--rowan-segmented-control-active-fg", "#ffffff"],
+  ["--rowan-segmented-control-active-fg", "var(--rowan-color-accent-contrast)"],
   [
     "--rowan-segmented-control-hover-bg",
     "color-mix(in srgb, var(--rowan-color-accent) 8%, transparent)",

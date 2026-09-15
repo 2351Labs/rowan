@@ -54,7 +54,10 @@
 }
 
 .thead {
-  background: #f3f5f1;
+  background: var(
+    --rowan-table-head-bg,
+    color-mix(in srgb, var(--rowan-color-fg) 5%, var(--rowan-color-bg))
+  );
 }
 
 .th,
@@ -193,9 +196,12 @@
 
 .avatar-fallback {
   align-items: center;
-  background: #dce4d9;
+  background: var(
+    --rowan-table-avatar-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 14%, var(--rowan-color-bg))
+  );
   border-radius: 999px;
-  color: #2a3a2d;
+  color: var(--rowan-table-avatar-fg, var(--rowan-color-fg));
   display: inline-flex;
   font-size: var(--rowan-font-size-xs);
   font-weight: 700;

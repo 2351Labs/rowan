@@ -1,18 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-
-const FOCUSABLE_SELECTOR = [
-  "button:not([disabled])",
-  "[href]",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-  "rowan-button:not([disabled])",
-  "rowan-icon-button:not([disabled])",
-  "rowan-link",
-].join(",");
+import { collectFocusableElements } from "../lib/focus.js";
+import {
+  isTopmostOverlay,
+  lockBodyScroll,
+  pushOverlay,
+  removeOverlay,
+  unlockBodyScroll,
+} from "../lib/overlay-stack.js";
 
 /**
  * Modal dialog surface.
@@ -45,6 +41,7 @@ export class RowanDialog extends BaseElement {
   #isOpen = false;
   #handleDocumentFocusIn = (event) => {
     if (!this.open) return;
+    if (!isTopmostOverlay(this)) return;
 
     const target = event.target;
     if (!(target instanceof Node)) return;
@@ -53,6 +50,16 @@ export class RowanDialog extends BaseElement {
       this.#focusFirstElement();
     }
   };
+
+  disconnectedCallback() {
+    if (this.#isOpen) {
+      removeOverlay(this);
+      unlockBodyScroll();
+      this.#isOpen = false;
+    }
+
+    super.disconnectedCallback();
+  }
 
   get open() {
     return this.readBoolean("open");
@@ -174,6 +181,8 @@ export class RowanDialog extends BaseElement {
   #onOpen() {
     this.#lastFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    pushOverlay(this);
+    lockBodyScroll();
     this.#removeDocumentFocusListener = this.listen(
       document,
       "focusin",
@@ -188,6 +197,8 @@ export class RowanDialog extends BaseElement {
   }
 
   #onClose() {
+    removeOverlay(this);
+    unlockBodyScroll();
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 
@@ -244,34 +255,7 @@ export class RowanDialog extends BaseElement {
   }
 
   #collectFocusableElements() {
-    const seen = new Set();
-    const elements = [];
-
-    const addFocusable = (element) => {
-      if (!(element instanceof HTMLElement)) return;
-      if (seen.has(element)) return;
-      if (!element.matches(FOCUSABLE_SELECTOR)) return;
-
-      seen.add(element);
-      elements.push(element);
-    };
-
-    this.#panel.querySelectorAll(FOCUSABLE_SELECTOR).forEach((element) => {
-      addFocusable(element);
-    });
-
-    this.#panel.querySelectorAll("slot").forEach((slot) => {
-      slot.assignedElements({ flatten: true }).forEach((element) => {
-        addFocusable(element);
-        if (typeof element.querySelectorAll === "function") {
-          element.querySelectorAll(FOCUSABLE_SELECTOR).forEach((nested) => {
-            addFocusable(nested);
-          });
-        }
-      });
-    });
-
-    return elements;
+    return collectFocusableElements(this.#panel);
   }
 
   #isNodeInDialog(node) {

@@ -8,10 +8,13 @@
 
 .alert {
   align-items: start;
-  background: #eef3ef;
-  border: var(--rowan-border-width) solid #c9d6cb;
+  background: var(
+    --rowan-alert-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg))
+  );
+  border: var(--rowan-border-width) solid var(--rowan-alert-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-md);
-  color: var(--rowan-color-fg);
+  color: var(--rowan-alert-fg, var(--rowan-color-fg));
   display: grid;
   gap: var(--rowan-space-2);
   grid-template-columns: 1fr auto;
@@ -20,18 +23,27 @@
 }
 
 :host([tone="success"]) .alert {
-  background: #e5f1e8;
-  border-color: #b5cdbb;
+  background: var(
+    --rowan-alert-success-bg,
+    color-mix(in srgb, var(--rowan-color-success) 12%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-alert-success-border, var(--rowan-color-border));
 }
 
 :host([tone="warning"]) .alert {
-  background: #f6eddc;
-  border-color: #d8c8a2;
+  background: var(
+    --rowan-alert-warning-bg,
+    color-mix(in srgb, var(--rowan-color-warning) 14%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-alert-warning-border, var(--rowan-color-border));
 }
 
 :host([tone="danger"]) .alert {
-  background: #f7e4e1;
-  border-color: #dfb6b0;
+  background: var(
+    --rowan-alert-danger-bg,
+    color-mix(in srgb, var(--rowan-color-danger) 12%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-alert-danger-border, var(--rowan-color-border));
 }
 
 .message {

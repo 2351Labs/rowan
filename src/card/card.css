@@ -7,7 +7,7 @@
 }
 
 .card {
-  background: var(--rowan-card-bg, #ffffff);
+  background: var(--rowan-card-bg, var(--rowan-color-bg));
   border: var(--rowan-border-width) solid var(--rowan-card-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-lg);
   color: var(--rowan-color-fg);

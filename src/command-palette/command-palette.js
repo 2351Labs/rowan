@@ -2,16 +2,11 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { collectFocusableElements } from "../lib/focus.js";
+import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import { RowanCommandItem } from "../command-item/command-item.js";
 
 let commandPaletteId = 0;
-
-const FOCUSABLE_SELECTOR = [
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "[href]",
-  "[tabindex]:not([tabindex='-1'])",
-].join(",");
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -125,6 +120,8 @@ export class RowanCommandPalette extends BaseElement {
       return;
     }
 
+    if (!isTopmostOverlay(this)) return;
+
     if (!this.#isNodeInPalette(event.target)) this.#focusFirstElement();
   };
 
@@ -146,6 +143,7 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   disconnectedCallback() {
+    removeOverlay(this);
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
     this.#removeDocumentHotkeyListener?.();
@@ -528,6 +526,7 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #onClose() {
+    removeOverlay(this);
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 
@@ -541,6 +540,7 @@ export class RowanCommandPalette extends BaseElement {
   #installFocusContainment() {
     if (this.#removeDocumentFocusListener) return;
 
+    pushOverlay(this);
     this.#removeDocumentFocusListener = this.listen(
       document,
       "focusin",
@@ -582,10 +582,9 @@ export class RowanCommandPalette extends BaseElement {
     first.focus();
   }
 
+  // Slotted command items are an arrow-navigated listbox, not Tab stops.
   #collectFocusableElements() {
-    return [...this.#panel.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
-      (element) => element instanceof HTMLElement && !element.hidden,
-    );
+    return collectFocusableElements(this.#panel, { includeSlotted: false });
   }
 
   #isNodeInPalette(node) {

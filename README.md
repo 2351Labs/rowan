@@ -157,6 +157,16 @@ Rowan tokens are layered so teams can theme once and keep component APIs stable.
 2. Semantic tokens, for example `--rowan-color-bg`, `--rowan-color-fg`, `--rowan-color-accent`
 3. Component tokens, for example `--rowan-button-bg`, `--rowan-field-border`
 
+Component tokens derive from the semantic layer, so setting the semantic layer alone
+produces a readable theme. `--rowan-color-surface` is the raised surface behind cards,
+dialogs, and fields, and `--rowan-color-accent-contrast` is the text drawn on an accent
+fill; both default to `--rowan-color-bg` when a theme does not set them.
+
+Apply a theme at the same element that declares the tokens, normally `:root`. A custom
+property that references another custom property resolves where it is declared, so a
+theme scoped to a nested wrapper must also re-declare the component tokens it changes.
+The shipped `light.css` and `dark.css` do this for you.
+
 Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and as CSS files you can import globally.
 
 ```css
@@ -164,14 +174,16 @@ Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and 
   --rowan-color-bg: #f8f7f2;
   --rowan-color-fg: #1f2421;
   --rowan-color-accent: #1d432f;
+  --rowan-color-surface: #ffffff;
   --rowan-button-bg: var(--rowan-color-accent);
 }
 
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --rowan-color-bg: #111714;
   --rowan-color-fg: #ecf0e9;
   --rowan-color-accent: #7fc095;
-  --rowan-button-fg: #10261c;
+  --rowan-color-surface: #1a221d;
+  --rowan-color-accent-contrast: #10261c;
 }
 ```
 

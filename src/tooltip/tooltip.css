@@ -12,9 +12,9 @@
 }
 
 .tooltip {
-  background: #1f2421;
+  background: var(--rowan-tooltip-bg, var(--rowan-color-fg));
   border-radius: var(--rowan-radius-sm);
-  color: #ffffff;
+  color: var(--rowan-tooltip-fg, var(--rowan-color-bg));
   font-family: var(--rowan-font-family);
   font-size: 0.75rem;
   left: 50%;

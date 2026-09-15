@@ -8,9 +8,12 @@
 
 .avatar {
   align-items: center;
-  background: #dbe5dd;
+  background: var(
+    --rowan-avatar-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 14%, var(--rowan-color-bg))
+  );
   border-radius: 50%;
-  color: var(--rowan-color-forest-900);
+  color: var(--rowan-avatar-fg, var(--rowan-color-fg));
   display: inline-flex;
   font-family: var(--rowan-font-family);
   font-size: 0.82rem;

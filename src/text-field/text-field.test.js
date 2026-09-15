@@ -20,6 +20,83 @@ describe("rowan-text-field", () => {
     expect(element.value).to.equal("cedar");
   });
 
+  it("keeps a password value out of the DOM", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.type = "password";
+    document.body.append(element);
+    await nextMicrotask();
+
+    element.value = "hunter2";
+
+    expect(element.value).to.equal("hunter2");
+    expect(element.hasAttribute("value")).to.equal(false);
+    expect(element.outerHTML).to.not.include("hunter2");
+
+    const input = element.shadowRoot.querySelector("input");
+    input.value = "typed-secret";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+
+    expect(element.value).to.equal("typed-secret");
+    expect(element.outerHTML).to.not.include("typed-secret");
+  });
+
+  it("evicts a markup-provided password value from the attribute", async () => {
+    document.body.innerHTML = `<rowan-text-field type="password" value="from-markup"></rowan-text-field>`;
+    const element = document.querySelector("rowan-text-field");
+    await nextMicrotask();
+
+    expect(element.value).to.equal("from-markup");
+    expect(element.hasAttribute("value")).to.equal(false);
+  });
+
+  it("exposes the standard validity surface", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-text-field");
+    element.name = "email";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.form).to.equal(form);
+    expect(element.willValidate).to.equal(true);
+    expect(element.validity.valueMissing).to.equal(true);
+    expect(element.validationMessage).to.not.equal("");
+
+    element.value = "ada@example.com";
+    await nextMicrotask();
+
+    expect(element.validity.valid).to.equal(true);
+  });
+
+  it("keeps a consumer custom error through unrelated renders", async () => {
+    const element = document.createElement("rowan-text-field");
+    document.body.append(element);
+    await nextMicrotask();
+
+    element.value = "ada@example.com";
+    element.setCustomValidity("Email already registered");
+    await nextMicrotask();
+
+    expect(element.validity.customError).to.equal(true);
+    expect(element.validationMessage).to.equal("Email already registered");
+
+    element.placeholder = "Work email";
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.validity.customError).to.equal(true);
+    expect(element.validationMessage).to.equal("Email already registered");
+
+    element.setCustomValidity("");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.validity.customError).to.equal(false);
+    expect(element.validity.valid).to.equal(true);
+  });
+
   it("emits rowan-change when user changes the value", async () => {
     const element = document.createElement("rowan-text-field");
     document.body.append(element);

@@ -13,7 +13,7 @@
 }
 
 .input {
-  background: var(--rowan-field-bg, #ffffff);
+  background: var(--rowan-field-bg, var(--rowan-color-bg));
   border: var(--rowan-border-width) solid var(--rowan-field-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-md);
   color: var(--rowan-field-fg, var(--rowan-color-fg));

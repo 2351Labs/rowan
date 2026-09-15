@@ -6,33 +6,57 @@
   --rowan-color-accent: var(--rowan-color-forest-700);
   --rowan-color-border: #d8dcd5;
   --rowan-color-danger: var(--rowan-color-danger-600);
+  --rowan-color-success: #2f7a4d;
+  --rowan-color-warning: #9b7018;
+  --rowan-color-surface: #ffffff;
+  --rowan-color-accent-contrast: #ffffff;
 
-  --rowan-button-bg: var(--rowan-color-accent);
-  --rowan-button-fg: #ffffff;
-  --rowan-field-bg: #ffffff;
-  --rowan-card-bg: #ffffff;
-  --rowan-dialog-bg: #ffffff;
-  --rowan-chip-bg: #eef3ef;
-  --rowan-chip-border: #c9d6cb;
+  /* Re-declared so a nested [data-theme] scope re-resolves these against this theme. */
+  --rowan-button-fg: var(--rowan-color-accent-contrast);
+  --rowan-field-bg: var(--rowan-color-surface);
+  --rowan-card-bg: var(--rowan-color-surface);
+  --rowan-dialog-bg: var(--rowan-color-surface);
+  --rowan-chip-bg: color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg));
+  --rowan-chip-border: color-mix(in srgb, var(--rowan-color-accent) 30%, var(--rowan-color-border));
   --rowan-chip-fg: var(--rowan-color-fg);
-  --rowan-chip-success-bg: #e5f1e8;
-  --rowan-chip-success-border: #b5cdbb;
-  --rowan-chip-warning-bg: #f6eddc;
-  --rowan-chip-warning-border: #d8c8a2;
-  --rowan-chip-danger-bg: #f7e4e1;
-  --rowan-chip-danger-border: #dfb6b0;
-  --rowan-skeleton-base: #e6ebe5;
-  --rowan-skeleton-highlight: #f4f7f2;
+  --rowan-chip-success-bg: color-mix(
+    in srgb,
+    var(--rowan-color-success) 12%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-success-border: color-mix(
+    in srgb,
+    var(--rowan-color-success) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-warning-bg: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 14%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-warning-border: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 34%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-danger-bg: color-mix(in srgb, var(--rowan-color-danger) 12%, var(--rowan-color-bg));
+  --rowan-chip-danger-border: color-mix(
+    in srgb,
+    var(--rowan-color-danger) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-skeleton-base: color-mix(in srgb, var(--rowan-color-fg) 10%, var(--rowan-color-bg));
+  --rowan-skeleton-highlight: color-mix(in srgb, var(--rowan-color-fg) 4%, var(--rowan-color-bg));
   --rowan-calendar-bg: var(--rowan-card-bg);
   --rowan-calendar-fg: var(--rowan-color-fg);
   --rowan-calendar-muted: var(--rowan-color-muted);
   --rowan-calendar-border: var(--rowan-color-border);
   --rowan-calendar-accent: var(--rowan-color-accent);
-  --rowan-calendar-accent-contrast: #ffffff;
+  --rowan-calendar-accent-contrast: var(--rowan-color-accent-contrast);
+  --rowan-segmented-control-active-fg: var(--rowan-color-accent-contrast);
   --rowan-toast-bg: var(--rowan-card-bg);
   --rowan-toast-fg: var(--rowan-color-fg);
   --rowan-toast-border: var(--rowan-color-border);
   --rowan-toast-shadow: 0 10px 24px rgb(16 28 22 / 18%);
-  --rowan-toaster-z-index: 1000;
   --rowan-overlay-backdrop: rgb(16 28 22 / 48%);
 }

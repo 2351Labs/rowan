@@ -467,9 +467,9 @@ export class RowanCalendar extends BaseElement {
   setValidity(flags = {}, message = "", anchor = this.#grid) {
     if (this.internals && typeof this.internals.setValidity === "function") {
       if (anchor instanceof HTMLElement) {
-        this.internals.setValidity(flags, message, anchor);
+        this.applyValidity(flags, message, anchor);
       } else {
-        this.internals.setValidity(flags, message);
+        this.applyValidity(flags, message);
       }
     }
   }

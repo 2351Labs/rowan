@@ -93,6 +93,7 @@ export class BaseElement extends HTMLElement {
   #componentStyleTag = null;
   #renderRoot = null;
   #formDisabled = false;
+  #customValidityMessage = "";
 
   constructor() {
     super();
@@ -155,6 +156,47 @@ export class BaseElement extends HTMLElement {
 
   get renderRoot() {
     return this.#renderRoot;
+  }
+
+  get form() {
+    return this.constructor.formAssociated ? (this.#internals?.form ?? null) : null;
+  }
+
+  get labels() {
+    return this.constructor.formAssociated ? (this.#internals?.labels ?? null) : null;
+  }
+
+  get validity() {
+    return this.constructor.formAssociated ? this.#internals?.validity : undefined;
+  }
+
+  get validationMessage() {
+    return this.constructor.formAssociated ? (this.#internals?.validationMessage ?? "") : "";
+  }
+
+  get willValidate() {
+    return this.constructor.formAssociated ? (this.#internals?.willValidate ?? false) : false;
+  }
+
+  setCustomValidity(message) {
+    this.#customValidityMessage = String(message ?? "");
+    this.requestRender();
+  }
+
+  /** Applies validity with the consumer's custom error merged in, so renders cannot erase it. */
+  applyValidity(flags = {}, message = "", anchor = undefined) {
+    if (!this.#internals || typeof this.#internals.setValidity !== "function") return;
+
+    const customMessage = this.#customValidityMessage;
+    const nextFlags = customMessage ? { ...flags, customError: true } : flags;
+    const nextMessage = customMessage || message;
+
+    if (anchor instanceof HTMLElement) {
+      this.#internals.setValidity(nextFlags, nextMessage, anchor);
+      return;
+    }
+
+    this.#internals.setValidity(nextFlags, nextMessage);
   }
 
   requestRender() {

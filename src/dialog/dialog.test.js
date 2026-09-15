@@ -1,7 +1,15 @@
 import { expect } from "@esm-bundle/chai";
 import "./dialog.js";
+import "../text-field/text-field.js";
+import "../button/button.js";
 
 const wait = () => Promise.resolve();
+
+const settle = async () => {
+  await wait();
+  await wait();
+  await wait();
+};
 
 async function waitForStyleLink(shadowRoot) {
   const link = shadowRoot.querySelector('link[rel="stylesheet"]');
@@ -20,6 +28,92 @@ async function waitForStyleLink(shadowRoot) {
     link.addEventListener("error", onLoad, { once: true });
   });
 }
+
+describe("rowan-dialog focus containment", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("includes slotted Rowan form controls in the focus cycle", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const field = document.createElement("rowan-text-field");
+    field.label = "Email";
+    dialog.append(field);
+    document.body.append(dialog);
+    await settle();
+
+    dialog.open = true;
+    await settle();
+    await settle();
+
+    const close = dialog.shadowRoot.querySelector(".close");
+    const panel = dialog.shadowRoot.querySelector(".panel");
+    close.focus();
+
+    // The close button is first, so Shift+Tab wraps to the last focusable.
+    // The old tag allowlist did not recognise rowan-text-field, so it wrapped to itself.
+    panel.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey: true,
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+      }),
+    );
+    await settle();
+
+    expect(document.activeElement).to.equal(field);
+  });
+
+  it("lets only the topmost dialog recapture focus", async () => {
+    const outside = document.createElement("button");
+    outside.textContent = "Outside";
+
+    const first = document.createElement("rowan-dialog");
+    const firstButton = document.createElement("rowan-button");
+    firstButton.textContent = "First";
+    first.append(firstButton);
+
+    const second = document.createElement("rowan-dialog");
+    const secondButton = document.createElement("rowan-button");
+    secondButton.textContent = "Second";
+    second.append(secondButton);
+
+    document.body.append(outside, first, second);
+    await settle();
+
+    first.open = true;
+    await settle();
+    await settle();
+
+    second.open = true;
+    await settle();
+    await settle();
+
+    expect(second.contains(document.activeElement)).to.equal(true);
+    expect(first.contains(document.activeElement)).to.equal(false);
+  });
+
+  it("locks and restores document scroll around the open state", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const button = document.createElement("rowan-button");
+    button.textContent = "Close";
+    dialog.append(button);
+    document.body.append(dialog);
+    await settle();
+
+    const initialOverflow = document.body.style.overflow;
+
+    dialog.open = true;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    dialog.open = false;
+    await settle();
+    expect(document.body.style.overflow).to.equal(initialOverflow);
+  });
+});
 
 describe("rowan-dialog", () => {
   afterEach(() => {

@@ -145,7 +145,7 @@ export class RowanTextarea extends BaseElement {
 
   setValidity(flags = {}, message = "", anchor = this.#input) {
     if (this.internals && typeof this.internals.setValidity === "function") {
-      this.internals.setValidity(flags, message, anchor);
+      this.applyValidity(flags, message, anchor);
     }
   }
 

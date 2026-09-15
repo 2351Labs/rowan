@@ -15,6 +15,14 @@ export class BaseElement extends HTMLElement {
     formDisabledCallback(disabled: any): void;
     get internals(): null;
     get renderRoot(): null;
+    get form(): any;
+    get labels(): any;
+    get validity(): any;
+    get validationMessage(): any;
+    get willValidate(): any;
+    setCustomValidity(message: any): void;
+    /** Applies validity with the consumer's custom error merged in, so renders cannot erase it. */
+    applyValidity(flags?: {}, message?: string, anchor?: undefined): void;
     requestRender(): void;
     render(): void;
     setComponentStyles(cssText: any): void;

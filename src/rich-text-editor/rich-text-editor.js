@@ -251,9 +251,9 @@ export class RowanRichTextEditor extends BaseElement {
   setValidity(flags = {}, message = "", anchor = this.#activeInput()) {
     if (this.internals && typeof this.internals.setValidity === "function") {
       if (anchor instanceof HTMLElement) {
-        this.internals.setValidity(flags, message, anchor);
+        this.applyValidity(flags, message, anchor);
       } else {
-        this.internals.setValidity(flags, message);
+        this.applyValidity(flags, message);
       }
     }
   }

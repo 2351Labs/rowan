@@ -2,18 +2,8 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
-
-const FOCUSABLE_SELECTOR = [
-  "button:not([disabled])",
-  "[href]",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-  "rowan-button:not([disabled])",
-  "rowan-icon-button:not([disabled])",
-  "rowan-link",
-].join(",");
+import { collectFocusableElements } from "../lib/focus.js";
+import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 
 /**
  * Side panel drawer.
@@ -44,6 +34,7 @@ export class RowanDrawer extends BaseElement {
   #isOpen = false;
   #handleDocumentFocusIn = (event) => {
     if (!this.open || !(event.target instanceof Node)) return;
+    if (!isTopmostOverlay(this)) return;
     if (!this.#isNodeInDrawer(event.target)) this.#focusFirstElement();
   };
 
@@ -158,6 +149,7 @@ export class RowanDrawer extends BaseElement {
   #onOpen() {
     this.#lastFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    pushOverlay(this);
     this.#removeDocumentFocusListener = this.listen(
       document,
       "focusin",
@@ -171,6 +163,7 @@ export class RowanDrawer extends BaseElement {
   }
 
   #onClose() {
+    removeOverlay(this);
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 
@@ -216,28 +209,7 @@ export class RowanDrawer extends BaseElement {
   }
 
   #collectFocusableElements() {
-    const seen = new Set();
-    const elements = [];
-    const addFocusable = (element) => {
-      if (!(element instanceof HTMLElement) || seen.has(element)) return;
-      if (!element.matches(FOCUSABLE_SELECTOR)) return;
-
-      seen.add(element);
-      elements.push(element);
-    };
-
-    this.#panel.querySelectorAll(FOCUSABLE_SELECTOR).forEach((element) => {
-      addFocusable(element);
-    });
-
-    this.#panel.querySelectorAll("slot").forEach((slot) => {
-      slot.assignedElements({ flatten: true }).forEach((element) => {
-        addFocusable(element);
-        element.querySelectorAll?.(FOCUSABLE_SELECTOR).forEach((nested) => addFocusable(nested));
-      });
-    });
-
-    return elements;
+    return collectFocusableElements(this.#panel);
   }
 
   #titleText() {

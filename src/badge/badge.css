@@ -8,10 +8,13 @@
 
 .badge {
   align-items: center;
-  background: #e8f0eb;
-  border: var(--rowan-border-width) solid #b8cfc0;
+  background: var(
+    --rowan-badge-bg,
+    color-mix(in srgb, var(--rowan-color-accent) 12%, var(--rowan-color-bg))
+  );
+  border: var(--rowan-border-width) solid var(--rowan-badge-border, var(--rowan-color-border));
   border-radius: 999px;
-  color: var(--rowan-color-fg);
+  color: var(--rowan-badge-fg, var(--rowan-color-fg));
   display: inline-flex;
   font-family: var(--rowan-font-family);
   font-size: var(--rowan-font-size-sm);
@@ -22,18 +25,27 @@
 }
 
 :host([tone="success"]) .badge {
-  background: #deece4;
-  border-color: #a6c7b2;
+  background: var(
+    --rowan-badge-success-bg,
+    color-mix(in srgb, var(--rowan-color-success) 14%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-badge-success-border, var(--rowan-color-border));
 }
 
 :host([tone="warning"]) .badge {
-  background: #f2e6cf;
-  border-color: #d4bd8a;
+  background: var(
+    --rowan-badge-warning-bg,
+    color-mix(in srgb, var(--rowan-color-warning) 16%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-badge-warning-border, var(--rowan-color-border));
 }
 
 :host([tone="danger"]) .badge {
-  background: #f6dfdc;
-  border-color: #d9a7a1;
+  background: var(
+    --rowan-badge-danger-bg,
+    color-mix(in srgb, var(--rowan-color-danger) 14%, var(--rowan-color-bg))
+  );
+  border-color: var(--rowan-badge-danger-border, var(--rowan-color-border));
 }
 
 :host([size="sm"]) .badge {

@@ -27,7 +27,7 @@
 }
 
 .panel {
-  background: var(--rowan-dialog-bg, #ffffff);
+  background: var(--rowan-dialog-bg, var(--rowan-color-bg));
   border: var(--rowan-border-width) solid var(--rowan-color-border);
   border-radius: var(--rowan-radius-lg);
   color: var(--rowan-color-fg);
