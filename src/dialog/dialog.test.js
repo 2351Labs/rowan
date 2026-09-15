@@ -83,6 +83,13 @@ describe("rowan-dialog focus containment", () => {
 
     expect(second.contains(document.activeElement)).to.equal(true);
     expect(first.contains(document.activeElement)).to.equal(false);
+
+    // The lower dialog sits below the top layer, so it cannot pull focus back.
+    firstButton.focus();
+    await settle();
+
+    expect(first.contains(document.activeElement)).to.equal(false);
+    expect(second.contains(document.activeElement)).to.equal(true);
   });
 
   it("locks and restores document scroll around the open state", async () => {

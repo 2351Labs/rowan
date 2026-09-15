@@ -24,7 +24,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)                  |
 | F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                                           |
 | F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                                           |
-| F-18 | Untested axes                                                            | Medium   | Open                                                |
+| F-18 | Untested axes                                                            | Medium   | **Fixed**                                           |
 
 ---
 
@@ -678,6 +678,32 @@ darker shimmer — so they no longer break when token values legitimately change
 - **Severity:** Medium
 - **Evidence:** Coverage exists for roving focus, reflection, virtual collection, table events, and toaster returns. No coverage found for custom-validity persistence (F-07), external-label naming (F-10), fieldset re-enable (F-05), multi-overlay focus (F-13), or React re-render property churn (F-03).
 - **Fix:** Each finding above names the specific assertion to add.
+
+**Resolution (fixed).** All five axes now have coverage. Four were added while fixing the
+findings themselves; each is named here so the claim is checkable rather than asserted:
+
+| Axis                               | Test                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Custom-validity persistence (F-07) | `text-field.test.js` — "keeps a consumer custom error through unrelated renders"                                                           |
+| External-label naming (F-10)       | `text-field.test.js` — "takes its accessible name from an external label element" and "prefers the label attribute over an external label" |
+| Fieldset re-enable (F-05)          | `text-field.test.js` — "re-enables its inner control when a disabled fieldset is re-enabled"                                               |
+| Multi-overlay focus (F-13)         | `dialog.test.js` — "lets only the topmost dialog recapture focus"                                                                          |
+| React property churn (F-03)        | `react.test.js` — "does not reassign unchanged properties on re-render"                                                                    |
+
+The custom-validity test is the strongest of the four inherited ones: it sets a custom
+error, triggers an unrelated re-render by changing `placeholder`, asserts the error
+survives, then clears it and asserts `valid` returns.
+
+The multi-overlay test was the weak one and was strengthened. It previously only asserted
+where focus happened to land after opening a second dialog, which a broken implementation
+could satisfy by accident. It now also calls `focus()` on a control inside the lower dialog
+and asserts focus does not move there, which is the actual containment contract. Verified
+non-vacuous: leaving the second dialog closed makes it fail.
+
+Two caveats on the scope of this finding. First, it only ever named these five axes, so
+closing it does not mean coverage is complete. Second, the "not reviewed, therefore not
+cleared" list below still stands unchanged — those components have not been audited, and
+their existing tests were not assessed for depth.
 
 ---
 
