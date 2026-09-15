@@ -36716,6 +36716,16 @@
             },
             {
               "kind": "method",
+              "name": "focusFirstOption",
+              "description": "Moves focus to the first option that can receive it.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "setFormValue",
               "parameters": [
                 {
@@ -39892,17 +39902,6 @@
               "kind": "method",
               "name": "#firstAvailableOption",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#focusFirstOption",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "attempt",
-                  "default": "0"
-                }
-              ]
             },
             {
               "kind": "method",

@@ -114,9 +114,10 @@ describe("rowan-combobox", () => {
     document.body.append(el);
     await nextMicrotask();
 
-    expect(el.internals.role).to.equal("combobox");
-    expect(el.internals.ariaAutoComplete).to.equal("list");
-    expect(el.internals.ariaExpanded).to.equal("false");
+    // The datalist popup is browser-owned, so the host must not claim a combobox role it
+    // cannot report expansion state for.
+    expect(el.internals.role).to.equal(null);
+    expect(el.internals.ariaExpanded).to.equal(null);
     expect(el.internals.ariaRequired).to.equal("true");
     expect(el.internals.ariaInvalid).to.equal("true");
     expect(el.internals.ariaLabel).to.equal("City");

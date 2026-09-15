@@ -177,6 +177,18 @@ export class RowanListbox extends BaseElement {
     return this.#options().filter((option) => selected.has(option.value));
   }
 
+  /**
+   * Moves focus to the first option that can receive it.
+   * @returns {boolean} Whether an option received focus.
+   */
+  focusFirstOption() {
+    const [first] = this.#availableOptions();
+    if (!first) return false;
+
+    this.#focusOption(first);
+    return true;
+  }
+
   setFormValue(value = null, state = undefined) {
     if (this.internals && typeof this.internals.setFormValue === "function") {
       this.internals.setFormValue(value, state);

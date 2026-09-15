@@ -288,17 +288,8 @@ export class RowanCombobox extends BaseElement {
 
     const invalidState = this.required && this.value.trim().length === 0 ? "true" : "false";
 
-    if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "combobox";
-    }
-
-    if (!this.hasAttribute("aria-autocomplete") && "ariaAutoComplete" in this.internals) {
-      this.internals.ariaAutoComplete = "list";
-    }
-
-    if (!this.hasAttribute("aria-expanded") && "ariaExpanded" in this.internals) {
-      this.internals.ariaExpanded = "false";
-    }
+    // The popup belongs to the native datalist, so the host cannot honestly report combobox
+    // expansion state. The inner input carries the combobox semantics instead.
 
     if (!this.hasAttribute("aria-required") && "ariaRequired" in this.internals) {
       this.internals.ariaRequired = this.required ? "true" : "false";

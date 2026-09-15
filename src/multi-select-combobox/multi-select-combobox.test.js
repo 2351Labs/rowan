@@ -124,4 +124,21 @@ describe("rowan-multi-select-combobox", () => {
     expect(combobox.internals.role).to.equal("combobox");
     expect(combobox.internals.ariaAutoComplete).to.equal("list");
   });
+
+  it("moves focus into the listbox without waiting for a timer", async () => {
+    const combobox = await renderCombobox();
+    const input = combobox.shadowRoot.querySelector("input");
+    input.focus();
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowDown" }),
+    );
+
+    await nextMicrotask();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const option = combobox.shadowRoot.querySelector("rowan-option");
+    expect(combobox.shadowRoot.activeElement === option).to.equal(true);
+    expect(option.tabIndex).to.equal(0);
+  });
 });

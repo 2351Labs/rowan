@@ -501,7 +501,8 @@ export class RowanMultiSelectCombobox extends BaseElement {
     if (event.key === keys.ARROW_DOWN) {
       event.preventDefault();
       this.open = true;
-      setTimeout(() => this.#focusFirstOption());
+      // Opening queues a render that recreates the options, so focus once it has settled.
+      queueMicrotask(() => this.#listbox?.focusFirstOption());
       return;
     }
 
@@ -537,16 +538,6 @@ export class RowanMultiSelectCombobox extends BaseElement {
     return [...this.#listbox.querySelectorAll("rowan-option")].find(
       (option) => !option.disabled && !option.hidden,
     );
-  }
-
-  #focusFirstOption(attempt = 0) {
-    const option = this.#firstAvailableOption();
-    if (!option || option.tabIndex !== 0) {
-      if (attempt < 3) setTimeout(() => this.#focusFirstOption(attempt + 1));
-      return;
-    }
-
-    option.focus({ preventScroll: true });
   }
 
   #removeValue(value) {

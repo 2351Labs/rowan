@@ -37,6 +37,11 @@ export class RowanListbox extends BaseElement {
     get selected(): string[];
     /** @returns {RowanOption[]} */
     get selectedOptions(): RowanOption[];
+    /**
+     * Moves focus to the first option that can receive it.
+     * @returns {boolean} Whether an option received focus.
+     */
+    focusFirstOption(): boolean;
     setFormValue(value?: null, state?: undefined): void;
     setValidity(flags?: {}, message?: string, anchor?: null): void;
     formResetCallback(): void;

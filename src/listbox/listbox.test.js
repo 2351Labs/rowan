@@ -37,6 +37,23 @@ describe("rowan-listbox", () => {
     document.body.innerHTML = "";
   });
 
+  it("focuses the first available option on request", async () => {
+    const { listbox, design } = await renderListbox();
+
+    expect(listbox.focusFirstOption()).to.equal(true);
+    expect(document.activeElement).to.equal(design);
+    expect(design.tabIndex).to.equal(0);
+  });
+
+  it("reports when no option can take focus", async () => {
+    const { listbox, design, engineering, operations } = await renderListbox();
+    for (const option of [design, engineering, operations]) option.disabled = true;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(listbox.focusFirstOption()).to.equal(false);
+  });
+
   it("keeps property-driven selection silent and emits a composed change for user selection", async () => {
     const { listbox, design, engineering } = await renderListbox();
     let detail = null;
