@@ -113,6 +113,53 @@ describe("rowan-dialog focus containment", () => {
     await settle();
     expect(document.body.style.overflow).to.equal(initialOverflow);
   });
+
+  it("keeps the page scroll locked until the last overlay closes", async () => {
+    const first = document.createElement("rowan-dialog");
+    const second = document.createElement("rowan-dialog");
+    document.body.append(first, second);
+    await settle();
+
+    const initialOverflow = document.body.style.overflow;
+
+    first.open = true;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    second.open = true;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    second.open = false;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    first.open = false;
+    await settle();
+    expect(document.body.style.overflow).to.equal(initialOverflow);
+  });
+
+  it("releases the scroll lock when an open overlay is removed from the document", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const other = document.createElement("rowan-dialog");
+    document.body.append(dialog, other);
+    await settle();
+
+    const initialOverflow = document.body.style.overflow;
+
+    dialog.open = true;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    dialog.remove();
+    // The stack prunes disconnected overlays on its next update.
+    other.open = true;
+    await settle();
+    other.open = false;
+    await settle();
+
+    expect(document.body.style.overflow).to.equal(initialOverflow);
+  });
 });
 
 describe("rowan-dialog", () => {

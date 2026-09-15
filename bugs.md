@@ -5,26 +5,26 @@ IDs `F-NN` are stable and referenced by the review write-up.
 
 ## Triage summary
 
-| ID   | Title                                                                    | Severity | Status                             |
-| ---- | ------------------------------------------------------------------------ | -------- | ---------------------------------- |
-| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3       |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)  |
-| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                          |
-| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented         |
-| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                          |
-| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                          |
-| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                          |
-| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                          |
-| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                          |
-| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                          |
-| F-11 | Four similar controls use four different interaction architectures       | Medium   | Deferred — documented              |
-| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                          |
-| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                          |
-| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | **Fixed** (scroll lock; see note)  |
-| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces) |
-| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                          |
-| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                          |
-| F-18 | Untested axes                                                            | Medium   | Open                               |
+| ID   | Title                                                                    | Severity | Status                                |
+| ---- | ------------------------------------------------------------------------ | -------- | ------------------------------------- |
+| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3          |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)     |
+| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                             |
+| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented            |
+| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                             |
+| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                             |
+| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                             |
+| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                             |
+| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                             |
+| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                             |
+| F-11 | Four similar controls use four different interaction architectures       | Medium   | Deferred — documented                 |
+| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                             |
+| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                             |
+| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | Scroll lock **fixed**; inert deferred |
+| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)    |
+| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                             |
+| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                             |
+| F-18 | Untested axes                                                            | Medium   | Open                                  |
 
 ---
 
@@ -323,6 +323,36 @@ early unless `isTopmostOverlay(this)`. Stacked overlays can no longer fight over
 `lockBodyScroll()` / `unlockBodyScroll()`, wired into `rowan-dialog`, which restores the
 previous `overflow` on close. Background `inert` is still **not** applied; `aria-modal`
 covers assistive technology, so this remains open for `drawer` and `command-palette`.
+
+**Update — scroll lock complete; background inert deliberately deferred.**
+
+The overlay stack now owns page scrolling outright. It locks when the stack becomes
+non-empty and restores the previous `overflow` when it empties, so `dialog`, `drawer`,
+`command-palette`, and `row-details-panel` are all covered and stacked overlays cannot
+unlock early. The stack also prunes overlays that are removed from the document while
+open, which previously leaked a lock. Replacing the per-component `lock`/`unlock` pairs
+with single ownership removed a whole class of balance bugs.
+
+Background `inert` was implemented and then **removed before shipping**. A DOM-walking
+implementation — walking from the overlay to `<body>` and inerting siblings at each
+level, skipping author-owned `inert` and live-region hosts — reliably hung the
+`command-palette` and `row-details-panel` suites, taking them from passing to zero
+reported tests. Isolated probes showed the parts were individually sound: the traversal
+completed in well under a millisecond, and setting `inert` on a sibling of an open
+palette produced no focus storm and no freeze. The interaction only appears under the
+test harness, which shares `document.body` with the overlays under test. I could not
+isolate the root cause at acceptable cost, and shipping a focus-affecting mechanism that
+is not understood is worse than the gap it closes.
+
+Residual risk is bounded: `aria-modal="true"` is set on all four overlays and the focus
+trap is working and tested, so assistive technology and keyboard focus are already
+contained. What is missing is pointer-interaction blocking on background content and a
+native tab-order backstop.
+
+The right fix is the native `<dialog>` + `showModal()` migration, which provides
+top-layer, `::backdrop`, and inert background from the platform instead of by DOM walking.
+That is a breaking change to the documented `part="backdrop"` and the z-index contract,
+so it belongs on the `1.0` milestone rather than a defect sweep.
 
 ---
 

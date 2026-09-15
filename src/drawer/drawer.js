@@ -38,6 +38,11 @@ export class RowanDrawer extends BaseElement {
     if (!this.#isNodeInDrawer(event.target)) this.#focusFirstElement();
   };
 
+  disconnectedCallback() {
+    removeOverlay(this);
+    super.disconnectedCallback();
+  }
+
   get open() {
     return this.readBoolean("open");
   }
@@ -166,7 +171,6 @@ export class RowanDrawer extends BaseElement {
     removeOverlay(this);
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
-
     if (this.#lastFocused?.isConnected && typeof this.#lastFocused.focus === "function") {
       this.#lastFocused.focus();
     }

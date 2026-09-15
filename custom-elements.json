@@ -15605,6 +15605,11 @@
             },
             {
               "kind": "method",
+              "name": "#releaseFocusContainment",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
               "name": "#installFocusContainment",
               "privacy": "private"
             },
@@ -35118,14 +35123,6 @@
             }
           ],
           "description": "Only the topmost overlay may contain focus, so stacked overlays cannot fight over it."
-        },
-        {
-          "kind": "function",
-          "name": "lockBodyScroll"
-        },
-        {
-          "kind": "function",
-          "name": "unlockBodyScroll"
         }
       ],
       "exports": [
@@ -35150,22 +35147,6 @@
           "name": "isTopmostOverlay",
           "declaration": {
             "name": "isTopmostOverlay",
-            "module": "src/lib/overlay-stack.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "lockBodyScroll",
-          "declaration": {
-            "name": "lockBodyScroll",
-            "module": "src/lib/overlay-stack.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "unlockBodyScroll",
-          "declaration": {
-            "name": "unlockBodyScroll",
             "module": "src/lib/overlay-stack.js"
           }
         }

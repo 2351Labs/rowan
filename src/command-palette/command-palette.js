@@ -143,9 +143,7 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   disconnectedCallback() {
-    removeOverlay(this);
-    this.#removeDocumentFocusListener?.();
-    this.#removeDocumentFocusListener = null;
+    this.#releaseFocusContainment();
     this.#removeDocumentHotkeyListener?.();
     this.#removeDocumentHotkeyListener = null;
     this.#clearManagedItems();
@@ -526,15 +524,21 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #onClose() {
-    removeOverlay(this);
-    this.#removeDocumentFocusListener?.();
-    this.#removeDocumentFocusListener = null;
+    this.#releaseFocusContainment();
 
     if (this.#lastFocused?.isConnected && typeof this.#lastFocused.focus === "function") {
       this.#lastFocused.focus();
     }
 
     this.#lastFocused = null;
+  }
+
+  #releaseFocusContainment() {
+    if (!this.#removeDocumentFocusListener) return;
+
+    this.#removeDocumentFocusListener();
+    this.#removeDocumentFocusListener = null;
+    removeOverlay(this);
   }
 
   #installFocusContainment() {

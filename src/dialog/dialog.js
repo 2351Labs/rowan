@@ -2,13 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
-import {
-  isTopmostOverlay,
-  lockBodyScroll,
-  pushOverlay,
-  removeOverlay,
-  unlockBodyScroll,
-} from "../lib/overlay-stack.js";
+import { isTopmostOverlay, pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 
 /**
  * Modal dialog surface.
@@ -54,7 +48,6 @@ export class RowanDialog extends BaseElement {
   disconnectedCallback() {
     if (this.#isOpen) {
       removeOverlay(this);
-      unlockBodyScroll();
       this.#isOpen = false;
     }
 
@@ -182,7 +175,6 @@ export class RowanDialog extends BaseElement {
     this.#lastFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     pushOverlay(this);
-    lockBodyScroll();
     this.#removeDocumentFocusListener = this.listen(
       document,
       "focusin",
@@ -198,7 +190,6 @@ export class RowanDialog extends BaseElement {
 
   #onClose() {
     removeOverlay(this);
-    unlockBodyScroll();
     this.#removeDocumentFocusListener?.();
     this.#removeDocumentFocusListener = null;
 
