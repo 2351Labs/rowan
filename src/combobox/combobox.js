@@ -1,55 +1,84 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { keys } from "../lib/keys.js";
+
+import "../option/option.js";
 
 let comboboxId = 0;
 
-/** @typedef {string | { value: string, label?: string }} RowanComboboxOption */
+/** @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanComboboxOption */
 
 /**
- * Filterable text entry with suggestions.
+ * Filterable text entry with a listbox of suggestions.
+ * Focus stays in the input and the highlighted option is reported with
+ * `aria-activedescendant`, matching the APG combobox pattern.
  * @tag rowan-combobox
  * @attr {string} name
  * @attr {string} value
  * @attr {string} label
  * @attr {string} placeholder
+ * @attr {boolean} open
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @property {RowanComboboxOption[]} options - Available suggestions. Arrays are property-only.
+ * @csspart control
+ * @csspart label
  * @csspart input
+ * @csspart panel
  * @csspart list
+ * @csspart empty
  * @cssprop --rowan-field-bg
- * @event rowan-change - Fired when the committed value changes
+ * @event rowan-change - Fired when the user commits a changed value
  */
 export class RowanCombobox extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./combobox.css", import.meta.url).href;
-  static observedAttributes = ["name", "value", "label", "placeholder", "disabled", "required"];
+  static observedAttributes = [
+    "name",
+    "value",
+    "label",
+    "placeholder",
+    "open",
+    "disabled",
+    "required",
+  ];
   static upgradeProperties = [
     "name",
     "value",
     "label",
     "placeholder",
+    "open",
     "disabled",
     "required",
     "options",
   ];
 
   #input = null;
+  #panel = null;
   #list = null;
+  #empty = null;
   #fallbackLabel = null;
   #defaultValue = null;
   #inputId = "";
   #listId = "";
   #options = [];
   #autoInvalid = false;
+  #activeValue = "";
+  #filtering = false;
+  #lastEmittedValue = null;
+  #hasDocumentPointerListener = false;
 
   connectedCallback() {
     super.connectedCallback();
 
     if (this.#defaultValue === null) {
       this.#defaultValue = this.value;
+    }
+
+    if (this.#lastEmittedValue === null) {
+      this.#lastEmittedValue = this.value;
     }
 
     if (!this.id) {
@@ -60,9 +89,22 @@ export class RowanCombobox extends BaseElement {
     this.#inputId = `${this.id}__input`;
     this.#listId = `${this.id}__list`;
 
+    if (!this.#hasDocumentPointerListener) {
+      this.listen(document, "pointerdown", (event) => this.#handleDocumentPointerDown(event));
+      this.#hasDocumentPointerListener = true;
+    }
+
     this.#syncFormValue();
     this.#syncValidity();
     this.#applyDefaultA11y();
+  }
+
+  get open() {
+    return this.readBoolean("open");
+  }
+
+  set open(value) {
+    this.reflectBoolean("open", Boolean(value));
   }
 
   /** @returns {RowanComboboxOption[]} */
@@ -170,39 +212,49 @@ export class RowanCombobox extends BaseElement {
       this.renderRoot.innerHTML = `
         <div class="control" part="control">
           <label class="sr-only" part="label"></label>
-          <input class="input" part="input" type="text" autocomplete="off" />
-          <datalist class="list" part="list"></datalist>
+          <input class="input" part="input" type="text" autocomplete="off" role="combobox" />
+          <div class="panel" part="panel" hidden>
+            <div class="list" part="list" role="listbox"></div>
+            <div class="empty" part="empty" role="status" hidden>No matching options.</div>
+          </div>
         </div>
       `;
 
       this.#input = this.renderRoot.querySelector("input");
-      this.#list = this.renderRoot.querySelector("datalist");
+      this.#panel = this.renderRoot.querySelector(".panel");
+      this.#list = this.renderRoot.querySelector(".list");
+      this.#empty = this.renderRoot.querySelector(".empty");
       this.#fallbackLabel = this.renderRoot.querySelector("label");
 
       this.listen(this.#input, "input", () => {
+        this.#filtering = true;
         this.value = this.#input.value;
+        this.open = !this.disabled;
+        this.#activeValue = "";
       });
 
       this.listen(this.#input, "change", () => {
-        this.value = this.#input.value;
-
-        emit(this, "rowan-change", {
-          value: this.value,
-        });
+        this.#commitValue(this.#input.value);
       });
+
+      this.listen(this.#input, "keydown", (event) => this.#handleInputKeydown(event));
+      this.listen(this.#list, "click", (event) => this.#handleListClick(event));
     }
 
     this.#renderOptions();
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
-    this.#input.value = this.value;
+    this.#writeInputValue();
     this.#input.placeholder = this.placeholder;
     this.#input.disabled = this.disabled;
     this.#input.required = this.required;
-    this.#input.setAttribute("list", this.#listId);
 
     this.#list.id = this.#listId;
+    this.#input.setAttribute("aria-controls", this.#listId);
+    this.#input.setAttribute("aria-autocomplete", "list");
+    this.#input.setAttribute("aria-expanded", this.open ? "true" : "false");
+    this.#panel.hidden = !this.open;
 
     const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
@@ -221,33 +273,181 @@ export class RowanCombobox extends BaseElement {
   }
 
   #renderOptions() {
-    const options = this.#resolvedOptions();
+    const visible = this.#visibleOptions();
     this.#list.textContent = "";
 
-    for (const item of options) {
-      const option = document.createElement("option");
-      option.value = item.value;
-      option.textContent = item.label;
-      this.#list.append(option);
+    if (!visible.some((item) => item.value === this.#activeValue)) {
+      this.#activeValue = visible.find((item) => !item.disabled)?.value ?? "";
     }
+
+    let activeId = "";
+
+    visible.forEach((item, index) => {
+      const option = document.createElement("rowan-option");
+      option.id = `${this.#listId}-option-${index}`;
+      option.value = item.value;
+      option.label = item.label;
+      option.disabled = item.disabled;
+      option.selected = item.value === this.value;
+
+      const isActive = item.value === this.#activeValue && !item.disabled;
+      option.setActiveDescendant(isActive, this);
+      if (isActive) activeId = option.id;
+
+      this.#list.append(option);
+    });
+
+    this.#empty.hidden = visible.length > 0;
+
+    if (activeId && this.open) {
+      this.#input.setAttribute("aria-activedescendant", activeId);
+    } else {
+      this.#input.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  #visibleOptions() {
+    const options = this.#resolvedOptions();
+    const query = this.#filtering ? this.#input.value.trim().toLocaleLowerCase() : "";
+    if (query.length === 0) return options;
+
+    return options.filter((item) =>
+      `${item.label} ${item.value}`.toLocaleLowerCase().includes(query),
+    );
   }
 
   #resolvedOptions() {
     return this.#options
       .map((item) => {
         if (typeof item === "string") {
-          return { value: item, label: item };
+          return { value: item, label: item, disabled: false };
         }
 
         if (item && typeof item === "object") {
           const value = "value" in item ? String(item.value) : "";
           const label = "label" in item ? String(item.label) : value;
-          return { value, label };
+          return { value, label, disabled: Boolean(item.disabled) };
         }
 
         return null;
       })
       .filter(Boolean);
+  }
+
+  #availableOptions() {
+    return this.#visibleOptions().filter((item) => !item.disabled);
+  }
+
+  #moveActive(step) {
+    const available = this.#availableOptions();
+    if (available.length === 0) return;
+
+    const currentIndex = available.findIndex((item) => item.value === this.#activeValue);
+    const nextIndex = (currentIndex + step + available.length) % available.length;
+    this.#activeValue = available[currentIndex === -1 ? 0 : nextIndex].value;
+    this.requestRender();
+  }
+
+  #handleInputKeydown(event) {
+    if (this.disabled) return;
+
+    if (event.key === keys.ARROW_DOWN) {
+      event.preventDefault();
+      if (!this.open) {
+        this.#filtering = false;
+        this.open = true;
+        this.requestRender();
+        return;
+      }
+
+      this.#moveActive(1);
+      return;
+    }
+
+    if (event.key === keys.ARROW_UP) {
+      event.preventDefault();
+      if (!this.open) {
+        this.#filtering = false;
+        this.open = true;
+        this.requestRender();
+        return;
+      }
+
+      this.#moveActive(-1);
+      return;
+    }
+
+    if (!this.open) return;
+
+    if (event.key === keys.HOME || event.key === keys.END) {
+      const available = this.#availableOptions();
+      if (available.length === 0) return;
+
+      event.preventDefault();
+      this.#activeValue = (event.key === keys.HOME ? available.at(0) : available.at(-1)).value;
+      this.requestRender();
+      return;
+    }
+
+    if (event.key === keys.ENTER) {
+      if (!this.#activeValue) return;
+
+      event.preventDefault();
+      this.#commitValue(this.#activeValue);
+      return;
+    }
+
+    if (event.key === keys.ESCAPE) {
+      event.preventDefault();
+      this.open = false;
+      return;
+    }
+
+    if (event.key === keys.TAB) {
+      this.open = false;
+    }
+  }
+
+  #handleListClick(event) {
+    const target = event
+      .composedPath()
+      .find((node) => node instanceof HTMLElement && node.localName === "rowan-option");
+    if (!target || target.disabled) return;
+
+    event.preventDefault();
+    this.#commitValue(target.value);
+    this.#input.focus();
+  }
+
+  #handleDocumentPointerDown(event) {
+    if (!this.open || !(event.target instanceof Node)) return;
+    if (event.composedPath().includes(this)) return;
+
+    this.open = false;
+  }
+
+  #commitValue(nextValue) {
+    const next = String(nextValue ?? "");
+    this.#filtering = false;
+    this.open = false;
+    this.value = next;
+    this.#activeValue = next;
+
+    if (next === this.#lastEmittedValue) return;
+
+    this.#lastEmittedValue = next;
+    emit(this, "rowan-change", { value: next });
+  }
+
+  // Never write back into the field while the user is typing in it.
+  #writeInputValue() {
+    if (document.activeElement === this && this.#input.value !== this.value && this.#filtering) {
+      return;
+    }
+
+    if (this.#input.value === this.value) return;
+
+    this.#input.value = this.value;
   }
 
   #syncFormValue() {

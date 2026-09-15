@@ -5,6 +5,8 @@
   --_option-hover-bg: var(--rowan-option-hover-bg, transparent);
   --_option-selected-bg: var(--rowan-option-selected-bg, transparent);
   --_option-selected-fg: var(--rowan-option-selected-fg, var(--rowan-color-fg));
+  --_option-active-bg: var(--rowan-option-active-bg, transparent);
+  --_option-active-fg: var(--rowan-option-active-fg, var(--rowan-color-fg));
   --_option-focus-ring: var(--rowan-option-focus-ring, var(--rowan-focus-ring));
   --_option-radius: var(--rowan-option-radius, var(--rowan-radius-sm));
   --_option-font-family: var(--rowan-option-font-family, var(--rowan-font-family));
@@ -46,6 +48,18 @@
 :host([selected]) .option {
   background: var(--_option-selected-bg);
   color: var(--_option-selected-fg);
+}
+
+:host([data-rowan-active]) .option {
+  background: var(--_option-active-bg);
+  color: var(--_option-active-fg);
+}
+
+@media (forced-colors: active) {
+  :host([data-rowan-active]) .option {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
 }
 
 :host([disabled]) .option,

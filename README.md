@@ -286,6 +286,25 @@ not autoplay or serialize panel data.
 </script>
 ```
 
+## List Control Keyboard Model
+
+Rowan uses one rule for every control that presents a collection, so behaviour is
+predictable across components:
+
+- **Input with a popup list** keeps DOM focus in the input and reports the
+  highlighted option with `aria-activedescendant`. This is `rowan-combobox` and
+  `rowan-command-palette`, and it follows the APG combobox pattern.
+- **Standalone collection** moves DOM focus between items with a roving tab index.
+  This is `rowan-listbox`, `rowan-menu`, `rowan-tabs`, and `rowan-tree`.
+
+`rowan-select` stays a thin wrapper over the native `<select>`, so the platform
+provides its popup and keyboard behaviour.
+
+`rowan-combobox` supports Arrow Up and Down to open and move the highlight, Home
+and End to jump, Enter to commit the highlighted option, Escape to close without
+committing, and Tab to close. Typing filters the list. It accepts free text, so
+the committed value does not have to match an option.
+
 ## Optional Integrations
 
 `@rowan-ui/icons` provides 2,098 individually importable SVG icon modules without

@@ -37,6 +37,8 @@ export class RowanOption extends BaseElement {
   #authorTabIndex = null;
   #listboxOwner = null;
   #listboxDisabled = false;
+  #activeOwner = null;
+  #isActiveDescendant = false;
 
   get value() {
     return this.readString("value", "");
@@ -99,6 +101,21 @@ export class RowanOption extends BaseElement {
     this.#rovingTabIndex = next;
     this.#rovingOwner = owner;
     this.tabIndex = next;
+  }
+
+  /**
+   * Marks the option as the controller's active descendant. This is the highlight a
+   * combobox moves with the arrow keys, which is separate from selection.
+   * @internal
+   */
+  setActiveDescendant(active, owner = null) {
+    const next = Boolean(active);
+    if (!next && owner && this.#activeOwner !== owner) return;
+    if (this.#isActiveDescendant === next && this.#activeOwner === (next ? owner : null)) return;
+
+    this.#isActiveDescendant = next;
+    this.#activeOwner = next ? owner : null;
+    this.toggleAttribute("data-rowan-active", next);
   }
 
   /** @internal */

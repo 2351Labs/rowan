@@ -3,6 +3,10 @@ import "./combobox.js";
 
 const nextMicrotask = () => Promise.resolve();
 
+function keydown(element, key) {
+  element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
+}
+
 describe("rowan-combobox", () => {
   afterEach(() => {
     document.body.innerHTML = "";
@@ -20,13 +24,122 @@ describe("rowan-combobox", () => {
     expect(el.value).to.equal("Portland");
   });
 
-  it("renders datalist options from property", async () => {
+  it("renders listbox options from property", async () => {
     const el = document.createElement("rowan-combobox");
     el.options = ["A", "B", "C"];
     document.body.append(el);
     await nextMicrotask();
+    await nextMicrotask();
 
-    expect(el.shadowRoot.querySelectorAll("datalist option").length).to.equal(3);
+    expect(el.shadowRoot.querySelectorAll('[role="listbox"] rowan-option').length).to.equal(3);
+  });
+
+  it("opens from ArrowDown and tracks the active option with aria-activedescendant", async () => {
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Seattle", "Portland", "Boise"];
+    document.body.append(el);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const input = el.shadowRoot.querySelector("input");
+    input.focus();
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.open).to.equal(true);
+    expect(input.getAttribute("aria-expanded")).to.equal("true");
+
+    const first = el.shadowRoot.querySelectorAll("rowan-option")[0];
+    expect(input.getAttribute("aria-activedescendant")).to.equal(first.id);
+    // Focus stays in the input; the popup is tracked by active descendant.
+    expect(el.shadowRoot.activeElement).to.equal(input);
+
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const second = el.shadowRoot.querySelectorAll("rowan-option")[1];
+    expect(input.getAttribute("aria-activedescendant")).to.equal(second.id);
+  });
+
+  it("commits the active option on Enter and emits one change", async () => {
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Seattle", "Portland"];
+    document.body.append(el);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-change", (event) => changes.push(event.detail.value));
+
+    const input = el.shadowRoot.querySelector("input");
+    input.focus();
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    keydown(input, "Enter");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.value).to.equal("Portland");
+    expect(el.open).to.equal(false);
+    expect(changes).to.deep.equal(["Portland"]);
+
+    // A trailing native change for the same value must not emit again.
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    await nextMicrotask();
+    expect(changes).to.deep.equal(["Portland"]);
+  });
+
+  it("closes on Escape without committing the active option", async () => {
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Seattle", "Portland"];
+    document.body.append(el);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const input = el.shadowRoot.querySelector("input");
+    input.focus();
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    keydown(input, "Escape");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.open).to.equal(false);
+    expect(el.value).to.equal("");
+  });
+
+  it("filters options as the user types and skips disabled options", async () => {
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Seattle", { value: "Portland", disabled: true }, "Sacramento"];
+    document.body.append(el);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const input = el.shadowRoot.querySelector("input");
+    input.focus();
+    input.value = "s";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const labels = [...el.shadowRoot.querySelectorAll("rowan-option")].map(
+      (option) => option.value,
+    );
+    expect(labels).to.deep.equal(["Seattle", "Sacramento"]);
+
+    const [first, second] = el.shadowRoot.querySelectorAll("rowan-option");
+    expect(input.getAttribute("aria-activedescendant")).to.equal(first.id);
+
+    // Portland is filtered out, and a disabled option would be skipped anyway.
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(input.getAttribute("aria-activedescendant")).to.equal(second.id);
   });
 
   it("emits rowan-change when user commits a value", async () => {

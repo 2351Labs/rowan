@@ -252,6 +252,8 @@ export const tokenCssText = `
   --rowan-option-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
   --rowan-option-selected-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
   --rowan-option-selected-fg: var(--rowan-color-fg);
+  --rowan-option-active-bg: color-mix(in srgb, var(--rowan-color-accent) 22%, transparent);
+  --rowan-option-active-fg: var(--rowan-color-fg);
   --rowan-option-focus-ring: var(--rowan-focus-ring);
   --rowan-option-radius: var(--rowan-radius-sm);
   --rowan-option-font-family: var(--rowan-font-family);
@@ -944,6 +946,8 @@ export const unregisteredTokenNames = [
   "--rowan-option-hover-bg",
   "--rowan-option-selected-bg",
   "--rowan-option-selected-fg",
+  "--rowan-option-active-bg",
+  "--rowan-option-active-fg",
   "--rowan-option-focus-ring",
   "--rowan-option-radius",
   "--rowan-option-font-family",
@@ -1428,6 +1432,8 @@ export const componentTokenDeclarations = [
   ["--rowan-option-hover-bg", "color-mix(in srgb, var(--rowan-color-accent) 8%, transparent)"],
   ["--rowan-option-selected-bg", "color-mix(in srgb, var(--rowan-color-accent) 14%, transparent)"],
   ["--rowan-option-selected-fg", "var(--rowan-color-fg)"],
+  ["--rowan-option-active-bg", "color-mix(in srgb, var(--rowan-color-accent) 22%, transparent)"],
+  ["--rowan-option-active-fg", "var(--rowan-color-fg)"],
   ["--rowan-option-focus-ring", "var(--rowan-focus-ring)"],
   ["--rowan-option-radius", "var(--rowan-radius-sm)"],
   ["--rowan-option-font-family", "var(--rowan-font-family)"],

@@ -13,7 +13,7 @@
 }
 
 .input {
-  background: var(--rowan-field-bg, #ffffff);
+  background: var(--rowan-field-bg, var(--rowan-color-bg));
   border: var(--rowan-border-width) solid var(--rowan-field-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-md);
   box-sizing: border-box;
@@ -55,4 +55,35 @@
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.panel {
+  background: var(--rowan-combobox-panel-bg, var(--rowan-color-surface, var(--rowan-color-bg)));
+  border: var(--rowan-border-width) solid
+    var(--rowan-combobox-panel-border, var(--rowan-color-border));
+  border-radius: var(--rowan-radius-md);
+  box-sizing: border-box;
+  inline-size: 100%;
+  inset-block-start: calc(100% + var(--rowan-space-1));
+  inset-inline-start: 0;
+  max-block-size: var(--rowan-combobox-panel-max-block-size, 16rem);
+  overflow-y: auto;
+  padding: var(--rowan-space-1);
+  position: absolute;
+  z-index: 1;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.empty {
+  color: var(--rowan-color-muted);
+  font-family: var(--rowan-font-family);
+  font-size: var(--rowan-font-size-sm);
+  padding: var(--rowan-space-2) var(--rowan-space-3);
+}
+
+.empty[hidden] {
+  display: none;
 }

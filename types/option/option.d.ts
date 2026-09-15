@@ -25,6 +25,12 @@ export class RowanOption extends BaseElement {
     get disabled(): boolean;
     /** @internal */
     setRovingTabIndex(value: any, owner?: null): void;
+    /**
+     * Marks the option as the controller's active descendant. This is the highlight a
+     * combobox moves with the arrow keys, which is separate from selection.
+     * @internal
+     */
+    setActiveDescendant(active: any, owner?: null): void;
     /** @internal */
     setListboxDisabled(disabled: any, owner?: null): void;
     #private;

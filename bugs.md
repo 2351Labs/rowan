@@ -5,26 +5,26 @@ IDs `F-NN` are stable and referenced by the review write-up.
 
 ## Triage summary
 
-| ID   | Title                                                                    | Severity | Status                                  |
-| ---- | ------------------------------------------------------------------------ | -------- | --------------------------------------- |
-| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3            |
-| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)       |
-| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                               |
-| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented              |
-| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                               |
-| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                               |
-| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                               |
-| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                               |
-| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                               |
-| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                               |
-| F-11 | Four similar controls use four different interaction architectures       | Medium   | Phase 1 **fixed**; convergence deferred |
-| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                               |
-| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                               |
-| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | Scroll lock **fixed**; inert deferred   |
-| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)      |
-| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                               |
-| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                               |
-| F-18 | Untested axes                                                            | Medium   | Open                                    |
+| ID   | Title                                                                    | Severity | Status                                |
+| ---- | ------------------------------------------------------------------------ | -------- | ------------------------------------- |
+| F-01 | Component tokens hard-code light literals, breaking documented theming   | Blocker  | **Fixed** — closes BUG 1/2/3          |
+| F-02 | Eight components bypass tokens entirely and cannot be themed             | High     | **Fixed** (switch thumb deferred)     |
+| F-03 | `useRowanElement` re-assigns properties and listeners every React render | High     | **Fixed**                             |
+| F-04 | `reflectStringAttribute` cannot represent an empty string                | Medium   | **Won't fix** — documented            |
+| F-05 | `#syncFormDisabledState` disables inner controls but never re-enables    | Medium   | **Fixed**                             |
+| F-06 | No standard validity surface on any form-associated component            | High     | **Fixed**                             |
+| F-07 | Every render resets validity, erasing consumer-set custom errors         | High     | **Fixed**                             |
+| F-08 | `type="password"` reflects the secret into a DOM attribute               | High     | **Fixed**                             |
+| F-09 | Per-keystroke attribute reflection risks IME and caret behavior          | Medium   | **Fixed**                             |
+| F-10 | External `<label for>` never names the control                           | High     | **Fixed**                             |
+| F-11 | Four similar controls use four different interaction architectures       | Medium   | **Fixed** (combobox converged)        |
+| F-12 | Overlay focusable allowlist omits most Rowan form controls               | High     | **Fixed**                             |
+| F-13 | Document-wide focus recapture with no overlay stack                      | High     | **Fixed**                             |
+| F-14 | No scroll lock or background inert while a modal is open                 | Medium   | Scroll lock **fixed**; inert deferred |
+| F-15 | No forced-colors support                                                 | Medium   | **Fixed** (state-bearing surfaces)    |
+| F-16 | `0.1.0` surface is not marked for stability                              | Medium   | **Fixed**                             |
+| F-17 | Dark-theme test validates the shipped theme, not the documented one      | High     | **Fixed**                             |
+| F-18 | Untested axes                                                            | Medium   | Open                                  |
 
 ---
 
@@ -296,6 +296,36 @@ collection uses roving tab index. That rule already holds for menu, tabs, tree,
 listbox, and palette; the comboboxes are the only violations. It is a breaking
 change to a public keyboard and CSS-part contract, so it is cheapest now at `0.x`
 and should land as its own change with a shared keyboard conformance suite.
+
+**Update — Phase 2 complete.**
+
+`rowan-combobox` no longer uses a `<datalist>`. It now renders a `role="listbox"`
+popup of `rowan-option` children and keeps DOM focus in the input, reporting the
+highlight with `aria-activedescendant` — the APG combobox pattern that
+`command-palette` already implemented. It gained Arrow Up/Down, Home, End, Enter,
+Escape, Tab, type-to-filter, an `open` attribute, and a stylable panel. Free-text
+entry is preserved, and `rowan-change` is emitted once per committed change, so a
+trailing native `change` for the same value does not double-fire.
+
+`rowan-option` gained an owner-guarded `setActiveDescendant()` internal method plus
+`--rowan-option-active-bg` / `--rowan-option-active-fg`, because active descendant
+highlight is a distinct state from selection. It has a forced-colors outline so the
+highlight survives High Contrast.
+
+The rule is now documented in the README: input with a popup list uses active
+descendant; a standalone collection uses roving tab index. `rowan-select` stays a
+native `<select>` wrapper by design.
+
+**Breaking changes for `0.1.0` consumers:** the `list` CSS part is now the listbox
+container rather than a `<datalist>`, `control`, `panel`, and `empty` parts were
+added, and the host no longer exposes a `combobox` role — the inner input carries
+it. Browser-verified: open, arrow movement, End, wrap-around, disabled-option
+skipping, Enter commit, and `aria-expanded` transitions.
+
+**Still open:** `rowan-multi-select-combobox` moves focus into its listbox instead
+of using active descendant, so it does not yet follow the rule. Converging it is a
+second breaking change and should carry the shared keyboard conformance suite that
+F-11 originally called for.
 
 ---
 

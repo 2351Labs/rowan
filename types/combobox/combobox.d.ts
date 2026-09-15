@@ -1,24 +1,33 @@
-/** @typedef {string | { value: string, label?: string }} RowanComboboxOption */
+/** @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanComboboxOption */
 /**
- * Filterable text entry with suggestions.
+ * Filterable text entry with a listbox of suggestions.
+ * Focus stays in the input and the highlighted option is reported with
+ * `aria-activedescendant`, matching the APG combobox pattern.
  * @tag rowan-combobox
  * @attr {string} name
  * @attr {string} value
  * @attr {string} label
  * @attr {string} placeholder
+ * @attr {boolean} open
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @property {RowanComboboxOption[]} options - Available suggestions. Arrays are property-only.
+ * @csspart control
+ * @csspart label
  * @csspart input
+ * @csspart panel
  * @csspart list
+ * @csspart empty
  * @cssprop --rowan-field-bg
- * @event rowan-change - Fired when the committed value changes
+ * @event rowan-change - Fired when the user commits a changed value
  */
 export class RowanCombobox extends BaseElement {
     static shadowRootOptions: {
         mode: string;
         delegatesFocus: boolean;
     };
+    set open(value: boolean);
+    get open(): boolean;
     /** @param {RowanComboboxOption[]} value */
     set options(value: RowanComboboxOption[]);
     /** @returns {RowanComboboxOption[]} */
@@ -46,5 +55,6 @@ export class RowanCombobox extends BaseElement {
 export type RowanComboboxOption = string | {
     value: string;
     label?: string;
+    disabled?: boolean;
 };
 import { BaseElement } from "../lib/base-element.js";
