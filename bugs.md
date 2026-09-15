@@ -27,6 +27,7 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-18 | Untested axes                                                            | Medium   | **Fixed**                                           |
 | F-19 | Audit of the previously uncleared components                             | High     | **Fixed** — stepper contrast, forced colours        |
 | F-20 | Second audit pass — keyboard, selection, virtualization                  | Medium   | **Fixed** — shift anchor, table row semantics       |
+| F-21 | Virtualization measurement and scroll restoration                        | Low      | **Covered** — no defects found                      |
 
 ---
 
@@ -880,3 +881,40 @@ Covers the four axes F-19 explicitly left open.
 Scroll-position restoration after data changes, and `virtual-collection` measurement
 behaviour with highly variable row heights, were not exercised beyond the existing unit
 tests.
+
+**Closed by the pass below.**
+
+## F-21: Virtualization measurement and scroll restoration
+
+The last two axes. **No defects found** — this pass produced coverage, not fixes, and the
+honest result is that the existing implementation was already correct.
+
+`virtual-collection` had exactly one test, covering key collisions. Variable-height layout,
+which is the hard part, was untested. Four tests added:
+
+- Offsets stack correctly from a mix of measured and estimated sizes.
+- Remeasuring a row reflows every offset after it, and remeasuring to the same value returns
+  `false` without invalidating the layout.
+- `range()` resolves the window against real offsets rather than an average. With two 200px
+  rows followed by 20px rows, offset 410 lands on `r2`; an average-size estimate would place
+  it near the end of the list.
+- Measurements are dropped when a row leaves the collection, so a row that returns does not
+  inherit a stale height.
+
+One expectation of mine was wrong and the code was right. At offset 400 with a 40px viewport,
+`range()` includes the row starting exactly at 440 — the bottom edge. That is an inclusive
+boundary that avoids gaps during fractional scrolling, not an off-by-one. The test now uses a
+non-boundary offset and asserts the contract that matters: the returned window fully covers
+the viewport.
+
+For the table, scroll position survives an in-place data update, and shrinking the dataset
+far below the current scroll offset still renders rows rather than blanking the viewport.
+The in-place test asserts the updated text is present, so a table that silently failed to
+re-render could not pass it by leaving the scroll untouched.
+
+### Residual risk
+
+Scroll anchoring is still not implemented: if a row _above_ the viewport changes height after
+measurement, content below it shifts. In practice rows above the viewport have already been
+measured, so this is confined to rows whose content changes while scrolled past. Not
+observed, not fixed, and recorded here rather than claimed as covered.

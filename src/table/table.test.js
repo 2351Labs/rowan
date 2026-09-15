@@ -949,6 +949,86 @@ describe("rowan-table", () => {
     expect(table.selectedRows.map((row) => row.id)).to.deep.equal(["1", "2", "3"]);
   });
 
+  it("keeps the scroll position when row data is updated in place", async () => {
+    const rows = Array.from({ length: 60 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Person ${index + 1}`,
+    }));
+
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "100px");
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+      virtualized: true,
+      virtualItemSize: 20,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.scrollTop = 300;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const scrollBefore = viewport.scrollTop;
+    expect(scrollBefore).to.be.above(0);
+
+    table.rows = rows.map((row) => ({ ...row, name: `${row.name} (updated)` }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(viewport.scrollTop).to.equal(scrollBefore);
+
+    const renderedRows = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
+    expect(renderedRows.length).to.be.above(0);
+    // Proves the body actually re-rendered, so the preserved scroll position means something.
+    expect(renderedRows[0].textContent).to.contain("(updated)");
+
+    table.remove();
+  });
+
+  it("still renders rows when the dataset shrinks below the scroll offset", async () => {
+    const rows = Array.from({ length: 60 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Person ${index + 1}`,
+    }));
+
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "100px");
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+      virtualized: true,
+      virtualItemSize: 20,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.scrollTop = 900;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    // Filtering down to fewer rows than the old scroll offset must not blank the viewport.
+    table.rows = rows.slice(0, 3);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const rendered = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
+    expect(rendered.length).to.equal(3);
+
+    table.remove();
+  });
+
   it("exposes the full row count when rows are omitted from the DOM", async () => {
     const rows = Array.from({ length: 40 }, (_, index) => ({
       id: String(index + 1),
