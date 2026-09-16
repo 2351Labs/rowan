@@ -105,6 +105,19 @@ describe("rowan-radio", () => {
     expect(second.checked).to.equal(true);
   });
 
+  it("keeps unnamed radios independent like native radio inputs", async () => {
+    const first = document.createElement("rowan-radio");
+    const second = document.createElement("rowan-radio");
+    document.body.append(first, second);
+    await nextMicrotask();
+
+    first.checked = true;
+    second.checked = true;
+
+    expect(first.checked).to.equal(true);
+    expect(second.checked).to.equal(true);
+  });
+
   it("resets to default checked state", async () => {
     const form = document.createElement("form");
     const el = document.createElement("rowan-radio");

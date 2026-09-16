@@ -48,4 +48,105 @@ describe("rowan-radio-group", () => {
     expect(north.checked).to.equal(true);
     expect(south.checked).to.equal(false);
   });
+
+  it("propagates a child selection once and keeps parent-driven updates silent", async () => {
+    const group = document.createElement("rowan-radio-group");
+    group.name = "region";
+    group.disabled = true;
+    group.required = true;
+
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+
+    group.append(north, south);
+    document.body.append(group);
+    await nextMicrotask();
+
+    expect(north.disabled).to.equal(true);
+    expect(south.disabled).to.equal(true);
+    expect(north.required).to.equal(true);
+    expect(south.required).to.equal(false);
+
+    group.disabled = false;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(south.shadowRoot.querySelector("input").disabled).to.equal(false);
+
+    const changes = [];
+    const childChanges = [];
+    group.addEventListener("rowan-change", (event) => changes.push(event));
+    south.addEventListener("rowan-change", (event) => childChanges.push(event.detail));
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("south");
+    expect(south.checked).to.equal(true);
+    expect(north.checked).to.equal(false);
+    expect(changes).to.have.length(1);
+    expect(changes[0].detail.value).to.equal("south");
+    expect(changes[0].detail.radio === south).to.equal(true);
+    expect(changes[0].bubbles).to.equal(true);
+    expect(changes[0].composed).to.equal(true);
+    expect(childChanges).to.deep.equal([{ checked: true, value: "south" }]);
+
+    group.value = "north";
+    await nextMicrotask();
+
+    expect(north.checked).to.equal(true);
+    expect(changes).to.have.length(1);
+  });
+
+  it("keeps one controller selection event after reconnecting", async () => {
+    const group = document.createElement("rowan-radio-group");
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    north.checked = true;
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+    group.append(north, south);
+    document.body.append(group);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(group.value).to.equal("north");
+
+    group.remove();
+    document.body.append(group);
+
+    const changes = [];
+    group.addEventListener("rowan-change", (event) => changes.push(event));
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("south");
+    expect(changes).to.have.length(1);
+    expect(changes[0].detail.radio === south).to.equal(true);
+  });
+
+  it("does not treat a nested group selection as its own", async () => {
+    const outer = document.createElement("rowan-radio-group");
+    const outerRadio = document.createElement("rowan-radio");
+    outerRadio.value = "outer";
+    outerRadio.checked = true;
+    const inner = document.createElement("rowan-radio-group");
+    const first = document.createElement("rowan-radio");
+    first.value = "first";
+    first.checked = true;
+    const second = document.createElement("rowan-radio");
+    second.value = "second";
+    inner.append(first, second);
+    outer.append(outerRadio, inner);
+    document.body.append(outer);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    second.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(outer.value).to.equal("outer");
+    expect(outerRadio.checked).to.equal(true);
+    expect(inner.value).to.equal("second");
+    expect(second.checked).to.equal(true);
+  });
 });

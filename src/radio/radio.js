@@ -195,11 +195,14 @@ export class RowanRadio extends BaseElement {
     const root = this.getRootNode();
     if (!(root instanceof Document || root instanceof ShadowRoot)) return;
 
+    const name = this.name;
+    if (!name) return;
+
     const formOwner = this.#formOwner();
     const peers = Array.from(root.querySelectorAll("rowan-radio")).filter((radio) => {
       return (
         radio !== this &&
-        radio.name === this.name &&
+        radio.name === name &&
         radio.getRootNode() === root &&
         radio.#formOwner() === formOwner
       );

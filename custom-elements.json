@@ -45452,12 +45452,9 @@
             },
             {
               "kind": "field",
-              "name": "#removeChangeListener",
+              "name": "#radioChangeListeners",
               "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
+              "default": "new Map()"
             },
             {
               "kind": "field",
@@ -45482,6 +45479,34 @@
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
               }
+            },
+            {
+              "kind": "method",
+              "name": "#radios",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncRadioChangeListeners",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "radios"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleRadioChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                },
+                {
+                  "name": "source"
+                }
+              ]
             },
             {
               "kind": "field",

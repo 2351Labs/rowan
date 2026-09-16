@@ -22,30 +22,7 @@ export class RowanRadioGroup extends BaseElement {
   static upgradeProperties = ["value", "name", "disabled", "required"];
 
   #slot = null;
-  #removeChangeListener = null;
-
-  connectedCallback() {
-    super.connectedCallback();
-
-    if (this.#removeChangeListener) return;
-
-    this.#removeChangeListener = this.listen(this, "rowan-change", (event) => {
-      const source = event.target;
-      if (!(source instanceof HTMLElement)) return;
-      if (source.tagName.toLowerCase() !== "rowan-radio") return;
-      if (!source.checked) return;
-
-      const nextValue = source.value;
-      if (this.value === nextValue) return;
-
-      this.value = nextValue;
-
-      emit(this, "rowan-change", {
-        value: this.value,
-        radio: source,
-      });
-    });
-  }
+  #radioChangeListeners = new Map();
 
   get value() {
     return this.readString("value", "");
@@ -90,11 +67,8 @@ export class RowanRadioGroup extends BaseElement {
       this.internals.role = "radiogroup";
     }
 
-    const radios = this.#slot
-      .assignedElements({ flatten: true })
-      .filter(
-        (node) => node instanceof HTMLElement && node.tagName.toLowerCase() === "rowan-radio",
-      );
+    const radios = this.#radios();
+    this.#syncRadioChangeListeners(radios);
 
     const selectedByChild = radios.find((radio) => radio.checked)?.value ?? "";
     const selectedValue = this.value || selectedByChild;
@@ -122,6 +96,50 @@ export class RowanRadioGroup extends BaseElement {
       radio.disabled = this.disabled || localDisabled;
       radio.required = localRequired || (this.required && index === 0);
       radio.checked = radio.value === selectedValue;
+    });
+  }
+
+  #radios() {
+    return this.#slot
+      .assignedElements({ flatten: true })
+      .filter(
+        (node) => node instanceof HTMLElement && node.tagName.toLowerCase() === "rowan-radio",
+      );
+  }
+
+  #syncRadioChangeListeners(radios) {
+    const nextRadios = new Set(radios);
+
+    for (const [radio, removeListener] of this.#radioChangeListeners) {
+      if (nextRadios.has(radio)) continue;
+      removeListener();
+      this.#radioChangeListeners.delete(radio);
+    }
+
+    for (const radio of radios) {
+      if (this.#radioChangeListeners.has(radio)) continue;
+
+      const removeListener = this.listen(radio, "rowan-change", (event) => {
+        this.#handleRadioChange(event, radio);
+      });
+      this.#radioChangeListeners.set(radio, removeListener);
+    }
+  }
+
+  #handleRadioChange(event, source) {
+    if (event.target !== source) return;
+    if (source.closest("rowan-radio-group") !== this || !source.checked) return;
+
+    event.stopPropagation();
+
+    const nextValue = source.value;
+    if (this.value === nextValue) return;
+
+    this.value = nextValue;
+
+    emit(this, "rowan-change", {
+      value: this.value,
+      radio: source,
     });
   }
 }
