@@ -60,4 +60,43 @@ describe("rowan-split-pane", () => {
 
     expect(pane.position).to.equal(90);
   });
+
+  it("removes a disabled separator from keyboard resizing", async () => {
+    const pane = document.createElement("rowan-split-pane");
+    pane.position = 40;
+    pane.disabled = true;
+    document.body.append(pane);
+    await nextMicrotask();
+
+    const separator = pane.shadowRoot.querySelector('[role="separator"]');
+    const events = [];
+    pane.addEventListener("rowan-resize", (event) => events.push(event));
+
+    expect(separator.getAttribute("aria-disabled")).to.equal("true");
+    expect(separator.tabIndex).to.equal(-1);
+
+    separator.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }));
+    await nextMicrotask();
+
+    expect(pane.position).to.equal(40);
+    expect(events).to.have.length(0);
+  });
+
+  it("reverses horizontal arrow resizing in RTL", async () => {
+    const pane = document.createElement("rowan-split-pane");
+    pane.position = 50;
+    pane.step = 5;
+    pane.style.direction = "rtl";
+    document.body.append(pane);
+    await nextMicrotask();
+
+    const separator = pane.shadowRoot.querySelector('[role="separator"]');
+    const events = [];
+    pane.addEventListener("rowan-resize", (event) => events.push(event.detail));
+    separator.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }));
+    await nextMicrotask();
+
+    expect(pane.position).to.equal(45);
+    expect(events).to.deep.equal([{ value: 45, previousValue: 50, orientation: "horizontal" }]);
+  });
 });

@@ -46,4 +46,46 @@ describe("rowan-pagination", () => {
     expect(status.textContent).to.equal("Page 1 of 2");
     expect(changes).to.deep.equal([{ index: 1, size: null }]);
   });
+
+  it("bounds next-page activation and emits only for a user-visible transition", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.page = 0;
+    el.totalPages = 2;
+    document.body.append(el);
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-page-change", (event) => changes.push(event));
+
+    const next = el.shadowRoot.querySelector('button[data-action="next"]');
+    expect(el.page).to.equal(1);
+    expect(el.getAttribute("page")).to.equal("1");
+    expect(next.disabled).to.equal(false);
+
+    next.click();
+    await nextMicrotask();
+    next.click();
+    await nextMicrotask();
+
+    expect(el.page).to.equal(2);
+    expect(next.disabled).to.equal(true);
+    expect(changes).to.have.length(1);
+    expect(changes[0].detail).to.deep.equal({ index: 2, size: null });
+    expect(changes[0].bubbles).to.equal(true);
+    expect(changes[0].composed).to.equal(true);
+  });
+
+  it("normalizes invalid numeric properties to a single disabled page", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.page = Number.NaN;
+    el.totalPages = -4;
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.page).to.equal(1);
+    expect(el.totalPages).to.equal(1);
+    expect(el.shadowRoot.querySelector(".status").textContent).to.equal("Page 1 of 1");
+    expect(el.shadowRoot.querySelector('[data-action="prev"]').disabled).to.equal(true);
+    expect(el.shadowRoot.querySelector('[data-action="next"]').disabled).to.equal(true);
+  });
 });

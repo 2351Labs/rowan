@@ -56,4 +56,34 @@ describe("rowan-toast", () => {
 
     expect(dismissCount).to.equal(0);
   });
+
+  it("reveals optional title and actions content and announces danger tones assertively", async () => {
+    const toast = document.createElement("rowan-toast");
+    toast.tone = "danger";
+    const title = document.createElement("strong");
+    title.slot = "title";
+    title.textContent = "Upload failed";
+    const action = document.createElement("button");
+    action.slot = "actions";
+    action.textContent = "Retry";
+    toast.append(title, action);
+    document.body.append(toast);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const titleRegion = toast.shadowRoot.querySelector(".title");
+    const actionsRegion = toast.shadowRoot.querySelector(".actions");
+    expect(titleRegion.hidden).to.equal(false);
+    expect(actionsRegion.hidden).to.equal(false);
+    expect(toast.internals.role).to.equal("alert");
+    expect(toast.internals.ariaLive).to.equal("assertive");
+
+    title.remove();
+    action.remove();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(titleRegion.hidden).to.equal(true);
+    expect(actionsRegion.hidden).to.equal(true);
+  });
 });

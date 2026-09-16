@@ -92,4 +92,46 @@ describe("rowan-side-nav", () => {
     expect(activity.shadowRoot.querySelector("a").tabIndex).to.equal(0);
     expect(nav.activeItem).to.equal(null);
   });
+
+  it("adopts a declared active item and ignores clicks on disabled items", async () => {
+    const nav = document.createElement("rowan-side-nav");
+    const overview = document.createElement("rowan-side-nav-item");
+    overview.value = "overview";
+    overview.active = true;
+    const settings = document.createElement("rowan-side-nav-item");
+    settings.value = "settings";
+    settings.disabled = true;
+    nav.append(overview, settings);
+    document.body.append(nav);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const events = [];
+    nav.addEventListener("rowan-change", (event) => events.push(event));
+    settings.shadowRoot.querySelector("a").click();
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("overview");
+    expect(nav.activeItem === overview).to.equal(true);
+    expect(overview.active).to.equal(true);
+    expect(settings.active).to.equal(false);
+    expect(events).to.have.length(0);
+  });
+
+  it("keeps one activation listener after reconnecting", async () => {
+    const { nav, activity } = await renderSideNav();
+    nav.remove();
+    document.body.append(nav);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const events = [];
+    nav.addEventListener("rowan-change", (event) => events.push(event));
+    activity.shadowRoot.querySelector("a").click();
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("activity");
+    expect(events).to.have.length(1);
+    expect(events[0].detail.value).to.equal("activity");
+  });
 });

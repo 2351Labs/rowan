@@ -151,4 +151,32 @@ describe("rowan-filter-builder", () => {
     expect(builder.filters).to.deep.equal([filter]);
     expect(builder.shadowRoot.querySelector('[data-filter-part="value"]').value).to.equal("true");
   });
+
+  it("clears an existing value when a user chooses a valueless operator", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [{ id: "name", label: "Name" }];
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    document.body.append(builder);
+    await settle();
+
+    const changes = [];
+    builder.addEventListener("rowan-filter-change", (event) => changes.push(event.detail));
+
+    changeValue(builder.shadowRoot.querySelector('[data-filter-part="operator"]'), "is-empty");
+    await settle();
+
+    expect(builder.filters).to.deep.equal([
+      { id: "name-filter", field: "name", operator: "is-empty", value: "" },
+    ]);
+    expect(builder.shadowRoot.querySelector('[part="value-control"]').textContent).to.equal(
+      "No value",
+    );
+    expect(changes).to.deep.equal([
+      {
+        action: "update",
+        filter: { id: "name-filter", field: "name", operator: "is-empty", value: "" },
+        filters: [{ id: "name-filter", field: "name", operator: "is-empty", value: "" }],
+      },
+    ]);
+  });
 });

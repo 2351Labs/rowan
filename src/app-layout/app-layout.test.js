@@ -59,4 +59,74 @@ describe("rowan-app-layout", () => {
       },
     ]);
   });
+
+  it("makes compact navigation inert while closed and restores toggle focus after Escape", async () => {
+    const originalMatchMedia = Object.getOwnPropertyDescriptor(window, "matchMedia");
+    const compactMedia = {
+      matches: true,
+      addEventListener() {},
+      removeEventListener() {},
+    };
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      writable: true,
+      value: () => compactMedia,
+    });
+
+    try {
+      const layout = document.createElement("rowan-app-layout");
+      document.body.append(layout);
+      await nextMicrotask();
+
+      const navigation = layout.shadowRoot.querySelector(".navigation");
+      const backdrop = layout.shadowRoot.querySelector(".backdrop");
+      const toggle = layout.shadowRoot.querySelector(".navigation-toggle");
+      toggle.style.display = "inline-flex";
+      const events = [];
+      layout.addEventListener("rowan-change", (event) => events.push(event.detail));
+
+      expect(toggle.hidden).to.equal(false);
+      expect(navigation.inert).to.equal(true);
+      expect(navigation.getAttribute("aria-hidden")).to.equal("true");
+      expect(backdrop.hidden).to.equal(true);
+
+      toggle.click();
+      await nextMicrotask();
+      expect(navigation.inert).to.equal(false);
+      expect(navigation.getAttribute("aria-hidden")).to.equal("false");
+      expect(backdrop.hidden).to.equal(false);
+
+      toggle.dispatchEvent(
+        new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "Escape" }),
+      );
+      await nextMicrotask();
+
+      expect(layout.navigationOpen).to.equal(false);
+      expect(navigation.inert).to.equal(true);
+      expect(layout.shadowRoot.activeElement === toggle).to.equal(true);
+      expect(events).to.deep.equal([
+        { navigationOpen: true, previousOpen: false },
+        { navigationOpen: false, previousOpen: true },
+      ]);
+    } finally {
+      if (originalMatchMedia) {
+        Object.defineProperty(window, "matchMedia", originalMatchMedia);
+      } else {
+        delete window.matchMedia;
+      }
+    }
+  });
+
+  it("reflects its navigation label into the navigation landmark and toggle name", async () => {
+    const layout = document.createElement("rowan-app-layout");
+    layout.navigationLabel = "Project sections";
+    document.body.append(layout);
+    await nextMicrotask();
+
+    const navigation = layout.shadowRoot.querySelector(".navigation");
+    const toggle = layout.shadowRoot.querySelector(".navigation-toggle");
+    expect(layout.getAttribute("navigation-label")).to.equal("Project sections");
+    expect(navigation.getAttribute("aria-label")).to.equal("Project sections");
+    expect(toggle.getAttribute("aria-label")).to.equal("Toggle Project sections");
+  });
 });

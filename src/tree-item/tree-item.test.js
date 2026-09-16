@@ -57,4 +57,22 @@ describe("rowan-tree-item", () => {
     expect(item.shadowRoot.querySelector("button").tabIndex).to.equal(-1);
     expect(item.hasAttribute("tabindex")).to.equal(false);
   });
+
+  it("infers nested level and exposes disabled treeitem state", async () => {
+    const parent = document.createElement("rowan-tree-item");
+    const child = document.createElement("rowan-tree-item");
+    child.slot = "children";
+    child.disabled = true;
+    parent.append(child);
+    document.body.append(parent);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const button = child.shadowRoot.querySelector("button");
+    expect(child.level).to.equal(2);
+    expect(child.internals.role).to.equal("treeitem");
+    expect(child.internals.ariaLevel).to.equal("2");
+    expect(child.internals.ariaDisabled).to.equal("true");
+    expect(button.disabled).to.equal(true);
+  });
 });

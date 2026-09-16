@@ -85,4 +85,20 @@ describe("rowan-dropdown", () => {
 
     expect(changeCount).to.equal(0);
   });
+
+  it("reflects a custom trigger label and its initial closed panel state", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    dropdown.label = "Project actions";
+    document.body.append(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    const panel = dropdown.shadowRoot.querySelector(".panel");
+    expect(dropdown.getAttribute("label")).to.equal("Project actions");
+    expect(trigger.textContent).to.equal("Project actions");
+    expect(trigger.getAttribute("aria-expanded")).to.equal("false");
+    expect(trigger.getAttribute("aria-controls")).to.equal(panel.id);
+    expect(panel.hidden).to.equal(true);
+    expect(panel.getAttribute("aria-hidden")).to.equal("true");
+  });
 });

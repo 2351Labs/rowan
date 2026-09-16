@@ -45,4 +45,29 @@ describe("rowan-link", () => {
     anchor.click();
     expect(count).to.equal(1);
   });
+
+  it("hardens external links and suppresses disabled activation", async () => {
+    const el = document.createElement("rowan-link");
+    el.href = "/guides";
+    el.external = true;
+    document.body.append(el);
+    await nextMicrotask();
+
+    const anchor = el.shadowRoot.querySelector("a");
+    expect(anchor.getAttribute("href")).to.equal("/guides");
+    expect(anchor.target).to.equal("_blank");
+    expect(anchor.rel).to.equal("noopener noreferrer");
+
+    let eventCount = 0;
+    el.addEventListener("rowan-click", () => {
+      eventCount += 1;
+    });
+    el.disabled = true;
+    await nextMicrotask();
+    anchor.click();
+
+    expect(anchor.getAttribute("aria-disabled")).to.equal("true");
+    expect(anchor.tabIndex).to.equal(-1);
+    expect(eventCount).to.equal(0);
+  });
 });

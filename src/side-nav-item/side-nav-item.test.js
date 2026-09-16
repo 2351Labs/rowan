@@ -43,4 +43,29 @@ describe("rowan-side-nav-item", () => {
 
     expect(item.shadowRoot.querySelector("a").tabIndex).to.equal(-1);
   });
+
+  it("hardens external links and suppresses disabled navigation", async () => {
+    const item = document.createElement("rowan-side-nav-item");
+    item.href = "/guides";
+    item.external = true;
+    document.body.append(item);
+    await nextMicrotask();
+
+    const control = item.shadowRoot.querySelector("a");
+    expect(control.getAttribute("href")).to.equal("/guides");
+    expect(control.target).to.equal("_blank");
+    expect(control.rel).to.equal("noopener noreferrer");
+
+    let clickCount = 0;
+    item.addEventListener("click", () => {
+      clickCount += 1;
+    });
+    item.disabled = true;
+    await nextMicrotask();
+    control.click();
+
+    expect(control.getAttribute("aria-disabled")).to.equal("true");
+    expect(control.tabIndex).to.equal(-1);
+    expect(clickCount).to.equal(0);
+  });
 });

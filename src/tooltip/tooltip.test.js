@@ -43,7 +43,7 @@ describe("rowan-tooltip", () => {
     expect(bubble.getAttribute("role")).to.equal("tooltip");
     expect(trigger.getAttribute("aria-description")).to.equal("Save the current draft");
 
-    trigger.focus();
+    trigger.dispatchEvent(new FocusEvent("focusin", { bubbles: true, composed: true }));
     await settle();
     expect(tooltip.open).to.equal(true);
 
@@ -80,5 +80,26 @@ describe("rowan-tooltip", () => {
     tooltip.text = "";
     await settle();
     expect(secondTrigger.hasAttribute("aria-description")).to.equal(false);
+  });
+
+  it("opens and closes from pointer hover", async () => {
+    const tooltip = document.createElement("rowan-tooltip");
+    tooltip.text = "Save the current draft";
+    tooltip.append(document.createElement("button"));
+    document.body.append(tooltip);
+    await settle();
+
+    const bubble = tooltip.shadowRoot.querySelector(".tooltip");
+    tooltip.dispatchEvent(new MouseEvent("mouseenter"));
+    await settle();
+
+    expect(tooltip.open).to.equal(true);
+    expect(bubble.hidden).to.equal(false);
+
+    tooltip.dispatchEvent(new MouseEvent("mouseleave"));
+    await settle();
+
+    expect(tooltip.open).to.equal(false);
+    expect(bubble.hidden).to.equal(true);
   });
 });

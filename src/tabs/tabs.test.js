@@ -135,4 +135,32 @@ describe("rowan-tabs", () => {
       expect(Array.from(activityTab.internals.ariaControlsElements)).to.deep.equal([]);
     }
   });
+
+  it("keeps parent-driven selection silent and emits one composed change for pointer activation", async () => {
+    const tabs = document.createElement("rowan-tabs");
+    const overviewTab = createTab("overview", "Overview");
+    const settingsTab = createTab("settings", "Settings");
+    tabs.append(overviewTab, settingsTab, createPanel("overview", "Overview"));
+    tabs.append(createPanel("settings", "Settings"));
+    document.body.append(tabs);
+    await settle();
+
+    const events = [];
+    tabs.addEventListener("rowan-change", (event) => events.push(event));
+    tabs.value = "settings";
+    await settle();
+
+    expect(settingsTab.active).to.equal(true);
+    expect(events).to.have.length(0);
+
+    overviewTab.shadowRoot.querySelector("button").click();
+    await settle();
+
+    expect(tabs.value).to.equal("overview");
+    expect(events).to.have.length(1);
+    expect(events[0].detail.value).to.equal("overview");
+    expect(events[0].detail.tab === overviewTab).to.equal(true);
+    expect(events[0].bubbles).to.equal(true);
+    expect(events[0].composed).to.equal(true);
+  });
 });
