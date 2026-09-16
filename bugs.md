@@ -29,6 +29,9 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-20 | Second audit pass — keyboard, selection, virtualization                  | Medium   | **Fixed** — shift anchor, table row semantics       |
 | F-21 | Virtualization measurement and scroll restoration                        | Low      | **Covered** — no defects found                      |
 | F-22 | Scroll anchoring missing when rows change above the viewport             | Medium   | **Fixed** — table and virtual-list                  |
+| F-23 | Radio group leaks both child and controller change events                | Medium   | **Fixed**                                           |
+| F-24 | Enum properties accept values outside their documented unions            | Medium   | **Fixed**                                           |
+| F-25 | Unnamed radio controls are incorrectly grouped together                  | Medium   | **Fixed**                                           |
 
 ---
 
@@ -950,3 +953,82 @@ list's from `Item 20` to `Item 18` — the two-row jump from prepending two rows
 Remaining genuine limit: anchoring corrects the scroll offset, it does not prevent a reflow.
 A row whose height changes _while rendered_ still reflows rows after it, which is correct
 behaviour. Anchoring only guarantees the row at the top of the viewport stays there.
+
+## F-23: Radio group leaks both child and controller change events
+
+- **Severity:** Medium
+- **Area:** `src/radio-group/radio-group.js`
+- **Contract:** `rowan-radio-group` documents `rowan-change` as the event fired when its
+  selected value changes. Consumers listening on the group should receive one controller
+  event for one user selection.
+- **Evidence:** A slotted `rowan-radio` emits its bubbling, composed `rowan-change`. The
+  group observed it, updated `value`, and emitted its own event with `{ value, radio }` but
+  left the child event bubbling. A listener on the group therefore received two events for
+  one click: first the radio's `{ checked, value }`, then the group's `{ value, radio }`.
+- **Impact:** Consumers persisting selection from the group could execute the same action
+  twice and receive two incompatible detail shapes from a single documented event surface.
+- **Fix:** The controller now listens directly on each owned radio. It calls
+  `stopPropagation()` at that event target before emitting one group-level event, so the child
+  event cannot bubble into the group or its ancestors while listeners attached directly to the
+  radio still receive it. The listener records are retained across disconnects, so
+  `BaseElement.listen()` restores them synchronously on reconnect before its queued render. This
+  also prevents an outer group from treating a nested group's radio as its own.
+- **Test:** `radio-group.test.js` verifies a listener on the group receives exactly one
+  composed event for a child selection, a direct child listener still receives the child's
+  event, parent-driven updates stay silent, and a selection immediately after reconnection
+  still emits only once.
+
+**Resolution (fixed).** Discovered while expanding the low-test component baseline. The new
+test failed with two events before the controller boundary was added and passes with the group's
+own event detail after the fix. An immediate post-reconnect selection regression confirms the
+retained listener records are restored before the render microtask.
+
+## F-24: Enum properties accept values outside their documented unions
+
+- **Severity:** Medium
+- **Area:** `src/divider/divider.js`, `src/badge/badge.js`, `src/alert/alert.js`,
+  `src/avatar/avatar.js`, `src/spinner/spinner.js`
+- **Contract:** Each component documents finite property unions such as
+  `"horizontal" | "vertical"`, `"info" | "success" | "warning" | "danger"`, and
+  `"sm" | "md" | "lg"`. Properties must reflect only their supported public state.
+- **Evidence:** Setters reflected arbitrary strings and getters returned them unchanged.
+  For example, `divider.orientation = "diagonal"` returned `"diagonal"` while rendering
+  and exposing horizontal separator semantics; badges, alerts, avatars, and spinners likewise
+  retained unsupported `tone` or `size` values that no CSS variant could interpret. Raw
+  declarative values such as `tone=" DANGER "` had the same mismatch: the getter normalized
+  them while host-attribute CSS still selected the default state.
+- **Impact:** Consumer state, reflected attributes, rendered output, and generated type/CEM
+  declarations could disagree. Invalid variants silently fell back visually while remaining
+  observable as invalid public values.
+- **Fix:** Each affected component now normalizes at getter, property-setter, and observed
+  attribute boundaries, canonicalizing supported case/whitespace variants and falling back to
+  its documented default before reflection and rendering.
+- **Test:** Focused component tests prove invalid property and declarative values normalize to
+  the default and that canonical supported values continue to reflect correctly.
+
+**Resolution (fixed).** Five focused regression tests failed before normalization and pass
+afterward. The generated declarations already described the intended unions, so no public type
+surface changed.
+
+## F-25: Unnamed radio controls are incorrectly grouped together
+
+- **Severity:** Medium
+- **Area:** `src/radio/radio.js`
+- **Contract:** Standalone `rowan-radio` controls should follow native radio grouping semantics:
+  only radios with a shared non-empty `name` and form owner form a peer group. `rowan-radio-group`
+  owns selection for its unnamed children.
+- **Evidence:** `#uncheckPeers()` matched peers whose `radio.name === this.name`, including the
+  default empty string. Selecting any unnamed Rowan radio silently unchecked every other unnamed
+  radio in the same document root, including radios in a nested `rowan-radio-group`. A browser
+  probe confirms two native `<input type="radio">` controls without `name` both remain checked.
+- **Impact:** Independent unnamed controls and nested groups corrupted each other's selection.
+  A nested group's radio could uncheck an outer group's active radio before either controller had
+  a chance to reconcile its own value.
+- **Fix:** The peer-uncheck path now returns for an empty name and reuses a captured non-empty
+  name for comparisons. Named radios retain same-form grouping; `rowan-radio-group` continues to
+  coordinate unnamed child selection through its own `value` state.
+- **Test:** `radio.test.js` asserts two unnamed controls remain independently checked, and
+  `radio-group.test.js` verifies a nested unnamed group changes only its own value.
+
+**Resolution (fixed).** The direct radio regression and nested-group ownership test both fail
+without the empty-name guard and pass with it.
