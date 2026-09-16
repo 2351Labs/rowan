@@ -25,6 +25,10 @@ describe("rowan-avatar", () => {
 
     el.size = "lg";
     expect(el.getAttribute("size")).to.equal("lg");
+
+    el.setAttribute("size", " SM ");
+    expect(el.size).to.equal("sm");
+    expect(el.getAttribute("size")).to.equal("sm");
   });
 
   it("retains initials after an image failure during unrelated renders", async () => {
@@ -49,5 +53,19 @@ describe("rowan-avatar", () => {
     expect(initials.hidden).to.equal(false);
     expect(initials.textContent.trim()).to.equal("AL");
     expect(getComputedStyle(image).display).to.equal("none");
+  });
+
+  it("normalizes unsupported size property values to md", async () => {
+    const el = document.createElement("rowan-avatar");
+    el.size = "xl";
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.size).to.equal("md");
+    expect(el.hasAttribute("size")).to.equal(false);
+
+    el.setAttribute("size", "xl");
+    expect(el.size).to.equal("md");
+    expect(el.hasAttribute("size")).to.equal(false);
   });
 });

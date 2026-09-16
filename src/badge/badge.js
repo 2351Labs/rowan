@@ -1,6 +1,23 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 
+const TONES = new Set(["info", "success", "warning", "danger"]);
+const SIZES = new Set(["sm", "md", "lg"]);
+
+function normalizeTone(value) {
+  const tone = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  return TONES.has(tone) ? tone : "info";
+}
+
+function normalizeSize(value) {
+  const size = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  return SIZES.has(size) ? size : "md";
+}
+
 /**
  * Compact label for status and metadata.
  * @tag rowan-badge
@@ -16,22 +33,48 @@ export class RowanBadge extends BaseElement {
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
-    return this.readString("tone", "info");
+    return normalizeTone(this.readString("tone", "info"));
   }
 
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
-    this.reflectString("tone", value === "info" ? null : value);
+    const next = normalizeTone(value);
+    this.reflectString("tone", next === "info" ? null : next);
   }
 
   /** @returns {"sm" | "md" | "lg"} */
   get size() {
-    return this.readString("size", "md");
+    return normalizeSize(this.readString("size", "md"));
   }
 
   /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
-    this.reflectString("size", value === "md" ? null : value);
+    const next = normalizeSize(value);
+    this.reflectString("size", next === "md" ? null : next);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "tone") {
+      const tone = normalizeTone(newValue);
+      const attributeValue = tone === "info" ? null : tone;
+      if (newValue !== attributeValue) {
+        this.reflectString("tone", attributeValue);
+        return;
+      }
+    }
+
+    if (name === "size") {
+      const size = normalizeSize(newValue);
+      const attributeValue = size === "md" ? null : size;
+      if (newValue !== attributeValue) {
+        this.reflectString("size", attributeValue);
+        return;
+      }
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {

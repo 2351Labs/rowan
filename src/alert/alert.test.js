@@ -18,6 +18,10 @@ describe("rowan-alert", () => {
 
     alert.setAttribute("tone", "danger");
     expect(alert.tone).to.equal("danger");
+
+    alert.setAttribute("tone", " WARNING ");
+    expect(alert.tone).to.equal("warning");
+    expect(alert.getAttribute("tone")).to.equal("warning");
   });
 
   it("emits rowan-dismiss and hides on close button click", async () => {
@@ -53,5 +57,20 @@ describe("rowan-alert", () => {
     await nextMicrotask();
 
     expect(dismissCount).to.equal(0);
+  });
+
+  it("normalizes unsupported tone property values to info", async () => {
+    const alert = document.createElement("rowan-alert");
+    alert.tone = "urgent";
+    document.body.append(alert);
+    await nextMicrotask();
+
+    expect(alert.tone).to.equal("info");
+    expect(alert.hasAttribute("tone")).to.equal(false);
+    expect(alert.internals.role).to.equal("status");
+
+    alert.setAttribute("tone", "urgent");
+    expect(alert.tone).to.equal("info");
+    expect(alert.hasAttribute("tone")).to.equal(false);
   });
 });

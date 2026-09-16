@@ -2,6 +2,15 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 
+const TONES = new Set(["info", "success", "warning", "danger"]);
+
+function normalizeTone(value) {
+  const tone = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  return TONES.has(tone) ? tone : "info";
+}
+
 /**
  * Status message surface with optional dismissal.
  * @tag rowan-alert
@@ -23,12 +32,13 @@ export class RowanAlert extends BaseElement {
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
-    return this.readString("tone", "info");
+    return normalizeTone(this.readString("tone", "info"));
   }
 
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
-    this.reflectString("tone", value === "info" ? null : value);
+    const next = normalizeTone(value);
+    this.reflectString("tone", next === "info" ? null : next);
   }
 
   get dismissible() {
@@ -37,6 +47,21 @@ export class RowanAlert extends BaseElement {
 
   set dismissible(value) {
     this.reflectBoolean("dismissible", Boolean(value));
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "tone") {
+      const tone = normalizeTone(newValue);
+      const attributeValue = tone === "info" ? null : tone;
+      if (newValue !== attributeValue) {
+        this.reflectString("tone", attributeValue);
+        return;
+      }
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {

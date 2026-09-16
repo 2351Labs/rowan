@@ -1,6 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 
+function normalizeOrientation(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase() === "vertical"
+    ? "vertical"
+    : "horizontal";
+}
+
 /**
  * Visual separator line.
  * @tag rowan-divider
@@ -17,12 +25,28 @@ export class RowanDivider extends BaseElement {
 
   /** @returns {"horizontal" | "vertical"} */
   get orientation() {
-    return this.readString("orientation", "horizontal");
+    return normalizeOrientation(this.readString("orientation", "horizontal"));
   }
 
   /** @param {"horizontal" | "vertical"} value */
   set orientation(value) {
-    this.reflectString("orientation", value === "horizontal" ? null : value);
+    const next = normalizeOrientation(value);
+    this.reflectString("orientation", next === "horizontal" ? null : next);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "orientation") {
+      const orientation = normalizeOrientation(newValue);
+      const attributeValue = orientation === "horizontal" ? null : orientation;
+      if (newValue !== attributeValue) {
+        this.reflectString("orientation", attributeValue);
+        return;
+      }
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {
