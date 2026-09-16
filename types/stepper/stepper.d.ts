@@ -19,8 +19,8 @@ export class RowanStepper extends BaseElement {
     };
     set currentStep(value: number);
     get currentStep(): number;
-    set orientation(value: "horizontal" | "vertical");
-    get orientation(): "horizontal" | "vertical";
+    set orientation(value: "vertical" | "horizontal");
+    get orientation(): "vertical" | "horizontal";
     set steps(value: {
         id: string;
         label: string;

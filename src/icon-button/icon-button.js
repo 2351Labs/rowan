@@ -7,12 +7,14 @@ import { triggerAssociatedFormAction } from "../lib/form.js";
  * Icon-only action control.
  * @tag rowan-icon-button
  * @attr {string} label
+ * @attr {string} icon - Name registered by an `@rowan-ui/icons/elements/*` import.
  * @attr {"primary"|"secondary"|"ghost"|"danger"} variant
  * @attr {"sm"|"md"|"lg"} size
  * @attr {boolean} disabled
  * @attr {"button"|"submit"|"reset"} type
  * @slot - Icon glyph
  * @csspart button
+ * @csspart icon
  * @cssprop --rowan-button-bg
  * @cssprop --rowan-button-border-width
  * @cssprop --rowan-button-ghost-bg
@@ -23,11 +25,13 @@ import { triggerAssociatedFormAction } from "../lib/form.js";
 export class RowanIconButton extends BaseElement {
   static styleUrl = new URL("./icon-button.css", import.meta.url).href;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["label", "variant", "size", "disabled", "type"];
-  static upgradeProperties = ["label", "variant", "size", "disabled", "type"];
+  static observedAttributes = ["label", "icon", "variant", "size", "disabled", "type"];
+  static upgradeProperties = ["label", "icon", "variant", "size", "disabled", "type"];
   static componentTokenPrefixes = ["--rowan-button-"];
 
   #button = null;
+  #iconSlot = null;
+  #configuredIcon = null;
 
   get label() {
     return this.readString("label", "");
@@ -35,6 +39,14 @@ export class RowanIconButton extends BaseElement {
 
   set label(value) {
     this.reflectString("label", value);
+  }
+
+  get icon() {
+    return this.readString("icon", "");
+  }
+
+  set icon(value) {
+    this.reflectString("icon", value);
   }
 
   /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
@@ -80,10 +92,13 @@ export class RowanIconButton extends BaseElement {
       this.renderRoot.innerHTML = `
         <button class="button" part="button" type="button">
           <slot>•</slot>
+          <rowan-icon part="icon" hidden></rowan-icon>
         </button>
       `;
 
       this.#button = this.renderRoot.querySelector("button");
+      this.#iconSlot = this.renderRoot.querySelector("slot");
+      this.#configuredIcon = this.renderRoot.querySelector("rowan-icon");
       this.listen(this.#button, "click", (event) => {
         if (this.disabled) {
           event.preventDefault();
@@ -104,6 +119,15 @@ export class RowanIconButton extends BaseElement {
     this.#button.type = this.#normalizedType(this.type);
     this.#button.disabled = this.disabled;
     this.#button.setAttribute("aria-label", this.label.trim() || "Icon button");
+
+    const iconName = this.icon;
+    this.#iconSlot.hidden = Boolean(iconName);
+    this.#configuredIcon.hidden = !iconName;
+    if (iconName) {
+      this.#configuredIcon.setAttribute("name", iconName);
+    } else {
+      this.#configuredIcon.removeAttribute("name");
+    }
   }
 
   #normalizedType(type) {

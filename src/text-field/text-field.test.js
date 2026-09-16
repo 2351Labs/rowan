@@ -2,6 +2,31 @@ import { expect } from "@esm-bundle/chai";
 import "./text-field.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForStyles(element) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
+
+    if (stylesheet?.sheet) {
+      await nextFrame();
+      return;
+    }
+
+    if (stylesheet) {
+      await new Promise((resolve, reject) => {
+        stylesheet.addEventListener("load", resolve, { once: true });
+        stylesheet.addEventListener("error", reject, { once: true });
+      });
+      await nextFrame();
+      return;
+    }
+
+    await nextFrame();
+  }
+
+  throw new Error("stylesheet never loaded for <rowan-text-field>");
+}
 
 describe("rowan-text-field", () => {
   afterEach(() => {
@@ -18,6 +43,21 @@ describe("rowan-text-field", () => {
 
     element.setAttribute("value", "cedar");
     expect(element.value).to.equal("cedar");
+  });
+
+  it("keeps the rendered input within its host width", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.style.inlineSize = "14rem";
+    document.body.append(element);
+    await nextMicrotask();
+    await waitForStyles(element);
+
+    const input = element.shadowRoot.querySelector("input");
+    const host = element.getBoundingClientRect();
+    const control = input.getBoundingClientRect();
+
+    expect(control.width).to.equal(host.width);
+    expect(control.right <= host.right).to.equal(true);
   });
 
   it("keeps a password value out of the DOM", async () => {

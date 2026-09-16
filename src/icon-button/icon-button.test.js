@@ -8,16 +8,29 @@ describe("rowan-icon-button", () => {
     document.body.innerHTML = "";
   });
 
-  it("reflects label and size", async () => {
+  it("reflects label, icon, and size", async () => {
     const el = document.createElement("rowan-icon-button");
     document.body.append(el);
     await nextMicrotask();
 
     el.label = "Open";
+    el.icon = "calendar-days";
     el.size = "lg";
+    await nextMicrotask();
 
     expect(el.getAttribute("label")).to.equal("Open");
+    expect(el.getAttribute("icon")).to.equal("calendar-days");
     expect(el.getAttribute("size")).to.equal("lg");
+    expect(el.shadowRoot.querySelector("rowan-icon")?.getAttribute("name")).to.equal(
+      "calendar-days",
+    );
+
+    el.icon = "";
+    await nextMicrotask();
+
+    expect(el.hasAttribute("icon")).to.equal(false);
+    expect(el.shadowRoot.querySelector("slot")?.hidden).to.equal(false);
+    expect(el.shadowRoot.querySelector("rowan-icon")?.hidden).to.equal(true);
   });
 
   it("emits rowan-click when activated", async () => {

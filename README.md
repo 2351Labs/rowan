@@ -313,10 +313,13 @@ the last chip, and selected values stay property-only.
 ## Optional Integrations
 
 `@rowan-ui/icons` provides 2,098 individually importable SVG icon modules without
-adding icon assets or a name-to-icon registry to `@rowan-ui/core`. Icons are
-decorative by default and become meaningful only when callers pass an explicit
-accessible label. See the `@rowan-ui/icons` package README for direct-import,
-accessibility, and Lucide source-license guidance.
+adding icon assets or an all-icons name registry to `@rowan-ui/core`. For
+declarative HTML, an individual `@rowan-ui/icons/elements/calendar-days` import
+registers `icon="calendar-days"` for `rowan-icon-button` and `<rowan-icon
+name="calendar-days">` for other component slots. Icons are decorative by
+default and become meaningful only when callers pass an explicit accessible
+label. See the `@rowan-ui/icons` package README for direct-import, declarative
+composition, accessibility, and Lucide source-license guidance.
 
 `@rowan-ui/maplibre` provides `rowan-maplibre-map` without adding a map runtime to
 `@rowan-ui/core`. Install it with `maplibre-gl` only in applications that need map

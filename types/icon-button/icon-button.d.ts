@@ -2,12 +2,14 @@
  * Icon-only action control.
  * @tag rowan-icon-button
  * @attr {string} label
+ * @attr {string} icon - Name registered by an `@rowan-ui/icons/elements/*` import.
  * @attr {"primary"|"secondary"|"ghost"|"danger"} variant
  * @attr {"sm"|"md"|"lg"} size
  * @attr {boolean} disabled
  * @attr {"button"|"submit"|"reset"} type
  * @slot - Icon glyph
  * @csspart button
+ * @csspart icon
  * @cssprop --rowan-button-bg
  * @cssprop --rowan-button-border-width
  * @cssprop --rowan-button-ghost-bg
@@ -23,6 +25,8 @@ export class RowanIconButton extends BaseElement {
     static componentTokenPrefixes: string[];
     set label(value: string);
     get label(): string;
+    set icon(value: string);
+    get icon(): string;
     /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
     set variant(value: "danger" | "primary" | "secondary" | "ghost");
     /** @returns {"primary" | "secondary" | "ghost" | "danger"} */

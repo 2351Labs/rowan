@@ -44,10 +44,13 @@ export class RowanFormLayout extends BaseElement {
   #layout = null;
   #slot = null;
   #styleLink = null;
+  #sizingProbe = null;
+  #responsiveProbe = null;
   #childObserver = null;
   #resizeObserver = null;
   #managedSpans = new Map();
   #managedResponsiveMarkers = new Map();
+  #effectiveColumns = null;
   #responsiveMarkerQueued = false;
 
   connectedCallback() {
@@ -120,17 +123,29 @@ export class RowanFormLayout extends BaseElement {
 
   render() {
     if (!this.#layout) {
-      this.renderRoot.innerHTML = '<div class="layout" part="layout"><slot></slot></div>';
+      this.renderRoot.innerHTML = `
+        <div class="layout" part="layout">
+          <slot></slot>
+          <span class="sizing-probe" aria-hidden="true"></span>
+          <span class="responsive-probe" aria-hidden="true"></span>
+        </div>
+      `;
       this.#layout = this.renderRoot.querySelector(".layout");
       this.#slot = this.renderRoot.querySelector("slot");
       this.#styleLink = this.shadowRoot.querySelector('link[rel="stylesheet"]');
+      this.#sizingProbe = this.renderRoot.querySelector(".sizing-probe");
+      this.#responsiveProbe = this.renderRoot.querySelector(".responsive-probe");
       this.listen(this.#slot, "slotchange", () => this.#syncChildSpans());
       if (this.#styleLink) {
-        this.listen(this.#styleLink, "load", () => this.#syncResponsiveMarkers());
+        this.listen(this.#styleLink, "load", () => this.#syncResponsiveLayout());
       }
+      this.#observeSize();
     }
 
     this.#layout.style.setProperty("--rowan-form-layout-columns", String(this.columns));
+    if (this.#effectiveColumns === null || this.#effectiveColumns > this.columns) {
+      this.#setEffectiveColumns(this.columns);
+    }
 
     if (this.gap) {
       this.#layout.style.setProperty("--rowan-form-layout-gap", this.gap);
@@ -139,12 +154,17 @@ export class RowanFormLayout extends BaseElement {
     }
 
     if (this.labelPosition === "start") {
+      this.#layout.style.setProperty(
+        "--rowan-form-layout-required-column-width",
+        "max(var(--rowan-form-layout-min-column-width, 14rem), calc(var(--rowan-form-layout-label-width, 10rem) + var(--rowan-space-2, 0.5rem) + var(--rowan-form-layout-min-column-width, 14rem)))",
+      );
       this.style.setProperty("--rowan-form-layout-field-areas", '"label control" ". support"');
       this.style.setProperty(
         "--rowan-form-layout-field-columns",
         "minmax(var(--rowan-form-layout-label-width, 10rem), 0.45fr) minmax(0, 1fr)",
       );
     } else {
+      this.#layout.style.removeProperty("--rowan-form-layout-required-column-width");
       this.style.removeProperty("--rowan-form-layout-field-areas");
       this.style.removeProperty("--rowan-form-layout-field-columns");
     }
@@ -156,8 +176,8 @@ export class RowanFormLayout extends BaseElement {
     }
 
     this.style.setProperty("--rowan-form-field-label-align", this.labelAlign);
+    this.#syncResponsiveLayout();
     this.#syncChildSpans();
-    this.#queueResponsiveMarkers();
   }
 
   #observeChildren() {
@@ -177,21 +197,23 @@ export class RowanFormLayout extends BaseElement {
   }
 
   #observeSize() {
-    if (this.#resizeObserver || typeof ResizeObserver === "undefined") return;
+    if (typeof ResizeObserver === "undefined") return;
 
-    this.#resizeObserver = new ResizeObserver(() => this.#queueResponsiveMarkers());
-    const restore = () => this.#resizeObserver.observe(this);
-    this.observe(this.#resizeObserver, restore);
-    restore();
+    if (!this.#resizeObserver) {
+      this.#resizeObserver = new ResizeObserver(() => this.#queueResponsiveLayout());
+      this.observe(this.#resizeObserver, () => this.#observeResponsiveSizeTargets());
+    }
+
+    this.#observeResponsiveSizeTargets();
   }
 
-  #queueResponsiveMarkers(attempt = 0) {
+  #queueResponsiveLayout(attempt = 0) {
     if (this.#responsiveMarkerQueued) return;
 
     this.#responsiveMarkerQueued = true;
     const synchronize = () => {
       this.#responsiveMarkerQueued = false;
-      if (this.isConnected) this.#syncResponsiveMarkers(attempt);
+      if (this.isConnected) this.#syncResponsiveLayout(attempt);
     };
 
     setTimeout(synchronize);
@@ -209,7 +231,7 @@ export class RowanFormLayout extends BaseElement {
     }
 
     for (const child of children) {
-      const span = normalizeSpan(child.getAttribute("span"), this.columns);
+      const span = normalizeSpan(child.getAttribute("span"), this.#effectiveColumns);
       if (span === null) continue;
 
       if (!this.#managedSpans.has(child)) {
@@ -223,6 +245,55 @@ export class RowanFormLayout extends BaseElement {
     }
 
     this.#syncResponsiveMarkers();
+  }
+
+  #syncResponsiveLayout(attempt = 0) {
+    if (!this.#layout || typeof getComputedStyle !== "function") return;
+
+    const styles = getComputedStyle(this.#layout);
+    const minimumColumnWidth = this.#inlineSize(this.#sizingProbe, styles.writingMode);
+    const layoutInlineSize = this.#inlineSize(this.#layout, styles.writingMode);
+    const combinedWidth = this.#inlineSize(this.#responsiveProbe, styles.writingMode);
+    const gap = Math.max(0, combinedWidth - minimumColumnWidth);
+
+    if (!Number.isFinite(minimumColumnWidth) || minimumColumnWidth <= 0 || layoutInlineSize <= 0) {
+      if (attempt < 3) this.#queueResponsiveLayout(attempt + 1);
+      return;
+    }
+
+    const effectiveColumns = Math.min(
+      this.columns,
+      Math.max(1, Math.floor((layoutInlineSize + gap) / (minimumColumnWidth + gap))),
+    );
+
+    if (effectiveColumns !== this.#effectiveColumns) {
+      this.#setEffectiveColumns(effectiveColumns);
+      this.#syncChildSpans();
+    }
+
+    this.#syncResponsiveMarkers(attempt);
+  }
+
+  #inlineSize(element, writingMode) {
+    if (!element) return 0;
+
+    const { height, width } = element.getBoundingClientRect();
+    return writingMode.startsWith("vertical") || writingMode.startsWith("sideways")
+      ? height
+      : width;
+  }
+
+  #setEffectiveColumns(columns) {
+    this.#effectiveColumns = columns;
+    this.#layout.style.setProperty("--rowan-form-layout-effective-columns", String(columns));
+  }
+
+  #observeResponsiveSizeTargets() {
+    if (!this.#resizeObserver) return;
+
+    this.#resizeObserver.observe(this);
+    if (this.#sizingProbe) this.#resizeObserver.observe(this.#sizingProbe);
+    if (this.#responsiveProbe) this.#resizeObserver.observe(this.#responsiveProbe);
   }
 
   #clearManagedSpans() {
@@ -249,7 +320,7 @@ export class RowanFormLayout extends BaseElement {
 
     const gridTemplateColumns = getComputedStyle(this.#layout).gridTemplateColumns.trim();
     if (!gridTemplateColumns || gridTemplateColumns === "none") {
-      if (attempt < 3) this.#queueResponsiveMarkers(attempt + 1);
+      if (attempt < 3) this.#queueResponsiveLayout(attempt + 1);
       return;
     }
 

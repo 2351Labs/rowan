@@ -12,6 +12,7 @@ export class RowanSpinner extends BaseElement {
     get size(): "sm" | "md" | "lg";
     set label(value: string);
     get label(): string;
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

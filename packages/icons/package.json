@@ -7,6 +7,7 @@
   "types": "./types/index.d.ts",
   "main": "./src/index.js",
   "module": "./src/index.js",
+  "customElements": "custom-elements.json",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
@@ -19,19 +20,37 @@
     "./icons/*": {
       "types": "./types/icons/*.d.ts",
       "default": "./src/icons/*.js"
+    },
+    "./element": {
+      "types": "./src/element.d.ts",
+      "default": "./src/element.js"
+    },
+    "./elements/*": {
+      "types": "./src/elements.d.ts",
+      "default": "./src/elements/*.js"
     }
   },
   "files": [
+    "src/element.css",
+    "src/element.d.ts",
+    "src/element.js",
+    "src/elements.d.ts",
+    "src/elements",
     "src/index.js",
     "src/icon.js",
     "src/icons",
     "types",
+    "custom-elements.json",
     "LICENSE",
     "NOTICE",
     "README.md"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/element.js",
+    "./src/elements/*.js"
+  ],
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@web/test-runner": "^0.18.2",
     "@web/test-runner-playwright": "^0.11.0",
@@ -42,6 +61,7 @@
     "typescript": "~5.4.5"
   },
   "scripts": {
+    "analyze": "cem analyze --config custom-elements-manifest.config.js",
     "generate": "node ./scripts/generate-icons.mjs",
     "verify": "node ./scripts/verify-icons.mjs",
     "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json",

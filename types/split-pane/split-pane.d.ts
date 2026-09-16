@@ -27,8 +27,8 @@ export class RowanSplitPane extends BaseElement {
     };
     static componentTokenPrefixes: string[];
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set orientation(value: "horizontal" | "vertical");
-    get orientation(): "horizontal" | "vertical";
+    set orientation(value: "vertical" | "horizontal");
+    get orientation(): "vertical" | "horizontal";
     /** @param {number} value */
     set position(value: number);
     /** @returns {number} */

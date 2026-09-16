@@ -15,6 +15,7 @@ export class RowanAlert extends BaseElement {
     get tone(): "info" | "success" | "warning" | "danger";
     set dismissible(value: boolean);
     get dismissible(): boolean;
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

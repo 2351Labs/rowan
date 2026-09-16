@@ -16,6 +16,7 @@
   background: var(--rowan-field-bg, #ffffff);
   border: var(--rowan-border-width) solid var(--rowan-field-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-md);
+  box-sizing: border-box;
   color: var(--rowan-field-fg, var(--rowan-color-fg));
   font-family: var(--rowan-font-family);
   font-size: var(--rowan-font-size-md);

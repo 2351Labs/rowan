@@ -15,5 +15,6 @@ export class RowanBadge extends BaseElement {
     set size(value: "sm" | "md" | "lg");
     /** @returns {"sm" | "md" | "lg"} */
     get size(): "sm" | "md" | "lg";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
 }
 import { BaseElement } from "../lib/base-element.js";

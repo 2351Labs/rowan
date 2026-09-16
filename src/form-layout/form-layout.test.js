@@ -1,9 +1,17 @@
 import { expect } from "@esm-bundle/chai";
 import "../form-field/form-field.js";
+import "../text-field/text-field.js";
 import "./form-layout.js";
 
 const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+const nextTask = () => new Promise((resolve) => setTimeout(resolve));
+
+async function settleResponsiveLayout() {
+  await nextMicrotask();
+  await nextTask();
+  await nextFrame();
+}
 
 describe("rowan-form-layout", () => {
   afterEach(() => {
@@ -89,9 +97,137 @@ describe("rowan-form-layout", () => {
       '"label" "control" "support"',
     );
 
-    layout.style.inlineSize = "50rem";
+    layout.style.inlineSize = "54rem";
     await nextFrame();
     await nextFrame();
     expect(field.hasAttribute("data-rowan-form-layout-stacked")).to.equal(false);
+  });
+
+  it("resizes start-aligned grids and their spans before controls overflow", async () => {
+    const layout = document.createElement("rowan-form-layout");
+    layout.style.inlineSize = "54rem";
+    layout.columns = 2;
+    layout.setAttribute("label-position", " START ");
+
+    const project = document.createElement("rowan-form-field");
+    project.label = "Project name";
+    const projectInput = document.createElement("rowan-text-field");
+    project.append(projectInput);
+
+    const owner = document.createElement("rowan-form-field");
+    owner.label = "Owner email";
+    owner.append(document.createElement("rowan-text-field"));
+
+    const budget = document.createElement("rowan-form-field");
+    budget.setAttribute("span", "2");
+    budget.append(document.createElement("rowan-text-field"));
+
+    layout.append(project, owner, budget);
+    document.body.append(layout);
+    await settleResponsiveLayout();
+
+    const grid = layout.shadowRoot.querySelector(".layout");
+    const input = projectInput.shadowRoot.querySelector("input");
+
+    expect(layout.labelPosition).to.equal("start");
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(2);
+    expect(budget.style.getPropertyValue("--rowan-form-layout-item-span")).to.equal("2");
+    expect(project.hasAttribute("data-rowan-form-layout-stacked")).to.equal(false);
+
+    layout.style.inlineSize = "48rem";
+    await settleResponsiveLayout();
+
+    const layoutBox = layout.getBoundingClientRect();
+    const inputBox = input.getBoundingClientRect();
+
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
+    expect(project.hasAttribute("data-rowan-form-layout-stacked")).to.equal(true);
+    expect(budget.style.getPropertyValue("--rowan-form-layout-item-span")).to.equal("1");
+    expect(inputBox.right <= layoutBox.right).to.equal(true);
+
+    layout.style.inlineSize = "54rem";
+    await settleResponsiveLayout();
+
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(2);
+    expect(project.hasAttribute("data-rowan-form-layout-stacked")).to.equal(false);
+    expect(budget.style.getPropertyValue("--rowan-form-layout-item-span")).to.equal("2");
+  });
+
+  it("recalculates responsive columns when its stylesheet loads", async () => {
+    const layout = document.createElement("rowan-form-layout");
+    layout.style.inlineSize = "54rem";
+    layout.columns = 2;
+    layout.labelPosition = "start";
+    layout.append(document.createElement("rowan-form-field"));
+    document.body.append(layout);
+    await settleResponsiveLayout();
+
+    const grid = layout.shadowRoot.querySelector(".layout");
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(2);
+
+    layout.style.inlineSize = "48rem";
+    layout.shadowRoot.querySelector('link[rel="stylesheet"]').dispatchEvent(new Event("load"));
+
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
+  });
+
+  it("uses a resolved percentage gap when selecting responsive columns", async () => {
+    const layout = document.createElement("rowan-form-layout");
+    layout.style.inlineSize = "48rem";
+    layout.columns = 2;
+    layout.gap = "10%";
+    layout.labelPosition = "start";
+    layout.labelWidth = "8rem";
+
+    const project = document.createElement("rowan-form-field");
+    project.label = "Project name";
+    project.append(document.createElement("rowan-text-field"));
+    const owner = document.createElement("rowan-form-field");
+    owner.label = "Owner email";
+    owner.append(document.createElement("rowan-text-field"));
+
+    layout.append(project, owner);
+    document.body.append(layout);
+    await settleResponsiveLayout();
+
+    const grid = layout.shadowRoot.querySelector(".layout");
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
+    expect(project.hasAttribute("data-rowan-form-layout-stacked")).to.equal(true);
+  });
+
+  it("responds when inherited sizing tokens change after connection", async () => {
+    const layout = document.createElement("rowan-form-layout");
+    layout.style.inlineSize = "54rem";
+    layout.columns = 2;
+    layout.labelPosition = "start";
+    layout.labelWidth = "8rem";
+    layout.append(document.createElement("rowan-form-field"));
+    document.body.append(layout);
+    await settleResponsiveLayout();
+
+    const grid = layout.shadowRoot.querySelector(".layout");
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(2);
+
+    layout.style.setProperty("--rowan-form-layout-label-width", "16rem");
+    await settleResponsiveLayout();
+
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
+  });
+
+  it("uses the logical inline axis in vertical writing modes", async () => {
+    const layout = document.createElement("rowan-form-layout");
+    layout.style.blockSize = "20rem";
+    layout.style.inlineSize = "48rem";
+    layout.style.writingMode = "vertical-rl";
+    layout.columns = 2;
+    layout.labelPosition = "start";
+    layout.labelWidth = "10rem";
+    layout.append(document.createElement("rowan-form-field"));
+    document.body.append(layout);
+    await settleResponsiveLayout();
+
+    const grid = layout.shadowRoot.querySelector(".layout");
+    expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
+    expect(grid.scrollHeight <= grid.clientHeight).to.equal(true);
   });
 });

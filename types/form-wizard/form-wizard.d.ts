@@ -43,8 +43,8 @@ export class RowanFormWizard extends BaseElement {
         label: string;
         slot: any;
     }[];
-    set orientation(value: "horizontal" | "vertical");
-    get orientation(): "horizontal" | "vertical";
+    set orientation(value: "vertical" | "horizontal");
+    get orientation(): "vertical" | "horizontal";
     set label(value: string);
     get label(): string;
     set previousLabel(value: string);

@@ -1,5 +1,6 @@
 import { setCustomElementsManifest } from "@storybook/web-components";
 import customElements from "../custom-elements.json";
+import iconCustomElements from "../packages/icons/custom-elements.json";
 import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
 import "../src/tokens/tokens.css";
 import "../src/tokens/themes/light.css";
@@ -7,7 +8,11 @@ import "../src/tokens/themes/dark.css";
 
 setCustomElementsManifest({
   ...customElements,
-  modules: [...customElements.modules, ...maplibreCustomElements.modules],
+  modules: [
+    ...customElements.modules,
+    ...iconCustomElements.modules,
+    ...maplibreCustomElements.modules,
+  ],
 });
 
 function isLikelyHtmlSource(source) {

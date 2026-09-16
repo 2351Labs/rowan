@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const packageRoot = dirname(require.resolve("lucide-static/package.json"));
 const sourceDirectory = resolve(packageRoot, "icons");
 const outputDirectory = new URL("../src/icons/", import.meta.url);
+const elementOutputDirectory = new URL("../src/elements/", import.meta.url);
 const RESTRICTED_GLOBAL_EXPORT_NAMES = new Set(["Infinity"]);
 
 function toExportName(name) {
@@ -40,7 +41,9 @@ function serializeNode(element) {
     if (child?.nodeType === 1) children.push(serializeNode(child));
   }
 
-  return children.length > 0 ? [element.tagName, attributes, children] : [element.tagName, attributes];
+  return children.length > 0
+    ? [element.tagName, attributes, children]
+    : [element.tagName, attributes];
 }
 
 function readDefinition(fileName) {
@@ -70,18 +73,28 @@ async function writeIcon(fileName, definition, exportName) {
     null,
     2,
   )};\n\n/**\n * Creates the ${definition.name} icon.\n * @param {import("../icon.js").IconOptions} [options]\n * @returns {SVGSVGElement}\n */\nexport function ${exportName}(options) {\n  return createIcon(definition, options);\n}\n\nexport default ${exportName};\n`;
-    const implementationName = getImplementationName(exportName);
-    const generatedSource =
-      implementationName === exportName
-        ? source
-        : source
-            .replace(`export function ${exportName}`, `function ${implementationName}`)
-            .replace(
-              `export default ${exportName};`,
-              `export { ${implementationName} as ${exportName} };\n\nexport default ${implementationName};`,
-            );
-    const formatted = await format(generatedSource, { parser: "babel" });
+  const implementationName = getImplementationName(exportName);
+  const generatedSource =
+    implementationName === exportName
+      ? source
+      : source
+          .replace(`export function ${exportName}`, `function ${implementationName}`)
+          .replace(
+            `export default ${exportName};`,
+            `export { ${implementationName} as ${exportName} };\n\nexport default ${implementationName};`,
+          );
+  const formatted = await format(generatedSource, { parser: "babel" });
   writeFileSync(new URL(fileName, outputDirectory), formatted);
+}
+
+async function writeElement(fileName, name) {
+  const source = `import { registerIcon } from "../element.js";
+import icon from "../icons/${fileName}";
+
+registerIcon(${JSON.stringify(name)}, icon);
+`;
+  const formatted = await format(source, { parser: "babel" });
+  writeFileSync(new URL(fileName, elementOutputDirectory), formatted);
 }
 
 const iconFiles = readdirSync(sourceDirectory)
@@ -94,6 +107,8 @@ if (iconFiles.length === 0) {
 
 rmSync(outputDirectory, { force: true, recursive: true });
 mkdirSync(outputDirectory, { recursive: true });
+rmSync(elementOutputDirectory, { force: true, recursive: true });
+mkdirSync(elementOutputDirectory, { recursive: true });
 
 const exportNames = new Set();
 const exports = [];
@@ -107,6 +122,7 @@ for (const fileName of iconFiles) {
 
   exportNames.add(exportName);
   await writeIcon(`${definition.name}.js`, definition, exportName);
+  await writeElement(`${definition.name}.js`, definition.name);
   exports.push(`export { default as ${exportName} } from "./${definition.name}.js";`);
 }
 

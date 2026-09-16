@@ -1,8 +1,8 @@
 # @rowan-ui/icons
 
 `@rowan-ui/icons` is Rowan's optional SVG icon package. It has no dependency on
-`@rowan-ui/core`, registers no custom elements, and never asks core components to
-look up an icon by a string name.
+`@rowan-ui/core` and never asks core components to look up an icon by a string
+name.
 
 It currently ships 2,098 individually importable icons generated from Lucide
 Static 1.45.0.
@@ -26,6 +26,26 @@ button.append(ArrowRight());
 Each icon module imports only the shared SVG factory and its own geometry. The
 `@rowan-ui/icons/icons` barrel is available for convenience, but direct imports
 are the preferred production path when bundle size matters.
+
+## Declarative HTML
+
+For HTML-first applications, import the per-icon element module for each icon used.
+It registers `rowan-icon` and exactly that icon name, so there is no full-catalog
+runtime registry or core dependency:
+
+```js
+import "@rowan-ui/core/icon-button";
+import "@rowan-ui/icons/elements/calendar-days";
+```
+
+```html
+<rowan-icon-button icon="calendar-days" label="Schedule" title="Schedule"></rowan-icon-button>
+```
+
+`icon` and `name` use the icon module's kebab-case name. `rowan-icon` remains
+available for slots in other Rowan components and accepts `size`, `stroke-width`,
+and `label`; omit `label` when the icon is decorative, including inside a labeled
+`rowan-icon-button`.
 
 ## Accessibility
 
@@ -60,5 +80,6 @@ specifically the `lucide-static` package. Lucide is licensed under the ISC
 License. Rowan's factory and package code are MIT-licensed. See [NOTICE](./NOTICE)
 for source attribution and third-party license text.
 
-The package intentionally contains no runtime name-to-icon registry. Core Rowan
-components remain icon-agnostic and accept icons through their existing slots.
+Core Rowan components remain icon-agnostic and accept icons through their
+existing slots. The declarative entry modules register only explicitly imported
+icons; they do not add an all-icons registry to the core package.

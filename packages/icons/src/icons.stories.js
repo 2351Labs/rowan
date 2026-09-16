@@ -1,26 +1,42 @@
 import "../../../src/icon-button/icon-button.js";
-import { ArrowRight } from "./icons/arrow-right.js";
-import { CalendarDays } from "./icons/calendar-days.js";
-import { CircleCheck } from "./icons/circle-check.js";
-import { Download } from "./icons/download.js";
-import { Menu } from "./icons/menu.js";
-import { Search } from "./icons/search.js";
-import { Settings2 } from "./icons/settings-2.js";
-import { ShieldCheck } from "./icons/shield-check.js";
-import { SlidersHorizontal } from "./icons/sliders-horizontal.js";
-import { X } from "./icons/x.js";
+import "./elements/arrow-right.js";
+import "./elements/calendar-days.js";
+import "./elements/circle-check.js";
+import "./elements/download.js";
+import "./elements/menu.js";
+import "./elements/search.js";
+import "./elements/settings-2.js";
+import "./elements/shield-check.js";
+import "./elements/sliders-horizontal.js";
+import "./elements/x.js";
 
 const ICONS = [
-  { create: ArrowRight, label: "Continue", name: "arrow-right" },
-  { create: CalendarDays, label: "Schedule", name: "calendar-days" },
-  { create: Download, label: "Download", name: "download" },
-  { create: Menu, label: "Open navigation", name: "menu" },
-  { create: Search, label: "Search", name: "search" },
-  { create: Settings2, label: "Settings", name: "settings-2" },
-  { create: ShieldCheck, label: "Security", name: "shield-check" },
-  { create: SlidersHorizontal, label: "Adjust filters", name: "sliders-horizontal" },
-  { create: X, label: "Close", name: "x" },
+  { label: "Continue", name: "arrow-right" },
+  { label: "Schedule", name: "calendar-days" },
+  { label: "Download", name: "download" },
+  { label: "Open navigation", name: "menu" },
+  { label: "Search", name: "search" },
+  { label: "Settings", name: "settings-2" },
+  { label: "Security", name: "shield-check" },
+  { label: "Adjust filters", name: "sliders-horizontal" },
+  { label: "Close", name: "x" },
 ];
+
+const ICON_BUTTON_COMPOSITION_SOURCE = `import "@rowan-ui/core/icon-button";
+import "@rowan-ui/icons/elements/calendar-days";
+
+document.body.innerHTML = \`
+  <rowan-icon-button icon="calendar-days" label="Schedule" title="Schedule"></rowan-icon-button>
+\`;`;
+
+const MEANINGFUL_ICON_SOURCE = `import "@rowan-ui/icons/elements/circle-check";
+
+document.body.innerHTML = \`
+  <div>
+    <rowan-icon name="circle-check" size="28" label="Deployment completed"></rowan-icon>
+    <span>Deployment completed</span>
+  </div>
+\`;`;
 
 function createGallery() {
   const gallery = document.createElement("div");
@@ -28,7 +44,7 @@ function createGallery() {
   gallery.style.gap = "0.75rem";
   gallery.style.gridTemplateColumns = "repeat(auto-fill, minmax(8rem, 1fr))";
 
-  for (const icon of ICONS) {
+  for (const iconDefinition of ICONS) {
     const item = document.createElement("div");
     item.style.alignItems = "center";
     item.style.border = "1px solid var(--rowan-color-border, #ced3ca)";
@@ -39,12 +55,12 @@ function createGallery() {
     item.style.padding = "0.75rem";
 
     const button = document.createElement("rowan-icon-button");
-    button.label = icon.label;
-    button.title = icon.label;
-    button.append(icon.create({ size: 22 }));
+    button.label = iconDefinition.label;
+    button.title = iconDefinition.label;
+    button.icon = iconDefinition.name;
 
     const name = document.createElement("code");
-    name.textContent = icon.name;
+    name.textContent = iconDefinition.name;
     name.style.fontSize = "0.75rem";
     name.style.overflowWrap = "anywhere";
     name.style.textAlign = "center";
@@ -62,17 +78,36 @@ export default {
 };
 
 export const IconButtonComposition = {
+  parameters: {
+    docs: {
+      source: {
+        code: ICON_BUTTON_COMPOSITION_SOURCE,
+        language: "js",
+      },
+    },
+  },
   render: () => createGallery(),
 };
 
 export const MeaningfulIcon = {
+  parameters: {
+    docs: {
+      source: {
+        code: MEANINGFUL_ICON_SOURCE,
+        language: "js",
+      },
+    },
+  },
   render: () => {
     const message = document.createElement("div");
     message.style.alignItems = "center";
     message.style.display = "flex";
     message.style.gap = "0.6rem";
 
-    const icon = CircleCheck({ label: "Deployment completed", size: 28 });
+    const icon = document.createElement("rowan-icon");
+    icon.name = "circle-check";
+    icon.label = "Deployment completed";
+    icon.size = 28;
     const text = document.createElement("span");
     text.textContent = "Deployment completed";
 

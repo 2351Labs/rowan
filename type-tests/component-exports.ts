@@ -122,6 +122,7 @@ const formField: RowanFormField = document.createElement("rowan-form-field");
 const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");
 const iconButton: RowanIconButton = document.createElement("rowan-icon-button");
+iconButton.icon = "calendar-days";
 const link: RowanLink = document.createElement("rowan-link");
 const listbox: RowanListbox = document.createElement("rowan-listbox");
 const menu: RowanMenu = document.createElement("rowan-menu");

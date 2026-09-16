@@ -30532,6 +30532,24 @@
             },
             {
               "kind": "field",
+              "name": "#sizingProbe",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#responsiveProbe",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "#childObserver",
               "privacy": "private",
               "type": {
@@ -30559,6 +30577,15 @@
               "name": "#managedResponsiveMarkers",
               "privacy": "private",
               "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "#effectiveColumns",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
             },
             {
               "kind": "field",
@@ -30609,7 +30636,7 @@
             },
             {
               "kind": "method",
-              "name": "#queueResponsiveMarkers",
+              "name": "#queueResponsiveLayout",
               "privacy": "private",
               "parameters": [
                 {
@@ -30621,6 +30648,45 @@
             {
               "kind": "method",
               "name": "#syncChildSpans",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncResponsiveLayout",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "attempt",
+                  "default": "0"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#inlineSize",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "element"
+                },
+                {
+                  "name": "writingMode"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#setEffectiveColumns",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "columns"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#observeResponsiveSizeTargets",
               "privacy": "private"
             },
             {
@@ -32646,6 +32712,9 @@
           "cssParts": [
             {
               "name": "button"
+            },
+            {
+              "name": "icon"
             }
           ],
           "slots": [
@@ -32688,7 +32757,7 @@
                 "text": "array"
               },
               "static": true,
-              "default": "[\"label\", \"variant\", \"size\", \"disabled\", \"type\"]",
+              "default": "[\"label\", \"icon\", \"variant\", \"size\", \"disabled\", \"type\"]",
               "inheritedFrom": {
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
@@ -32718,7 +32787,29 @@
             },
             {
               "kind": "field",
+              "name": "#iconSlot",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#configuredIcon",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "icon"
             },
             {
               "kind": "field",
@@ -33471,6 +33562,13 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "description": "Name registered by an `@rowan-ui/icons/elements/*` import."
             },
             {
               "name": "variant",

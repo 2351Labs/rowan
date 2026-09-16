@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[part="icon"] {
+  display: block;
+}

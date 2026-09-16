@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/element.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "registerIcon",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "factory",
+              "type": {
+                "text": "(options?: IconOptions) => SVGSVGElement"
+              }
+            }
+          ],
+          "description": "Registers an icon factory for declarative `<rowan-icon>` use.\n\nIndividual `@rowan-ui/icons/elements/<name>` imports call this for exactly\none icon, preserving the direct-import bundle boundary."
+        },
+        {
+          "kind": "class",
+          "description": "Declarative SVG icon registered by an individual `@rowan-ui/icons/elements/*` import.",
+          "name": "RowanIcon",
+          "cssParts": [
+            {
+              "name": "icon"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "#iconContainer",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "size"
+            },
+            {
+              "kind": "field",
+              "name": "strokeWidth"
+            },
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "method",
+              "name": "#reflectString",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "attribute"
+                },
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#upgradeProperty",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "property"
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "stroke-width",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "rowan-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "registerIcon",
+          "declaration": {
+            "name": "registerIcon",
+            "module": "src/element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanIcon",
+          "declaration": {
+            "name": "RowanIcon",
+            "module": "src/element.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "rowan-icon",
+          "declaration": {
+            "name": "RowanIcon",
+            "module": "src/element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icon.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createIcon",
+          "parameters": [
+            {
+              "name": "definition",
+              "type": {
+                "text": "IconDefinition"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "IconOptions"
+              }
+            }
+          ],
+          "description": "Creates an SVG icon from a static icon definition.\n\nIcons are decorative by default. Pass `label` only when the icon itself\ncommunicates information not already supplied by nearby text or control labels.",
+          "return": {
+            "type": {
+              "text": "SVGSVGElement"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createIcon",
+          "declaration": {
+            "name": "createIcon",
+            "module": "src/icon.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createIcon",
+          "declaration": {
+            "name": "createIcon",
+            "module": "./icon.js"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -778,7 +778,7 @@ const FORM_FIELD_SNIPPET = `<rowan-form-field
   <rowan-text-field name="workspace"></rowan-text-field>
 </rowan-form-field>`;
 
-const FORM_LAYOUT_SNIPPET = `<rowan-form-layout columns="2" label-position="start" label-align="end">
+const FORM_LAYOUT_SNIPPET = `<rowan-form-layout columns="2" label-position="start" label-align="end" label-width="8rem">
   <rowan-form-field label="Project name">
     <rowan-text-field name="project"></rowan-text-field>
   </rowan-form-field>
@@ -1941,7 +1941,7 @@ const DOC_PAGES = [
       <section class="doc-section" data-doc-section id="form-layout-grid">
         <h2>Dense operational forms</h2>
         <p>Use direct-child span values for fields that need the full row. At narrower container widths the layout resolves to one column without changing the form markup.</p>
-        <rowan-form-layout columns="2" label-position="start" label-align="end" label-width="10rem">
+        <rowan-form-layout columns="2" label-position="start" label-align="end" label-width="8rem">
           <rowan-form-field label="Project name" hint="Shown in workspace navigation.">
             <rowan-text-field name="project" value="Northstar"></rowan-text-field>
           </rowan-form-field>

@@ -457,7 +457,7 @@
     }
   },
   "scripts": {
-    "analyze": "cem analyze --config custom-elements-manifest.config.js && npm run analyze --workspace=@rowan-ui/maplibre",
+    "analyze": "cem analyze --config custom-elements-manifest.config.js && npm run analyze --workspace=@rowan-ui/icons && npm run analyze --workspace=@rowan-ui/maplibre",
     "storybook": "storybook dev -p 6006",
     "documentation": "vite --open /documentation/index.html",
     "build-storybook": "storybook build",
