@@ -3,10 +3,10 @@
  * @tag rowan-side-nav
  * @attr {string} label
  * @attr {string} value
- * @slot - rowan-side-nav-item nodes
+ * @slot - rowan-side-nav-item and optional rowan-side-nav-section nodes
  * @csspart nav
  * @cssprop --rowan-side-nav-gap
- * @event rowan-change - Fired when a user activates a different navigation item.
+ * @event rowan-change - Fired when a user activates a different navigation item. Cancelable when the item has an in-app href; preventDefault to block navigation.
  */
 export class RowanSideNav extends BaseElement {
     set label(value: string);

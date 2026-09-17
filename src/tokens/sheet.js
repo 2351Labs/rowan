@@ -390,6 +390,10 @@ export const tokenCssText = `
   --rowan-side-nav-item-gap: var(--rowan-space-2);
   --rowan-side-nav-item-min-block-size: 2.5rem;
   --rowan-side-nav-item-padding: 0.45rem var(--rowan-space-3);
+  --rowan-side-nav-section-gap: var(--rowan-space-1);
+  --rowan-side-nav-section-label-fg: var(--rowan-color-muted);
+  --rowan-side-nav-section-label-font-size: var(--rowan-font-size-sm);
+  --rowan-side-nav-section-label-padding: 0.35rem var(--rowan-space-3);
   --rowan-confirm-dialog-action-gap: var(--rowan-space-2);
   --rowan-context-menu-offset: var(--rowan-space-2);
   --rowan-context-menu-shadow: 0 0.5rem 1.25rem rgb(16 28 22 / 14%);
@@ -1068,6 +1072,10 @@ export const unregisteredTokenNames = [
   "--rowan-side-nav-item-gap",
   "--rowan-side-nav-item-min-block-size",
   "--rowan-side-nav-item-padding",
+  "--rowan-side-nav-section-gap",
+  "--rowan-side-nav-section-label-fg",
+  "--rowan-side-nav-section-label-font-size",
+  "--rowan-side-nav-section-label-padding",
   "--rowan-confirm-dialog-action-gap",
   "--rowan-context-menu-offset",
   "--rowan-context-menu-shadow",
@@ -1575,6 +1583,10 @@ export const componentTokenDeclarations = [
   ["--rowan-side-nav-item-gap", "var(--rowan-space-2)"],
   ["--rowan-side-nav-item-min-block-size", "2.5rem"],
   ["--rowan-side-nav-item-padding", "0.45rem var(--rowan-space-3)"],
+  ["--rowan-side-nav-section-gap", "var(--rowan-space-1)"],
+  ["--rowan-side-nav-section-label-fg", "var(--rowan-color-muted)"],
+  ["--rowan-side-nav-section-label-font-size", "var(--rowan-font-size-sm)"],
+  ["--rowan-side-nav-section-label-padding", "0.35rem var(--rowan-space-3)"],
   ["--rowan-confirm-dialog-action-gap", "var(--rowan-space-2)"],
   ["--rowan-context-menu-offset", "var(--rowan-space-2)"],
   ["--rowan-context-menu-shadow", "0 0.5rem 1.25rem rgb(16 28 22 / 14%)"],

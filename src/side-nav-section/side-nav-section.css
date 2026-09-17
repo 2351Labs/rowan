@@ -1,0 +1,40 @@
+:host {
+  --_side-nav-section-gap: var(--rowan-side-nav-section-gap, var(--rowan-space-1));
+  --_side-nav-section-label-fg: var(--rowan-side-nav-section-label-fg, var(--rowan-color-muted));
+  --_side-nav-section-label-font-size: var(
+    --rowan-side-nav-section-label-font-size,
+    var(--rowan-font-size-sm)
+  );
+  --_side-nav-section-label-padding: var(
+    --rowan-side-nav-section-label-padding,
+    0.35rem var(--rowan-space-3)
+  );
+  display: grid;
+  min-inline-size: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.section {
+  display: grid;
+  gap: var(--_side-nav-section-gap);
+  min-inline-size: 0;
+}
+
+.label {
+  color: var(--_side-nav-section-label-fg);
+  font-size: var(--_side-nav-section-label-font-size);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0;
+  padding: var(--_side-nav-section-label-padding);
+  text-transform: uppercase;
+}
+
+.items {
+  display: grid;
+  gap: inherit;
+  min-inline-size: 0;
+}

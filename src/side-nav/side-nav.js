@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { sanitizeNavigationHref } from "../lib/url.js";
 import { RowanSideNavItem } from "../side-nav-item/side-nav-item.js";
 
 function isSideNavItem(value) {
@@ -13,10 +14,10 @@ function isSideNavItem(value) {
  * @tag rowan-side-nav
  * @attr {string} label
  * @attr {string} value
- * @slot - rowan-side-nav-item nodes
+ * @slot - rowan-side-nav-item and optional rowan-side-nav-section nodes
  * @csspart nav
  * @cssprop --rowan-side-nav-gap
- * @event rowan-change - Fired when a user activates a different navigation item.
+ * @event rowan-change - Fired when a user activates a different navigation item. Cancelable when the item has an in-app href; preventDefault to block navigation.
  */
 export class RowanSideNav extends BaseElement {
   static styleUrl = new URL("./side-nav.css", import.meta.url).href;
@@ -72,7 +73,9 @@ export class RowanSideNav extends BaseElement {
   }
 
   set value(value) {
-    this.reflectString("value", value);
+    const next = value == null ? "" : String(value);
+    if (next) this.reflectString("value", next);
+    else this.setAttribute("value", "");
   }
 
   /** @returns {RowanSideNavItem | null} */
@@ -113,8 +116,9 @@ export class RowanSideNav extends BaseElement {
   #syncActiveItem(items) {
     const requested = this.value;
     const requestedItem = requested ? items.find((item) => item.value === requested) : null;
+    const explicitEmpty = !requested && this.hasAttribute("value");
     const declaredItem = items.find((item) => item.active) ?? null;
-    const next = requestedItem ?? (requested ? null : declaredItem);
+    const next = requestedItem ?? (explicitEmpty ? null : requested ? null : declaredItem);
 
     this.#activeItem = next;
 
@@ -123,7 +127,7 @@ export class RowanSideNav extends BaseElement {
       if (item.active !== active) item.active = active;
     }
 
-    if (!requested && next?.value) this.reflectString("value", next.value);
+    if (!requested && !explicitEmpty && next?.value) this.reflectString("value", next.value);
   }
 
   #syncRovingTabIndex(items) {
@@ -164,7 +168,7 @@ export class RowanSideNav extends BaseElement {
       return;
     }
 
-    this.#activateItem(item);
+    this.#activateItem(item, event);
   }
 
   #handleKeydown(event) {
@@ -212,9 +216,10 @@ export class RowanSideNav extends BaseElement {
     return item ?? null;
   }
 
-  #activateItem(item) {
+  #activateItem(item, nativeEvent) {
     const previousValue = this.value;
     const changed = this.#activeItem !== item || previousValue !== item.value;
+    const href = item.external ? "" : sanitizeNavigationHref(item.href, "");
 
     this.#activeItem = item;
     this.#focusItem = item;
@@ -222,13 +227,21 @@ export class RowanSideNav extends BaseElement {
     this.#syncActiveItem(this.#items());
     this.#syncRovingTabIndex(this.#items());
 
-    if (!changed) return;
+    if (!changed && !href) return;
 
-    emit(this, "rowan-change", {
-      value: item.value,
-      previousValue,
-      item,
-    });
+    const allowed = emit(
+      this,
+      "rowan-change",
+      {
+        value: item.value,
+        previousValue,
+        item,
+        href: href || null,
+      },
+      { cancelable: Boolean(href) },
+    );
+
+    if (!allowed && nativeEvent) nativeEvent.preventDefault();
   }
 
   #focusItemAt(items, index, direction) {

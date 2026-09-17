@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 
 import "./side-nav.js";
+import "../side-nav-section/side-nav-section.js";
 
 const nextMicrotask = () => Promise.resolve();
 
@@ -133,5 +134,122 @@ describe("rowan-side-nav", () => {
     expect(nav.value).to.equal("activity");
     expect(events).to.have.length(1);
     expect(events[0].detail.value).to.equal("activity");
+  });
+
+  it("clears selection when value is set to an empty string", async () => {
+    const { nav, overview } = await renderSideNav();
+    nav.value = "overview";
+    await nextMicrotask();
+    expect(nav.activeItem).to.equal(overview);
+
+    nav.value = "";
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("");
+    expect(nav.activeItem).to.equal(null);
+    expect(overview.active).to.equal(false);
+  });
+
+  it("does not adopt a declared active item when value is explicitly empty", async () => {
+    const nav = document.createElement("rowan-side-nav");
+    nav.setAttribute("value", "");
+    const overview = document.createElement("rowan-side-nav-item");
+    overview.value = "overview";
+    overview.active = true;
+    overview.textContent = "Overview";
+    nav.append(overview);
+    document.body.append(nav);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("");
+    expect(nav.activeItem).to.equal(null);
+    expect(overview.active).to.equal(false);
+  });
+
+  it("selects one item across sections and keeps keyboard sequence", async () => {
+    const nav = document.createElement("rowan-side-nav");
+    nav.label = "Products";
+
+    const invexus = document.createElement("rowan-side-nav-section");
+    invexus.label = "Invexus";
+    const overview = document.createElement("rowan-side-nav-item");
+    overview.value = "overview";
+    overview.textContent = "Overview";
+    const jobs = document.createElement("rowan-side-nav-item");
+    jobs.value = "jobs";
+    jobs.textContent = "Jobs";
+    invexus.append(overview, jobs);
+
+    const ptms = document.createElement("rowan-side-nav-section");
+    ptms.label = "PTMS";
+    const routes = document.createElement("rowan-side-nav-item");
+    routes.value = "routes";
+    routes.textContent = "Routes";
+    ptms.append(routes);
+
+    nav.append(invexus, ptms);
+    document.body.append(nav);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    nav.value = "jobs";
+    await nextMicrotask();
+    expect(nav.activeItem).to.equal(jobs);
+    expect(overview.active).to.equal(false);
+    expect(routes.active).to.equal(false);
+    expect(invexus.shadowRoot.querySelector(".label").textContent).to.equal("Invexus");
+
+    jobs.focus();
+    keydown(jobs, "ArrowDown");
+    expect(routes.shadowRoot.activeElement).to.equal(routes.shadowRoot.querySelector("a"));
+  });
+
+  it("blocks in-app href navigation when rowan-change is cancelled", async () => {
+    const { nav, activity } = await renderSideNav();
+    activity.href = "#activity";
+    await nextMicrotask();
+
+    nav.addEventListener("rowan-change", (event) => event.preventDefault());
+    const click = new MouseEvent("click", { bubbles: true, composed: true, cancelable: true });
+    activity.shadowRoot.querySelector("a").dispatchEvent(click);
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("activity");
+    expect(click.defaultPrevented).to.equal(true);
+  });
+
+  it("still lets SPA listeners cancel navigation when the current href is activated again", async () => {
+    const { nav, activity } = await renderSideNav();
+    activity.href = "#activity";
+    nav.value = "activity";
+    await nextMicrotask();
+
+    nav.addEventListener("rowan-change", (event) => event.preventDefault());
+    const click = new MouseEvent("click", { bubbles: true, composed: true, cancelable: true });
+    activity.shadowRoot.querySelector("a").dispatchEvent(click);
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("activity");
+    expect(click.defaultPrevented).to.equal(true);
+  });
+
+  it("does not treat a javascript href as an in-app destination", async () => {
+    const { nav, activity } = await renderSideNav();
+    activity.href = "javascript:alert(1)";
+    await nextMicrotask();
+
+    const events = [];
+    nav.addEventListener("rowan-change", (event) => {
+      events.push(event);
+      event.preventDefault();
+    });
+    const click = new MouseEvent("click", { bubbles: true, composed: true, cancelable: true });
+    activity.shadowRoot.querySelector("a").dispatchEvent(click);
+    await nextMicrotask();
+
+    expect(events[0].detail.href).to.equal(null);
+    expect(events[0].cancelable).to.equal(false);
+    expect(activity.shadowRoot.querySelector("a").getAttribute("href")).to.equal(null);
   });
 });
