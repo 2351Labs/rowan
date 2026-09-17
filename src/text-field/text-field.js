@@ -84,6 +84,7 @@ export class RowanTextField extends BaseElement {
   #inputId = "";
   #autoInvalid = false;
   #paintInvalid = false;
+  #ignoreInvalidEvent = false;
   #value = null;
   #composing = false;
 
@@ -259,11 +260,16 @@ export class RowanTextField extends BaseElement {
   }
 
   checkValidity() {
-    if (this.internals && typeof this.internals.checkValidity === "function") {
-      return this.internals.checkValidity();
-    }
+    this.#ignoreInvalidEvent = true;
+    try {
+      if (this.internals && typeof this.internals.checkValidity === "function") {
+        return this.internals.checkValidity();
+      }
 
-    return this.#input ? this.#input.checkValidity() : true;
+      return this.#input ? this.#input.checkValidity() : true;
+    } finally {
+      this.#ignoreInvalidEvent = false;
+    }
   }
 
   reportValidity() {
@@ -369,6 +375,7 @@ export class RowanTextField extends BaseElement {
   }
 
   #onInvalid() {
+    if (this.#ignoreInvalidEvent) return;
     this.#paintInvalid = true;
     this.#syncValidity();
     this.#paintHostIfInvalid();

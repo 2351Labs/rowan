@@ -71,7 +71,9 @@ describe("rowan-textarea", () => {
     document.body.append(el);
     await nextMicrotask();
 
+    expect(el.hasAttribute("invalid")).to.equal(false);
     expect(el.checkValidity()).to.equal(false);
+    expect(el.hasAttribute("invalid")).to.equal(false);
 
     el.value = "Ready";
     await nextMicrotask();

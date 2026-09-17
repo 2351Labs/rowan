@@ -450,6 +450,7 @@ describe("rowan-text-field", () => {
 
     expect(element.hasAttribute("invalid")).to.equal(false);
     expect(element.checkValidity()).to.equal(false);
+    expect(element.hasAttribute("invalid")).to.equal(false);
 
     element.shadowRoot
       .querySelector("input")

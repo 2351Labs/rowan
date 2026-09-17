@@ -132,7 +132,9 @@ describe("rowan-number-field", () => {
     document.body.append(element);
     await nextMicrotask();
 
+    expect(element.hasAttribute("invalid")).to.equal(false);
     expect(element.checkValidity()).to.equal(false);
+    expect(element.hasAttribute("invalid")).to.equal(false);
 
     element.value = "-1";
     await nextMicrotask();
