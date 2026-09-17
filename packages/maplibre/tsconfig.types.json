@@ -14,5 +14,5 @@
     "target": "ES2022"
   },
   "include": ["src/**/*.js"],
-  "exclude": ["src/**/*.stories.js", "src/**/*.test.js", "types/**"]
+  "exclude": ["src/**/*.stories.js", "src/**/*.test.js", "src/react/generated/**", "types/**"]
 }

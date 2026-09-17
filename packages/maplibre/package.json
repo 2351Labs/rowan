@@ -19,6 +19,14 @@
     "./map": {
       "types": "./src/map/map.d.ts",
       "default": "./src/map/map.js"
+    },
+    "./react": {
+      "types": "./src/react/generated/index.d.ts",
+      "default": "./src/react/generated/index.js"
+    },
+    "./react/map": {
+      "types": "./src/react/generated/maplibre-map.d.ts",
+      "default": "./src/react/generated/maplibre-map.js"
     }
   },
   "files": [
@@ -38,7 +46,13 @@
   ],
   "peerDependencies": {
     "@rowan-ui/core": "^0.5.0",
-    "maplibre-gl": "^5.0.0"
+    "maplibre-gl": "^5.0.0",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",

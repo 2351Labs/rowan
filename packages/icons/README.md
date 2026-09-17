@@ -47,6 +47,21 @@ available for slots in other Rowan components and accepts `size`, `stroke-width`
 and `label`; omit `label` when the icon is decorative, including inside a labeled
 `rowan-icon-button`.
 
+## React
+
+The SVG factory and `rowan-icon` tag do not require `@rowan-ui/core`. The generated
+wrapper does: it uses the same `createRowanComponent` helper as core.
+
+```tsx
+import "@rowan-ui/icons/elements/calendar-days";
+import { RowanIcon } from "@rowan-ui/icons/react/icon";
+
+<RowanIcon name="calendar-days" label="Schedule" />;
+```
+
+Import the per-icon element module so the name is registered. The wrapper is a
+client binding, not a Server Component.
+
 ## Accessibility
 
 Icons are decorative by default, with `aria-hidden="true"` and

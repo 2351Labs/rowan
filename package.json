@@ -339,6 +339,9 @@
       "types": "./src/react/index.d.ts",
       "default": "./src/react/index.js"
     },
+    "./react/wrapper-props": {
+      "types": "./src/react/wrapper-props.d.ts"
+    },
     "./react/components": {
       "types": "./src/react/generated/index.d.ts",
       "default": "./src/react/generated/index.js"

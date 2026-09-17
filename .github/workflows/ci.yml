@@ -29,7 +29,7 @@ jobs:
       - run: npm run typecheck --workspace=@rowan-ui/icons
       - name: Verify generated artifacts
         run: |
-          changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types packages/icons/custom-elements.json packages/icons/types packages/maplibre/custom-elements.json packages/maplibre/types src/react/generated)"
+          changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types packages/icons/custom-elements.json packages/icons/types packages/maplibre/custom-elements.json packages/maplibre/types src/react/generated packages/icons/src/react/generated packages/maplibre/src/react/generated)"
           if [[ -n "$changes" ]]; then
             printf '%s\n' "$changes"
             exit 1

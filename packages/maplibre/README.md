@@ -58,6 +58,22 @@ map.locations = [
 map.layers = [{ id: "scheduled", label: "Scheduled work", visible: true }];
 ```
 
+## React
+
+```tsx
+import { RowanMapLibreMap } from "@rowan-ui/maplibre/react/map";
+
+<RowanMapLibreMap
+  mapStyle={mapStyle}
+  attribution={attribution}
+  locations={locations}
+  onRowanLocationActivate={(event) => select(event.detail)}
+/>;
+```
+
+`mapStyle`, `locations`, and `layers` stay properties. The wrapper loads the
+element module and is not a Server Component.
+
 All structured inputs are properties and are copied before the adapter uses
 them. Coordinates are the only spatial input in this package. It does not
 perform geocoding, reverse geocoding, address lookup, or location telemetry.
