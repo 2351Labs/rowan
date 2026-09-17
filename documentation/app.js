@@ -1087,7 +1087,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="react-18-booleans">
         <h2>React 18 boolean attributes</h2>
-        <p>Wrappers assign booleans as properties, so <code>disabled={false}</code> does not appear in markup. React 18 server rendering of a raw tag serializes false custom-element booleans as present attributes such as disabled=&quot;false&quot;. For raw tags, omit false booleans from server markup or set them through a client-side ref after hydration.</p>
+        <p>Wrappers assign booleans as properties, so <code>disabled={false}</code> does not appear in markup. React 18 server rendering of a raw tag still serializes false booleans as disabled=&quot;false&quot;; after the host upgrades, Rowan treats that value as unset and removes the attribute.</p>
         ${codeBlock(REACT_18_BOOLEAN_SNIPPET, "tsx")}
       </section>
 

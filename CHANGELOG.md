@@ -6,6 +6,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- React wrapper props keep nullable function properties (`renderItem`, `formatValue`, `valueFormatter`).
+- Boolean attributes whose value is `"false"` (React 18 SSR on raw tags) are treated as unset.
+
 ### Added
 
 - Generated React wrappers from the public Custom Elements Manifest: `import { RowanButton } from "@rowan-ui/core/react/button"`. `onRowan*` maps to `rowan-*`. Objects stay property-only. `@rowan-ui/core/react` remains the hook and JSX types.

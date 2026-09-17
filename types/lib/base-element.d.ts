@@ -11,6 +11,7 @@ export class BaseElement extends HTMLElement {
     static componentTokenPrefixes: any[];
     connectedCallback(): void;
     disconnectedCallback(): void;
+    setAttribute(name: any, value: any): void;
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     formDisabledCallback(disabled: any): void;
     get internals(): null;

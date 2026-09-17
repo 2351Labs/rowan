@@ -19,6 +19,13 @@ describe("reflect helpers", () => {
     reflectBooleanAttribute(element, "disabled", false);
     expect(element.hasAttribute("disabled")).to.equal(false);
     expect(readBooleanAttribute(element, "disabled")).to.equal(false);
+
+    element.setAttribute("hidden", "false");
+    expect(readBooleanAttribute(element, "hidden")).to.equal(false);
+    expect(element.hasAttribute("hidden")).to.equal(false);
+
+    reflectBooleanAttribute(element, "disabled", "false");
+    expect(element.hasAttribute("disabled")).to.equal(false);
   });
 
   it("reflects string attributes and removes empty values", () => {

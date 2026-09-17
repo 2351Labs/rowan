@@ -10,11 +10,15 @@ type RowanCustomPropertyKeys<Element extends HTMLElement> = Exclude<
   keyof HTMLElement | keyof BaseElement
 >;
 type RowanPropertyKeys<Element extends HTMLElement> = {
-  [Key in RowanCustomPropertyKeys<Element>]: Key extends `render${string}`
-    ? Key
-    : NonNullable<Element[Key]> extends (...args: never[]) => unknown
-      ? never
-      : Key;
+  [Key in RowanCustomPropertyKeys<Element>]: NonNullable<Element[Key]> extends (
+    ...args: never[]
+  ) => unknown
+    ? null extends Element[Key]
+      ? Key
+      : undefined extends Element[Key]
+        ? Key
+        : never
+    : Key;
 }[RowanCustomPropertyKeys<Element>];
 type RowanScalarPropertyKeys<Element extends HTMLElement> = {
   [Key in RowanPropertyKeys<Element>]: Exclude<Element[Key], null | undefined> extends

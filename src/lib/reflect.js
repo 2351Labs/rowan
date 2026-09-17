@@ -1,14 +1,47 @@
+export const BOOLEAN_ATTRIBUTES = new Set([
+  "active",
+  "animated",
+  "checked",
+  "confirm-disabled",
+  "disabled",
+  "dismissible",
+  "expanded",
+  "external",
+  "hidden",
+  "indeterminate",
+  "interactive",
+  "invalid",
+  "loading",
+  "multiple",
+  "open",
+  "pulse",
+  "range",
+  "required",
+  "selected",
+  "sticky-header",
+  "virtualized",
+]);
+
+export function isFalseBooleanAttributeValue(value) {
+  return value === false || value === "false";
+}
+
 export function readBooleanAttribute(element, attributeName) {
-  return element.hasAttribute(attributeName);
+  if (!element.hasAttribute(attributeName)) return false;
+  if (element.getAttribute(attributeName) === "false") {
+    element.removeAttribute(attributeName);
+    return false;
+  }
+  return true;
 }
 
 export function reflectBooleanAttribute(element, attributeName, value) {
-  if (value) {
-    element.setAttribute(attributeName, "");
+  if (isFalseBooleanAttributeValue(value) || !value) {
+    element.removeAttribute(attributeName);
     return;
   }
 
-  element.removeAttribute(attributeName);
+  element.setAttribute(attributeName, "");
 }
 
 export function readStringAttribute(element, attributeName, fallback = "") {

@@ -52,6 +52,16 @@ describe("rowan-button", () => {
     expect(element.size).to.equal("sm");
   });
 
+  it("treats disabled=\"false\" as unset", async () => {
+    const element = document.createElement("rowan-button");
+    document.body.append(element);
+    await nextMicrotask();
+
+    element.setAttribute("disabled", "false");
+    expect(element.hasAttribute("disabled")).to.equal(false);
+    expect(element.disabled).to.equal(false);
+  });
+
   it("normalizes unsupported variant, size, and type to documented defaults", async () => {
     const element = document.createElement("rowan-button");
     element.variant = "loud";
