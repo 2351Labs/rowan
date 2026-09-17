@@ -403,6 +403,7 @@ export const parameters = {
     storySort: {
       method: "alphabetical",
       order: [
+        "Home",
         "Foundations",
         "Integrations",
         ["Using Rowan from React", "React", "MapLibre Map"],

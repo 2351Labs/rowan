@@ -102,36 +102,31 @@ const deploymentDate = formatDate("2026-09-13T14:30:00Z", {
 const change = formatRelativeTime(-1, { locale: "en-US", unit: "day" });
 const fallback = formatNumber("unavailable", { fallback: "Not available" });`;
 
-const REACT_TABLE_SNIPPET = `import { useEffect, useRef, useState } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
-import type { RowanTable } from "@rowan-ui/core/table";
+const REACT_TABLE_SNIPPET = `import { useState } from "react";
+import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanTable } from "@rowan-ui/core/react/table";
 
 const config = {
   rowId: "id",
   selectable: "multiple",
+  caption: "Members",
   columns: [{ id: "name", header: "Name" }],
   rows: [{ id: "1", name: "Ada" }],
 };
 
 export function MembersTable() {
-  const tableRef = useRef<RowanTable>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
-  useEffect(() => {
-    void import("@rowan-ui/core/table");
-  }, []);
-
-  useRowanElement(tableRef, {
-    properties: { config, selected },
-    events: {
-      "rowan-select": (event) => {
-        const detail = (event as CustomEvent<{ selected: string[] }>).detail;
-        setSelected(detail.selected);
-      },
-    },
-  });
-
-  return <rowan-table ref={tableRef} caption="Members" />;
+  return (
+    <>
+      <RowanTable
+        config={config}
+        selected={selected}
+        onRowanSelect={(event) => setSelected(event.detail.selected)}
+      />
+      <RowanButton onRowanClick={() => save()}>Save</RowanButton>
+    </>
+  );
 }`;
 
 const REACT_EVENTS_SNIPPET = `useRowanElement(fieldRef, {
@@ -154,16 +149,11 @@ return <rowan-button {...booleanAttributes}>Save</rowan-button>;`;
 
 const NEXT_JS_SNIPPET = `"use client";
 
-import { useEffect } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
+import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanTable } from "@rowan-ui/core/react/table";
 
 export function RowanClientBoundary() {
-  useEffect(() => {
-    void import("@rowan-ui/core/table");
-    void import("@rowan-ui/core/button");
-  }, []);
-
-  return null;
+  return <RowanButton onRowanClick={() => save()}>Save</RowanButton>;
 }`;
 
 const TABLE_SNIPPET = `const table = document.querySelector("rowan-table");
@@ -1063,31 +1053,31 @@ const DOC_PAGES = [
     group: "Overview",
     title: "React",
     summary:
-      "Use the optional JSX facade and native ref bindings while keeping Rowan elements framework-neutral.",
-    tags: ["react", "tsx", "ssr", "events"],
-    keywords: ["react", "tsx", "next.js", "ssr", "useRowanElement", "native events"],
+      "Generated wrappers are the React default. Raw tags and useRowanElement remain for odd bindings.",
+    tags: ["react", "tsx", "ssr", "events", "wrappers"],
+    keywords: ["react", "tsx", "next.js", "ssr", "useRowanElement", "RowanButton", "wrappers"],
     content: () => `
       <section class="doc-section" data-doc-section id="react-overview">
-        <h2>Typed React usage</h2>
-        <p>The optional React entry adds JSX declarations for every Rowan tag and a ref helper. It does not provide component wrappers or register custom elements.</p>
+        <h2>Generated wrappers</h2>
+        <p>The custom element is the product. Import <code>RowanButton</code> from <code>@rowan-ui/core/react/button</code> (and the same pattern for other tags). Wrappers load the element module, assign objects as properties, and map <code>onRowanClick</code> to <code>rowan-click</code>. <code>ref</code> is the host. They are not Server Components.</p>
         ${codeBlock(REACT_TABLE_SNIPPET, "tsx")}
       </section>
 
       <section class="doc-section" data-doc-section id="react-properties-events">
-        <h2>Properties and native events</h2>
-        <p>Use JSX for string and number scalar attributes. Assign boolean state, arrays, objects, callbacks, and other structured values through the helper so they remain properties. Its native subscriptions are replaced on rerender and cleaned up on unmount.</p>
+        <h2>Raw tags and useRowanElement</h2>
+        <p>Raw <code>&lt;rowan-button&gt;</code> stays first-class. <code>@rowan-ui/core/react</code> still adds JSX types and <code>useRowanElement()</code> for odd bindings. Pass objects, arrays, and native events through the helper on the tag path; wrappers already do that as props.</p>
         ${codeBlock(REACT_EVENTS_SNIPPET, "tsx")}
       </section>
 
       <section class="doc-section" data-doc-section id="react-18-booleans">
         <h2>React 18 boolean attributes</h2>
-        <p>React 18 server rendering serializes false custom-element booleans as present attributes such as disabled=&quot;false&quot;. Rowan follows HTML boolean presence semantics, so omit false booleans from server markup or set them through a client-side ref after hydration.</p>
+        <p>Wrappers assign booleans as properties, so <code>disabled={false}</code> does not appear in markup. React 18 server rendering of a raw tag serializes false custom-element booleans as present attributes such as disabled=&quot;false&quot;. For raw tags, omit false booleans from server markup or set them through a client-side ref after hydration.</p>
         ${codeBlock(REACT_18_BOOLEAN_SNIPPET, "tsx")}
       </section>
 
       <section class="doc-section" data-doc-section id="react-ssr">
         <h2>Next.js and SSR</h2>
-        <p>The React facade is safe to import during server rendering because it does not touch browser globals or register elements. Keep component registration inside a client effect or equivalent client-only boundary, and use the React 18 boolean boundary above when rendering Rowan controls on the server.</p>
+        <p>Import wrappers from a client component. Do not import them or registration modules from server-rendered code. The hook-only <code>@rowan-ui/core/react</code> entry does not register elements; generated wrappers do.</p>
         ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
       </section>
     `,

@@ -109,7 +109,7 @@ export function MembersTable() {
 
 Raw tags stay first-class. `@rowan-ui/core/react` still provides JSX types and `useRowanElement()` for odd bindings. Storybook **Integrations / Using Rowan from React** shows wrapper and tag side by side.
 
-Use JSX for string and number scalar attributes such as `caption`. Pass arrays, objects, callbacks, and other property-only values through `useRowanElement(ref, { properties })`; the helper assigns them directly after the host exists rather than serializing them as attributes. Its `events` map uses native `addEventListener()` and removes outdated listeners on rerender and unmount:
+On the **tag** path only, pass arrays, objects, callbacks, and native events through `useRowanElement(ref, { properties, events })`. Wrappers already accept those as props (`config`, `selected`, `onRowanSelect`). The helper assigns properties after the host exists and binds `addEventListener` (replaced on rerender, removed on unmount):
 
 ```tsx
 useRowanElement(fieldRef, {
@@ -347,8 +347,9 @@ declarative HTML, an individual `@rowan-ui/icons/elements/calendar-days` import
 registers `icon="calendar-days"` for `rowan-icon-button` and `<rowan-icon
 name="calendar-days">` for other component slots. Icons are decorative by
 default and become meaningful only when callers pass an explicit accessible
-label. See the `@rowan-ui/icons` package README for direct-import, declarative
-composition, accessibility, and Lucide source-license guidance.
+label. React: `import { RowanIcon } from "@rowan-ui/icons/react/icon"` after a
+per-icon `@rowan-ui/icons/elements/<name>` import. The wrapper optionally peers
+on `@rowan-ui/core`; SVG and HTML usage stay core-free. See the package README.
 
 `@rowan-ui/maplibre` provides `rowan-maplibre-map` without adding a map runtime to
 `@rowan-ui/core`. Install it with `maplibre-gl` only in applications that need map
@@ -356,8 +357,9 @@ rendering. Applications own the style or permitted tiles, provider attribution,
 credentials, cost and privacy decisions, and offline policy. The adapter accepts
 coordinates only; it does not geocode or look up addresses. Locations and marker
 layers are property-only, and accessible list and table alternatives remain
-available when map rendering cannot start. See the `@rowan-ui/maplibre` package
-README for the application-owned setup contract.
+available when map rendering cannot start. React:
+`import { RowanMapLibreMap } from "@rowan-ui/maplibre/react/map"`. See the
+package README for the application-owned setup contract.
 
 ## Rowan Selection Controls
 
@@ -1022,8 +1024,9 @@ Pushes to `main` publish Storybook to GitHub Pages via
 `.github/workflows/storybook-pages.yml`. One-time repo setting: **Settings →
 Pages → Source: GitHub Actions**. The project site is
 `https://<owner>.github.io/<repo>/` (for this repo,
-[https://2351labs.github.io/rowan/](https://2351labs.github.io/rowan/)). Local
-`npm run storybook` still serves at `/`.
+[https://2351labs.github.io/rowan/](https://2351labs.github.io/rowan/)); the
+**Home** docs page is the landing story. Local `npm run storybook` still serves
+at `/`.
 
 - `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit of representative widgets
 - `npm run test:browser` runs the same serial component contracts with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`

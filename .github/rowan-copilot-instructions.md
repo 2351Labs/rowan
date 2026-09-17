@@ -1,7 +1,8 @@
 # Rowan — GitHub Copilot build brief
 
 You are implementing **Rowan**, a plain-vanilla Web Component design system.
-No Lit, Stencil, FAST, React, Vue, Svelte, Angular, Tailwind, or CSS-in-JS.
+No Lit, Stencil, FAST, Vue, Svelte, Angular, Tailwind, or CSS-in-JS in shipped hosts.
+React bindings live only under `src/react/` and are generated from the CEM.
 Browser standards only: Custom Elements, Shadow DOM, `<slot>`, ES modules,
 CSS custom properties, `::part()`, `adoptedStyleSheets`, ElementInternals.
 
@@ -43,7 +44,7 @@ License: MIT
    visual component.
 10. Guard `customElements.define` so HMR / double-import does not throw.
 11. No Tailwind in `dist/`. No utility-class public API.
-12. Custom Elements Manifest is the source of truth for docs and Storybook.
+12. Custom Elements Manifest is the source of truth for docs, Storybook, and generated React wrappers. Do not hand-edit `src/react/generated/`.
 
 ## Repo layout (create this)
 
