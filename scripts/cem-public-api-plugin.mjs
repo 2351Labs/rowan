@@ -23,6 +23,7 @@ const INTERNAL_METHODS = new Set([
   "readBoolean",
   "readString",
   "readNumber",
+  "setAttribute",
 ]);
 
 const INTERNAL_FIELDS = new Set(["renderRoot"]);

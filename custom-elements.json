@@ -9325,6 +9325,20 @@
       "path": "src/lib/reflect.js",
       "declarations": [
         {
+          "kind": "variable",
+          "name": "BOOLEAN_ATTRIBUTES",
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+        },
+        {
+          "kind": "function",
+          "name": "isFalseBooleanAttributeValue",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
           "kind": "function",
           "name": "readBooleanAttribute",
           "parameters": [
@@ -9416,6 +9430,22 @@
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "BOOLEAN_ATTRIBUTES",
+          "declaration": {
+            "name": "BOOLEAN_ATTRIBUTES",
+            "module": "src/lib/reflect.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isFalseBooleanAttributeValue",
+          "declaration": {
+            "name": "isFalseBooleanAttributeValue",
+            "module": "src/lib/reflect.js"
+          }
+        },
         {
           "kind": "js",
           "name": "readBooleanAttribute",
