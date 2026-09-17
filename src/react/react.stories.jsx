@@ -24,9 +24,30 @@ if (!customElements.get("rowan-react-story")) {
   );
 }
 
-function renderReact(story) {
-  const host = document.createElement("rowan-react-story");
-  host.story = story;
+function renderReact(story, source) {
+  const host = document.createElement("div");
+  host.style.display = "grid";
+  host.style.gap = "1rem";
+
+  const live = document.createElement("rowan-react-story");
+  live.story = story;
+
+  const heading = document.createElement("p");
+  heading.style.margin = "0";
+  heading.style.fontWeight = "600";
+  heading.textContent = "Application source";
+
+  const pre = document.createElement("pre");
+  pre.style.margin = "0";
+  pre.style.padding = "1rem";
+  pre.style.overflow = "auto";
+  pre.style.fontSize = "0.8125rem";
+  pre.style.lineHeight = "1.45";
+  pre.style.border = "1px solid currentColor";
+  pre.style.borderRadius = "0.5rem";
+  pre.textContent = String(source ?? "").trim();
+
+  host.append(live, heading, pre);
   return host;
 }
 
@@ -48,24 +69,24 @@ export default {
     docs: {
       description: {
         component:
-          "Copy the story source. Register each element in a client `useEffect`, put scalars in JSX, and pass objects, arrays, and events through `useRowanElement()`.",
+          "Each story is a real React tree: register the element in `useEffect`, put scalars in JSX, and pass objects, arrays, and events through `useRowanElement()`. See Integrations → Using Rowan from React for the full walkthrough.",
       },
     },
   },
 };
 
 export const Button = {
-  render: () => renderReact(<SaveButton />),
+  render: () => renderReact(<SaveButton />, saveButtonSource),
   parameters: reactSource(saveButtonSource),
 };
 
 export const TextField = {
-  render: () => renderReact(<WorkspaceField />),
+  render: () => renderReact(<WorkspaceField />, workspaceFieldSource),
   parameters: reactSource(workspaceFieldSource),
 };
 
 export const Table = {
   name: "Table with useRowanElement",
-  render: () => renderReact(<MembersTable />),
+  render: () => renderReact(<MembersTable />, membersTableSource),
   parameters: reactSource(membersTableSource),
 };

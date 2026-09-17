@@ -62,6 +62,10 @@ function formatHtmlNode(node, depth = 0) {
 }
 
 function formatStorySource(source) {
+  if (typeof source === "string" && /^\s*import\s/m.test(source)) {
+    return source;
+  }
+
   if (!isLikelyHtmlSource(source)) {
     return source;
   }
@@ -401,6 +405,7 @@ export const parameters = {
       order: [
         "Foundations",
         "Integrations",
+        ["Using Rowan from React", "React", "MapLibre Map"],
         "Components",
         [
           "Actions & Feedback",
