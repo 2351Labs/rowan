@@ -15,7 +15,6 @@
  * @event rowan-change - Fired when user interaction changes selection
  */
 export class RowanListbox extends BaseElement {
-    static componentTokenPrefixes: string[];
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set name(value: string);
     get name(): string;

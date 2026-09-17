@@ -1,14 +1,13 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
+import { normalizeCalendarDate } from "../lib/calendar-date.js";
 
 let datePickerId = 0;
 
-const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
 function normalizeDateValue(value) {
-  const next = String(value ?? "").trim();
-  return DATE_VALUE_PATTERN.test(next) ? next : "";
+  return normalizeCalendarDate(value);
 }
 
 /**
@@ -202,21 +201,31 @@ export class RowanDatePicker extends BaseElement {
       this.#fallbackLabel = this.renderRoot.querySelector("label");
 
       this.listen(this.#input, "input", () => {
+        if (this.#input.validity.badInput) {
+          this.#syncValidity();
+          this.#applyDefaultA11y();
+          return;
+        }
+
         this.value = this.#input.value;
       });
 
       this.listen(this.#input, "change", () => {
-        this.value = this.#input.value;
+        this.value = this.#input.validity.badInput ? "" : this.#input.value;
 
         emit(this, "rowan-change", {
           value: this.value,
         });
       });
+
+      this.listen(this.#input, "blur", () => {
+        this.requestRender();
+      });
     }
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
-    this.#input.value = this.value;
+    this.#writeInputValue();
     this.#input.min = this.min;
     this.#input.max = this.max;
     this.#input.disabled = this.disabled;
@@ -238,6 +247,14 @@ export class RowanDatePicker extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  #writeInputValue() {
+    if (!this.#input) return;
+    if (this.#input.matches(":focus") || this.#input.validity.badInput) return;
+    if (this.#input.value === this.value) return;
+
+    this.#input.value = this.value;
+  }
+
   #syncFormValue() {
     this.setFormValue(this.value);
   }
@@ -245,20 +262,30 @@ export class RowanDatePicker extends BaseElement {
   #syncValidity() {
     if (!this.#input) return;
 
+    if (this.#input.validity.badInput) {
+      this.setValidity({ badInput: true }, validityMessage("badInput.date"), this.#input);
+      this.#setAutoInvalid(true);
+      return;
+    }
+
     if (this.required && this.value.length === 0) {
-      this.setValidity({ valueMissing: true }, "Please select a date.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.date"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.value.length > 0 && this.min.length > 0 && this.value < this.min) {
-      this.setValidity({ rangeUnderflow: true }, "Date is before minimum.", this.#input);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.date"),
+        this.#input,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.value.length > 0 && this.max.length > 0 && this.value > this.max) {
-      this.setValidity({ rangeOverflow: true }, "Date is after maximum.", this.#input);
+      this.setValidity({ rangeOverflow: true }, validityMessage("rangeOverflow.date"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }

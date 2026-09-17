@@ -25,6 +25,7 @@ export class RowanTooltip extends BaseElement {
   #tooltip = null;
 
   disconnectedCallback() {
+    this.#hideTooltipPopover();
     this.#releaseTrigger();
     super.disconnectedCallback();
   }
@@ -73,8 +74,53 @@ export class RowanTooltip extends BaseElement {
 
     const text = this.text.trim();
     this.#tooltip.textContent = text;
-    this.#tooltip.hidden = !this.open || !text;
+    if (this.open && text) {
+      this.#showTooltipPopover();
+    } else {
+      this.#hideTooltipPopover();
+    }
     this.#syncTrigger(text);
+  }
+
+  #showTooltipPopover() {
+    if (!this.#tooltip) return;
+
+    this.#tooltip.hidden = false;
+    if (typeof this.#tooltip.showPopover === "function") {
+      if (this.#tooltip.getAttribute("popover") !== "manual") {
+        this.#tooltip.setAttribute("popover", "manual");
+      }
+
+      try {
+        if (!this.#tooltip.matches(":popover-open")) this.#tooltip.showPopover();
+      } catch {
+        this.#tooltip.hidden = false;
+      }
+    }
+
+    this.#positionTooltip();
+  }
+
+  #hideTooltipPopover() {
+    if (!this.#tooltip) return;
+
+    this.#tooltip.hidden = true;
+    if (typeof this.#tooltip.hidePopover !== "function") return;
+
+    try {
+      if (this.#tooltip.matches(":popover-open")) this.#tooltip.hidePopover();
+    } catch {
+      return;
+    }
+  }
+
+  #positionTooltip() {
+    if (!this.#tooltip) return;
+
+    const anchor = this.#trigger ?? this;
+    const bounds = anchor.getBoundingClientRect();
+    this.#tooltip.style.top = `${Math.round(bounds.bottom + 6)}px`;
+    this.#tooltip.style.left = `${Math.round(bounds.left + bounds.width / 2)}px`;
   }
 
   #syncTrigger(text) {

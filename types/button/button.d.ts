@@ -30,7 +30,6 @@ export class RowanButton extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
-    static componentTokenPrefixes: string[];
     /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
     set variant(value: "danger" | "primary" | "secondary" | "ghost");
     /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
@@ -47,6 +46,7 @@ export class RowanButton extends BaseElement {
     set type(value: "button" | "submit" | "reset");
     /** @returns {"button" | "submit" | "reset"} */
     get type(): "button" | "submit" | "reset";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

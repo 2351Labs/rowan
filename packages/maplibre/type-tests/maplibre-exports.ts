@@ -1,5 +1,22 @@
 import "../src/elements.js";
-import type { RowanMapLibreMap } from "../src/map/map.js";
+import type {
+  RowanMapAttribution,
+  RowanMapLayer,
+  RowanMapLibreMap,
+  RowanMapLocation,
+} from "../src/index.js";
+
+const location: RowanMapLocation = {
+  id: "dispatch-17",
+  label: "Generator inspection",
+  latitude: 47.6062,
+  longitude: -122.3321,
+};
+const layer: RowanMapLayer = { id: "scheduled", label: "Scheduled", visible: true };
+const credit: RowanMapAttribution = { label: "Open source tiles" };
+void location;
+void layer;
+void credit;
 
 const map = document.createElement("rowan-maplibre-map");
 const typedMap: RowanMapLibreMap = map;

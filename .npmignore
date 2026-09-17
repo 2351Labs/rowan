@@ -1,0 +1,6 @@
+*.test.js
+*.stories.js
+**/*.test.js
+**/*.stories.js
+src/storybook
+src/storybook/**

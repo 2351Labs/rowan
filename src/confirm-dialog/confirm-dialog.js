@@ -153,6 +153,7 @@ export class RowanConfirmDialog extends BaseElement {
   }
 
   #syncDialog() {
+    this.#dialog.alert = true;
     this.#dialog.open = this.open;
     this.#dialog.setAttribute("aria-label", this.label);
     this.#titleFallback.textContent = this.label;

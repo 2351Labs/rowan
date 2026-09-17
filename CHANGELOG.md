@@ -1,0 +1,58 @@
+# Changelog
+
+User-visible changes to `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre`.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Unreleased
+
+## 0.5.0 - 2026-09-16
+
+Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
+part of `0.5` until they are marked Stable.
+
+### Added
+
+- `rowan-radio-group` is form-associated: it submits the selected value, owns `required` / `valueMissing`, and restores the default on reset. Named child radios do not also submit.
+- `rowan-file-upload` is form-associated: `name`, `required`, `FormData` submission of `File` objects, reset, and `valueMissing`.
+- Overlay stack: dismissible layers (popover, dropdown, context-menu) share `isTopmostOverlay` with modals.
+- Published packages declare `engines.node` `>=20`.
+- `npm test` runs an axe WCAG A/AA audit of representative form and status widgets.
+- Form constraint strings are overridable through `@rowan-ui/core/validity-messages` (`setValidityMessages`, `setValidityMessageResolver`). `setCustomValidity` still wins per control.
+- `rowan-dialog` `alert` mode for confirm dialogs (`alertdialog`, hidden close, initial focus on Cancel).
+- `@rowan-ui/maplibre` re-exports `RowanMapLocation`, `RowanMapLayer`, and attribution types.
+
+### Changed
+
+- Table `rowan-page-change` and pagination share `detail.index` (0-based) and `detail.page` (1-based).
+- Table link cells navigate unless `rowan-cell-action` is cancelled.
+- Password `type` is canonicalized; `type="PASSWORD"` evicts the value attribute.
+- Date-only `formatDate("YYYY-MM-DD")` formats that calendar day (no west-of-UTC shift).
+- Toasts defer while a modal is open, then flush when it closes.
+- Dropdown, popover, and tooltip panels use the Popover API (top layer) so `overflow: hidden` ancestors do not clip them.
+- Documented enum attributes on button, icon-button, chip, toast, status-indicator, toaster, skeleton, drawer, and table canonicalize like badge (unsupported values become the default; `tone=" DANGER "` becomes `danger`).
+- Checkbox and radio expose one widget: the inner input. Host `role` stays unset unless the author sets it.
+
+### Fixed
+
+- Required radio groups stay valid after a later option is selected.
+- Number, date, and time fields no longer wipe in-progress input.
+- Dropzone `accept` applies to drops and picker change.
+- Overlay scroll-lock leaks and reconnect skips on drawer / row-details.
+- `css:check` runs on Node 20 (CI).
+- `setCustomValidity` is synchronous.
+- Nested overlay dismiss (popover/dropdown/context-menu inside a dialog).
+- Fieldset-disabled FACE hosts are not overlay first-focus.
+- Impossible dates such as `2026-02-31` are rejected.
+- Multi-select combobox closes on Tab; Home/End move the caret in editable comboboxes.
+- Closed row-details panels leave the accessibility tree.
+- Generated Storybook/docs/tmp artifacts are gitignored; npm packs omit tests and stories.
+- `useRowanElement` binds listeners when the host mounts late.
+- External `<label for>` added after connect names the control.
+- Nested dialog/tab/switch roles collapsed to one widget each.
+
+## 0.1.0
+
+Initial public catalog. See README API stability: primitives, forms, overlays, and
+table config/events are settled for `0.1.x`; table virtualization, rich-text-editor,
+filter-builder, and trend-chart remain experimental.

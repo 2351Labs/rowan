@@ -1,6 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { hasModalOverlay, subscribeOverlayChange } from "../lib/overlay-stack.js";
 
 import "../toast/toast.js";
 
@@ -55,9 +57,12 @@ export class RowanToaster extends BaseElement {
   #renderedToasts = new Map();
   #pendingShowEvents = new Set();
   #flushPendingShowsOnRender = false;
+  #overlayUnsubscribe = null;
 
   connectedCallback() {
     super.connectedCallback();
+
+    this.#overlayUnsubscribe = subscribeOverlayChange(() => this.#ensureTopLayer());
 
     if (this.#pendingShowEvents.size > 0) {
       this.#flushPendingShowsOnRender = true;
@@ -65,6 +70,10 @@ export class RowanToaster extends BaseElement {
   }
 
   disconnectedCallback() {
+    this.#overlayUnsubscribe?.();
+    this.#overlayUnsubscribe = null;
+    this.#hidePopover();
+
     super.disconnectedCallback();
 
     for (const timer of this.#timers.values()) {
@@ -76,14 +85,29 @@ export class RowanToaster extends BaseElement {
 
   /** @returns {RowanToasterPlacement} */
   get placement() {
-    const value = this.readString("placement", DEFAULT_PLACEMENT);
-    return VALID_PLACEMENTS.has(value) ? value : DEFAULT_PLACEMENT;
+    return normalizeEnum(
+      this.readString("placement", DEFAULT_PLACEMENT),
+      VALID_PLACEMENTS,
+      DEFAULT_PLACEMENT,
+    );
   }
 
   /** @param {RowanToasterPlacement} value */
   set placement(value) {
-    const nextPlacement = VALID_PLACEMENTS.has(value) ? value : DEFAULT_PLACEMENT;
-    this.reflectString("placement", nextPlacement === DEFAULT_PLACEMENT ? null : nextPlacement);
+    reflectEnum(this, "placement", value, VALID_PLACEMENTS, DEFAULT_PLACEMENT);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (
+      name === "placement" &&
+      rewriteEnumAttribute(this, name, newValue, VALID_PLACEMENTS, DEFAULT_PLACEMENT)
+    ) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   get maxVisible() {
@@ -126,6 +150,7 @@ export class RowanToaster extends BaseElement {
     if (this.isConnected && this.#stack) {
       this.#flushQueue({ emitShowEvents: true });
       this.#renderActiveToasts();
+      this.#ensureTopLayer();
     } else {
       this.#flushPendingShowsOnRender = true;
       this.requestRender();
@@ -193,9 +218,71 @@ export class RowanToaster extends BaseElement {
     for (const toast of this.#active) {
       this.#ensureDismissTimer(toast);
     }
+
+    this.#ensureTopLayer();
+  }
+
+  #ensureTopLayer() {
+    if (!this.isConnected || this.hasAttribute("hidden")) {
+      this.#hidePopover();
+      return;
+    }
+
+    if (hasModalOverlay()) {
+      this.#parkActiveToasts();
+      this.#hidePopover();
+      return;
+    }
+
+    this.#flushQueue({ emitShowEvents: true });
+    this.#renderActiveToasts();
+
+    for (const toast of this.#active) {
+      this.#ensureDismissTimer(toast);
+    }
+
+    if (this.#active.length === 0 || typeof this.showPopover !== "function") {
+      this.#hidePopover();
+      return;
+    }
+
+    if (this.getAttribute("popover") !== "manual") {
+      this.setAttribute("popover", "manual");
+    }
+
+    try {
+      if (this.matches(":popover-open")) this.hidePopover();
+      this.showPopover();
+    } catch {
+      this.#hidePopover();
+    }
+  }
+
+  #parkActiveToasts() {
+    if (this.#active.length === 0) return;
+
+    for (const toast of this.#active) {
+      this.#clearDismissTimer(toast.id);
+    }
+
+    this.#queue = [...this.#active, ...this.#queue];
+    this.#active = [];
+    this.#renderActiveToasts();
+  }
+
+  #hidePopover() {
+    if (typeof this.hidePopover !== "function") return;
+
+    try {
+      if (this.matches(":popover-open")) this.hidePopover();
+    } catch {
+      return;
+    }
   }
 
   #flushQueue({ emitShowEvents = false } = {}) {
+    if (hasModalOverlay()) return;
+
     this.#enforceMaxVisible();
 
     while (this.#active.length < this.maxVisible && this.#queue.length > 0) {
@@ -236,6 +323,7 @@ export class RowanToaster extends BaseElement {
     this.#clearDismissTimer(id);
     this.#flushQueue({ emitShowEvents: true });
     this.#renderActiveToasts();
+    this.#ensureTopLayer();
 
     emit(this, "rowan-toast-dismiss", {
       id,

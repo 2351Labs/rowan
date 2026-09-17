@@ -1,7 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { collectFocusableElements } from "../lib/focus.js";
 import { keys } from "../lib/keys.js";
+import {
+  isTopmostOverlay,
+  noteDismissibleClose,
+  pushDismissible,
+  removeDismissible,
+} from "../lib/overlay-stack.js";
 
 let popoverId = 0;
 
@@ -59,6 +66,7 @@ export class RowanPopover extends BaseElement {
   #panelId = "";
   #removeTriggerClickListener = null;
   #removeDocumentPointerListener = null;
+  #removeDocumentKeydownListener = null;
   #managedControlsElement = null;
 
   connectedCallback() {
@@ -71,9 +79,10 @@ export class RowanPopover extends BaseElement {
   }
 
   disconnectedCallback() {
-    this.#removeDocumentPointerListener?.();
-    this.#removeDocumentPointerListener = null;
+    this.#teardownDocumentDismissal();
+    this.#hidePanelPopover();
     this.#releaseTrigger();
+    removeDismissible(this);
     super.disconnectedCallback();
   }
 
@@ -106,11 +115,12 @@ export class RowanPopover extends BaseElement {
       this.#panel = this.renderRoot.querySelector(".panel");
       this.listen(this.#triggerSlot, "slotchange", () => this.requestRender());
       this.listen(this, "keydown", (event) => this.#handleKeydown(event));
+      this.listen(this, "focusout", (event) => this.#handleFocusOut(event));
     }
 
     this.#panel.id = this.#panelId;
     this.#panel.setAttribute("aria-label", this.label);
-    this.#panel.hidden = !this.open;
+    this.#panel.tabIndex = -1;
     this.#syncTrigger();
     this.#syncDocumentDismissal();
   }
@@ -246,25 +256,120 @@ export class RowanPopover extends BaseElement {
 
   #syncDocumentDismissal() {
     if (!this.open) {
-      this.#removeDocumentPointerListener?.();
-      this.#removeDocumentPointerListener = null;
+      this.#teardownDocumentDismissal();
+      this.#hidePanelPopover();
+      removeDismissible(this);
       return;
     }
 
     if (this.#removeDocumentPointerListener) return;
+    pushDismissible(this);
+    this.#showPanelPopover();
+    this.#focusPanel();
     this.#removeDocumentPointerListener = this.listen(document, "pointerdown", (event) => {
+      if (!isTopmostOverlay(this)) return;
       const path = event.composedPath();
       if (path.includes(this) || path.includes(this.#panel)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      noteDismissibleClose();
       this.#setOpenFromUser(false);
     });
+    this.#removeDocumentKeydownListener = this.listen(document, "keydown", (event) => {
+      if (event.key !== keys.ESCAPE || !this.open) return;
+      if (!isTopmostOverlay(this)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      noteDismissibleClose();
+      this.#setOpenFromUser(false);
+      this.#trigger?.focus({ preventScroll: true });
+    });
+  }
+
+  #teardownDocumentDismissal() {
+    this.#removeDocumentPointerListener?.();
+    this.#removeDocumentPointerListener = null;
+    this.#removeDocumentKeydownListener?.();
+    this.#removeDocumentKeydownListener = null;
+  }
+
+  #showPanelPopover() {
+    if (!this.#panel) return;
+
+    this.#panel.hidden = false;
+    if (typeof this.#panel.showPopover === "function") {
+      if (this.#panel.getAttribute("popover") !== "manual") {
+        this.#panel.setAttribute("popover", "manual");
+      }
+
+      try {
+        if (!this.#panel.matches(":popover-open")) this.#panel.showPopover();
+      } catch {
+        this.#panel.hidden = false;
+      }
+    }
+
+    this.#positionPanel();
+  }
+
+  #hidePanelPopover() {
+    if (!this.#panel) return;
+
+    this.#panel.hidden = true;
+    if (typeof this.#panel.hidePopover !== "function") return;
+
+    try {
+      if (this.#panel.matches(":popover-open")) this.#panel.hidePopover();
+    } catch {
+      return;
+    }
+  }
+
+  #positionPanel() {
+    if (!this.#panel) return;
+
+    const anchor = this.#trigger ?? this;
+    const bounds = anchor.getBoundingClientRect();
+    const offset = 6;
+    this.#panel.style.top = `${Math.round(bounds.bottom + offset)}px`;
+    this.#panel.style.left = `${Math.round(bounds.left)}px`;
+  }
+
+  #focusPanel() {
+    if (!this.#panel) return;
+
+    const first = collectFocusableElements(this.#panel)[0] ?? this.#panel;
+    first.focus({ preventScroll: true });
   }
 
   #handleKeydown(event) {
     if (event.key !== keys.ESCAPE || !this.open) return;
+    if (!isTopmostOverlay(this)) return;
 
     event.preventDefault();
+    event.stopPropagation();
+    noteDismissibleClose();
     this.#setOpenFromUser(false);
     this.#trigger?.focus({ preventScroll: true });
+  }
+
+  #handleFocusOut(event) {
+    if (!this.open) return;
+    if (this.#containsNode(event.relatedTarget)) return;
+
+    noteDismissibleClose();
+    this.#setOpenFromUser(false);
+  }
+
+  #containsNode(node) {
+    let current = node instanceof Node ? node : null;
+
+    while (current) {
+      if (current === this || current === this.#panel || current === this.shadowRoot) return true;
+      current = current.parentNode ?? current.host ?? null;
+    }
+
+    return false;
   }
 
   #toggleFromUser() {

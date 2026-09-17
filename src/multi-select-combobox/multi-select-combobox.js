@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 import "../option/option.js";
 
 let multiSelectComboboxId = 0;
@@ -286,6 +287,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
         if (!this.disabled) this.open = true;
       });
       this.listen(this.#input, "keydown", (event) => this.#handleInputKeydown(event));
+      this.listen(this.#input, "focusout", (event) => this.#handleFocusOut(event));
       this.listen(this.#chips, "click", (event) => this.#handleChipClick(event));
       this.listen(this.#listbox, "click", (event) => this.#handleOptionClick(event));
     }
@@ -431,7 +433,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
 
   #syncValidity() {
     if (this.#isValueMissing()) {
-      this.setValidity({ valueMissing: true }, "Please select at least one option.");
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.options"));
       return;
     }
 
@@ -535,18 +537,6 @@ export class RowanMultiSelectCombobox extends BaseElement {
       return;
     }
 
-    if (event.key === keys.HOME || event.key === keys.END) {
-      if (!this.open) return;
-
-      const available = this.#filteredOptions().filter((item) => !item.disabled);
-      if (available.length === 0) return;
-
-      event.preventDefault();
-      this.#activeValue = (event.key === keys.HOME ? available.at(0) : available.at(-1)).value;
-      this.requestRender();
-      return;
-    }
-
     if (event.key === keys.ENTER && this.open) {
       if (!this.#activeValue) return;
 
@@ -557,6 +547,11 @@ export class RowanMultiSelectCombobox extends BaseElement {
 
     if (event.key === keys.ESCAPE && this.open) {
       event.preventDefault();
+      this.open = false;
+      return;
+    }
+
+    if (event.key === keys.TAB) {
       this.open = false;
       return;
     }
@@ -573,6 +568,23 @@ export class RowanMultiSelectCombobox extends BaseElement {
     if (!this.open || !(event.target instanceof Node)) return;
     if (event.composedPath().includes(this)) return;
     this.open = false;
+  }
+
+  #handleFocusOut(event) {
+    if (!this.open) return;
+    if (this.#containsNode(event.relatedTarget)) return;
+    this.open = false;
+  }
+
+  #containsNode(node) {
+    let current = node instanceof Node ? node : null;
+
+    while (current) {
+      if (current === this || current === this.shadowRoot) return true;
+      current = current.parentNode ?? current.host ?? null;
+    }
+
+    return false;
   }
 
   #removeValue(value) {

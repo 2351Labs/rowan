@@ -3,7 +3,17 @@
 Rowan is a plain-vanilla Web Component design system built with browser standards only:
 Custom Elements, Shadow DOM, slots, CSS custom properties, and ElementInternals.
 
-Package name: `@rowan-ui/core`
+Package name: `@rowan-ui/core`. Version `0.5.0`. User-visible changes are in
+[`CHANGELOG.md`](CHANGELOG.md).
+
+**`0.5` surface.** Public API is attributes, properties, slots, events, tokens,
+and CSS parts. Events fire only from user action, never because a parent set a
+property. Form controls are form-associated. Constraint copy is English by
+default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
+Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
+the top layer. Table virtualization, `rowan-rich-text-editor`,
+`rowan-filter-builder`, and `rowan-trend-chart` are experimental and **out of
+`0.5`** (and a later `1.0` until they are marked Stable).
 
 ## Install
 
@@ -231,6 +241,33 @@ their existing `format` callback:
 }
 ```
 
+## Constraint Messages
+
+Rowan form controls ship English constraint strings. Locale policy stays in the
+application, the same way formatters do. Import `@rowan-ui/core/validity-messages`,
+replace keys or install a resolver **before** mounting controls, and keep
+`setCustomValidity` for per-control errors.
+
+```js
+import {
+  ROWAN_VALIDITY_MESSAGES,
+  setValidityMessageResolver,
+  setValidityMessages,
+} from "@rowan-ui/core/validity-messages";
+
+setValidityMessages({
+  "valueMissing.checkbox": "Cochez cette case.",
+});
+
+setValidityMessageResolver((key, fallback) => {
+  return translate(`rowan.${key}`, fallback);
+});
+```
+
+`ROWAN_VALIDITY_MESSAGES` is the English catalog. Unknown keys resolve to an empty
+string. Empty resolver/override values fall through to the default. Text fields still
+prefer the browser's native `validationMessage` when the engine provides one.
+
 ## Component Catalog
 
 Implemented components currently include:
@@ -243,9 +280,8 @@ Implemented components currently include:
 
 ### API stability
 
-Rowan is `0.1.0`. Everything in the catalog above is usable, but the surfaces
-below carry the most implementation and are the most likely to change before
-`1.0`. Pin the version if you depend on them.
+Everything in the catalog above is usable. The surfaces below are **out of
+`0.5`** until they are marked Stable. Pin the version if you depend on them.
 
 | Surface                         | Status       | Notes                                                               |
 | ------------------------------- | ------------ | ------------------------------------------------------------------- |
@@ -335,6 +371,10 @@ README for the application-owned setup contract.
 `rowan-listbox` composes light-DOM `rowan-option` children for accessible single or multiple selection. Its scalar `value` reflects for declarative single-selection bindings; its `selected` array is property-only for multiple values. User selection emits `rowan-change` with the activated value, selected values, and option reference. Form-associated listboxes submit one value per selected option in multiple mode.
 
 `rowan-multi-select-combobox` uses property-only `options` and `selected` arrays. It filters available choices, preserves selections outside the active query, provides removable chips, and emits one outer `rowan-change` event for user additions or removals. Its FACE value is a repeated form entry under `name`.
+
+`rowan-radio-group` is form-associated. A `name` submits the selected child value once; `required` is `valueMissing` until a radio is selected; form reset restores the value present at connect. Child radios keep their own validity, but they do not also submit when the group has a `name`.
+
+`rowan-file-upload` is form-associated. A `name` submits queued `File` objects; `required` is `valueMissing` until at least one file is queued; form reset clears the queue without emitting.
 
 `rowan-segmented-control` is a compact, property-configured radio-group for mutually exclusive modes. Set its `options` array and reflected `value`; user click and Arrow-key changes emit `rowan-change`, while parent-assigned values remain silent.
 
@@ -536,6 +576,9 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 ## Rowan Contextual Actions
 
 `rowan-confirm-dialog` composes the modal behavior of `rowan-dialog` with explicit outcomes for consequential actions. Parent changes to `open` remain silent. A user selection emits `rowan-confirm` or `rowan-cancel`, while Escape, the dialog close control, and backdrop dismissal emit `rowan-close`.
+
+`rowan-dropdown`, `rowan-popover`, and `rowan-tooltip` paint on the top layer
+(Popover API), so `overflow: hidden` ancestors do not clip them.
 
 `rowan-context-menu` binds to an element through its `for` attribute or `target` property. It intercepts the target's native context menu, also opens from `Shift+F10` or the Context Menu key, manages Arrow/Home/End menu focus, and emits `rowan-change` when a user selects a `rowan-menu-item`.
 
@@ -981,16 +1024,21 @@ npm run storybook
 - `npm run documentation` serves the standalone static docs website at `/documentation/index.html`
 - `npm run storybook` starts Storybook on port 6006
 - `npm run build-storybook` builds Storybook static assets
-- `npm run test` runs web component tests with Web Test Runner
+
+Pushes to `main` publish Storybook to GitHub Pages via
+`.github/workflows/storybook-pages.yml`. One-time repo setting: **Settings →
+Pages → Source: GitHub Actions**. The project site is
+`https://<owner>.github.io/<repo>/` (for this repo,
+[https://2351labs.github.io/rowan/](https://2351labs.github.io/rowan/)). Local
+`npm run storybook` still serves at `/`.
+
+- `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit of representative widgets
 - `npm run test:browser` runs the same serial component contracts with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`
 - `npm run types` regenerates publishable declaration files in `/types`
 - `npm run typecheck` verifies root and per-component package imports, including `HTMLElementTagNameMap` discovery
 - `npm run lint` runs ESLint on source files
 - `npm run format` formats JS, CSS, JSON, MD, and MDX via Prettier
 - `npm run format:check` verifies formatting
-
-See [Storybook URL migration](STORYBOOK_URL_MIGRATION.md) before upgrading externally shared
-Storybook links to the taxonomy hierarchy.
 
 ## Documentation Source Of Truth
 
@@ -1003,6 +1051,8 @@ npm run analyze
 ## Browser Support
 
 Rowan's automated compatibility baseline covers Chromium, Firefox, and WebKit supplied by the pinned Playwright release. Component contracts run in CI on each engine. This verifies current engine-family behavior, not a historical browser-version support window or Safari-specific integrations. Form-associated behavior uses `ElementInternals` when available; where the platform lacks it, controls retain their native internal-control fallback but cannot participate in host-level form association.
+
+Tooling (`analyze`, `types`, `css:check`, tests) requires Node 20 or later. Published packages declare `"engines": { "node": ">=20" }`.
 
 ## Benchmarks
 

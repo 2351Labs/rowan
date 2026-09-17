@@ -90,6 +90,47 @@ describe("rowan-text-field", () => {
     expect(element.hasAttribute("value")).to.equal(false);
   });
 
+  it("canonicalizes type case and evicts password values from type=PASSWORD", async () => {
+    document.body.innerHTML = `<rowan-text-field type="PASSWORD" value="from-markup"></rowan-text-field>`;
+    const element = document.querySelector("rowan-text-field");
+    await nextMicrotask();
+
+    expect(element.type).to.equal("password");
+    expect(element.getAttribute("type")).to.equal("password");
+    expect(element.value).to.equal("from-markup");
+    expect(element.hasAttribute("value")).to.equal(false);
+    expect(element.outerHTML).to.not.include("from-markup");
+    expect(element.shadowRoot.querySelector("input").type).to.equal("password");
+  });
+
+  it("treats unknown types as text", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.type = "banana";
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.type).to.equal("text");
+    expect(element.hasAttribute("type")).to.equal(false);
+    expect(element.shadowRoot.querySelector("input").type).to.equal("text");
+  });
+
+  it("evicts the value when type becomes a case-insensitive password", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.value = "hunter2";
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.getAttribute("value")).to.equal("hunter2");
+
+    element.type = "Password";
+    await nextMicrotask();
+
+    expect(element.type).to.equal("password");
+    expect(element.value).to.equal("hunter2");
+    expect(element.hasAttribute("value")).to.equal(false);
+    expect(element.shadowRoot.querySelector("input").type).to.equal("password");
+  });
+
   it("takes its accessible name from an external label element", async () => {
     document.body.innerHTML = `
       <label for="external-email">Work email</label>
@@ -109,6 +150,57 @@ describe("rowan-text-field", () => {
     await nextMicrotask();
 
     expect(input.getAttribute("aria-label")).to.equal("Personal email");
+  });
+
+  it("adopts an external label added after connect", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.id = "late-email";
+    document.body.append(element);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.externalLabelText).to.equal("");
+
+    const label = document.createElement("label");
+    label.htmlFor = "late-email";
+    label.textContent = "Work email";
+    document.body.append(label);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.externalLabelText).to.equal("Work email");
+    expect(element.shadowRoot.querySelector("input").getAttribute("aria-label")).to.equal(
+      "Work email",
+    );
+
+    label.textContent = "Personal email";
+    await nextMicrotask();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.externalLabelText).to.equal("Personal email");
+    expect(element.shadowRoot.querySelector("input").getAttribute("aria-label")).to.equal(
+      "Personal email",
+    );
+  });
+
+  it("adopts a label when the host id is assigned after connect", async () => {
+    const label = document.createElement("label");
+    label.htmlFor = "late-id";
+    label.textContent = "Phone";
+    const element = document.createElement("rowan-text-field");
+    document.body.append(label, element);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.externalLabelText).to.equal("");
+
+    element.id = "late-id";
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.externalLabelText).to.equal("Phone");
+    expect(element.shadowRoot.querySelector("input").getAttribute("aria-label")).to.equal("Phone");
   });
 
   it("prefers the label attribute over an external label", async () => {
@@ -186,6 +278,21 @@ describe("rowan-text-field", () => {
     expect(element.validity.valid).to.equal(true);
   });
 
+  it("applies setCustomValidity in the same turn", () => {
+    const element = document.createElement("rowan-text-field");
+
+    element.setCustomValidity("taken");
+
+    expect(element.validity.customError).to.equal(true);
+    expect(element.validationMessage).to.equal("taken");
+    expect(element.checkValidity()).to.equal(false);
+
+    element.setCustomValidity("");
+
+    expect(element.validity.customError).to.equal(false);
+    expect(element.checkValidity()).to.equal(true);
+  });
+
   it("keeps a consumer custom error through unrelated renders", async () => {
     const element = document.createElement("rowan-text-field");
     document.body.append(element);
@@ -193,7 +300,6 @@ describe("rowan-text-field", () => {
 
     element.value = "ada@example.com";
     element.setCustomValidity("Email already registered");
-    await nextMicrotask();
 
     expect(element.validity.customError).to.equal(true);
     expect(element.validationMessage).to.equal("Email already registered");

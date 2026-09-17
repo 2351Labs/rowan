@@ -33,6 +33,29 @@ describe("rowan-icon-button", () => {
     expect(el.shadowRoot.querySelector("rowan-icon")?.hidden).to.equal(true);
   });
 
+  it("normalizes unsupported variant, size, and type to documented defaults", async () => {
+    const el = document.createElement("rowan-icon-button");
+    el.variant = "loud";
+    el.size = "xl";
+    el.type = "link";
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.variant).to.equal("ghost");
+    expect(el.size).to.equal("md");
+    expect(el.type).to.equal("button");
+    expect(el.hasAttribute("variant")).to.equal(false);
+    expect(el.hasAttribute("size")).to.equal(false);
+    expect(el.hasAttribute("type")).to.equal(false);
+
+    el.setAttribute("variant", " PRIMARY ");
+    el.setAttribute("type", " RESET ");
+    expect(el.variant).to.equal("primary");
+    expect(el.type).to.equal("reset");
+    expect(el.getAttribute("variant")).to.equal("primary");
+    expect(el.getAttribute("type")).to.equal("reset");
+  });
+
   it("emits rowan-click when activated", async () => {
     const el = document.createElement("rowan-icon-button");
     document.body.append(el);

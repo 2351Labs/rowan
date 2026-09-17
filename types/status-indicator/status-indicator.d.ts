@@ -14,7 +14,6 @@
  * @cssprop --rowan-status-indicator-gap
  */
 export class RowanStatusIndicator extends BaseElement {
-    static componentTokenPrefixes: string[];
     /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
     set tone(value: "info" | "success" | "warning" | "danger" | "neutral");
     /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
@@ -23,6 +22,7 @@ export class RowanStatusIndicator extends BaseElement {
     set size(value: "sm" | "md" | "lg");
     /** @returns {"sm" | "md" | "lg"} */
     get size(): "sm" | "md" | "lg";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set label(value: string);
     get label(): string;
     set pulse(value: boolean);

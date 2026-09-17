@@ -10,7 +10,7 @@ Generated: 2026-09-11T15:38:09.843Z
 - CPU: Apple M4 Pro
 - Browser: chromium 153.0.8010.12
 - User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
-- Packages: Rowan 0.1.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
+- Packages: Rowan 0.5.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
 - Samples per adapter: 15
 - Table workload: 100 rows; 50 rows per page
 

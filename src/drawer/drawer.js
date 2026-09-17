@@ -1,8 +1,11 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+
+const SIDES = new Set(["start", "end"]);
 
 /**
  * Side panel drawer.
@@ -32,7 +35,10 @@ export class RowanDrawer extends BaseElement {
   #isOpen = false;
 
   disconnectedCallback() {
-    removeOverlay(this);
+    if (this.#isOpen) {
+      removeOverlay(this);
+      this.#isOpen = false;
+    }
 
     // A modal removed while open would stay in the top layer and block the page.
     if (this.#overlay?.open) {
@@ -52,13 +58,22 @@ export class RowanDrawer extends BaseElement {
 
   /** @returns {"start" | "end"} */
   get side() {
-    return this.readString("side", "start");
+    return normalizeEnum(this.readString("side", "start"), SIDES, "start");
   }
 
   /** @param {"start" | "end"} value */
   set side(value) {
-    const next = value === "end" ? "end" : "start";
-    this.reflectString("side", next);
+    reflectEnum(this, "side", value, SIDES, "start");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "side" && rewriteEnumAttribute(this, name, newValue, SIDES, "start")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {
@@ -103,18 +118,25 @@ export class RowanDrawer extends BaseElement {
   }
 
   #applyDefaultA11y() {
-    this.#panel.setAttribute("role", "dialog");
-    this.#panel.setAttribute("aria-modal", "true");
-    this.#panel.setAttribute("aria-label", this.#titleText() || "Drawer");
+    this.#panel.removeAttribute("role");
+    this.#panel.removeAttribute("aria-modal");
+    this.#panel.removeAttribute("aria-label");
+
+    const title = this.#titleText() || "Drawer";
+    if (this.open) {
+      this.#overlay.setAttribute("aria-label", title);
+    } else {
+      this.#overlay.removeAttribute("aria-label");
+    }
 
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = this.open ? "dialog" : null;
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
-      this.internals.ariaModal = this.open ? "true" : null;
+      this.internals.ariaModal = null;
     }
 
     if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
@@ -126,7 +148,7 @@ export class RowanDrawer extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.open ? this.#titleText() || "Drawer" : null;
+      this.internals.ariaLabel = null;
     }
   }
 

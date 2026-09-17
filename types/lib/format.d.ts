@@ -16,6 +16,7 @@ export function formatNumber(value: number | string, config?: NumberFormatConfig
 export function formatCurrency(value: number | string, config: CurrencyFormatConfig): string;
 /**
  * Formats a Date, timestamp, or date string using the requested locale and time zone.
+ * `YYYY-MM-DD` is a calendar date and formats as that day in UTC, ignoring `timeZone`.
  * Invalid values, locales, time zones, or options return `fallback`, which defaults to an empty string.
  * @param {Date | number | string} value
  * @param {DateFormatConfig} [config]

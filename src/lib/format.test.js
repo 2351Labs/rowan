@@ -35,6 +35,18 @@ describe("locale formatting", () => {
     );
   });
 
+  it("formats YYYY-MM-DD as that calendar day west of UTC", () => {
+    const config = { locale: "en-US", timeZone: "America/Los_Angeles" };
+
+    expect(formatDate("2026-01-01", config)).to.equal(
+      new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeZone: "UTC",
+      }).format(new Date(Date.UTC(2026, 0, 1))),
+    );
+    expect(formatDate("2026-02-31", { fallback: "Unavailable" })).to.equal("Unavailable");
+  });
+
   it("formats signed relative values with locale-aware defaults", () => {
     const config = { locale: "en-US", unit: "day", options: { numeric: "auto" } };
 
@@ -51,9 +63,9 @@ describe("locale formatting", () => {
     expect(formatCurrency(5, { currency: "not-a-currency", fallback })).to.equal(fallback);
     expect(formatCurrency(5, { currency: "USD", options: "invalid", fallback })).to.equal(fallback);
     expect(formatDate("not-a-date", { fallback })).to.equal(fallback);
-    expect(formatDate("2026-01-01", { timeZone: "Mars/Olympus_Mons", fallback })).to.equal(
-      fallback,
-    );
+    expect(
+      formatDate("2026-01-01T00:30:00.000Z", { timeZone: "Mars/Olympus_Mons", fallback }),
+    ).to.equal(fallback);
     expect(formatRelativeTime(1, { unit: "fortnight", fallback })).to.equal(fallback);
   });
 });

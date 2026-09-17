@@ -102,4 +102,28 @@ describe("rowan-tooltip", () => {
     expect(tooltip.open).to.equal(false);
     expect(bubble.hidden).to.equal(true);
   });
+
+  it("is not clipped by an overflow-hidden ancestor", async () => {
+    const clip = document.createElement("div");
+    clip.style.overflow = "hidden";
+    clip.style.height = "1.5rem";
+    clip.style.width = "8rem";
+    const tooltip = document.createElement("rowan-tooltip");
+    tooltip.text = "A long hint that would clip inside overflow hidden.";
+    const trigger = document.createElement("button");
+    trigger.textContent = "Info";
+    tooltip.append(trigger);
+    clip.append(tooltip);
+    document.body.append(clip);
+    await settle();
+
+    tooltip.open = true;
+    await settle();
+
+    const bubble = tooltip.shadowRoot.querySelector(".tooltip");
+    const bubbleRect = bubble.getBoundingClientRect();
+    const clipRect = clip.getBoundingClientRect();
+    expect(bubble.matches(":popover-open")).to.equal(true);
+    expect(bubbleRect.bottom).to.be.above(clipRect.bottom);
+  });
 });

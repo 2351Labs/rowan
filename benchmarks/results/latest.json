@@ -8,7 +8,7 @@
     "operatingSystemVersion": "25.6.0",
     "cpu": "Apple M4 Pro",
     "packageVersions": {
-      "rowan": "0.1.0",
+      "rowan": "0.5.0",
       "lit": "3.3.3",
       "fastElement": "3.0.3",
       "webAwesome": "3.12.0",

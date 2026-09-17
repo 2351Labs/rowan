@@ -2114,7 +2114,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="dropzone-contract">
         <h2>Behavior contract</h2>
-        <p>rowan-dropzone emits rowan-files-add with selected File objects and a source field indicating picker or drop.</p>
+        <p>rowan-dropzone applies accept to both picker and drop, then emits rowan-files-add. detail.files are matches; detail.rejected failed accept. Empty accept allows every file.</p>
         ${codeBlock(DROPZONE_SNIPPET, "html")}
       </section>
     `,
@@ -2158,7 +2158,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="file-upload-workflow">
         <h2>Attachment workflow composition</h2>
-        <p>rowan-file-upload combines rowan-dropzone and rowan-file-item, emits normalized queue events, and supports max-files limits.</p>
+        <p>rowan-file-upload combines rowan-dropzone and rowan-file-item, applies the same accept filter before queueing, emits normalized queue events, and supports max-files limits.</p>
         <div class="demo-row" style="width: 100%; max-width: 42rem;">
           <rowan-file-upload
             label="Upload supporting documents"

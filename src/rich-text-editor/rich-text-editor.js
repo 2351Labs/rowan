@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 import {
   cloneDocument,
   documentFromEditingSurface,
@@ -632,7 +633,11 @@ export class RowanRichTextEditor extends BaseElement {
 
   #syncValidity() {
     if (this.#isValueMissing()) {
-      this.setValidity({ valueMissing: true }, "Please enter content.", this.#activeInput());
+      this.setValidity(
+        { valueMissing: true },
+        validityMessage("valueMissing.content"),
+        this.#activeInput(),
+      );
       return;
     }
 

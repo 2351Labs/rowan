@@ -70,13 +70,11 @@ describe("rowan-tabs", () => {
     const overviewButton = overviewTab.shadowRoot.querySelector("button");
     const settingsButton = settingsTab.shadowRoot.querySelector("button");
     expect(tabs.internals.role).to.equal("tablist");
-    expect(tabs.shadowRoot.querySelector(".tabs").getAttribute("role")).to.equal("tablist");
+    expect(tabs.shadowRoot.querySelector(".tabs").hasAttribute("role")).to.equal(false);
     expect(overviewTab.internals.role).to.equal("tab");
-    expect(overviewButton.getAttribute("role")).to.equal("tab");
+    expect(overviewButton.getAttribute("role")).to.equal("presentation");
     expect(overviewPanel.internals.role).to.equal("tabpanel");
-    expect(overviewPanel.shadowRoot.querySelector(".panel").getAttribute("role")).to.equal(
-      "tabpanel",
-    );
+    expect(overviewPanel.shadowRoot.querySelector(".panel").hasAttribute("role")).to.equal(false);
     expect(overviewButton.tabIndex).to.equal(0);
     expect(settingsButton.tabIndex).to.equal(-1);
     if ("ariaControlsElements" in overviewTab.internals) {

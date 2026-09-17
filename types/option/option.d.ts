@@ -14,7 +14,6 @@
  * @cssprop --rowan-option-selected-bg
  */
 export class RowanOption extends BaseElement {
-    static componentTokenPrefixes: string[];
     set value(value: string);
     get value(): string;
     set label(value: string);

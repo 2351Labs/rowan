@@ -49,6 +49,8 @@ export function readTableSelection(table) {
   };
 }
 
+const SELECTION_OBSERVERS = Symbol.for("rowan.tableSelectionObservers");
+
 export function observeTableSelection(table, onChange) {
   if (!isRowanTable(table) || typeof onChange !== "function") {
     return () => {};
@@ -57,15 +59,35 @@ export function observeTableSelection(table, onChange) {
   const controller = new AbortController();
   table.addEventListener("rowan-select", onChange, { signal: controller.signal });
 
-  const observer =
-    table.shadowRoot && typeof MutationObserver !== "undefined"
-      ? new MutationObserver(onChange)
-      : null;
+  let observers = table[SELECTION_OBSERVERS];
+  if (!observers) {
+    observers = new Set();
+    table[SELECTION_OBSERVERS] = observers;
 
-  observer?.observe(table.shadowRoot, { childList: true, subtree: true });
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(table), "selected");
+    if (descriptor?.get && descriptor.set) {
+      Object.defineProperty(table, "selected", {
+        configurable: true,
+        enumerable: true,
+        get() {
+          return descriptor.get.call(this);
+        },
+        set(value) {
+          descriptor.set.call(this, value);
+          for (const listener of observers) listener();
+        },
+      });
+    }
+  }
+
+  observers.add(onChange);
 
   return () => {
     controller.abort();
-    observer?.disconnect();
+    observers.delete(onChange);
+    if (observers.size === 0) {
+      delete table.selected;
+      delete table[SELECTION_OBSERVERS];
+    }
   };
 }

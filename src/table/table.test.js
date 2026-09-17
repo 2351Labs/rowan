@@ -221,8 +221,13 @@ describe("rowan-table", () => {
     const actions = [];
     const eventMeta = [];
     table.addEventListener("rowan-cell-action", (event) => {
+      if (event.detail.action === "link") event.preventDefault();
       actions.push(event.detail.action);
-      eventMeta.push({ bubbles: event.bubbles, composed: event.composed });
+      eventMeta.push({
+        bubbles: event.bubbles,
+        composed: event.composed,
+        cancelable: event.cancelable,
+      });
     });
 
     table.shadowRoot.querySelector('a[part="link"]').click();
@@ -233,9 +238,42 @@ describe("rowan-table", () => {
 
     expect(actions).to.deep.equal(["link", "button"]);
     expect(eventMeta).to.deep.equal([
-      { bubbles: true, composed: true },
-      { bubbles: true, composed: true },
+      { bubbles: true, composed: true, cancelable: true },
+      { bubbles: true, composed: true, cancelable: true },
     ]);
+  });
+
+  it("lets link cells navigate unless rowan-cell-action is cancelled", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        {
+          id: "profile",
+          header: "Profile",
+          type: "link",
+          cell: { href: "#profile" },
+        },
+      ],
+      rows: [{ id: "1", profile: "Open" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const link = table.shadowRoot.querySelector('a[part="link"]');
+    expect(link.getAttribute("href")).to.equal("#profile");
+
+    const allowed = new MouseEvent("click", { bubbles: true, cancelable: true, composed: true });
+    link.dispatchEvent(allowed);
+    expect(allowed.defaultPrevented).to.equal(false);
+
+    table.addEventListener("rowan-cell-action", (event) => {
+      event.preventDefault();
+    });
+
+    const blocked = new MouseEvent("click", { bubbles: true, cancelable: true, composed: true });
+    link.dispatchEvent(blocked);
+    expect(blocked.defaultPrevented).to.equal(true);
   });
 
   it("does not emit table events when parent sets properties", async () => {
@@ -296,6 +334,26 @@ describe("rowan-table", () => {
     expect(table.sort).to.equal(null);
     expect(table.page).to.equal(null);
     expect(table.rows).to.deep.equal([{ id: "4", name: "Grace" }]);
+  });
+
+  it("normalizes unsupported density and selectable to documented defaults", async () => {
+    const table = document.createElement("rowan-table");
+    table.density = "xl";
+    table.selectable = "all";
+    document.body.append(table);
+    await nextMicrotask();
+
+    expect(table.density).to.equal("md");
+    expect(table.selectable).to.equal("none");
+    expect(table.hasAttribute("density")).to.equal(false);
+    expect(table.hasAttribute("selectable")).to.equal(false);
+
+    table.setAttribute("density", " SM ");
+    table.setAttribute("selectable", " MULTIPLE ");
+    expect(table.density).to.equal("sm");
+    expect(table.selectable).to.equal("multiple");
+    expect(table.getAttribute("density")).to.equal("sm");
+    expect(table.getAttribute("selectable")).to.equal("multiple");
   });
 
   it("clears configuration with null and undefined", async () => {
@@ -761,7 +819,7 @@ describe("rowan-table", () => {
     nextButton.click();
     await nextMicrotask();
 
-    expect(detail).to.deep.equal({ index: 1, size: 2 });
+    expect(detail).to.deep.equal({ index: 1, page: 2, size: 2 });
     expect(eventMeta).to.deep.equal({ bubbles: true, composed: true });
 
     table.page = { index: 1, size: 2, total: 3 };

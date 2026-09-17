@@ -79,7 +79,7 @@ export class RowanTabs extends BaseElement {
   render() {
     if (!this.#slot) {
       this.renderRoot.innerHTML =
-        '<div class="tabs" part="tabs" role="tablist"><slot></slot></div>';
+        '<div class="tabs" part="tabs"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
       this.listen(this.#slot, "slotchange", () => this.requestRender());
     }

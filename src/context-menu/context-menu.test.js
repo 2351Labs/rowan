@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import "./context-menu.js";
+import "../dialog/dialog.js";
 
 const wait = () => Promise.resolve();
 const settle = async () => {
@@ -153,5 +154,59 @@ describe("rowan-context-menu", () => {
     expect(menu.open).to.equal(false);
     expect(reason).to.equal("escape");
     expect(document.activeElement).to.equal(target);
+  });
+
+  it("closes on Tab so focus can leave", async () => {
+    const target = document.createElement("button");
+    const next = document.createElement("button");
+    next.textContent = "Next";
+    const { menu, edit } = createMenu(target);
+    document.body.append(target, menu, next);
+    await settle();
+
+    target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+    await settle();
+    expect(menu.open).to.equal(true);
+
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    edit.shadowRoot.querySelector("button").dispatchEvent(event);
+    await settle();
+
+    expect(menu.open).to.equal(false);
+    expect(event.defaultPrevented).to.equal(false);
+  });
+
+  it("does not close a parent dialog on the same Escape", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const target = document.createElement("button");
+    target.textContent = "Row";
+    const { menu, edit } = createMenu(target);
+    dialog.append(target, menu);
+    document.body.append(dialog);
+    await settle();
+
+    dialog.open = true;
+    await settle();
+    target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+    await settle();
+    expect(menu.open).to.equal(true);
+
+    edit.shadowRoot.querySelector("button").dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+      }),
+    );
+    await settle();
+
+    expect(menu.open).to.equal(false);
+    expect(dialog.open).to.equal(true);
   });
 });

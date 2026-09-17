@@ -1,8 +1,18 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let textFieldId = 0;
+
+const TEXT_FIELD_TYPES = new Set(["text", "email", "password", "search", "url", "tel"]);
+
+function normalizeType(value) {
+  const next = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  return TEXT_FIELD_TYPES.has(next) ? next : "text";
+}
 
 const validityFlags = [
   "badInput",
@@ -98,17 +108,31 @@ export class RowanTextField extends BaseElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    super.attributeChangedCallback(name, oldValue, newValue);
     if (oldValue === newValue) return;
 
-    if (name === "value" && !this.#isSecret()) {
+    if (name === "type") {
+      const type = normalizeType(newValue);
+      const attributeValue = type === "text" ? null : type;
+      if (newValue !== attributeValue) {
+        this.reflectString("type", attributeValue);
+        this.#evictSecretAttribute();
+        return;
+      }
+
+      this.#evictSecretAttribute();
+    }
+
+    if (name === "value" && this.#isSecret()) {
+      this.#evictSecretAttribute();
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
+
+    if (name === "value") {
       this.#value = newValue ?? "";
       this.#syncFormValue();
       this.#syncValidity();
-    }
-
-    if (name === "type") {
-      this.#evictSecretAttribute();
     }
   }
 
@@ -156,12 +180,13 @@ export class RowanTextField extends BaseElement {
 
   /** @returns {"text" | "email" | "password" | "search" | "url" | "tel"} */
   get type() {
-    return this.readString("type", "text");
+    return normalizeType(this.readString("type", "text"));
   }
 
   /** @param {"text" | "email" | "password" | "search" | "url" | "tel"} value */
   set type(value) {
-    this.reflectString("type", value);
+    const next = normalizeType(value);
+    this.reflectString("type", next === "text" ? null : next);
     this.#evictSecretAttribute();
     this.#syncValidity();
   }
@@ -285,7 +310,7 @@ export class RowanTextField extends BaseElement {
     this.#input.name = this.name;
     this.#writeInputValue();
     this.#input.placeholder = this.placeholder;
-    this.#input.type = this.#normalizedType(this.type);
+    this.#input.type = this.type;
     this.#syncPattern();
     this.#input.disabled = this.disabled;
     this.#input.required = this.required;
@@ -324,6 +349,8 @@ export class RowanTextField extends BaseElement {
 
     this.#value = this.getAttribute("value") ?? "";
     this.removeAttribute("value");
+    this.#syncFormValue();
+    this.#syncValidity();
   }
 
   #syncFormValue() {
@@ -333,7 +360,7 @@ export class RowanTextField extends BaseElement {
   #syncValidity() {
     if (!this.#input) return;
 
-    this.#input.type = this.#normalizedType(this.type);
+    this.#input.type = this.type;
     this.#syncPattern();
     this.#input.required = this.required;
     this.#input.disabled = this.disabled;
@@ -342,7 +369,7 @@ export class RowanTextField extends BaseElement {
     if (!this.#input.validity.valid) {
       this.setValidity(
         validityStateToFlags(this.#input.validity),
-        this.#input.validationMessage || "Please enter a valid value.",
+        this.#input.validationMessage || validityMessage("invalid"),
         this.#input,
       );
       this.#setAutoInvalid(true);
@@ -401,21 +428,6 @@ export class RowanTextField extends BaseElement {
       const label = this.label.trim();
       this.internals.ariaLabel = label || null;
     }
-  }
-
-  #normalizedType(type) {
-    if (
-      type === "text" ||
-      type === "email" ||
-      type === "password" ||
-      type === "search" ||
-      type === "url" ||
-      type === "tel"
-    ) {
-      return type;
-    }
-
-    return "text";
   }
 }
 

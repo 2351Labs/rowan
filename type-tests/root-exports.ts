@@ -24,6 +24,13 @@ import {
   type NumberFormatConfig,
   type RelativeTimeFormatConfig,
 } from "@rowan-ui/core/format";
+import {
+  ROWAN_VALIDITY_MESSAGES,
+  resetValidityMessages,
+  setValidityMessageResolver,
+  setValidityMessages,
+  validityMessage,
+} from "@rowan-ui/core/validity-messages";
 // @ts-expect-error BaseElement is an internal implementation detail.
 type InternalBaseElement = import("@rowan-ui/core/lib/base-element").BaseElement;
 import { debounce } from "@rowan-ui/core/lib/debounce";
@@ -61,6 +68,11 @@ const formattedCurrency: string = formatCurrency(1234.5, currencyFormat);
 const formattedDate: string = formatDate("2026-09-13T12:00:00Z", dateFormat);
 const formattedSubpathDate: string = formatDateFromSubpath("2026-09-13T12:00:00Z", dateFormat);
 const formattedRelativeTime: string = formatRelativeTime(-1, relativeTimeFormat);
+const defaultCheckboxMessage: string = ROWAN_VALIDITY_MESSAGES["valueMissing.checkbox"];
+const localizedCheckboxMessage: string = validityMessage("valueMissing.checkbox");
+setValidityMessages({ "valueMissing.checkbox": "Cochez cette case." });
+setValidityMessageResolver((key, fallback) => (key === "valueMissing.checkbox" ? fallback : null));
+resetValidityMessages();
 
 rootButton.disabled = true;
 rootCarousel.activeIndex = 1;
@@ -88,6 +100,8 @@ void [
   formattedNumber,
   formattedRelativeTime,
   formattedSubpathDate,
+  defaultCheckboxMessage,
+  localizedCheckboxMessage,
   rootCommandItem,
   rootCarousel,
   rootCommandPalette,

@@ -20,6 +20,20 @@ describe("rowan-toast", () => {
     expect(toast.tone).to.equal("danger");
   });
 
+  it("normalizes unsupported tone to the documented default", async () => {
+    const toast = document.createElement("rowan-toast");
+    toast.tone = "loud";
+    document.body.append(toast);
+    await nextMicrotask();
+
+    expect(toast.tone).to.equal("info");
+    expect(toast.hasAttribute("tone")).to.equal(false);
+
+    toast.setAttribute("tone", " SUCCESS ");
+    expect(toast.tone).to.equal("success");
+    expect(toast.getAttribute("tone")).to.equal("success");
+  });
+
   it("emits rowan-dismiss and hides on close button click", async () => {
     const toast = document.createElement("rowan-toast");
     toast.setAttribute("dismissible", "");

@@ -18,6 +18,13 @@ export class RowanRadioGroup extends BaseElement {
     get disabled(): boolean;
     set required(value: boolean);
     get required(): boolean;
+    /** @param {string | null} [value] */
+    setFormValue(value?: string | null | undefined): void;
+    setValidity(flags?: {}, message?: string, anchor?: undefined): void;
+    formResetCallback(): void;
+    formStateRestoreCallback(state: any): void;
+    checkValidity(): boolean;
+    reportValidity(): boolean;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

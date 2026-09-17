@@ -2,6 +2,12 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import {
+  isTopmostOverlay,
+  noteDismissibleClose,
+  pushDismissible,
+  removeDismissible,
+} from "../lib/overlay-stack.js";
 
 import "../button/button.js";
 
@@ -39,6 +45,8 @@ export class RowanDropdown extends BaseElement {
   disconnectedCallback() {
     this.#removeDocumentPointerListener?.();
     this.#removeDocumentPointerListener = null;
+    this.#hidePanelPopover();
+    removeDismissible(this);
     super.disconnectedCallback();
   }
 
@@ -70,6 +78,7 @@ export class RowanDropdown extends BaseElement {
 
       this.listen(this.#trigger, "rowan-click", () => this.#setOpenFromUser(!this.open));
       this.listen(this, "keydown", (event) => this.#handleKeydown(event));
+      this.listen(this, "rowan-change", (event) => this.#handleMenuChange(event));
     }
 
     this.#trigger.textContent = this.label;
@@ -77,7 +86,6 @@ export class RowanDropdown extends BaseElement {
     this.#trigger.setAttribute("aria-expanded", this.open ? "true" : "false");
     this.#trigger.setAttribute("aria-haspopup", "menu");
     this.#panel.id = this.#panelId;
-    this.#panel.hidden = !this.open;
     this.#panel.setAttribute("aria-hidden", this.open ? "false" : "true");
     this.#syncDocumentDismissal();
   }
@@ -86,23 +94,97 @@ export class RowanDropdown extends BaseElement {
     if (!this.open) {
       this.#removeDocumentPointerListener?.();
       this.#removeDocumentPointerListener = null;
+      this.#hidePanelPopover();
+      removeDismissible(this);
       return;
     }
 
     if (this.#removeDocumentPointerListener) return;
+    pushDismissible(this);
+    this.#showPanelPopover();
+    this.#focusFirstMenuItem();
     this.#removeDocumentPointerListener = this.listen(document, "pointerdown", (event) => {
+      if (!isTopmostOverlay(this)) return;
       const path = event.composedPath();
       if (path.includes(this) || path.includes(this.#panel)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      noteDismissibleClose();
       this.#setOpenFromUser(false);
     });
   }
 
   #handleKeydown(event) {
-    if (event.key !== keys.ESCAPE || !this.open) return;
+    if (!this.open) return;
+    if (!isTopmostOverlay(this)) return;
 
-    event.preventDefault();
+    if (event.key === keys.ESCAPE) {
+      event.preventDefault();
+      event.stopPropagation();
+      noteDismissibleClose();
+      this.#setOpenFromUser(false);
+      this.#trigger.focus({ preventScroll: true });
+      return;
+    }
+
+    if (event.key === keys.TAB) {
+      noteDismissibleClose();
+      this.#setOpenFromUser(false);
+    }
+  }
+
+  #handleMenuChange(event) {
+    if (event.target === this || !this.open) return;
+    if (!(event.detail && "item" in event.detail)) return;
+
     this.#setOpenFromUser(false);
-    this.#trigger.focus({ preventScroll: true });
+  }
+
+  #showPanelPopover() {
+    if (!this.#panel) return;
+
+    this.#panel.hidden = false;
+    if (typeof this.#panel.showPopover === "function") {
+      if (this.#panel.getAttribute("popover") !== "manual") {
+        this.#panel.setAttribute("popover", "manual");
+      }
+
+      try {
+        if (!this.#panel.matches(":popover-open")) this.#panel.showPopover();
+      } catch {
+        this.#panel.hidden = false;
+      }
+    }
+
+    this.#positionPanel();
+  }
+
+  #hidePanelPopover() {
+    if (!this.#panel) return;
+
+    this.#panel.hidden = true;
+    if (typeof this.#panel.hidePopover !== "function") return;
+
+    try {
+      if (this.#panel.matches(":popover-open")) this.#panel.hidePopover();
+    } catch {
+      return;
+    }
+  }
+
+  #positionPanel() {
+    if (!this.#panel || !this.#trigger) return;
+
+    const bounds = this.#trigger.getBoundingClientRect();
+    this.#panel.style.top = `${Math.round(bounds.bottom + 5)}px`;
+    this.#panel.style.left = `${Math.round(bounds.left)}px`;
+  }
+
+  #focusFirstMenuItem() {
+    const item = this.querySelector("rowan-menu-item");
+    if (item && typeof item.focus === "function") {
+      item.focus({ preventScroll: true });
+    }
   }
 
   #setOpenFromUser(open) {

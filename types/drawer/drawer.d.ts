@@ -22,6 +22,7 @@ export class RowanDrawer extends BaseElement {
     set side(value: "start" | "end");
     /** @returns {"start" | "end"} */
     get side(): "start" | "end";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

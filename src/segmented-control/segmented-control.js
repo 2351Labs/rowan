@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 const SIZES = new Set(["sm", "md", "lg"]);
 
@@ -261,7 +262,7 @@ export class RowanSegmentedControl extends BaseElement {
 
   #syncValidity() {
     if (this.#isValueMissing()) {
-      this.setValidity({ valueMissing: true }, "Please choose a mode.");
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.mode"));
       return;
     }
 

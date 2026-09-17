@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 import "./popover.js";
 import "../button/button.js";
+import "../dialog/dialog.js";
 
 const nextMicrotask = () => Promise.resolve();
 
@@ -113,5 +114,110 @@ describe("rowan-popover", () => {
     button.click();
     await settle();
     expect(button.getAttribute("aria-expanded")).to.equal("true");
+  });
+
+  it("does not close a parent dialog on the same backdrop click", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More";
+    popover.append(trigger);
+    dialog.append(popover);
+    document.body.append(dialog);
+    await settle();
+
+    dialog.open = true;
+    await settle();
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+
+    const overlay = dialog.shadowRoot.querySelector("dialog");
+    overlay.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    overlay.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+    await settle();
+
+    expect(popover.open).to.equal(false);
+    expect(dialog.open).to.equal(true);
+  });
+
+  it("closes only the topmost nested popover on Escape", async () => {
+    const outer = document.createElement("rowan-popover");
+    const outerTrigger = document.createElement("button");
+    outerTrigger.slot = "trigger";
+    const inner = document.createElement("rowan-popover");
+    const innerTrigger = document.createElement("button");
+    innerTrigger.slot = "trigger";
+    inner.append(innerTrigger);
+    outer.append(outerTrigger, inner);
+    document.body.append(outer);
+    await settle();
+
+    outerTrigger.click();
+    await settle();
+    innerTrigger.click();
+    await settle();
+    expect(outer.open).to.equal(true);
+    expect(inner.open).to.equal(true);
+
+    keydown(innerTrigger, "Escape");
+    await settle();
+
+    expect(inner.open).to.equal(false);
+    expect(outer.open).to.equal(true);
+  });
+
+  it("moves focus into the panel on open and closes from Escape on a descendant", async () => {
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More";
+    const action = document.createElement("button");
+    action.textContent = "Do it";
+    popover.append(trigger, action);
+    document.body.append(popover);
+    await settle();
+
+    trigger.click();
+    await settle();
+
+    expect(popover.open).to.equal(true);
+    expect(document.activeElement).to.equal(action);
+
+    keydown(action, "Escape");
+    await settle();
+
+    expect(popover.open).to.equal(false);
+    expect(document.activeElement).to.equal(trigger);
+  });
+
+  it("is not clipped by an overflow-hidden ancestor", async () => {
+    const clip = document.createElement("div");
+    clip.style.overflow = "hidden";
+    clip.style.height = "2rem";
+    clip.style.width = "12rem";
+
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More";
+    const body = document.createElement("p");
+    body.textContent = "Tall popover content that would clip inside overflow hidden.";
+    popover.append(trigger, body);
+    clip.append(popover);
+    document.body.append(clip);
+    await settle();
+
+    trigger.click();
+    await settle();
+
+    const panel = popover.shadowRoot.querySelector(".panel");
+    const panelRect = panel.getBoundingClientRect();
+    const clipRect = clip.getBoundingClientRect();
+
+    expect(panel.matches(":popover-open")).to.equal(true);
+    expect(panelRect.height).to.be.above(clipRect.height);
+    expect(panelRect.bottom).to.be.above(clipRect.bottom);
   });
 });

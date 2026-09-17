@@ -15,6 +15,7 @@ export class RowanToast extends BaseElement {
     set tone(value: "info" | "success" | "warning" | "danger");
     /** @returns {"info" | "success" | "warning" | "danger"} */
     get tone(): "info" | "success" | "warning" | "danger";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set dismissible(value: boolean);
     get dismissible(): boolean;
     #private;

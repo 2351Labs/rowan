@@ -26,6 +26,17 @@ function TableHarness({ elementKey, events, properties }) {
   return createElement("rowan-table", { ref, key: elementKey, caption: "Members" });
 }
 
+function DelayedTableHarness({ events, properties, ready }) {
+  const ref = useRef(null);
+  useRowanElement(ref, {
+    properties,
+    events,
+  });
+
+  if (!ready) return null;
+  return createElement("rowan-table", { ref, caption: "Members" });
+}
+
 function ClientRegistrationHarness({ onRegistered }) {
   useEffect(() => {
     void import("../status-indicator/status-indicator.js").then(onRegistered);
@@ -121,6 +132,37 @@ describe("@rowan-ui/core/react", () => {
 
     firstTable.dispatchEvent(new CustomEvent("rowan-select"));
     secondTable.dispatchEvent(new CustomEvent("rowan-select"));
+    expect(events).to.have.length(1);
+  });
+
+  it("binds listeners when the host mounts after the hook", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    const events = [];
+    const properties = { config: createConfig() };
+    const listeners = { "rowan-select": (event) => events.push(event) };
+
+    await act(async () => {
+      root.render(
+        createElement(DelayedTableHarness, { ready: false, events: listeners, properties }),
+      );
+    });
+
+    expect(container.querySelector("rowan-table")).to.equal(null);
+
+    await act(async () => {
+      root.render(
+        createElement(DelayedTableHarness, { ready: true, events: listeners, properties }),
+      );
+    });
+    await wait();
+
+    const table = container.querySelector("rowan-table");
+    expect(table.config.rows).to.deep.equal(properties.config.rows);
+    table.dispatchEvent(new CustomEvent("rowan-select"));
     expect(events).to.have.length(1);
   });
 

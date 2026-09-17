@@ -13,7 +13,6 @@
  * @cssprop --rowan-form-layout-min-column-width
  */
 export class RowanFormLayout extends BaseElement {
-    static componentTokenPrefixes: string[];
     set columns(value: number);
     get columns(): number;
     set gap(value: any);

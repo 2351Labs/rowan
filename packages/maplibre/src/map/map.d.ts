@@ -7,6 +7,13 @@ import type {
   RowanMapLocation,
 } from "../../types/map/model.js";
 
+export type {
+  RowanMapAttribution,
+  RowanMapAttributionInput,
+  RowanMapLayer,
+  RowanMapLocation,
+};
+
 export declare class RowanMapLibreMap extends HTMLElement {
 	static observedAttributes: string[];
 

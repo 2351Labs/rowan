@@ -9,7 +9,6 @@
  * @event rowan-change - Fired when a user activates a different navigation item.
  */
 export class RowanSideNav extends BaseElement {
-    static componentTokenPrefixes: string[];
     set label(value: string);
     get label(): string;
     set value(value: string);

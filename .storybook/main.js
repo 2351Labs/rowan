@@ -1,3 +1,14 @@
+function storybookBase() {
+  if (process.env.STORYBOOK_BASE) return process.env.STORYBOOK_BASE;
+
+  if (process.env.GITHUB_ACTIONS === "true" && process.env.GITHUB_REPOSITORY) {
+    const repository = process.env.GITHUB_REPOSITORY.split("/")[1];
+    return `/${repository}/`;
+  }
+
+  return "/";
+}
+
 export default {
   stories: ["../src/**/*.stories.js", "../packages/*/src/**/*.stories.js", "../stories/**/*.mdx"],
   addons: ["@storybook/addon-essentials", "@storybook/addon-a11y"],
@@ -10,5 +21,9 @@ export default {
   },
   docs: {
     autodocs: "tag",
+  },
+  async viteFinal(config) {
+    config.base = storybookBase();
+    return config;
   },
 };

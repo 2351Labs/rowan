@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 const COLOR_PATTERN = /^#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i;
 const DEFAULT_INPUT_COLOR = "#1d432f";
@@ -413,7 +414,11 @@ export class RowanColorPicker extends BaseElement {
 
   #syncValidity() {
     if (this.required && !this.disabled && !this.value) {
-      this.setValidity({ valueMissing: true }, "Please choose a color.", this.#colorInput);
+      this.setValidity(
+        { valueMissing: true },
+        validityMessage("valueMissing.color"),
+        this.#colorInput,
+      );
       return;
     }
 

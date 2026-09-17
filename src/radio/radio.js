@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 /**
  * Radio control with form association.
@@ -41,6 +42,7 @@ export class RowanRadio extends BaseElement {
 
     this.#syncFormValue();
     this.#syncValidity();
+    this.#syncPeerValidity();
     this.#applyDefaultA11y();
   }
 
@@ -58,6 +60,7 @@ export class RowanRadio extends BaseElement {
 
     this.#syncFormValue();
     this.#syncValidity();
+    this.#syncPeerValidity();
   }
 
   get disabled() {
@@ -75,6 +78,7 @@ export class RowanRadio extends BaseElement {
   set required(value) {
     this.reflectBoolean("required", Boolean(value));
     this.#syncValidity();
+    this.#syncPeerValidity();
   }
 
   get name() {
@@ -83,6 +87,7 @@ export class RowanRadio extends BaseElement {
 
   set name(value) {
     this.reflectString("name", value);
+    this.#syncFormValue();
   }
 
   get value() {
@@ -192,14 +197,29 @@ export class RowanRadio extends BaseElement {
   }
 
   #uncheckPeers() {
-    const root = this.getRootNode();
-    if (!(root instanceof Document || root instanceof ShadowRoot)) return;
-
     const name = this.name;
     if (!name) return;
 
+    this.#syncingPeers = true;
+
+    for (const radio of this.#namedPeers(name)) {
+      radio.checked = false;
+    }
+
+    this.#syncingPeers = false;
+  }
+
+  #owningRadioGroup() {
+    const group = this.closest("rowan-radio-group");
+    return group instanceof HTMLElement && group.localName === "rowan-radio-group" ? group : null;
+  }
+
+  #namedPeers(name) {
+    const root = this.getRootNode();
+    if (!(root instanceof Document || root instanceof ShadowRoot)) return [];
+
     const formOwner = this.#formOwner();
-    const peers = Array.from(root.querySelectorAll("rowan-radio")).filter((radio) => {
+    return Array.from(root.querySelectorAll("rowan-radio")).filter((radio) => {
       return (
         radio !== this &&
         radio.name === name &&
@@ -207,13 +227,31 @@ export class RowanRadio extends BaseElement {
         radio.#formOwner() === formOwner
       );
     });
-    this.#syncingPeers = true;
+  }
 
-    for (const radio of peers) {
-      radio.checked = false;
+  #selectionPeers() {
+    const group = this.#owningRadioGroup();
+    if (group) {
+      return Array.from(group.querySelectorAll("rowan-radio")).filter((radio) => {
+        return radio !== this && radio.#owningRadioGroup() === group;
+      });
     }
 
-    this.#syncingPeers = false;
+    const name = this.name;
+    return name ? this.#namedPeers(name) : [];
+  }
+
+  #isMissingRequiredValue() {
+    return this.required && !this.checked && !this.#selectionPeers().some((radio) => radio.checked);
+  }
+
+  #syncPeerValidity() {
+    if (!this.isConnected) return;
+
+    for (const radio of this.#selectionPeers()) {
+      radio.#syncValidity();
+      radio.#applyDefaultA11y();
+    }
   }
 
   #formOwner() {
@@ -221,14 +259,23 @@ export class RowanRadio extends BaseElement {
   }
 
   #syncFormValue() {
+    const group = this.#owningRadioGroup();
+    const groupName =
+      group && typeof group.name === "string" ? group.name : (group?.getAttribute("name") ?? "");
+
+    if (groupName) {
+      this.setFormValue(null);
+      return;
+    }
+
     this.setFormValue(this.checked ? this.value : null);
   }
 
   #syncValidity() {
     if (!this.#input) return;
 
-    if (this.required && !this.checked) {
-      this.setValidity({ valueMissing: true }, "Please select an option.", this.#input);
+    if (this.#isMissingRequiredValue()) {
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.option"), this.#input);
       return;
     }
 
@@ -238,10 +285,10 @@ export class RowanRadio extends BaseElement {
   #applyDefaultA11y() {
     if (!this.internals) return;
 
-    const invalidState = this.required && !this.checked ? "true" : "false";
+    const invalidState = this.#isMissingRequiredValue() ? "true" : "false";
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "radio";
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-checked") && "ariaChecked" in this.internals) {

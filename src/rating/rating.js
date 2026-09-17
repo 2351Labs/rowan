@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let ratingId = 0;
 
@@ -399,7 +400,11 @@ export class RowanRating extends BaseElement {
 
   #syncValidity() {
     if (this.#isValueMissing()) {
-      this.setValidity({ valueMissing: true }, "Please choose a rating.", this.#rating);
+      this.setValidity(
+        { valueMissing: true },
+        validityMessage("valueMissing.rating"),
+        this.#rating,
+      );
       return;
     }
 

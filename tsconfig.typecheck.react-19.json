@@ -4,5 +4,5 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "include": ["type-tests/react-19.tsx"]
+  "include": ["type-tests/react-19.tsx", "type-tests/base-element-react.ts"]
 }

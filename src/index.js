@@ -3,6 +3,13 @@ export { debounce } from "./lib/debounce.js";
 export { emit } from "./lib/events.js";
 export { formatCurrency, formatDate, formatNumber, formatRelativeTime } from "./lib/format.js";
 export { keys } from "./lib/keys.js";
+export {
+  ROWAN_VALIDITY_MESSAGES,
+  resetValidityMessages,
+  setValidityMessageResolver,
+  setValidityMessages,
+  validityMessage,
+} from "./lib/validity-messages.js";
 export { RowanAlert } from "./alert/alert.js";
 export { RowanAppLayout } from "./app-layout/app-layout.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";

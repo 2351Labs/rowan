@@ -26,6 +26,13 @@ describe("rowan-status-indicator", () => {
     expect(indicator.size).to.equal("md");
     expect(indicator.hasAttribute("tone")).to.equal(false);
     expect(indicator.hasAttribute("size")).to.equal(false);
+
+    indicator.setAttribute("tone", " WARNING ");
+    indicator.setAttribute("size", " SM ");
+    expect(indicator.tone).to.equal("warning");
+    expect(indicator.size).to.equal("sm");
+    expect(indicator.getAttribute("tone")).to.equal("warning");
+    expect(indicator.getAttribute("size")).to.equal("sm");
   });
 
   it("renders its label attribute as fallback content", async () => {

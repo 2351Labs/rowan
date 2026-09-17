@@ -26,6 +26,7 @@ export class RowanToaster extends BaseElement {
     set placement(value: RowanToasterPlacement);
     /** @returns {RowanToasterPlacement} */
     get placement(): RowanToasterPlacement;
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set maxVisible(value: number);
     get maxVisible(): number;
     set duration(value: number);

@@ -34,7 +34,14 @@ async function renderPalette({ open = false, hotkey = "" } = {}) {
 }
 
 function keydown(element, key) {
-  element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
+  const event = new KeyboardEvent("keydown", {
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+    key,
+  });
+  element.dispatchEvent(event);
+  return event;
 }
 
 describe("rowan-command-palette", () => {
@@ -70,15 +77,15 @@ describe("rowan-command-palette", () => {
     palette.open = true;
     await nextMicrotask();
 
+    const overlay = palette.shadowRoot.querySelector("dialog");
     const panel = palette.shadowRoot.querySelector(".panel");
     expect(palette.inert).to.equal(false);
-    expect(palette.internals.role).to.equal("dialog");
-    expect(palette.internals.ariaModal).to.equal("true");
+    expect(palette.internals.role).to.equal(null);
+    expect(palette.internals.ariaModal).to.equal(null);
     expect(palette.internals.ariaHidden).to.equal("false");
-    expect(palette.internals.ariaLabel).to.equal("Command palette");
-    expect(panel.getAttribute("role")).to.equal("dialog");
-    expect(panel.getAttribute("aria-modal")).to.equal("true");
-    expect(panel.getAttribute("aria-labelledby")).to.not.equal(null);
+    expect(overlay.getAttribute("aria-labelledby")).to.not.equal(null);
+    expect(panel.hasAttribute("role")).to.equal(false);
+    expect(panel.hasAttribute("aria-modal")).to.equal(false);
   });
 
   it("filters command items from labels, descriptions, and keywords", async () => {
@@ -151,12 +158,6 @@ describe("rowan-command-palette", () => {
     expect(settings.hasAttribute("data-rowan-command-active")).to.equal(false);
     expect(invite.hasAttribute("data-rowan-command-active")).to.equal(true);
 
-    keydown(input, "Home");
-    expect(settings.hasAttribute("data-rowan-command-active")).to.equal(true);
-
-    keydown(input, "End");
-    expect(invite.hasAttribute("data-rowan-command-active")).to.equal(true);
-
     keydown(input, "Enter");
     await nextMicrotask();
 
@@ -164,6 +165,30 @@ describe("rowan-command-palette", () => {
     expect(detail.item === invite).to.equal(true);
     expect(eventMeta).to.deep.equal({ bubbles: true, composed: true });
     expect(palette.open).to.equal(false);
+  });
+
+  it("lets Home and End move the caret without changing the active command", async () => {
+    const palette = await renderPalette({ open: true });
+    const input = palette.shadowRoot.querySelector("input");
+    const [settings, invite] = palette.querySelectorAll("rowan-command-item");
+
+    input.focus();
+    input.value = "settings";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    input.setSelectionRange(8, 8);
+
+    expect(settings.hasAttribute("data-rowan-command-active")).to.equal(true);
+
+    const home = keydown(input, "Home");
+    expect(home.defaultPrevented).to.equal(false);
+    expect(input.selectionStart).to.equal(8);
+    expect(settings.hasAttribute("data-rowan-command-active")).to.equal(true);
+    expect(invite.hasAttribute("data-rowan-command-active")).to.equal(false);
+
+    const end = keydown(input, "End");
+    expect(end.defaultPrevented).to.equal(false);
+    expect(settings.hasAttribute("data-rowan-command-active")).to.equal(true);
   });
 
   it("opens from an opted-in hotkey and returns focus after Escape", async () => {

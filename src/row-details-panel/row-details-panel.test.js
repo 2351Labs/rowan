@@ -2,6 +2,7 @@ import { expect } from "@esm-bundle/chai";
 
 import "../table/table.js";
 import "./row-details-panel.js";
+import { isTopmostOverlay } from "../lib/overlay-stack.js";
 
 const nextMicrotask = () => Promise.resolve();
 
@@ -55,6 +56,45 @@ describe("rowan-row-details-panel", () => {
     outside.remove();
   });
 
+  it("keeps closed panels out of modal semantics and names open panels", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.label = "Member details";
+    document.body.append(panel);
+    await settle();
+
+    expect(panel.inert).to.equal(true);
+    expect(panel.internals.role).to.equal(null);
+    expect(panel.internals.ariaModal).to.equal(null);
+    expect(panel.internals.ariaHidden).to.equal("true");
+
+    panel.open = true;
+    await settle();
+
+    expect(panel.inert).to.equal(false);
+    expect(panel.internals.role).to.equal(null);
+    expect(panel.internals.ariaModal).to.equal(null);
+    expect(panel.internals.ariaHidden).to.equal("false");
+    expect(panel.shadowRoot.querySelector("dialog").getAttribute("aria-label")).to.equal(
+      "Member details",
+    );
+  });
+
+  it("releases the scroll lock when an open panel is removed from the document", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    document.body.append(panel);
+    await settle();
+
+    const initialOverflow = document.body.style.overflow;
+
+    panel.open = true;
+    await settle();
+    expect(document.body.style.overflow).to.equal("hidden");
+
+    panel.remove();
+
+    expect(document.body.style.overflow).to.equal(initialOverflow);
+  });
+
   afterEach(() => {
     document.body.innerHTML = "";
   });
@@ -80,7 +120,7 @@ describe("rowan-row-details-panel", () => {
     expect(panel.open).to.equal(true);
     expect(panel.row).to.equal(table.rows[0]);
     expect(panel.rowId).to.equal("member-1");
-    expect(panel.internals.role).to.equal("dialog");
+    expect(panel.shadowRoot.querySelector("dialog").getAttribute("aria-label")).to.not.equal(null);
     expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Ada");
     expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Admin");
 
@@ -245,8 +285,13 @@ describe("rowan-row-details-panel", () => {
 
     panel.remove();
     await settle();
+    expect(isTopmostOverlay(panel)).to.equal(false);
+
     document.body.append(panel);
     await settle();
+
+    expect(document.body.style.overflow).to.equal("hidden");
+    expect(isTopmostOverlay(panel)).to.equal(true);
 
     outside.focus();
     await settle();

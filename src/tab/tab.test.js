@@ -14,7 +14,8 @@ describe("rowan-tab", () => {
     document.body.append(tab);
     await nextMicrotask();
 
-    expect(tab.shadowRoot.querySelector("button").getAttribute("aria-selected")).to.equal("true");
+    expect(tab.internals.ariaSelected).to.equal("true");
+    expect(tab.shadowRoot.querySelector("button").getAttribute("role")).to.equal("presentation");
   });
 
   it("accepts a controller-owned roving tab index", async () => {

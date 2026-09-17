@@ -1,7 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { triggerAssociatedFormAction } from "../lib/form.js";
+
+const VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
+const SIZES = new Set(["sm", "md", "lg"]);
+const TYPES = new Set(["button", "submit", "reset"]);
 
 /**
  * Icon-only action control.
@@ -51,22 +56,22 @@ export class RowanIconButton extends BaseElement {
 
   /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
   get variant() {
-    return this.readString("variant", "ghost");
+    return normalizeEnum(this.readString("variant", "ghost"), VARIANTS, "ghost");
   }
 
   /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
   set variant(value) {
-    this.reflectString("variant", value === "ghost" ? null : value);
+    reflectEnum(this, "variant", value, VARIANTS, "ghost");
   }
 
   /** @returns {"sm" | "md" | "lg"} */
   get size() {
-    return this.readString("size", "md");
+    return normalizeEnum(this.readString("size", "md"), SIZES, "md");
   }
 
   /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
-    this.reflectString("size", value === "md" ? null : value);
+    reflectEnum(this, "size", value, SIZES, "md");
   }
 
   get disabled() {
@@ -79,12 +84,30 @@ export class RowanIconButton extends BaseElement {
 
   /** @returns {"button" | "submit" | "reset"} */
   get type() {
-    return this.readString("type", "button");
+    return normalizeEnum(this.readString("type", "button"), TYPES, "button");
   }
 
   /** @param {"button" | "submit" | "reset"} value */
   set type(value) {
-    this.reflectString("type", value);
+    reflectEnum(this, "type", value, TYPES, "button");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "variant" && rewriteEnumAttribute(this, name, newValue, VARIANTS, "ghost")) {
+      return;
+    }
+
+    if (name === "size" && rewriteEnumAttribute(this, name, newValue, SIZES, "md")) {
+      return;
+    }
+
+    if (name === "type" && rewriteEnumAttribute(this, name, newValue, TYPES, "button")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {
@@ -106,7 +129,7 @@ export class RowanIconButton extends BaseElement {
           return;
         }
 
-        const type = this.#normalizedType(this.type);
+        const type = this.type;
         if (type !== "button") event.preventDefault();
 
         emit(this, "rowan-click", {
@@ -116,7 +139,7 @@ export class RowanIconButton extends BaseElement {
       });
     }
 
-    this.#button.type = this.#normalizedType(this.type);
+    this.#button.type = this.type;
     this.#button.disabled = this.disabled;
     this.#button.setAttribute("aria-label", this.label.trim() || "Icon button");
 
@@ -128,11 +151,6 @@ export class RowanIconButton extends BaseElement {
     } else {
       this.#configuredIcon.removeAttribute("name");
     }
-  }
-
-  #normalizedType(type) {
-    if (type === "submit" || type === "reset") return type;
-    return "button";
   }
 }
 

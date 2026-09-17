@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 
 const TONE_VALUES = new Set(["info", "success", "warning", "danger"]);
@@ -30,14 +31,22 @@ export class RowanToast extends BaseElement {
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
-    const value = this.readString("tone", "info");
-    return TONE_VALUES.has(value) ? value : "info";
+    return normalizeEnum(this.readString("tone", "info"), TONE_VALUES, "info");
   }
 
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value) {
-    const nextTone = TONE_VALUES.has(value) ? value : "info";
-    this.reflectString("tone", nextTone === "info" ? null : nextTone);
+    reflectEnum(this, "tone", value, TONE_VALUES, "info");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "tone" && rewriteEnumAttribute(this, name, newValue, TONE_VALUES, "info")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   get dismissible() {

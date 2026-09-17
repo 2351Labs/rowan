@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 import "../radio/radio.js";
 
@@ -16,6 +17,7 @@ import "../radio/radio.js";
  * @event rowan-change - Fired when selected value changes
  */
 export class RowanRadioGroup extends BaseElement {
+  static formAssociated = true;
   static styleUrl = new URL("./radio-group.css", import.meta.url).href;
   static useElementInternals = true;
   static observedAttributes = ["value", "name", "disabled", "required"];
@@ -23,6 +25,14 @@ export class RowanRadioGroup extends BaseElement {
 
   #slot = null;
   #radioChangeListeners = new Map();
+  #defaultValue = undefined;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.#syncFormValue();
+    this.#syncValidity();
+    this.#applyDefaultA11y();
+  }
 
   get value() {
     return this.readString("value", "");
@@ -30,6 +40,8 @@ export class RowanRadioGroup extends BaseElement {
 
   set value(value) {
     this.reflectString("value", value);
+    this.#syncFormValue();
+    this.#syncValidity();
   }
 
   get name() {
@@ -38,6 +50,7 @@ export class RowanRadioGroup extends BaseElement {
 
   set name(value) {
     this.reflectString("name", value);
+    this.#syncFormValue();
   }
 
   get disabled() {
@@ -46,6 +59,8 @@ export class RowanRadioGroup extends BaseElement {
 
   set disabled(value) {
     this.reflectBoolean("disabled", Boolean(value));
+    this.#syncFormValue();
+    this.#syncValidity();
   }
 
   get required() {
@@ -54,6 +69,48 @@ export class RowanRadioGroup extends BaseElement {
 
   set required(value) {
     this.reflectBoolean("required", Boolean(value));
+    this.#syncValidity();
+  }
+
+  /** @param {string | null} [value] */
+  setFormValue(value = this.value ? this.value : null) {
+    if (this.internals && typeof this.internals.setFormValue === "function") {
+      this.internals.setFormValue(value);
+    }
+  }
+
+  setValidity(flags = {}, message = "", anchor = undefined) {
+    if (this.internals && typeof this.internals.setValidity === "function") {
+      if (anchor instanceof HTMLElement) {
+        this.applyValidity(flags, message, anchor);
+      } else {
+        this.applyValidity(flags, message);
+      }
+    }
+  }
+
+  formResetCallback() {
+    this.value = this.#defaultValue ?? "";
+  }
+
+  formStateRestoreCallback(state) {
+    this.value = state == null ? "" : String(state);
+  }
+
+  checkValidity() {
+    if (this.internals && typeof this.internals.checkValidity === "function") {
+      return this.internals.checkValidity();
+    }
+
+    return !this.#isValueMissing();
+  }
+
+  reportValidity() {
+    if (this.internals && typeof this.internals.reportValidity === "function") {
+      return this.internals.reportValidity();
+    }
+
+    return this.checkValidity();
   }
 
   render() {
@@ -61,10 +118,6 @@ export class RowanRadioGroup extends BaseElement {
       this.renderRoot.innerHTML = '<div class="group" part="group"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
       this.listen(this.#slot, "slotchange", () => this.requestRender());
-    }
-
-    if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "radiogroup";
     }
 
     const radios = this.#radios();
@@ -75,6 +128,10 @@ export class RowanRadioGroup extends BaseElement {
 
     if (!this.value && selectedByChild) {
       this.value = selectedByChild;
+    }
+
+    if (this.#defaultValue === undefined) {
+      this.#defaultValue = this.value;
     }
 
     radios.forEach((radio, index) => {
@@ -97,6 +154,10 @@ export class RowanRadioGroup extends BaseElement {
       radio.required = localRequired || (this.required && index === 0);
       radio.checked = radio.value === selectedValue;
     });
+
+    this.#syncFormValue();
+    this.#syncValidity();
+    this.#applyDefaultA11y();
   }
 
   #radios() {
@@ -141,6 +202,43 @@ export class RowanRadioGroup extends BaseElement {
       value: this.value,
       radio: source,
     });
+  }
+
+  #isValueMissing() {
+    return this.required && !this.value;
+  }
+
+  #syncFormValue() {
+    this.setFormValue(this.value ? this.value : null);
+  }
+
+  #syncValidity() {
+    if (this.#isValueMissing()) {
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.option"));
+      return;
+    }
+
+    this.setValidity({});
+  }
+
+  #applyDefaultA11y() {
+    if (!this.internals) return;
+
+    if (!this.hasAttribute("role") && "role" in this.internals) {
+      this.internals.role = "radiogroup";
+    }
+
+    if (!this.hasAttribute("aria-required") && "ariaRequired" in this.internals) {
+      this.internals.ariaRequired = this.required ? "true" : "false";
+    }
+
+    if (!this.hasAttribute("aria-disabled") && "ariaDisabled" in this.internals) {
+      this.internals.ariaDisabled = this.disabled ? "true" : "false";
+    }
+
+    if (!this.hasAttribute("aria-invalid") && "ariaInvalid" in this.internals) {
+      this.internals.ariaInvalid = this.#isValueMissing() ? "true" : "false";
+    }
   }
 }
 

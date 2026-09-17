@@ -11,5 +11,5 @@
     },
     "types": []
   },
-  "include": ["type-tests/react-18.tsx"]
+  "include": ["type-tests/react-18.tsx", "type-tests/base-element-react.ts"]
 }

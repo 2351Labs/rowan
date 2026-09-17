@@ -1,9 +1,20 @@
 # Rowan bug log
 
-Findings from the staff frontend review of the public `@rowan-ui/core` surface.
+Findings from the staff frontend review of the public `@rowan-ui/core` surface
+(F-01–F-25) and the 2026-09-16 whole-project review
+(`documentation/code_review/2026-09-16T130711-0700_grok-4.6.md`, F-26–F-56).
 IDs `F-NN` are stable and referenced by the review write-up.
 
+Open items are listed first, High then Medium then Low. Closed items keep their
+original ID order. F-26–F-56 are all fixed; the Open table is empty.
+
 ## Triage summary
+
+### Open
+
+None.
+
+### Closed
 
 | ID   | Title                                                                    | Severity | Status                                              |
 | ---- | ------------------------------------------------------------------------ | -------- | --------------------------------------------------- |
@@ -32,6 +43,37 @@ IDs `F-NN` are stable and referenced by the review write-up.
 | F-23 | Radio group leaks both child and controller change events                | Medium   | **Fixed**                                           |
 | F-24 | Enum properties accept values outside their documented unions            | Medium   | **Fixed**                                           |
 | F-25 | Unnamed radio controls are incorrectly grouped together                  | Medium   | **Fixed**                                           |
+| F-26 | Required radio-group stays invalid after a later option is selected      | High     | **Fixed**                                           |
+| F-27 | Number field wipes in-progress input (`-`, `1.`)                         | High     | **Fixed**                                           |
+| F-28 | `type="PASSWORD"` bypasses password-value eviction                       | High     | **Fixed**                                           |
+| F-29 | Dropzone `accept` filters the picker, not drops                          | High     | **Fixed**                                           |
+| F-30 | Row-details panel leaks body scroll lock on disconnect                   | High     | **Fixed**                                           |
+| F-31 | `css:check` imports Node 22 `glob` while CI is Node 20                   | High     | **Fixed**                                           |
+| F-32 | Date-only `formatDate` shifts a day west of UTC                          | High     | **Fixed**                                           |
+| F-33 | `setCustomValidity` is not synchronous                                   | High     | **Fixed**                                           |
+| F-34 | Outside-click dismisses popover and parent dialog together               | High     | **Fixed**                                           |
+| F-35 | Fieldset-disabled FACE hosts still steal overlay focus                   | Medium   | **Fixed**                                           |
+| F-36 | Drawer reconnect skips overlay-stack re-registration                     | Medium   | **Fixed**                                           |
+| F-37 | Date-picker accepts impossible dates such as `2026-02-31`                | Medium   | **Fixed**                                           |
+| F-38 | Multi-select combobox does not close on Tab                              | Medium   | **Fixed**                                           |
+| F-39 | Command palette Home/End steal the caret                                 | Medium   | **Fixed**                                           |
+| F-40 | Toaster paints under native modal top layer                              | Medium   | **Fixed**                                           |
+| F-41 | Closed row-details panel remains `aria-modal`                            | Medium   | **Fixed**                                           |
+| F-42 | `.gitignore` is only `node_modules`; generated artifacts are tracked     | Medium   | **Fixed**                                           |
+| F-43 | Core and MapLibre npm packs include tests and stories                    | Medium   | **Fixed**                                           |
+| F-44 | `useRowanElement` never binds listeners if the host mounts late          | Medium   | **Fixed**                                           |
+| F-45 | Context menu and dropdown do not dismiss on Tab                          | Medium   | **Fixed**                                           |
+| F-46 | Popover is `role="dialog"` without focus move or top layer               | Medium   | **Fixed**                                           |
+| F-47 | Nested dialog/tab/switch roles in the accessibility tree                 | Medium   | **Fixed**                                           |
+| F-48 | External `<label for>` added after connect is never observed             | Medium   | **Fixed**                                           |
+| F-49 | Table link cells always `preventDefault` so they never navigate          | Medium   | **Fixed**                                           |
+| F-50 | `rowan-page-change` is 0-based on table and 1-based on pagination        | Medium   | **Fixed**                                           |
+| F-51 | Confirm dialog initial focus lands on the × close button                 | Medium   | **Fixed**                                           |
+| F-52 | Table-selection MutationObserver runs on every virtualized scroll        | Low      | **Fixed**                                           |
+| F-53 | MapLibre model types are not exported; tests never load maplibre-gl      | Low      | **Fixed**                                           |
+| F-54 | `#didFirstRender` is written and never read                              | Low      | **Fixed**                                           |
+| F-55 | `isTopmostOverlay` is unused after the native-dialog migration           | Low      | **Fixed**                                           |
+| F-56 | Hand-written `base-element.d.ts` omits FACE members                      | Low      | **Fixed**                                           |
 
 ---
 
@@ -1032,3 +1074,382 @@ surface changed.
 
 **Resolution (fixed).** The direct radio regression and nested-group ownership test both fail
 without the empty-name guard and pass with it.
+
+---
+
+## Open findings (2026-09-16 review)
+
+Source: `documentation/code_review/2026-09-16T130711-0700_grok-4.6.md` at `c2f548d`.
+Ordered High → Medium → Low. F-01–F-25 were not reopened. F-26 through F-56 are fixed.
+
+### F-26: Required radio-group stays invalid after a later option is selected
+
+- **Severity:** High
+- **Area:** `src/radio-group/radio-group.js`, `src/radio/radio.js`
+- **Contract:** Native radio `required` is group-level: any checked peer satisfies it. `rowan-form-wizard` and `rowan-validation-summary` walk descendant FACE `checkValidity()`.
+- **Evidence:** The group is not form-associated. `required` is implemented by `radio.required = true` on index 0 only (`radio-group.js:97`). Each `rowan-radio` then validates independently (`radio.js:230`: `if (this.required && !this.checked)`). Selecting a later radio unchecks the first but leaves it `required`, so `north.checkValidity()` is still false. Tests assert that only the first child is required; they never assert form validity after selecting a later option.
+- **Impact:** A completed required group still fails `form.checkValidity()`, blocks wizard Next/Complete, and shows a spurious error.
+- **Fix:** `rowan-radio` treats required as satisfied when any selection peer is checked. Peers are radios in the same `rowan-radio-group` (including unnamed children the group owns), or same-name/same-form radios when standalone. Checking one radio re-syncs peer validity immediately so `form.checkValidity()` is correct in the same turn. Child radios still submit; the group does not become a second FACE control.
+- **Test:** `radio.test.js` asserts a required named radio is valid after a same-name peer is checked. `radio-group.test.js` asserts a required group (named and unnamed) is valid after selecting the second option, including `form.checkValidity()`.
+
+**Resolution (fixed).** Native group-level required is implemented on the radio, matching F-25's unnamed-vs-named grouping: unnamed standalone radios stay independent, unnamed children of a group share validity through the group, and named radios share it by form owner. The new tests failed before peer validity sync and pass after.
+
+### F-27: Number field wipes in-progress input (`-`, `1.`)
+
+- **Severity:** High
+- **Area:** `src/number-field/number-field.js`, also `src/time-picker/time-picker.js`, `src/date-picker/date-picker.js`
+- **Contract:** Users must be able to type a leading minus, a trailing decimal, and other intermediate number-input states. `rowan-text-field` already skips write-back while composing and when the inner value matches.
+- **Evidence:** Every `input` event assigns `this.value = this.#input.value`, which runs `/^[+-]?(?:\d+|\d*\.\d+)$/` and stores `""` for `-`, `1.`, `.5` mid-edit, and `1e2`. Render then does `this.#input.value = this.value` (`number-field.js:304`). For `type="number"`, writing `""` (or a truncated `"1"`) clears the browser’s unsanitized text buffer.
+- **Impact:** The user cannot type a negative or decimal number. The same write-back exists on time-picker and date-picker.
+- **Fix:** Skip writing the committed value into the inner control while it is focused or `validity.badInput`. Incomplete `input` events no longer overwrite the committed value; `change` still normalizes. `normalizeNumberString` uses finite `Number(...)` so `1e2` and `.5` survive. Date and time pickers use the same write-back guard.
+- **Test:** Focused inner input keeps its live buffer when the committed value is cleared; `1e2` / `.5` round-trip; `badInput` does not empty the committed value. Date and time pickers have the same focused write-back test.
+
+**Resolution (fixed).** Matches `rowan-text-field`’s write-back skip. FACE still reflects the committed number; parent-driven `value` assignments apply on blur. Events still fire only from user `change` / stepper clicks.
+
+### F-28: `type="PASSWORD"` bypasses password-value eviction
+
+- **Severity:** High
+- **Area:** `src/text-field/text-field.js`
+- **Contract:** F-08: a password value must never enter a DOM attribute, and the inner control must be `type="password"`. F-24 canonicalized enums on divider/badge/alert/avatar/spinner; text-field `type` was not included.
+- **Evidence:** `#isSecret()` is `this.type === "password"` (`text-field.js:318`). The public `type` getter returns the raw attribute. `#normalizedType` is used only for the inner `<input>`. Markup such as `type="PASSWORD"` or `type="Password"` does not evict `value` and falls through to an inner `type="text"` control.
+- **Impact:** The secret is both visible and present in the DOM. A case mismatch reopens F-08.
+- **Fix:** Canonicalize `type` at getter, setter, and observed-attribute boundaries: trim, lower-case, accept the documented union, otherwise `text`. Default `text` is omitted from the attribute. Any canonical `password` evicts `value` before first paint. The inner input uses the canonical type.
+- **Test:** Markup `type="PASSWORD" value="secret"` has no `value` attribute, inner input is `type="password"`, and `el.type === "password"`. Unknown types collapse to `text`. Switching to `type="Password"` evicts a previously reflected value.
+
+**Resolution (fixed).** Same F-24 rewrite path as `rowan-divider`. `#isSecret()` now sees canonical `password` for any case/whitespace variant, so F-08 eviction runs for markup and property assignment.
+
+### F-29: Dropzone `accept` filters the picker, not drops
+
+- **Severity:** High
+- **Area:** `src/dropzone/dropzone.js`, `src/file-upload/file-upload.js`
+- **Contract:** The documented `accept` attribute is the client-side file-type gate for both picker and drop.
+- **Evidence:** `accept` is copied onto the hidden `<input type="file">` (`dropzone.js:190`) so the OS picker filters, but `#emitFiles` never matches files against `accept` (`dropzone.js:207`). `rowan-file-upload.#acceptFiles` only applies `multiple` and `max-files`. Tests only assert that the attribute reflects onto the input.
+- **Impact:** A dropzone with `accept=".csv,.pdf"` still queues a dropped `.exe`. There is no size cap; drop is the bypass.
+- **Fix:** Shared `src/lib/file-accept.js` matches HTML `accept` tokens: `.ext`, `type/subtype`, and `type/*`. Dropzone filters picker `change` and `drop` before `rowan-files-add`; `detail.files` are matches and `detail.rejected` failed `accept`. File-upload applies the same filter in `#acceptFiles` so a synthetic event cannot bypass it.
+- **Test:** Drop a `.exe` onto `accept=".csv"`; `detail.files` is empty and `detail.rejected` holds the exe. Mixed drops, MIME wildcards, picker change, and a synthetic file-upload event are covered.
+
+**Resolution (fixed).** Empty `accept` still allows every file. `multiple` still keeps only the first accepted file; extra accepted files are not reported as `rejected`. Events still fire only from user picker/drop (or a composed child event on file-upload), not from setting `accept`.
+
+### F-30: Row-details panel leaks body scroll lock on disconnect
+
+- **Severity:** High
+- **Area:** `src/row-details-panel/row-details-panel.js`, `src/lib/overlay-stack.js`
+- **Contract:** Removing the last open modal must restore `document.body.style.overflow`. `rowan-dialog` and `rowan-command-palette` unregister in `disconnectedCallback`.
+- **Evidence:** An open panel calls `pushOverlay(this)` on open. `disconnectedCallback` (`row-details-panel.js:169`) closes the native `<dialog>` but never calls `removeOverlay(this)` and never clears `#isOpen`. `pruneDisconnectedOverlays()` runs only from `pushOverlay` / `removeOverlay` (`overlay-stack.js:29`). The dialog suite documents this lazy prune as needing a later overlay update.
+- **Impact:** Removing the last open panel leaves `overflow: hidden`. The page is interactive (native modal is already closed) but cannot scroll until some other overlay mutates the stack.
+- **Fix:** On disconnect, call `removeOverlay(this)` and reset `#isOpen`, matching `src/dialog/dialog.js:35`. Reconnect while `open` still re-enters the stack because `#syncOpenState` sees `#isOpen === false`.
+- **Test:** Open a details panel, remove it from the document, assert body overflow is restored with no further overlay activity. Reconnect-while-open still restores focus containment.
+
+**Resolution (fixed).** Disconnect unregisters immediately, so the last open panel no longer leaves `overflow: hidden`. `rowan-close` still fires only for user dismissal, not for parent `remove()`.
+
+### F-31: `css:check` imports Node 22 `glob` while CI is Node 20
+
+- **Severity:** High
+- **Area:** `scripts/check-css-tokens.mjs`, `.github/workflows/ci.yml`
+- **Contract:** F-02’s non-regression guard (`npm run lint` → `css:check`) must run in CI.
+- **Evidence:** The script does `import { glob } from "node:fs/promises"` (`check-css-tokens.mjs:4`). That named export was added in Node 22. CI (`.github/workflows/ci.yml:19`) runs Node 20, where the import throws `does not provide an export named 'glob'`. Local Node 24 hides this.
+- **Impact:** The F-02 colour-literal lint is not actually running in CI. A hard-coded hex can land on `main`.
+- **Fix:** Walk `src/` with `readdir` + `withFileTypes` (Node 20) instead of `fs.promises.glob`. Still skip `src/tokens/`. Keep CI on Node 20.
+- **Test:** `node@20 ./scripts/check-css-tokens.mjs` completes and reports no unthemeable colour literals.
+
+**Resolution (fixed).** The F-02 lint now loads on the CI Node version. No new glob dependency; no CI version bump.
+
+### F-32: Date-only `formatDate` shifts a day west of UTC
+
+- **Severity:** High
+- **Area:** `src/lib/format.js`
+- **Contract:** A calendar date such as a due date, birth date, or schedule label must format as that calendar day. `rowan-calendar` already round-trips date-only values via `Date.UTC`.
+- **Evidence:** `readDate` feeds date-only ISO strings through `new Date(value)` (`format.js:68`). Per spec those parse as UTC midnight, so `formatDate("2026-01-01", { locale: "en-US", timeZone: "America/Los_Angeles" })` returns `Dec 31, 2025`. The suite only exercises a full ISO datetime with an explicit zone.
+- **Impact:** Any zone west of UTC shows the previous day. The same shift happens with the host timezone when no `timeZone` is passed.
+- **Fix:** `YYYY-MM-DD` is parsed with `Date.UTC` and the same round-trip as `rowan-calendar` (impossible days such as `2026-02-31` are invalid). Formatting uses `timeZone: "UTC"` so a caller `timeZone` cannot shift the calendar day. Instants (`Date`, timestamps, datetimes) still honor `timeZone`.
+- **Test:** `formatDate("2026-01-01", { locale: "en-US", timeZone: "America/Los_Angeles" })` equals the UTC medium date for 1 Jan 2026. `2026-02-31` uses `fallback`.
+
+**Resolution (fixed).** Date-only strings are calendar dates, not UTC midnights displayed in local time. Datetime strings keep the previous zone behavior.
+
+### F-33: `setCustomValidity` is not synchronous
+
+- **Severity:** High
+- **Area:** `src/lib/base-element.js`
+- **Contract:** Native `setCustomValidity` is synchronous: `el.setCustomValidity("taken"); el.reportValidity()` / `el.validity.customError` must already reflect the error. F-07 only guaranteed that a later render would not wipe a custom error.
+- **Evidence:** `setCustomValidity` stores `#customValidityMessage` and `requestRender()`s (`base-element.js:194`). `applyValidity` runs later in the render microtask, and that microtask no-ops when `!this.isConnected`. The F-07 test awaits a microtask before asserting.
+- **Impact:** A consumer who reports validity in the same turn still sees the previous state. Disconnected hosts never apply the custom error at all.
+- **Fix:** `setCustomValidity` writes `#customValidityMessage` and commits through `ElementInternals.setValidity` immediately, merging with the last `applyValidity` constraint flags/message/anchor. `requestRender()` still runs so inner inputs and `aria-invalid` catch up. Clearing the custom error restores the stored constraint state in the same turn.
+- **Test:** `el.setCustomValidity("taken"); expect(el.validity.customError).to.equal(true)` with no `await`, including on a disconnected host. F-07 persist-through-render still holds.
+
+**Resolution (fixed).** Custom errors are visible to `validity` / `checkValidity` / `reportValidity` in the same turn. Renders still cannot wipe them (F-07).
+
+### F-34: Outside-click dismisses popover and parent dialog together
+
+- **Severity:** High
+- **Area:** `src/popover/popover.js`, `src/dropdown/dropdown.js`, `src/dialog/dialog.js`
+- **Contract:** Native stacked `<dialog>`s only let the topmost receive `cancel`. An outside click or Escape must close only the topmost surface.
+- **Evidence:** Popover and dropdown dismiss on a document `pointerdown` whenever `composedPath()` does not include themselves (`popover.js:255`). They are not registered in `overlay-stack`. A popover open inside a `rowan-dialog` therefore closes on backdrop `pointerdown`, and the same gesture’s later `click` hits `event.target === this.#overlay` on the native dialog (`dialog.js:91`) and closes that too. Nested popovers: `#handleKeydown` `preventDefault()`s but does not `stopPropagation()`.
+- **Impact:** One outside click dismisses both layers. Nested popovers both close on Escape.
+- **Fix:** Overlay stack has dismissible layers that do not lock scroll. Popover and dropdown push/remove as dismissibles and handle outside pointerdown / Escape only when topmost, with `preventDefault` + `stopPropagation`. Closing notes a same-turn consume so a parent dialog’s backdrop `click` / `cancel` does not also fire. Dialog backdrop and Escape no-op unless the dialog is topmost and no dismissible closed this turn.
+- **Test:** Open a dialog, open a popover (or dropdown) inside it, pointerdown+click the dialog backdrop; only the nested surface closes. Nested popovers: Escape closes only the inner one.
+
+**Resolution (fixed).** Lightweight overlays join the stack without locking page scroll. Parent modals stay open through the same dismiss gesture.
+
+### F-35: Fieldset-disabled FACE hosts still steal overlay focus
+
+- **Severity:** Medium
+- **Area:** `src/lib/focus.js`
+- **Contract:** A control disabled by an ancestor `<fieldset disabled>` must not receive initial focus after `showModal()`. Native `:disabled` matches that state.
+- **Evidence:** `isFocusable` treats a host as disabled only via `hasAttribute("disabled")` or `aria-disabled="true"` (`focus.js:25`). `formDisabledCallback` sets `#formDisabled` and `internals.ariaDisabled`, but the host attribute stays off. Dialog, drawer, command-palette, and row-details-panel use `collectFocusableElements` to pick initial focus.
+- **Impact:** A fieldset-disabled `rowan-text-field` can steal first focus from the first actually interactive control in a modal.
+- **Fix:** `isFocusable` rejects `element.matches(":disabled")`, which covers FACE `formDisabledCallback` and native controls inside `<fieldset disabled>` (including the legend exception, which `closest("fieldset[disabled]")` would get wrong).
+- **Test:** FACE host and native input inside `<fieldset disabled>` are not focusable and are omitted from `collectFocusableElements`. Opening a dialog with a disabled fieldset does not focus that field.
+
+**Resolution (fixed).** Overlay initial-focus collection now follows the same disabled state the browser uses for Tab.
+
+### F-36: Drawer reconnect skips overlay-stack re-registration
+
+- **Severity:** Medium
+- **Area:** `src/drawer/drawer.js`, `src/row-details-panel/row-details-panel.js`
+- **Contract:** Reconnecting an open modal must re-enter the overlay stack so body scroll stays locked. Command-palette re-installs containment on the already-open path.
+- **Evidence:** `rowan-drawer` calls `removeOverlay` on disconnect but does not set `#isOpen = false`. On reconnect while `open` is still true, `#syncOpenState` hits `if (this.open === this.#isOpen) return` (`drawer.js:144`) and skips `#onOpen()` / `pushOverlay`. `#reconcileNativeOpen()` still calls `showModal()`. Row-details-panel has the same short-circuit at line 566.
+- **Impact:** The drawer looks modal but is absent from the stack and body scroll is not locked.
+- **Fix:** On disconnect, `removeOverlay` only when `#isOpen` and then set `#isOpen = false`, matching `rowan-dialog`. Reconnect while `open` takes the open path and `pushOverlay`s again. Row-details-panel already did this in F-30.
+- **Test:** Open a drawer, remove and re-append it; it is topmost and `overflow` is `hidden`. Row-details reconnect-while-open asserts the same stack lock.
+
+**Resolution (fixed).** Reconnect-while-open re-enters the overlay stack. `rowan-change` still fires only for user close.
+
+### F-37: Date-picker accepts impossible dates such as `2026-02-31`
+
+- **Severity:** Medium
+- **Area:** `src/date-picker/date-picker.js`
+- **Contract:** Native `input type="date"` rejects impossible days (`input.value` becomes `""`). `rowan-calendar` and `rowan-date-range-picker` round-trip through `Date.UTC` and reject them.
+- **Evidence:** `normalizeDateValue` only tests `/^\d{4}-\d{2}-\d{2}$/` (`date-picker.js:9`). `2026-02-31` is stored, reflected, submitted via FACE, and compared as a string for min/max. After render the inner control is empty while the host still holds `2026-02-31`.
+- **Impact:** Invalid dates survive as form values and disagree with the visible control and with calendar/range.
+- **Fix:** Shared `src/lib/calendar-date.js` UTC round-trip (`normalizeCalendarDate` / `parseCalendarDate`). Date-picker, calendar, date-range-picker, and `formatDate` all use it. Impossible days become `""` before reflect and `setFormValue`.
+- **Test:** `el.value = "2026-02-31"`; host value is `""`, the attribute is gone, and FormData is empty.
+
+**Resolution (fixed).** Date-picker now matches calendar/range and native `input type="date"`: `2026-02-31` is not a value. `rowan-change` still fires only from user commit.
+
+### F-38: Multi-select combobox does not close on Tab
+
+- **Severity:** Medium
+- **Area:** `src/multi-select-combobox/multi-select-combobox.js`
+- **Contract:** After F-11, both comboboxes follow the APG combobox pattern. `rowan-combobox` closes the popup on Tab (`combobox.js:406`).
+- **Evidence:** The multi-select keydown handler has no Tab (or `focusout`) path (`multi-select-combobox.js:522`). The only dismissals are Escape and document `pointerdown`.
+- **Impact:** Tabbing to the next field leaves the listbox open over the following control. Keyboard-only users cannot dismiss it without Escape.
+- **Fix:** Tab sets `open = false` without `preventDefault`, so focus can move. `focusout` also closes when `relatedTarget` is outside the host (including nested shadow). Focus remaining on chips/options inside the control does not close.
+- **Test:** Open the multi-select, press Tab; `open` is false. Moving focus to a following button also closes the popup.
+
+**Resolution (fixed).** Matches `rowan-combobox`. Tab is not an option-commit key, so no `rowan-change`. Enter still toggles selection and keeps the popup open.
+
+### F-39: Command palette Home/End steal the caret
+
+- **Severity:** Medium
+- **Area:** `src/command-palette/command-palette.js`, `src/multi-select-combobox/multi-select-combobox.js`
+- **Contract:** APG combobox: Home/End move the caret in an editable input; they move options only when the popup itself is focused or the combobox is not editable.
+- **Evidence:** The search field is `<input type="search" role="combobox">`. Home and End call `preventDefault()` and jump to the first/last enabled command (`command-palette.js:381`). Multi-select has the same intercept while the popup is open (`multi-select-combobox.js:538`).
+- **Impact:** The caret can never move to the start or end of the query.
+- **Fix:** Removed Home/End from the editable input keydown path on command palette, multi-select, and combobox (all `aria-activedescendant`, listbox never focused). Arrow keys still move the active option. `#moveActiveItemToBoundary` is gone.
+- **Test:** Type a query, press Home; `defaultPrevented` is false, the active command/option is unchanged. Synthetic events cannot move the caret; not preventing default is what lets the UA do it.
+
+**Resolution (fixed).** Home/End are caret keys on these editable comboboxes. ArrowDown/ArrowUp still move the highlight.
+
+### F-40: Toaster paints under native modal top layer
+
+- **Severity:** Medium
+- **Area:** `src/toaster/toaster.css`
+- **Contract:** Notifications shown while a modal is open must remain visible and reachable, or be explicitly queued.
+- **Evidence:** `rowan-toaster` is `position: fixed; z-index: var(--rowan-toaster-z-index, 1000)` (`toaster.css:7`). Modal overlays use `showModal()`, which puts them in the top layer above every `z-index`.
+- **Impact:** A toast shown while a dialog, drawer, command palette, or row-details panel is open is painted under the backdrop: not visible, not reachable, dismiss control inert.
+- **Fix:** Toasts are parked (not dismissed) while a lock-scroll modal is in the overlay stack, then flushed when it closes. The toaster uses `popover="manual"` so shown toasts join the top layer when no modal is open. Chrome still paints modal dialogs above popovers, so deferral is the reachable path. No `rowan-toast-dismiss` on park; `rowan-toast-show` fires when the toast actually appears.
+- **Test:** Open a dialog, `show()` a toast; nothing renders until the dialog closes, then the toast appears. A visible toast is parked when a dialog opens and restored after close.
+
+**Resolution (fixed).** Toasts are never trapped under a modal backdrop. Events still fire only from show/dismiss, not from parent property sets.
+
+### F-41: Closed row-details panel remains `aria-modal`
+
+- **Severity:** Medium
+- **Area:** `src/row-details-panel/row-details-panel.js`
+- **Contract:** Closed `rowan-dialog`, `rowan-drawer`, and `rowan-command-palette` set `this.inert = true` and clear `internals.role` / `ariaModal` so they leave the accessibility tree.
+- **Evidence:** The panel never sets `inert` from open state. `#applyDefaultA11y` always assigns `internals.role = "dialog"` and `internals.ariaModal = "true"` (`row-details-panel.js:605`), even when closed.
+- **Impact:** A closed panel remains a modal dialog in the accessibility tree.
+- **Fix:** Same as dialog/drawer: `this.inert = !this.open`; host `role`, `ariaModal`, and `ariaLabel` are set only while open; `ariaHidden` is `"true"` when closed.
+- **Test:** Closed panel has `inert === true` and `internals.role == null`; open panel is a named dialog.
+
+**Resolution (fixed).** Closed panels leave the accessibility tree. Author `role` / `aria-modal` attributes are still not overwritten.
+
+### F-42: `.gitignore` is only `node_modules`; generated artifacts are tracked
+
+- **Severity:** Medium
+- **Area:** `.gitignore`, `storybook-static/`, `documentation/documentation-static-check/`, `documentation/documentation/documentation-static-check/`, `tmp/`
+- **Contract:** Generated builds, nested Vite output, and temp CEM dumps do not belong in git. They are not part of the npm tarball.
+- **Evidence:** `.gitignore` contains only `node_modules`. Tracked: `storybook-static/` (183 files), `documentation/documentation-static-check/` (including a bundled MapLibre build), a nested duplicate at `documentation/documentation/documentation-static-check/` from a mistaken Vite `outDir`, and `tmp/rowan-sprint36-cem.XFTknQ/custom-elements.json` (~2 MB). Nested static HTML loads `/assets/...` from domain root, so those snapshots 404 unless served at `/`.
+- **Impact:** Git history is bloated. The nested copy looks like a published docs site and is not actually serveable.
+- **Fix:** `.gitignore` (and `.prettierignore`) cover `storybook-static/`, `documentation/**/documentation-static-check/`, and `tmp/`. Those trees were removed from the index. `npm run documentation:build` uses `documentation/vite.build.mjs` with `base: "./"` so assets are relative. Lint only globs `documentation/*.js`, not generated bundles.
+- **Test:** `git check-ignore` matches those paths. `npm run documentation:build` writes `./assets/...` and does not show up as untracked.
+
+**Resolution (fixed).** Generated Storybook, static docs, and tmp CEM dumps are no longer source. History still contains the old blobs until a later rewrite; they will not grow on new commits.
+
+### F-43: Core and MapLibre npm packs include tests and stories
+
+- **Severity:** Medium
+- **Area:** `package.json`, `packages/maplibre/package.json`
+- **Contract:** Published files are the runtime surface. `@rowan-ui/icons` already uses an explicit allowlist and packs zero tests.
+- **Evidence:** `"files": ["src", "types", …]` publishes 83 `*.test.js` files, 76 `*.stories.js` files, and `src/storybook/event-script.js`. MapLibre likewise packs tests and stories. `sideEffects` points only at registration modules, so consumers are not auto-executing tests.
+- **Impact:** The tarball is larger and ships test/Storybook harness code to npm. Consumers can import `@rowan-ui/core/src/text-field/text-field.test.js`.
+- **Fix:** Core and MapLibre `files` allow runtime `js`/`css`/`d.ts` and negate `*.test.js`, `*.stories.js`, and `src/storybook/`. `.npmignore` matches. `test:package` fails if a packed tarball still contains those paths.
+- **Test:** `npm pack --dry-run` lists no `*.test.js` or `*.stories.js`. `npm run test:package` passes.
+
+**Resolution (fixed).** Runtime `src/` and `types/` still ship. Tests, stories, and the Storybook event helper do not.
+
+### F-44: `useRowanElement` never binds listeners if the host mounts late
+
+- **Severity:** Medium
+- **Area:** `src/react/index.js`
+- **Contract:** F-03 fixed re-assignment on every render. Listeners must still attach when the host appears after the first effect, which is the Next.js client-boundary pattern the README describes.
+- **Evidence:** The events effect depends on `[ref, eventTypes]` and returns early when `ref.current` is null (`index.js:48`). Property assignment has no dependency array, so it retries every render; listeners do not. The documented README example always renders `<rowan-table ref={tableRef}>`, so the happy path works.
+- **Impact:** Conditional render, or a delayed custom-element mount, never attaches `rowan-select` (etc.). React 18 Strict Mode remount is fine because the effect re-runs.
+- **Fix:** A layout effect snapshots `ref.current` into state after each commit. The listener effect depends on that host, so it binds when the element appears. Properties still assign only on `Object.is` change (F-03). The public `ref` API is unchanged.
+- **Test:** Render the hook first without the host, then mount the host, and assert the listener fires. Existing rebind/unmount tests still pass.
+
+**Resolution (fixed).** Delayed and conditional hosts get listeners. Handler identity can still change without rebinding; events still fire only from the custom element, not from property assignment.
+
+### F-45: Context menu and dropdown do not dismiss on Tab
+
+- **Severity:** Medium
+- **Area:** `src/context-menu/context-menu.js`, `src/dropdown/dropdown.js`
+- **Contract:** APG menus either trap focus or dismiss on Tab. Dropdown with `aria-haspopup="menu"` is the menu-button pattern: open moves focus to the first item, item activate closes.
+- **Evidence:** Context-menu keydown has no Tab / Shift+Tab handler (`context-menu.js:281`). `:host { display: contents }` and a non-top-layer overlay leave the rest of the page interactive. Dropdown sets `aria-haspopup="menu"` (`dropdown.js:78`) but opening does not move focus into the menu, and activating a slotted `rowan-menu-item` does not close it.
+- **Impact:** Tab moves to the next page control while the menu stays open. Keyboard users can interact with the background.
+- **Fix:** Tab closes both surfaces without `preventDefault`, so focus can leave. Context menu skips restore-focus on Tab (unlike Escape). Dropdown follows menu-button: focus the first `rowan-menu-item` on open, close when a slotted menu emits `rowan-change` with an `item`.
+- **Test:** Open the menu, press Tab; it is closed and Tab is not cancelled. Activate a dropdown item; the dropdown is closed.
+
+**Resolution (fixed).** Tab dismisses the menu. Dropdown item activate closes the menu. Parent-driven `open` still does not emit `rowan-change`.
+
+### F-46: Popover is `role="dialog"` without focus move or top layer
+
+- **Severity:** Medium
+- **Area:** `src/popover/popover.js`, `src/popover/popover.css`, also dropdown and tooltip CSS
+- **Contract:** `role="dialog"` + `aria-haspopup="dialog"` is the non-modal dialog contract: focus moves into the dialog on open. Modals were moved to the top layer specifically to avoid clipping and z-index wars.
+- **Evidence:** Opening leaves focus on the trigger (`popover.js:101`). There is no document-level Escape listener, so Tabbing out leaves an open dialog that keyboard users cannot dismiss without clicking. CSS is `position: absolute; z-index: 20` (`popover.css:22`). Dropdown and tooltip have the same clipping/top-layer gap.
+- **Impact:** Keyboard users cannot dismiss after Tabbing out. Any `overflow: hidden` ancestor (table, dialog body, split pane) clips the panel. It cannot cover a native modal.
+- **Fix:** The panel uses `popover="manual"` and is positioned `fixed` from the trigger, so it joins the top layer and is not clipped. On open, focus moves to the first focusable in the panel (or the panel). Document Escape and host Escape close it and restore the trigger. `focusout` closes when focus leaves the popover. Keeps `role="dialog"`. Dropdown/tooltip clipping is unchanged.
+- **Test:** Open the popover; focus is the first panel control. Escape from that control closes it. A popover in an `overflow: hidden` box still paints below the clip edge.
+
+**Resolution (fixed).** Non-modal dialog contract: focus in, Escape/focusout out, top layer so overflow ancestors cannot clip it. Parent-driven `open` still does not emit `rowan-change`.
+
+### F-47: Nested dialog/tab/switch roles in the accessibility tree
+
+- **Severity:** Medium
+- **Area:** `src/dialog/dialog.js`, `src/tabs/tabs.js`, `src/tab/tab.js`, `src/switch/switch.js`
+- **Contract:** One role per widget. Native `<dialog>` already supplies `role="dialog"`.
+- **Evidence:** While open, each modal exposes three dialog objects: host `ElementInternals` (`role=dialog`, `aria-modal=true`), the native `<dialog>`, and the inner `.panel` with `role="dialog"` (`dialog.js:108`). Tests encode this (`dialog.test.js:286`). `rowan-tabs` / `rowan-tab` stamp `tablist` / `tab` on both host internals and inner nodes (`tabs.js:82`, `tab.js:109`). `rowan-switch` is host `role="switch"` wrapping a focused `<input type="checkbox">`.
+- **Impact:** Screen readers can announce nested dialogs, tablist-in-tablist, or checkbox instead of switch.
+- **Fix:** Native `<dialog>` is the only dialog: host `role`/`ariaModal` stay unset, `.panel` has no dialog role, and the overlay carries `aria-label` / `aria-labelledby`. Tablist/tab/tabpanel live on ElementInternals; inner wrappers are not those roles (tab’s inner button is `presentation`). Switch role and `aria-checked` are on the focused checkbox, not the host. Same overlay naming on drawer, command-palette, and row-details-panel.
+- **Test:** Open dialog/drawer/palette: host `role` is null, overlay is named, panel has no dialog role. Tabs: one tablist, tab host `role=tab`, inner button `presentation`. Switch: host `role` null, input `role=switch`.
+
+**Resolution (fixed).** One widget, one role. Author `role` on the host is still not overwritten.
+
+### F-48: External `<label for>` added after connect is never observed
+
+- **Severity:** Medium
+- **Area:** `src/lib/base-element.js`
+- **Contract:** F-10: an external `<label for>` names the control. That must still work if the label or host `id` appears after `connectedCallback`.
+- **Evidence:** `#observeExternalLabels` snapshots `internals.labels` at connect and returns immediately when the list is empty (`base-element.js:477`). Labels added later never get a `MutationObserver`. Reconnect after the label exists does recover. Static `<label for>` + host `id` present at connect still works.
+- **Impact:** Dynamic forms that attach labels after mount keep a stale `externalLabelText` until some unrelated render.
+- **Fix:** FACE hosts observe their own `id` and the root’s `label[for]` insertions/changes. Matching labels get a text `MutationObserver` so later edits still `requestRender()`. Unrelated `for` mutations are ignored.
+- **Test:** Append `<label for>` after connect, then change its text; `externalLabelText` and the inner `aria-label` update. Assigning `id` after a matching label exists also adopts it. F-10 static markup still works.
+
+**Resolution (fixed).** Late labels and late host ids name the control. `label`/`for` still cannot cross a shadow boundary.
+
+### F-49: Table link cells always `preventDefault` so they never navigate
+
+- **Severity:** Medium
+- **Area:** `src/table/table.js`
+- **Contract:** A link cell renders a real `<a href>` after `sanitizeNavigationHref`. If it is a link, unmodified click and Cmd/Ctrl-click should navigate unless the consumer cancels.
+- **Evidence:** Tbody click always `preventDefault()`s and emits `rowan-cell-action` (`table.js:1195`). Without a listener, the link does nothing. The default is already cancelled before the event is re-emitted, so consumers cannot restore navigation from `nativeEvent`. Protocol filtering itself is correct.
+- **Impact:** Table links are inert unless the app reimplements navigation. Cmd/Ctrl-click cannot open a new tab.
+- **Fix:** `rowan-cell-action` is cancelable. The native click is `preventDefault`ed only when a listener cancels that event. No listener (or a listener that does not cancel) lets the `<a href>` navigate, including modifier-clicks. `sanitizeNavigationHref` still rejects `javascript:` etc.
+- **Test:** Uncancelled link click has `defaultPrevented === false`. A cancelling listener blocks the native click. Existing action tests cancel the link action so they do not navigate the runner.
+
+**Resolution (fixed).** Links are links. Apps that want action-only behavior call `preventDefault()` on `rowan-cell-action`.
+
+### F-50: `rowan-page-change` is 0-based on table and 1-based on pagination
+
+- **Severity:** Medium
+- **Area:** `src/pagination/pagination.js`, `src/table/table.js`
+- **Contract:** A shared event name has one index space, documented on both JSDoc `@event` blocks.
+- **Evidence:** `rowan-table` emits 0-based `page.index` (test expects `{ index: 1, size: 2 }` after leaving page 0). `rowan-pagination` emits the 1-based `page` attribute (test expects `{ index: 1, size: null }` for the first page) (`pagination.js:69`).
+- **Impact:** A consumer wiring the two together skips a page or lands off-by-one.
+- **Fix:** Both emit `detail.index` (0-based) and `detail.page` (1-based). Pagination’s `page` attribute stays 1-based. Table’s `page.index` property stays 0-based. Wire with `table.page = { ...table.page, index: event.detail.index }`.
+- **Test:** Pagination first-page event is `{ index: 0, page: 1 }`. Table next-page is `{ index: 1, page: 2, size: 2 }`. Wiring pagination next into table lands on the second page.
+
+**Resolution (fixed).** Shared event, two fields, one convention. Parent-driven `page` still does not emit.
+
+### F-51: Confirm dialog initial focus lands on the × close button
+
+- **Severity:** Medium
+- **Area:** `src/confirm-dialog/confirm-dialog.js`, `src/dialog/dialog.js`
+- **Contract:** APG alertdialog puts initial focus on a meaningful action, usually the least destructive one.
+- **Evidence:** `rowan-confirm-dialog` reuses `rowan-dialog` unchanged. `#focusFirstElement` focuses the first focusable in the panel (`dialog.js:204`), which is the inner “×” close button (`dialog.js:72`). The × emits `rowan-close` rather than `rowan-cancel`.
+- **Impact:** Enter/Space on open may dismiss via Close instead of Confirm/Cancel. The least-destructive action is not first.
+- **Fix:** `rowan-dialog` has `alert`. Confirm sets it. The × is hidden, the native overlay is `role="alertdialog"`, and initial focus is the first control in the actions slot (Cancel). Escape still emits `rowan-close` via the inner dialog. Parent-driven `open` still does not emit confirm/cancel/close.
+- **Test:** Open confirm; inner close is hidden, overlay is `alertdialog`, and Cancel is focused.
+
+**Resolution (fixed).** Least-destructive action is first. The × is not a third dismiss path on confirm.
+
+### F-52: Table-selection MutationObserver runs on every virtualized scroll
+
+- **Severity:** Low
+- **Area:** `src/lib/table-selection.js`
+- **Contract:** Toolbar and bulk-actions-bar should track selection via `rowan-select`, not by watching the entire table shadow tree.
+- **Evidence:** `observeTableSelection` attaches a `MutationObserver` to the table’s entire `shadowRoot` (`childList` + `subtree`) in addition to `rowan-select` (`table-selection.js:60`). A virtualized table mutates that tree on every scroll. Separately, `observeTableAvailability` observes `document.documentElement` with `subtree: true` until a matching `id` appears.
+- **Impact:** Scroll of a large table is on the observer hot path. A missing `for-table` target observes the whole document until disconnect.
+- **Fix:** Drop the shadow-tree MutationObserver. Listen to `rowan-select` and wrap the table `selected` setter so parent-driven assignment still notifies without a DOM event. `selectAll` / `clearSelection` go through that setter. Availability still watches the document until the `for-table` id appears, then disconnects.
+- **Test:** Shadow `tbody` mutations do not notify. `selected = [...]` and `rowan-select` do. Toolbar still syncs parent-driven selection and `clearSelection`.
+
+**Resolution (fixed).** Virtualized scroll no longer sits on the selection observer. Parent-driven `selected` still updates toolbar/bulk bar without emitting `rowan-select`.
+
+### F-53: MapLibre model types are not exported; tests never load maplibre-gl
+
+- **Severity:** Low
+- **Area:** `packages/maplibre/src/index.d.ts`, `packages/maplibre/src/map/map.js`, `packages/maplibre/src/map/map.test.js`
+- **Contract:** Public types used in the README (`RowanMapLocation`, layers, attribution) are importable from the package entry. CI exercises the production provider path at least once.
+- **Evidence:** Public exports are only `"."` and `"./map"`. Model types live in `types/map/model.d.ts` but are not re-exported. Unit tests inject `FakeMap` and never execute `import("maplibre-gl")`, including error-during-load fallback (`map.js:542`).
+- **Impact:** `import type { RowanMapLocation } from "@rowan-ui/maplibre"` does not work. A noisy provider during first load can take down the canvas in production while tests stay green.
+- **Fix:** Re-export `RowanMapLocation`, `RowanMapLayer`, and attribution types from `src/index.d.ts` and `src/map/map.d.ts`. `#resolveProvider` accepts ESM named exports, `default.Map`, or the UMD `globalThis.maplibregl`. A browser test loads the real `maplibre-gl` dist, injects it, and uses a local background style.
+- **Test:** `type-tests/maplibre-exports.ts` imports `RowanMapLocation` from the package entry. `map.provider.test.js` constructs the map with the real module.
+
+**Resolution (fixed).** `import type { RowanMapLocation } from "@rowan-ui/maplibre"` typechecks. The adapter no longer assumes `module.default.Map` is the only browser shape.
+
+### F-54: `#didFirstRender` is written and never read
+
+- **Severity:** Low
+- **Area:** `src/lib/base-element.js`
+- **Contract:** Dead fields should not remain after the render rewrite.
+- **Evidence:** `#didFirstRender` is set after every successful render (`base-element.js:87`) and never read.
+- **Impact:** Noise only; no user-visible failure.
+- **Fix:** Remove the field and the assignment in `requestRender`.
+- **Test:** Grep shows no remaining references in `src/`.
+
+**Resolution (fixed).** Dead field removed. CEM regenerated.
+
+### F-55: `isTopmostOverlay` is unused after the native-dialog migration
+
+- **Severity:** Low
+- **Area:** `src/lib/overlay-stack.js`
+- **Contract:** The stack either owns topmost focus (F-13) or only reference-counts scroll lock. Comments and exports should match.
+- **Evidence:** `isTopmostOverlay` is exported and typed (`overlay-stack.js:24`) but unused after `showModal()`. The comment on line 23 (“Only the topmost overlay may contain focus…”) is stale. Lightweight overlays never call `pushOverlay`.
+- **Impact:** Dead API. If something started using it for nested Escape (F-34), it would ignore popover/dropdown/context-menu.
+- **Fix:** Keep the export. F-34 registered popover/dropdown as dismissible layers. Context-menu now `pushDismissible`s too and gates Escape/outside-click on `isTopmostOverlay`, with `noteDismissibleClose` so a parent dialog does not consume the same gesture. Comments describe modal vs dismissible layers.
+- **Test:** Grep shows dialog, popover, dropdown, and context-menu callers. Context-menu Escape inside a dialog closes only the menu.
+
+**Resolution (fixed).** One stack: modals lock scroll, dismissibles do not, `isTopmostOverlay` is the nested-dismiss source of truth.
+
+### F-56: Hand-written `base-element.d.ts` omits FACE members
+
+- **Severity:** Low
+- **Area:** `src/lib/base-element.d.ts`, `src/react/index.d.ts`
+- **Contract:** The source declaration next to `base-element.js` matches the generated `types/lib/base-element.d.ts` and the runtime class.
+- **Evidence:** The hand-written file omits `form`, `labels`, `validity`, `validationMessage`, `willValidate`, `setCustomValidity`, `applyValidity`, `formDisabledCallback`, `externalLabelText`, and `componentTokenPrefixes`. Generated types have them. `src/react/index.d.ts` imports this hand-written type to exclude `keyof BaseElement` from React property maps.
+- **Impact:** FACE getters can leak into `RowanElementProperties` as writable fields. Editors that resolve the source `.d.ts` show an incomplete class.
+- **Fix:** Add the missing FACE members to the colocated `.d.ts` with DOM types (`ValidityState`, `ValidityStateFlags`, `NodeListOf<HTMLLabelElement>`). `useRowanElement` still excludes `keyof BaseElement` from writable properties.
+- **Test:** `type-tests/base-element-react.ts` asserts `validity` and `setCustomValidity` exist on `BaseElement` and are omitted from `RowanElementProperties<RowanTextField>`.
+
+**Resolution (fixed).** Editors that resolve `src/lib/base-element.js` see the FACE surface. React property maps no longer treat validity APIs as writable element props.

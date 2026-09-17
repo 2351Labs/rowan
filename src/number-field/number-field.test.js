@@ -20,6 +20,60 @@ describe("rowan-number-field", () => {
     expect(element.value).to.equal("18");
   });
 
+  it("accepts scientific notation and leading-decimal values", async () => {
+    const element = document.createElement("rowan-number-field");
+    document.body.append(element);
+    await nextMicrotask();
+
+    element.value = "1e2";
+    expect(element.value).to.equal("100");
+    expect(element.getAttribute("value")).to.equal("100");
+
+    element.value = ".5";
+    expect(element.value).to.equal("0.5");
+  });
+
+  it("does not write the committed value into a focused inner input", async () => {
+    const element = document.createElement("rowan-number-field");
+    element.value = "12";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('input[type="number"]');
+    input.focus();
+    input.value = "12";
+    element.value = "";
+    await nextMicrotask();
+
+    expect(input.value).to.equal("12");
+
+    input.blur();
+    await nextMicrotask();
+
+    expect(input.value).to.equal("");
+  });
+
+  it("keeps the committed value while the inner input reports badInput", async () => {
+    const element = document.createElement("rowan-number-field");
+    element.value = "8";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('input[type="number"]');
+    Object.defineProperty(input, "validity", {
+      configurable: true,
+      get() {
+        return { badInput: true };
+      },
+    });
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+
+    expect(element.value).to.equal("8");
+    expect(element.internals.validity.badInput).to.equal(true);
+    expect(element.checkValidity()).to.equal(false);
+  });
+
   it("emits rowan-change when user commits value", async () => {
     const element = document.createElement("rowan-number-field");
     document.body.append(element);

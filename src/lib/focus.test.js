@@ -38,6 +38,26 @@ describe("focus utilities", () => {
     expect(isFocusable(inertChild)).to.equal(false);
   });
 
+  it("skips FACE hosts and native controls disabled by a fieldset", async () => {
+    const host = document.createElement("div");
+    const fieldset = document.createElement("fieldset");
+    fieldset.disabled = true;
+    const field = document.createElement("rowan-text-field");
+    const native = document.createElement("input");
+    const enabled = document.createElement("rowan-text-field");
+    fieldset.append(field, native);
+    host.append(fieldset, enabled);
+    document.body.append(host);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(field.matches(":disabled")).to.equal(true);
+    expect(isFocusable(field)).to.equal(false);
+    expect(isFocusable(native)).to.equal(false);
+    expect(isFocusable(enabled)).to.equal(true);
+    expect(collectFocusableElements(host)).to.deep.equal([enabled]);
+  });
+
   it("collects slotted focusables in document order", async () => {
     const host = document.createElement("div");
     const nativeButton = document.createElement("button");

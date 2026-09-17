@@ -1,6 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { partitionAcceptedFiles } from "../lib/file-accept.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 import "../dropzone/dropzone.js";
 import "../file-item/file-item.js";
@@ -72,30 +74,65 @@ function normalizeRecord(record) {
 /**
  * File upload composer with dropzone and queue item rendering.
  * @tag rowan-file-upload
+ * @attr {string} name
  * @attr {string} label
  * @attr {string} accept
  * @attr {boolean} multiple
  * @attr {boolean} disabled
+ * @attr {boolean} required
  * @attr {number} max-files
  * @csspart upload
  * @csspart dropzone
  * @csspart file-list
  * @csspart empty
- * @event rowan-files-add - Fired when files are accepted into the queue
+ * @event rowan-files-add - Fired when files pass accept and max-files and are queued
  * @event rowan-file-remove - Fired when a queued file is removed
  * @event rowan-file-retry - Fired when retry is requested for a failed file
  * @event rowan-file-cancel - Fired when cancel is requested for an uploading file
  */
 export class RowanFileUpload extends BaseElement {
+  static formAssociated = true;
   static useElementInternals = true;
   static styleUrl = new URL("./file-upload.css", import.meta.url).href;
-  static observedAttributes = ["label", "accept", "multiple", "disabled", "max-files"];
-  static upgradeProperties = ["label", "accept", "multiple", "disabled", "maxFiles", "files"];
+  static observedAttributes = [
+    "name",
+    "label",
+    "accept",
+    "multiple",
+    "disabled",
+    "required",
+    "max-files",
+  ];
+  static upgradeProperties = [
+    "name",
+    "label",
+    "accept",
+    "multiple",
+    "disabled",
+    "required",
+    "maxFiles",
+    "files",
+  ];
 
   #dropzone = null;
   #list = null;
   #empty = null;
   #files = [];
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.#syncFormValue();
+    this.#syncValidity();
+  }
+
+  get name() {
+    return this.readString("name", "");
+  }
+
+  set name(value) {
+    this.reflectString("name", value);
+    this.#syncFormValue();
+  }
 
   get label() {
     return this.readString("label", "");
@@ -131,6 +168,15 @@ export class RowanFileUpload extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  get required() {
+    return this.readBoolean("required");
+  }
+
+  set required(value) {
+    this.reflectBoolean("required", Boolean(value));
+    this.#syncValidity();
+  }
+
   get maxFiles() {
     return normalizeMaxFiles(this.readNumber("max-files", 0));
   }
@@ -147,7 +193,34 @@ export class RowanFileUpload extends BaseElement {
   set files(value) {
     const items = Array.isArray(value) ? value : [];
     this.#files = items.map((item) => normalizeRecord(item));
+    this.#syncFormValue();
+    this.#syncValidity();
     this.requestRender();
+  }
+
+  formResetCallback() {
+    this.#files = [];
+    this.#syncFormValue();
+    this.#syncValidity();
+    this.requestRender();
+  }
+
+  formStateRestoreCallback() {}
+
+  checkValidity() {
+    if (this.internals && typeof this.internals.checkValidity === "function") {
+      return this.internals.checkValidity();
+    }
+
+    return true;
+  }
+
+  reportValidity() {
+    if (this.internals && typeof this.internals.reportValidity === "function") {
+      return this.internals.reportValidity();
+    }
+
+    return true;
   }
 
   render() {
@@ -196,6 +269,8 @@ export class RowanFileUpload extends BaseElement {
     this.#dropzone.disabled = this.disabled;
 
     this.#renderFileList();
+    this.#syncFormValue();
+    this.#syncValidity();
     this.#applyDefaultA11y();
   }
 
@@ -225,10 +300,10 @@ export class RowanFileUpload extends BaseElement {
   }
 
   #acceptFiles(files, source) {
-    const incoming = Array.isArray(files) ? files.filter((file) => file instanceof File) : [];
-    if (incoming.length === 0) return;
+    const { accepted: matching } = partitionAcceptedFiles(files, this.accept);
+    if (matching.length === 0) return;
 
-    const candidates = this.multiple ? incoming : incoming.slice(0, 1);
+    const candidates = this.multiple ? matching : matching.slice(0, 1);
     const maxFiles = this.maxFiles;
     const remaining =
       maxFiles > 0 ? Math.max(0, maxFiles - this.#files.length) : Number.POSITIVE_INFINITY;
@@ -238,6 +313,8 @@ export class RowanFileUpload extends BaseElement {
 
     const normalized = accepted.map((file) => normalizeFromFile(file));
     this.#files = [...this.#files, ...normalized];
+    this.#syncFormValue();
+    this.#syncValidity();
     this.requestRender();
 
     emit(this, "rowan-files-add", {
@@ -269,6 +346,8 @@ export class RowanFileUpload extends BaseElement {
 
     const [removed] = this.#files.splice(index, 1);
     this.#files = [...this.#files];
+    this.#syncFormValue();
+    this.#syncValidity();
     this.requestRender();
 
     emit(this, "rowan-file-remove", {
@@ -343,6 +422,43 @@ export class RowanFileUpload extends BaseElement {
     if (!this.hasAttribute("aria-disabled") && "ariaDisabled" in this.internals) {
       this.internals.ariaDisabled = this.disabled ? "true" : "false";
     }
+
+    if (!this.hasAttribute("aria-required") && "ariaRequired" in this.internals) {
+      this.internals.ariaRequired = this.required ? "true" : "false";
+    }
+
+    if (!this.hasAttribute("aria-invalid") && "ariaInvalid" in this.internals) {
+      this.internals.ariaInvalid =
+        this.required && this.#submittedFiles().length === 0 ? "true" : "false";
+    }
+  }
+
+  #submittedFiles() {
+    return this.#files.map((record) => record.file).filter((file) => file instanceof File);
+  }
+
+  #syncFormValue() {
+    if (!this.internals || typeof this.internals.setFormValue !== "function") return;
+
+    const name = this.name;
+    const files = this.#submittedFiles();
+    if (!name || files.length === 0) {
+      this.internals.setFormValue(null);
+      return;
+    }
+
+    const data = new FormData();
+    for (const file of files) data.append(name, file);
+    this.internals.setFormValue(data);
+  }
+
+  #syncValidity() {
+    if (this.required && this.#submittedFiles().length === 0) {
+      this.applyValidity({ valueMissing: true }, validityMessage("valueMissing.file"));
+      return;
+    }
+
+    this.applyValidity({});
   }
 }
 

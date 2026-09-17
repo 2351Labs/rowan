@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let timePickerId = 0;
 
@@ -227,21 +228,31 @@ export class RowanTimePicker extends BaseElement {
       this.#fallbackLabel = this.renderRoot.querySelector("label");
 
       this.listen(this.#input, "input", () => {
+        if (this.#input.validity.badInput) {
+          this.#syncValidity();
+          this.#applyDefaultA11y();
+          return;
+        }
+
         this.value = this.#input.value;
       });
 
       this.listen(this.#input, "change", () => {
-        this.value = this.#input.value;
+        this.value = this.#input.validity.badInput ? "" : this.#input.value;
 
         emit(this, "rowan-change", {
           value: this.value,
         });
       });
+
+      this.listen(this.#input, "blur", () => {
+        this.requestRender();
+      });
     }
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
-    this.#input.value = this.value;
+    this.#writeInputValue();
     this.#input.min = this.min;
     this.#input.max = this.max;
     this.#input.step = String(this.step);
@@ -264,6 +275,14 @@ export class RowanTimePicker extends BaseElement {
     this.#applyDefaultA11y();
   }
 
+  #writeInputValue() {
+    if (!this.#input) return;
+    if (this.#input.matches(":focus") || this.#input.validity.badInput) return;
+    if (this.#input.value === this.value) return;
+
+    this.#input.value = this.value;
+  }
+
   #syncFormValue() {
     this.setFormValue(this.value);
   }
@@ -271,8 +290,14 @@ export class RowanTimePicker extends BaseElement {
   #syncValidity() {
     if (!this.#input) return;
 
+    if (this.#input.validity.badInput) {
+      this.setValidity({ badInput: true }, validityMessage("badInput.time"), this.#input);
+      this.#setAutoInvalid(true);
+      return;
+    }
+
     if (this.required && this.value.length === 0) {
-      this.setValidity({ valueMissing: true }, "Please select a time.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.time"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }
@@ -282,19 +307,23 @@ export class RowanTimePicker extends BaseElement {
     const maxSeconds = parseTimeToSeconds(this.max);
 
     if (valueSeconds != null && minSeconds != null && valueSeconds < minSeconds) {
-      this.setValidity({ rangeUnderflow: true }, "Time is before minimum.", this.#input);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.time"),
+        this.#input,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (valueSeconds != null && maxSeconds != null && valueSeconds > maxSeconds) {
-      this.setValidity({ rangeOverflow: true }, "Time is after maximum.", this.#input);
+      this.setValidity({ rangeOverflow: true }, validityMessage("rangeOverflow.time"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }
 
     if (valueSeconds != null && this.#hasStepMismatch(valueSeconds, minSeconds)) {
-      this.setValidity({ stepMismatch: true }, "Time does not align to step.", this.#input);
+      this.setValidity({ stepMismatch: true }, validityMessage("stepMismatch.time"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }

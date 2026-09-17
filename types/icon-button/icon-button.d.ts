@@ -22,7 +22,6 @@ export class RowanIconButton extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
-    static componentTokenPrefixes: string[];
     set label(value: string);
     get label(): string;
     set icon(value: string);
@@ -41,6 +40,7 @@ export class RowanIconButton extends BaseElement {
     set type(value: "button" | "submit" | "reset");
     /** @returns {"button" | "submit" | "reset"} */
     get type(): "button" | "submit" | "reset";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

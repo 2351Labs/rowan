@@ -160,23 +160,76 @@ describe("rowan-multi-select-combobox", () => {
 
     expect(combobox.selected).to.deep.equal([]);
     expect(changes).to.deep.equal([activeValue, activeValue]);
+    expect(combobox.open).to.equal(true);
   });
 
-  it("jumps to the last available option with End", async () => {
+  it("closes the popup on Tab so focus can leave", async () => {
+    const next = document.createElement("button");
+    next.textContent = "Next field";
+    const combobox = await renderCombobox();
+    document.body.append(next);
+
+    const input = combobox.shadowRoot.querySelector("input");
+    input.focus();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(combobox.open).to.equal(true);
+
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "Tab" }),
+    );
+    await nextMicrotask();
+    expect(combobox.open).to.equal(false);
+
+    next.focus();
+    await nextMicrotask();
+    expect(combobox.open).to.equal(false);
+    expect(document.activeElement).to.equal(next);
+  });
+
+  it("closes the popup when focus leaves the host", async () => {
+    const next = document.createElement("button");
+    next.textContent = "Next field";
+    const combobox = await renderCombobox();
+    document.body.append(next);
+
+    const input = combobox.shadowRoot.querySelector("input");
+    input.focus();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(combobox.open).to.equal(true);
+
+    next.focus();
+    await nextMicrotask();
+    expect(combobox.open).to.equal(false);
+    expect(document.activeElement).to.equal(next);
+  });
+
+  it("lets Home and End move the caret without changing the active option", async () => {
     const combobox = await renderCombobox();
     const input = combobox.shadowRoot.querySelector("input");
     input.focus();
     await nextMicrotask();
     await nextMicrotask();
 
-    input.dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "End" }),
-    );
+    input.value = "engine";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     await nextMicrotask();
+    await nextMicrotask();
+    input.setSelectionRange(6, 6);
+    const activeId = input.getAttribute("aria-activedescendant");
+
+    const home = new KeyboardEvent("keydown", {
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+      key: "Home",
+    });
+    input.dispatchEvent(home);
     await nextMicrotask();
 
-    const options = [...combobox.shadowRoot.querySelectorAll("rowan-option")];
-    const lastAvailable = options.filter((option) => !option.disabled).at(-1);
-    expect(input.getAttribute("aria-activedescendant")).to.equal(lastAvailable.id);
+    expect(home.defaultPrevented).to.equal(false);
+    expect(input.selectionStart).to.equal(6);
+    expect(input.getAttribute("aria-activedescendant")).to.equal(activeId);
   });
 });

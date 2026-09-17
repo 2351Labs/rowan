@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const SIZES = new Set(["sm", "md", "lg"]);
@@ -42,26 +43,36 @@ export class RowanStatusIndicator extends BaseElement {
 
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
   get tone() {
-    const value = this.readString("tone", "neutral");
-    return TONES.has(value) ? value : "neutral";
+    return normalizeEnum(this.readString("tone", "neutral"), TONES, "neutral");
   }
 
   /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
   set tone(value) {
-    const nextTone = TONES.has(value) ? value : "neutral";
-    this.reflectString("tone", nextTone === "neutral" ? null : nextTone);
+    reflectEnum(this, "tone", value, TONES, "neutral");
   }
 
   /** @returns {"sm" | "md" | "lg"} */
   get size() {
-    const value = this.readString("size", "md");
-    return SIZES.has(value) ? value : "md";
+    return normalizeEnum(this.readString("size", "md"), SIZES, "md");
   }
 
   /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
-    const nextSize = SIZES.has(value) ? value : "md";
-    this.reflectString("size", nextSize === "md" ? null : nextSize);
+    reflectEnum(this, "size", value, SIZES, "md");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "tone" && rewriteEnumAttribute(this, name, newValue, TONES, "neutral")) {
+      return;
+    }
+
+    if (name === "size" && rewriteEnumAttribute(this, name, newValue, SIZES, "md")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   get label() {

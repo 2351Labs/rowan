@@ -88,7 +88,9 @@ describe("rowan-switch", () => {
     document.body.append(el);
     await nextMicrotask();
 
-    expect(el.internals.role).to.equal("switch");
+    expect(el.internals.role).to.equal(null);
+    expect(el.shadowRoot.querySelector("input").getAttribute("role")).to.equal("switch");
+    expect(el.shadowRoot.querySelector("input").getAttribute("aria-checked")).to.equal("false");
     expect(el.internals.ariaChecked).to.equal("false");
     expect(el.internals.ariaRequired).to.equal("true");
     expect(el.internals.ariaInvalid).to.equal("true");

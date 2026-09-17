@@ -1,9 +1,12 @@
 {
   "name": "@rowan-ui/maplibre",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "description": "Optional MapLibre integration for Rowan Web Components.",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "customElements": "custom-elements.json",
   "types": "./src/index.d.ts",
   "main": "./src/index.js",
@@ -19,7 +22,11 @@
     }
   },
   "files": [
-    "src",
+    "src/**/*.js",
+    "src/**/*.css",
+    "src/**/*.d.ts",
+    "!src/**/*.test.js",
+    "!src/**/*.stories.js",
     "types",
     "custom-elements.json",
     "README.md",
@@ -30,7 +37,7 @@
     "./src/map/map.js"
   ],
   "peerDependencies": {
-    "@rowan-ui/core": "^0.1.0",
+    "@rowan-ui/core": "^0.5.0",
     "maplibre-gl": "^5.0.0"
   },
   "devDependencies": {

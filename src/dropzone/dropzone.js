@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { partitionAcceptedFiles } from "../lib/file-accept.js";
 
 let dropzoneId = 0;
 
@@ -23,7 +24,7 @@ function normalizeFileArray(files) {
  * @csspart label
  * @csspart description
  * @csspart input
- * @event rowan-files-add - Fired when files are selected by picker or drop
+ * @event rowan-files-add - Fired when files are selected by picker or drop. `detail.files` are accept matches; `detail.rejected` failed `accept`.
  */
 export class RowanDropzone extends BaseElement {
   static useElementInternals = true;
@@ -205,12 +206,14 @@ export class RowanDropzone extends BaseElement {
   }
 
   #emitFiles(files, source) {
-    if (!Array.isArray(files) || files.length === 0) return;
+    const { accepted, rejected } = partitionAcceptedFiles(files, this.accept);
+    const acceptedFiles = this.multiple ? accepted : accepted.slice(0, 1);
 
-    const acceptedFiles = this.multiple ? files : files.slice(0, 1);
+    if (acceptedFiles.length === 0 && rejected.length === 0) return;
 
     emit(this, "rowan-files-add", {
       files: acceptedFiles,
+      rejected,
       source,
     });
   }

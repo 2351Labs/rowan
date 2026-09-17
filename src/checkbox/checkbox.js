@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 /**
  * Checkbox control with form association.
@@ -214,7 +215,11 @@ export class RowanCheckbox extends BaseElement {
     if (!this.#input) return;
 
     if (this.required && !this.checked) {
-      this.setValidity({ valueMissing: true }, "Please check this box.", this.#input);
+      this.setValidity(
+        { valueMissing: true },
+        validityMessage("valueMissing.checkbox"),
+        this.#input,
+      );
       return;
     }
 
@@ -228,7 +233,7 @@ export class RowanCheckbox extends BaseElement {
     const invalidState = this.required && !this.checked ? "true" : "false";
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "checkbox";
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-checked") && "ariaChecked" in this.internals) {

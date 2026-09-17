@@ -1,15 +1,13 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let numberFieldId = 0;
-
-const NUMBER_VALUE_PATTERN = /^[+-]?(?:\d+|\d*\.\d+)$/;
 
 function normalizeNumberString(value) {
   const next = String(value ?? "").trim();
   if (!next) return "";
-  if (!NUMBER_VALUE_PATTERN.test(next)) return "";
 
   const numeric = Number(next);
   if (!Number.isFinite(numeric)) return "";
@@ -279,15 +277,25 @@ export class RowanNumberField extends BaseElement {
       this.#incrementButton = this.renderRoot.querySelector('[data-action="increment"]');
 
       this.listen(this.#input, "input", () => {
+        if (this.#input.validity.badInput) {
+          this.#syncValidity();
+          this.#applyDefaultA11y();
+          return;
+        }
+
         this.value = this.#input.value;
       });
 
       this.listen(this.#input, "change", () => {
-        this.value = this.#input.value;
+        this.value = this.#input.validity.badInput ? "" : this.#input.value;
 
         emit(this, "rowan-change", {
           value: this.value,
         });
+      });
+
+      this.listen(this.#input, "blur", () => {
+        this.requestRender();
       });
 
       this.listen(this.#decrementButton, "click", () => {
@@ -301,7 +309,7 @@ export class RowanNumberField extends BaseElement {
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
-    this.#input.value = this.value;
+    this.#writeInputValue();
     this.#input.placeholder = this.placeholder;
     this.#input.min = this.min;
     this.#input.max = this.max;
@@ -326,6 +334,14 @@ export class RowanNumberField extends BaseElement {
     this.#syncFormValue();
     this.#syncValidity();
     this.#applyDefaultA11y();
+  }
+
+  #writeInputValue() {
+    if (!this.#input) return;
+    if (this.#input.matches(":focus") || this.#input.validity.badInput) return;
+    if (this.#input.value === this.value) return;
+
+    this.#input.value = this.value;
   }
 
   #valueNumber() {
@@ -381,8 +397,14 @@ export class RowanNumberField extends BaseElement {
   #syncValidity() {
     if (!this.#input) return;
 
+    if (this.#input.validity.badInput) {
+      this.setValidity({ badInput: true }, validityMessage("badInput.number"), this.#input);
+      this.#setAutoInvalid(true);
+      return;
+    }
+
     if (this.required && this.value.length === 0) {
-      this.setValidity({ valueMissing: true }, "Please enter a number.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.number"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }
@@ -392,25 +414,33 @@ export class RowanNumberField extends BaseElement {
     const maxNumber = this.#maxNumber();
 
     if (this.value.length > 0 && valueNumber == null) {
-      this.setValidity({ badInput: true }, "Enter a valid number.", this.#input);
+      this.setValidity({ badInput: true }, validityMessage("badInput.number"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }
 
     if (valueNumber != null && minNumber != null && valueNumber < minNumber) {
-      this.setValidity({ rangeUnderflow: true }, "Value is below minimum.", this.#input);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.number"),
+        this.#input,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (valueNumber != null && maxNumber != null && valueNumber > maxNumber) {
-      this.setValidity({ rangeOverflow: true }, "Value is above maximum.", this.#input);
+      this.setValidity(
+        { rangeOverflow: true },
+        validityMessage("rangeOverflow.number"),
+        this.#input,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (valueNumber != null && this.#hasStepMismatch(valueNumber, minNumber)) {
-      this.setValidity({ stepMismatch: true }, "Value does not align to step.", this.#input);
+      this.setValidity({ stepMismatch: true }, validityMessage("stepMismatch.number"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }

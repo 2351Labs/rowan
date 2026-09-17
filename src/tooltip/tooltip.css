@@ -13,18 +13,22 @@
 
 .tooltip {
   background: var(--rowan-tooltip-bg, var(--rowan-color-fg));
+  border: none;
   border-radius: var(--rowan-radius-sm);
   color: var(--rowan-tooltip-fg, var(--rowan-color-bg));
   font-family: var(--rowan-font-family);
   font-size: 0.75rem;
-  left: 50%;
+  height: fit-content;
+  inset: unset;
   line-height: 1.2;
+  margin: 0;
   max-width: 16rem;
+  overflow: visible;
   padding: 0.3rem 0.45rem;
   pointer-events: none;
-  position: absolute;
-  top: calc(100% + 0.35rem);
+  position: fixed;
   transform: translateX(-50%);
   white-space: nowrap;
+  width: max-content;
   z-index: 10;
 }

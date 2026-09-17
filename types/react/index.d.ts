@@ -6,6 +6,7 @@
  * Properties are assigned only when their value changes, so the object and array
  * APIs Rowan exposes as property-only keep their identity across renders.
  * Listeners bind once per event type and dispatch to the latest handler.
+ * If the host is missing on the first effect, listeners attach when it mounts.
  *
  * @param {{ current: HTMLElement | null }} ref
  * @param {{ properties?: Record<string, unknown>, events?: Record<string, EventListener | undefined> }} [options]

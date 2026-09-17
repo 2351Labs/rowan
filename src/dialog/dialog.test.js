@@ -2,6 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import "./dialog.js";
 import "../text-field/text-field.js";
 import "../button/button.js";
+import { collectFocusableElements } from "../lib/focus.js";
 
 const wait = () => Promise.resolve();
 
@@ -54,6 +55,30 @@ describe("rowan-dialog focus containment", () => {
     await settle();
 
     expect(document.activeElement).to.equal(field);
+  });
+
+  it("does not focus a fieldset-disabled control when opening", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const fieldset = document.createElement("fieldset");
+    fieldset.disabled = true;
+    const field = document.createElement("rowan-text-field");
+    field.label = "Disabled";
+    const action = document.createElement("button");
+    action.textContent = "Continue";
+    fieldset.append(field);
+    dialog.append(fieldset, action);
+    document.body.append(dialog);
+    await settle();
+
+    dialog.open = true;
+    await settle();
+    await settle();
+
+    const panel = dialog.shadowRoot.querySelector(".panel");
+    const focusable = collectFocusableElements(panel);
+    expect(focusable.includes(field)).to.equal(false);
+    expect(document.activeElement === field).to.equal(false);
+    expect(field.contains(document.activeElement)).to.equal(false);
   });
 
   it("lets only the topmost dialog recapture focus", async () => {
@@ -283,15 +308,15 @@ describe("rowan-dialog", () => {
     dialog.open = true;
     await wait();
 
+    const overlay = dialog.shadowRoot.querySelector("dialog");
     const panel = dialog.shadowRoot.querySelector(".panel");
     expect(dialog.inert).to.equal(false);
-    expect(dialog.internals.role).to.equal("dialog");
-    expect(dialog.internals.ariaModal).to.equal("true");
+    expect(dialog.internals.role).to.equal(null);
+    expect(dialog.internals.ariaModal).to.equal(null);
     expect(dialog.internals.ariaHidden).to.equal("false");
-    expect(dialog.internals.ariaLabel).to.equal("Edit profile");
-    expect(panel.getAttribute("role")).to.equal("dialog");
-    expect(panel.getAttribute("aria-modal")).to.equal("true");
-    expect(panel.getAttribute("aria-label")).to.equal("Edit profile");
+    expect(overlay.getAttribute("aria-label")).to.equal("Edit profile");
+    expect(panel.hasAttribute("role")).to.equal(false);
+    expect(panel.hasAttribute("aria-modal")).to.equal(false);
   });
 
   it("traps Tab focus within the panel", async () => {

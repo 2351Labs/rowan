@@ -29,6 +29,19 @@ function packWorkspace(workspace) {
   return join(packageDirectory, packed.filename);
 }
 
+function assertPackExcludesTestsAndStories(archivePath, packageName) {
+  const listing = execFileSync("tar", ["-tzf", archivePath], { encoding: "utf8" });
+  const banned = listing
+    .split("\n")
+    .filter((entry) => /\.(?:test|stories)\.js$/.test(entry) || /\/storybook\//.test(entry));
+
+  if (banned.length > 0) {
+    throw new Error(
+      `${packageName} pack includes test or Storybook files:\n${banned.join("\n")}`,
+    );
+  }
+}
+
 function extractPackage(archivePath, packageName) {
   const extractionDirectory = mkdtempSync(join(temporaryDirectory, "extract-"));
   const destination = join(consumerDirectory, "node_modules", ...packageName.split("/"));
@@ -102,6 +115,8 @@ async function main() {
 
   const coreArchive = packWorkspace();
   const maplibreArchive = packWorkspace("@rowan-ui/maplibre");
+  assertPackExcludesTestsAndStories(coreArchive, "@rowan-ui/core");
+  assertPackExcludesTestsAndStories(maplibreArchive, "@rowan-ui/maplibre");
   extractPackage(coreArchive, "@rowan-ui/core");
   extractPackage(maplibreArchive, "@rowan-ui/maplibre");
 

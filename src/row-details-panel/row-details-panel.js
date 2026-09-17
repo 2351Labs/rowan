@@ -170,6 +170,11 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#controlsController?.abort();
     this.#controlsController = null;
 
+    if (this.#isOpen) {
+      removeOverlay(this);
+      this.#isOpen = false;
+    }
+
     // A modal removed while open would stay in the top layer and block the page.
     if (this.#overlay?.open) {
       this.#overlay.close();
@@ -555,6 +560,8 @@ export class RowanRowDetailsPanel extends BaseElement {
   }
 
   #syncOpenState() {
+    this.inert = !this.open;
+
     // showModal() moves focus, so capture the restore target before reconciling.
     if (this.open && !this.#isOpen) {
       this.#lastFocused =
@@ -603,18 +610,28 @@ export class RowanRowDetailsPanel extends BaseElement {
   }
 
   #applyDefaultA11y() {
+    if (this.open) {
+      this.#overlay.setAttribute("aria-label", this.label);
+    } else {
+      this.#overlay.removeAttribute("aria-label");
+    }
+
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "dialog";
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
-      this.internals.ariaModal = "true";
+      this.internals.ariaModal = null;
+    }
+
+    if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
+      this.internals.ariaHidden = this.open ? "false" : "true";
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = this.label;
+      this.internals.ariaLabel = null;
     }
   }
 }

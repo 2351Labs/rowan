@@ -2,12 +2,18 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
-import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+import {
+  dismissConsumedThisTurn,
+  isTopmostOverlay,
+  pushOverlay,
+  removeOverlay,
+} from "../lib/overlay-stack.js";
 
 /**
  * Modal dialog surface.
  * @tag rowan-dialog
  * @attr {boolean} open
+ * @attr {boolean} alert
  * @slot title
  * @slot - Content
  * @slot actions
@@ -22,13 +28,14 @@ export class RowanDialog extends BaseElement {
   static styleUrl = new URL("./dialog.css", import.meta.url).href;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["open"];
-  static upgradeProperties = ["open"];
+  static observedAttributes = ["open", "alert"];
+  static upgradeProperties = ["open", "alert"];
 
   #overlay = null;
   #panel = null;
   #closeButton = null;
   #titleSlot = null;
+  #actionsSlot = null;
   #lastFocused = null;
   #isOpen = false;
 
@@ -52,6 +59,14 @@ export class RowanDialog extends BaseElement {
 
   set open(value) {
     this.reflectBoolean("open", Boolean(value));
+  }
+
+  get alert() {
+    return this.readBoolean("alert");
+  }
+
+  set alert(value) {
+    this.reflectBoolean("alert", Boolean(value));
   }
 
   show() {
@@ -81,6 +96,7 @@ export class RowanDialog extends BaseElement {
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#closeButton = this.renderRoot.querySelector(".close");
       this.#titleSlot = this.renderRoot.querySelector('[part="title"] slot');
+      this.#actionsSlot = this.renderRoot.querySelector('[part="actions"] slot');
 
       this.listen(this.#titleSlot, "slotchange", () => this.requestRender());
 
@@ -89,34 +105,46 @@ export class RowanDialog extends BaseElement {
       });
 
       this.listen(this.#overlay, "click", (event) => {
-        if (event.target === this.#overlay) {
-          this.#requestUserClose("backdrop");
-        }
+        if (event.target !== this.#overlay) return;
+        if (!isTopmostOverlay(this) || dismissConsumedThisTurn()) return;
+        this.#requestUserClose("backdrop");
       });
 
       this.listen(this.#overlay, "cancel", (event) => {
         event.preventDefault();
+        if (!isTopmostOverlay(this) || dismissConsumedThisTurn()) return;
         this.#requestUserClose("escape");
       });
     }
 
+    this.#closeButton.hidden = this.alert;
     this.#applyDefaultA11y();
     this.#syncOpenState();
   }
 
   #applyDefaultA11y() {
-    this.#panel.setAttribute("role", "dialog");
-    this.#panel.setAttribute("aria-modal", "true");
-    this.#panel.setAttribute("aria-label", this.#titleText() || "Dialog");
+    this.#panel.removeAttribute("role");
+    this.#panel.removeAttribute("aria-modal");
+    this.#panel.removeAttribute("aria-label");
+
+    const title = this.#titleText() || "Dialog";
+    if (this.open) {
+      this.#overlay.setAttribute("aria-label", title);
+      if (this.alert) this.#overlay.setAttribute("role", "alertdialog");
+      else this.#overlay.removeAttribute("role");
+    } else {
+      this.#overlay.removeAttribute("aria-label");
+      this.#overlay.removeAttribute("role");
+    }
 
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = this.open ? "dialog" : null;
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
-      this.internals.ariaModal = this.open ? "true" : null;
+      this.internals.ariaModal = null;
     }
 
     if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
@@ -128,7 +156,7 @@ export class RowanDialog extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.open ? this.#titleText() || "Dialog" : null;
+      this.internals.ariaLabel = null;
     }
   }
 
@@ -202,13 +230,27 @@ export class RowanDialog extends BaseElement {
   }
 
   #focusFirstElement() {
-    const focusableElements = this.#collectFocusableElements();
-    const first = focusableElements[0] ?? this.#panel;
+    if (this.alert) {
+      const firstAction = this.#collectActionFocusableElements()[0];
+      if (firstAction) {
+        firstAction.focus();
+        return;
+      }
+    }
+
+    const first = this.#collectFocusableElements()[0] ?? this.#panel;
     first.focus();
   }
 
   #collectFocusableElements() {
     return collectFocusableElements(this.#panel);
+  }
+
+  #collectActionFocusableElements() {
+    const assigned = this.#actionsSlot?.assignedElements({ flatten: true }) ?? [];
+    return assigned.flatMap((element) =>
+      element instanceof HTMLElement ? collectFocusableElements(element) : [],
+    );
   }
 }
 

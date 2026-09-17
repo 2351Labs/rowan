@@ -71,8 +71,12 @@ export class RowanTabPanel extends BaseElement {
       this.internals.ariaHidden = this.active ? "false" : "true";
     }
 
-    this.#panel.setAttribute("role", "tabpanel");
-    this.#panel.setAttribute("aria-label", this.#tab?.textContent?.trim() || "Tab panel");
+    this.#panel.removeAttribute("role");
+    this.#panel.removeAttribute("aria-label");
+
+    if (this.internals && !this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
+      this.internals.ariaLabel = this.#tab?.textContent?.trim() || "Tab panel";
+    }
     this.#panel.hidden = !this.active;
     this.#syncInertState();
   }

@@ -24,6 +24,7 @@ export function isFocusable(element) {
   if (!(element instanceof HTMLElement)) return false;
   if (element.hasAttribute("disabled")) return false;
   if (element.getAttribute("aria-disabled") === "true") return false;
+  if (element.matches(":disabled")) return false;
   if (element.hidden) return false;
   if (typeof element.closest === "function" && element.closest("[inert]")) return false;
 

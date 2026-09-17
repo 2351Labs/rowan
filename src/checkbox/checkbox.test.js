@@ -91,7 +91,7 @@ describe("rowan-checkbox", () => {
     document.body.append(element);
     await nextMicrotask();
 
-    expect(element.internals.role).to.equal("checkbox");
+    expect(element.internals.role).to.equal(null);
     expect(element.internals.ariaChecked).to.equal("false");
     expect(element.internals.ariaRequired).to.equal("true");
     expect(element.internals.ariaInvalid).to.equal("true");

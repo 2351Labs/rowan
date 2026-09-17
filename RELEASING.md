@@ -86,7 +86,7 @@ present in the packed file set.
    npm publish --access public
    ```
 
-4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`.
+4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`. The tarball must not include `*.test.js`, `*.stories.js`, or `src/storybook/`.
 5. Publish release notes with the version tag and any browser-support changes.
 
 ## Browser Baseline

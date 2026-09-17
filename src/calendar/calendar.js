@@ -1,10 +1,11 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeCalendarDate } from "../lib/calendar-date.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let calendarId = 0;
 
-const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH_VALUE_PATTERN = /^\d{4}-\d{2}$/;
 const SELECTION_MODES = new Set(["single", "range"]);
 
@@ -13,24 +14,7 @@ function pad(number) {
 }
 
 function normalizeDateValue(value) {
-  const next = String(value ?? "").trim();
-  if (!DATE_VALUE_PATTERN.test(next)) return "";
-
-  const [yearText, monthText, dayText] = next.split("-");
-  const year = Number(yearText);
-  const month = Number(monthText);
-  const day = Number(dayText);
-
-  const parsed = new Date(Date.UTC(year, month - 1, day));
-  if (
-    parsed.getUTCFullYear() !== year ||
-    parsed.getUTCMonth() !== month - 1 ||
-    parsed.getUTCDate() !== day
-  ) {
-    return "";
-  }
-
-  return next;
+  return normalizeCalendarDate(value);
 }
 
 function normalizeMonthValue(value) {
@@ -847,41 +831,57 @@ export class RowanCalendar extends BaseElement {
 
     if (this.selectionMode === "range") {
       if (this.required && (!this.start || !this.end)) {
-        this.setValidity({ valueMissing: true }, "Please select a start and end date.", this.#grid);
+        this.setValidity(
+          { valueMissing: true },
+          validityMessage("valueMissing.dateRange"),
+          this.#grid,
+        );
         this.#setAutoInvalid(true);
         return;
       }
 
       if (this.start && this.min && this.start < this.min) {
-        this.setValidity({ rangeUnderflow: true }, "Start date is before minimum.", this.#grid);
+        this.setValidity(
+          { rangeUnderflow: true },
+          validityMessage("rangeUnderflow.dateStart"),
+          this.#grid,
+        );
         this.#setAutoInvalid(true);
         return;
       }
 
       if (this.end && this.min && this.end < this.min) {
-        this.setValidity({ rangeUnderflow: true }, "End date is before minimum.", this.#grid);
+        this.setValidity(
+          { rangeUnderflow: true },
+          validityMessage("rangeUnderflow.dateEnd"),
+          this.#grid,
+        );
         this.#setAutoInvalid(true);
         return;
       }
 
       if (this.start && this.max && this.start > this.max) {
-        this.setValidity({ rangeOverflow: true }, "Start date is after maximum.", this.#grid);
+        this.setValidity(
+          { rangeOverflow: true },
+          validityMessage("rangeOverflow.dateStart"),
+          this.#grid,
+        );
         this.#setAutoInvalid(true);
         return;
       }
 
       if (this.end && this.max && this.end > this.max) {
-        this.setValidity({ rangeOverflow: true }, "End date is after maximum.", this.#grid);
+        this.setValidity(
+          { rangeOverflow: true },
+          validityMessage("rangeOverflow.dateEnd"),
+          this.#grid,
+        );
         this.#setAutoInvalid(true);
         return;
       }
 
       if (this.start && this.end && this.start > this.end) {
-        this.setValidity(
-          { customError: true },
-          "End date must be on or after start date.",
-          this.#grid,
-        );
+        this.setValidity({ customError: true }, validityMessage("range.dateOrder"), this.#grid);
         this.#setAutoInvalid(true);
         return;
       }
@@ -892,19 +892,23 @@ export class RowanCalendar extends BaseElement {
     }
 
     if (this.required && this.value.length === 0) {
-      this.setValidity({ valueMissing: true }, "Please select a date.", this.#grid);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.date"), this.#grid);
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.value.length > 0 && this.min.length > 0 && this.value < this.min) {
-      this.setValidity({ rangeUnderflow: true }, "Date is before minimum.", this.#grid);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.date"),
+        this.#grid,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.value.length > 0 && this.max.length > 0 && this.value > this.max) {
-      this.setValidity({ rangeOverflow: true }, "Date is after maximum.", this.#grid);
+      this.setValidity({ rangeOverflow: true }, validityMessage("rangeOverflow.date"), this.#grid);
       this.#setAutoInvalid(true);
       return;
     }

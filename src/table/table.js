@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
 import { VirtualCollection } from "../lib/virtual-collection.js";
@@ -32,6 +33,8 @@ const CELL_TYPES = new Set([
 
 const SELECT_COLUMN_ID = "__select";
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
+const SELECTABLE_MODES = new Set(["none", "single", "multiple"]);
+const DENSITIES = new Set(["sm", "md", "lg"]);
 const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
 const DEFAULT_VIRTUAL_OVERSCAN = 3;
 
@@ -165,9 +168,9 @@ function isDevelopmentEnvironment() {
  * @event rowan-sort - Fired when a sortable header changes direction
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
- * @event rowan-cell-action - Fired when link or button cell activates
+ * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
- * @event rowan-page-change - Fired when pagination changes
+ * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
  */
 export class RowanTable extends BaseElement {
@@ -243,6 +246,17 @@ export class RowanTable extends BaseElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
+
+    if (
+      name === "selectable" &&
+      rewriteEnumAttribute(this, name, newValue, SELECTABLE_MODES, "none")
+    ) {
+      return;
+    }
+
+    if (name === "density" && rewriteEnumAttribute(this, name, newValue, DENSITIES, "md")) {
+      return;
+    }
 
     if (
       name === "selectable" ||
@@ -340,13 +354,12 @@ export class RowanTable extends BaseElement {
 
   /** @returns {RowanTableSelectable} */
   get selectable() {
-    return this.readString("selectable", "none");
+    return normalizeEnum(this.readString("selectable", "none"), SELECTABLE_MODES, "none");
   }
 
   /** @param {RowanTableSelectable} value */
   set selectable(value) {
-    const next = value === "single" || value === "multiple" ? value : "none";
-    this.reflectString("selectable", next === "none" ? null : next);
+    reflectEnum(this, "selectable", value, SELECTABLE_MODES, "none");
   }
 
   /** @returns {string[]} */
@@ -391,13 +404,12 @@ export class RowanTable extends BaseElement {
 
   /** @returns {RowanTableDensity} */
   get density() {
-    return this.readString("density", "md");
+    return normalizeEnum(this.readString("density", "md"), DENSITIES, "md");
   }
 
   /** @param {RowanTableDensity} value */
   set density(value) {
-    const next = value === "sm" || value === "lg" ? value : "md";
-    this.reflectString("density", next === "md" ? null : next);
+    reflectEnum(this, "density", value, DENSITIES, "md");
   }
 
   get stickyHeader() {
@@ -473,16 +485,12 @@ export class RowanTable extends BaseElement {
     if (this.selectable !== "multiple") return;
 
     const selectedIds = new Set(this.#visibleRows.map((entry) => entry.rowId));
-    this.#state.selected = this.#orderedSelection(selectedIds);
-    this.#selectionNeedsSync = true;
-    this.requestRender();
+    this.selected = this.#orderedSelection(selectedIds);
   }
 
   clearSelection() {
-    this.#state.selected = [];
-    this.#selectionNeedsSync = true;
     this.#selectionAnchorId = null;
-    this.requestRender();
+    this.selected = [];
   }
 
   /**
@@ -1192,11 +1200,11 @@ export class RowanTable extends BaseElement {
     const link = this.#findActionElement(event, "link");
     if (!link) return;
 
-    event.preventDefault();
     const context = this.#findCellContext(link);
-    if (context) {
-      this.#emitCellAction(context, "link", event);
-    }
+    if (!context) return;
+
+    const allowed = this.#emitCellAction(context, "link", event);
+    if (!allowed) event.preventDefault();
   }
 
   #handleBodyDoubleClick(event) {
@@ -1841,13 +1849,18 @@ export class RowanTable extends BaseElement {
   }
 
   #emitCellAction(context, action, nativeEvent) {
-    emit(this, "rowan-cell-action", {
-      rowId: context.rowId,
-      columnId: context.column.id,
-      action,
-      row: context.row,
-      nativeEvent,
-    });
+    return emit(
+      this,
+      "rowan-cell-action",
+      {
+        rowId: context.rowId,
+        columnId: context.column.id,
+        action,
+        row: context.row,
+        nativeEvent,
+      },
+      { cancelable: true },
+    );
   }
 
   #toggleRowSelection(entry, checked, options = {}) {
@@ -2093,6 +2106,7 @@ export class RowanTable extends BaseElement {
 
     emit(this, "rowan-page-change", {
       index,
+      page: index + 1,
       size: this.#state.page.size,
     });
   }

@@ -122,6 +122,32 @@ describe("rowan-file-upload", () => {
     expect(element.files[0].id).to.equal("f-1");
   });
 
+  it("rejects synthetic files that fail accept", async () => {
+    const element = document.createElement("rowan-file-upload");
+    element.accept = ".csv";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const dropzone = element.shadowRoot.querySelector("rowan-dropzone");
+    const csv = new File(["sheet"], "report.csv", { type: "text/csv" });
+    const exe = new File(["binary"], "setup.exe", { type: "application/x-msdownload" });
+
+    dropzone.dispatchEvent(
+      new CustomEvent("rowan-files-add", {
+        bubbles: true,
+        composed: true,
+        detail: {
+          files: [exe, csv],
+          source: "drop",
+        },
+      }),
+    );
+    await nextMicrotask();
+
+    expect(element.files).to.have.length(1);
+    expect(element.files[0].name).to.equal("report.csv");
+  });
+
   it("enforces max-files limit", async () => {
     const element = document.createElement("rowan-file-upload");
     element.maxFiles = 1;
@@ -161,5 +187,70 @@ describe("rowan-file-upload", () => {
     element.disabled = true;
     await nextMicrotask();
     expect(element.internals.ariaDisabled).to.equal("true");
+  });
+
+  it("participates in form submission and required validity", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-file-upload");
+    element.name = "docs";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.checkValidity()).to.equal(false);
+    expect(new FormData(form).getAll("docs")).to.deep.equal([]);
+
+    const dropzone = element.shadowRoot.querySelector("rowan-dropzone");
+    const fileA = new File(["alpha"], "alpha.csv", { type: "text/csv" });
+    dropzone.dispatchEvent(
+      new CustomEvent("rowan-files-add", {
+        bubbles: true,
+        composed: true,
+        detail: { files: [fileA], source: "picker" },
+      }),
+    );
+    await nextMicrotask();
+
+    expect(element.checkValidity()).to.equal(true);
+    const submitted = new FormData(form).getAll("docs");
+    expect(submitted).to.have.length(1);
+    expect(submitted[0]).to.be.instanceOf(File);
+    expect(submitted[0].name).to.equal("alpha.csv");
+  });
+
+  it("clears queued files on form reset without emitting", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-file-upload");
+    element.name = "docs";
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    const dropzone = element.shadowRoot.querySelector("rowan-dropzone");
+    dropzone.dispatchEvent(
+      new CustomEvent("rowan-files-add", {
+        bubbles: true,
+        composed: true,
+        detail: {
+          files: [new File(["alpha"], "alpha.csv", { type: "text/csv" })],
+          source: "picker",
+        },
+      }),
+    );
+    await nextMicrotask();
+    expect(element.files).to.have.length(1);
+
+    let removals = 0;
+    element.addEventListener("rowan-file-remove", () => {
+      removals += 1;
+    });
+
+    form.reset();
+    await nextMicrotask();
+
+    expect(element.files).to.deep.equal([]);
+    expect(removals).to.equal(0);
+    expect(new FormData(form).getAll("docs")).to.deep.equal([]);
   });
 });

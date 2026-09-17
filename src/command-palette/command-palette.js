@@ -378,18 +378,6 @@ export class RowanCommandPalette extends BaseElement {
       return;
     }
 
-    if (event.key === keys.HOME) {
-      event.preventDefault();
-      this.#moveActiveItemToBoundary("start");
-      return;
-    }
-
-    if (event.key === keys.END) {
-      event.preventDefault();
-      this.#moveActiveItemToBoundary("end");
-      return;
-    }
-
     if (event.key === keys.ENTER) {
       event.preventDefault();
       if (this.#activeItem) this.#activateItem(this.#activeItem);
@@ -404,14 +392,6 @@ export class RowanCommandPalette extends BaseElement {
     const nextIndex =
       index === -1 ? 0 : (index + direction + enabledItems.length) % enabledItems.length;
     this.#activeItem = enabledItems[nextIndex];
-    this.#syncCommandState();
-  }
-
-  #moveActiveItemToBoundary(boundary) {
-    const enabledItems = this.#matchingItems().filter((item) => !item.disabled);
-    if (enabledItems.length === 0) return;
-
-    this.#activeItem = boundary === "end" ? enabledItems[enabledItems.length - 1] : enabledItems[0];
     this.#syncCommandState();
   }
 
@@ -457,18 +437,24 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #applyDefaultA11y() {
-    this.#panel.setAttribute("role", "dialog");
-    this.#panel.setAttribute("aria-modal", "true");
-    this.#panel.setAttribute("aria-labelledby", this.#titleId);
+    this.#panel.removeAttribute("role");
+    this.#panel.removeAttribute("aria-modal");
+    this.#panel.removeAttribute("aria-labelledby");
+
+    if (this.open) {
+      this.#overlay.setAttribute("aria-labelledby", this.#titleId);
+    } else {
+      this.#overlay.removeAttribute("aria-labelledby");
+    }
 
     if (!this.internals) return;
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = this.open ? "dialog" : null;
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-modal") && "ariaModal" in this.internals) {
-      this.internals.ariaModal = this.open ? "true" : null;
+      this.internals.ariaModal = null;
     }
 
     if (!this.hasAttribute("aria-hidden") && "ariaHidden" in this.internals) {
@@ -480,7 +466,7 @@ export class RowanCommandPalette extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.open ? this.label || "Command palette" : null;
+      this.internals.ariaLabel = null;
     }
   }
 

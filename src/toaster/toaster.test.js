@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import "./toaster.js";
+import "../dialog/dialog.js";
 
 const nextMicrotask = () => Promise.resolve();
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,6 +24,11 @@ describe("rowan-toaster", () => {
 
     toaster.setAttribute("placement", "not-a-placement");
     expect(toaster.placement).to.equal("top-end");
+    expect(toaster.hasAttribute("placement")).to.equal(false);
+
+    toaster.setAttribute("placement", " BOTTOM-START ");
+    expect(toaster.placement).to.equal("bottom-start");
+    expect(toaster.getAttribute("placement")).to.equal("bottom-start");
 
     toaster.maxVisible = 4;
     expect(toaster.getAttribute("max-visible")).to.equal("4");
@@ -233,5 +239,69 @@ describe("rowan-toaster", () => {
       [...toaster.shadowRoot.querySelectorAll("rowan-toast")].map((toast) => toast.dataset.toastId),
     ).to.deep.equal(ids);
     expect(events).to.deep.equal([]);
+  });
+
+  it("defers toasts while a modal dialog is open and shows them after it closes", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const toaster = document.createElement("rowan-toaster");
+    toaster.duration = 0;
+    document.body.append(dialog, toaster);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    dialog.open = true;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const shownIds = [];
+    toaster.addEventListener("rowan-toast-show", (event) => {
+      shownIds.push(event.detail.id);
+    });
+
+    const id = toaster.show({ message: "Saved", dismissible: true });
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(id).to.be.a("string");
+    expect(toaster.shadowRoot.querySelector("rowan-toast")).to.equal(null);
+    expect(shownIds).to.deep.equal([]);
+    expect(dialog.open).to.equal(true);
+
+    dialog.open = false;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const toast = toaster.shadowRoot.querySelector("rowan-toast");
+    expect(toast).to.not.equal(null);
+    expect(toast.textContent.includes("Saved")).to.equal(true);
+    expect(shownIds).to.deep.equal([id]);
+    expect(toaster.matches(":popover-open")).to.equal(true);
+  });
+
+  it("parks visible toasts when a modal opens and restores them after close", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const toaster = document.createElement("rowan-toaster");
+    toaster.duration = 0;
+    document.body.append(dialog, toaster);
+    await nextMicrotask();
+
+    const id = toaster.show({ message: "Still visible", dismissible: true });
+    await nextMicrotask();
+    expect(toaster.shadowRoot.querySelector("rowan-toast")).to.not.equal(null);
+
+    dialog.open = true;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(toaster.shadowRoot.querySelector("rowan-toast")).to.equal(null);
+    expect(dialog.open).to.equal(true);
+
+    dialog.open = false;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const toast = toaster.shadowRoot.querySelector(`[data-toast-id="${id}"]`);
+    expect(toast).to.not.equal(null);
+    expect(toast.textContent.includes("Still visible")).to.equal(true);
   });
 });

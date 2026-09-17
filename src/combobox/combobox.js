@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 import "../option/option.js";
 
@@ -379,16 +380,6 @@ export class RowanCombobox extends BaseElement {
 
     if (!this.open) return;
 
-    if (event.key === keys.HOME || event.key === keys.END) {
-      const available = this.#availableOptions();
-      if (available.length === 0) return;
-
-      event.preventDefault();
-      this.#activeValue = (event.key === keys.HOME ? available.at(0) : available.at(-1)).value;
-      this.requestRender();
-      return;
-    }
-
     if (event.key === keys.ENTER) {
       if (!this.#activeValue) return;
 
@@ -458,7 +449,7 @@ export class RowanCombobox extends BaseElement {
     if (!this.#input) return;
 
     if (this.required && this.value.trim().length === 0) {
-      this.setValidity({ valueMissing: true }, "Please fill out this field.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }

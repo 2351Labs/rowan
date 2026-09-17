@@ -124,6 +124,64 @@ describe("rowan-radio-group", () => {
     expect(changes[0].detail.radio === south).to.equal(true);
   });
 
+  it("satisfies required when a later radio is selected", async () => {
+    const form = document.createElement("form");
+    const group = document.createElement("rowan-radio-group");
+    group.name = "region";
+    group.required = true;
+
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+
+    group.append(north, south);
+    form.append(group);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(north.required).to.equal(true);
+    expect(south.required).to.equal(false);
+    expect(north.checkValidity()).to.equal(false);
+    expect(form.checkValidity()).to.equal(false);
+
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("south");
+    expect(south.checked).to.equal(true);
+    expect(north.checked).to.equal(false);
+    expect(north.checkValidity()).to.equal(true);
+    expect(south.checkValidity()).to.equal(true);
+    expect(form.checkValidity()).to.equal(true);
+    expect(north.internals.ariaInvalid).to.equal("false");
+  });
+
+  it("satisfies required for unnamed radios in a group", async () => {
+    const form = document.createElement("form");
+    const group = document.createElement("rowan-radio-group");
+    group.required = true;
+
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+
+    group.append(north, south);
+    form.append(group);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(north.checkValidity()).to.equal(false);
+
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("south");
+    expect(north.checkValidity()).to.equal(true);
+    expect(form.checkValidity()).to.equal(true);
+  });
+
   it("does not treat a nested group selection as its own", async () => {
     const outer = document.createElement("rowan-radio-group");
     const outerRadio = document.createElement("rowan-radio");
@@ -148,5 +206,81 @@ describe("rowan-radio-group", () => {
     expect(outerRadio.checked).to.equal(true);
     expect(inner.value).to.equal("second");
     expect(second.checked).to.equal(true);
+  });
+
+  it("submits the selected value once through FACE", async () => {
+    const form = document.createElement("form");
+    const group = document.createElement("rowan-radio-group");
+    group.name = "region";
+    group.required = true;
+
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+    group.append(north, south);
+    form.append(group);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(group.checkValidity()).to.equal(false);
+    expect(new FormData(form).getAll("region")).to.deep.equal([]);
+
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("south");
+    expect(group.checkValidity()).to.equal(true);
+    expect(form.checkValidity()).to.equal(true);
+    expect(new FormData(form).getAll("region")).to.deep.equal(["south"]);
+    expect(group.internals.ariaInvalid).to.equal("false");
+  });
+
+  it("resets to the default value without emitting", async () => {
+    const form = document.createElement("form");
+    const group = document.createElement("rowan-radio-group");
+    group.name = "region";
+    group.value = "north";
+
+    const north = document.createElement("rowan-radio");
+    north.value = "north";
+    const south = document.createElement("rowan-radio");
+    south.value = "south";
+    group.append(north, south);
+    form.append(group);
+    document.body.append(form);
+    await nextMicrotask();
+
+    const changes = [];
+    group.addEventListener("rowan-change", (event) => changes.push(event));
+
+    south.shadowRoot.querySelector("input").click();
+    await nextMicrotask();
+    expect(group.value).to.equal("south");
+    expect(changes).to.have.length(1);
+
+    form.reset();
+    await nextMicrotask();
+
+    expect(group.value).to.equal("north");
+    expect(north.checked).to.equal(true);
+    expect(south.checked).to.equal(false);
+    expect(new FormData(form).get("region")).to.equal("north");
+    expect(changes).to.have.length(1);
+  });
+
+  it("lets named radios submit when the group has no name", async () => {
+    const form = document.createElement("form");
+    const group = document.createElement("rowan-radio-group");
+    const north = document.createElement("rowan-radio");
+    north.name = "region";
+    north.value = "north";
+    north.checked = true;
+    group.append(north);
+    form.append(group);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(new FormData(form).getAll("region")).to.deep.equal(["north"]);
   });
 });

@@ -86,6 +86,20 @@ describe("rowan-skeleton", () => {
     expect(skeleton.style.width).to.equal("2rem");
   });
 
+  it("normalizes unsupported shape to the documented default", async () => {
+    const el = document.createElement("rowan-skeleton");
+    el.shape = "hexagon";
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.shape).to.equal("text");
+    expect(el.hasAttribute("shape")).to.equal(false);
+
+    el.setAttribute("shape", " RECT ");
+    expect(el.shape).to.equal("rect");
+    expect(el.getAttribute("shape")).to.equal("rect");
+  });
+
   it("uses public surface and motion tokens", async () => {
     const el = document.createElement("rowan-skeleton");
     el.style.setProperty("--rowan-skeleton-base", "rgb(24, 48, 32)");

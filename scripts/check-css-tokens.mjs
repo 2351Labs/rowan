@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Enforces F-02: component CSS may only reach a literal colour through a var() fallback.
-import { readFile } from "node:fs/promises";
-import { glob } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 const COLOUR_PROPERTIES =
   /^\s*(background|background-color|color|border|border-color|border-top|border-right|border-bottom|border-left|outline|outline-color|fill|stroke|box-shadow|text-shadow)\s*:/;
@@ -20,11 +20,28 @@ function stripVarFallbacks(value) {
   return current;
 }
 
+async function cssFilesUnder(root) {
+  const files = [];
+  const entries = await readdir(root, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = join(root, entry.name).replaceAll("\\", "/");
+
+    if (entry.isDirectory()) {
+      if (fullPath === "src/tokens") continue;
+      files.push(...(await cssFilesUnder(fullPath)));
+      continue;
+    }
+
+    if (entry.isFile() && entry.name.endsWith(".css")) files.push(fullPath);
+  }
+
+  return files;
+}
+
 const violations = [];
 
-for await (const file of glob("src/**/*.css")) {
-  if (file.startsWith("src/tokens/")) continue;
-
+for (const file of await cssFilesUnder("src")) {
   const source = await readFile(file, "utf8");
   const lines = source.split("\n");
 

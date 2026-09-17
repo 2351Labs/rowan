@@ -1,3 +1,5 @@
+import { isCalendarDateInput, parseCalendarDate } from "./calendar-date.js";
+
 const RELATIVE_TIME_UNITS = new Set([
   "year",
   "quarter",
@@ -70,9 +72,16 @@ function readDate(value) {
     return Number.isNaN(value.getTime()) ? null : new Date(value.getTime());
   }
 
-  if (typeof value !== "number" && (typeof value !== "string" || value.trim() === "")) {
-    return null;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (isCalendarDateInput(trimmed)) return parseCalendarDate(trimmed);
+    if (trimmed === "") return null;
+
+    const date = new Date(trimmed);
+    return Number.isNaN(date.getTime()) ? null : date;
   }
+
+  if (typeof value !== "number") return null;
 
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
@@ -168,6 +177,7 @@ export function formatCurrency(value, config) {
 
 /**
  * Formats a Date, timestamp, or date string using the requested locale and time zone.
+ * `YYYY-MM-DD` is a calendar date and formats as that day in UTC, ignoring `timeZone`.
  * Invalid values, locales, time zones, or options return `fallback`, which defaults to an empty string.
  * @param {Date | number | string} value
  * @param {DateFormatConfig} [config]
@@ -176,11 +186,16 @@ export function formatCurrency(value, config) {
 export function formatDate(value, config = {}) {
   const normalizedConfig = readConfig(config);
   const fallback = readFallback(normalizedConfig);
+  const calendarDate = isCalendarDateInput(value) && Boolean(parseCalendarDate(value));
   const date = readDate(value);
   if (!date) return fallback;
 
   const options = copyOptions(normalizedConfig.options, { dateStyle: "medium" });
-  if (options && normalizedConfig.timeZone !== undefined) {
+  if (!options) return fallback;
+
+  if (calendarDate) {
+    options.timeZone = "UTC";
+  } else if (normalizedConfig.timeZone !== undefined) {
     options.timeZone = normalizedConfig.timeZone;
   }
 

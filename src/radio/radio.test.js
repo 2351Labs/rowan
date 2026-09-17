@@ -118,6 +118,33 @@ describe("rowan-radio", () => {
     expect(second.checked).to.equal(true);
   });
 
+  it("treats required as satisfied when a same-name peer is checked", async () => {
+    const form = document.createElement("form");
+    const first = document.createElement("rowan-radio");
+    const second = document.createElement("rowan-radio");
+    first.name = "region";
+    second.name = "region";
+    first.required = true;
+    first.value = "north";
+    second.value = "south";
+    form.append(first, second);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(first.checkValidity()).to.equal(false);
+    expect(form.checkValidity()).to.equal(false);
+
+    second.checked = true;
+    await nextMicrotask();
+
+    expect(first.checked).to.equal(false);
+    expect(second.checked).to.equal(true);
+    expect(first.checkValidity()).to.equal(true);
+    expect(second.checkValidity()).to.equal(true);
+    expect(form.checkValidity()).to.equal(true);
+    expect(first.internals.ariaInvalid).to.equal("false");
+  });
+
   it("resets to default checked state", async () => {
     const form = document.createElement("form");
     const el = document.createElement("rowan-radio");
@@ -141,7 +168,7 @@ describe("rowan-radio", () => {
     document.body.append(el);
     await nextMicrotask();
 
-    expect(el.internals.role).to.equal("radio");
+    expect(el.internals.role).to.equal(null);
     expect(el.internals.ariaChecked).to.equal("false");
     expect(el.internals.ariaRequired).to.equal("true");
     expect(el.internals.ariaInvalid).to.equal("true");

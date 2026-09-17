@@ -52,6 +52,32 @@ describe("rowan-button", () => {
     expect(element.size).to.equal("sm");
   });
 
+  it("normalizes unsupported variant, size, and type to documented defaults", async () => {
+    const element = document.createElement("rowan-button");
+    element.variant = "loud";
+    element.size = "xl";
+    element.type = "link";
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.variant).to.equal("primary");
+    expect(element.size).to.equal("md");
+    expect(element.type).to.equal("button");
+    expect(element.hasAttribute("variant")).to.equal(false);
+    expect(element.hasAttribute("size")).to.equal(false);
+    expect(element.hasAttribute("type")).to.equal(false);
+
+    element.setAttribute("variant", " GHOST ");
+    element.setAttribute("size", " SM ");
+    element.setAttribute("type", " SUBMIT ");
+    expect(element.variant).to.equal("ghost");
+    expect(element.size).to.equal("sm");
+    expect(element.type).to.equal("submit");
+    expect(element.getAttribute("variant")).to.equal("ghost");
+    expect(element.getAttribute("size")).to.equal("sm");
+    expect(element.getAttribute("type")).to.equal("submit");
+  });
+
   it("renders internal styling and composition hooks", async () => {
     const element = document.createElement("rowan-button");
     document.body.append(element);

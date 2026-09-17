@@ -34,13 +34,12 @@
  * @event rowan-sort - Fired when a sortable header changes direction
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
- * @event rowan-cell-action - Fired when link or button cell activates
+ * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
- * @event rowan-page-change - Fired when pagination changes
+ * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
  */
 export class RowanTable extends BaseElement {
-    static componentTokenPrefixes: string[];
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     /** @param {RowanTableConfig | null | undefined} value */
     set config(value: RowanTableConfig | null | undefined);

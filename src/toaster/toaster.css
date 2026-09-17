@@ -1,9 +1,18 @@
 :host {
+  background: transparent;
+  border: none;
   bottom: calc(var(--rowan-space-3) + env(safe-area-inset-bottom));
+  color: inherit;
   display: block;
+  height: fit-content;
+  inset: auto;
   inset-inline: var(--rowan-space-3);
+  margin: 0;
+  overflow: visible;
+  padding: 0;
   pointer-events: none;
   position: fixed;
+  width: fit-content;
   z-index: var(--rowan-toaster-z-index, 1000);
 }
 

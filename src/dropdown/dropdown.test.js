@@ -1,5 +1,8 @@
 import { expect } from "@esm-bundle/chai";
 import "./dropdown.js";
+import "../dialog/dialog.js";
+import "../menu/menu.js";
+import "../menu-item/menu-item.js";
 
 const nextMicrotask = () => Promise.resolve();
 
@@ -67,6 +70,101 @@ describe("rowan-dropdown", () => {
       { open: true },
       { open: false },
     ]);
+  });
+
+  it("does not close a parent dialog on the same backdrop click", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    const dropdown = document.createElement("rowan-dropdown");
+    dialog.append(dropdown);
+    document.body.append(dialog);
+    await settle();
+
+    dialog.open = true;
+    await settle();
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    const overlay = dialog.shadowRoot.querySelector("dialog");
+    overlay.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    overlay.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+    await settle();
+
+    expect(dropdown.open).to.equal(false);
+    expect(dialog.open).to.equal(true);
+  });
+
+  it("closes on Tab so focus can leave", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const menu = document.createElement("rowan-menu");
+    const item = document.createElement("rowan-menu-item");
+    item.value = "edit";
+    item.textContent = "Edit";
+    menu.append(item);
+    dropdown.append(menu);
+    document.body.append(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    item.shadowRoot.querySelector("button").dispatchEvent(event);
+    await settle();
+
+    expect(dropdown.open).to.equal(false);
+    expect(event.defaultPrevented).to.equal(false);
+  });
+
+  it("closes when a slotted menu item is activated", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const menu = document.createElement("rowan-menu");
+    const item = document.createElement("rowan-menu-item");
+    item.value = "archive";
+    item.textContent = "Archive";
+    menu.append(item);
+    dropdown.append(menu);
+    document.body.append(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    item.shadowRoot.querySelector("button").click();
+    await settle();
+
+    expect(dropdown.open).to.equal(false);
+  });
+
+  it("is not clipped by an overflow-hidden ancestor", async () => {
+    const clip = document.createElement("div");
+    clip.style.overflow = "hidden";
+    clip.style.height = "2rem";
+    clip.style.width = "12rem";
+    const dropdown = document.createElement("rowan-dropdown");
+    clip.append(dropdown);
+    document.body.append(clip);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+
+    const panel = dropdown.shadowRoot.querySelector(".panel");
+    const panelRect = panel.getBoundingClientRect();
+    const clipRect = clip.getBoundingClientRect();
+    expect(panel.matches(":popover-open")).to.equal(true);
+    expect(panelRect.bottom).to.be.above(clipRect.bottom);
   });
 
   it("keeps parent-driven state changes silent", async () => {

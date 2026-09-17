@@ -11,7 +11,7 @@
  * @csspart label
  * @csspart description
  * @csspart input
- * @event rowan-files-add - Fired when files are selected by picker or drop
+ * @event rowan-files-add - Fired when files are selected by picker or drop. `detail.files` are accept matches; `detail.rejected` failed `accept`.
  */
 export class RowanDropzone extends BaseElement {
     static shadowRootOptions: {

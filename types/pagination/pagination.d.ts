@@ -5,7 +5,7 @@
  * @attr {number} total-pages
  * @slot - Optional custom label
  * @csspart container
- * @event rowan-page-change - Fired when page changes
+ * @event rowan-page-change - Fired when the page changes. `detail.index` is 0-based; `detail.page` is 1-based.
  */
 export class RowanPagination extends BaseElement {
     set page(value: number);

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 /**
  * Toggle switch control with form association.
@@ -167,6 +168,8 @@ export class RowanSwitch extends BaseElement {
     this.#input.checked = this.checked;
     this.#input.disabled = this.disabled;
     this.#input.required = this.required;
+    this.#input.setAttribute("role", "switch");
+    this.#input.setAttribute("aria-checked", this.checked ? "true" : "false");
 
     const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;
@@ -191,7 +194,7 @@ export class RowanSwitch extends BaseElement {
     if (!this.#input) return;
 
     if (this.required && !this.checked) {
-      this.setValidity({ valueMissing: true }, "Please enable this switch.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.switch"), this.#input);
       return;
     }
 
@@ -204,7 +207,7 @@ export class RowanSwitch extends BaseElement {
     const invalidState = this.required && !this.checked ? "true" : "false";
 
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "switch";
+      this.internals.role = null;
     }
 
     if (!this.hasAttribute("aria-checked") && "ariaChecked" in this.internals) {

@@ -111,4 +111,25 @@ describe("rowan-confirm-dialog", () => {
     expect(native.contains(innerDialog.shadowRoot.querySelector(".panel"))).to.equal(true);
     expect(confirmButton.closest("rowan-dialog")).to.equal(innerDialog);
   });
+
+  it("hides the inner close control and focuses cancel on open", async () => {
+    const dialog = document.createElement("rowan-confirm-dialog");
+    document.body.append(dialog);
+    await waitForNestedRender();
+
+    dialog.open = true;
+    await waitForNestedRender();
+    await wait();
+    await wait();
+
+    const innerDialog = dialog.shadowRoot.querySelector("rowan-dialog");
+    const overlay = innerDialog.shadowRoot.querySelector("dialog");
+    const closeButton = innerDialog.shadowRoot.querySelector(".close");
+    const cancel = dialog.shadowRoot.querySelector(".cancel");
+
+    expect(innerDialog.alert).to.equal(true);
+    expect(closeButton.hidden).to.equal(true);
+    expect(overlay.getAttribute("role")).to.equal("alertdialog");
+    expect(dialog.shadowRoot.activeElement).to.equal(cancel);
+  });
 });

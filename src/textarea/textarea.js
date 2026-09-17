@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let textAreaId = 0;
 
@@ -232,7 +233,7 @@ export class RowanTextarea extends BaseElement {
     if (!this.#input) return;
 
     if (this.required && this.value.trim().length === 0) {
-      this.setValidity({ valueMissing: true }, "Please fill out this field.", this.#input);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing"), this.#input);
       this.#setAutoInvalid(true);
       return;
     }

@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { validityMessage } from "../lib/validity-messages.js";
 import { RowanOption } from "../option/option.js";
 
 const SELECTION_MODES = new Set(["single", "multiple"]);
@@ -387,7 +388,7 @@ export class RowanListbox extends BaseElement {
 
   #syncValidity() {
     if (this.#isValueMissing()) {
-      this.setValidity({ valueMissing: true }, "Please select an option.");
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.option"));
       return;
     }
 

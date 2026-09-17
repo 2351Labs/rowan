@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import "./drawer.js";
+import { isTopmostOverlay } from "../lib/overlay-stack.js";
 
 const nextMicrotask = () => Promise.resolve();
 
@@ -28,6 +29,20 @@ describe("rowan-drawer", () => {
 
     expect(overlay.open).to.equal(true);
     expect(overlay.matches(":modal")).to.equal(true);
+  });
+
+  it("normalizes unsupported side to the documented default", async () => {
+    const drawer = document.createElement("rowan-drawer");
+    drawer.side = "top";
+    document.body.append(drawer);
+    await nextMicrotask();
+
+    expect(drawer.side).to.equal("start");
+    expect(drawer.hasAttribute("side")).to.equal(false);
+
+    drawer.setAttribute("side", " END ");
+    expect(drawer.side).to.equal("end");
+    expect(drawer.getAttribute("side")).to.equal("end");
   });
 
   it("makes background content inert while open", async () => {
@@ -67,15 +82,15 @@ describe("rowan-drawer", () => {
     drawer.open = true;
     await nextMicrotask();
 
+    const overlay = drawer.shadowRoot.querySelector("dialog");
     const panel = drawer.shadowRoot.querySelector(".panel");
     expect(drawer.inert).to.equal(false);
-    expect(drawer.internals.role).to.equal("dialog");
-    expect(drawer.internals.ariaModal).to.equal("true");
+    expect(drawer.internals.role).to.equal(null);
+    expect(drawer.internals.ariaModal).to.equal(null);
     expect(drawer.internals.ariaHidden).to.equal("false");
-    expect(drawer.internals.ariaLabel).to.equal("Navigation");
-    expect(panel.getAttribute("role")).to.equal("dialog");
-    expect(panel.getAttribute("aria-modal")).to.equal("true");
-    expect(panel.getAttribute("aria-label")).to.equal("Navigation");
+    expect(overlay.getAttribute("aria-label")).to.equal("Navigation");
+    expect(panel.hasAttribute("role")).to.equal(false);
+    expect(panel.hasAttribute("aria-modal")).to.equal(false);
   });
 
   it("closes on Escape, emits a user change, and returns focus", async () => {
@@ -130,6 +145,30 @@ describe("rowan-drawer", () => {
     outside.focus();
     await nextMicrotask();
     expect(drawer.shadowRoot.activeElement).to.equal(closeButton);
+  });
+
+  it("re-locks scroll when reconnected while open", async () => {
+    const drawer = document.createElement("rowan-drawer");
+    document.body.append(drawer);
+    await nextMicrotask();
+
+    const initialOverflow = document.body.style.overflow;
+
+    drawer.open = true;
+    await nextMicrotask();
+    expect(document.body.style.overflow).to.equal("hidden");
+    expect(isTopmostOverlay(drawer)).to.equal(true);
+
+    drawer.remove();
+    expect(document.body.style.overflow).to.equal(initialOverflow);
+    expect(isTopmostOverlay(drawer)).to.equal(false);
+
+    document.body.append(drawer);
+    await nextMicrotask();
+
+    expect(drawer.shadowRoot.querySelector("dialog").matches(":modal")).to.equal(true);
+    expect(document.body.style.overflow).to.equal("hidden");
+    expect(isTopmostOverlay(drawer)).to.equal(true);
   });
 
   it("keeps parent-driven closing silent", async () => {

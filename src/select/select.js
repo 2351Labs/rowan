@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let selectId = 0;
 
@@ -293,7 +294,11 @@ export class RowanSelect extends BaseElement {
     if (!this.#select) return;
 
     if (this.required && this.value.length === 0) {
-      this.setValidity({ valueMissing: true }, "Please select an option.", this.#select);
+      this.setValidity(
+        { valueMissing: true },
+        validityMessage("valueMissing.option"),
+        this.#select,
+      );
       return;
     }
 

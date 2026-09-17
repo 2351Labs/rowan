@@ -2,6 +2,12 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { RowanMenuItem } from "../menu-item/menu-item.js";
+import {
+  isTopmostOverlay,
+  noteDismissibleClose,
+  pushDismissible,
+  removeDismissible,
+} from "../lib/overlay-stack.js";
 
 import "../menu/menu.js";
 
@@ -86,6 +92,11 @@ export class RowanContextMenu extends BaseElement {
   }
 
   disconnectedCallback() {
+    if (this.#isOpen) {
+      removeDismissible(this);
+      this.#isOpen = false;
+    }
+
     this.#unbindTarget();
     this.#releaseManagedItems();
     super.disconnectedCallback();
@@ -229,6 +240,7 @@ export class RowanContextMenu extends BaseElement {
     this.#overlay.hidden = !this.open;
 
     if (this.open) {
+      pushDismissible(this);
       if (!this.#position) {
         const bounds = this.#boundTarget?.getBoundingClientRect();
         this.#position = this.#normalizedPosition(bounds?.left ?? 0, bounds?.bottom ?? 0);
@@ -243,6 +255,7 @@ export class RowanContextMenu extends BaseElement {
       return;
     }
 
+    removeDismissible(this);
     this.#releaseManagedItems();
     this.#restoreFocus();
   }
@@ -274,7 +287,9 @@ export class RowanContextMenu extends BaseElement {
   }
 
   #handleOverlayClick(event) {
+    if (!isTopmostOverlay(this)) return;
     if (event.composedPath().includes(this.#panel)) return;
+    noteDismissibleClose();
     this.#requestUserClose("outside-click");
   }
 
@@ -284,8 +299,18 @@ export class RowanContextMenu extends BaseElement {
     const currentIndex = items.indexOf(currentItem);
 
     if (event.key === "Escape") {
+      if (!isTopmostOverlay(this)) return;
       event.preventDefault();
+      event.stopPropagation();
+      noteDismissibleClose();
       this.#requestUserClose("escape");
+      return;
+    }
+
+    if (event.key === "Tab") {
+      this.#lastFocused = null;
+      noteDismissibleClose();
+      this.#requestUserClose("tab");
       return;
     }
 

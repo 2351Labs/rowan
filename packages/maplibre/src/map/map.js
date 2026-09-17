@@ -541,7 +541,12 @@ export class RowanMapLibreMap extends HTMLElement {
 
   #resolveProvider() {
     if (this.#maplibre) return Promise.resolve(this.#maplibre);
-    return import("maplibre-gl").then((module) => module.default ?? module);
+    return import("maplibre-gl").then((module) => {
+      if (typeof module.Map === "function") return module;
+      if (typeof module.default?.Map === "function") return module.default;
+      if (typeof globalThis.maplibregl?.Map === "function") return globalThis.maplibregl;
+      return module.default ?? module;
+    });
   }
 
   #createMap(provider, version) {

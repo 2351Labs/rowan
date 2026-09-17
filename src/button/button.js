@@ -1,7 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { triggerAssociatedFormAction } from "../lib/form.js";
+
+const VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
+const SIZES = new Set(["sm", "md", "lg"]);
+const TYPES = new Set(["button", "submit", "reset"]);
 
 /**
  * Primary action control.
@@ -52,22 +57,22 @@ export class RowanButton extends BaseElement {
 
   /** @returns {"primary" | "secondary" | "ghost" | "danger"} */
   get variant() {
-    return this.readString("variant", "primary");
+    return normalizeEnum(this.readString("variant", "primary"), VARIANTS, "primary");
   }
 
   /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
   set variant(value) {
-    this.reflectString("variant", value === "primary" ? null : value);
+    reflectEnum(this, "variant", value, VARIANTS, "primary");
   }
 
   /** @returns {"sm" | "md" | "lg"} */
   get size() {
-    return this.readString("size", "md");
+    return normalizeEnum(this.readString("size", "md"), SIZES, "md");
   }
 
   /** @param {"sm" | "md" | "lg"} value */
   set size(value) {
-    this.reflectString("size", value === "md" ? null : value);
+    reflectEnum(this, "size", value, SIZES, "md");
   }
 
   get disabled() {
@@ -88,12 +93,30 @@ export class RowanButton extends BaseElement {
 
   /** @returns {"button" | "submit" | "reset"} */
   get type() {
-    return this.readString("type", "button");
+    return normalizeEnum(this.readString("type", "button"), TYPES, "button");
   }
 
   /** @param {"button" | "submit" | "reset"} value */
   set type(value) {
-    this.reflectString("type", value);
+    reflectEnum(this, "type", value, TYPES, "button");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "variant" && rewriteEnumAttribute(this, name, newValue, VARIANTS, "primary")) {
+      return;
+    }
+
+    if (name === "size" && rewriteEnumAttribute(this, name, newValue, SIZES, "md")) {
+      return;
+    }
+
+    if (name === "type" && rewriteEnumAttribute(this, name, newValue, TYPES, "button")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   render() {
@@ -115,7 +138,7 @@ export class RowanButton extends BaseElement {
           return;
         }
 
-        const type = this.#normalizedType(this.type);
+        const type = this.type;
         if (type !== "button") event.preventDefault();
 
         emit(this, "rowan-click", {
@@ -125,7 +148,7 @@ export class RowanButton extends BaseElement {
       });
     }
 
-    this.#button.type = this.#normalizedType(this.type);
+    this.#button.type = this.type;
     this.#button.disabled = this.disabled || this.loading;
     this.#button.setAttribute("aria-busy", this.loading ? "true" : "false");
     this.#syncPopupState();
@@ -140,11 +163,6 @@ export class RowanButton extends BaseElement {
         this.#button.setAttribute(attribute, value);
       }
     }
-  }
-
-  #normalizedType(type) {
-    if (type === "submit" || type === "reset") return type;
-    return "button";
   }
 }
 

@@ -1,34 +1,13 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeCalendarDate } from "../lib/calendar-date.js";
+import { validityMessage } from "../lib/validity-messages.js";
 
 let dateRangePickerId = 0;
 
-const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-function pad(number) {
-  return String(number).padStart(2, "0");
-}
-
 function normalizeDateValue(value) {
-  const next = String(value ?? "").trim();
-  if (!DATE_VALUE_PATTERN.test(next)) return "";
-
-  const [yearText, monthText, dayText] = next.split("-");
-  const year = Number(yearText);
-  const month = Number(monthText);
-  const day = Number(dayText);
-
-  const parsed = new Date(Date.UTC(year, month - 1, day));
-  if (
-    parsed.getUTCFullYear() !== year ||
-    parsed.getUTCMonth() !== month - 1 ||
-    parsed.getUTCDate() !== day
-  ) {
-    return "";
-  }
-
-  return `${year}-${pad(month)}-${pad(day)}`;
+  return normalizeCalendarDate(value);
 }
 
 function serializeRangeState(start, end) {
@@ -449,41 +428,53 @@ export class RowanDateRangePicker extends BaseElement {
 
     if (this.required && (!this.start || !this.end)) {
       const anchor = this.start ? this.#endInput : this.#startInput;
-      this.setValidity({ valueMissing: true }, "Please select a start and end date.", anchor);
+      this.setValidity({ valueMissing: true }, validityMessage("valueMissing.dateRange"), anchor);
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.start && this.min && this.start < this.min) {
-      this.setValidity({ rangeUnderflow: true }, "Start date is before minimum.", this.#startInput);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.dateStart"),
+        this.#startInput,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.end && this.min && this.end < this.min) {
-      this.setValidity({ rangeUnderflow: true }, "End date is before minimum.", this.#endInput);
+      this.setValidity(
+        { rangeUnderflow: true },
+        validityMessage("rangeUnderflow.dateEnd"),
+        this.#endInput,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.start && this.max && this.start > this.max) {
-      this.setValidity({ rangeOverflow: true }, "Start date is after maximum.", this.#startInput);
+      this.setValidity(
+        { rangeOverflow: true },
+        validityMessage("rangeOverflow.dateStart"),
+        this.#startInput,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.end && this.max && this.end > this.max) {
-      this.setValidity({ rangeOverflow: true }, "End date is after maximum.", this.#endInput);
+      this.setValidity(
+        { rangeOverflow: true },
+        validityMessage("rangeOverflow.dateEnd"),
+        this.#endInput,
+      );
       this.#setAutoInvalid(true);
       return;
     }
 
     if (this.start && this.end && this.start > this.end) {
-      this.setValidity(
-        { customError: true },
-        "End date must be on or after start date.",
-        this.#endInput,
-      );
+      this.setValidity({ customError: true }, validityMessage("range.dateOrder"), this.#endInput);
       this.#setAutoInvalid(true);
       return;
     }

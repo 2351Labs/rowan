@@ -74,6 +74,26 @@ describe("rowan-chip", () => {
     expect(el.getAttribute("size")).to.equal("lg");
   });
 
+  it("normalizes unsupported tone and size to documented defaults", async () => {
+    const el = document.createElement("rowan-chip");
+    el.tone = "loud";
+    el.size = "xl";
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.tone).to.equal("info");
+    expect(el.size).to.equal("md");
+    expect(el.hasAttribute("tone")).to.equal(false);
+    expect(el.hasAttribute("size")).to.equal(false);
+
+    el.setAttribute("tone", " DANGER ");
+    el.setAttribute("size", " SM ");
+    expect(el.tone).to.equal("danger");
+    expect(el.size).to.equal("sm");
+    expect(el.getAttribute("tone")).to.equal("danger");
+    expect(el.getAttribute("size")).to.equal("sm");
+  });
+
   it("uses public tokens for its rendered surfaces", async () => {
     const el = document.createElement("rowan-chip");
     el.style.setProperty("--rowan-chip-bg", "rgb(24, 48, 32)");

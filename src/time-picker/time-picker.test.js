@@ -20,6 +20,26 @@ describe("rowan-time-picker", () => {
     expect(element.value).to.equal("15:45");
   });
 
+  it("does not write the committed value into a focused inner input", async () => {
+    const element = document.createElement("rowan-time-picker");
+    element.value = "09:30";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('input[type="time"]');
+    input.focus();
+    input.value = "09:30";
+    element.value = "";
+    await nextMicrotask();
+
+    expect(input.value).to.equal("09:30");
+
+    input.blur();
+    await nextMicrotask();
+
+    expect(input.value).to.equal("");
+  });
+
   it("emits rowan-change when user changes the value", async () => {
     const element = document.createElement("rowan-time-picker");
     document.body.append(element);

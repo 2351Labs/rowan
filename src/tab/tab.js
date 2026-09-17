@@ -105,8 +105,8 @@ export class RowanTab extends BaseElement {
           : [];
     }
 
-    this.#button.setAttribute("aria-selected", selected);
-    this.#button.setAttribute("role", "tab");
+    this.#button.removeAttribute("aria-selected");
+    this.#button.setAttribute("role", "presentation");
     this.#button.tabIndex = this.#resolvedTabIndex();
   }
 

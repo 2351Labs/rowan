@@ -23,7 +23,6 @@ export class RowanSegmentedControl extends BaseElement {
         mode: string;
         delegatesFocus: boolean;
     };
-    static componentTokenPrefixes: string[];
     /** @param {RowanSegmentedControlOption[]} value */
     set options(value: RowanSegmentedControlOption[]);
     /** @returns {RowanSegmentedControlOption[]} */

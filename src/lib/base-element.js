@@ -84,7 +84,6 @@ export class BaseElement extends HTMLElement {
   #listeners = new Set();
   #observations = new Set();
   #renderQueued = false;
-  #didFirstRender = false;
   #pendingUpgrades = [];
   #componentSheet = supportsAdoptedStyleSheets ? new CSSStyleSheet() : null;
   #componentTokenSheet = null;
@@ -94,7 +93,11 @@ export class BaseElement extends HTMLElement {
   #renderRoot = null;
   #formDisabled = false;
   #customValidityMessage = "";
+  #constraintFlags = {};
+  #constraintMessage = "";
+  #constraintAnchor = undefined;
   #baseDisabledControls = new Set();
+  #labelTextObserver = null;
 
   constructor() {
     super();
@@ -193,16 +196,27 @@ export class BaseElement extends HTMLElement {
 
   setCustomValidity(message) {
     this.#customValidityMessage = String(message ?? "");
+    this.#commitValidity();
     this.requestRender();
   }
 
   /** Applies validity with the consumer's custom error merged in, so renders cannot erase it. */
   applyValidity(flags = {}, message = "", anchor = undefined) {
+    this.#constraintFlags = { ...flags };
+    this.#constraintMessage = String(message ?? "");
+    this.#constraintAnchor = anchor instanceof HTMLElement ? anchor : undefined;
+    this.#commitValidity();
+  }
+
+  #commitValidity() {
     if (!this.#internals || typeof this.#internals.setValidity !== "function") return;
 
     const customMessage = this.#customValidityMessage;
-    const nextFlags = customMessage ? { ...flags, customError: true } : flags;
-    const nextMessage = customMessage || message;
+    const nextFlags = customMessage
+      ? { ...this.#constraintFlags, customError: true }
+      : { ...this.#constraintFlags };
+    const nextMessage = customMessage || this.#constraintMessage;
+    const anchor = this.#constraintAnchor;
 
     if (anchor instanceof HTMLElement) {
       this.#internals.setValidity(nextFlags, nextMessage, anchor);
@@ -222,7 +236,6 @@ export class BaseElement extends HTMLElement {
 
       this.render();
       this.#syncFormDisabledState();
-      this.#didFirstRender = true;
     });
   }
 
@@ -477,15 +490,93 @@ export class BaseElement extends HTMLElement {
   #observeExternalLabels() {
     if (!this.constructor.formAssociated || typeof MutationObserver === "undefined") return;
 
+    this.#syncLabelTextObservers();
+
+    const adoptionObserver = new MutationObserver((mutations) => {
+      if (!this.#externalLabelMutationAffectsHost(mutations)) return;
+      this.#syncLabelTextObservers();
+      this.requestRender();
+    });
+
+    adoptionObserver.observe(this, { attributes: true, attributeFilter: ["id"] });
+
+    const root = this.getRootNode();
+    const scope =
+      root instanceof Document
+        ? root.documentElement
+        : root instanceof ShadowRoot
+          ? root
+          : document.documentElement;
+    if (scope) {
+      adoptionObserver.observe(scope, {
+        attributeOldValue: true,
+        attributes: true,
+        attributeFilter: ["for"],
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    this.addCleanup(() => {
+      adoptionObserver.disconnect();
+      this.#labelTextObserver?.disconnect();
+      this.#labelTextObserver = null;
+    });
+  }
+
+  #syncLabelTextObservers() {
+    this.#labelTextObserver?.disconnect();
+    this.#labelTextObserver = null;
+
     const labels = this.#internals?.labels;
     if (!labels || labels.length === 0) return;
 
-    const observer = new MutationObserver(() => this.requestRender());
+    this.#labelTextObserver = new MutationObserver(() => this.requestRender());
     for (const label of labels) {
-      observer.observe(label, { characterData: true, childList: true, subtree: true });
+      this.#labelTextObserver.observe(label, {
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+  }
+
+  #externalLabelMutationAffectsHost(mutations) {
+    const hostId = this.id;
+
+    for (const mutation of mutations) {
+      if (mutation.type === "attributes" && mutation.attributeName === "id" && mutation.target === this) {
+        return true;
+      }
+
+      if (mutation.type === "attributes" && mutation.attributeName === "for") {
+        const nextFor = mutation.target.getAttribute?.("for");
+        if ((hostId && nextFor === hostId) || mutation.oldValue === hostId) return true;
+      }
+
+      if (mutation.type === "childList") {
+        for (const node of mutation.addedNodes) {
+          if (this.#nodeAssociatesLabel(node, hostId)) return true;
+        }
+        for (const node of mutation.removedNodes) {
+          if (this.#nodeAssociatesLabel(node, hostId)) return true;
+        }
+      }
     }
 
-    this.addCleanup(() => observer.disconnect());
+    return false;
+  }
+
+  #nodeAssociatesLabel(node, hostId) {
+    if (!hostId) return false;
+
+    if (node instanceof HTMLLabelElement) return node.htmlFor === hostId;
+
+    if (node instanceof Element) {
+      return Boolean(node.querySelector(`label[for="${CSS.escape(hostId)}"]`));
+    }
+
+    return false;
   }
 
   #capturePreUpgradeProperties() {

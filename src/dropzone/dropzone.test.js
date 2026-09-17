@@ -87,6 +87,102 @@ describe("rowan-dropzone", () => {
     expect(detail.source).to.equal("drop");
   });
 
+  it("filters dropped files against accept", async () => {
+    const element = document.createElement("rowan-dropzone");
+    element.accept = ".csv,.pdf";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const csv = new File(["sheet"], "report.csv", { type: "text/csv" });
+    const exe = new File(["binary"], "setup.exe", { type: "application/x-msdownload" });
+    let detail = null;
+    element.addEventListener("rowan-files-add", (event) => {
+      detail = event.detail;
+    });
+
+    const event = new Event("drop", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "dataTransfer", {
+      value: { files: [exe, csv] },
+    });
+    element.shadowRoot.querySelector('[data-part="surface"]').dispatchEvent(event);
+
+    expect(detail.files).to.deep.equal([csv]);
+    expect(detail.rejected).to.deep.equal([exe]);
+    expect(detail.source).to.equal("drop");
+  });
+
+  it("does not add a dropped file that fails accept", async () => {
+    const element = document.createElement("rowan-dropzone");
+    element.accept = ".csv";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const exe = new File(["binary"], "setup.exe", { type: "application/x-msdownload" });
+    let detail = null;
+    element.addEventListener("rowan-files-add", (event) => {
+      detail = event.detail;
+    });
+
+    const event = new Event("drop", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "dataTransfer", {
+      value: { files: [exe] },
+    });
+    element.shadowRoot.querySelector('[data-part="surface"]').dispatchEvent(event);
+
+    expect(detail.files).to.deep.equal([]);
+    expect(detail.rejected).to.deep.equal([exe]);
+  });
+
+  it("matches accept wildcards and MIME types", async () => {
+    const element = document.createElement("rowan-dropzone");
+    element.accept = "image/*,text/csv";
+    element.multiple = true;
+    document.body.append(element);
+    await nextMicrotask();
+
+    const png = new File(["img"], "photo.png", { type: "image/png" });
+    const csv = new File(["sheet"], "report.csv", { type: "text/csv" });
+    const txt = new File(["note"], "note.txt", { type: "text/plain" });
+    let detail = null;
+    element.addEventListener("rowan-files-add", (event) => {
+      detail = event.detail;
+    });
+
+    const event = new Event("drop", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "dataTransfer", {
+      value: { files: [png, csv, txt] },
+    });
+    element.shadowRoot.querySelector('[data-part="surface"]').dispatchEvent(event);
+
+    expect(detail.files).to.deep.equal([png, csv]);
+    expect(detail.rejected).to.deep.equal([txt]);
+  });
+
+  it("filters picker files against accept", async () => {
+    const element = document.createElement("rowan-dropzone");
+    element.accept = ".csv";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const csv = new File(["sheet"], "report.csv", { type: "text/csv" });
+    const exe = new File(["binary"], "setup.exe", { type: "application/x-msdownload" });
+    let detail = null;
+    element.addEventListener("rowan-files-add", (event) => {
+      detail = event.detail;
+    });
+
+    const input = element.shadowRoot.querySelector('input[type="file"]');
+    Object.defineProperty(input, "files", {
+      configurable: true,
+      value: [exe, csv],
+    });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(detail.files).to.deep.equal([csv]);
+    expect(detail.rejected).to.deep.equal([exe]);
+    expect(detail.source).to.equal("picker");
+  });
+
   it("does not emit rowan-files-add when disabled", async () => {
     const element = document.createElement("rowan-dropzone");
     element.disabled = true;

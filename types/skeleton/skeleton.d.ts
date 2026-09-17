@@ -11,11 +11,11 @@
  * @cssprop --rowan-skeleton-shimmer-duration
  */
 export class RowanSkeleton extends BaseElement {
-    static componentTokenPrefixes: string[];
     /** @param {"text" | "rect" | "circle"} value */
     set shape(value: "circle" | "rect" | "text");
     /** @returns {"text" | "rect" | "circle"} */
     get shape(): "circle" | "rect" | "text";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     set width(value: string);
     get width(): string;
     set height(value: string);

@@ -20,6 +20,46 @@ describe("rowan-date-picker", () => {
     expect(element.value).to.equal("2026-09-14");
   });
 
+  it("rejects impossible calendar dates", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-date-picker");
+    element.name = "due";
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    element.value = "2026-02-31";
+    await nextMicrotask();
+
+    expect(element.value).to.equal("");
+    expect(element.hasAttribute("value")).to.equal(false);
+    expect(new FormData(form).get("due")).to.equal("");
+
+    element.setAttribute("value", "2026-02-31");
+    await nextMicrotask();
+    expect(element.value).to.equal("");
+  });
+
+  it("does not write the committed value into a focused inner input", async () => {
+    const element = document.createElement("rowan-date-picker");
+    element.value = "2026-09-12";
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('input[type="date"]');
+    input.focus();
+    input.value = "2026-09-12";
+    element.value = "";
+    await nextMicrotask();
+
+    expect(input.value).to.equal("2026-09-12");
+
+    input.blur();
+    await nextMicrotask();
+
+    expect(input.value).to.equal("");
+  });
+
   it("emits rowan-change when user changes the value", async () => {
     const element = document.createElement("rowan-date-picker");
     document.body.append(element);

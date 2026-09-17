@@ -1,5 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+
+const SHAPES = new Set(["text", "rect", "circle"]);
 
 /**
  * Loading placeholder block.
@@ -23,12 +26,22 @@ export class RowanSkeleton extends BaseElement {
 
   /** @returns {"text" | "rect" | "circle"} */
   get shape() {
-    return this.readString("shape", "text");
+    return normalizeEnum(this.readString("shape", "text"), SHAPES, "text");
   }
 
   /** @param {"text" | "rect" | "circle"} value */
   set shape(value) {
-    this.reflectString("shape", value === "text" ? null : value);
+    reflectEnum(this, "shape", value, SHAPES, "text");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "shape" && rewriteEnumAttribute(this, name, newValue, SHAPES, "text")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
   }
 
   get width() {

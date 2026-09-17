@@ -8,9 +8,16 @@
 }
 
 .panel {
-  left: 0;
+  background: var(--rowan-color-bg, #ffffff);
+  border: var(--rowan-border-width) solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-md);
+  color: inherit;
+  height: fit-content;
+  inset: unset;
+  margin: 0;
   min-width: 12rem;
-  position: absolute;
-  top: calc(100% + 0.3rem);
+  overflow: visible;
+  position: fixed;
+  width: max-content;
   z-index: 30;
 }
