@@ -87,6 +87,8 @@ export class RowanMapLibreMap extends HTMLElement {
   #activeLocationId = "";
   #renderQueued = false;
   #resizeObserver = null;
+  #resizeFrame = 0;
+  #lastMapSize = "";
 
   constructor() {
     super();
@@ -124,6 +126,10 @@ export class RowanMapLibreMap extends HTMLElement {
     this.#providerVersion += 1;
     this.#providerLoading = false;
     this.#disposeMap();
+    if (this.#resizeFrame) {
+      cancelAnimationFrame(this.#resizeFrame);
+      this.#resizeFrame = 0;
+    }
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
   }
@@ -835,7 +841,20 @@ export class RowanMapLibreMap extends HTMLElement {
   #observeSize() {
     if (this.#resizeObserver || typeof ResizeObserver === "undefined") return;
 
-    this.#resizeObserver = new ResizeObserver(() => this.#map?.resize?.());
+    this.#resizeObserver = new ResizeObserver((entries) => {
+      const box = entries[0]?.contentRect;
+      if (!box) return;
+
+      const next = `${Math.round(box.width)}x${Math.round(box.height)}`;
+      if (next === this.#lastMapSize) return;
+      this.#lastMapSize = next;
+
+      if (this.#resizeFrame) cancelAnimationFrame(this.#resizeFrame);
+      this.#resizeFrame = requestAnimationFrame(() => {
+        this.#resizeFrame = 0;
+        this.#map?.resize?.();
+      });
+    });
     this.#resizeObserver.observe(this);
   }
 

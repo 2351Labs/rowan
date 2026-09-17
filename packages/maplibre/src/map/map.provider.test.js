@@ -32,7 +32,29 @@ function readProvider(module) {
   return module.default ?? module;
 }
 
+function ignoreResizeObserverLoop() {
+  const onError = (event) => {
+    if (String(event.message ?? "").includes("ResizeObserver loop")) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  };
+
+  window.addEventListener("error", onError, true);
+  return () => window.removeEventListener("error", onError, true);
+}
+
 describe("rowan-maplibre-map real provider", () => {
+  let restoreError;
+
+  before(() => {
+    restoreError = ignoreResizeObserverLoop();
+  });
+
+  after(() => {
+    restoreError?.();
+  });
+
   afterEach(() => {
     document.body.innerHTML = "";
   });
