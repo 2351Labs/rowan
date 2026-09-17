@@ -53,9 +53,15 @@ export class RowanSideNavSection extends BaseElement {
       this.internals.role = "group";
     }
 
+    if (this.internals && !this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
+      this.internals.ariaLabel = label || null;
+    }
+
     if (this.internals && "ariaLabelledByElements" in this.internals) {
       this.internals.ariaLabelledByElements =
-        !this.hasAttribute("aria-labelledby") && label ? [this.#heading] : [];
+        !this.hasAttribute("aria-labelledby") && !this.hasAttribute("aria-label") && label
+          ? [this.#heading]
+          : [];
     }
   }
 }
