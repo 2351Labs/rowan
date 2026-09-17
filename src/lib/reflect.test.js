@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import {
+  BOOLEAN_ATTRIBUTES,
   readBooleanAttribute,
   readNumberAttribute,
   readStringAttribute,
@@ -26,6 +27,12 @@ describe("reflect helpers", () => {
 
     reflectBooleanAttribute(element, "disabled", "false");
     expect(element.hasAttribute("disabled")).to.equal(false);
+  });
+
+  it("includes dialog, dropzone, and app-layout boolean attributes", () => {
+    expect(BOOLEAN_ATTRIBUTES.has("alert")).to.equal(true);
+    expect(BOOLEAN_ATTRIBUTES.has("drag-active")).to.equal(true);
+    expect(BOOLEAN_ATTRIBUTES.has("navigation-open")).to.equal(true);
   });
 
   it("reflects string attributes and removes empty values", () => {

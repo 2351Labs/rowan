@@ -143,9 +143,7 @@ useRowanElement(buttonRef, {
   events: { "rowan-click": () => save() },
 });`;
 
-const REACT_18_BOOLEAN_SNIPPET = `const booleanAttributes = disabled ? { disabled: true } : {};
-
-return <rowan-button {...booleanAttributes}>Save</rowan-button>;`;
+const REACT_18_BOOLEAN_SNIPPET = `return <rowan-button disabled={false}>Save</rowan-button>;`;
 
 const NEXT_JS_SNIPPET = `"use client";
 
