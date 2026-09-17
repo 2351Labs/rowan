@@ -19,6 +19,27 @@
   margin: 0;
 }
 
+.home-why h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.home-why p,
+.home-why li {
+  color: var(--rowan-color-muted);
+  line-height: 1.55;
+  margin: 0 0 0.65rem;
+}
+
+.home-why ul {
+  margin: 0 0 0.65rem;
+  padding-inline-start: 1.15rem;
+}
+
+.home-why li {
+  margin: 0 0 0.4rem;
+}
+
 .home-grid {
   display: grid;
   gap: 0.8rem;
