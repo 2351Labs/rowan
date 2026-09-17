@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -61,14 +62,25 @@ export const ${className} = createRowanComponent({
 `;
 }
 
-function renderWrapperTypes({ className, modulePath }) {
+function renderEventProps(events) {
+  if (events.length === 0) return "{}";
+
+  const fields = events
+    .map((name) => `    ${eventPropName(name)}?: (event: CustomEvent) => void;`)
+    .join("\n");
+  return `{\n${fields}\n  }`;
+}
+
+function renderWrapperTypes({ className, modulePath, events }) {
   const importPath = relativeFromGenerated(modulePath);
 
   return `import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { ${className} as ${className}Element } from ${JSON.stringify(importPath)};
+import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const ${className}: ForwardRefExoticComponent<
-  Record<string, unknown> & RefAttributes<${className}Element>
+  RowanWrapperProps<${className}Element, ${renderEventProps(events)}> &
+    RefAttributes<${className}Element>
 >;
 `;
 }
@@ -94,6 +106,11 @@ for (const element of elements) {
 
 writeFileSync(join(outDir, "index.js"), `${barrelExports.join("\n")}\n`);
 writeFileSync(join(outDir, "index.d.ts"), `${typeExports.join("\n")}\n`);
+
+execFileSync(resolve(root, "node_modules/.bin/prettier"), ["--write", "src/react/generated"], {
+  cwd: root,
+  stdio: "inherit",
+});
 
 const buttonSource = readFileSync(join(outDir, "button.js"), "utf8");
 if (!buttonSource.includes('tagName: "rowan-button"') || !buttonSource.includes("onRowanClick")) {

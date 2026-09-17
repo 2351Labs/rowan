@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
+import { useState } from "react";
+import { RowanTable } from "@rowan-ui/core/react/table";
 
 const config = {
   rowId: "id",
@@ -14,25 +14,15 @@ const config = {
 };
 
 export function MembersTable() {
-  const tableRef = useRef(null);
   const [selected, setSelected] = useState([]);
-
-  useEffect(() => {
-    void import("@rowan-ui/core/table");
-  }, []);
-
-  useRowanElement(tableRef, {
-    properties: { config, selected },
-    events: {
-      "rowan-select": (event) => {
-        setSelected(event.detail.selected);
-      },
-    },
-  });
 
   return (
     <div style={{ display: "grid", gap: "0.75rem" }}>
-      <rowan-table ref={tableRef} />
+      <RowanTable
+        config={config}
+        selected={selected}
+        onRowanSelect={(event) => setSelected(event.detail.selected)}
+      />
       <p>{selected.length ? `Selected: ${selected.join(", ")}` : "Select one or more rows."}</p>
     </div>
   );

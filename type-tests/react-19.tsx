@@ -2,6 +2,7 @@ import { useRef } from "react";
 import type * as React from "react";
 import { useRowanElement } from "@rowan-ui/core/react";
 import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanTable as Table } from "@rowan-ui/core/react/table";
 import type { RowanTable } from "@rowan-ui/core/table";
 
 type RowanTags = Extract<keyof HTMLElementTagNameMap, `rowan-${string}`>;
@@ -106,7 +107,23 @@ const invalidTableDensityAttribute = (
   <rowan-table density="compact" />
 );
 
+const wrapperButton = (
+  <RowanButton disabled={false} variant="primary" onRowanClick={(event) => event.type}>
+    Save
+  </RowanButton>
+);
+const invalidWrapperVariant = (
+  // @ts-expect-error Button variant is primary, secondary, ghost, or danger.
+  <RowanButton variant="loud" />
+);
+const wrapperTable = (
+  <Table config={tableConfig} selected={["1"]} onRowanSelect={(event) => event.detail} />
+);
+
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
 void structuredTablePropertyRequiresRef;
 void invalidTableDensityAttribute;
+void wrapperButton;
+void invalidWrapperVariant;
+void wrapperTable;

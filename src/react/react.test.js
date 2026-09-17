@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 import { act, createElement, useEffect, useRef } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
+import { renderToStaticMarkup } from "react-dom/server";
 
 import "../button/button.js";
 import "../table/table.js";
@@ -283,5 +284,48 @@ describe("@rowan-ui/core/react", () => {
     expect(table.hasAttribute("config")).to.equal(false);
     expect(table.config.rows).to.deep.equal(config.rows);
     expect(table.selectable).to.equal("multiple");
+  });
+
+  it("omits disabled={false} from wrapper SSR markup", () => {
+    const markup = renderToStaticMarkup(createElement(RowanButton, { disabled: false }, "Save"));
+    expect(markup).to.not.include("disabled");
+  });
+
+  it("does not stringify disabled={false} onto the host", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    await act(async () => {
+      root.render(createElement(RowanButton, { disabled: false }, "Save"));
+    });
+    await wait();
+
+    const button = container.querySelector("rowan-button");
+    expect(button.hasAttribute("disabled")).to.equal(false);
+    expect(button.disabled).to.equal(false);
+  });
+
+  it("does not emit onRowanClick when disabled", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+    const clicks = [];
+
+    await act(async () => {
+      root.render(
+        createElement(
+          RowanButton,
+          { disabled: true, onRowanClick: (event) => clicks.push(event) },
+          "Save",
+        ),
+      );
+    });
+    await wait();
+
+    container.querySelector("rowan-button").shadowRoot.querySelector("button").click();
+    expect(clicks).to.have.length(0);
   });
 });

@@ -8,15 +8,32 @@ import workspaceFieldSource from "../src/react/examples/workspace-field.jsx?raw"
 
 # Using Rowan from React
 
-Rowan is a Web Component library. `@rowan-ui/core/react` adds JSX types and `useRowanElement()`. It does not ship React wrappers and it does not register elements.
+The custom element is the product. `@rowan-ui/core/react/button` is a generated wrapper around `rowan-button`. It is not a second implementation.
 
-Three steps:
+```tsx
+import { RowanButton } from "@rowan-ui/core/react/button";
 
-1. **Register on the client.** Custom-element modules define the tag as a side effect. Import them in `useEffect` (or another browser-only boundary), never at the top of a Server Component.
-2. **Scalars in JSX.** Strings and numbers such as `label` and `name` can be attributes.
-3. **Objects, arrays, and events through the hook.** `useRowanElement(ref, { properties, events })` assigns property-only APIs and binds native `addEventListener` handlers.
+<RowanButton onRowanClick={() => save()}>Save</RowanButton>;
+```
 
-Live canvases are under **Integrations → React**. Those stories show this same source under the widget.
+The same control as a tag:
+
+```tsx
+import { useEffect, useRef } from "react";
+import { useRowanElement } from "@rowan-ui/core/react";
+
+useEffect(() => {
+  void import("@rowan-ui/core/button");
+}, []);
+
+<rowan-button ref={buttonRef}>Save</rowan-button>;
+```
+
+Prefer the wrapper in React. `onRowanClick` maps to `rowan-click`. `ref` is the host element. Named slots stay `slot="..."`. Import wrappers from a client component; they load the element module and are not Server Components.
+
+`useRowanElement` remains for odd bindings. Do not hand-edit files under `src/react/generated/` — `npm run analyze` regenerates them from the Custom Elements Manifest.
+
+Live canvases: **Integrations → React**.
 
 ## Button
 
@@ -32,6 +49,6 @@ Live canvases are under **Integrations → React**. Those stories show this same
 
 ## Table
 
-`config` and `selected` are property-only. Put `caption` on the config object; assigning `config` replaces the whole configuration.
+`config` and `selected` are property-only. Put `caption` on the config object.
 
 <Source language="jsx" code={membersTableSource} />
