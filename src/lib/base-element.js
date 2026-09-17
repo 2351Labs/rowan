@@ -185,10 +185,10 @@ export class BaseElement extends HTMLElement {
 
   /** Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary. */
   get externalLabelText() {
-    const labels = this.constructor.formAssociated ? this.#internals?.labels : null;
-    if (!labels || labels.length === 0) return "";
+    const labels = this.#associatedLabels();
+    if (labels.length === 0) return "";
 
-    return [...labels]
+    return labels
       .map((label) => label.textContent?.trim() ?? "")
       .filter(Boolean)
       .join(" ");
@@ -524,12 +524,27 @@ export class BaseElement extends HTMLElement {
     });
   }
 
+  #associatedLabels() {
+    if (!this.constructor.formAssociated) return [];
+
+    const fromInternals = this.#internals?.labels;
+    if (fromInternals && fromInternals.length > 0) return [...fromInternals];
+
+    const hostId = this.id;
+    if (!hostId || !this.isConnected) return [];
+
+    const root = this.getRootNode();
+    if (!(root instanceof Document || root instanceof ShadowRoot)) return [];
+
+    return [...root.querySelectorAll(`label[for="${CSS.escape(hostId)}"]`)];
+  }
+
   #syncLabelTextObservers() {
     this.#labelTextObserver?.disconnect();
     this.#labelTextObserver = null;
 
-    const labels = this.#internals?.labels;
-    if (!labels || labels.length === 0) return;
+    const labels = this.#associatedLabels();
+    if (labels.length === 0) return;
 
     this.#labelTextObserver = new MutationObserver(() => this.requestRender());
     for (const label of labels) {
