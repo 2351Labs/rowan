@@ -339,6 +339,14 @@
       "types": "./src/react/index.d.ts",
       "default": "./src/react/index.js"
     },
+    "./react/components": {
+      "types": "./src/react/generated/index.d.ts",
+      "default": "./src/react/generated/index.js"
+    },
+    "./react/*": {
+      "types": "./src/react/generated/*.d.ts",
+      "default": "./src/react/generated/*.js"
+    },
     "./tokens/light": {
       "types": "./src/tokens/themes/light.css.d.ts",
       "default": "./src/tokens/themes/light.css"
@@ -470,7 +478,7 @@
     }
   },
   "scripts": {
-    "analyze": "cem analyze --config custom-elements-manifest.config.js && npm run analyze --workspace=@rowan-ui/icons && npm run analyze --workspace=@rowan-ui/maplibre && node ./scripts/check-cem-public-api.mjs",
+    "analyze": "cem analyze --config custom-elements-manifest.config.js && npm run analyze --workspace=@rowan-ui/icons && npm run analyze --workspace=@rowan-ui/maplibre && node ./scripts/check-cem-public-api.mjs && node ./scripts/generate-react-wrappers.mjs",
     "storybook": "storybook dev -p 6006",
     "documentation": "vite --open /documentation/index.html",
     "documentation:build": "vite build --config documentation/vite.build.mjs",

@@ -2,8 +2,22 @@ import { expect } from "@esm-bundle/chai";
 import { act, createElement, useEffect, useRef } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 
+import "../button/button.js";
 import "../table/table.js";
+import { createRowanComponent } from "./create-wrapper.js";
 import { useRowanElement } from "./index.js";
+
+const RowanButton = createRowanComponent({
+  tagName: "rowan-button",
+  displayName: "RowanButton",
+  events: { onRowanClick: "rowan-click" },
+});
+
+const RowanTable = createRowanComponent({
+  tagName: "rowan-table",
+  displayName: "RowanTable",
+  events: { onRowanSelect: "rowan-select" },
+});
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -229,5 +243,45 @@ describe("@rowan-ui/core/react", () => {
     await wait();
 
     expect(assignments).to.equal(1);
+  });
+
+  it("fires onRowanClick from the generated button wrapper", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    const clicks = [];
+
+    await act(async () => {
+      root.render(
+        createElement(RowanButton, { onRowanClick: (event) => clicks.push(event) }, "Save"),
+      );
+    });
+    await wait();
+
+    const button = container.querySelector("rowan-button");
+    button.shadowRoot.querySelector("button").click();
+    expect(clicks).to.have.length(1);
+    expect(clicks[0].type).to.equal("rowan-click");
+  });
+
+  it("assigns table config as a property through the generated wrapper", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    const config = createConfig();
+
+    await act(async () => {
+      root.render(createElement(RowanTable, { config, selectable: "multiple" }));
+    });
+    await wait();
+
+    const table = container.querySelector("rowan-table");
+    expect(table.hasAttribute("config")).to.equal(false);
+    expect(table.config.rows).to.deep.equal(config.rows);
+    expect(table.selectable).to.equal("multiple");
   });
 });
