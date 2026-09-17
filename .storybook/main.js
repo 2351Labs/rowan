@@ -10,6 +10,7 @@ function storybookBase() {
 }
 
 export default {
+  staticDirs: [{ from: "../brand", to: "/brand" }],
   stories: [
     "../src/**/*.stories.js",
     "../src/**/*.stories.jsx",

@@ -1,3 +1,11 @@
+.home-mark {
+  display: block;
+  height: 6rem;
+  margin: 0 0 0.75rem;
+  object-fit: contain;
+  width: 6rem;
+}
+
 .home-page {
   display: grid;
   gap: 1.25rem;

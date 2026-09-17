@@ -109,18 +109,11 @@ html[data-theme="dark"] body {
 }
 
 .brand-mark {
-  align-items: center;
-  background: var(--rowan-color-accent);
-  border-radius: 0.75rem;
-  color: var(--rowan-button-fg, #ffffff);
-  display: inline-flex;
-  font-family: "Fraunces", "Iowan Old Style", serif;
-  font-size: 1.05rem;
-  font-weight: 650;
-  height: 2.1rem;
-  justify-content: center;
-  letter-spacing: 0.03em;
-  width: 2.1rem;
+  border-radius: 0.55rem;
+  display: block;
+  height: 2.4rem;
+  object-fit: contain;
+  width: 2.4rem;
 }
 
 .brand-copy {
