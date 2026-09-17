@@ -69,7 +69,7 @@ export default {
     docs: {
       description: {
         component:
-          "Each story is a real React tree: register the element in `useEffect`, put scalars in JSX, and pass objects, arrays, and events through `useRowanElement()`. See Integrations → Using Rowan from React for the full walkthrough.",
+          "Generated wrappers are the React default (`RowanButton`, `onRowanClick`). Raw tags and `useRowanElement` remain. See Integrations → Using Rowan from React.",
       },
     },
   },
@@ -86,7 +86,7 @@ export const TextField = {
 };
 
 export const Table = {
-  name: "Table with useRowanElement",
+  name: "Table with RowanTable",
   render: () => renderReact(<MembersTable />, membersTableSource),
   parameters: reactSource(membersTableSource),
 };

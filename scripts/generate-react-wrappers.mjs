@@ -61,14 +61,25 @@ export const ${className} = createRowanComponent({
 `;
 }
 
-function renderWrapperTypes({ className, modulePath }) {
+function renderEventProps(events) {
+  if (events.length === 0) return "{}";
+
+  const fields = events
+    .map((name) => `    ${eventPropName(name)}?: (event: CustomEvent) => void;`)
+    .join("\n");
+  return `{\n${fields}\n  }`;
+}
+
+function renderWrapperTypes({ className, modulePath, events }) {
   const importPath = relativeFromGenerated(modulePath);
 
   return `import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { ${className} as ${className}Element } from ${JSON.stringify(importPath)};
+import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const ${className}: ForwardRefExoticComponent<
-  Record<string, unknown> & RefAttributes<${className}Element>
+  RowanWrapperProps<${className}Element, ${renderEventProps(events)}> &
+    RefAttributes<${className}Element>
 >;
 `;
 }

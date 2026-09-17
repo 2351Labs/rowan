@@ -2,17 +2,17 @@
 
 **Goal.** One implementation (the custom element) + generated React wrappers + JSX types. React is a binding, not a fork.
 
-**Default DX.** `import { RowanButton } from "@rowan-ui/core/react"` (or `@rowan-ui/core/react/button`). Raw `<rowan-button>` stays first-class. `useRowanElement` remains an escape hatch.
+**Default DX.** `import { RowanButton } from "@rowan-ui/core/react/button"`. Raw `<rowan-button>` stays first-class. `useRowanElement` remains an escape hatch.
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprint 1 done on main. Sprint 2 in progress.
+**Status.** Sprints 1–2 on main. Sprints 3–5 in this branch.
 
 ---
 
 ## Sprint 1 — CEM public contract
 
-**Status:** in progress
+**Status:** done
 
 The published `custom-elements.json` is the source of truth for wrappers, docs, and types. Today it includes private fields, static internals, and lifecycle methods that must not become React props.
 
@@ -32,7 +32,7 @@ Wrapper files, new package exports, Storybook React rewrite.
 
 ## Sprint 2 — Generate wrappers from CEM
 
-**Status:** not started
+**Status:** done
 
 Generate checked-in React bindings from the public CEM. Prefer a small Rowan generator (vanilla hosts, property-only objects) over Lit-only helpers. `@wc-toolkit/react-wrappers` is the fallback if it assigns properties for objects and maps `rowan-change` → `onRowanChange` without aliases.
 
@@ -52,7 +52,7 @@ Storybook rewrite, dropping the hook.
 
 ## Sprint 3 — Wrapper runtime
 
-**Status:** not started
+**Status:** done
 
 Thin `forwardRef` facades. No extra React state.
 
@@ -66,37 +66,37 @@ Thin `forwardRef` facades. No extra React state.
 
 ### Done when
 
-- [ ] Button: `onRowanClick` fires from user activation only.
-- [ ] Table: `config` / `selected` assigned as properties; caption lives on `config`.
-- [ ] React 18: boolean `disabled={false}` does not stringify onto the attribute.
-- [ ] Existing `useRowanElement` tests still pass.
-- [ ] `test:package` still proves registration is import-time, not a React-only side path.
+- [x] Button: `onRowanClick` fires from user activation only.
+- [x] Table: `config` / `selected` assigned as properties; caption lives on `config`.
+- [x] React 18: boolean `disabled={false}` does not stringify onto the attribute.
+- [x] Existing `useRowanElement` tests still pass.
+- [x] `test:package` still proves registration is import-time, not a React-only side path.
 
 ---
 
 ## Sprint 4 — Types
 
-**Status:** not started
+**Status:** done
 
 ### Done when
 
-- [ ] Each wrapper is `ForwardRefExoticComponent<Props & RefAttributes<HostElement>>`.
-- [ ] Props use host property names (camelCase); events are `onRowan*`.
-- [ ] JSX intrinsic types for `<rowan-button>` remain.
-- [ ] `type-tests/` cover wrapper props, event detail, and tag JSX.
+- [x] Each wrapper is `ForwardRefExoticComponent<Props & RefAttributes<HostElement>>`.
+- [x] Props use host property names (camelCase); events are `onRowan*`.
+- [x] JSX intrinsic types for `<rowan-button>` remain.
+- [x] `type-tests/` cover wrapper props, event detail, and tag JSX.
 
 ---
 
 ## Sprint 5 — Docs and Storybook
 
-**Status:** not started
+**Status:** done
 
 ### Done when
 
-- [ ] README recommends the wrapper for React; shows tag + `RowanButton` side by side.
-- [ ] Storybook **Using Rowan from React** uses wrappers as the default example; raw tag remains.
-- [ ] Copilot brief: wrappers are generated from CEM; do not hand-edit them.
-- [ ] CHANGELOG records the React export as the binding layer.
+- [x] README recommends the wrapper for React; shows tag + `RowanButton` side by side.
+- [x] Storybook **Using Rowan from React** uses wrappers as the default example; raw tag remains.
+- [x] Copilot brief: wrappers are generated from CEM; do not hand-edit them.
+- [x] CHANGELOG records the React export as the binding layer.
 
 ---
 

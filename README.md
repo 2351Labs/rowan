@@ -76,41 +76,38 @@ table.config = config;
 
 ## React
 
-Rowan remains a Web Component library. The optional `@rowan-ui/core/react` entry adds JSX types and the `useRowanElement()` binding helper; it does not ship React wrappers or register any elements. Storybook **Integrations / Using Rowan from React** walks through client `useEffect` registration and `useRowanElement()`. **Integrations / React** shows the same files live, with the source under each canvas.
+The custom element is the product. Generated wrappers in `@rowan-ui/core/react/<name>` are the React default. They load the element module, assign objects as properties, and map `onRowanClick` to `rowan-click`. `ref` is the host. Import them from a client component; they are not Server Components.
 
 ```tsx
-import { useEffect, useRef, useState } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
-import type { RowanTable } from "@rowan-ui/core/table";
+import { useState } from "react";
+import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanTable } from "@rowan-ui/core/react/table";
 
 const config = {
   rowId: "id",
   selectable: "multiple",
+  caption: "Members",
   columns: [{ id: "name", header: "Name" }],
   rows: [{ id: "1", name: "Ada" }],
 };
 
 export function MembersTable() {
-  const tableRef = useRef<RowanTable>(null);
   const [selected, setSelected] = useState<string[]>([]);
 
-  useEffect(() => {
-    void import("@rowan-ui/core/table");
-  }, []);
-
-  useRowanElement(tableRef, {
-    properties: { config, selected },
-    events: {
-      "rowan-select": (event) => {
-        const detail = (event as CustomEvent<{ selected: string[] }>).detail;
-        setSelected(detail.selected);
-      },
-    },
-  });
-
-  return <rowan-table ref={tableRef} caption="Members" />;
+  return (
+    <>
+      <RowanTable
+        config={config}
+        selected={selected}
+        onRowanSelect={(event) => setSelected(event.detail.selected)}
+      />
+      <RowanButton onRowanClick={() => save()}>Save</RowanButton>
+    </>
+  );
 }
 ```
+
+Raw tags stay first-class. `@rowan-ui/core/react` still provides JSX types and `useRowanElement()` for odd bindings. Storybook **Integrations / Using Rowan from React** shows wrapper and tag side by side.
 
 Use JSX for string and number scalar attributes such as `caption`. Pass arrays, objects, callbacks, and other property-only values through `useRowanElement(ref, { properties })`; the helper assigns them directly after the host exists rather than serializing them as attributes. Its `events` map uses native `addEventListener()` and removes outdated listeners on rerender and unmount:
 
@@ -131,9 +128,10 @@ useRowanElement(buttonRef, {
 ```
 
 React 18 server rendering serializes a false custom-element boolean as a present
-attribute such as `disabled="false"`. Rowan follows HTML boolean semantics, so that
-attribute is true after the element upgrades. For React 18 SSR, omit false boolean
-attributes from server markup or assign the boolean through a client-side ref:
+attribute such as `disabled="false"`. Generated wrappers assign booleans as
+properties, so `disabled={false}` does not appear in markup. For raw tags, omit
+false boolean attributes from server markup or assign them through a client-side
+ref:
 
 ```tsx
 const booleanAttributes = disabled ? { disabled: true } : {};
@@ -141,21 +139,16 @@ const booleanAttributes = disabled ? { disabled: true } : {};
 return <rowan-button {...booleanAttributes}>Save</rowan-button>;
 ```
 
-For Next.js, import the React facade from a client component, but register Rowan components inside a client effect. Do not import registration modules from server-rendered code:
+For Next.js, import wrappers from a client component. Do not import them (or registration modules) from server-rendered code:
 
 ```tsx
 "use client";
 
-import { useEffect } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
+import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanTable } from "@rowan-ui/core/react/table";
 
 export function RowanClientBoundary() {
-  useEffect(() => {
-    void import("@rowan-ui/core/table");
-    void import("@rowan-ui/core/button");
-  }, []);
-
-  return null;
+  return <RowanButton onRowanClick={() => save()}>Save</RowanButton>;
 }
 ```
 
