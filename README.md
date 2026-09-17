@@ -76,7 +76,7 @@ table.config = config;
 
 ## React
 
-Rowan remains a Web Component library. The optional `@rowan-ui/core/react` entry adds JSX types and the `useRowanElement()` binding helper; it does not ship React wrappers or register any elements. Storybook shows the same pattern under **Integrations / React**.
+Rowan remains a Web Component library. The optional `@rowan-ui/core/react` entry adds JSX types and the `useRowanElement()` binding helper; it does not ship React wrappers or register any elements. Storybook **Integrations / React** shows the same files, including client `useEffect` registration.
 
 ```tsx
 import { useEffect, useRef, useState } from "react";

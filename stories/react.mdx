@@ -1,0 +1,42 @@
+import { Canvas, Meta, Source } from "@storybook/blocks";
+
+import membersTableSource from "../src/react/examples/members-table.jsx?raw";
+import saveButtonSource from "../src/react/examples/save-button.jsx?raw";
+import workspaceFieldSource from "../src/react/examples/workspace-field.jsx?raw";
+import * as ReactStories from "../src/react/react.stories.jsx";
+
+<Meta of={ReactStories} />
+
+# React
+
+Rowan is a Web Component library. `@rowan-ui/core/react` adds JSX types and `useRowanElement()`. It does not ship React wrappers and it does not register elements.
+
+Three steps:
+
+1. **Register on the client.** Custom-element modules define the tag as a side effect. Import them in `useEffect` (or another browser-only boundary), never at the top of a Server Component.
+2. **Scalars in JSX.** Strings and numbers such as `label` and `name` can be attributes.
+3. **Objects, arrays, and events through the hook.** `useRowanElement(ref, { properties, events })` assigns property-only APIs and binds native `addEventListener` handlers.
+
+## Button
+
+`rowan-click` is a DOM event, not `onClick`.
+
+<Canvas of={ReactStories.Button} sourceState="shown" />
+
+<Source language="jsx" code={saveButtonSource} />
+
+## Text field
+
+`rowan-change` fires when the value is committed (blur), not on every keystroke.
+
+<Canvas of={ReactStories.TextField} sourceState="shown" />
+
+<Source language="jsx" code={workspaceFieldSource} />
+
+## Table
+
+`config` and `selected` are property-only. Put `caption` on the config object; assigning `config` replaces the whole configuration.
+
+<Canvas of={ReactStories.Table} sourceState="shown" />
+
+<Source language="jsx" code={membersTableSource} />
