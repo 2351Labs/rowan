@@ -7,6 +7,27 @@
 Rowan is a plain-vanilla Web Component design system built with browser standards only:
 Custom Elements, Shadow DOM, slots, CSS custom properties, and ElementInternals.
 
+## Why Rowan
+
+Rowan is named after the rowan tree (_Sorbus aucuparia_): small, hardy, and easy to
+recognize without being loud. It grows at edges and in thin soil. The scarlet berries
+are a detail on the tree, not the tree itself.
+
+That is the brief for this library.
+
+- **Vanilla first.** Custom Elements, Shadow DOM, slots, CSS tokens. No framework
+  runtime in the box.
+- **Composition over inheritance.** Public API is attributes, properties, slots,
+  events, and parts. Components nest; they do not subclass each other.
+- **Config where reuse matters.** Tables and similar surfaces take data and cell
+  config so the same component can be a checkbox column in one app and a link
+  column in another.
+- **Quiet theming.** Primitive → semantic → component tokens. Dark mode is a token
+  swap, not a fork.
+
+The mark is an R with a single berry in the counter. The letter is the product.
+The berry is the reminder: keep the accent small.
+
 Package name: `@rowan-ui/core`. Version `0.5.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 

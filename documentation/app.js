@@ -1022,10 +1022,23 @@ const DOC_PAGES = [
     group: "Overview",
     title: "Getting Started",
     summary:
-      "Rowan ships unbundled ESM components with token-based theming, open shadow roots, and composable APIs.",
+      "Named after the rowan tree: vanilla Web Components, composition, config where reuse matters, quiet theming.",
     tags: ["esm", "web-components", "shadow-dom"],
-    keywords: ["install", "import", "quick start", "setup"],
+    keywords: ["install", "import", "quick start", "setup", "why rowan", "brief"],
     content: () => `
+      <section class="doc-section" data-doc-section id="start-why">
+        <h2>Why Rowan</h2>
+        <p>Rowan is named after the rowan tree (<em>Sorbus aucuparia</em>): small, hardy, and easy to recognize without being loud. It grows at edges and in thin soil. The scarlet berries are a detail on the tree, not the tree itself.</p>
+        <p>That is the brief for this library.</p>
+        <ul>
+          <li><strong>Vanilla first.</strong> Custom Elements, Shadow DOM, slots, CSS tokens. No framework runtime in the box.</li>
+          <li><strong>Composition over inheritance.</strong> Public API is attributes, properties, slots, events, and parts. Components nest; they do not subclass each other.</li>
+          <li><strong>Config where reuse matters.</strong> Tables and similar surfaces take data and cell config so the same component can be a checkbox column in one app and a link column in another.</li>
+          <li><strong>Quiet theming.</strong> Primitive → semantic → component tokens. Dark mode is a token swap, not a fork.</li>
+        </ul>
+        <p>The mark is an R with a single berry in the counter. The letter is the product. The berry is the reminder: keep the accent small.</p>
+      </section>
+
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
         <p>Import the full catalog for app-level installs or cherry-pick specific components for focused bundles.</p>
