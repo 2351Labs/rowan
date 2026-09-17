@@ -817,6 +817,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -1736,6 +1745,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -2750,6 +2768,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -3710,6 +3737,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -4635,6 +4671,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -5506,6 +5551,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -6610,6 +6664,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -6942,16 +7005,6 @@
               "kind": "method",
               "name": "#syncPopupState",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#normalizedType",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "type"
-                }
-              ]
             },
             {
               "kind": "field",
@@ -7639,6 +7692,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -8895,6 +8957,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -9891,6 +9962,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -10982,6 +11062,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -11989,6 +12078,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -12956,6 +13054,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -14157,6 +14264,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -15419,6 +15535,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -16528,6 +16653,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -17796,6 +17930,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -18828,6 +18971,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -20098,6 +20250,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -21146,6 +21307,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -22299,6 +22469,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -23393,6 +23572,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -24290,6 +24478,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -25304,6 +25501,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -26291,6 +26497,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -27270,6 +27485,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -28192,6 +28416,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -29186,6 +29419,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -30268,6 +30510,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -31624,6 +31875,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -33027,6 +33287,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -34164,6 +34433,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -35434,6 +35712,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -35778,16 +36065,6 @@
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
               }
-            },
-            {
-              "kind": "method",
-              "name": "#normalizedType",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "type"
-                }
-              ]
             },
             {
               "kind": "field",
@@ -36483,6 +36760,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -36686,6 +36972,46 @@
           "declaration": {
             "name": "keys",
             "module": "./lib/keys.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ROWAN_VALIDITY_MESSAGES",
+          "declaration": {
+            "name": "ROWAN_VALIDITY_MESSAGES",
+            "module": "./lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resetValidityMessages",
+          "declaration": {
+            "name": "resetValidityMessages",
+            "module": "./lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setValidityMessageResolver",
+          "declaration": {
+            "name": "setValidityMessageResolver",
+            "module": "./lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setValidityMessages",
+          "declaration": {
+            "name": "setValidityMessages",
+            "module": "./lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validityMessage",
+          "declaration": {
+            "name": "validityMessage",
+            "module": "./lib/validity-messages.js"
           }
         },
         {
@@ -37857,6 +38183,11 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private"
             },
@@ -38031,6 +38362,142 @@
           "declaration": {
             "name": "Class",
             "module": "src/lib/define.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/enum.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizeEnum",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "allowed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              }
+            },
+            {
+              "name": "fallback",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Canonicalize a documented string union."
+        },
+        {
+          "kind": "function",
+          "name": "reflectEnum",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "{ reflectString: (name: string, value: string | null) => void }"
+              }
+            },
+            {
+              "name": "attribute",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "allowed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              }
+            },
+            {
+              "name": "fallback",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Reflect a canonical enum, omitting the documented default."
+        },
+        {
+          "kind": "function",
+          "name": "rewriteEnumAttribute",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "{ reflectString: (name: string, value: string | null) => void }"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "newValue",
+              "type": {
+                "text": "string | null"
+              }
+            },
+            {
+              "name": "allowed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              }
+            },
+            {
+              "name": "fallback",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Rewrite an observed enum attribute to its canonical form.",
+          "return": {
+            "type": {
+              "text": "boolean"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizeEnum",
+          "declaration": {
+            "name": "normalizeEnum",
+            "module": "src/lib/enum.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "reflectEnum",
+          "declaration": {
+            "name": "reflectEnum",
+            "module": "src/lib/enum.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rewriteEnumAttribute",
+          "declaration": {
+            "name": "rewriteEnumAttribute",
+            "module": "src/lib/enum.js"
           }
         }
       ]
@@ -38824,6 +39291,104 @@
           "declaration": {
             "name": "sanitizeNavigationHref",
             "module": "src/lib/url.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/validity-messages.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "ROWAN_VALIDITY_MESSAGES",
+          "description": "English constraint strings used by Rowan form controls.\nApplications own locale policy: replace keys or install a resolver\nbefore mounting controls. `setCustomValidity` still wins per control.",
+          "type": {
+            "text": "Readonly<Record<string, string>>"
+          }
+        },
+        {
+          "kind": "function",
+          "name": "setValidityMessages",
+          "parameters": [
+            {
+              "name": "messages",
+              "type": {
+                "text": "Record<string, string> | null | undefined"
+              }
+            }
+          ],
+          "description": "Replace application overrides. Omitted keys keep the English default."
+        },
+        {
+          "kind": "function",
+          "name": "setValidityMessageResolver",
+          "parameters": [
+            {
+              "name": "resolver",
+              "type": {
+                "text": "null | undefined | ((key: string, fallback: string) => unknown)"
+              }
+            }
+          ],
+          "description": "Install a function that maps a message key to a localized string.\nReturn a non-empty string to use it; any other value falls through."
+        },
+        {
+          "kind": "function",
+          "name": "resetValidityMessages"
+        },
+        {
+          "kind": "function",
+          "name": "validityMessage",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ROWAN_VALIDITY_MESSAGES",
+          "declaration": {
+            "name": "ROWAN_VALIDITY_MESSAGES",
+            "module": "src/lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setValidityMessages",
+          "declaration": {
+            "name": "setValidityMessages",
+            "module": "src/lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setValidityMessageResolver",
+          "declaration": {
+            "name": "setValidityMessageResolver",
+            "module": "src/lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resetValidityMessages",
+          "declaration": {
+            "name": "resetValidityMessages",
+            "module": "src/lib/validity-messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validityMessage",
+          "declaration": {
+            "name": "validityMessage",
+            "module": "src/lib/validity-messages.js"
           }
         }
       ]
@@ -39840,6 +40405,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -41141,6 +41715,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -42091,6 +42674,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -43109,6 +43701,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -44399,6 +45000,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -45542,6 +46152,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -46594,6 +47213,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -47521,6 +48149,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -48629,6 +49266,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -49545,6 +50191,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -50568,6 +51223,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -51632,6 +52296,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -52897,6 +53570,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -54632,6 +55314,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -55953,6 +56644,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -57114,6 +57814,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -58205,6 +58914,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -59210,6 +59928,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -60323,6 +61050,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -61243,6 +61979,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -62495,6 +63240,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -63473,6 +64227,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -64611,6 +65374,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -65613,6 +66385,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -66583,6 +67364,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -67650,6 +68440,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -68608,6 +69407,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -69552,6 +70360,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -70629,6 +71446,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -72903,6 +73729,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -74045,6 +74880,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -75125,6 +75969,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -76216,6 +77069,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -77317,6 +78179,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -78341,6 +79212,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -79497,6 +80377,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -80734,6 +81623,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -81742,6 +82640,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -82965,6 +83872,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -84544,6 +85460,15 @@
             },
             {
               "kind": "method",
+              "name": "#associatedLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncLabelTextObservers",
               "privacy": "private",
               "inheritedFrom": {
@@ -85551,6 +86476,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
@@ -86753,6 +87687,15 @@
             {
               "kind": "method",
               "name": "#observeExternalLabels",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#associatedLabels",
               "privacy": "private",
               "inheritedFrom": {
                 "name": "BaseElement",
