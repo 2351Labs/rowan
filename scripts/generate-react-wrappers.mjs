@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -105,6 +106,11 @@ for (const element of elements) {
 
 writeFileSync(join(outDir, "index.js"), `${barrelExports.join("\n")}\n`);
 writeFileSync(join(outDir, "index.d.ts"), `${typeExports.join("\n")}\n`);
+
+execFileSync(resolve(root, "node_modules/.bin/prettier"), ["--write", "src/react/generated"], {
+  cwd: root,
+  stdio: "inherit",
+});
 
 const buttonSource = readFileSync(join(outDir, "button.js"), "utf8");
 if (!buttonSource.includes('tagName: "rowan-button"') || !buttonSource.includes("onRowanClick")) {
