@@ -185,7 +185,7 @@ describe("rowan-number-field", () => {
 
     expect(element.internals.role).to.equal("spinbutton");
     expect(element.internals.ariaRequired).to.equal("true");
-    expect(element.internals.ariaInvalid).to.equal("true");
+    expect(element.internals.ariaInvalid).to.equal("false");
     expect(element.internals.ariaLabel).to.equal("Quantity");
 
     element.value = "5";

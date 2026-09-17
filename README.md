@@ -573,7 +573,13 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 `rowan-confirm-dialog` composes the modal behavior of `rowan-dialog` with explicit outcomes for consequential actions. Parent changes to `open` remain silent. A user selection emits `rowan-confirm` or `rowan-cancel`, while Escape, the dialog close control, and backdrop dismissal emit `rowan-close`.
 
 `rowan-dropdown`, `rowan-popover`, and `rowan-tooltip` paint on the top layer
-(Popover API), so `overflow: hidden` ancestors do not clip them.
+(Popover API), so `overflow: hidden` ancestors do not clip them. `rowan-dropdown`
+keeps a default secondary trigger and accepts a `trigger` slot for an avatar or
+icon-only control.
+
+Required `rowan-text-field`, `rowan-textarea`, and `rowan-number-field` stay
+visually valid until blur or `reportValidity()` (form submit). `checkValidity()`
+still fails immediately.
 
 `rowan-context-menu` binds to an element through its `for` attribute or `target` property. It intercepts the target's native context menu, also opens from `Shift+F10` or the Context Menu key, manages Arrow/Home/End menu focus, and emits `rowan-change` when a user selects a `rowan-menu-item`.
 

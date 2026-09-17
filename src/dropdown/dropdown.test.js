@@ -199,4 +199,25 @@ describe("rowan-dropdown", () => {
     expect(panel.hidden).to.equal(true);
     expect(panel.getAttribute("aria-hidden")).to.equal("true");
   });
+
+  it("uses a slotted trigger instead of the default button", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.textContent = "MK";
+    dropdown.append(trigger);
+    document.body.append(dropdown);
+    await settle();
+
+    const fallback = dropdown.shadowRoot.querySelector(".fallback-trigger");
+    expect(fallback.hidden).to.equal(true);
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("menu");
+    expect(trigger.getAttribute("aria-expanded")).to.equal("false");
+
+    trigger.click();
+    await settle();
+    expect(dropdown.open).to.equal(true);
+    expect(trigger.getAttribute("aria-expanded")).to.equal("true");
+  });
 });

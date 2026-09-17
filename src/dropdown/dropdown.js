@@ -19,6 +19,7 @@ let dropdownId = 0;
  * @attr {boolean} open
  * @attr {string} label
  * @slot - Dropdown content
+ * @slot trigger - Optional custom trigger. The default secondary button is used when this slot is empty.
  * @csspart trigger
  * @csspart panel
  * @event rowan-change - Fired when a user toggles or dismisses the dropdown
@@ -29,6 +30,9 @@ export class RowanDropdown extends BaseElement {
   static upgradeProperties = ["open", "label"];
 
   #trigger = null;
+  #triggerSlot = null;
+  #fallbackTrigger = null;
+  #removeTriggerListener = null;
   #panel = null;
   #panelId = "";
   #removeDocumentPointerListener = null;
@@ -67,27 +71,52 @@ export class RowanDropdown extends BaseElement {
   }
 
   render() {
-    if (!this.#trigger) {
+    if (!this.#panel) {
       this.renderRoot.innerHTML = `
-        <rowan-button class="trigger" part="trigger" variant="secondary" size="sm"></rowan-button>
+        <span class="trigger" part="trigger">
+          <slot name="trigger"></slot>
+          <rowan-button class="fallback-trigger" variant="secondary" size="sm"></rowan-button>
+        </span>
         <section class="panel" part="panel"><slot></slot></section>
       `;
 
-      this.#trigger = this.renderRoot.querySelector("rowan-button");
+      this.#triggerSlot = this.renderRoot.querySelector("slot[name='trigger']");
+      this.#fallbackTrigger = this.renderRoot.querySelector(".fallback-trigger");
       this.#panel = this.renderRoot.querySelector(".panel");
 
-      this.listen(this.#trigger, "rowan-click", () => this.#setOpenFromUser(!this.open));
+      this.listen(this.#triggerSlot, "slotchange", () => this.requestRender());
       this.listen(this, "keydown", (event) => this.#handleKeydown(event));
       this.listen(this, "rowan-change", (event) => this.#handleMenuChange(event));
     }
 
-    this.#trigger.textContent = this.label;
-    this.#trigger.setAttribute("aria-controls", this.#panelId);
-    this.#trigger.setAttribute("aria-expanded", this.open ? "true" : "false");
-    this.#trigger.setAttribute("aria-haspopup", "menu");
+    this.#syncTrigger();
     this.#panel.id = this.#panelId;
     this.#panel.setAttribute("aria-hidden", this.open ? "false" : "true");
     this.#syncDocumentDismissal();
+  }
+
+  #syncTrigger() {
+    const custom =
+      this.#triggerSlot
+        .assignedElements({ flatten: true })
+        .find((node) => node instanceof HTMLElement) ?? null;
+    this.#fallbackTrigger.hidden = Boolean(custom);
+    if (!custom) this.#fallbackTrigger.textContent = this.label;
+
+    const trigger = custom ?? this.#fallbackTrigger;
+    if (trigger !== this.#trigger) {
+      this.#removeTriggerListener?.();
+      this.#removeTriggerListener = null;
+      this.#trigger = trigger;
+      const type = custom ? "click" : "rowan-click";
+      this.#removeTriggerListener = this.listen(trigger, type, () =>
+        this.#setOpenFromUser(!this.open),
+      );
+    }
+
+    this.#trigger.setAttribute("aria-controls", this.#panelId);
+    this.#trigger.setAttribute("aria-expanded", this.open ? "true" : "false");
+    this.#trigger.setAttribute("aria-haspopup", "menu");
   }
 
   #syncDocumentDismissal() {

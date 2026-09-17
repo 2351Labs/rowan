@@ -442,6 +442,31 @@ describe("rowan-text-field", () => {
     expect(element.checkValidity()).to.equal(true);
   });
 
+  it("does not paint invalid until blur or reportValidity", async () => {
+    const element = document.createElement("rowan-text-field");
+    element.required = true;
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(element.checkValidity()).to.equal(false);
+
+    element.shadowRoot
+      .querySelector("input")
+      .dispatchEvent(new Event("focusout", { bubbles: true }));
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+
+    element.value = "oak";
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(false);
+
+    element.value = "";
+    await nextMicrotask();
+    element.reportValidity();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+  });
+
   it("mirrors native email validity through the FACE host", async () => {
     const element = document.createElement("rowan-text-field");
     element.type = "email";
@@ -519,7 +544,8 @@ describe("rowan-text-field", () => {
 
     expect(element.internals.role).to.equal("textbox");
     expect(element.internals.ariaRequired).to.equal("true");
-    expect(element.internals.ariaInvalid).to.equal("true");
+    expect(element.internals.ariaInvalid).to.equal("false");
+    expect(element.hasAttribute("invalid")).to.equal(false);
     expect(element.internals.ariaLabel).to.equal("Forest name");
 
     element.value = "Pine";

@@ -7,6 +7,15 @@
   display: none;
 }
 
+.trigger {
+  display: inline-flex;
+  max-inline-size: 100%;
+}
+
+.fallback-trigger[hidden] {
+  display: none;
+}
+
 .panel {
   background: var(--rowan-color-bg, #ffffff);
   border: var(--rowan-border-width) solid var(--rowan-color-border);
