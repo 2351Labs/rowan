@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { sanitizeNavigationHref } from "../lib/url.js";
 import { RowanSideNavItem } from "../side-nav-item/side-nav-item.js";
 
 function isSideNavItem(value) {
@@ -218,6 +219,7 @@ export class RowanSideNav extends BaseElement {
   #activateItem(item, nativeEvent) {
     const previousValue = this.value;
     const changed = this.#activeItem !== item || previousValue !== item.value;
+    const href = item.external ? "" : sanitizeNavigationHref(item.href, "");
 
     this.#activeItem = item;
     this.#focusItem = item;
@@ -225,9 +227,8 @@ export class RowanSideNav extends BaseElement {
     this.#syncActiveItem(this.#items());
     this.#syncRovingTabIndex(this.#items());
 
-    if (!changed) return;
+    if (!changed && !href) return;
 
-    const href = item.href && !item.external ? item.href : "";
     const allowed = emit(
       this,
       "rowan-change",

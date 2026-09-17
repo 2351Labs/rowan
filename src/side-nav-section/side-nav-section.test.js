@@ -19,5 +19,10 @@ describe("rowan-side-nav-section", () => {
     expect(section.shadowRoot.querySelector("nav")).to.equal(null);
     expect(section.shadowRoot.querySelector(".label").textContent).to.equal("Invexus");
     expect(section.shadowRoot.querySelector(".label").hidden).to.equal(false);
+    if ("ariaLabelledByElements" in section.internals) {
+      expect(Array.from(section.internals.ariaLabelledByElements)).to.deep.equal([
+        section.shadowRoot.querySelector(".label"),
+      ]);
+    }
   });
 });

@@ -667,6 +667,12 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
   import "@rowan-ui/core/side-nav-section";
   import "@rowan-ui/core/split-pane";
 
+  const nav = document.querySelector("rowan-side-nav");
+  nav.addEventListener("rowan-change", (event) => {
+    event.preventDefault();
+    console.log(event.detail.value);
+  });
+
   const pane = document.querySelector("rowan-split-pane");
   pane.snapPoints = [25, 50, 75];
 

@@ -5,6 +5,10 @@
  * @slot - rowan-side-nav-item children
  * @csspart section
  * @csspart label
+ * @cssprop --rowan-side-nav-section-gap
+ * @cssprop --rowan-side-nav-section-label-fg
+ * @cssprop --rowan-side-nav-section-label-font-size
+ * @cssprop --rowan-side-nav-section-label-padding
  */
 export class RowanSideNavSection extends BaseElement {
     set label(value: string);

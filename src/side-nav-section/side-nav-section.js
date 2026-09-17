@@ -8,6 +8,10 @@ import { define } from "../lib/define.js";
  * @slot - rowan-side-nav-item children
  * @csspart section
  * @csspart label
+ * @cssprop --rowan-side-nav-section-gap
+ * @cssprop --rowan-side-nav-section-label-fg
+ * @cssprop --rowan-side-nav-section-label-font-size
+ * @cssprop --rowan-side-nav-section-label-padding
  */
 export class RowanSideNavSection extends BaseElement {
   static styleUrl = new URL("./side-nav-section.css", import.meta.url).href;
@@ -49,12 +53,9 @@ export class RowanSideNavSection extends BaseElement {
       this.internals.role = "group";
     }
 
-    if (
-      this.internals &&
-      !this.hasAttribute("aria-labelledby") &&
-      "ariaLabelledby" in this.internals
-    ) {
-      this.internals.ariaLabelledby = label ? this.#headingId : null;
+    if (this.internals && "ariaLabelledByElements" in this.internals) {
+      this.internals.ariaLabelledByElements =
+        !this.hasAttribute("aria-labelledby") && label ? [this.#heading] : [];
     }
   }
 }

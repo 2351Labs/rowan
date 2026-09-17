@@ -452,6 +452,7 @@
     "./src/segmented-control/segmented-control.js",
     "./src/side-nav/side-nav.js",
     "./src/side-nav-item/side-nav-item.js",
+    "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",

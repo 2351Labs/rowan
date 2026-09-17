@@ -218,4 +218,38 @@ describe("rowan-side-nav", () => {
     expect(nav.value).to.equal("activity");
     expect(click.defaultPrevented).to.equal(true);
   });
+
+  it("still lets SPA listeners cancel navigation when the current href is activated again", async () => {
+    const { nav, activity } = await renderSideNav();
+    activity.href = "#activity";
+    nav.value = "activity";
+    await nextMicrotask();
+
+    nav.addEventListener("rowan-change", (event) => event.preventDefault());
+    const click = new MouseEvent("click", { bubbles: true, composed: true, cancelable: true });
+    activity.shadowRoot.querySelector("a").dispatchEvent(click);
+    await nextMicrotask();
+
+    expect(nav.value).to.equal("activity");
+    expect(click.defaultPrevented).to.equal(true);
+  });
+
+  it("does not treat a javascript href as an in-app destination", async () => {
+    const { nav, activity } = await renderSideNav();
+    activity.href = "javascript:alert(1)";
+    await nextMicrotask();
+
+    const events = [];
+    nav.addEventListener("rowan-change", (event) => {
+      events.push(event);
+      event.preventDefault();
+    });
+    const click = new MouseEvent("click", { bubbles: true, composed: true, cancelable: true });
+    activity.shadowRoot.querySelector("a").dispatchEvent(click);
+    await nextMicrotask();
+
+    expect(events[0].detail.href).to.equal(null);
+    expect(events[0].cancelable).to.equal(false);
+    expect(activity.shadowRoot.querySelector("a").getAttribute("href")).to.equal(null);
+  });
 });
