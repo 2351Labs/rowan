@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 function storybookBase() {
   if (process.env.STORYBOOK_BASE) return process.env.STORYBOOK_BASE;
 
