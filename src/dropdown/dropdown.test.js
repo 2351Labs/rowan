@@ -255,4 +255,19 @@ describe("rowan-dropdown", () => {
     await settle();
     expect(trigger.hasAttribute("aria-haspopup")).to.equal(false);
   });
+
+  it("does not overwrite an author-supplied empty popup attribute", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.textContent = "MK";
+    trigger.setAttribute("aria-expanded", "");
+    dropdown.append(trigger);
+    document.body.append(dropdown);
+    await settle();
+
+    expect(trigger.getAttribute("aria-expanded")).to.equal("");
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("menu");
+  });
 });

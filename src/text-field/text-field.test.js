@@ -483,6 +483,22 @@ describe("rowan-text-field", () => {
     expect(element.hasAttribute("invalid")).to.equal(true);
   });
 
+  it("paints custom validity when the owning form reports validity", async () => {
+    const form = document.createElement("form");
+    form.addEventListener("submit", (event) => event.preventDefault());
+    const element = document.createElement("rowan-text-field");
+    element.name = "workspace";
+    element.value = "oak";
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    element.setCustomValidity("taken");
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(element.reportValidity()).to.equal(false);
+    expect(element.hasAttribute("invalid")).to.equal(true);
+  });
+
   it("mirrors native email validity through the FACE host", async () => {
     const element = document.createElement("rowan-text-field");
     element.type = "email";

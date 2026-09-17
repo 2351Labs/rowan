@@ -132,7 +132,7 @@ export class RowanDropdown extends BaseElement {
     for (const [attribute, value] of Object.entries(next)) {
       const current = this.#trigger.getAttribute(attribute);
       const owned = this.#ownedAria[attribute];
-      if (current && owned !== current) {
+      if (current !== null && owned !== current) {
         delete this.#ownedAria[attribute];
         continue;
       }

@@ -96,7 +96,6 @@ export class RowanNumberField extends BaseElement {
   #inputId = "";
   #autoInvalid = false;
   #paintInvalid = false;
-  #ignoreInvalidEvent = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -232,21 +231,17 @@ export class RowanNumberField extends BaseElement {
   }
 
   checkValidity() {
-    this.#ignoreInvalidEvent = true;
-    try {
-      if (this.internals && typeof this.internals.checkValidity === "function") {
-        return this.internals.checkValidity();
-      }
-
-      return this.#input ? this.#input.checkValidity() : true;
-    } finally {
-      this.#ignoreInvalidEvent = false;
+    if (this.internals && typeof this.internals.checkValidity === "function") {
+      return this.internals.checkValidity();
     }
+
+    return this.#input ? this.#input.checkValidity() : true;
   }
 
   reportValidity() {
     this.#paintInvalid = true;
     this.#syncValidity();
+    this.#paintHostIfInvalid();
     this.#applyDefaultA11y();
 
     if (this.internals && typeof this.internals.reportValidity === "function") {
@@ -406,10 +401,16 @@ export class RowanNumberField extends BaseElement {
   }
 
   #onInvalid() {
-    if (this.#ignoreInvalidEvent) return;
     this.#paintInvalid = true;
     this.#syncValidity();
+    this.#paintHostIfInvalid();
     this.#applyDefaultA11y();
+  }
+
+  #paintHostIfInvalid() {
+    if (this.internals && this.internals.validity && !this.internals.validity.valid) {
+      this.#setAutoInvalid(true);
+    }
   }
 
   #syncFormValue() {
