@@ -113,4 +113,20 @@ describe("rowan-textarea", () => {
 
     expect(el.internals.ariaInvalid).to.equal("false");
   });
+
+  it("paints invalid when the owning form reports validity", async () => {
+    const form = document.createElement("form");
+    form.addEventListener("submit", (event) => event.preventDefault());
+    const element = document.createElement("rowan-textarea");
+    element.name = "notes";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(form.reportValidity()).to.equal(false);
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+  });
 });

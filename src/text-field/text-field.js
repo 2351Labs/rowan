@@ -103,7 +103,6 @@ export class RowanTextField extends BaseElement {
     }
 
     this.#inputId = `${this.id}__input`;
-    this.listen(this, "invalid", () => this.#onInvalid());
 
     this.#syncFormValue();
     this.#syncValidity();
@@ -323,6 +322,8 @@ export class RowanTextField extends BaseElement {
         this.#syncValidity();
         this.#applyDefaultA11y();
       });
+
+      this.listen(this, "invalid", () => this.#onInvalid());
     }
 
     this.#input.id = this.#inputId;

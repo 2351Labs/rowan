@@ -111,7 +111,6 @@ export class RowanNumberField extends BaseElement {
     }
 
     this.#inputId = `${this.id}__input`;
-    this.listen(this, "invalid", () => this.#onInvalid());
 
     this.#syncFormValue();
     this.#syncValidity();
@@ -311,6 +310,8 @@ export class RowanNumberField extends BaseElement {
         this.#paintInvalid = true;
         this.requestRender();
       });
+
+      this.listen(this, "invalid", () => this.#onInvalid());
 
       this.listen(this.#decrementButton, "click", () => {
         this.#nudge(-1);
