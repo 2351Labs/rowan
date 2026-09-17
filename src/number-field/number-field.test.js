@@ -132,7 +132,9 @@ describe("rowan-number-field", () => {
     document.body.append(element);
     await nextMicrotask();
 
+    expect(element.hasAttribute("invalid")).to.equal(false);
     expect(element.checkValidity()).to.equal(false);
+    expect(element.hasAttribute("invalid")).to.equal(false);
 
     element.value = "-1";
     await nextMicrotask();
@@ -152,6 +154,22 @@ describe("rowan-number-field", () => {
     element.value = "1.5";
     await nextMicrotask();
     expect(element.checkValidity()).to.equal(true);
+  });
+
+  it("paints invalid when the owning form reports validity", async () => {
+    const form = document.createElement("form");
+    form.addEventListener("submit", (event) => event.preventDefault());
+    const element = document.createElement("rowan-number-field");
+    element.name = "quantity";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(form.reportValidity()).to.equal(false);
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
   });
 
   it("supports increment and decrement controls", async () => {

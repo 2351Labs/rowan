@@ -7658,6 +7658,15 @@
               "type": {
                 "text": "\"button\"|\"submit\"|\"reset\""
               }
+            },
+            {
+              "name": "aria-expanded"
+            },
+            {
+              "name": "aria-haspopup"
+            },
+            {
+              "name": "aria-controls"
             }
           ],
           "superclass": {

@@ -33,6 +33,7 @@ export class RowanDropdown extends BaseElement {
   #triggerSlot = null;
   #fallbackTrigger = null;
   #removeTriggerListener = null;
+  #ownedAria = {};
   #panel = null;
   #panelId = "";
   #removeDocumentPointerListener = null;
@@ -50,6 +51,7 @@ export class RowanDropdown extends BaseElement {
     this.#removeDocumentPointerListener?.();
     this.#removeDocumentPointerListener = null;
     this.#hidePanelPopover();
+    this.#releaseTriggerAria();
     removeDismissible(this);
     super.disconnectedCallback();
   }
@@ -107,6 +109,7 @@ export class RowanDropdown extends BaseElement {
     if (trigger !== this.#trigger) {
       this.#removeTriggerListener?.();
       this.#removeTriggerListener = null;
+      this.#releaseTriggerAria();
       this.#trigger = trigger;
       const type = custom ? "click" : "rowan-click";
       this.#removeTriggerListener = this.listen(trigger, type, () =>
@@ -114,9 +117,41 @@ export class RowanDropdown extends BaseElement {
       );
     }
 
-    this.#trigger.setAttribute("aria-controls", this.#panelId);
-    this.#trigger.setAttribute("aria-expanded", this.open ? "true" : "false");
-    this.#trigger.setAttribute("aria-haspopup", "menu");
+    this.#syncTriggerAria();
+  }
+
+  #syncTriggerAria() {
+    if (!this.#trigger) return;
+
+    const next = {
+      "aria-controls": this.#panelId,
+      "aria-expanded": this.open ? "true" : "false",
+      "aria-haspopup": "menu",
+    };
+
+    for (const [attribute, value] of Object.entries(next)) {
+      const current = this.#trigger.getAttribute(attribute);
+      const owned = this.#ownedAria[attribute];
+      if (current !== null && owned !== current) {
+        delete this.#ownedAria[attribute];
+        continue;
+      }
+      this.#trigger.setAttribute(attribute, value);
+      this.#ownedAria[attribute] = value;
+    }
+  }
+
+  #releaseTriggerAria() {
+    const trigger = this.#trigger;
+    if (!trigger) return;
+
+    for (const [attribute, value] of Object.entries(this.#ownedAria)) {
+      if (trigger.getAttribute(attribute) === value) {
+        trigger.removeAttribute(attribute);
+      }
+    }
+
+    this.#ownedAria = {};
   }
 
   #syncDocumentDismissal() {

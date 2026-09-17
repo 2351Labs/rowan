@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import "./dropdown.js";
+import "../icon-button/icon-button.js";
 import "../dialog/dialog.js";
 import "../menu/menu.js";
 import "../menu-item/menu-item.js";
@@ -219,5 +220,54 @@ describe("rowan-dropdown", () => {
     await settle();
     expect(dropdown.open).to.equal(true);
     expect(trigger.getAttribute("aria-expanded")).to.equal("true");
+  });
+
+  it("forwards popup state onto a slotted icon-button control", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("rowan-icon-button");
+    trigger.slot = "trigger";
+    trigger.label = "Account";
+    dropdown.append(trigger);
+    document.body.append(dropdown);
+    await settle();
+
+    const inner = trigger.shadowRoot.querySelector("button");
+    expect(inner.getAttribute("aria-haspopup")).to.equal("menu");
+    expect(inner.getAttribute("aria-expanded")).to.equal("false");
+
+    trigger.click();
+    await settle();
+    expect(inner.getAttribute("aria-expanded")).to.equal("true");
+  });
+
+  it("clears managed popup attributes when the trigger slot is emptied", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.textContent = "MK";
+    dropdown.append(trigger);
+    document.body.append(dropdown);
+    await settle();
+
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("menu");
+    trigger.remove();
+    await settle();
+    expect(trigger.hasAttribute("aria-haspopup")).to.equal(false);
+  });
+
+  it("does not overwrite an author-supplied empty popup attribute", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.textContent = "MK";
+    trigger.setAttribute("aria-expanded", "");
+    dropdown.append(trigger);
+    document.body.append(dropdown);
+    await settle();
+
+    expect(trigger.getAttribute("aria-expanded")).to.equal("");
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("menu");
   });
 });

@@ -450,6 +450,7 @@ describe("rowan-text-field", () => {
 
     expect(element.hasAttribute("invalid")).to.equal(false);
     expect(element.checkValidity()).to.equal(false);
+    expect(element.hasAttribute("invalid")).to.equal(false);
 
     element.shadowRoot
       .querySelector("input")
@@ -464,6 +465,38 @@ describe("rowan-text-field", () => {
     element.value = "";
     await nextMicrotask();
     element.reportValidity();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+  });
+
+  it("paints invalid when the owning form reports validity", async () => {
+    const form = document.createElement("form");
+    form.addEventListener("submit", (event) => event.preventDefault());
+    const element = document.createElement("rowan-text-field");
+    element.name = "workspace";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(form.reportValidity()).to.equal(false);
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+  });
+
+  it("paints custom validity when the owning form reports validity", async () => {
+    const form = document.createElement("form");
+    form.addEventListener("submit", (event) => event.preventDefault());
+    const element = document.createElement("rowan-text-field");
+    element.name = "workspace";
+    element.value = "oak";
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    element.setCustomValidity("taken");
+    expect(element.hasAttribute("invalid")).to.equal(false);
+    expect(element.reportValidity()).to.equal(false);
     expect(element.hasAttribute("invalid")).to.equal(true);
   });
 
