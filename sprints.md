@@ -6,7 +6,7 @@
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprints 1–6 landed on main.
+**Status.** Sprints 1–6 on main. Sprints 7–8 in this branch. Sprint 9 not started.
 
 ---
 
@@ -110,7 +110,42 @@ Thin `forwardRef` facades. No extra React state.
 - [x] Wrappers import `createRowanComponent` from core; HTML icon usage stays core-free.
 - [x] CI fails if those generated trees are stale.
 
+## Sprint 7 — Side nav: none-selected and sections
+
+**Status:** done
+
+Admin apps need one rail with labeled groups and a way to clear selection (no dummy `__none__` values).
+
+### Done when
+
+- [x] `value=""` (or clearing `value`) means no item is active. Do not revive an item marked `active`.
+- [x] Initial HTML without `value` may still adopt a child with `active`.
+- [x] `rowan-side-nav-section` renders a group label; items inside stay on the parent nav’s single `value` and keyboard sequence.
+- [x] Tests cover clear-selection, explicit empty vs declared `active`, and sectioned items.
+
+## Sprint 8 — Side nav: SPA destinations
+
+**Status:** done
+
+### Done when
+
+- [x] In-app `href` still uses a real `<a>`. `rowan-change` is cancelable; `preventDefault` blocks navigation (same idea as table link actions).
+- [x] No-`href` items stay `role="button"` and emit `rowan-change` only.
+- [x] README documents both SPA patterns.
+
+## Sprint 9 — Slotted dropdown trigger and touched-invalid fields
+
+**Status:** not started
+
+### Done when
+
+- [ ] `rowan-dropdown` keeps the default secondary button and accepts a `trigger` slot (avatar / icon-only).
+- [ ] FACE text fields do not paint `invalid` until the user has interacted or the form was submitted (`:user-invalid` / touched).
+
 ## Later / not this track
 
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).
+- Publish `@rowan-ui/icons` next to core on npm.
+- Progress `meta` visibility and trend-chart compact density.
+- KPI/stat card as a primitive.

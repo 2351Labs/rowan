@@ -51,6 +51,7 @@ export { RowanSegmentedControl } from "./segmented-control.js";
 export { RowanSelect } from "./select.js";
 export { RowanSideNav } from "./side-nav.js";
 export { RowanSideNavItem } from "./side-nav-item.js";
+export { RowanSideNavSection } from "./side-nav-section.js";
 export { RowanSkeleton } from "./skeleton.js";
 export { RowanSlider } from "./slider.js";
 export { RowanSpinner } from "./spinner.js";

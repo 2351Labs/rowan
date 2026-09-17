@@ -56,6 +56,7 @@ import {
 } from "@rowan-ui/core/segmented-control";
 import { RowanSideNav } from "@rowan-ui/core/side-nav";
 import { RowanSideNavItem } from "@rowan-ui/core/side-nav-item";
+import { RowanSideNavSection } from "@rowan-ui/core/side-nav-section";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
@@ -144,6 +145,7 @@ const select: RowanSelect = document.createElement("rowan-select");
 const segmentedControl: RowanSegmentedControl = document.createElement("rowan-segmented-control");
 const sideNav: RowanSideNav = document.createElement("rowan-side-nav");
 const sideNavItem: RowanSideNavItem = document.createElement("rowan-side-nav-item");
+const sideNavSection: RowanSideNavSection = document.createElement("rowan-side-nav-section");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");

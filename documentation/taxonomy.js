@@ -82,6 +82,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "pagination",
       "side-nav",
       "side-nav-item",
+      "side-nav-section",
       "split-pane",
       "tab",
       "tab-panel",

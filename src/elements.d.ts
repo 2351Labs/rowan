@@ -51,6 +51,7 @@ import type { RowanSelect } from "../types/select/select.js";
 import type { RowanSegmentedControl } from "../types/segmented-control/segmented-control.js";
 import type { RowanSideNav } from "../types/side-nav/side-nav.js";
 import type { RowanSideNavItem } from "../types/side-nav-item/side-nav-item.js";
+import type { RowanSideNavSection } from "../types/side-nav-section/side-nav-section.js";
 import type { RowanSkeleton } from "../types/skeleton/skeleton.js";
 import type { RowanSlider } from "../types/slider/slider.js";
 import type { RowanSpinner } from "../types/spinner/spinner.js";
@@ -130,6 +131,7 @@ declare global {
     "rowan-segmented-control": RowanSegmentedControl;
     "rowan-side-nav": RowanSideNav;
     "rowan-side-nav-item": RowanSideNavItem;
+    "rowan-side-nav-section": RowanSideNavSection;
     "rowan-skeleton": RowanSkeleton;
     "rowan-slider": RowanSlider;
     "rowan-spinner": RowanSpinner;

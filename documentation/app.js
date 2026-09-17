@@ -813,17 +813,20 @@ const APP_LAYOUT_SNIPPET = `<rowan-app-layout id="project-shell">
 </script>`;
 
 const SIDE_NAV_SNIPPET = `<rowan-side-nav id="project-nav" label="Project navigation" value="overview">
-  <rowan-side-nav-item value="overview" href="/overview">Overview</rowan-side-nav-item>
-  <rowan-side-nav-item value="activity" href="/activity">Activity</rowan-side-nav-item>
-  <rowan-side-nav-item value="settings" href="/settings">Settings</rowan-side-nav-item>
+  <rowan-side-nav-section label="Workspace">
+    <rowan-side-nav-item value="overview">Overview</rowan-side-nav-item>
+    <rowan-side-nav-item value="activity">Activity</rowan-side-nav-item>
+  </rowan-side-nav-section>
 </rowan-side-nav>
 
 <script type="module">
   import "@rowan-ui/core/side-nav";
+  import "@rowan-ui/core/side-nav-section";
 
   const nav = document.querySelector("#project-nav");
   nav.addEventListener("rowan-change", (event) => {
-    console.log(event.detail.value);
+    event.preventDefault();
+    router.push(event.detail.value);
   });
 </script>`;
 
@@ -2359,13 +2362,13 @@ const DOC_PAGES = [
     group: "Components",
     title: "Rowan Side Navigation",
     summary:
-      "Flat application navigation controller with active-item state and roving keyboard focus.",
+      "Application navigation with optional labeled sections, empty-value none-selected, and cancelable in-app href.",
     tags: ["navigation", "keyboard", "selection"],
     keywords: ["side nav", "navigation", "roving focus", "active", "rowan-change"],
     content: () => `
       <section class="doc-section" data-doc-section id="side-nav-overview">
-        <h2>Flat application navigation</h2>
-        <p>Compose direct rowan-side-nav-item children for workspace destinations. Arrow keys move the sole tab stop between enabled items, and Enter or Space activates the focused item.</p>
+        <h2>Application navigation</h2>
+        <p>Compose rowan-side-nav-item children, optionally wrapped in rowan-side-nav-section. The parent keeps one value. An empty value clears selection. Arrow keys move the sole tab stop between enabled items; Enter or Space activates the focused item.</p>
         <div class="docs-side-nav-demo">
           <rowan-side-nav id="docs-side-nav-demo" label="Project navigation" value="overview">
             <rowan-side-nav-item value="overview">Overview</rowan-side-nav-item>
@@ -2379,7 +2382,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="side-nav-contract">
         <h2>Controlled active value</h2>
-        <p>Set value from application state to update the active item without an event. User activation updates value and emits one composed rowan-change event with the selected item.</p>
+        <p>Set value from application state to update the active item without an event. User activation emits one composed rowan-change. For SPA routing, omit href or preventDefault on rowan-change when href is set.</p>
         ${codeBlock(SIDE_NAV_SNIPPET, "html")}
       </section>
     `,
@@ -2396,7 +2399,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="side-nav-item-overview">
         <h2>Destination content</h2>
-        <p>Use href for navigation destinations, or omit it for controller-managed action items. The item works standalone and receives roving focus behavior when it is a direct child of rowan-side-nav.</p>
+        <p>Use href for full navigation, or omit it and route from the parent rowan-change for SPA destinations. Items receive roving focus when they belong to a rowan-side-nav, including inside a section.</p>
         <div class="docs-side-nav-item-demo">
           <rowan-side-nav-item value="overview" href="#side-nav-item-contract" active>
             <span slot="prefix" class="docs-side-nav-item-mark" aria-hidden="true"></span>
@@ -2410,6 +2413,20 @@ const DOC_PAGES = [
         <h2>Link and state contract</h2>
         <p>active reflects the current destination and maps to an internal aria-current page marker. disabled items are removed from the tab order and skipped by the side navigation controller.</p>
         ${codeBlock(SIDE_NAV_ITEM_SNIPPET, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "side-nav-section",
+    group: "Components",
+    title: "Rowan Side Navigation Section",
+    summary: "Labeled group of destinations inside a single rowan-side-nav.",
+    tags: ["navigation", "composition"],
+    keywords: ["side nav section", "group", "navigation"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="side-nav-section-overview">
+        <h2>Labeled groups</h2>
+        <p>Wrap rowan-side-nav-item children in rowan-side-nav-section. The parent nav still has one value and one keyboard sequence.</p>
       </section>
     `,
   },

@@ -243,6 +243,10 @@
       "types": "./src/side-nav-item/side-nav-item.d.ts",
       "default": "./src/side-nav-item/side-nav-item.js"
     },
+    "./side-nav-section": {
+      "types": "./src/side-nav-section/side-nav-section.d.ts",
+      "default": "./src/side-nav-section/side-nav-section.js"
+    },
     "./slider": {
       "types": "./src/slider/slider.d.ts",
       "default": "./src/slider/slider.js"
