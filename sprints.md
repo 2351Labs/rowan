@@ -6,7 +6,7 @@
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprints 1–6 on main. Sprints 7–8 in this branch. Sprint 9 not started.
+**Status.** Sprints 1–8 on main. Sprint 9 in this branch.
 
 ---
 
@@ -135,12 +135,12 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ## Sprint 9 — Slotted dropdown trigger and touched-invalid fields
 
-**Status:** not started
+**Status:** done
 
 ### Done when
 
-- [ ] `rowan-dropdown` keeps the default secondary button and accepts a `trigger` slot (avatar / icon-only).
-- [ ] FACE text fields do not paint `invalid` until the user has interacted or the form was submitted (`:user-invalid` / touched).
+- [x] `rowan-dropdown` keeps the default secondary button and accepts a `trigger` slot (avatar / icon-only).
+- [x] FACE text fields do not paint `invalid` until the user has interacted or the form was submitted (`:user-invalid` / touched).
 
 ## Later / not this track
 

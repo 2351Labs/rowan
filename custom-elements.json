@@ -5433,6 +5433,10 @@
             {
               "description": "Dropdown content",
               "name": ""
+            },
+            {
+              "description": "Optional custom trigger. The default secondary button is used when this slot is empty.",
+              "name": "trigger"
             }
           ],
           "members": [

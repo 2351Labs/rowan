@@ -105,7 +105,7 @@ describe("rowan-textarea", () => {
     expect(el.internals.role).to.equal("textbox");
     expect(el.internals.ariaMultiLine).to.equal("true");
     expect(el.internals.ariaRequired).to.equal("true");
-    expect(el.internals.ariaInvalid).to.equal("true");
+    expect(el.internals.ariaInvalid).to.equal("false");
     expect(el.internals.ariaLabel).to.equal("Notes");
 
     el.value = "Ready";

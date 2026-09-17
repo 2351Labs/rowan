@@ -83,6 +83,7 @@ export class RowanTextField extends BaseElement {
   #defaultValue = null;
   #inputId = "";
   #autoInvalid = false;
+  #paintInvalid = false;
   #value = null;
   #composing = false;
 
@@ -247,6 +248,7 @@ export class RowanTextField extends BaseElement {
   }
 
   formResetCallback() {
+    this.#paintInvalid = false;
     this.value = this.#defaultValue ?? "";
     this.requestRender();
   }
@@ -265,6 +267,10 @@ export class RowanTextField extends BaseElement {
   }
 
   reportValidity() {
+    this.#paintInvalid = true;
+    this.#syncValidity();
+    this.#applyDefaultA11y();
+
     if (this.internals && typeof this.internals.reportValidity === "function") {
       return this.internals.reportValidity();
     }
@@ -303,6 +309,12 @@ export class RowanTextField extends BaseElement {
         emit(this, "rowan-change", {
           value: this.value,
         });
+      });
+
+      this.listen(this.#input, "focusout", () => {
+        this.#paintInvalid = true;
+        this.#syncValidity();
+        this.#applyDefaultA11y();
       });
     }
 
@@ -390,6 +402,15 @@ export class RowanTextField extends BaseElement {
   }
 
   #setAutoInvalid(nextValue) {
+    if (nextValue && !this.#paintInvalid) {
+      if (this.#autoInvalid) {
+        this.removeAttribute("invalid");
+        this.#autoInvalid = false;
+      }
+
+      return;
+    }
+
     if (nextValue) {
       if (!this.hasAttribute("invalid")) {
         this.#autoInvalid = true;

@@ -95,6 +95,7 @@ export class RowanNumberField extends BaseElement {
   #defaultValue = null;
   #inputId = "";
   #autoInvalid = false;
+  #paintInvalid = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -219,6 +220,7 @@ export class RowanNumberField extends BaseElement {
   }
 
   formResetCallback() {
+    this.#paintInvalid = false;
     this.value = this.#defaultValue ?? "";
     this.requestRender();
   }
@@ -237,6 +239,10 @@ export class RowanNumberField extends BaseElement {
   }
 
   reportValidity() {
+    this.#paintInvalid = true;
+    this.#syncValidity();
+    this.#applyDefaultA11y();
+
     if (this.internals && typeof this.internals.reportValidity === "function") {
       return this.internals.reportValidity();
     }
@@ -295,6 +301,7 @@ export class RowanNumberField extends BaseElement {
       });
 
       this.listen(this.#input, "blur", () => {
+        this.#paintInvalid = true;
         this.requestRender();
       });
 
@@ -458,6 +465,15 @@ export class RowanNumberField extends BaseElement {
   }
 
   #setAutoInvalid(nextValue) {
+    if (nextValue && !this.#paintInvalid) {
+      if (this.#autoInvalid) {
+        this.removeAttribute("invalid");
+        this.#autoInvalid = false;
+      }
+
+      return;
+    }
+
     if (nextValue) {
       if (!this.hasAttribute("invalid")) {
         this.#autoInvalid = true;

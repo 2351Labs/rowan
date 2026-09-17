@@ -38,3 +38,29 @@ export const Playground = {
     return dropdown;
   },
 };
+
+export const CustomTrigger = {
+  parameters: createEventScriptParameters({
+    steps: ["Click the custom trigger to open the menu."],
+    events: ["rowan-change"],
+  }),
+  render: () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.textContent = "MK";
+    trigger.setAttribute("aria-label", "Account");
+
+    const menu = document.createElement("rowan-menu");
+    for (const value of ["Profile", "Sign out"]) {
+      const item = document.createElement("rowan-menu-item");
+      item.value = value.toLowerCase().replace(" ", "-");
+      item.textContent = value;
+      menu.append(item);
+    }
+
+    dropdown.append(trigger, menu);
+    return dropdown;
+  },
+};
