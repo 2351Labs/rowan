@@ -485,8 +485,8 @@
     "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json && node ./scripts/refine-generated-declarations.mjs && npm run types --workspace=@rowan-ui/maplibre",
     "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json && tsc --project tsconfig.typecheck.react-18.json && tsc --project tsconfig.typecheck.react-19.json && npm run typecheck --workspace=@rowan-ui/maplibre",
     "lint": "npm run tokens:check && npm run css:check && eslint \"src/**/*.js\" \"scripts/**/*.mjs\" \"documentation/*.js\" \".storybook/**/*.js\" \"packages/*/src/**/*.js\" \"packages/*/scripts/**/*.mjs\"",
-    "format": "prettier --write \"**/*.{js,css,md,mdx,json}\"",
-    "format:check": "prettier --check \"**/*.{js,css,md,mdx,json}\""
+    "format": "prettier --write \"**/*.{js,jsx,css,md,mdx,json}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,css,md,mdx,json}\""
   },
   "devDependencies": {
     "@awesome.me/webawesome": "^3.12.0",

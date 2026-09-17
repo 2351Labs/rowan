@@ -365,6 +365,24 @@
             },
             {
               "kind": "field",
+              "name": "#resizeFrame",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#lastMapSize",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
               "name": "label"
             },
             {
