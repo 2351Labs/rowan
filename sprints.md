@@ -6,7 +6,7 @@
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprint 1 in progress (CEM plugin + public-API check landed locally).
+**Status.** Sprint 1 done on main. Sprint 2 in progress.
 
 ---
 
@@ -19,7 +19,7 @@ The published `custom-elements.json` is the source of truth for wrappers, docs, 
 ### Done when
 
 - [x] Analyzer plugin strips private/`#` members, statics, and host lifecycle from published CEM (core, icons, MapLibre).
-- [ ] `npm run analyze` is still the only generator; CI `Verify generated artifacts` stays green.
+- [x] `npm run analyze` is still the only generator; CI `Verify generated artifacts` stays green.
 - [x] A check fails if a `tagName` is missing or a private member leaks into the published manifest.
 - [x] Public instance fields (including property-only `config`) and `@event` names remain.
 - [x] Positive pins: `rowan-button` variant/disabled/`rowan-click`, `rowan-table` config/selected/`rowan-select`.
@@ -38,11 +38,11 @@ Generate checked-in React bindings from the public CEM. Prefer a small Rowan gen
 
 ### Done when
 
-- [ ] `npm run analyze` (or a follow-on `npm run react:generate`) emits wrapper modules from CEM.
-- [ ] Barrel: `@rowan-ui/core/react` exports components + existing JSX types + `useRowanElement`.
-- [ ] Per-component: `@rowan-ui/core/react/button` (tree-shakeable).
-- [ ] Wrapper import loads the element module (client define). No `defineAll()` as the only path.
-- [ ] Generated output is committed; CI fails if it is stale.
+- [x] `npm run analyze` (or a follow-on `npm run react:generate`) emits wrapper modules from CEM.
+- [x] `@rowan-ui/core/react` stays the hook + JSX types (no define-all).
+- [x] Per-component: `@rowan-ui/core/react/button`. All wrappers: `@rowan-ui/core/react/components`.
+- [x] Wrapper import loads the element module (client define). No `defineAll()` as the only path.
+- [x] Generated output is committed; CI fails if it is stale.
 
 ### Out of scope
 

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type * as React from "react";
 import { useRowanElement } from "@rowan-ui/core/react";
+import { RowanButton } from "@rowan-ui/core/react/button";
 import type { RowanTable } from "@rowan-ui/core/table";
 
 type RowanTags = Extract<keyof HTMLElementTagNameMap, `rowan-${string}`>;
@@ -86,6 +87,9 @@ function TableView() {
       <rowan-button disabled size="sm" variant="primary">
         Save
       </rowan-button>
+      <RowanButton disabled size="sm" onRowanClick={() => undefined}>
+        Save
+      </RowanButton>
       <rowan-context-menu for="member-row" label="Member actions" />
       <rowan-virtual-list ref={listRef} />
       <rowan-combobox ref={comboboxRef} label="Member" />

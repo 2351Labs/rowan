@@ -22,6 +22,7 @@ const REQUIRED_CONTRACTS = {
     "rowan-table": {
       members: ["config", "selected"],
       events: ["rowan-select"],
+      notAttributes: ["config", "selected"],
     },
     "rowan-radio-group": {
       members: ["name", "required", "value"],
@@ -47,12 +48,25 @@ function names(items) {
   return new Set((items ?? []).map((item) => item.name).filter(Boolean));
 }
 
-function collectCustomElements(manifest) {
+function collectCustomElements(manifest, sourcePath) {
   const byTag = new Map();
 
   for (const module of manifest.modules ?? []) {
     for (const declaration of module.declarations ?? []) {
       if (declaration.kind !== "class") continue;
+
+      for (const member of declaration.members ?? []) {
+        if (!isPublicApiMember(member)) {
+          const where = declaration.tagName ?? declaration.name;
+          errors.push(`${sourcePath}: ${where} leaked ${member.kind} ${member.name}`);
+        }
+      }
+
+      if (declaration.name.startsWith("Rowan") && !declaration.tagName) {
+        errors.push(`${sourcePath}: ${declaration.name} is missing tagName`);
+        continue;
+      }
+
       if (!declaration.tagName) continue;
       byTag.set(declaration.tagName, declaration);
     }
@@ -63,7 +77,7 @@ function collectCustomElements(manifest) {
 
 for (const relativePath of manifests) {
   const manifest = JSON.parse(readFileSync(resolve(root, relativePath), "utf8"));
-  const byTag = collectCustomElements(manifest);
+  const byTag = collectCustomElements(manifest, relativePath);
 
   if (byTag.size === 0) {
     errors.push(`${relativePath}: no custom elements`);
@@ -73,12 +87,6 @@ for (const relativePath of manifests) {
   for (const [tagName, declaration] of byTag) {
     if (!tagName.startsWith("rowan-")) {
       errors.push(`${relativePath}: ${declaration.name} tagName "${tagName}"`);
-    }
-
-    for (const member of declaration.members ?? []) {
-      if (!isPublicApiMember(member)) {
-        errors.push(`${relativePath}: ${tagName} leaked ${member.kind} ${member.name}`);
-      }
     }
   }
 
@@ -92,6 +100,7 @@ for (const relativePath of manifests) {
 
     const memberNames = names(declaration.members);
     const eventNames = names(declaration.events);
+    const attributeNames = names(declaration.attributes);
 
     for (const member of contract.members ?? []) {
       if (!memberNames.has(member)) {
@@ -102,6 +111,12 @@ for (const relativePath of manifests) {
     for (const event of contract.events ?? []) {
       if (!eventNames.has(event)) {
         errors.push(`${relativePath}: ${tagName} missing event ${event}`);
+      }
+    }
+
+    for (const attribute of contract.notAttributes ?? []) {
+      if (attributeNames.has(attribute)) {
+        errors.push(`${relativePath}: ${tagName} must not reflect ${attribute} as an attribute`);
       }
     }
   }

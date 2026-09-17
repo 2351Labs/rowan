@@ -12685,43 +12685,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/react/index.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "useRowanElement",
-          "parameters": [
-            {
-              "name": "ref",
-              "type": {
-                "text": "{ current: HTMLElement | null }"
-              }
-            },
-            {
-              "name": "options",
-              "default": "{}",
-              "optional": true,
-              "type": {
-                "text": "{ properties?: Record<string, unknown>, events?: Record<string, EventListener | undefined> }"
-              }
-            }
-          ],
-          "description": "Binds React state and native event listeners to a Rowan custom-element ref.\nThis hook does not register Rowan elements; import registration modules from\nclient-only React effects or another browser-only application boundary.\n\nProperties are assigned only when their value changes, so the object and array\nAPIs Rowan exposes as property-only keep their identity across renders.\nListeners bind once per event type and dispatch to the latest handler.\nIf the host is missing on the first effect, listeners attach when it mounts."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "useRowanElement",
-          "declaration": {
-            "name": "useRowanElement",
-            "module": "src/react/index.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/rich-text-editor/document.js",
       "declarations": [
         {
