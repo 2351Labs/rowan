@@ -96,6 +96,7 @@ export class RowanNumberField extends BaseElement {
   #inputId = "";
   #autoInvalid = false;
   #paintInvalid = false;
+  #ignoreInvalidEvent = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -110,6 +111,7 @@ export class RowanNumberField extends BaseElement {
     }
 
     this.#inputId = `${this.id}__input`;
+    this.listen(this, "invalid", () => this.#onInvalid());
 
     this.#syncFormValue();
     this.#syncValidity();
@@ -231,11 +233,16 @@ export class RowanNumberField extends BaseElement {
   }
 
   checkValidity() {
-    if (this.internals && typeof this.internals.checkValidity === "function") {
-      return this.internals.checkValidity();
-    }
+    this.#ignoreInvalidEvent = true;
+    try {
+      if (this.internals && typeof this.internals.checkValidity === "function") {
+        return this.internals.checkValidity();
+      }
 
-    return this.#input ? this.#input.checkValidity() : true;
+      return this.#input ? this.#input.checkValidity() : true;
+    } finally {
+      this.#ignoreInvalidEvent = false;
+    }
   }
 
   reportValidity() {
@@ -395,6 +402,13 @@ export class RowanNumberField extends BaseElement {
     emit(this, "rowan-change", {
       value: this.value,
     });
+  }
+
+  #onInvalid() {
+    if (this.#ignoreInvalidEvent) return;
+    this.#paintInvalid = true;
+    this.#syncValidity();
+    this.#applyDefaultA11y();
   }
 
   #syncFormValue() {

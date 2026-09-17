@@ -56,6 +56,19 @@ describe("rowan-icon-button", () => {
     expect(el.getAttribute("type")).to.equal("reset");
   });
 
+  it("forwards popup ARIA onto the inner button", async () => {
+    const el = document.createElement("rowan-icon-button");
+    el.label = "Account";
+    el.setAttribute("aria-haspopup", "menu");
+    el.setAttribute("aria-expanded", "true");
+    document.body.append(el);
+    await nextMicrotask();
+
+    const inner = el.shadowRoot.querySelector("button");
+    expect(inner.getAttribute("aria-haspopup")).to.equal("menu");
+    expect(inner.getAttribute("aria-expanded")).to.equal("true");
+  });
+
   it("emits rowan-click when activated", async () => {
     const el = document.createElement("rowan-icon-button");
     document.body.append(el);

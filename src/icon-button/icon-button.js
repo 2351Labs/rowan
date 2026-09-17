@@ -30,7 +30,17 @@ const TYPES = new Set(["button", "submit", "reset"]);
 export class RowanIconButton extends BaseElement {
   static styleUrl = new URL("./icon-button.css", import.meta.url).href;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["label", "icon", "variant", "size", "disabled", "type"];
+  static observedAttributes = [
+    "label",
+    "icon",
+    "variant",
+    "size",
+    "disabled",
+    "type",
+    "aria-expanded",
+    "aria-haspopup",
+    "aria-controls",
+  ];
   static upgradeProperties = ["label", "icon", "variant", "size", "disabled", "type"];
   static componentTokenPrefixes = ["--rowan-button-"];
 
@@ -142,6 +152,7 @@ export class RowanIconButton extends BaseElement {
     this.#button.type = this.type;
     this.#button.disabled = this.disabled;
     this.#button.setAttribute("aria-label", this.label.trim() || "Icon button");
+    this.#syncPopupState();
 
     const iconName = this.icon;
     this.#iconSlot.hidden = Boolean(iconName);
@@ -150,6 +161,17 @@ export class RowanIconButton extends BaseElement {
       this.#configuredIcon.setAttribute("name", iconName);
     } else {
       this.#configuredIcon.removeAttribute("name");
+    }
+  }
+
+  #syncPopupState() {
+    for (const attribute of ["aria-expanded", "aria-haspopup", "aria-controls"]) {
+      const value = this.getAttribute(attribute);
+      if (value === null) {
+        this.#button.removeAttribute(attribute);
+      } else {
+        this.#button.setAttribute(attribute, value);
+      }
     }
   }
 }
