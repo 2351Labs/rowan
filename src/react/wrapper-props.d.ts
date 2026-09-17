@@ -5,7 +5,13 @@ import type { BaseElement } from "../lib/base-element.js";
 type HostPropertyKeys<Element extends HTMLElement> = {
   [
     Key in Exclude<Extract<keyof Element, string>, keyof HTMLElement | keyof BaseElement>
-  ]: NonNullable<Element[Key]> extends (...args: never[]) => unknown ? never : Key;
+  ]: NonNullable<Element[Key]> extends (...args: never[]) => unknown
+    ? null extends Element[Key]
+      ? Key
+      : undefined extends Element[Key]
+        ? Key
+        : never
+    : Key;
 }[Exclude<Extract<keyof Element, string>, keyof HTMLElement | keyof BaseElement>];
 
 export type RowanWrapperProps<Element extends HTMLElement, EventProps extends object = {}> = {

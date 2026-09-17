@@ -6,7 +6,7 @@
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprints 1–8 on main. Sprint 9 in this branch.
+**Status.** Sprints 1–9 landed on main.
 
 ---
 

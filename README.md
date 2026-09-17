@@ -153,16 +153,9 @@ useRowanElement(buttonRef, {
 ```
 
 React 18 server rendering serializes a false custom-element boolean as a present
-attribute such as `disabled="false"`. Generated wrappers assign booleans as
-properties, so `disabled={false}` does not appear in markup. For raw tags, omit
-false boolean attributes from server markup or assign them through a client-side
-ref:
-
-```tsx
-const booleanAttributes = disabled ? { disabled: true } : {};
-
-return <rowan-button {...booleanAttributes}>Save</rowan-button>;
-```
+attribute such as `disabled="false"`. After the host upgrades, Rowan treats
+`"false"` as unset and removes the attribute. Generated wrappers assign booleans
+as properties, so `disabled={false}` never appears in markup.
 
 For Next.js, import wrappers from a client component. Do not import them (or registration modules) from server-rendered code:
 

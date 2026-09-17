@@ -3,6 +3,8 @@ import type * as React from "react";
 import { useRowanElement } from "@rowan-ui/core/react";
 import { RowanButton } from "@rowan-ui/core/react/button";
 import { RowanTable as Table } from "@rowan-ui/core/react/table";
+import { RowanTrendChart } from "@rowan-ui/core/react/trend-chart";
+import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
 import type { RowanTable } from "@rowan-ui/core/table";
 
 type RowanTags = Extract<keyof HTMLElementTagNameMap, `rowan-${string}`>;
@@ -119,6 +121,13 @@ const invalidWrapperVariant = (
 const wrapperTable = (
   <Table config={tableConfig} selected={["1"]} onRowanSelect={(event) => event.detail} />
 );
+const wrapperList = (
+  <RowanVirtualList
+    items={tableConfig.rows}
+    renderItem={(_item, _index, itemElement) => itemElement}
+  />
+);
+const wrapperChart = <RowanTrendChart series={[]} valueFormatter={(value) => String(value)} />;
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
@@ -127,3 +136,5 @@ void invalidTableDensityAttribute;
 void wrapperButton;
 void invalidWrapperVariant;
 void wrapperTable;
+void wrapperList;
+void wrapperChart;

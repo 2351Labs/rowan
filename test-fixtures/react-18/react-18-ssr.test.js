@@ -30,7 +30,7 @@ describe("React 18 SSR compatibility", () => {
     document.body.innerHTML = "";
   });
 
-  it("treats a false JSX boolean attribute as present after custom-element upgrade", async () => {
+  it("drops a false JSX boolean attribute after custom-element upgrade", async () => {
     const markup = renderToStaticMarkup(createElement("rowan-button", { disabled: false }, "Save"));
     const container = document.createElement("div");
     container.innerHTML = markup;
@@ -39,7 +39,8 @@ describe("React 18 SSR compatibility", () => {
 
     const button = container.querySelector("rowan-button");
     expect(markup).to.include('disabled="false"');
-    expect(button.disabled).to.equal(true);
+    expect(button.hasAttribute("disabled")).to.equal(false);
+    expect(button.disabled).to.equal(false);
   });
 
   it("hydrates a false boolean through a client-side property assignment", async () => {

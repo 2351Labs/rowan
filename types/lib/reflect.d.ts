@@ -1,4 +1,5 @@
-export function readBooleanAttribute(element: any, attributeName: any): any;
+export function isFalseBooleanAttributeValue(value: any): boolean;
+export function readBooleanAttribute(element: any, attributeName: any): boolean;
 export function reflectBooleanAttribute(element: any, attributeName: any, value: any): void;
 export function readStringAttribute(element: any, attributeName: any, fallback?: string): any;
 /**
@@ -10,3 +11,4 @@ export function readStringAttribute(element: any, attributeName: any, fallback?:
 export function reflectStringAttribute(element: any, attributeName: any, value: any): void;
 export function readNumberAttribute(element: any, attributeName: any, fallback?: number): number;
 export function reflectNumberAttribute(element: any, attributeName: any, value: any): void;
+export const BOOLEAN_ATTRIBUTES: Set<string>;

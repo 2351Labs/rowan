@@ -1,4 +1,6 @@
 import {
+  BOOLEAN_ATTRIBUTES,
+  isFalseBooleanAttributeValue,
   readBooleanAttribute,
   readNumberAttribute,
   readStringAttribute,
@@ -143,7 +145,21 @@ export class BaseElement extends HTMLElement {
     this.#cleanup.clear();
   }
 
+  setAttribute(name, value) {
+    if (BOOLEAN_ATTRIBUTES.has(name) && isFalseBooleanAttributeValue(value)) {
+      this.removeAttribute(name);
+      return;
+    }
+
+    super.setAttribute(name, value);
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue === "false" && BOOLEAN_ATTRIBUTES.has(name)) {
+      this.removeAttribute(name);
+      return;
+    }
+
     if (oldValue === newValue) return;
     if (name === "disabled") this.#syncFormDisabledState();
     this.requestRender();
@@ -560,7 +576,11 @@ export class BaseElement extends HTMLElement {
     const hostId = this.id;
 
     for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "id" && mutation.target === this) {
+      if (
+        mutation.type === "attributes" &&
+        mutation.attributeName === "id" &&
+        mutation.target === this
+      ) {
         return true;
       }
 
