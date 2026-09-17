@@ -31,6 +31,14 @@
     "./elements/*": {
       "types": "./src/elements.d.ts",
       "default": "./src/elements/*.js"
+    },
+    "./react": {
+      "types": "./src/react/generated/index.d.ts",
+      "default": "./src/react/generated/index.js"
+    },
+    "./react/icon": {
+      "types": "./src/react/generated/icon.d.ts",
+      "default": "./src/react/generated/icon.js"
     }
   },
   "files": [
@@ -42,6 +50,7 @@
     "src/index.js",
     "src/icon.js",
     "src/icons",
+    "src/react",
     "types",
     "custom-elements.json",
     "LICENSE",
@@ -52,7 +61,20 @@
     "./src/element.js",
     "./src/elements/*.js"
   ],
+  "peerDependencies": {
+    "@rowan-ui/core": "^0.5.0",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@rowan-ui/core": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@rowan-ui/core": "file:../..",
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@web/test-runner": "^0.18.2",

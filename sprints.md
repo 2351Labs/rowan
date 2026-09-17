@@ -6,7 +6,7 @@
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
-**Status.** Sprints 1–2 on main. Sprints 3–5 in this branch.
+**Status.** Sprints 1–5 on main. Sprint 6 in this branch.
 
 ---
 
@@ -100,8 +100,17 @@ Thin `forwardRef` facades. No extra React state.
 
 ---
 
+## Sprint 6 — Icons and MapLibre wrappers
+
+**Status:** done
+
+### Done when
+
+- [x] Same generator emits `@rowan-ui/icons/react/icon` and `@rowan-ui/maplibre/react/map`.
+- [x] Wrappers import `createRowanComponent` from core; HTML icon usage stays core-free.
+- [x] CI fails if those generated trees are stale.
+
 ## Later / not this track
 
-- MapLibre / icons wrapper barrels (follow the same generator once core is proven).
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).

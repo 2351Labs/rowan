@@ -6,7 +6,7 @@ import { cemPublicApiPlugin } from "../../scripts/cem-public-api-plugin.mjs";
 /** @type {import("@custom-elements-manifest/analyzer").Config} */
 export default {
   globs: ["src/**/*.js"],
-  exclude: ["src/**/*.stories.js", "src/**/*.test.js", "src/icons/**", "src/elements/**"],
+  exclude: ["src/**/*.stories.js", "src/**/*.test.js", "src/icons/**", "src/elements/**", "src/react/**"],
   outdir: ".",
   plugins: [cemPublicApiPlugin()],
   overrideModuleCreation({ ts, globs }) {

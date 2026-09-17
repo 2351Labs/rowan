@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - Generated React wrappers from the public Custom Elements Manifest: `import { RowanButton } from "@rowan-ui/core/react/button"`. `onRowan*` maps to `rowan-*`. Objects stay property-only. `@rowan-ui/core/react` remains the hook and JSX types.
+- `@rowan-ui/icons/react/icon` and `@rowan-ui/maplibre/react/map` wrappers, generated with the same pipeline.
 
 ## 0.5.0 - 2026-09-16
 

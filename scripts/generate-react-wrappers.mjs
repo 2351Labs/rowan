@@ -4,8 +4,6 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(readFileSync(resolve(root, "custom-elements.json"), "utf8"));
-const outDir = resolve(root, "src/react/generated");
 
 function eventPropName(eventName) {
   return `on${eventName
@@ -36,27 +34,29 @@ function collectElements(customElementsManifest) {
   return elements.sort((left, right) => left.tagName.localeCompare(right.tagName));
 }
 
-function relativeFromGenerated(modulePath) {
+function relativeFromGenerated(outDir, packageRoot, modulePath) {
   const from = join(outDir, "placeholder.js");
-  const to = resolve(root, modulePath);
+  const to = resolve(packageRoot, modulePath);
   const spec = relative(dirname(from), to).replaceAll("\\", "/");
   return spec.startsWith(".") ? spec : `./${spec}`;
 }
 
-function renderWrapper({ className, tagName, modulePath, events }) {
-  const importPath = relativeFromGenerated(modulePath);
-  const eventEntries = events.map((name) => `    ${eventPropName(name)}: "${name}",`).join("\n");
+function renderWrapper(element, { outDir, packageRoot, createWrapperImport }) {
+  const importPath = relativeFromGenerated(outDir, packageRoot, element.modulePath);
+  const eventEntries = element.events
+    .map((name) => `    ${eventPropName(name)}: "${name}",`)
+    .join("\n");
   const eventsBlock = eventEntries ? `{\n${eventEntries}\n  }` : "{}";
 
   return `/**
  * @generated from custom-elements.json
  */
 import ${JSON.stringify(importPath)};
-import { createRowanComponent } from "../create-wrapper.js";
+import { createRowanComponent } from ${JSON.stringify(createWrapperImport)};
 
-export const ${className} = createRowanComponent({
-  tagName: ${JSON.stringify(tagName)},
-  displayName: ${JSON.stringify(className)},
+export const ${element.className} = createRowanComponent({
+  tagName: ${JSON.stringify(element.tagName)},
+  displayName: ${JSON.stringify(element.className)},
   events: ${eventsBlock},
 });
 `;
@@ -71,55 +71,99 @@ function renderEventProps(events) {
   return `{\n${fields}\n  }`;
 }
 
-function renderWrapperTypes({ className, modulePath, events }) {
-  const importPath = relativeFromGenerated(modulePath);
+function renderWrapperTypes(element, { outDir, packageRoot, wrapperPropsImport }) {
+  const importPath = relativeFromGenerated(outDir, packageRoot, element.modulePath);
 
   return `import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import type { ${className} as ${className}Element } from ${JSON.stringify(importPath)};
-import type { RowanWrapperProps } from "../wrapper-props.js";
+import type { ${element.className} as ${element.className}Element } from ${JSON.stringify(importPath)};
+import type { RowanWrapperProps } from ${JSON.stringify(wrapperPropsImport)};
 
-export const ${className}: ForwardRefExoticComponent<
-  RowanWrapperProps<${className}Element, ${renderEventProps(events)}> &
-    RefAttributes<${className}Element>
+export const ${element.className}: ForwardRefExoticComponent<
+  RowanWrapperProps<${element.className}Element, ${renderEventProps(element.events)}> &
+    RefAttributes<${element.className}Element>
 >;
 `;
 }
 
-const elements = collectElements(manifest);
-if (elements.length === 0) {
-  throw new Error("generate-react-wrappers: no custom elements in custom-elements.json");
+function generatePackage(target) {
+  const packageRoot = target.packageRoot;
+  const outDir = target.outDir;
+  const manifest = JSON.parse(readFileSync(resolve(packageRoot, "custom-elements.json"), "utf8"));
+  const elements = collectElements(manifest);
+
+  if (elements.length === 0) {
+    throw new Error(`generate-react-wrappers: no custom elements in ${target.name}`);
+  }
+
+  rmSync(outDir, { recursive: true, force: true });
+  mkdirSync(outDir, { recursive: true });
+
+  const barrelExports = [];
+  const typeExports = [];
+
+  for (const element of elements) {
+    const fileName = fileNameForTag(element.tagName);
+    writeFileSync(join(outDir, `${fileName}.js`), renderWrapper(element, target));
+    writeFileSync(join(outDir, `${fileName}.d.ts`), renderWrapperTypes(element, target));
+    barrelExports.push(`export { ${element.className} } from "./${fileName}.js";`);
+    typeExports.push(`export { ${element.className} } from "./${fileName}.js";`);
+  }
+
+  writeFileSync(join(outDir, "index.js"), `${barrelExports.join("\n")}\n`);
+  writeFileSync(join(outDir, "index.d.ts"), `${typeExports.join("\n")}\n`);
+
+  execFileSync(resolve(root, "node_modules/.bin/prettier"), ["--write", outDir], {
+    cwd: root,
+    stdio: "inherit",
+  });
+
+  for (const check of target.checks) {
+    const source = readFileSync(join(outDir, check.file), "utf8");
+    for (const needle of check.needles) {
+      if (!source.includes(needle)) {
+        throw new Error(`generate-react-wrappers: ${target.name} ${check.file} missing ${needle}`);
+      }
+    }
+  }
+
+  console.log(`Generated ${elements.length} React wrappers for ${target.name}.`);
 }
 
-rmSync(outDir, { recursive: true, force: true });
-mkdirSync(outDir, { recursive: true });
+const packages = [
+  {
+    name: "core",
+    packageRoot: root,
+    outDir: join(root, "src/react/generated"),
+    createWrapperImport: "../create-wrapper.js",
+    wrapperPropsImport: "../wrapper-props.js",
+    checks: [
+      { file: "button.js", needles: ['tagName: "rowan-button"', "onRowanClick"] },
+      { file: "table.js", needles: ["../../table/table.js", "onRowanSelect"] },
+    ],
+  },
+  {
+    name: "icons",
+    packageRoot: join(root, "packages/icons"),
+    outDir: join(root, "packages/icons/src/react/generated"),
+    createWrapperImport: "@rowan-ui/core/react",
+    wrapperPropsImport: "@rowan-ui/core/react/wrapper-props",
+    checks: [{ file: "icon.js", needles: ['tagName: "rowan-icon"', "../../element.js"] }],
+  },
+  {
+    name: "maplibre",
+    packageRoot: join(root, "packages/maplibre"),
+    outDir: join(root, "packages/maplibre/src/react/generated"),
+    createWrapperImport: "@rowan-ui/core/react",
+    wrapperPropsImport: "@rowan-ui/core/react/wrapper-props",
+    checks: [
+      {
+        file: "maplibre-map.js",
+        needles: ['tagName: "rowan-maplibre-map"', "onRowanLocationActivate", "../../map/map.js"],
+      },
+    ],
+  },
+];
 
-const barrelExports = [];
-const typeExports = [];
-
-for (const element of elements) {
-  const fileName = fileNameForTag(element.tagName);
-  writeFileSync(join(outDir, `${fileName}.js`), renderWrapper(element));
-  writeFileSync(join(outDir, `${fileName}.d.ts`), renderWrapperTypes(element));
-  barrelExports.push(`export { ${element.className} } from "./${fileName}.js";`);
-  typeExports.push(`export { ${element.className} } from "./${fileName}.js";`);
+for (const target of packages) {
+  generatePackage(target);
 }
-
-writeFileSync(join(outDir, "index.js"), `${barrelExports.join("\n")}\n`);
-writeFileSync(join(outDir, "index.d.ts"), `${typeExports.join("\n")}\n`);
-
-execFileSync(resolve(root, "node_modules/.bin/prettier"), ["--write", "src/react/generated"], {
-  cwd: root,
-  stdio: "inherit",
-});
-
-const buttonSource = readFileSync(join(outDir, "button.js"), "utf8");
-if (!buttonSource.includes('tagName: "rowan-button"') || !buttonSource.includes("onRowanClick")) {
-  throw new Error("generate-react-wrappers: rowan-button wrapper is missing its public contract");
-}
-
-const tableSource = readFileSync(join(outDir, "table.js"), "utf8");
-if (!tableSource.includes("../../table/table.js") || !tableSource.includes("onRowanSelect")) {
-  throw new Error("generate-react-wrappers: rowan-table wrapper is missing its public contract");
-}
-
-console.log(`Generated ${elements.length} React wrappers in src/react/generated.`);
