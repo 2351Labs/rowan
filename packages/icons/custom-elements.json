@@ -37,15 +37,6 @@
           "members": [
             {
               "kind": "field",
-              "name": "#iconContainer",
-              "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "name"
             },
             {
@@ -59,34 +50,6 @@
             {
               "kind": "field",
               "name": "label"
-            },
-            {
-              "kind": "method",
-              "name": "#reflectString",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "attribute"
-                },
-                {
-                  "name": "value"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#render",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#upgradeProperty",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "property"
-                }
-              ]
             }
           ],
           "attributes": [

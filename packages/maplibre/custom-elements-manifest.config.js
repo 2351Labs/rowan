@@ -1,11 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { cemPublicApiPlugin } from "../../scripts/cem-public-api-plugin.mjs";
+
 /** @type {import("@custom-elements-manifest/analyzer").Config} */
 export default {
   globs: ["src/**/*.js"],
   exclude: ["src/**/*.stories.js", "src/**/*.test.js"],
   outdir: ".",
+  plugins: [cemPublicApiPlugin()],
   overrideModuleCreation({ ts, globs }) {
     return [...globs]
       .sort((left, right) => left.localeCompare(right))
