@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/blocks";
+
+import "./home.css";
+
+<Meta title="Home" />
+
+# Rowan
+
+<div className="home-page">
+  <p className="home-lede">
+    A vanilla Web Component design system: Custom Elements, Shadow DOM, slots, CSS tokens, and
+    ElementInternals. Version 0.5. Package <code>@rowan-ui/core</code>.
+  </p>
+
+<div className="home-grid">
+  <article className="home-card">
+    <h2>Foundations</h2>
+    <p>
+      Token layers, light and dark themes. Start at{" "}
+      <a href="?path=/docs/foundations-tokens--docs">Tokens</a>.
+    </p>
+  </article>
+  <article className="home-card">
+    <h2>Components</h2>
+    <p>Live canvases grouped by Actions, Forms, Overlays, Navigation, and Data Display.</p>
+  </article>
+  <article className="home-card">
+    <h2>React</h2>
+    <p>
+      Generated wrappers are the default.{" "}
+      <a href="?path=/docs/integrations-using-rowan-from-react--docs">Using Rowan from React</a>{" "}
+      shows <code>RowanButton</code> next to the raw tag.
+    </p>
+  </article>
+  <article className="home-card">
+    <h2>MapLibre</h2>
+    <p>
+      Optional adapter. Application-owned styles and attribution.{" "}
+      <a href="?path=/docs/integrations-maplibre-map--docs">MapLibre Map</a>.
+    </p>
+  </article>
+</div>
+
+<pre className="home-install">{`npm install @rowan-ui/core
+import "@rowan-ui/core";
+import "@rowan-ui/core/tokens";`}</pre>
+
+  <p className="home-note">
+    Table virtualization, rich-text-editor, filter-builder, and trend-chart are experimental and out
+    of the 0.5 surface.
+  </p>
+</div>
