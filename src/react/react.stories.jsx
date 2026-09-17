@@ -103,7 +103,7 @@ function TableExample() {
 
 export default {
   title: "Integrations/React",
-  parameters: {
+  tags: ["autodocs"],
     docs: {
       description: {
         component:
