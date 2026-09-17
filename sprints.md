@@ -22,6 +22,7 @@ The published `custom-elements.json` is the source of truth for wrappers, docs, 
 - [ ] `npm run analyze` is still the only generator; CI `Verify generated artifacts` stays green.
 - [x] A check fails if a `tagName` is missing or a private member leaks into the published manifest.
 - [x] Public instance fields (including property-only `config`) and `@event` names remain.
+- [x] Positive pins: `rowan-button` variant/disabled/`rowan-click`, `rowan-table` config/selected/`rowan-select`.
 
 ### Out of scope
 
