@@ -72,7 +72,8 @@ function TextFieldExample() {
 const TABLE_CONFIG = {
   rowId: "id",
   selectable: "multiple",
-  columns: [{ id: "name", header: "Name" }],
+  caption: "Members",
+  columns: [{ id: "name", header: "Name" }]
   rows: [
     { id: "1", name: "Ada" },
     { id: "2", name: "Alan" },
