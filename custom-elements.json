@@ -20513,6 +20513,22 @@
       "declarations": [
         {
           "kind": "variable",
+          "name": "extraShippedThemes",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ lagoon: parseThemeTokens(lagoonThemeSource), ember: parseThemeTokens(emberThemeSource), }"
+        },
+        {
+          "kind": "variable",
+          "name": "shippedThemeIds",
+          "type": {
+            "text": "array"
+          },
+          "default": "[\"light\", \"dark\", \"lagoon\", \"ember\"]"
+        },
+        {
+          "kind": "variable",
           "name": "primitiveColorTokens"
         },
         {
@@ -20549,10 +20565,26 @@
           "type": {
             "text": "array"
           },
-          "default": "[ \"src/tokens/tokens.css\", \"src/tokens/themes/light.css\", \"src/tokens/themes/dark.css\", ]"
+          "default": "[ \"src/tokens/tokens.css\", \"src/tokens/themes/light.css\", \"src/tokens/themes/dark.css\", \"src/tokens/themes/lagoon.css\", \"src/tokens/themes/ember.css\", ]"
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "extraShippedThemes",
+          "declaration": {
+            "name": "extraShippedThemes",
+            "module": "src/tokens/token-data.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "shippedThemeIds",
+          "declaration": {
+            "name": "shippedThemeIds",
+            "module": "src/tokens/token-data.js"
+          }
+        },
         {
           "kind": "js",
           "name": "primitiveColorTokens",

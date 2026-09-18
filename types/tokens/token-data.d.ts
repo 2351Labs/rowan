@@ -1,3 +1,8 @@
+export namespace extraShippedThemes {
+    let lagoon: Map<any, any>;
+    let ember: Map<any, any>;
+}
+export const shippedThemeIds: string[];
 export const primitiveColorTokens: any;
 export const primitiveSpaceTokens: any;
 export const primitiveRadiusTokens: any;
