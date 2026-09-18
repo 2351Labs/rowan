@@ -2,7 +2,7 @@
 
 **Goal.** One implementation (the custom element) + generated React wrappers + JSX types. React is a binding, not a fork.
 
-**Default DX.** `import { RowanButton } from "@rowan-ui/core/react/button"`. Raw `<rowan-button>` stays first-class. `useRowanElement` remains an escape hatch.
+**Default DX.** `import { RowanButton } from "@rowan-ui/core/react/button"`. Raw `<rowan-button>` stays first-class for markup.
 
 **Non-negotiables.** Vanilla hosts. No React-only behavior. Objects/arrays stay property-only. Events stay `rowan-*` (`onRowanChange`, never `onChange`). Wrappers do not register as Server Components. CEM is the contract.
 
@@ -194,5 +194,4 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 ## Later / not this track
 
 - Vue/Svelte wrappers.
-- Dropping `useRowanElement` (keep until wrappers cover property-only + events).
 - Data/dashboard track: `sprints-data.md` (Sprints 1–8 done; KPI, sparkline, bar, and donut are Stable).

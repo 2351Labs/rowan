@@ -139,25 +139,9 @@ export function MembersTable() {
 }
 ```
 
-Raw tags stay first-class. `@rowan-ui/core/react` still provides JSX types and `useRowanElement()` for odd bindings. Storybook **Integrations / Using Rowan from React** shows wrapper and tag side by side.
-
-On the **tag** path only, pass arrays, objects, callbacks, and native events through `useRowanElement(ref, { properties, events })`. Wrappers already accept those as props (`config`, `selected`, `onRowanSelect`). The helper assigns properties after the host exists and binds `addEventListener` (replaced on rerender, removed on unmount):
-
-```tsx
-useRowanElement(fieldRef, {
-  events: {
-    "rowan-change": (event) => {
-      const detail = (event as CustomEvent<{ value: string }>).detail;
-      updateName(detail.value);
-    },
-  },
-});
-
-useRowanElement(buttonRef, {
-  properties: { disabled },
-  events: { "rowan-click": () => save() },
-});
-```
+Raw tags stay first-class for markup. Prefer wrappers for objects, arrays, and
+`onRowan*` events. Storybook **Integrations / Using Rowan from React** shows
+wrapper and tag side by side.
 
 React 18 server rendering serializes a false custom-element boolean as a present
 attribute such as `disabled="false"`. After the host upgrades, Rowan treats

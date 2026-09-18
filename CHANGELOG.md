@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Removed
+
+- Public `useRowanElement`. Use generated wrappers for objects, arrays, and `onRowan*` events. The helper remains internal to those wrappers.
+
 ### Changed
 
 - `rowan-kpi-card`, `rowan-sparkline`, `rowan-donut-chart`, and `rowan-bar-chart` are Stable.

@@ -7,7 +7,7 @@ import "../button/button.js";
 import "../table/table.js";
 import "../row-details-panel/row-details-panel.js";
 import { createRowanComponent } from "./create-wrapper.js";
-import { useRowanElement } from "./index.js";
+import { useRowanElement } from "./use-rowan-element.js";
 
 const RowanButton = createRowanComponent({
   tagName: "rowan-button",

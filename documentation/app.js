@@ -135,19 +135,15 @@ export function MembersTable() {
   );
 }`;
 
-const REACT_EVENTS_SNIPPET = `useRowanElement(fieldRef, {
-  events: {
-    "rowan-change": (event) => {
-      const detail = (event as CustomEvent<{ value: string }>).detail;
-      updateName(detail.value);
-    },
-  },
-});
+const REACT_EVENTS_SNIPPET = `<RowanTextField
+  label="Name"
+  value={name}
+  onRowanChange={(event) => updateName(event.detail.value)}
+/>
 
-useRowanElement(buttonRef, {
-  properties: { disabled },
-  events: { "rowan-click": () => save() },
-});`;
+<RowanButton disabled={disabled} onRowanClick={() => save()}>
+  Save
+</RowanButton>`;
 
 const REACT_18_BOOLEAN_SNIPPET = `return <rowan-button disabled={false}>Save</rowan-button>;`;
 
@@ -1109,10 +1105,9 @@ const DOC_PAGES = [
     id: "react",
     group: "Overview",
     title: "React",
-    summary:
-      "Generated wrappers are the React default. Raw tags and useRowanElement remain for odd bindings.",
+    summary: "Generated wrappers are the React default. Raw tags stay first-class for markup.",
     tags: ["react", "tsx", "ssr", "events", "wrappers"],
-    keywords: ["react", "tsx", "next.js", "ssr", "useRowanElement", "RowanButton", "wrappers"],
+    keywords: ["react", "tsx", "next.js", "ssr", "RowanButton", "wrappers"],
     content: () => `
       <section class="doc-section" data-doc-section id="react-overview">
         <h2>Generated wrappers</h2>
@@ -1121,8 +1116,8 @@ const DOC_PAGES = [
       </section>
 
       <section class="doc-section" data-doc-section id="react-properties-events">
-        <h2>Raw tags and useRowanElement</h2>
-        <p>Raw <code>&lt;rowan-button&gt;</code> stays first-class. <code>@rowan-ui/core/react</code> still adds JSX types and <code>useRowanElement()</code> for odd bindings. Pass objects, arrays, and native events through the helper on the tag path; wrappers already do that as props.</p>
+        <h2>Events and properties</h2>
+        <p>Raw <code>&lt;rowan-button&gt;</code> stays first-class for markup. Pass objects, arrays, and <code>onRowan*</code> events as wrapper props. <code>@rowan-ui/core/react</code> still adds JSX types for tags.</p>
         ${codeBlock(REACT_EVENTS_SNIPPET, "tsx")}
       </section>
 
@@ -1134,7 +1129,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="react-ssr">
         <h2>Next.js and SSR</h2>
-        <p>Import wrappers from a client component. Do not import them or registration modules from server-rendered code. The hook-only <code>@rowan-ui/core/react</code> entry does not register elements; generated wrappers do.</p>
+        <p>Import wrappers from a client component. Do not import them or registration modules from server-rendered code. The <code>@rowan-ui/core/react</code> entry is JSX types plus <code>createRowanComponent</code>; generated wrappers register the element.</p>
         ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
       </section>
     `,

@@ -262,5 +262,4 @@ npm publish (separate release cut), Vue/Svelte, MapLibre changes.
 - Rich-text headings, links, images.
 - Table column virtualization.
 - More geometries (area-as-separate-host, stacked bar).
-- Dropping `useRowanElement`.
 - Vue/Svelte wrappers.

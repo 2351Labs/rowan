@@ -19,19 +19,18 @@ import { RowanButton } from "@rowan-ui/core/react/button";
 The same control as a tag:
 
 ```tsx
-import { useEffect, useRef } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
+import { useEffect } from "react";
 
 useEffect(() => {
   void import("@rowan-ui/core/button");
 }, []);
 
-<rowan-button ref={buttonRef}>Save</rowan-button>;
+<rowan-button>Save</rowan-button>;
 ```
 
-Prefer the wrapper in React. `onRowanClick` maps to `rowan-click`. `ref` is the host element. Named slots stay `slot="..."`. Import wrappers from a client component; they load the element module and are not Server Components.
+Prefer the wrapper in React. `onRowanClick` maps to `rowan-click`. `ref` is the host element. Named slots stay `slot="..."`. Import wrappers from a client component; they load the element module and are not Server Components. Objects, arrays, and events are wrapper props — not attributes on the tag.
 
-`useRowanElement` remains for odd bindings. Do not hand-edit files under `src/react/generated/` — `npm run analyze` regenerates them from the Custom Elements Manifest.
+Do not hand-edit files under `src/react/generated/` — `npm run analyze` regenerates them from the Custom Elements Manifest.
 
 Live canvases: **Integrations → React**.
 
