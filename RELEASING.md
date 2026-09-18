@@ -78,9 +78,9 @@ present in the packed file set.
 
 ## First 0.5.0 cut
 
-`@rowan-ui/core` and `@rowan-ui/icons` publish together. Icons peers on core
-`^0.5.0`, so core must hit the registry first. `@rowan-ui/maplibre` is **not**
-part of this cut.
+`@rowan-ui/core` publishes first. Icons and MapLibre peer on core `^0.5.0`, so
+they follow. The workflow skips a package if that version is already on the
+registry.
 
 1. Create the npm org `rowan-ui` if it does not exist, and a granular access
    token with publish permission for `@rowan-ui/core` and `@rowan-ui/icons`.
@@ -92,25 +92,28 @@ part of this cut.
    git push origin v0.5.0
    ```
 
-4. `.github/workflows/publish.yml` publishes core, then icons, with provenance.
-   To publish from a machine instead:
+4. `.github/workflows/publish.yml` publishes core, then icons, then MapLibre,
+   with provenance. To publish from a machine instead:
 
    ```sh
    npm publish --access public
    npm publish --access public --workspace=@rowan-ui/icons
+   npm publish --access public --workspace=@rowan-ui/maplibre
    ```
 
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
 2. Create an annotated version tag after the release commit is merged.
-3. The publish workflow publishes `@rowan-ui/core`, then `@rowan-ui/icons`. Do not
-   use `npm publish --workspaces` (that would include MapLibre and fixtures).
+3. The publish workflow publishes `@rowan-ui/core`, then `@rowan-ui/icons`, then
+   `@rowan-ui/maplibre`. It skips a version that is already on the registry. Do
+   not use `npm publish --workspaces` (that would include test fixtures).
    To publish a single package from a machine:
 
    ```sh
    npm publish --access public
    npm publish --access public --workspace=@rowan-ui/icons
+   npm publish --access public --workspace=@rowan-ui/maplibre
    ```
 
 4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`. The tarball must not include `*.test.js`, `*.stories.js`, or `src/storybook/`.
