@@ -477,7 +477,7 @@ export class RowanRichTextEditor extends BaseElement {
         font-size: 1.125rem;
         font-weight: 600;
         line-height: 1.3;
-        margin: 0 0 0.5rem;
+        margin: 0 0 var(--rowan-space-2, 0.5rem);
       }
       [data-rowan-rich-text-editor-surface] h1 {
         font-size: 1.25rem;

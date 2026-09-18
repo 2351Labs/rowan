@@ -73,7 +73,8 @@ export function normalizeHref(value) {
     lower.startsWith("vbscript:") ||
     lower.startsWith("file:") ||
     href.startsWith("//") ||
-    href.includes("\\")
+    href.includes("\\") ||
+    /[\u0000-\u001F\u007F]/.test(href)
   ) {
     return "";
   }

@@ -270,13 +270,46 @@ describe("rowan-rich-text-editor", () => {
 
   it("names the link popover and styles headings on the editing surface", async () => {
     const editor = await renderEditor({
-      value: { blocks: [{ type: "heading", level: 2, children: [{ text: "Containment" }] }] },
+      value: {
+        blocks: [
+          { type: "heading", level: 2, children: [{ text: "Containment" }] },
+          {
+            type: "paragraph",
+            children: [{ text: "Open the record", href: "/incidents/12" }],
+          },
+        ],
+      },
     });
+    const popover = editor.shadowRoot.querySelector(".link-popover");
 
-    expect(editor.shadowRoot.querySelector(".link-popover").getAttribute("role")).to.equal(
-      "dialog",
-    );
+    expect(popover.getAttribute("role")).to.equal("dialog");
+    expect(popover.getAttribute("aria-label")).to.equal("Link URL");
     expect(editor.querySelector("style[data-rowan-rich-text-surface]")).to.not.equal(null);
     expect(getComputedStyle(surfaceFor(editor).querySelector("h2")).fontWeight).to.equal("600");
+    expect(getComputedStyle(surfaceFor(editor).querySelector("a")).color).to.equal(
+      "rgb(29, 67, 47)",
+    );
+  });
+
+  it("toggles a heading off when formatBlock reports <h2>", async () => {
+    const editor = await renderEditor({
+      value: { blocks: [{ type: "heading", level: 2, children: [{ text: "Containment" }] }] },
+    });
+    const original = document.queryCommandValue.bind(document);
+    document.queryCommandValue = (command) =>
+      command === "formatBlock" ? "<h2>" : original(command);
+
+    try {
+      selectEditorContents(editor);
+      editor.shadowRoot.querySelector('button[data-command="heading"]').click();
+      await nextMicrotask();
+    } finally {
+      document.queryCommandValue = original;
+    }
+
+    expect(editor.value.blocks[0]).to.deep.equal({
+      type: "paragraph",
+      children: [{ text: "Containment" }],
+    });
   });
 });
