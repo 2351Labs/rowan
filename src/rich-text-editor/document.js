@@ -56,6 +56,15 @@ function normalizeText(value) {
   return String(value ?? "").replace(/\r\n?/g, "\n");
 }
 
+function hasDisallowedHrefCharacter(href) {
+  for (let index = 0; index < href.length; index += 1) {
+    const code = href.charCodeAt(index);
+    if (code <= 0x1f || code === 0x7f || code === 0x5c) return true;
+  }
+
+  return false;
+}
+
 /**
  * Allows http(s), mailto, in-app paths, and fragments. Drops javascript, data,
  * and other schemes.
@@ -72,7 +81,8 @@ export function normalizeHref(value) {
     lower.startsWith("data:") ||
     lower.startsWith("vbscript:") ||
     lower.startsWith("file:") ||
-    href.startsWith("//")
+    href.startsWith("//") ||
+    hasDisallowedHrefCharacter(href)
   ) {
     return "";
   }

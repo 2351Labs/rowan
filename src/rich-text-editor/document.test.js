@@ -111,6 +111,32 @@ describe("rich-text document", () => {
       ],
     });
 
+    expect(
+      normalizeDocument({
+        blocks: [
+          {
+            type: "paragraph",
+            children: [{ text: "Open", href: "/\\evil.example" }],
+          },
+        ],
+      }),
+    ).to.deep.equal({
+      blocks: [{ type: "paragraph", children: [{ text: "Open" }] }],
+    });
+
+    expect(
+      normalizeDocument({
+        blocks: [
+          {
+            type: "paragraph",
+            children: [{ text: "Open", href: "/\t/evil.example" }],
+          },
+        ],
+      }),
+    ).to.deep.equal({
+      blocks: [{ type: "paragraph", children: [{ text: "Open" }] }],
+    });
+
     expect(normalizeDocument("<p><strong>Markup</strong></p>")).to.deep.equal({ blocks: [] });
     expect(normalizeDocument("<script>alert(1)</script>")).to.deep.equal({ blocks: [] });
   });
