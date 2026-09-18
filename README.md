@@ -36,9 +36,9 @@ and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. Table virtualization, `rowan-rich-text-editor`,
-`rowan-filter-builder`, and `rowan-trend-chart` are experimental and **out of
-`0.5`** (and a later `1.0` until they are marked Stable).
+the top layer. `rowan-rich-text-editor`, `rowan-filter-builder`, and
+`rowan-trend-chart` are experimental and **out of `0.5`** (and a later `1.0`
+until they are marked Stable). Table virtualization is Stable.
 
 ## Install
 
@@ -298,17 +298,18 @@ Implemented components currently include:
 
 ### API stability
 
-Everything in the catalog above is usable. The surfaces below are **out of
-`0.5`** until they are marked Stable. Pin the version if you depend on them.
+Everything in the catalog above is usable. Experimental surfaces below are
+**out of `0.5`** until they are marked Stable. Pin the version if you depend on
+them.
 
-| Surface                         | Status       | Notes                                                               |
-| ------------------------------- | ------------ | ------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.       |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.      |
-| Table virtualization            | Experimental | `virtualized`, `virtualItemSize`, and `virtualOverscan` may change. |
-| `rowan-rich-text-editor`        | Experimental | The document model may gain node types.                             |
-| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                         |
-| `rowan-trend-chart`             | Experimental | Config shape may change.                                            |
+| Surface                         | Status       | Notes                                                                                                        |
+| ------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                               |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed. |
+| `rowan-rich-text-editor`        | Experimental | The document model may gain node types.                                                                      |
+| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                                                                  |
+| `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                     |
 
 ## Rowan Carousel
 
@@ -768,7 +769,7 @@ An out-of-range `page.index` resolves to the last available page and updates the
 
 ### Virtualized body
 
-Set `virtualized` for large local row collections. `virtualItemSize` is the initial row-height estimate, `virtualOverscan` adds rows around the visible viewport, and `--rowan-table-virtual-height` controls the viewport height. The table remains a real semantic `<table>` with mounted `<tr>` rows, so the existing cell, selection, sort, and row-activation APIs do not change. Tables with duplicate row IDs retain Rowan's full-render safety fallback.
+Set `virtualized` for large local row collections. `virtualItemSize` is the initial row-height estimate, `virtualOverscan` adds rows around the visible viewport, and `--rowan-table-virtual-height` controls the viewport height. Those three fields and the CSS variable are frozen names. The table remains a real semantic `<table>` with mounted `<tr>` rows, so the existing cell, selection, sort, and row-activation APIs do not change. Tables with duplicate row IDs retain Rowan's full-render safety fallback.
 
 ```js
 table.config = {

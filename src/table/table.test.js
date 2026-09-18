@@ -1359,4 +1359,83 @@ describe("rowan-table", () => {
       table.remove();
     }
   });
+
+  it("falls back to a full body render when virtualized rows share ids", async () => {
+    const rows = Array.from({ length: 20 }, (_, index) => ({
+      id: index < 10 ? "dup" : String(index),
+      name: `Row ${index}`,
+    }));
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "80px");
+    table.config = {
+      rowId: "id",
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+      columns: [{ id: "name", header: "Name" }],
+      rows,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextFrame();
+    await nextMicrotask();
+
+    expect(table.shadowRoot.querySelectorAll("tbody .virtual-spacer").length).to.equal(0);
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.equal(rows.length);
+
+    table.remove();
+  });
+
+  it("emits cell events from mounted virtualized rows", async () => {
+    const rows = Array.from({ length: 40 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Person ${index + 1}`,
+      edit: "Edit",
+    }));
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "80px");
+    table.config = {
+      rowId: "id",
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+      columns: [
+        { id: "name", header: "Name" },
+        {
+          id: "edit",
+          header: "",
+          type: "button",
+          cell: { label: "Edit", variant: "secondary" },
+        },
+      ],
+      rows,
+    };
+
+    document.body.append(table);
+    await nextMicrotask();
+    await nextFrame();
+    await nextMicrotask();
+
+    const mounted = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+    expect(mounted).to.not.equal(null);
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.be.below(
+      rows.length,
+    );
+
+    const actions = [];
+    table.addEventListener("rowan-cell-action", (event) => {
+      actions.push(event.detail);
+    });
+
+    mounted.querySelector("rowan-button").shadowRoot.querySelector("button").click();
+    await nextMicrotask();
+
+    expect(actions).to.have.lengthOf(1);
+    expect(actions[0].action).to.equal("button");
+    expect(actions[0].rowId).to.equal(mounted.dataset.rowId);
+    expect(actions[0].columnId).to.equal("edit");
+
+    table.remove();
+  });
 });
