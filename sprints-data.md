@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 6 done. Next: Sprint 7 (bar and donut charts, experimental). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 7 done. Next: Sprint 8 (catalog and release notes). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -192,7 +192,7 @@ Live streaming, 1px canvas charts, theming beyond Rowan tokens.
 
 ## Sprint 7 — Additional chart types (experimental)
 
-**Status:** pending
+**Status:** done
 
 New hosts, same data discipline as the line chart. Experimental until a later freeze.
 
@@ -215,10 +215,10 @@ Extract shared normalize/table helpers if Sprint 4 did not.
 
 ### Done when
 
-- [ ] Both hosts + wrappers + Storybook + tests + CEM.
-- [ ] README experimental table lists them. Copy says small local data only.
-- [ ] Shared event and formatter types. Line chart API stays untouched.
-- [ ] Donut rejects or flattens negative values in a documented way.
+- [x] Both hosts + wrappers + Storybook + tests + CEM.
+- [x] README experimental table lists them. Copy says small local data only.
+- [x] Shared event and formatter types. Line chart API stays untouched.
+- [x] Donut rejects or flattens negative values in a documented way.
 
 ### Out of scope
 

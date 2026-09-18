@@ -1,67 +1,12 @@
-/**
- * @param {unknown} value
- * @returns {string[]}
- */
-export function normalizeTrendLabels(value: unknown): string[];
-/**
- * @param {unknown} value
- * @param {string[]} labels
- * @returns {RowanNormalizedTrendSeries[]}
- */
-export function normalizeTrendSeries(value: unknown, labels?: string[]): RowanNormalizedTrendSeries[];
-/**
- * @param {RowanNormalizedTrendSeries[]} value
- * @returns {RowanNormalizedTrendSeries[]}
- */
-export function cloneTrendSeries(value: RowanNormalizedTrendSeries[]): RowanNormalizedTrendSeries[];
-/**
- * @param {RowanNormalizedTrendSeries[]} series
- * @param {string[]} labels
- * @returns {string[]}
- */
-export function resolveTrendLabels(series: RowanNormalizedTrendSeries[], labels: string[]): string[];
-/**
- * @param {RowanNormalizedTrendSeries[]} series
- * @returns {{ min: number, max: number }}
- */
-export function trendValueDomain(series: RowanNormalizedTrendSeries[]): {
-    min: number;
-    max: number;
-};
-export type RowanTrendChartPoint = {
-    value: number | null;
-    label?: string | undefined;
-};
-export type RowanTrendChartSeries = {
-    id: string;
-    label: string;
-    values: Array<number | null | RowanTrendChartPoint>;
-    color?: string | undefined;
-};
-export type RowanTrendChartFormatContext = {
-    series?: RowanNormalizedTrendSeries | undefined;
-    index?: number | undefined;
-    label?: string | undefined;
-    tick?: boolean | undefined;
-};
-export type RowanTrendChartValueFormatter = (value: number, context: RowanTrendChartFormatContext) => string;
+export type RowanTrendChartPoint = import("../chart/model.js").RowanChartPoint;
+export type RowanTrendChartSeries = import("../chart/model.js").RowanChartSeries;
+export type RowanTrendChartFormatContext = import("../chart/model.js").RowanChartFormatContext;
+export type RowanTrendChartValueFormatter = import("../chart/model.js").RowanChartValueFormatter;
 /**
  * Frozen line-chart configuration for `rowan-trend-chart`. Other geometries
  * are separate hosts and must not change these keys.
  */
-export type RowanTrendChartConfig = {
-    series?: RowanTrendChartSeries[] | undefined;
-    labels?: string[] | undefined;
-    interactive?: boolean | undefined;
-    valueFormatter?: RowanTrendChartValueFormatter | null | undefined;
-};
-export type RowanNormalizedTrendPoint = {
-    value: number | null;
-    label: string;
-};
-export type RowanNormalizedTrendSeries = {
-    id: string;
-    label: string;
-    values: RowanNormalizedTrendPoint[];
-    color: string;
-};
+export type RowanTrendChartConfig = import("../chart/model.js").RowanChartConfig;
+export type RowanNormalizedTrendPoint = import("../chart/model.js").RowanNormalizedChartPoint;
+export type RowanNormalizedTrendSeries = import("../chart/model.js").RowanNormalizedChartSeries;
+export { chartValueDomain as trendValueDomain, cloneChartSeries as cloneTrendSeries, normalizeChartLabels as normalizeTrendLabels, normalizeChartSeries as normalizeTrendSeries, resolveChartLabels as resolveTrendLabels } from "../chart/model.js";

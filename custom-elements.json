@@ -907,6 +907,284 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/bar-chart/bar-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental small categorical bar chart. Native SVG, no animation.",
+          "name": "RowanBarChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-bar-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "bar"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "Chart series. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartConfig"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              },
+              "description": "Formats chart and table values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive bar.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-bar-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBarChart",
+          "declaration": {
+            "name": "RowanBarChart",
+            "module": "src/bar-chart/bar-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/bar-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBarChart",
+          "declaration": {
+            "name": "RowanBarChart",
+            "module": "./bar-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/breadcrumb/breadcrumb.js",
       "declarations": [
         {
@@ -2301,6 +2579,389 @@
           "declaration": {
             "name": "*",
             "module": "src/carousel/carousel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/dom.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createSvgElement",
+          "parameters": [
+            {
+              "name": "name"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "createCell",
+          "parameters": [
+            {
+              "name": "tagName"
+            },
+            {
+              "name": "text"
+            },
+            {
+              "name": "scope",
+              "default": "\"\""
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "renderChartTable",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLTableElement"
+              }
+            },
+            {
+              "name": "{ caption, labels, series, formatValue }"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   caption: string,\n *   labels: string[],\n *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,\n *   formatValue: (value: number, series: unknown, index: number, label: string) => string,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "emitPointActivate",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "emit"
+            },
+            {
+              "name": "entry"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createSvgElement",
+          "declaration": {
+            "name": "createSvgElement",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createCell",
+          "declaration": {
+            "name": "createCell",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "renderChartTable",
+          "declaration": {
+            "name": "renderChartTable",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "emitPointActivate",
+          "declaration": {
+            "name": "emitPointActivate",
+            "module": "src/chart/dom.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizeChartLabels",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "normalizeChartSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "labels",
+              "default": "[]",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "RowanNormalizedChartSeries[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "cloneChartSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "cloneChartSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "RowanNormalizedChartSeries[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "resolveChartLabels",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            },
+            {
+              "name": "labels",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "chartValueDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "{ min: number, max: number }"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "barValueDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            }
+          ],
+          "description": "Bar charts include a zero baseline."
+        },
+        {
+          "kind": "function",
+          "name": "donutSlices",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries | undefined"
+              }
+            }
+          ],
+          "description": "Donut slices skip null and negative values. Negatives become no-data."
+        },
+        {
+          "kind": "variable",
+          "name": "CHART_SERIES_COLORS",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-color-accent))\", \"var(--rowan-chart-series-2, var(--rowan-color-success))\", \"var(--rowan-chart-series-3, var(--rowan-color-warning))\", \"var(--rowan-chart-series-4, var(--rowan-color-danger))\", ]"
+        },
+        {
+          "kind": "function",
+          "name": "chartSeriesColor",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries"
+              }
+            },
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "formatChartValue",
+          "parameters": [
+            {
+              "name": "formatter",
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "context",
+              "type": {
+                "text": "RowanChartFormatContext"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizeChartLabels",
+          "declaration": {
+            "name": "normalizeChartLabels",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeChartSeries",
+          "declaration": {
+            "name": "normalizeChartSeries",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneChartSeriesInput",
+          "declaration": {
+            "name": "cloneChartSeriesInput",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneChartSeries",
+          "declaration": {
+            "name": "cloneChartSeries",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveChartLabels",
+          "declaration": {
+            "name": "resolveChartLabels",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "chartValueDomain",
+          "declaration": {
+            "name": "chartValueDomain",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "barValueDomain",
+          "declaration": {
+            "name": "barValueDomain",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "donutSlices",
+          "declaration": {
+            "name": "donutSlices",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CHART_SERIES_COLORS",
+          "declaration": {
+            "name": "CHART_SERIES_COLORS",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "chartSeriesColor",
+          "declaration": {
+            "name": "chartSeriesColor",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "formatChartValue",
+          "declaration": {
+            "name": "formatChartValue",
+            "module": "src/chart/model.js"
           }
         }
       ]
@@ -5230,6 +5891,279 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/donut-chart/donut-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental parts-of-a-whole chart. Uses the first series. Negative values\nare treated as no-data, not slices.",
+          "name": "RowanDonutChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-donut-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "slice"
+            },
+            {
+              "name": "total"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "First series is drawn. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Slice labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartConfig"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive slice.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-donut-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanDonutChart",
+          "declaration": {
+            "name": "RowanDonutChart",
+            "module": "src/donut-chart/donut-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/donut-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanDonutChart",
+          "declaration": {
+            "name": "RowanDonutChart",
+            "module": "./donut-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/drawer/drawer.js",
       "declarations": [
         {
@@ -7968,6 +8902,14 @@
         },
         {
           "kind": "js",
+          "name": "RowanBarChart",
+          "declaration": {
+            "name": "RowanBarChart",
+            "module": "./bar-chart/bar-chart.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanAccordion",
           "declaration": {
             "name": "RowanAccordion",
@@ -8068,6 +9010,14 @@
           "declaration": {
             "name": "RowanDivider",
             "module": "./divider/divider.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanDonutChart",
+          "declaration": {
+            "name": "RowanDonutChart",
+            "module": "./donut-chart/donut-chart.js"
           }
         },
         {
@@ -20300,145 +21250,46 @@
     {
       "kind": "javascript-module",
       "path": "src/trend-chart/model.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "normalizeTrendLabels",
-          "parameters": [
-            {
-              "name": "value",
-              "type": {
-                "text": "unknown"
-              }
-            }
-          ],
-          "return": {
-            "type": {
-              "text": "string[]"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "normalizeTrendSeries",
-          "parameters": [
-            {
-              "name": "value",
-              "type": {
-                "text": "unknown"
-              }
-            },
-            {
-              "name": "labels",
-              "default": "[]",
-              "type": {
-                "text": "string[]"
-              }
-            }
-          ],
-          "return": {
-            "type": {
-              "text": "RowanNormalizedTrendSeries[]"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "cloneTrendSeries",
-          "parameters": [
-            {
-              "name": "value",
-              "type": {
-                "text": "RowanNormalizedTrendSeries[]"
-              }
-            }
-          ],
-          "return": {
-            "type": {
-              "text": "RowanNormalizedTrendSeries[]"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "resolveTrendLabels",
-          "parameters": [
-            {
-              "name": "series",
-              "type": {
-                "text": "RowanNormalizedTrendSeries[]"
-              }
-            },
-            {
-              "name": "labels",
-              "type": {
-                "text": "string[]"
-              }
-            }
-          ],
-          "return": {
-            "type": {
-              "text": "string[]"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "trendValueDomain",
-          "parameters": [
-            {
-              "name": "series",
-              "type": {
-                "text": "RowanNormalizedTrendSeries[]"
-              }
-            }
-          ],
-          "return": {
-            "type": {
-              "text": "{ min: number, max: number }"
-            }
-          }
-        }
-      ],
+      "declarations": [],
       "exports": [
         {
           "kind": "js",
-          "name": "normalizeTrendLabels",
+          "name": "trendValueDomain",
           "declaration": {
-            "name": "normalizeTrendLabels",
-            "module": "src/trend-chart/model.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "normalizeTrendSeries",
-          "declaration": {
-            "name": "normalizeTrendSeries",
-            "module": "src/trend-chart/model.js"
+            "name": "chartValueDomain",
+            "module": "../chart/model.js"
           }
         },
         {
           "kind": "js",
           "name": "cloneTrendSeries",
           "declaration": {
-            "name": "cloneTrendSeries",
-            "module": "src/trend-chart/model.js"
+            "name": "cloneChartSeries",
+            "module": "../chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeTrendLabels",
+          "declaration": {
+            "name": "normalizeChartLabels",
+            "module": "../chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeTrendSeries",
+          "declaration": {
+            "name": "normalizeChartSeries",
+            "module": "../chart/model.js"
           }
         },
         {
           "kind": "js",
           "name": "resolveTrendLabels",
           "declaration": {
-            "name": "resolveTrendLabels",
-            "module": "src/trend-chart/model.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "trendValueDomain",
-          "declaration": {
-            "name": "trendValueDomain",
-            "module": "src/trend-chart/model.js"
+            "name": "resolveChartLabels",
+            "module": "../chart/model.js"
           }
         }
       ]

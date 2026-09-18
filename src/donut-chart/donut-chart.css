@@ -1,0 +1,141 @@
+:host {
+  display: block;
+  max-inline-size: 22rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  background: var(--rowan-donut-chart-bg, var(--rowan-card-bg, var(--rowan-color-bg)));
+  border: var(--rowan-border-width, 1px) solid
+    var(--rowan-donut-chart-border, var(--rowan-color-border));
+  border-radius: var(--rowan-donut-chart-radius, var(--rowan-radius-md));
+  color: var(--rowan-donut-chart-fg, var(--rowan-color-fg));
+  font-family: var(--rowan-font-family);
+  overflow: clip;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-2);
+  padding: var(--rowan-space-3) var(--rowan-space-3) 0;
+}
+
+.chart-label {
+  font-weight: 600;
+}
+
+.description {
+  color: var(--rowan-color-muted);
+  font-size: var(--rowan-font-size-sm);
+}
+
+.chart {
+  display: grid;
+  gap: var(--rowan-space-3);
+  margin: 0;
+  padding: var(--rowan-space-3);
+}
+
+.plot-wrap {
+  justify-self: center;
+  position: relative;
+  inline-size: min(100%, 14rem);
+}
+
+.plot {
+  display: block;
+  inline-size: 100%;
+}
+
+.total {
+  font-size: var(--rowan-font-size-sm);
+  font-weight: 600;
+  inset: 50% auto auto 50%;
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legend-item {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--rowan-space-2);
+}
+
+.legend-swatch {
+  background: var(--series-color);
+  block-size: 0.75rem;
+  border-radius: 50%;
+  inline-size: 0.75rem;
+}
+
+.point-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-2);
+}
+
+.point-controls[hidden] {
+  display: none;
+}
+
+.point-controls button {
+  background: transparent;
+  border: 1px solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-sm);
+  color: inherit;
+  font: inherit;
+  font-size: var(--rowan-font-size-sm);
+  padding: 0.15rem 0.4rem;
+}
+
+.point-controls button:focus-visible {
+  outline: 2px solid var(--rowan-focus-ring, var(--rowan-color-accent));
+}
+
+.detail {
+  font-size: var(--rowan-font-size-sm);
+}
+
+.summary {
+  border-block-start: 1px solid var(--rowan-color-border);
+  padding: var(--rowan-space-3);
+}
+
+.table-scroll {
+  overflow: auto;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: var(--rowan-font-size-sm);
+  inline-size: 100%;
+}
+
+th,
+td {
+  padding: 0.25rem 0.5rem;
+  text-align: start;
+}
+
+.sr-only {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}

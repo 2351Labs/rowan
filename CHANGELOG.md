@@ -10,6 +10,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Experimental `rowan-kpi-card`: labeled metric, signed delta, tone, and `chart` slot. `value` and `delta` are property-only.
 - Experimental `rowan-sparkline`: compact one-series line for KPI tiles, with a visually hidden data table. `rowan-progress` `hide-meta` hides the percent caption.
+- Experimental `rowan-bar-chart` and `rowan-donut-chart`. Shared `rowan-point-activate` detail. Donut treats negative values as no-data.
 
 ### Changed
 

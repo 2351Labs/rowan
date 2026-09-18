@@ -293,7 +293,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -311,6 +311,8 @@ on them.
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
 | `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Compact chart slot is a placeholder until sparkline.                               |
 | `rowan-sparkline`               | Experimental | Compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`.                                                       |
+| `rowan-bar-chart`               | Experimental | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
+| `rowan-donut-chart`             | Experimental | First series only. Negative values are no-data and omitted from the total.                                                         |
 
 ## Rowan Carousel
 
@@ -550,6 +552,19 @@ reading order.
   card.delta = -4;
 </script>
 ```
+
+## Rowan Bar Chart
+
+`rowan-bar-chart` is an **experimental** small categorical comparison. Property-only
+`series`, `labels`, `config`, and `valueFormatter`. `null` is no-data, not zero.
+Interactive bars emit `rowan-point-activate` with the same detail shape as
+`rowan-trend-chart`. Native SVG, no animation, matching data table.
+
+## Rowan Donut Chart
+
+`rowan-donut-chart` is an **experimental** parts-of-a-whole chart. It draws the
+**first** series. Negative values are treated as no-data: they are omitted from
+slices and from the hole total, and appear as `No data` in the table.
 
 ## Rowan Sparkline
 

@@ -137,6 +137,10 @@
       "types": "./src/divider/divider.d.ts",
       "default": "./src/divider/divider.js"
     },
+    "./donut-chart": {
+      "types": "./src/donut-chart/donut-chart.d.ts",
+      "default": "./src/donut-chart/donut-chart.js"
+    },
     "./dropzone": {
       "types": "./src/dropzone/dropzone.d.ts",
       "default": "./src/dropzone/dropzone.js"
@@ -361,6 +365,10 @@
       "types": "./src/badge/badge.d.ts",
       "default": "./src/badge/badge.js"
     },
+    "./bar-chart": {
+      "types": "./src/bar-chart/bar-chart.d.ts",
+      "default": "./src/bar-chart/bar-chart.js"
+    },
     "./tokens": {
       "types": "./src/tokens/tokens.css.d.ts",
       "default": "./src/tokens/tokens.css"
@@ -505,7 +513,11 @@
     "./src/tooltip/tooltip.js",
     "./src/validation-summary/validation-summary.js",
     "./src/virtual-list/virtual-list.js",
-    "./src/badge/badge.js"
+    "./src/badge/badge.js",
+    "./src/bar-chart/bar-chart.js",
+    "./src/donut-chart/donut-chart.js",
+    "./src/chart/model.js",
+    "./src/chart/dom.js"
   ],
   "customElements": "custom-elements.json",
   "peerDependencies": {

@@ -1810,6 +1810,55 @@ const DOC_PAGES = [
     },
   },
   {
+    id: "bar-chart",
+    group: "Components",
+    title: "Rowan Bar Chart",
+    summary: "Experimental small categorical bar chart with a matching data table.",
+    tags: ["data display", "bar", "chart"],
+    keywords: ["bar chart", "categorical", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bar-chart-overview">
+        <h2>Categorical comparison</h2>
+        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. Interactive bars emit rowan-point-activate.</p>
+        <div class="demo-row">
+          <rowan-bar-chart id="docs-bar-chart" label="Incidents by day" interactive></rowan-bar-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-bar-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed"];
+      chart.series = [
+        { id: "incoming", label: "Incoming", values: [18, null, 12] },
+        { id: "resolved", label: "Resolved", values: [13, 19, 15] },
+      ];
+    },
+  },
+  {
+    id: "donut-chart",
+    group: "Components",
+    title: "Rowan Donut Chart",
+    summary: "Experimental parts-of-a-whole chart. Negative values are no-data.",
+    tags: ["data display", "donut", "chart"],
+    keywords: ["donut chart", "pie", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="donut-chart-overview">
+        <h2>Parts of a whole</h2>
+        <p>rowan-donut-chart draws the first series. Negative values are treated as no-data and omitted from the total. The hole shows the positive total. The data table includes skipped slices as No data.</p>
+        <div class="demo-row">
+          <rowan-donut-chart id="docs-donut-chart" label="Incident sources" interactive></rowan-donut-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-donut-chart");
+      if (!chart) return;
+      chart.labels = ["App", "Email", "Phone"];
+      chart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
+    },
+  },
+  {
     id: "trend-chart",
     group: "Components",
     title: "Rowan Trend Chart",

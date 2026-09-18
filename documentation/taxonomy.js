@@ -96,8 +96,10 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
     label: "Data Display",
     components: [
       "avatar",
+      "bar-chart",
       "bulk-actions-bar",
       "card",
+      "donut-chart",
       "filter-builder",
       "kpi-card",
       "row-details-panel",

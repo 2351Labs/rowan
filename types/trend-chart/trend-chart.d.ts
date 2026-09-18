@@ -42,9 +42,9 @@ export class RowanTrendChart extends BaseElement {
     set interactive(value: boolean);
     get interactive(): boolean;
     /** @param {Array<import("./model.js").RowanTrendChartSeries>} value */
-    set series(value: import("./model.js").RowanTrendChartSeries[]);
+    set series(value: import("../chart/model.js").RowanChartSeries[]);
     /** @returns {Array<import("./model.js").RowanTrendChartSeries>} */
-    get series(): import("./model.js").RowanTrendChartSeries[];
+    get series(): import("../chart/model.js").RowanChartSeries[];
     /** @param {string[]} value */
     set labels(value: string[]);
     /** @returns {string[]} */
@@ -52,11 +52,11 @@ export class RowanTrendChart extends BaseElement {
     /** @param {import("./model.js").RowanTrendChartConfig | null | undefined} value */
     set config(value: import("./model.js").RowanTrendChartConfig | null | undefined);
     /** @returns {import("./model.js").RowanTrendChartConfig} */
-    get config(): import("./model.js").RowanTrendChartConfig;
+    get config(): import("../chart/model.js").RowanChartConfig;
     /** @param {import("./model.js").RowanTrendChartValueFormatter | null} value */
-    set valueFormatter(value: import("./model.js").RowanTrendChartValueFormatter | null);
+    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
     /** @returns {import("./model.js").RowanTrendChartValueFormatter | null} */
-    get valueFormatter(): import("./model.js").RowanTrendChartValueFormatter | null;
+    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";
