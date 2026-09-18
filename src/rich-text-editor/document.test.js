@@ -1,9 +1,11 @@
 import { expect } from "@esm-bundle/chai";
 
 import {
+  documentFromEditingSurface,
   documentFromPlainText,
   normalizeDocument,
   parseStoredDocument,
+  renderDocument,
   serializeDocument,
 } from "./document.js";
 
@@ -40,6 +42,23 @@ describe("rich-text document", () => {
     };
 
     expect(roundTrip(documentValue)).to.deep.equal(normalizeDocument(documentValue));
+
+    const withHeadingAndLink = {
+      blocks: [
+        { type: "heading", level: 1, children: [{ text: "Containment" }] },
+        {
+          type: "paragraph",
+          children: [{ text: "Incident", href: "/incidents/12", bold: true }],
+        },
+      ],
+    };
+    expect(roundTrip(withHeadingAndLink)).to.deep.equal(normalizeDocument(withHeadingAndLink));
+
+    const surface = document.createElement("div");
+    renderDocument(surface, withHeadingAndLink);
+    expect(documentFromEditingSurface(surface)).to.deep.equal(
+      normalizeDocument(withHeadingAndLink),
+    );
   });
 
   it("round-trips plain-text documents as paragraph blocks", () => {
@@ -53,17 +72,43 @@ describe("rich-text document", () => {
     expect(roundTrip(fromPlain)).to.deep.equal(fromPlain);
   });
 
-  it("drops unknown block types and does not interpret HTML strings as markup", () => {
+  it("keeps headings and allowlisted links, and drops images and HTML strings", () => {
     expect(
       normalizeDocument({
         blocks: [
-          { type: "heading", children: [{ text: "Not a heading" }] },
-          { type: "paragraph", children: [{ text: "Keep" }] },
+          { type: "heading", level: 2, children: [{ text: "Runbook" }] },
+          {
+            type: "paragraph",
+            children: [{ text: "Open", href: "https://example.test/incident" }],
+          },
           { type: "image", src: "<img src=x onerror=alert(1)>" },
         ],
       }),
     ).to.deep.equal({
-      blocks: [{ type: "paragraph", children: [{ text: "Keep" }] }],
+      blocks: [
+        { type: "heading", level: 2, children: [{ text: "Runbook" }] },
+        {
+          type: "paragraph",
+          children: [{ text: "Open", href: "https://example.test/incident" }],
+        },
+      ],
+    });
+
+    expect(
+      normalizeDocument({
+        blocks: [
+          { type: "heading", level: 9, children: [{ text: "Default level" }] },
+          {
+            type: "paragraph",
+            children: [{ text: "XSS", href: "javascript:alert(1)" }],
+          },
+        ],
+      }),
+    ).to.deep.equal({
+      blocks: [
+        { type: "heading", level: 2, children: [{ text: "Default level" }] },
+        { type: "paragraph", children: [{ text: "XSS" }] },
+      ],
     });
 
     expect(normalizeDocument("<p><strong>Markup</strong></p>")).to.deep.equal({ blocks: [] });

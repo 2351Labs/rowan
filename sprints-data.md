@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 9 done. KPI, sparkline, bar, and donut are Stable. Area and stacked bar are experimental. Wrappers track remains in `sprints.md`.
+**Status.** Sprint 10 done. KPI, sparkline, bar, and donut are Stable. Area and stacked bar are experimental. Rich-text headings and links shipped. Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -68,7 +68,7 @@ Frozen document:
 
 ### Out of scope
 
-Collaboration, markdown import, headings/links/images, a sanitizing HTML setter.
+Collaboration, markdown import, images, a sanitizing HTML setter. Headings and links shipped later as a document expansion.
 
 ---
 
@@ -283,9 +283,27 @@ Shared rules stay the same: property-only data, matching table, native SVG, `row
 
 ---
 
+## Sprint 10 — Rich-text headings and links
+
+**Status:** done
+
+Expand the Stable document without accepting HTML or images.
+
+- Heading blocks: `{ type: "heading", level: 1|2|3, children }`
+- Link mark: optional allowlisted `href` on a run
+- Images stay out of the document
+
+### Done when
+
+- [x] Normalize, round-trip, and surface parse keep headings and allowlisted hrefs.
+- [x] `javascript:` and unknown schemes are dropped. Images and HTML strings still empty.
+- [x] Toolbar heading toggle and link popover. Events stay user-only.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.
-- Rich-text headings, links, images.
+- Rich-text images (not document nodes). Image display host with overlay/caption/link.
 - Table column virtualization.
 - Vue/Svelte wrappers.

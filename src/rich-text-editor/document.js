@@ -1,4 +1,5 @@
-const BLOCK_TYPES = new Set(["paragraph", "unordered-list", "ordered-list"]);
+const BLOCK_TYPES = new Set(["paragraph", "heading", "unordered-list", "ordered-list"]);
+const HEADING_LEVELS = new Set([1, 2, 3]);
 const UNSAFE_TAGS = new Set([
   "SCRIPT",
   "STYLE",
@@ -17,11 +18,19 @@ const UNSAFE_TAGS = new Set([
  * @property {boolean} [bold]
  * @property {boolean} [italic]
  * @property {boolean} [underline]
+ * @property {string} [href]
  */
 
 /**
  * @typedef {object} RowanRichTextParagraph
  * @property {"paragraph"} type
+ * @property {RowanRichTextRun[]} children
+ */
+
+/**
+ * @typedef {object} RowanRichTextHeading
+ * @property {"heading"} type
+ * @property {1|2|3} level
  * @property {RowanRichTextRun[]} children
  */
 
@@ -32,11 +41,11 @@ const UNSAFE_TAGS = new Set([
  */
 
 /**
- * Frozen public document. Blocks are only paragraph, unordered-list, and
- * ordered-list. Runs support only bold, italic, and underline. HTML is never
- * an API value.
+ * Public document. Blocks are paragraph, heading (levels 1–3), unordered-list,
+ * and ordered-list. Runs support bold, italic, underline, and an optional
+ * allowlisted href. HTML is never an API value. Images are not document nodes.
  * @typedef {object} RowanRichTextDocument
- * @property {Array<RowanRichTextParagraph | RowanRichTextList>} blocks
+ * @property {Array<RowanRichTextParagraph | RowanRichTextHeading | RowanRichTextList>} blocks
  */
 
 function isObject(value) {
@@ -47,11 +56,50 @@ function normalizeText(value) {
   return String(value ?? "").replace(/\r\n?/g, "\n");
 }
 
+/**
+ * Allows http(s), mailto, in-app paths, and fragments. Drops javascript, data,
+ * and other schemes.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeHref(value) {
+  const href = String(value ?? "").trim();
+  if (!href) return "";
+
+  const lower = href.toLowerCase();
+  if (
+    lower.startsWith("javascript:") ||
+    lower.startsWith("data:") ||
+    lower.startsWith("vbscript:") ||
+    lower.startsWith("file:") ||
+    href.startsWith("//")
+  ) {
+    return "";
+  }
+
+  if (
+    /^https?:/i.test(href) ||
+    /^mailto:/i.test(href) ||
+    href.startsWith("/") ||
+    href.startsWith("#")
+  ) {
+    return href;
+  }
+
+  return "";
+}
+
+function normalizeHeadingLevel(value) {
+  const level = Number(value);
+  return HEADING_LEVELS.has(level) ? level : 2;
+}
+
 function normalizeMarks(value) {
   return {
     bold: Boolean(value?.bold),
     italic: Boolean(value?.italic),
     underline: Boolean(value?.underline),
+    href: normalizeHref(value?.href),
   };
 }
 
@@ -59,7 +107,8 @@ function hasSameMarks(left, right) {
   return (
     Boolean(left.bold) === Boolean(right.bold) &&
     Boolean(left.italic) === Boolean(right.italic) &&
-    Boolean(left.underline) === Boolean(right.underline)
+    Boolean(left.underline) === Boolean(right.underline) &&
+    (left.href || "") === (right.href || "")
   );
 }
 
@@ -88,7 +137,7 @@ export function normalizeRuns(value) {
 
     runs.push({
       text,
-      ...Object.fromEntries(Object.entries(marks).filter(([, marked]) => marked)),
+      ...Object.fromEntries(Object.entries(marks).filter(([, marked]) => Boolean(marked))),
     });
   }
 
@@ -110,6 +159,16 @@ export function normalizeDocument(value) {
 
       if (block.type === "paragraph") {
         return [{ type: "paragraph", children: normalizeRuns(block.children) }];
+      }
+
+      if (block.type === "heading") {
+        return [
+          {
+            type: "heading",
+            level: normalizeHeadingLevel(block.level),
+            children: normalizeRuns(block.children),
+          },
+        ];
       }
 
       const sourceItems = Array.isArray(block.items) ? block.items : [];
@@ -155,7 +214,7 @@ export function documentToPlainText(value) {
   const documentValue = normalizeDocument(value);
   return documentValue.blocks
     .flatMap((block) => {
-      if (block.type === "paragraph") {
+      if (block.type === "paragraph" || block.type === "heading") {
         return [block.children.map((run) => run.text).join("")];
       }
 
@@ -217,6 +276,14 @@ function appendRuns(parent, runs) {
       node = wrapper;
     }
 
+    if (run.href) {
+      const wrapper = document.createElement("a");
+      wrapper.setAttribute("href", run.href);
+      wrapper.setAttribute("rel", "noreferrer noopener");
+      wrapper.append(node);
+      node = wrapper;
+    }
+
     parent.append(node);
   }
 }
@@ -240,6 +307,14 @@ export function renderDocument(root, value) {
       appendRuns(paragraph, block.children);
       appendPlaceholderBreak(paragraph, block.children);
       fragment.append(paragraph);
+      continue;
+    }
+
+    if (block.type === "heading") {
+      const heading = document.createElement(`h${block.level}`);
+      appendRuns(heading, block.children);
+      appendPlaceholderBreak(heading, block.children);
+      fragment.append(heading);
       continue;
     }
 
@@ -293,7 +368,11 @@ function collectRuns(node, marks = {}) {
   if (!(node instanceof HTMLElement) || UNSAFE_TAGS.has(node.tagName)) return [];
   if (node.tagName === "BR") return normalizeRuns([{ text: "\n", ...marks }]);
 
-  const nextMarks = marksFromElement(node, marks);
+  const nextMarks = {
+    ...marksFromElement(node, marks),
+    href:
+      node.tagName === "A" ? normalizeHref(node.getAttribute("href")) || marks.href : marks.href,
+  };
   return [...node.childNodes].flatMap((child) => collectRuns(child, nextMarks));
 }
 
@@ -313,7 +392,7 @@ function runsForElement(element) {
  * @returns {RowanRichTextDocument}
  */
 export function documentFromEditingSurface(root) {
-  /** @type {Array<RowanRichTextParagraph | RowanRichTextList>} */
+  /** @type {Array<RowanRichTextParagraph | RowanRichTextHeading | RowanRichTextList>} */
   const blocks = [];
   /** @type {RowanRichTextRun[]} */
   let looseRuns = [];
@@ -331,6 +410,16 @@ export function documentFromEditingSurface(root) {
     }
 
     if (!(child instanceof HTMLElement) || UNSAFE_TAGS.has(child.tagName)) continue;
+
+    if (/^H[1-3]$/.test(child.tagName)) {
+      appendLooseRuns();
+      blocks.push({
+        type: "heading",
+        level: Number(child.tagName.slice(1)),
+        children: runsForElement(child),
+      });
+      continue;
+    }
 
     if (child.tagName === "UL" || child.tagName === "OL") {
       appendLooseRuns();

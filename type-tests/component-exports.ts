@@ -61,6 +61,7 @@ import { RowanRating } from "@rowan-ui/core/rating";
 import {
   RowanRichTextEditor,
   type RowanRichTextDocument,
+  type RowanRichTextHeading,
   type RowanRichTextList,
   type RowanRichTextParagraph,
   type RowanRichTextRun,
@@ -271,10 +272,15 @@ richTextEditor.value = {
 };
 richTextEditor.mode = "plain";
 const richTextDocument: RowanRichTextDocument = richTextEditor.value;
-const richTextRun: RowanRichTextRun = { text: "Keep", bold: true };
+const richTextRun: RowanRichTextRun = { text: "Keep", bold: true, href: "/incidents/12" };
 const richTextParagraph: RowanRichTextParagraph = {
   type: "paragraph",
   children: [richTextRun],
+};
+const richTextHeading: RowanRichTextHeading = {
+  type: "heading",
+  level: 2,
+  children: [{ text: "Containment" }],
 };
 const richTextList: RowanRichTextList = {
   type: "unordered-list",
@@ -282,6 +288,7 @@ const richTextList: RowanRichTextList = {
 };
 void richTextDocument;
 void richTextParagraph;
+void richTextHeading;
 void richTextList;
 const trendFormatter: RowanTrendChartValueFormatter = (value, context) =>
   context.tick ? String(value) : `${value} incidents`;

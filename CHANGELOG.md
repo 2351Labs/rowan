@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-rich-text-editor` headings (levels 1–3) and allowlisted link hrefs. Images stay out of the document.
+
 ## 0.7.0 - 2026-09-18
 
 ### Removed

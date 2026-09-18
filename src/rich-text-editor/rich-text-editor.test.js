@@ -215,4 +215,56 @@ describe("rowan-rich-text-editor", () => {
     expect(editor.getAttribute("aria-label")).to.equal("Custom runbook label");
     expect(editor.internals.ariaLabel).to.equal("Runbook");
   });
+
+  it("toggles a heading block from the toolbar", async () => {
+    const editor = await renderEditor({
+      value: { blocks: [{ type: "paragraph", children: [{ text: "Containment" }] }] },
+    });
+    const changes = [];
+    editor.addEventListener("rowan-change", (event) => changes.push(event));
+
+    selectEditorContents(editor);
+    editor.shadowRoot.querySelector('button[data-command="heading"]').click();
+    await nextMicrotask();
+
+    expect(editor.value.blocks[0]).to.deep.equal({
+      type: "heading",
+      level: 2,
+      children: [{ text: "Containment" }],
+    });
+    expect(surfaceFor(editor).querySelector("h2").textContent).to.equal("Containment");
+    expect(changes).to.have.length(1);
+  });
+
+  it("applies an allowlisted link and drops javascript hrefs", async () => {
+    const editor = await renderEditor({
+      value: { blocks: [{ type: "paragraph", children: [{ text: "Open the incident" }] }] },
+    });
+    selectEditorTextRange(editor, 0, 4);
+    editor.shadowRoot.querySelector('button[data-command="link"]').click();
+    const hrefInput = editor.shadowRoot.querySelector(".link-href");
+    hrefInput.value = "https://example.test/incidents/12";
+    editor.shadowRoot.querySelector("[data-link-action='apply']").click();
+    await nextMicrotask();
+
+    expect(editor.value.blocks[0].children).to.deep.equal([
+      { text: "Open", href: "https://example.test/incidents/12" },
+      { text: " the incident" },
+    ]);
+    expect(surfaceFor(editor).querySelector("a").getAttribute("href")).to.equal(
+      "https://example.test/incidents/12",
+    );
+
+    editor.value = {
+      blocks: [
+        {
+          type: "paragraph",
+          children: [{ text: "Open", href: "javascript:alert(1)" }],
+        },
+      ],
+    };
+    await nextMicrotask();
+    expect(editor.value.blocks[0].children).to.deep.equal([{ text: "Open" }]);
+    expect(surfaceFor(editor).querySelector("a")).to.equal(null);
+  });
 });

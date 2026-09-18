@@ -1,9 +1,10 @@
 /**
  * Constrained form-associated authoring control with a property-only document value.
  *
- * The rich mode supports paragraphs, ordered and unordered lists, plus bold, italic,
- * and underline marks. Values are normalized to a safe document object; HTML is never
- * accepted as an API value. Rich clipboard data is inserted as plain text.
+ * The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered
+ * lists, plus bold, italic, underline, and allowlisted links. Values are normalized
+ * to a safe document object; HTML is never accepted as an API value. Images are not
+ * document nodes. Rich clipboard data is inserted as plain text.
  *
  * @tag rowan-rich-text-editor
  * @attr {string} name

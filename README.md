@@ -280,20 +280,20 @@ Everything in the catalog above is usable. Surfaces marked Experimental below
 are **out of `0.7`** until they are marked Stable. The listed dashboard hosts
 are frozen; pin the version if you depend on them.
 
-| Surface                         | Status       | Notes                                                                                                                              |
-| ------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                      |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
-| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
-| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
-| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
-| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
-| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline`.                 |
-| `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                |
-| `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                         |
-| `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
-| `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. |
-| `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                   |
+| Surface                         | Status       | Notes                                                                                                                                                                                  |
+| ------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                                                                          |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                         |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                           |
+| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes. |
+| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                               |
+| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                     |
+| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline`.                                                                     |
+| `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                    |
+| `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
+| `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
+| `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill.                                                     |
+| `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                                                                       |
 
 ## Rowan Carousel
 
@@ -476,7 +476,7 @@ Assign application-approved swatches with the property-only `palette` array. Use
 
 ## Rowan Rich Text Editor
 
-`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a frozen document object: paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. That block and mark set is closed. Headings, links, and images would be a later major. It never accepts an HTML value or reflects document data to an attribute. Import `RowanRichTextDocument` from `@rowan-ui/core/rich-text-editor`.
+`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a document object: paragraph, heading (levels 1–3), ordered-list, and unordered-list blocks plus bold, italic, underline, and optional allowlisted `href` runs. Images are not document nodes. It never accepts an HTML value or reflects document data to an attribute. Import `RowanRichTextDocument` from `@rowan-ui/core/rich-text-editor`. Link hrefs are `http:`, `https:`, `mailto:`, in-app paths starting with `/`, or fragments starting with `#`. Other schemes are dropped.
 
 Rich mode uses the browser editing surface and native undo behavior. Rich clipboard data is inserted as literal plain text, not interpreted as markup. Use `mode="plain"` when the workflow must use a textarea fallback; it still emits the same document object. The submitted FACE value is the JSON serialization of that document.
 
@@ -494,9 +494,13 @@ Rich mode uses the browser editing surface and native undo behavior. Rich clipbo
   const editor = document.querySelector("#incident-guidance");
   editor.value = {
     blocks: [
+      { type: "heading", level: 2, children: [{ text: "Escalation" }] },
       {
         type: "paragraph",
-        children: [{ text: "Escalate to the incident lead.", bold: true }],
+        children: [
+          { text: "Escalate to the incident lead.", bold: true },
+          { text: " Open the record", href: "/incidents/12" },
+        ],
       },
       {
         type: "unordered-list",
