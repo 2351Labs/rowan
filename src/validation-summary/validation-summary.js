@@ -220,6 +220,7 @@ export class RowanValidationSummary extends BaseElement {
     });
 
     this.#list.append(fragment);
+    this.#list.hidden = errors.length === 0;
     this.#empty.hidden = errors.length > 0;
 
     this.#applyDefaultA11y();

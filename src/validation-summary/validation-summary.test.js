@@ -20,6 +20,8 @@ describe("rowan-validation-summary", () => {
     const items = element.shadowRoot.querySelectorAll('[data-part="error-button"]');
     expect(items.length).to.equal(2);
     expect(items[0].textContent).to.include("First name is required");
+    expect(element.shadowRoot.querySelector(".list").hidden).to.equal(false);
+    expect(element.shadowRoot.querySelector('[data-part="empty"]').hidden).to.equal(true);
   });
 
   it("shows empty state when no errors", async () => {
@@ -28,8 +30,10 @@ describe("rowan-validation-summary", () => {
     await nextMicrotask();
 
     const empty = element.shadowRoot.querySelector('[data-part="empty"]');
+    const list = element.shadowRoot.querySelector(".list");
     expect(empty).to.not.equal(null);
     expect(empty.hidden).to.equal(false);
+    expect(list.hidden).to.equal(true);
   });
 
   it("emits rowan-jump and focuses target field when user activates an error", async () => {
