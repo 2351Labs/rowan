@@ -540,6 +540,304 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/area-chart/area-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental filled multi-series area chart. Same data contract as the line\nchart. Null values break both the line and the fill.",
+          "name": "RowanAreaChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-area-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "legend-item"
+            },
+            {
+              "name": "legend-swatch"
+            },
+            {
+              "name": "point"
+            },
+            {
+              "name": "detail"
+            },
+            {
+              "name": "summary"
+            },
+            {
+              "name": "table"
+            },
+            {
+              "name": "area"
+            },
+            {
+              "name": "line"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Replaces the label attribute.",
+              "name": "label"
+            },
+            {
+              "description": "Replaces the description attribute.",
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanTrendChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanTrendChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanTrendChartSeries>"
+              },
+              "description": "Chart series. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Point labels shared across series. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanTrendChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanTrendChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanTrendChartConfig"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanTrendChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanTrendChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanTrendChartValueFormatter | null"
+              },
+              "description": "Formats chart and table values. Its context includes tick for compact axis labels. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive data point.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-area-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanAreaChart",
+          "declaration": {
+            "name": "RowanAreaChart",
+            "module": "src/area-chart/area-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/area-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanAreaChart",
+          "declaration": {
+            "name": "RowanAreaChart",
+            "module": "./area-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/avatar/avatar.js",
       "declarations": [
         {
@@ -2813,6 +3111,19 @@
         },
         {
           "kind": "function",
+          "name": "stackedBarValueDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            }
+          ],
+          "description": "Stacked bars use the per-category sum of positive values. Null and negatives\nare no-data and do not contribute."
+        },
+        {
+          "kind": "function",
           "name": "donutSlices",
           "parameters": [
             {
@@ -2929,6 +3240,14 @@
           "name": "barValueDomain",
           "declaration": {
             "name": "barValueDomain",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stackedBarValueDomain",
+          "declaration": {
+            "name": "stackedBarValueDomain",
             "module": "src/chart/model.js"
           }
         },
@@ -8990,6 +9309,14 @@
         },
         {
           "kind": "js",
+          "name": "RowanAreaChart",
+          "declaration": {
+            "name": "RowanAreaChart",
+            "module": "./area-chart/area-chart.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanAvatar",
           "declaration": {
             "name": "RowanAvatar",
@@ -9354,6 +9681,14 @@
           "declaration": {
             "name": "RowanSparkline",
             "module": "./sparkline/sparkline.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanStackedBarChart",
+          "declaration": {
+            "name": "RowanStackedBarChart",
+            "module": "./stacked-bar-chart/stacked-bar-chart.js"
           }
         },
         {
@@ -17359,6 +17694,284 @@
           "declaration": {
             "name": "RowanSplitPane",
             "module": "src/split-pane/split-pane.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/stacked-bar-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanStackedBarChart",
+          "declaration": {
+            "name": "RowanStackedBarChart",
+            "module": "./stacked-bar-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/stacked-bar-chart/stacked-bar-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental stacked categorical bar chart. Positive values stack from zero.\nNull and negatives are no-data.",
+          "name": "RowanStackedBarChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-stacked-bar-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "bar"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "Chart series. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartConfig"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              },
+              "description": "Formats chart and table values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive bar.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-stacked-bar-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanStackedBarChart",
+          "declaration": {
+            "name": "RowanStackedBarChart",
+            "module": "src/stacked-bar-chart/stacked-bar-chart.js"
           }
         }
       ]

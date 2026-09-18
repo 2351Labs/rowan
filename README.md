@@ -272,7 +272,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -280,18 +280,20 @@ Everything in the catalog above is usable. Surfaces marked Experimental below
 are **out of `0.7`** until they are marked Stable. The listed dashboard hosts
 are frozen; pin the version if you depend on them.
 
-| Surface                         | Status | Notes                                                                                                                              |
-| ------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                      |
-| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
-| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
-| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
-| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
-| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
-| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline`.                 |
-| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                |
-| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total.                                                         |
-| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
+| Surface                         | Status       | Notes                                                                                                                              |
+| ------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                      |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
+| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
+| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
+| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
+| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline`.                 |
+| `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                |
+| `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                         |
+| `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
+| `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. |
+| `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                   |
 
 ## Rowan Carousel
 
@@ -539,6 +541,22 @@ reading order.
 Interactive bars emit `rowan-point-activate` with the same detail shape as
 `rowan-trend-chart`. Native SVG, no animation, matching data table.
 
+## Rowan Area Chart
+
+`rowan-area-chart` is an experimental filled multi-series chart. It uses the
+same property-only `series`, `labels`, `config`, and `valueFormatter` as
+`rowan-trend-chart`. Series are independent fills, not stacked. A `null` value
+breaks both the line and the fill and appears as `No data` in the table.
+Interactive points emit `rowan-point-activate`. Native SVG, no animation.
+
+## Rowan Stacked Bar Chart
+
+`rowan-stacked-bar-chart` is an experimental categorical stack. Positive values
+stack from zero in series order. `null` and negatives are no-data: they do not
+contribute height and appear as `No data` in the table. Interactive segments
+emit `rowan-point-activate`. Native SVG, no animation. Grouped bars stay on
+`rowan-bar-chart`.
+
 ## Rowan Donut Chart
 
 `rowan-donut-chart` is a frozen parts-of-a-whole chart. It draws the
@@ -573,7 +591,7 @@ caption without dropping the progressbar name.
 
 ## Rowan Trend Chart
 
-`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Bar, donut, and sparkline charts are separate hosts, not extra `config` keys.
+`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Area, bar, stacked bar, donut, and sparkline charts are separate hosts, not extra `config` keys.
 
 The component always provides the same values in a semantic table beneath the chart. A `null` value is an intentional no-data gap: it breaks the visual line, has no interactive point control, and appears as `No data` in the table. Set `interactive` to expose each available data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
 

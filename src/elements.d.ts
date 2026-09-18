@@ -1,4 +1,5 @@
 import type { RowanAlert } from "../types/alert/alert.js";
+import type { RowanAreaChart } from "../types/area-chart/area-chart.js";
 import type { RowanAccordion } from "../types/accordion/accordion.js";
 import type { RowanAppLayout } from "../types/app-layout/app-layout.js";
 import type { RowanAvatar } from "../types/avatar/avatar.js";
@@ -59,6 +60,7 @@ import type { RowanSkeleton } from "../types/skeleton/skeleton.js";
 import type { RowanSlider } from "../types/slider/slider.js";
 import type { RowanSparkline } from "../types/sparkline/sparkline.js";
 import type { RowanSpinner } from "../types/spinner/spinner.js";
+import type { RowanStackedBarChart } from "../types/stacked-bar-chart/stacked-bar-chart.js";
 import type { RowanSplitPane } from "../types/split-pane/split-pane.js";
 import type { RowanStatusIndicator } from "../types/status-indicator/status-indicator.js";
 import type { RowanStepper } from "../types/stepper/stepper.js";
@@ -84,6 +86,7 @@ declare global {
   interface HTMLElementTagNameMap {
     "rowan-accordion": RowanAccordion;
     "rowan-alert": RowanAlert;
+    "rowan-area-chart": RowanAreaChart;
     "rowan-app-layout": RowanAppLayout;
     "rowan-avatar": RowanAvatar;
     "rowan-badge": RowanBadge;
@@ -143,6 +146,7 @@ declare global {
     "rowan-slider": RowanSlider;
     "rowan-sparkline": RowanSparkline;
     "rowan-spinner": RowanSpinner;
+    "rowan-stacked-bar-chart": RowanStackedBarChart;
     "rowan-split-pane": RowanSplitPane;
     "rowan-status-indicator": RowanStatusIndicator;
     "rowan-stepper": RowanStepper;

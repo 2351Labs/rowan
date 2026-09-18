@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 8 done. KPI, sparkline, bar, and donut are Stable. Wrappers track remains in `sprints.md`.
+**Status.** Sprint 9 done. KPI, sparkline, bar, and donut are Stable. Area and stacked bar are experimental. Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -256,10 +256,36 @@ npm publish (separate release cut), Vue/Svelte, MapLibre changes.
 
 ---
 
+## Sprint 9 — Area and stacked bar (experimental)
+
+**Status:** done
+
+Admin dashboards need filled series and stacked categories. Keep the frozen line and grouped-bar APIs unchanged: new geometries are separate hosts.
+
+### Types in this sprint
+
+| Host                      | Use                         | Notes                                                                |
+| ------------------------- | --------------------------- | -------------------------------------------------------------------- |
+| `rowan-area-chart`        | Filled multi-series         | Same property-only contract as the line chart. Null breaks the fill. |
+| `rowan-stacked-bar-chart` | Categorical stack from zero | Positives stack. Null and negatives are no-data.                     |
+
+Shared rules stay the same: property-only data, matching table, native SVG, `rowan-point-activate`.
+
+### Done when
+
+- [x] Both hosts + wrappers + Storybook + tests + CEM.
+- [x] README marks them Experimental. Frozen line and grouped-bar APIs unchanged.
+- [x] Null gaps the area fill. Stacked bars skip null and negatives.
+
+### Out of scope
+
+100% stacked bar, stacked area, scatter, heatmap, time-series brushes.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.
 - Rich-text headings, links, images.
 - Table column virtualization.
-- More geometries (area-as-separate-host, stacked bar).
 - Vue/Svelte wrappers.

@@ -1851,6 +1851,59 @@ document.documentElement.dataset.theme = "lagoon";
     },
   },
   {
+    id: "area-chart",
+    group: "Components",
+    title: "Rowan Area Chart",
+    summary: "Filled multi-series chart. Null breaks the fill.",
+    tags: ["data display", "area", "chart"],
+    keywords: ["area chart", "filled"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="area-chart-overview">
+        <h2>Filled series</h2>
+        <p>rowan-area-chart is a separate host from the line chart. series, labels, config, and valueFormatter stay property-only. Null breaks both the line and the fill and appears as No data in the table. Series are independent fills, not stacked.</p>
+        <div class="demo-row">
+          <rowan-area-chart id="docs-area-chart" label="Throughput" interactive></rowan-area-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-area-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      chart.series = [
+        { id: "inbound", label: "Inbound", values: [18, 24, null, 12, 20] },
+        { id: "outbound", label: "Outbound", values: [10, 14, 16, 9, 11] },
+      ];
+    },
+  },
+  {
+    id: "stacked-bar-chart",
+    group: "Components",
+    title: "Rowan Stacked Bar Chart",
+    summary: "Positive values stack from zero. Null and negatives are no-data.",
+    tags: ["data display", "stacked bar", "chart"],
+    keywords: ["stacked bar", "stack"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="stacked-bar-chart-overview">
+        <h2>Stacked comparison</h2>
+        <p>rowan-stacked-bar-chart stacks positive values from zero. Null and negatives are no-data: they do not contribute height and appear as No data in the table. Interactive segments emit rowan-point-activate. Grouped bars stay on rowan-bar-chart.</p>
+        <div class="demo-row">
+          <rowan-stacked-bar-chart id="docs-stacked-bar-chart" label="Incidents by day" interactive></rowan-stacked-bar-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-stacked-bar-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      chart.series = [
+        { id: "p1", label: "P1", values: [2, 1, 0, 3, 1] },
+        { id: "p2", label: "P2", values: [4, 5, 2, 1, 3] },
+        { id: "p3", label: "P3", values: [6, 4, null, 5, 4] },
+      ];
+    },
+  },
+  {
     id: "donut-chart",
     group: "Components",
     title: "Rowan Donut Chart",
@@ -1898,7 +1951,7 @@ document.documentElement.dataset.theme = "lagoon";
 
       <section class="doc-section" data-doc-section id="trend-chart-contract">
         <h2>Accessible data contract</h2>
-        <p>series, labels, config, and valueFormatter are the frozen line-chart API and stay property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information. Other geometries are separate hosts.</p>
+        <p>series, labels, config, and valueFormatter are the frozen line-chart API and stay property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information. Area, bar, stacked bar, donut, and sparkline charts are separate hosts.</p>
         ${codeBlock(TREND_CHART_SNIPPET, "html")}
       </section>
     `,
