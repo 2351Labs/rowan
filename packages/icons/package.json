@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/icons",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Optional, tree-shakable SVG icons for Rowan.",
   "license": "MIT AND ISC",
   "author": "2351Labs",

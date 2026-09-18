@@ -144,7 +144,7 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ## Release — npm 0.5.0
 
-**Status:** `@rowan-ui/core@0.5.0` and `@rowan-ui/icons@0.5.0` are on npm. Catalog now `0.6.0` in git (`sprints-data.md` Sprint 8). Publish `0.6.0` is a later cut.
+**Status:** `@rowan-ui/core@0.6.0` is on npm. Git is `0.6.1` (themes, admin-shell follow-through). Publish `0.6.1` after this lands on `main` so GitHub Pages rebuilds Storybook.
 
 - [x] README, Storybook Home, and docs install `@rowan-ui/core @rowan-ui/icons`.
 - [x] Package metadata (`repository`, `publishConfig.access`) on core and icons.
