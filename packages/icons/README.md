@@ -16,7 +16,7 @@ npm install @rowan-ui/icons
 For `rowan-icon-button` names and other core slots, install icons next to core:
 
 ```sh
-npm install @rowan-ui/core@^0.6.0 @rowan-ui/icons@^0.6.0
+npm install @rowan-ui/core@^0.7.0 @rowan-ui/icons@^0.7.0
 ```
 
 Import icons by their individual ESM path for the narrowest bundle boundary:

@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/maplibre",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Optional MapLibre integration for Rowan Web Components.",
   "license": "MIT",
   "author": "2351Labs",
@@ -63,7 +63,7 @@
     "./src/map/map.js"
   ],
   "peerDependencies": {
-    "@rowan-ui/core": "^0.6.0",
+    "@rowan-ui/core": "^0.7.0",
     "maplibre-gl": "^5.0.0",
     "react": ">=18"
   },
