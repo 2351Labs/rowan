@@ -103,12 +103,29 @@ describe("rowan-trend-chart", () => {
       "Response time14 min9 min",
     );
     expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.include("14");
+    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.not.include("min");
     expect(chart.shadowRoot.querySelectorAll("button[data-point-key]")).to.have.length(2);
     expect(
       [...chart.shadowRoot.querySelectorAll("[part='legend-item']")].map(
         (item) => item.textContent,
       ),
     ).to.deep.equal(["Response time"]);
+  });
+
+  it("keeps parent series and config assignment silent", async () => {
+    const chart = await renderChart({ interactive: true });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event));
+
+    chart.series = [{ id: "incidents", label: "Incidents", values: [1, 2, 3] }];
+    await nextMicrotask();
+    chart.config = {
+      labels: ["Mon", "Tue"],
+      series: [{ id: "resolved", label: "Resolved", values: [4, 5] }],
+    };
+    await nextMicrotask();
+
+    expect(activations).to.have.length(0);
   });
 
   it("makes interactive points discoverable with Arrow keys and emits one composed activation event", async () => {

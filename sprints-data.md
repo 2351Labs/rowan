@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 3 done. Next: Sprint 4 (trend-chart line freeze). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 4 done. Next: Sprint 5 (KPI card, experimental). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -104,7 +104,7 @@ Query languages, OR groups, saved-view persistence, running the filter inside th
 
 ## Sprint 4 — Trend-chart line freeze
 
-**Status:** pending
+**Status:** done
 
 Freeze `rowan-trend-chart` as the **small multi-series line** chart. Other geometries wait for Sprint 7 and stay experimental.
 
@@ -119,10 +119,10 @@ Frozen contract:
 
 ### Done when
 
-- [ ] README marks `rowan-trend-chart` **Stable**. Config keys above are the line-chart API.
-- [ ] Tests pin: null gaps break the line, table matches series, `valueFormatter` `tick` context, interactive keyboard activation.
-- [ ] Shared normalization (`src/trend-chart/model.js`) is documented as the line-chart model. Extracting a generic `src/chart/` module may start here if Sprint 6–7 need it; the public `rowan-trend-chart` API must not change.
-- [ ] README **API stability** table: the original four are Stable. Catalog copy on Home / docs / CHANGELOG matches.
+- [x] README marks `rowan-trend-chart` **Stable**. Config keys above are the line-chart API.
+- [x] Tests pin: null gaps break the line, table matches series, `valueFormatter` `tick` context, interactive keyboard activation.
+- [x] Shared normalization (`src/trend-chart/model.js`) is documented as the line-chart model. Extracting a generic `src/chart/` module may start here if Sprint 6–7 need it; the public `rowan-trend-chart` API must not change.
+- [x] README **API stability** table: the original four are Stable. Catalog copy on Home / docs / CHANGELOG matches.
 
 ### Out of scope
 

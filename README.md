@@ -36,9 +36,8 @@ and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. `rowan-trend-chart` is experimental and **out of `0.5`** (and a
-later `1.0` until it is marked Stable). Table virtualization,
-`rowan-rich-text-editor`, and `rowan-filter-builder` are Stable.
+the top layer. Table virtualization, `rowan-rich-text-editor`,
+`rowan-filter-builder`, and `rowan-trend-chart` are Stable.
 
 ## Install
 
@@ -298,18 +297,18 @@ Implemented components currently include:
 
 ### API stability
 
-Everything in the catalog above is usable. Experimental surfaces below are
-**out of `0.5`** until they are marked Stable. Pin the version if you depend on
-them.
+Everything in the catalog above is usable. Surfaces marked Experimental below
+are **out of `0.5`** until they are marked Stable. Pin the version if you depend
+on them.
 
-| Surface                         | Status       | Notes                                                                                                                |
-| ------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                        |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                       |
-| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.         |
-| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value. |
-| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.             |
-| `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                             |
+| Surface                         | Status | Notes                                                                                                                              |
+| ------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                      |
+| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
+| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
+| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
+| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
+| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
 
 ## Rowan Carousel
 
@@ -531,7 +530,7 @@ This component's security boundary ends at its normalized document value: applic
 
 ## Rowan Trend Chart
 
-`rowan-trend-chart` is a compact multi-series line visualization for operational comparisons such as incoming versus resolved incidents. It is intentionally scoped to small data sets where a trend is faster to scan than a table or progress indicator. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes.
+`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Bar, donut, and sparkline charts are separate hosts, not extra `config` keys.
 
 The component always provides the same values in a semantic table beneath the chart. A `null` value is an intentional no-data gap: it breaks the visual line, has no interactive point control, and appears as `No data` in the table. Set `interactive` to expose each available data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
 

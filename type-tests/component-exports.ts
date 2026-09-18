@@ -86,7 +86,12 @@ import {
 } from "@rowan-ui/core/table";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
 import { RowanTabs } from "@rowan-ui/core/tabs";
-import { RowanTrendChart } from "@rowan-ui/core/trend-chart";
+import {
+  RowanTrendChart,
+  type RowanTrendChartConfig,
+  type RowanTrendChartSeries,
+  type RowanTrendChartValueFormatter,
+} from "@rowan-ui/core/trend-chart";
 import { RowanTextField } from "@rowan-ui/core/text-field";
 import { RowanTextarea } from "@rowan-ui/core/textarea";
 import { RowanTimePicker } from "@rowan-ui/core/time-picker";
@@ -249,11 +254,20 @@ const richTextList: RowanRichTextList = {
 void richTextDocument;
 void richTextParagraph;
 void richTextList;
-trendChart.config = {
-  labels: ["Mon", "Tue"],
-  interactive: true,
-  series: [{ id: "incidents", label: "Incidents", values: [4, 8] }],
+const trendFormatter: RowanTrendChartValueFormatter = (value, context) =>
+  context.tick ? String(value) : `${value} incidents`;
+const trendSeries: RowanTrendChartSeries = {
+  id: "incidents",
+  label: "Incidents",
+  values: [4, null, 8],
 };
+const trendConfig: RowanTrendChartConfig = {
+  labels: ["Mon", "Tue", "Wed"],
+  interactive: true,
+  series: [trendSeries],
+  valueFormatter: trendFormatter,
+};
+trendChart.config = trendConfig;
 trendChart.config = {
   series: [{ id: "resolved", label: "Resolved", values: [null, 6] }],
 };

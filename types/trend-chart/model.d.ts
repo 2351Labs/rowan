@@ -45,6 +45,10 @@ export type RowanTrendChartFormatContext = {
     tick?: boolean | undefined;
 };
 export type RowanTrendChartValueFormatter = (value: number, context: RowanTrendChartFormatContext) => string;
+/**
+ * Frozen line-chart configuration for `rowan-trend-chart`. Other geometries
+ * are separate hosts and must not change these keys.
+ */
 export type RowanTrendChartConfig = {
     series?: RowanTrendChartSeries[] | undefined;
     labels?: string[] | undefined;

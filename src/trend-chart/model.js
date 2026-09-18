@@ -28,6 +28,8 @@ const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
  */
 
 /**
+ * Frozen line-chart configuration for `rowan-trend-chart`. Other geometries
+ * are separate hosts and must not change these keys.
  * @typedef {object} RowanTrendChartConfig
  * @property {RowanTrendChartSeries[]} [series]
  * @property {string[]} [labels]

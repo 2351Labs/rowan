@@ -19935,7 +19935,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Accessible multi-series trend visualization for small operational data sets.",
+          "description": "Frozen small multi-series line chart for operational data sets. Native SVG,\nno animation, and an equivalent semantic table. Other geometries are\nseparate hosts.",
           "name": "RowanTrendChart",
           "cssProperties": [
             {

@@ -64,7 +64,9 @@ function createCell(tagName, text, scope = "") {
 }
 
 /**
- * Accessible multi-series trend visualization for small operational data sets.
+ * Frozen small multi-series line chart for operational data sets. Native SVG,
+ * no animation, and an equivalent semantic table. Other geometries are
+ * separate hosts.
  * @tag rowan-trend-chart
  * @attr {string} label
  * @attr {string} description

@@ -1740,7 +1740,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="trend-chart-contract">
         <h2>Accessible data contract</h2>
-        <p>series, labels, config, and valueFormatter are property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information.</p>
+        <p>series, labels, config, and valueFormatter are the frozen line-chart API and stay property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information. Other geometries are separate hosts.</p>
         ${codeBlock(TREND_CHART_SNIPPET, "html")}
       </section>
     `,
