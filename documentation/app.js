@@ -490,6 +490,35 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
   };
 </script>`;
 
+const SPARKLINE_SNIPPET = `<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
+</script>`;
+
+const KPI_CARD_SNIPPET = `<rowan-kpi-card
+  label="Open incidents"
+  tone="warning"
+  delta-label="vs last week"
+></rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+
+  const card = document.querySelector("rowan-kpi-card");
+  card.value = 19;
+  card.delta = -4;
+</script>`;
+
 const MAPLIBRE_MAP_SNIPPET = `<rowan-maplibre-map
   id="dispatch-coverage"
   label="Dispatch coverage"
@@ -1041,7 +1070,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Install <code>@rowan-ui/core</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles.</p>
+        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, rich-text, filter-builder, and trend-chart are Stable. KPI, sparkline, bar, and donut charts are experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization.
@@ -1694,7 +1723,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="rich-text-editor-control">
         <h2>Constrained operational guidance</h2>
-        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
+        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. That block and mark set is closed. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
         <div class="demo-row">
           <rowan-rich-text-editor
             id="docs-rich-text-editor"
@@ -1714,6 +1743,120 @@ const DOC_PAGES = [
       </section>
     `,
     afterRender: setupRichTextEditorDemo,
+  },
+  {
+    id: "kpi-card",
+    group: "Components",
+    title: "Rowan KPI Card",
+    summary:
+      "Experimental dashboard stat tile with a label, value, signed delta, and optional chart slot.",
+    tags: ["data display", "kpi", "dashboard"],
+    keywords: ["kpi", "stat", "metric", "delta", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="kpi-card-overview">
+        <h2>Stat tile</h2>
+        <p>Use a KPI card for a single labeled metric. value and delta are property-only. Tone never replaces the label. Delta text includes a sign so change is not color-only.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-kpi-card" label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="kpi-card-contract">
+        <h2>Experimental contract</h2>
+        <p>This host is experimental. Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order.</p>
+        ${codeBlock(KPI_CARD_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-kpi-card");
+      if (!card) return;
+      card.value = 19;
+      card.delta = -4;
+    },
+  },
+  {
+    id: "sparkline",
+    group: "Components",
+    title: "Rowan Sparkline",
+    summary:
+      "Experimental compact one-series line for KPI tiles, with a visually hidden data table.",
+    tags: ["data display", "sparkline", "kpi"],
+    keywords: ["sparkline", "compact chart", "kpi", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="sparkline-overview">
+        <h2>Compact trend</h2>
+        <p>rowan-sparkline is a separate host, not a density of rowan-trend-chart. One series, no legend, no interactive points, no animation. Null values break the line and appear as No data in a visually hidden table.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-sparkline-kpi" label="Open incidents" tone="warning" delta-label="vs last week">
+            <rowan-sparkline id="docs-sparkline" slot="chart" label="Open incidents this week"></rowan-sparkline>
+          </rowan-kpi-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="sparkline-contract">
+        <h2>Experimental contract</h2>
+        <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
+        ${codeBlock(SPARKLINE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-sparkline-kpi");
+      const chart = mainEl.querySelector("#docs-sparkline");
+      if (card) {
+        card.value = 11;
+        card.delta = -7;
+      }
+      if (chart) chart.values = [18, 24, 12, 15, 9, 11];
+    },
+  },
+  {
+    id: "bar-chart",
+    group: "Components",
+    title: "Rowan Bar Chart",
+    summary: "Experimental small categorical bar chart with a matching data table.",
+    tags: ["data display", "bar", "chart"],
+    keywords: ["bar chart", "categorical", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bar-chart-overview">
+        <h2>Categorical comparison</h2>
+        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. Interactive bars emit rowan-point-activate.</p>
+        <div class="demo-row">
+          <rowan-bar-chart id="docs-bar-chart" label="Incidents by day" interactive></rowan-bar-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-bar-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed"];
+      chart.series = [
+        { id: "incoming", label: "Incoming", values: [18, null, 12] },
+        { id: "resolved", label: "Resolved", values: [13, 19, 15] },
+      ];
+    },
+  },
+  {
+    id: "donut-chart",
+    group: "Components",
+    title: "Rowan Donut Chart",
+    summary: "Experimental parts-of-a-whole chart. Negative values are no-data.",
+    tags: ["data display", "donut", "chart"],
+    keywords: ["donut chart", "pie", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="donut-chart-overview">
+        <h2>Parts of a whole</h2>
+        <p>rowan-donut-chart draws the first series. Negative values are treated as no-data and omitted from the total. The hole shows the positive total. The data table includes skipped slices as No data.</p>
+        <div class="demo-row">
+          <rowan-donut-chart id="docs-donut-chart" label="Incident sources" interactive></rowan-donut-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-donut-chart");
+      if (!chart) return;
+      chart.labels = ["App", "Email", "Phone"];
+      chart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
+    },
   },
   {
     id: "trend-chart",
@@ -1740,7 +1883,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="trend-chart-contract">
         <h2>Accessible data contract</h2>
-        <p>series, labels, config, and valueFormatter are property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information.</p>
+        <p>series, labels, config, and valueFormatter are the frozen line-chart API and stay property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information. Other geometries are separate hosts.</p>
         ${codeBlock(TREND_CHART_SNIPPET, "html")}
       </section>
     `,
@@ -2831,7 +2974,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,

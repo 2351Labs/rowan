@@ -3,6 +3,7 @@ import { RowanAlert } from "@rowan-ui/core/alert";
 import { RowanAppLayout } from "@rowan-ui/core/app-layout";
 import { RowanAvatar } from "@rowan-ui/core/avatar";
 import { RowanBadge } from "@rowan-ui/core/badge";
+import { RowanBarChart, type RowanChartSeries } from "@rowan-ui/core/bar-chart";
 import { RowanBreadcrumb } from "@rowan-ui/core/breadcrumb";
 import { RowanBulkActionsBar } from "@rowan-ui/core/bulk-actions-bar";
 import { RowanButton } from "@rowan-ui/core/button";
@@ -20,17 +21,25 @@ import { RowanDatePicker } from "@rowan-ui/core/date-picker";
 import { RowanDateRangePicker } from "@rowan-ui/core/date-range-picker";
 import { RowanDialog } from "@rowan-ui/core/dialog";
 import { RowanDivider } from "@rowan-ui/core/divider";
+import { RowanDonutChart } from "@rowan-ui/core/donut-chart";
 import { RowanDrawer } from "@rowan-ui/core/drawer";
 import { RowanDropdown } from "@rowan-ui/core/dropdown";
 import { RowanDropzone } from "@rowan-ui/core/dropzone";
 import { RowanEmptyState } from "@rowan-ui/core/empty-state";
 import { RowanFileItem } from "@rowan-ui/core/file-item";
 import { RowanFileUpload } from "@rowan-ui/core/file-upload";
-import { RowanFilterBuilder } from "@rowan-ui/core/filter-builder";
+import {
+  RowanFilterBuilder,
+  type RowanFilter,
+  type RowanFilterField,
+  type RowanFilterFieldType,
+  type RowanFilterOperator,
+} from "@rowan-ui/core/filter-builder";
 import { RowanFormField } from "@rowan-ui/core/form-field";
 import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
 import { RowanIconButton } from "@rowan-ui/core/icon-button";
+import { RowanKpiCard } from "@rowan-ui/core/kpi-card";
 import { RowanLink } from "@rowan-ui/core/link";
 import { RowanListbox } from "@rowan-ui/core/listbox";
 import { RowanMenu } from "@rowan-ui/core/menu";
@@ -47,7 +56,13 @@ import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRating } from "@rowan-ui/core/rating";
-import { RowanRichTextEditor } from "@rowan-ui/core/rich-text-editor";
+import {
+  RowanRichTextEditor,
+  type RowanRichTextDocument,
+  type RowanRichTextList,
+  type RowanRichTextParagraph,
+  type RowanRichTextRun,
+} from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
 import {
@@ -59,6 +74,7 @@ import { RowanSideNavItem } from "@rowan-ui/core/side-nav-item";
 import { RowanSideNavSection } from "@rowan-ui/core/side-nav-section";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
+import { RowanSparkline } from "@rowan-ui/core/sparkline";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
 import { RowanSplitPane } from "@rowan-ui/core/split-pane";
 import { RowanStatusIndicator } from "@rowan-ui/core/status-indicator";
@@ -74,7 +90,12 @@ import {
 } from "@rowan-ui/core/table";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
 import { RowanTabs } from "@rowan-ui/core/tabs";
-import { RowanTrendChart } from "@rowan-ui/core/trend-chart";
+import {
+  RowanTrendChart,
+  type RowanTrendChartConfig,
+  type RowanTrendChartSeries,
+  type RowanTrendChartValueFormatter,
+} from "@rowan-ui/core/trend-chart";
 import { RowanTextField } from "@rowan-ui/core/text-field";
 import { RowanTextarea } from "@rowan-ui/core/textarea";
 import { RowanTimePicker } from "@rowan-ui/core/time-picker";
@@ -95,6 +116,10 @@ const alert: RowanAlert = document.createElement("rowan-alert");
 const appLayout: RowanAppLayout = document.createElement("rowan-app-layout");
 const avatar: RowanAvatar = document.createElement("rowan-avatar");
 const badge: RowanBadge = document.createElement("rowan-badge");
+const barChart: RowanBarChart = document.createElement("rowan-bar-chart");
+const barSeries: RowanChartSeries = { id: "incoming", label: "Incoming", values: [4, null, 8] };
+barChart.series = [barSeries];
+barChart.labels = ["Mon", "Tue", "Wed"];
 const breadcrumb: RowanBreadcrumb = document.createElement("rowan-breadcrumb");
 const bulkActionsBar: RowanBulkActionsBar = document.createElement("rowan-bulk-actions-bar");
 const button: RowanButton = document.createElement("rowan-button");
@@ -112,6 +137,8 @@ const datePicker: RowanDatePicker = document.createElement("rowan-date-picker");
 const dateRangePicker: RowanDateRangePicker = document.createElement("rowan-date-range-picker");
 const dialog: RowanDialog = document.createElement("rowan-dialog");
 const divider: RowanDivider = document.createElement("rowan-divider");
+const donutChart: RowanDonutChart = document.createElement("rowan-donut-chart");
+donutChart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
 const drawer: RowanDrawer = document.createElement("rowan-drawer");
 const dropdown: RowanDropdown = document.createElement("rowan-dropdown");
 const dropzone: RowanDropzone = document.createElement("rowan-dropzone");
@@ -119,10 +146,34 @@ const emptyState: RowanEmptyState = document.createElement("rowan-empty-state");
 const fileItem: RowanFileItem = document.createElement("rowan-file-item");
 const fileUpload: RowanFileUpload = document.createElement("rowan-file-upload");
 const filterBuilder: RowanFilterBuilder = document.createElement("rowan-filter-builder");
+const filterFieldType: RowanFilterFieldType = "select";
+const filterOperator: RowanFilterOperator = "contains";
+const filterField: RowanFilterField = {
+  id: "role",
+  label: "Role",
+  type: filterFieldType,
+  operators: [filterOperator, "equals"],
+  options: ["Admin", "Editor"],
+};
+const filterPredicate: RowanFilter = {
+  id: "role-filter",
+  field: "role",
+  operator: "equals",
+  value: "Admin",
+};
+filterBuilder.fields = [filterField];
+filterBuilder.filters = [filterPredicate];
 const formField: RowanFormField = document.createElement("rowan-form-field");
 const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");
 const iconButton: RowanIconButton = document.createElement("rowan-icon-button");
+const kpiCard: RowanKpiCard = document.createElement("rowan-kpi-card");
+kpiCard.label = "Open incidents";
+kpiCard.tone = "warning";
+kpiCard.value = 19;
+kpiCard.delta = -4;
+kpiCard.delta = null;
+kpiCard.loading = true;
 iconButton.icon = "calendar-days";
 const link: RowanLink = document.createElement("rowan-link");
 const listbox: RowanListbox = document.createElement("rowan-listbox");
@@ -136,6 +187,7 @@ const option: RowanOption = document.createElement("rowan-option");
 const pagination: RowanPagination = document.createElement("rowan-pagination");
 const popover: RowanPopover = document.createElement("rowan-popover");
 const progress: RowanProgress = document.createElement("rowan-progress");
+progress.hideMeta = true;
 const radio: RowanRadio = document.createElement("rowan-radio");
 const radioGroup: RowanRadioGroup = document.createElement("rowan-radio-group");
 const rating: RowanRating = document.createElement("rowan-rating");
@@ -148,6 +200,10 @@ const sideNavItem: RowanSideNavItem = document.createElement("rowan-side-nav-ite
 const sideNavSection: RowanSideNavSection = document.createElement("rowan-side-nav-section");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
+const sparkline: RowanSparkline = document.createElement("rowan-sparkline");
+sparkline.label = "Open incidents";
+sparkline.values = [4, null, 8];
+sparkline.labels = ["Mon", "Tue", "Wed"];
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
 const splitPane: RowanSplitPane = document.createElement("rowan-split-pane");
 const statusIndicator: RowanStatusIndicator = document.createElement("rowan-status-indicator");
@@ -207,11 +263,33 @@ richTextEditor.value = {
   blocks: [{ type: "paragraph", children: [{ text: "Dispatch checklist" }] }],
 };
 richTextEditor.mode = "plain";
-trendChart.config = {
-  labels: ["Mon", "Tue"],
-  interactive: true,
-  series: [{ id: "incidents", label: "Incidents", values: [4, 8] }],
+const richTextDocument: RowanRichTextDocument = richTextEditor.value;
+const richTextRun: RowanRichTextRun = { text: "Keep", bold: true };
+const richTextParagraph: RowanRichTextParagraph = {
+  type: "paragraph",
+  children: [richTextRun],
 };
+const richTextList: RowanRichTextList = {
+  type: "unordered-list",
+  items: [[{ text: "Notify on-call" }]],
+};
+void richTextDocument;
+void richTextParagraph;
+void richTextList;
+const trendFormatter: RowanTrendChartValueFormatter = (value, context) =>
+  context.tick ? String(value) : `${value} incidents`;
+const trendSeries: RowanTrendChartSeries = {
+  id: "incidents",
+  label: "Incidents",
+  values: [4, null, 8],
+};
+const trendConfig: RowanTrendChartConfig = {
+  labels: ["Mon", "Tue", "Wed"],
+  interactive: true,
+  series: [trendSeries],
+  valueFormatter: trendFormatter,
+};
+trendChart.config = trendConfig;
 trendChart.config = {
   series: [{ id: "resolved", label: "Resolved", values: [null, 6] }],
 };

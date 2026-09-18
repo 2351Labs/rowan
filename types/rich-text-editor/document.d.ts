@@ -67,6 +67,11 @@ export type RowanRichTextList = {
     type: "unordered-list" | "ordered-list";
     items: RowanRichTextRun[][];
 };
+/**
+ * Frozen public document. Blocks are only paragraph, unordered-list, and
+ * ordered-list. Runs support only bold, italic, and underline. HTML is never
+ * an API value.
+ */
 export type RowanRichTextDocument = {
     blocks: Array<RowanRichTextParagraph | RowanRichTextList>;
 };

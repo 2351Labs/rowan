@@ -7,6 +7,7 @@ import { define } from "../lib/define.js";
  * @attr {number} value
  * @attr {number} max
  * @attr {string} label
+ * @attr {boolean} hide-meta
  * @csspart progress
  * @csspart bar
  * @csspart meta
@@ -14,8 +15,8 @@ import { define } from "../lib/define.js";
 export class RowanProgress extends BaseElement {
   static styleUrl = new URL("./progress.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["value", "max", "label"];
-  static upgradeProperties = ["value", "max", "label"];
+  static observedAttributes = ["value", "max", "label", "hide-meta"];
+  static upgradeProperties = ["value", "max", "label", "hideMeta"];
 
   #track = null;
   #bar = null;
@@ -45,6 +46,14 @@ export class RowanProgress extends BaseElement {
     this.reflectString("label", value);
   }
 
+  get hideMeta() {
+    return this.readBoolean("hide-meta");
+  }
+
+  set hideMeta(value) {
+    this.reflectBoolean("hide-meta", Boolean(value));
+  }
+
   render() {
     if (!this.#track) {
       this.renderRoot.innerHTML = `
@@ -66,6 +75,7 @@ export class RowanProgress extends BaseElement {
 
     this.#bar.style.width = `${percent}%`;
     this.#meta.textContent = valueText;
+    this.#meta.hidden = this.hideMeta;
 
     if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {
       this.internals.role = "progressbar";

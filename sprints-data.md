@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 1 done. Next: Sprint 2 (rich-text document freeze). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 8 done. Catalog is `0.6.0`. Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -46,7 +46,7 @@ Server-side paging protocols, infinite scroll, column virtualization, renaming t
 
 ## Sprint 2 — Rich-text document freeze
 
-**Status:** pending
+**Status:** done
 
 The experimental note was “the document model may gain node types.” Freeze the model as the `1.0` document. Headings, links, images, and mentions are a later major, not a silent extension.
 
@@ -61,10 +61,10 @@ Frozen document:
 
 ### Done when
 
-- [ ] README marks `rowan-rich-text-editor` **Stable** and states the block/mark set is closed.
-- [ ] Round-trip tests: normalize → serialize → parse → equal for paragraphs, both list types, marks, empty docs, and plain-text mode.
-- [ ] Tests pin: HTML strings assigned to `value` are ignored or emptied, not interpreted; `rowan-change` is user-only.
-- [ ] Types (`RowanRichTextDocument` and friends) are exported from the public entry and CEM.
+- [x] README marks `rowan-rich-text-editor` **Stable** and states the block/mark set is closed.
+- [x] Round-trip tests: normalize → serialize → parse → equal for paragraphs, both list types, marks, empty docs, and plain-text mode.
+- [x] Tests pin: HTML strings assigned to `value` are ignored or emptied, not interpreted; `rowan-change` is user-only.
+- [x] Types (`RowanRichTextDocument` and friends) are exported from the public entry and CEM.
 
 ### Out of scope
 
@@ -74,7 +74,7 @@ Collaboration, markdown import, headings/links/images, a sanitizing HTML setter.
 
 ## Sprint 3 — Filter-builder predicate freeze
 
-**Status:** pending
+**Status:** done
 
 The experimental note was “predicate shape may change.” Freeze a **flat** list. Conjunction is implicit AND. Nested groups and OR would be a new experimental surface later.
 
@@ -91,10 +91,10 @@ The host does not evaluate predicates against rows. Applications (or a documente
 
 ### Done when
 
-- [ ] README marks `rowan-filter-builder` **Stable** and states: flat AND list, no groups.
-- [ ] Tests pin field types, valueless operators clearing `value`, table-inferred fields, and `rowan-filter-change` payloads.
-- [ ] Types for fields, filters, and operators are public. Unknown operators/types are dropped or coerced the same way they are today — that behavior is documented, not redesigned.
-- [ ] CEM lists `fields` and `filters` as property-only.
+- [x] README marks `rowan-filter-builder` **Stable** and states: flat AND list, no groups.
+- [x] Tests pin field types, valueless operators clearing `value`, table-inferred fields, and `rowan-filter-change` payloads.
+- [x] Types for fields, filters, and operators are public. Unknown operators/types are dropped or coerced the same way they are today — that behavior is documented, not redesigned.
+- [x] CEM lists `fields` and `filters` as property-only.
 
 ### Out of scope
 
@@ -104,7 +104,7 @@ Query languages, OR groups, saved-view persistence, running the filter inside th
 
 ## Sprint 4 — Trend-chart line freeze
 
-**Status:** pending
+**Status:** done
 
 Freeze `rowan-trend-chart` as the **small multi-series line** chart. Other geometries wait for Sprint 7 and stay experimental.
 
@@ -119,10 +119,10 @@ Frozen contract:
 
 ### Done when
 
-- [ ] README marks `rowan-trend-chart` **Stable**. Config keys above are the line-chart API.
-- [ ] Tests pin: null gaps break the line, table matches series, `valueFormatter` `tick` context, interactive keyboard activation.
-- [ ] Shared normalization (`src/trend-chart/model.js`) is documented as the line-chart model. Extracting a generic `src/chart/` module may start here if Sprint 6–7 need it; the public `rowan-trend-chart` API must not change.
-- [ ] README **API stability** table: the original four are Stable. Catalog copy on Home / docs / CHANGELOG matches.
+- [x] README marks `rowan-trend-chart` **Stable**. Config keys above are the line-chart API.
+- [x] Tests pin: null gaps break the line, table matches series, `valueFormatter` `tick` context, interactive keyboard activation.
+- [x] Shared normalization (`src/trend-chart/model.js`) is documented as the line-chart model. Extracting a generic `src/chart/` module may start here if Sprint 6–7 need it; the public `rowan-trend-chart` API must not change.
+- [x] README **API stability** table: the original four are Stable. Catalog copy on Home / docs / CHANGELOG matches.
 
 ### Out of scope
 
@@ -132,7 +132,7 @@ Bar, donut, sparkline, density attribute, stacked series, axes as a public confi
 
 ## Sprint 5 — KPI card (experimental)
 
-**Status:** pending
+**Status:** done
 
 Admin dashboards need a stat tile, not a restyled `rowan-card`. New host, experimental.
 
@@ -150,10 +150,10 @@ Compose tokens with card/status. Do not fork a dashboard layout system.
 
 ### Done when
 
-- [ ] Host, CSS parts, tokens, CEM, generated React wrapper, Storybook, tests.
-- [ ] README **API stability** lists `rowan-kpi-card` as Experimental.
-- [ ] Tests: tone without text still has a label; delta `0` / `null` / negative; slotted chart does not break the label/value reading order.
-- [ ] Empty/loading: `value` null shows an empty or skeleton treatment that stays accessible.
+- [x] Host, CSS parts, tokens, CEM, generated React wrapper, Storybook, tests.
+- [x] README **API stability** lists `rowan-kpi-card` as Experimental.
+- [x] Tests: tone without text still has a label; delta `0` / `null` / negative; slotted chart does not break the label/value reading order.
+- [x] Empty/loading: `value` null shows an empty or skeleton treatment that stays accessible.
 
 ### Out of scope
 
@@ -163,7 +163,7 @@ Grid dashboards, sparklines (Sprint 6), fetching, comparison date pickers.
 
 ## Sprint 6 — Compact charts (experimental)
 
-**Status:** pending
+**Status:** done
 
 KPI tiles need a sparkline-scale chart. Do **not** silently shrink `rowan-trend-chart` and hide its table. Add an experimental compact surface.
 
@@ -179,10 +179,10 @@ Related density: `rowan-progress` `part="meta"` is always on. If compact tiles n
 
 ### Done when
 
-- [ ] Compact chart host (or frozen `density` on a new experimental path) documented as Experimental.
-- [ ] Story: KPI card + sparkline. Story: progress with meta hidden.
-- [ ] Tests: AT still gets a name and values; reduced-motion unchanged (no animation).
-- [ ] Does not change Stable `rowan-trend-chart` rendering.
+- [x] Compact chart host (or frozen `density` on a new experimental path) documented as Experimental.
+- [x] Story: KPI card + sparkline. Story: progress with meta hidden.
+- [x] Tests: AT still gets a name and values; reduced-motion unchanged (no animation).
+- [x] Does not change Stable `rowan-trend-chart` rendering.
 
 ### Out of scope
 
@@ -192,7 +192,7 @@ Live streaming, 1px canvas charts, theming beyond Rowan tokens.
 
 ## Sprint 7 — Additional chart types (experimental)
 
-**Status:** pending
+**Status:** done
 
 New hosts, same data discipline as the line chart. Experimental until a later freeze.
 
@@ -215,10 +215,10 @@ Extract shared normalize/table helpers if Sprint 4 did not.
 
 ### Done when
 
-- [ ] Both hosts + wrappers + Storybook + tests + CEM.
-- [ ] README experimental table lists them. Copy says small local data only.
-- [ ] Shared event and formatter types. Line chart API stays untouched.
-- [ ] Donut rejects or flattens negative values in a documented way.
+- [x] Both hosts + wrappers + Storybook + tests + CEM.
+- [x] README experimental table lists them. Copy says small local data only.
+- [x] Shared event and formatter types. Line chart API stays untouched.
+- [x] Donut rejects or flattens negative values in a documented way.
 
 ### Out of scope
 
@@ -228,13 +228,13 @@ Stacked/100% bar, scatter, heatmap, time-series brushes, MapLibre charts, CSS-on
 
 ## Sprint 8 — Catalog and release notes
 
-**Status:** pending
+**Status:** done
 
 Close the loop so `0.5` docs match the freeze and the new experimental set.
 
 ### Done when
 
-- [ ] README API stability table:
+- [x] README API stability table:
 
   | Surface                                | Status       |
   | -------------------------------------- | ------------ |
@@ -246,9 +246,9 @@ Close the loop so `0.5` docs match the freeze and the new experimental set.
   | Compact sparkline (name from Sprint 6) | Experimental |
   | `rowan-bar-chart`, `rowan-donut-chart` | Experimental |
 
-- [ ] Home, docs site, CHANGELOG Unreleased: four promoted; three new experimental hosts.
-- [ ] `npm run analyze` + generated wrappers committed. CI generated-artifacts green.
-- [ ] Package version: **do not** call this `1.0`. Promoting the four is a minor (`0.6.0` or `0.5.1` per how breaking the freezes were — prefer `0.6.0` if any frozen shape was narrowed). Experimental hosts may change without a major.
+- [x] Home, docs site, CHANGELOG Unreleased: four promoted; three new experimental hosts.
+- [x] `npm run analyze` + generated wrappers committed. CI generated-artifacts green.
+- [x] Package version: **do not** call this `1.0`. Promoting the four is a minor (`0.6.0` or `0.5.1` per how breaking the freezes were — prefer `0.6.0` if any frozen shape was narrowed). Experimental hosts may change without a major.
 
 ### Out of scope
 

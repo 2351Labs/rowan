@@ -298,6 +298,38 @@ describe("rowan-table", () => {
     expect(fired).to.equal(false);
   });
 
+  it("hides the caption element when there is no caption text or slot", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const caption = table.shadowRoot.querySelector("caption");
+    expect(caption.hidden).to.equal(true);
+
+    table.caption = "Work orders";
+    await nextMicrotask();
+    expect(caption.hidden).to.equal(false);
+    expect(caption.textContent.trim()).to.equal("Work orders");
+
+    table.caption = "  ";
+    await nextMicrotask();
+    expect(caption.hidden).to.equal(true);
+
+    const slotted = document.createElement("span");
+    slotted.slot = "caption";
+    slotted.textContent = "Queued work";
+    table.append(slotted);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(caption.hidden).to.equal(false);
+
+    table.remove();
+  });
+
   it("treats config as full replacement and flattened properties as partial updates", async () => {
     const table = document.createElement("rowan-table");
     table.config = {

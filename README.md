@@ -28,17 +28,17 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.5.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.6.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.5` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.6` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. `rowan-rich-text-editor`, `rowan-filter-builder`, and
-`rowan-trend-chart` are experimental and **out of `0.5`** (and a later `1.0`
-until they are marked Stable). Table virtualization is Stable.
+the top layer. Table virtualization, `rowan-rich-text-editor`,
+`rowan-filter-builder`, and `rowan-trend-chart` are Stable. KPI, sparkline, bar,
+and donut charts are experimental. This is not `1.0`.
 
 ## Install
 
@@ -294,22 +294,26 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
-Everything in the catalog above is usable. Experimental surfaces below are
-**out of `0.5`** until they are marked Stable. Pin the version if you depend on
-them.
+Everything in the catalog above is usable. Surfaces marked Experimental below
+are **out of `0.6`** until they are marked Stable. Pin the version if you depend
+on them.
 
-| Surface                         | Status       | Notes                                                                                                        |
-| ------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                               |
-| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed. |
-| `rowan-rich-text-editor`        | Experimental | The document model may gain node types.                                                                      |
-| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                                                                  |
-| `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                     |
+| Surface                         | Status       | Notes                                                                                                                              |
+| ------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                      |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
+| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
+| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
+| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
+| `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Chart slot is for `rowan-sparkline`.                                               |
+| `rowan-sparkline`               | Experimental | Compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`.                                                       |
+| `rowan-bar-chart`               | Experimental | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
+| `rowan-donut-chart`             | Experimental | First series only. Negative values are no-data and omitted from the total.                                                         |
 
 ## Rowan Carousel
 
@@ -492,7 +496,7 @@ Assign application-approved swatches with the property-only `palette` array. Use
 
 ## Rowan Rich Text Editor
 
-`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a normalized document object with paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. It never accepts an HTML value or reflects document data to an attribute.
+`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a frozen document object: paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. That block and mark set is closed. Headings, links, and images would be a later major. It never accepts an HTML value or reflects document data to an attribute. Import `RowanRichTextDocument` from `@rowan-ui/core/rich-text-editor`.
 
 Rich mode uses the browser editing surface and native undo behavior. Rich clipboard data is inserted as literal plain text, not interpreted as markup. Use `mode="plain"` when the workflow must use a textarea fallback; it still emits the same document object. The submitted FACE value is the JSON serialization of that document.
 
@@ -529,9 +533,69 @@ Rich mode uses the browser editing surface and native undo behavior. Rich clipbo
 
 This component's security boundary ends at its normalized document value: applications own authorization, persistence, rendering outside the component, and any collaboration or merge model. Do not turn event data into HTML; render its text runs through DOM text nodes or an application-owned trusted renderer.
 
+## Rowan KPI Card
+
+`rowan-kpi-card` is an **experimental** dashboard stat tile. `label`, `tone`, and
+`delta-label` are attributes. `value` and `delta` are property-only. Tone never
+replaces the label. Delta text includes a sign so change is not color-only. A
+null `value` shows `No data`; `loading` replaces the value with a skeleton.
+The `chart` slot is for `rowan-sparkline` and follows the label and value in
+reading order.
+
+```html
+<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+
+  const card = document.querySelector("rowan-kpi-card");
+  card.value = 19;
+  card.delta = -4;
+</script>
+```
+
+## Rowan Bar Chart
+
+`rowan-bar-chart` is an **experimental** small categorical comparison. Property-only
+`series`, `labels`, `config`, and `valueFormatter`. `null` is no-data, not zero.
+Interactive bars emit `rowan-point-activate` with the same detail shape as
+`rowan-trend-chart`. Native SVG, no animation, matching data table.
+
+## Rowan Donut Chart
+
+`rowan-donut-chart` is an **experimental** parts-of-a-whole chart. It draws the
+**first** series. Negative values are treated as no-data: they are omitted from
+slices and from the hole total, and appear as `No data` in the table.
+
+## Rowan Sparkline
+
+`rowan-sparkline` is an **experimental** compact one-series line for KPI tiles.
+It is a separate host, not a density of `rowan-trend-chart`. `values` is
+property-only (`number | null`; null is a gap). There is no legend, no
+interactive points, and no animation. A visually hidden table exposes the same
+values to assistive technology. `rowan-progress` `hide-meta` hides the percent
+caption without dropping the progressbar name.
+
+```html
+<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
+</script>
+```
+
 ## Rowan Trend Chart
 
-`rowan-trend-chart` is a compact multi-series line visualization for operational comparisons such as incoming versus resolved incidents. It is intentionally scoped to small data sets where a trend is faster to scan than a table or progress indicator. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes.
+`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Bar, donut, and sparkline charts are separate hosts, not extra `config` keys.
 
 The component always provides the same values in a semantic table beneath the chart. A `null` value is an intentional no-data gap: it breaks the visual line, has no interactive point control, and appears as `No data` in the table. Set `interactive` to expose each available data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
 
@@ -925,7 +989,15 @@ Use `rowan-table-toolbar` for selection-aware table context and light-DOM contro
 
 ### Filtering and row details
 
-Keep the source rows in application state. The filter builder reports user changes but does not mutate `table.rows`; the application applies those filters and assigns the derived rows. The details panel listens to user row activation and does not modify the row record.
+Keep the source rows in application state. The filter builder reports a frozen
+flat AND list (`filters[]` of `{ id, field, operator, value }`) and does not
+mutate `table.rows`; the application applies those filters and assigns the
+derived rows. There are no nested groups. Field `type` is `text`, `number`,
+`date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
+`options` are present. Unknown operators on a filter become that field's first
+operator. Import `RowanFilter` and `RowanFilterField` from
+`@rowan-ui/core/filter-builder`. The details panel listens to user row
+activation and does not modify the row record.
 
 ```html
 <rowan-table id="members-table">

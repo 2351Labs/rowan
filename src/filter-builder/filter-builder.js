@@ -132,6 +132,38 @@ function cloneFilter(filter) {
   return { ...filter };
 }
 
+/**
+ * @typedef {"text" | "number" | "date" | "boolean" | "select"} RowanFilterFieldType
+ */
+
+/**
+ * Operator id. Defaults are contains, equals, not-equals, starts-with,
+ * ends-with, greater-than, greater-than-or-equal, less-than,
+ * less-than-or-equal, is-empty, and is-not-empty. Extra ids on a field are
+ * kept. Unknown ids on a filter coerce to that field's first operator.
+ * @typedef {string} RowanFilterOperator
+ */
+
+/**
+ * Frozen field. Conjunction across `filters` is implicit AND. There are no groups.
+ * @typedef {object} RowanFilterField
+ * @property {string} id
+ * @property {string} [label]
+ * @property {RowanFilterFieldType} [type]
+ * @property {RowanFilterOperator[]} [operators]
+ * @property {Array<string | number | boolean | { value: string, label?: string, disabled?: boolean }>} [options]
+ * @property {string} [placeholder]
+ */
+
+/**
+ * Frozen predicate row. Nested combinator objects are not a public shape.
+ * @typedef {object} RowanFilter
+ * @property {string} id
+ * @property {string} field
+ * @property {RowanFilterOperator} operator
+ * @property {string} value
+ */
+
 function inferFieldType(column) {
   if (column?.type === "number" || column?.type === "progress") return "number";
   if (column?.type === "date") return "date";
@@ -166,6 +198,8 @@ function isFilterableColumn(column) {
  * @cssprop --rowan-filter-builder-bg
  * @cssprop --rowan-filter-builder-border
  * @cssprop --rowan-filter-builder-control-bg
+ * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
+ * @property {RowanFilter[]} filters - Flat AND list of predicates. Arrays are property-only.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
 export class RowanFilterBuilder extends BaseElement {
@@ -236,20 +270,24 @@ export class RowanFilterBuilder extends BaseElement {
     this.reflectString("for-table", next || null);
   }
 
+  /** @returns {RowanFilterField[]} */
   get fields() {
     return this.#fields.map(cloneField);
   }
 
+  /** @param {RowanFilterField[]} value */
   set fields(value) {
     this.#hasExplicitFields = Array.isArray(value);
     this.#fields = normalizeFields(value);
     this.requestRender();
   }
 
+  /** @returns {RowanFilter[]} */
   get filters() {
     return this.#filters.map(cloneFilter);
   }
 
+  /** @param {RowanFilter[]} value */
   set filters(value) {
     this.#filters = this.#normalizeFilters(value);
     this.requestRender();

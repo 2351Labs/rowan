@@ -101,6 +101,14 @@ registry.
    npm publish --access public --workspace=@rowan-ui/maplibre
    ```
 
+## 0.6.0 cut
+
+Version in `package.json` is `0.6.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Experimental KPI/sparkline/bar/donut may still change. Publish
+is a separate step after this catalog commit is on `main`: tag `v0.6.0` so the
+workflow publishes core, then icons. MapLibre is included in the publish
+workflow only if that step is present.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

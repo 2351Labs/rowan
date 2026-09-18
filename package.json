@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/core",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Rowan vanilla Web Components design system.",
   "license": "MIT",
   "author": "2351Labs",
@@ -137,6 +137,10 @@
       "types": "./src/divider/divider.d.ts",
       "default": "./src/divider/divider.js"
     },
+    "./donut-chart": {
+      "types": "./src/donut-chart/donut-chart.d.ts",
+      "default": "./src/donut-chart/donut-chart.js"
+    },
     "./dropzone": {
       "types": "./src/dropzone/dropzone.d.ts",
       "default": "./src/dropzone/dropzone.js"
@@ -176,6 +180,10 @@
     "./icon-button": {
       "types": "./src/icon-button/icon-button.d.ts",
       "default": "./src/icon-button/icon-button.js"
+    },
+    "./kpi-card": {
+      "types": "./src/kpi-card/kpi-card.d.ts",
+      "default": "./src/kpi-card/kpi-card.js"
     },
     "./link": {
       "types": "./src/link/link.d.ts",
@@ -269,6 +277,10 @@
       "types": "./src/slider/slider.d.ts",
       "default": "./src/slider/slider.js"
     },
+    "./sparkline": {
+      "types": "./src/sparkline/sparkline.d.ts",
+      "default": "./src/sparkline/sparkline.js"
+    },
     "./spinner": {
       "types": "./src/spinner/spinner.d.ts",
       "default": "./src/spinner/spinner.js"
@@ -352,6 +364,10 @@
     "./badge": {
       "types": "./src/badge/badge.d.ts",
       "default": "./src/badge/badge.js"
+    },
+    "./bar-chart": {
+      "types": "./src/bar-chart/bar-chart.d.ts",
+      "default": "./src/bar-chart/bar-chart.js"
     },
     "./tokens": {
       "types": "./src/tokens/tokens.css.d.ts",
@@ -452,6 +468,7 @@
     "./src/form-layout/form-layout.js",
     "./src/form-wizard/form-wizard.js",
     "./src/icon-button/icon-button.js",
+    "./src/kpi-card/kpi-card.js",
     "./src/link/link.js",
     "./src/listbox/listbox.js",
     "./src/menu/menu.js",
@@ -475,6 +492,7 @@
     "./src/side-nav-item/side-nav-item.js",
     "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
+    "./src/sparkline/sparkline.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",
     "./src/status-indicator/status-indicator.js",
@@ -495,7 +513,11 @@
     "./src/tooltip/tooltip.js",
     "./src/validation-summary/validation-summary.js",
     "./src/virtual-list/virtual-list.js",
-    "./src/badge/badge.js"
+    "./src/badge/badge.js",
+    "./src/bar-chart/bar-chart.js",
+    "./src/donut-chart/donut-chart.js",
+    "./src/chart/model.js",
+    "./src/chart/dom.js"
   ],
   "customElements": "custom-elements.json",
   "peerDependencies": {

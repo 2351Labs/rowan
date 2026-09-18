@@ -6,21 +6,36 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.6.0 - 2026-09-17
+
+Catalog freeze of the former experimental four. Dashboard charts stay experimental.
+Not `1.0`.
+
+### Added
+
+- Experimental `rowan-kpi-card`: labeled metric, signed delta, tone, and `chart` slot. `value` and `delta` are property-only.
+- Experimental `rowan-sparkline`: compact one-series line for KPI tiles, with a visually hidden data table. `rowan-progress` `hide-meta` hides the percent caption.
+- Experimental `rowan-bar-chart` and `rowan-donut-chart`. Shared `rowan-point-activate` detail. Donut treats negative values as no-data.
+
 ### Changed
 
 - Table virtualization is Stable: `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.
+- `rowan-rich-text-editor` is Stable. The document is paragraphs, ordered/unordered lists, and bold/italic/underline runs. HTML is never a value.
+- `rowan-filter-builder` is Stable. Filters are a flat AND list of `{ id, field, operator, value }`. There are no nested groups.
+- `rowan-trend-chart` is Stable as a small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.
 
 ## 0.5.0 - 2026-09-17
 
 Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
 part of `0.5` until they are marked Stable. First npm publish of
-`@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre`.
+`@rowan-ui/core` and `@rowan-ui/icons`. `@rowan-ui/maplibre` stays unpublished
+until its own cut.
 
 ### Added
 
 - Generated React wrappers from the public Custom Elements Manifest: `import { RowanButton } from "@rowan-ui/core/react/button"`. `onRowan*` maps to `rowan-*`. Objects stay property-only. `@rowan-ui/core/react` remains the hook and JSX types.
 - `@rowan-ui/icons` published next to core: 2,098 tree-shakable SVG modules, `rowan-icon`, and `@rowan-ui/icons/react/icon`.
-- `@rowan-ui/maplibre` published as an optional adapter: `rowan-maplibre-map` and `@rowan-ui/maplibre/react/map`. Applications own style, tiles, and attribution. `maplibre-gl` is a peer.
+- `@rowan-ui/maplibre/react/map` wrapper, generated with the same pipeline.
 - `rowan-side-nav-section` for labeled groups in one rail. Empty `value` clears selection. In-app `href` navigation is blocked when `rowan-change` is cancelled.
 - `rowan-dropdown` accepts a `trigger` slot. Required text, textarea, and number fields do not paint `invalid` until blur, `reportValidity()`, or native form validation (`invalid` event).
 - `rowan-radio-group` is form-associated: it submits the selected value, owns `required` / `valueMissing`, and restores the default on reset. Named child radios do not also submit.

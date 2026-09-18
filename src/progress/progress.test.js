@@ -51,6 +51,20 @@ describe("rowan-progress", () => {
     expect(el.internals.ariaValueText).to.equal("Upload 0%");
   });
 
+  it("hides the percent caption when hide-meta is set and keeps the progressbar name", async () => {
+    const el = document.createElement("rowan-progress");
+    el.label = "Quota";
+    el.value = 42;
+    el.hideMeta = true;
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector(".meta").hidden).to.equal(true);
+    expect(el.internals.role).to.equal("progressbar");
+    expect(el.internals.ariaLabel).to.equal("Quota");
+    expect(el.internals.ariaValueText).to.equal("Quota 42%");
+  });
+
   it("does not supply a competing label when the author provides aria-labelledby", async () => {
     const el = document.createElement("rowan-progress");
     el.label = "Upload";

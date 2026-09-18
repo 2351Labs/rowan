@@ -32,6 +32,9 @@ const UNSAFE_TAGS = new Set([
  */
 
 /**
+ * Frozen public document. Blocks are only paragraph, unordered-list, and
+ * ordered-list. Runs support only bold, italic, and underline. HTML is never
+ * an API value.
  * @typedef {object} RowanRichTextDocument
  * @property {Array<RowanRichTextParagraph | RowanRichTextList>} blocks
  */

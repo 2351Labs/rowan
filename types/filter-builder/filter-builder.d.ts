@@ -19,6 +19,8 @@
  * @cssprop --rowan-filter-builder-bg
  * @cssprop --rowan-filter-builder-border
  * @cssprop --rowan-filter-builder-control-bg
+ * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
+ * @property {RowanFilter[]} filters - Flat AND list of predicates. Arrays are property-only.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
 export class RowanFilterBuilder extends BaseElement {
@@ -31,10 +33,14 @@ export class RowanFilterBuilder extends BaseElement {
     get table(): null;
     set forTable(value: string);
     get forTable(): string;
-    set fields(value: any[]);
-    get fields(): any[];
-    set filters(value: any[]);
-    get filters(): any[];
+    /** @param {RowanFilterField[]} value */
+    set fields(value: RowanFilterField[]);
+    /** @returns {RowanFilterField[]} */
+    get fields(): RowanFilterField[];
+    /** @param {RowanFilter[]} value */
+    set filters(value: RowanFilter[]);
+    /** @returns {RowanFilter[]} */
+    get filters(): RowanFilter[];
     set label(value: string);
     get label(): string;
     set addLabel(value: string);
@@ -49,4 +55,36 @@ export class RowanFilterBuilder extends BaseElement {
     refresh(): void;
     #private;
 }
+export type RowanFilterFieldType = "text" | "number" | "date" | "boolean" | "select";
+/**
+ * Operator id. Defaults are contains, equals, not-equals, starts-with,
+ * ends-with, greater-than, greater-than-or-equal, less-than,
+ * less-than-or-equal, is-empty, and is-not-empty. Extra ids on a field are
+ * kept. Unknown ids on a filter coerce to that field's first operator.
+ */
+export type RowanFilterOperator = string;
+/**
+ * Frozen field. Conjunction across `filters` is implicit AND. There are no groups.
+ */
+export type RowanFilterField = {
+    id: string;
+    label?: string | undefined;
+    type?: RowanFilterFieldType | undefined;
+    operators?: string[] | undefined;
+    options?: (string | number | boolean | {
+        value: string;
+        label?: string | undefined;
+        disabled?: boolean | undefined;
+    })[] | undefined;
+    placeholder?: string | undefined;
+};
+/**
+ * Frozen predicate row. Nested combinator objects are not a public shape.
+ */
+export type RowanFilter = {
+    id: string;
+    field: string;
+    operator: RowanFilterOperator;
+    value: string;
+};
 import { BaseElement } from "../lib/base-element.js";
