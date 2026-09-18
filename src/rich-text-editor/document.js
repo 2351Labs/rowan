@@ -72,7 +72,8 @@ export function normalizeHref(value) {
     lower.startsWith("data:") ||
     lower.startsWith("vbscript:") ||
     lower.startsWith("file:") ||
-    href.startsWith("//")
+    href.startsWith("//") ||
+    href.includes("\\")
   ) {
     return "";
   }

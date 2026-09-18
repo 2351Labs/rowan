@@ -11,6 +11,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-area-chart` does not set a default `ariaLabel` when the author provides `aria-labelledby`.
 - `rowan-stacked-bar-chart` associates its description with the plot and documents the `detail` and `summary` parts.
 - Chart keyboard focus looks up point controls by dataset instead of interpolating series ids into a selector.
+- Rich-text hrefs reject backslash paths. Heading and link styles apply on the editing surface. The link popover is named as a dialog.
 
 ## 0.7.0 - 2026-09-18
 

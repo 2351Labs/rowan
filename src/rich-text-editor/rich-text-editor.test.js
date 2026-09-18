@@ -267,4 +267,16 @@ describe("rowan-rich-text-editor", () => {
     expect(editor.value.blocks[0].children).to.deep.equal([{ text: "Open" }]);
     expect(surfaceFor(editor).querySelector("a")).to.equal(null);
   });
+
+  it("names the link popover and styles headings on the editing surface", async () => {
+    const editor = await renderEditor({
+      value: { blocks: [{ type: "heading", level: 2, children: [{ text: "Containment" }] }] },
+    });
+
+    expect(editor.shadowRoot.querySelector(".link-popover").getAttribute("role")).to.equal(
+      "dialog",
+    );
+    expect(editor.querySelector("style[data-rowan-rich-text-surface]")).to.not.equal(null);
+    expect(getComputedStyle(surfaceFor(editor).querySelector("h2")).fontWeight).to.equal("600");
+  });
 });

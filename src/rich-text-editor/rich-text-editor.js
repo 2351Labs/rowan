@@ -25,6 +25,13 @@ const MARK_COMMANDS = new Set([
   "insertOrderedList",
 ]);
 
+function formatBlockName(value) {
+  return String(value ?? "")
+    .replace(/[<>]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
@@ -305,7 +312,7 @@ export class RowanRichTextEditor extends BaseElement {
             <span class="toolbar-divider" aria-hidden="true"></span>
             <button class="format-button heading" part="format-button" type="button" data-command="heading" aria-label="Heading" title="Heading"><span aria-hidden="true">H</span></button>
             <button class="format-button link" part="format-button" type="button" data-command="link" aria-haspopup="dialog" aria-expanded="false" aria-label="Link" title="Link"><span aria-hidden="true">↗</span></button>
-            <div class="link-popover" popover>
+            <div class="link-popover" popover role="dialog" aria-label="Link URL">
               <label class="link-label">
                 URL
                 <input class="link-href" type="text" autocomplete="off" spellcheck="false" placeholder="https:// or /path" />
@@ -443,6 +450,7 @@ export class RowanRichTextEditor extends BaseElement {
     editor.setAttribute("aria-multiline", "true");
     this.append(editor);
     this.#editor = editor;
+    this.#ensureSurfaceStyles();
 
     this.#removeEditorListeners = [
       this.listen(editor, "input", () => this.#commitEditorInput()),
@@ -455,6 +463,30 @@ export class RowanRichTextEditor extends BaseElement {
       this.listen(editor, "keyup", () => this.#captureSelection()),
       this.listen(editor, "mouseup", () => this.#captureSelection()),
     ];
+  }
+
+  #ensureSurfaceStyles() {
+    if (this.querySelector(":scope > style[data-rowan-rich-text-surface]")) return;
+
+    const style = document.createElement("style");
+    style.setAttribute("data-rowan-rich-text-surface", "");
+    style.textContent = `
+      [data-rowan-rich-text-editor-surface] h1,
+      [data-rowan-rich-text-editor-surface] h2,
+      [data-rowan-rich-text-editor-surface] h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.3;
+        margin: 0 0 0.5rem;
+      }
+      [data-rowan-rich-text-editor-surface] h1 {
+        font-size: 1.25rem;
+      }
+      [data-rowan-rich-text-editor-surface] a {
+        color: var(--rowan-color-accent, #1d432f);
+      }
+    `;
+    this.append(style);
   }
 
   #syncEditingSurface() {
@@ -507,9 +539,9 @@ export class RowanRichTextEditor extends BaseElement {
           if (command === "heading") {
             const block =
               typeof document.queryCommandValue === "function"
-                ? document.queryCommandValue("formatBlock")
+                ? formatBlockName(document.queryCommandValue("formatBlock"))
                 : "";
-            active = /^h[1-3]$/i.test(block);
+            active = /^h[1-3]$/.test(block);
           } else if (command === "link") {
             active =
               typeof document.queryCommandState === "function" &&
@@ -589,9 +621,9 @@ export class RowanRichTextEditor extends BaseElement {
 
     const block =
       typeof document.queryCommandValue === "function"
-        ? document.queryCommandValue("formatBlock")
+        ? formatBlockName(document.queryCommandValue("formatBlock"))
         : "";
-    document.execCommand("formatBlock", false, /^h[1-3]$/i.test(block) ? "div" : "h2");
+    document.execCommand("formatBlock", false, /^h[1-3]$/.test(block) ? "div" : "h2");
     this.#captureSelection();
     this.#commitUserDocument(documentFromEditingSurface(this.#editor));
     this.#syncToolbarState();
