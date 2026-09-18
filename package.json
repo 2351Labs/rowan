@@ -45,6 +45,10 @@
       "types": "./src/alert/alert.d.ts",
       "default": "./src/alert/alert.js"
     },
+    "./area-chart": {
+      "types": "./src/area-chart/area-chart.d.ts",
+      "default": "./src/area-chart/area-chart.js"
+    },
     "./app-layout": {
       "types": "./src/app-layout/app-layout.d.ts",
       "default": "./src/app-layout/app-layout.js"
@@ -281,6 +285,10 @@
       "types": "./src/sparkline/sparkline.d.ts",
       "default": "./src/sparkline/sparkline.js"
     },
+    "./stacked-bar-chart": {
+      "types": "./src/stacked-bar-chart/stacked-bar-chart.d.ts",
+      "default": "./src/stacked-bar-chart/stacked-bar-chart.js"
+    },
     "./spinner": {
       "types": "./src/spinner/spinner.d.ts",
       "default": "./src/spinner/spinner.js"
@@ -445,6 +453,7 @@
     "./src/index.js",
     "./src/accordion/accordion.js",
     "./src/alert/alert.js",
+    "./src/area-chart/area-chart.js",
     "./src/app-layout/app-layout.js",
     "./src/avatar/avatar.js",
     "./src/bulk-actions-bar/bulk-actions-bar.js",
@@ -501,6 +510,7 @@
     "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
     "./src/sparkline/sparkline.js",
+    "./src/stacked-bar-chart/stacked-bar-chart.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",
     "./src/status-indicator/status-indicator.js",

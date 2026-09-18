@@ -1,5 +1,6 @@
 import { RowanAccordion } from "@rowan-ui/core/accordion";
 import { RowanAlert } from "@rowan-ui/core/alert";
+import { RowanAreaChart } from "@rowan-ui/core/area-chart";
 import { RowanAppLayout } from "@rowan-ui/core/app-layout";
 import { RowanAvatar } from "@rowan-ui/core/avatar";
 import { RowanBadge } from "@rowan-ui/core/badge";
@@ -76,6 +77,7 @@ import { RowanSideNavSection } from "@rowan-ui/core/side-nav-section";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
 import { RowanSparkline } from "@rowan-ui/core/sparkline";
+import { RowanStackedBarChart } from "@rowan-ui/core/stacked-bar-chart";
 import { RowanSpinner } from "@rowan-ui/core/spinner";
 import { RowanSplitPane } from "@rowan-ui/core/split-pane";
 import { RowanStatusIndicator } from "@rowan-ui/core/status-indicator";
@@ -114,6 +116,7 @@ import { RowanVirtualList } from "@rowan-ui/core/virtual-list";
 
 const accordion: RowanAccordion = document.createElement("rowan-accordion");
 const alert: RowanAlert = document.createElement("rowan-alert");
+const areaChart: RowanAreaChart = document.createElement("rowan-area-chart");
 const appLayout: RowanAppLayout = document.createElement("rowan-app-layout");
 const avatar: RowanAvatar = document.createElement("rowan-avatar");
 const badge: RowanBadge = document.createElement("rowan-badge");
@@ -207,6 +210,7 @@ const sparkline: RowanSparkline = document.createElement("rowan-sparkline");
 sparkline.label = "Open incidents";
 sparkline.values = [4, null, 8];
 sparkline.labels = ["Mon", "Tue", "Wed"];
+const stackedBarChart: RowanStackedBarChart = document.createElement("rowan-stacked-bar-chart");
 const spinner: RowanSpinner = document.createElement("rowan-spinner");
 const splitPane: RowanSplitPane = document.createElement("rowan-split-pane");
 const statusIndicator: RowanStatusIndicator = document.createElement("rowan-status-indicator");
@@ -292,6 +296,9 @@ const trendConfig: RowanTrendChartConfig = {
   series: [trendSeries],
   valueFormatter: trendFormatter,
 };
+areaChart.config = trendConfig;
+stackedBarChart.series = [barSeries];
+stackedBarChart.labels = ["Mon", "Tue", "Wed"];
 trendChart.config = trendConfig;
 trendChart.config = {
   series: [{ id: "resolved", label: "Resolved", values: [null, 6] }],

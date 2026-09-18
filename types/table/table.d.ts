@@ -163,7 +163,7 @@ export type RowanTableConfig = {
     columns?: RowanTableColumn[] | undefined;
     rows?: Record<string, unknown>[] | undefined;
     rowId?: string | ((row: RowanTableRow, rowIndex: number) => string) | undefined;
-    selectable?: "single" | "multiple" | "none" | undefined;
+    selectable?: "none" | "single" | "multiple" | undefined;
     selected?: string[] | undefined;
     sort?: RowanTableSort | null | undefined;
     caption?: string | undefined;

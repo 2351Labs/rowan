@@ -6,6 +6,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Experimental `rowan-area-chart`: filled multi-series. Null breaks the line and the fill. Same property-only data contract as the line chart.
+- Experimental `rowan-stacked-bar-chart`: positive values stack from zero. Null and negatives are no-data.
+
 ### Removed
 
 - Public `useRowanElement`. Use generated wrappers for objects, arrays, and `onRowan*` events. The helper remains internal to those wrappers.

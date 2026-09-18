@@ -41,6 +41,15 @@ export function barValueDomain(series: RowanNormalizedChartSeries[]): {
     max: number;
 };
 /**
+ * Stacked bars use the per-category sum of positive values. Null and negatives
+ * are no-data and do not contribute.
+ * @param {RowanNormalizedChartSeries[]} series
+ */
+export function stackedBarValueDomain(series: RowanNormalizedChartSeries[]): {
+    min: number;
+    max: number;
+};
+/**
  * Donut slices skip null and negative values. Negatives become no-data.
  * @param {RowanNormalizedChartSeries | undefined} series
  */

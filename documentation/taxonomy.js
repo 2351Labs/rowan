@@ -95,6 +95,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
     id: "data-display",
     label: "Data Display",
     components: [
+      "area-chart",
       "avatar",
       "bar-chart",
       "bulk-actions-bar",
@@ -104,6 +105,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "kpi-card",
       "row-details-panel",
       "sparkline",
+      "stacked-bar-chart",
       "table",
       "table-toolbar",
       "trend-chart",

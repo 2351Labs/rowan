@@ -4,6 +4,8 @@ import { RowanCombobox } from "@rowan-ui/core/react/combobox";
 import { RowanTable as Table } from "@rowan-ui/core/react/table";
 import { RowanSparkline } from "@rowan-ui/core/react/sparkline";
 import { RowanDonutChart } from "@rowan-ui/core/react/donut-chart";
+import { RowanAreaChart } from "@rowan-ui/core/react/area-chart";
+import { RowanStackedBarChart } from "@rowan-ui/core/react/stacked-bar-chart";
 import { RowanTrendChart } from "@rowan-ui/core/react/trend-chart";
 import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
 
@@ -80,6 +82,13 @@ const wrapperList = (
   />
 );
 const wrapperChart = <RowanTrendChart series={[]} valueFormatter={(value) => String(value)} />;
+const wrapperArea = <RowanAreaChart series={[]} labels={["Mon"]} />;
+const wrapperStackedBar = (
+  <RowanStackedBarChart
+    series={[{ id: "p1", label: "P1", values: [2, 1] }]}
+    labels={["Mon", "Tue"]}
+  />
+);
 const wrapperSparkline = (
   <RowanSparkline values={[4, 8, 3]} labels={["Mon", "Tue", "Wed"]} tone="success" />
 );
@@ -104,6 +113,8 @@ void invalidWrapperVariant;
 void wrapperTable;
 void wrapperList;
 void wrapperChart;
+void wrapperArea;
+void wrapperStackedBar;
 void wrapperSparkline;
 void wrapperDonut;
 void wrapperCombobox;

@@ -1,6 +1,7 @@
 export { RowanAccordion } from "./accordion.js";
 export { RowanAlert } from "./alert.js";
 export { RowanAppLayout } from "./app-layout.js";
+export { RowanAreaChart } from "./area-chart.js";
 export { RowanAvatar } from "./avatar.js";
 export { RowanBadge } from "./badge.js";
 export { RowanBarChart } from "./bar-chart.js";
@@ -60,6 +61,7 @@ export { RowanSlider } from "./slider.js";
 export { RowanSparkline } from "./sparkline.js";
 export { RowanSpinner } from "./spinner.js";
 export { RowanSplitPane } from "./split-pane.js";
+export { RowanStackedBarChart } from "./stacked-bar-chart.js";
 export { RowanStatusIndicator } from "./status-indicator.js";
 export { RowanStepper } from "./stepper.js";
 export { RowanSwitch } from "./switch.js";

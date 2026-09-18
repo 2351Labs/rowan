@@ -16,6 +16,16 @@ const nullableSetters = [
     setter: "config",
     valueType: 'import("./model.js").RowanTrendChartConfig | null | undefined',
   },
+  {
+    file: new URL("../types/area-chart/area-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: 'import("../trend-chart/model.js").RowanTrendChartConfig | null | undefined',
+  },
+  {
+    file: new URL("../types/stacked-bar-chart/stacked-bar-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: 'import("../chart/model.js").RowanChartConfig | null | undefined',
+  },
 ];
 
 for (const { file, setter, valueType } of nullableSetters) {
