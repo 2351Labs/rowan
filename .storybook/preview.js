@@ -427,6 +427,7 @@ export const parameters = {
           "Other",
         ],
         "Workflows",
+        ["Bulk confirm"],
       ],
     },
   },

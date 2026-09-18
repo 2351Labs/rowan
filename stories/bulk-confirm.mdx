@@ -1,0 +1,19 @@
+import { Meta, Canvas } from "@storybook/blocks";
+
+import * as Recipe from "../src/bulk-actions-bar/bulk-confirm.stories.js";
+
+<Meta of={Recipe} />
+
+# Bulk confirm
+
+Admin tables confirm Flag and Assign with `rowan-dialog` in `alert` mode. The
+toolbar keeps density and filters. The bulk bar owns the selection count.
+
+1. Select rows.
+2. **Flag** or **Assign driver**.
+3. Confirm or cancel in the alertdialog.
+
+Do not invent a second confirm widget. `rowan-dialog` `alert` already removes
+the close control and uses `role="alertdialog"`.
+
+<Canvas of={Recipe.FlagAndAssign} />
