@@ -66,7 +66,6 @@ function createAlertDialog({ id, title, confirmLabel, confirmVariant = "primary"
 
 export default {
   title: "Workflows/Bulk confirm",
-  tags: ["autodocs"],
 };
 
 export const FlagAndAssign = {
