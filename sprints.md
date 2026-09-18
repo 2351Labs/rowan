@@ -144,16 +144,17 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ## Release — npm 0.5.0
 
-**Status:** docs and packaging ready. Publish after `NPM_TOKEN` and org `rowan-ui`.
+**Status:** `@rowan-ui/core@0.5.0` and `@rowan-ui/icons@0.5.0` are on npm. MapLibre follows.
 
 - [x] README, Storybook Home, and docs install `@rowan-ui/core @rowan-ui/icons`.
 - [x] Package metadata (`repository`, `publishConfig.access`) on core and icons.
-- [x] Tag workflow publishes core, then icons. MapLibre is not in this cut.
-- [ ] Create npm org `rowan-ui` and repo secret `NPM_TOKEN`.
-- [ ] Tag `v0.5.0` after this lands on main.
+- [x] Tag workflow publishes core, then icons. `v0.5.0` is tagged.
+- [x] npm org `rowan-ui` and repo secret `NPM_TOKEN`.
+- [x] Publish `@rowan-ui/maplibre@0.5.0`.
 
 ## Later / not this track
 
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).
-- Data/dashboard track: `sprints-data.md` (stabilize the experimental four, then experimental KPI + charts).
+- Progress `meta` visibility and trend-chart compact density.
+- KPI/stat card as a primitive.

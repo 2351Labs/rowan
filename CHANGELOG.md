@@ -14,14 +14,13 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
 part of `0.5` until they are marked Stable. First npm publish of
-`@rowan-ui/core` and `@rowan-ui/icons`. `@rowan-ui/maplibre` stays unpublished
-until its own cut.
+`@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre`.
 
 ### Added
 
 - Generated React wrappers from the public Custom Elements Manifest: `import { RowanButton } from "@rowan-ui/core/react/button"`. `onRowan*` maps to `rowan-*`. Objects stay property-only. `@rowan-ui/core/react` remains the hook and JSX types.
 - `@rowan-ui/icons` published next to core: 2,098 tree-shakable SVG modules, `rowan-icon`, and `@rowan-ui/icons/react/icon`.
-- `@rowan-ui/maplibre/react/map` wrapper, generated with the same pipeline.
+- `@rowan-ui/maplibre` published as an optional adapter: `rowan-maplibre-map` and `@rowan-ui/maplibre/react/map`. Applications own style, tiles, and attribution. `maplibre-gl` is a peer.
 - `rowan-side-nav-section` for labeled groups in one rail. Empty `value` clears selection. In-app `href` navigation is blocked when `rowan-change` is cancelled.
 - `rowan-dropdown` accepts a `trigger` slot. Required text, textarea, and number fields do not paint `invalid` until blur, `reportValidity()`, or native form validation (`invalid` event).
 - `rowan-radio-group` is form-associated: it submits the selected value, owns `required` / `valueMissing`, and restores the default on reset. Named child radios do not also submit.
