@@ -62,3 +62,8 @@
   color: var(--rowan-validation-summary-muted, var(--rowan-color-muted, currentColor));
   font-size: 0.95em;
 }
+
+.list[hidden],
+.empty[hidden] {
+  display: none;
+}

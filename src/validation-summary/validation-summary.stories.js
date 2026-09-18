@@ -7,6 +7,7 @@ const meta = {
   argTypes: {
     heading: { control: "text" },
     disabled: { control: "boolean" },
+    errors: { control: false, table: { disable: true } },
   },
 };
 
