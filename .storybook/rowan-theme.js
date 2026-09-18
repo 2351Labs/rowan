@@ -1,4 +1,4 @@
-import { create, themes } from "@storybook/theming";
+import { create, themes } from "@storybook/theming/create";
 
 /** Manager + Docs chrome. Spread themes.dark so missing keys do not fall back to light. */
 export const rowanManagerTheme = create({
