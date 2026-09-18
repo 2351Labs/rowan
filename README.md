@@ -28,16 +28,17 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.5.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.6.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.5` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.6` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
 the top layer. Table virtualization, `rowan-rich-text-editor`,
-`rowan-filter-builder`, and `rowan-trend-chart` are Stable.
+`rowan-filter-builder`, and `rowan-trend-chart` are Stable. KPI, sparkline, bar,
+and donut charts are experimental. This is not `1.0`.
 
 ## Install
 
@@ -298,7 +299,7 @@ Implemented components currently include:
 ### API stability
 
 Everything in the catalog above is usable. Surfaces marked Experimental below
-are **out of `0.5`** until they are marked Stable. Pin the version if you depend
+are **out of `0.6`** until they are marked Stable. Pin the version if you depend
 on them.
 
 | Surface                         | Status       | Notes                                                                                                                              |
@@ -309,7 +310,7 @@ on them.
 | `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
 | `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
-| `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Compact chart slot is a placeholder until sparkline.                               |
+| `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Chart slot is for `rowan-sparkline`.                                               |
 | `rowan-sparkline`               | Experimental | Compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`.                                                       |
 | `rowan-bar-chart`               | Experimental | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
 | `rowan-donut-chart`             | Experimental | First series only. Negative values are no-data and omitted from the total.                                                         |

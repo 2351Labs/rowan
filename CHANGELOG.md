@@ -6,6 +6,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.6.0 - 2026-09-17
+
+Catalog freeze of the former experimental four. Dashboard charts stay experimental.
+Not `1.0`.
+
 ### Added
 
 - Experimental `rowan-kpi-card`: labeled metric, signed delta, tone, and `chart` slot. `value` and `delta` are property-only.

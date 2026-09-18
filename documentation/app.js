@@ -1070,7 +1070,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Install <code>@rowan-ui/core</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles.</p>
+        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, rich-text, filter-builder, and trend-chart are Stable. KPI, sparkline, bar, and donut charts are experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization.

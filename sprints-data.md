@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 7 done. Next: Sprint 8 (catalog and release notes). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 8 done. Catalog is `0.6.0`. Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -228,13 +228,13 @@ Stacked/100% bar, scatter, heatmap, time-series brushes, MapLibre charts, CSS-on
 
 ## Sprint 8 — Catalog and release notes
 
-**Status:** pending
+**Status:** done
 
 Close the loop so `0.5` docs match the freeze and the new experimental set.
 
 ### Done when
 
-- [ ] README API stability table:
+- [x] README API stability table:
 
   | Surface                                | Status       |
   | -------------------------------------- | ------------ |
@@ -246,9 +246,9 @@ Close the loop so `0.5` docs match the freeze and the new experimental set.
   | Compact sparkline (name from Sprint 6) | Experimental |
   | `rowan-bar-chart`, `rowan-donut-chart` | Experimental |
 
-- [ ] Home, docs site, CHANGELOG Unreleased: four promoted; three new experimental hosts.
-- [ ] `npm run analyze` + generated wrappers committed. CI generated-artifacts green.
-- [ ] Package version: **do not** call this `1.0`. Promoting the four is a minor (`0.6.0` or `0.5.1` per how breaking the freezes were — prefer `0.6.0` if any frozen shape was narrowed). Experimental hosts may change without a major.
+- [x] Home, docs site, CHANGELOG Unreleased: four promoted; three new experimental hosts.
+- [x] `npm run analyze` + generated wrappers committed. CI generated-artifacts green.
+- [x] Package version: **do not** call this `1.0`. Promoting the four is a minor (`0.6.0` or `0.5.1` per how breaking the freezes were — prefer `0.6.0` if any frozen shape was narrowed). Experimental hosts may change without a major.
 
 ### Out of scope
 
