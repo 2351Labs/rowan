@@ -412,6 +412,7 @@ export const parameters = {
       order: [
         "Home",
         "Foundations",
+        ["Tokens", "Themes", "Icons"],
         "Integrations",
         ["Using Rowan from React", "React", "MapLibre Map"],
         "Components",

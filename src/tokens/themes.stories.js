@@ -40,7 +40,6 @@ function createThemeSample(theme) {
 
 export default {
   title: "Foundations/Themes",
-  tags: ["autodocs"],
 };
 
 export const Gallery = {
