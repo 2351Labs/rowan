@@ -6,9 +6,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
-### Added
+### Fixed
 
-- `rowan-rich-text-editor` headings (levels 1–3) and allowlisted link hrefs. Images stay out of the document.
+- `rowan-area-chart` does not set a default `ariaLabel` when the author provides `aria-labelledby`.
+- `rowan-stacked-bar-chart` associates its description with the plot and documents the `detail` and `summary` parts.
+- Chart keyboard focus looks up point controls by dataset instead of interpolating series ids into a selector.
 
 ## 0.7.0 - 2026-09-18
 

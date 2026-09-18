@@ -21,3 +21,4 @@ export function renderChartTable(table: HTMLTableElement, { caption, labels, ser
     formatValue: (value: number, series: unknown, index: number, label: string) => string;
 }): void;
 export function emitPointActivate(host: any, emit: any, entry: any): void;
+export function pointControlFor(container: any, key: any): any;

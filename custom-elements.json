@@ -2945,6 +2945,18 @@
               "name": "entry"
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "pointControlFor",
+          "parameters": [
+            {
+              "name": "container"
+            },
+            {
+              "name": "key"
+            }
+          ]
         }
       ],
       "exports": [
@@ -2977,6 +2989,14 @@
           "name": "emitPointActivate",
           "declaration": {
             "name": "emitPointActivate",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pointControlFor",
+          "declaration": {
+            "name": "pointControlFor",
             "module": "src/chart/dom.js"
           }
         }
@@ -17773,6 +17793,12 @@
             },
             {
               "name": "legend"
+            },
+            {
+              "name": "detail"
+            },
+            {
+              "name": "summary"
             },
             {
               "name": "table"
