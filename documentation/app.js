@@ -1766,6 +1766,35 @@ document.documentElement.dataset.theme = "lagoon";
     afterRender: setupRichTextEditorDemo,
   },
   {
+    id: "image",
+    group: "Components",
+    title: "Rowan Image",
+    summary: "Display host for a still with optional link, overlay, and caption.",
+    tags: ["data display", "image", "media"],
+    keywords: ["image", "figure", "overlay", "caption"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="image-overview">
+        <h2>Still with overlay</h2>
+        <p>rowan-image is a display host, not a rich-text node. src and alt are attributes. Optional href becomes a real link around the image only; overlay actions stay outside that link. javascript hrefs are dropped. Missing or failed images show the fallback slot. Lightbox stays a composed dialog.</p>
+        <div class="demo-row">
+          <rowan-image id="docs-image" alt="North yard camera" href="https://example.test/cameras/north-yard">
+            <rowan-badge slot="overlay" tone="warning">Needs review</rowan-badge>
+            <span slot="caption">North yard · live still</span>
+          </rowan-image>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const image = mainEl.querySelector("#docs-image");
+      if (!image) return;
+      image.src =
+        "data:image/svg+xml," +
+        encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#1d432f"/></svg>`,
+        );
+    },
+  },
+  {
     id: "kpi-card",
     group: "Components",
     title: "Rowan KPI Card",

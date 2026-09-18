@@ -185,6 +185,10 @@
       "types": "./src/icon-button/icon-button.d.ts",
       "default": "./src/icon-button/icon-button.js"
     },
+    "./image": {
+      "types": "./src/image/image.d.ts",
+      "default": "./src/image/image.js"
+    },
     "./kpi-card": {
       "types": "./src/kpi-card/kpi-card.d.ts",
       "default": "./src/kpi-card/kpi-card.js"
@@ -485,6 +489,7 @@
     "./src/form-layout/form-layout.js",
     "./src/form-wizard/form-wizard.js",
     "./src/icon-button/icon-button.js",
+    "./src/image/image.js",
     "./src/kpi-card/kpi-card.js",
     "./src/link/link.js",
     "./src/listbox/listbox.js",

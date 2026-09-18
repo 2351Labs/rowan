@@ -272,7 +272,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -516,6 +516,22 @@ Rich mode uses the browser editing surface and native undo behavior. Rich clipbo
 ```
 
 This component's security boundary ends at its normalized document value: applications own authorization, persistence, rendering outside the component, and any collaboration or merge model. Do not turn event data into HTML; render its text runs through DOM text nodes or an application-owned trusted renderer.
+
+## Rowan Image
+
+`rowan-image` is an experimental display host for a still. `src` and `alt` are
+attributes. Optional `href` is a real link around the image only, using the
+same navigation sanitizer as `rowan-link`. Overlay actions stay outside that
+link. A caption slot renders as `figcaption`. Missing or failed images show
+the fallback slot. It is not a rich-text document node and not a lightbox;
+compose a dialog if you need one.
+
+```html
+<rowan-image src="/stills/north-yard.jpg" alt="North yard camera" href="/cameras/north-yard">
+  <rowan-badge slot="overlay" tone="warning">Needs review</rowan-badge>
+  <span slot="caption">North yard · live still</span>
+</rowan-image>
+```
 
 ## Rowan KPI Card
 

@@ -102,6 +102,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "card",
       "donut-chart",
       "filter-builder",
+      "image",
       "kpi-card",
       "row-details-panel",
       "sparkline",
