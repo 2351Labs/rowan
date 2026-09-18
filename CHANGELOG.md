@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.6.2 - 2026-09-18
+
 ### Added
 
 - Storybook **Workflows / Bulk confirm**: table + bulk bar + `rowan-dialog` alert for Flag and Assign driver.
