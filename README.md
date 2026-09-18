@@ -36,9 +36,9 @@ and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. `rowan-rich-text-editor`, `rowan-filter-builder`, and
-`rowan-trend-chart` are experimental and **out of `0.5`** (and a later `1.0`
-until they are marked Stable). Table virtualization is Stable.
+the top layer. `rowan-filter-builder` and `rowan-trend-chart` are experimental
+and **out of `0.5`** (and a later `1.0` until they are marked Stable). Table
+virtualization and `rowan-rich-text-editor` are Stable.
 
 ## Install
 
@@ -302,14 +302,14 @@ Everything in the catalog above is usable. Experimental surfaces below are
 **out of `0.5`** until they are marked Stable. Pin the version if you depend on
 them.
 
-| Surface                         | Status       | Notes                                                                                                        |
-| ------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                               |
-| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed. |
-| `rowan-rich-text-editor`        | Experimental | The document model may gain node types.                                                                      |
-| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                                                                  |
-| `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                     |
+| Surface                         | Status       | Notes                                                                                                                |
+| ------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                        |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                       |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.         |
+| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value. |
+| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                                                                          |
+| `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                             |
 
 ## Rowan Carousel
 
@@ -492,7 +492,7 @@ Assign application-approved swatches with the property-only `palette` array. Use
 
 ## Rowan Rich Text Editor
 
-`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a normalized document object with paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. It never accepts an HTML value or reflects document data to an attribute.
+`rowan-rich-text-editor` is a form-associated authoring control for concise operational guidance. Its property-only `value` is a frozen document object: paragraph, ordered-list, and unordered-list blocks plus bold, italic, and underline runs. That block and mark set is closed. Headings, links, and images would be a later major. It never accepts an HTML value or reflects document data to an attribute. Import `RowanRichTextDocument` from `@rowan-ui/core/rich-text-editor`.
 
 Rich mode uses the browser editing surface and native undo behavior. Rich clipboard data is inserted as literal plain text, not interpreted as markup. Use `mode="plain"` when the workflow must use a textarea fallback; it still emits the same document object. The submitted FACE value is the JSON serialization of that document.
 

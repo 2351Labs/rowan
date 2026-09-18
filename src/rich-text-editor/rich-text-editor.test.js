@@ -127,6 +127,22 @@ describe("rowan-rich-text-editor", () => {
     expect(changes).to.have.length(2);
   });
 
+  it("ignores HTML strings assigned to value and does not emit rowan-change", async () => {
+    const editor = await renderEditor({
+      value: { blocks: [{ type: "paragraph", children: [{ text: "Keep" }] }] },
+    });
+    const changes = [];
+    editor.addEventListener("rowan-change", (event) => changes.push(event));
+
+    editor.value = "<p><strong>Injected</strong></p>";
+    await nextMicrotask();
+
+    expect(editor.value).to.deep.equal({ blocks: [] });
+    expect(editor.text).to.equal("");
+    expect(surfaceFor(editor).querySelector("strong")).to.equal(null);
+    expect(changes).to.have.length(0);
+  });
+
   it("inserts clipboard text literally instead of accepting rich clipboard markup", async () => {
     const editor = await renderEditor({
       value: { blocks: [{ type: "paragraph", children: [{ text: "Replace me" }] }] },

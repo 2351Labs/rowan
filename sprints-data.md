@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 1 done. Next: Sprint 2 (rich-text document freeze). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 2 done. Next: Sprint 3 (filter-builder predicate freeze). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -46,7 +46,7 @@ Server-side paging protocols, infinite scroll, column virtualization, renaming t
 
 ## Sprint 2 — Rich-text document freeze
 
-**Status:** pending
+**Status:** done
 
 The experimental note was “the document model may gain node types.” Freeze the model as the `1.0` document. Headings, links, images, and mentions are a later major, not a silent extension.
 
@@ -61,10 +61,10 @@ Frozen document:
 
 ### Done when
 
-- [ ] README marks `rowan-rich-text-editor` **Stable** and states the block/mark set is closed.
-- [ ] Round-trip tests: normalize → serialize → parse → equal for paragraphs, both list types, marks, empty docs, and plain-text mode.
-- [ ] Tests pin: HTML strings assigned to `value` are ignored or emptied, not interpreted; `rowan-change` is user-only.
-- [ ] Types (`RowanRichTextDocument` and friends) are exported from the public entry and CEM.
+- [x] README marks `rowan-rich-text-editor` **Stable** and states the block/mark set is closed.
+- [x] Round-trip tests: normalize → serialize → parse → equal for paragraphs, both list types, marks, empty docs, and plain-text mode.
+- [x] Tests pin: HTML strings assigned to `value` are ignored or emptied, not interpreted; `rowan-change` is user-only.
+- [x] Types (`RowanRichTextDocument` and friends) are exported from the public entry and CEM.
 
 ### Out of scope
 

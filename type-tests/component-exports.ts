@@ -47,7 +47,13 @@ import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRating } from "@rowan-ui/core/rating";
-import { RowanRichTextEditor } from "@rowan-ui/core/rich-text-editor";
+import {
+  RowanRichTextEditor,
+  type RowanRichTextDocument,
+  type RowanRichTextList,
+  type RowanRichTextParagraph,
+  type RowanRichTextRun,
+} from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
 import {
@@ -207,6 +213,19 @@ richTextEditor.value = {
   blocks: [{ type: "paragraph", children: [{ text: "Dispatch checklist" }] }],
 };
 richTextEditor.mode = "plain";
+const richTextDocument: RowanRichTextDocument = richTextEditor.value;
+const richTextRun: RowanRichTextRun = { text: "Keep", bold: true };
+const richTextParagraph: RowanRichTextParagraph = {
+  type: "paragraph",
+  children: [richTextRun],
+};
+const richTextList: RowanRichTextList = {
+  type: "unordered-list",
+  items: [[{ text: "Notify on-call" }]],
+};
+void richTextDocument;
+void richTextParagraph;
+void richTextList;
 trendChart.config = {
   labels: ["Mon", "Tue"],
   interactive: true,

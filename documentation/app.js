@@ -1694,7 +1694,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="rich-text-editor-control">
         <h2>Constrained operational guidance</h2>
-        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
+        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. That block and mark set is closed. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
         <div class="demo-row">
           <rowan-rich-text-editor
             id="docs-rich-text-editor"
