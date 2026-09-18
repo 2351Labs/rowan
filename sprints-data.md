@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 5 done. Next: Sprint 6 (compact charts, experimental). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 6 done. Next: Sprint 7 (bar and donut charts, experimental). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -163,7 +163,7 @@ Grid dashboards, sparklines (Sprint 6), fetching, comparison date pickers.
 
 ## Sprint 6 — Compact charts (experimental)
 
-**Status:** pending
+**Status:** done
 
 KPI tiles need a sparkline-scale chart. Do **not** silently shrink `rowan-trend-chart` and hide its table. Add an experimental compact surface.
 
@@ -179,10 +179,10 @@ Related density: `rowan-progress` `part="meta"` is always on. If compact tiles n
 
 ### Done when
 
-- [ ] Compact chart host (or frozen `density` on a new experimental path) documented as Experimental.
-- [ ] Story: KPI card + sparkline. Story: progress with meta hidden.
-- [ ] Tests: AT still gets a name and values; reduced-motion unchanged (no animation).
-- [ ] Does not change Stable `rowan-trend-chart` rendering.
+- [x] Compact chart host (or frozen `density` on a new experimental path) documented as Experimental.
+- [x] Story: KPI card + sparkline. Story: progress with meta hidden.
+- [x] Tests: AT still gets a name and values; reduced-motion unchanged (no animation).
+- [x] Does not change Stable `rowan-trend-chart` rendering.
 
 ### Out of scope
 

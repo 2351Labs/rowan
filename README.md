@@ -293,7 +293,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-sparkline`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -310,6 +310,7 @@ on them.
 | `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
 | `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Compact chart slot is a placeholder until sparkline.                               |
+| `rowan-sparkline`               | Experimental | Compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`.                                                       |
 
 ## Rowan Carousel
 
@@ -535,8 +536,8 @@ This component's security boundary ends at its normalized document value: applic
 `delta-label` are attributes. `value` and `delta` are property-only. Tone never
 replaces the label. Delta text includes a sign so change is not color-only. A
 null `value` shows `No data`; `loading` replaces the value with a skeleton.
-The `chart` slot is for a later compact chart and follows the label and value
-in reading order.
+The `chart` slot is for `rowan-sparkline` and follows the label and value in
+reading order.
 
 ```html
 <rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
@@ -547,6 +548,32 @@ in reading order.
   const card = document.querySelector("rowan-kpi-card");
   card.value = 19;
   card.delta = -4;
+</script>
+```
+
+## Rowan Sparkline
+
+`rowan-sparkline` is an **experimental** compact one-series line for KPI tiles.
+It is a separate host, not a density of `rowan-trend-chart`. `values` is
+property-only (`number | null`; null is a gap). There is no legend, no
+interactive points, and no animation. A visually hidden table exposes the same
+values to assistive technology. `rowan-progress` `hide-meta` hides the percent
+caption without dropping the progressbar name.
+
+```html
+<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
 </script>
 ```
 

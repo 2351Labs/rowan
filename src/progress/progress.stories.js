@@ -24,3 +24,14 @@ export const Playground = {
     return el;
   },
 };
+
+export const HideMeta = {
+  render: () => {
+    const el = document.createElement("rowan-progress");
+    el.value = 42;
+    el.max = 100;
+    el.label = "Quota";
+    el.hideMeta = true;
+    return el;
+  },
+};

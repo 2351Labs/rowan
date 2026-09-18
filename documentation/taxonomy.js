@@ -101,6 +101,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "filter-builder",
       "kpi-card",
       "row-details-panel",
+      "sparkline",
       "table",
       "table-toolbar",
       "trend-chart",

@@ -490,6 +490,21 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
   };
 </script>`;
 
+const SPARKLINE_SNIPPET = `<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
+</script>`;
+
 const KPI_CARD_SNIPPET = `<rowan-kpi-card
   label="Open incidents"
   tone="warning"
@@ -1757,6 +1772,41 @@ const DOC_PAGES = [
       if (!card) return;
       card.value = 19;
       card.delta = -4;
+    },
+  },
+  {
+    id: "sparkline",
+    group: "Components",
+    title: "Rowan Sparkline",
+    summary:
+      "Experimental compact one-series line for KPI tiles, with a visually hidden data table.",
+    tags: ["data display", "sparkline", "kpi"],
+    keywords: ["sparkline", "compact chart", "kpi", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="sparkline-overview">
+        <h2>Compact trend</h2>
+        <p>rowan-sparkline is a separate host, not a density of rowan-trend-chart. One series, no legend, no interactive points, no animation. Null values break the line and appear as No data in a visually hidden table.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-sparkline-kpi" label="Open incidents" tone="warning" delta-label="vs last week">
+            <rowan-sparkline id="docs-sparkline" slot="chart" label="Open incidents this week"></rowan-sparkline>
+          </rowan-kpi-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="sparkline-contract">
+        <h2>Experimental contract</h2>
+        <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
+        ${codeBlock(SPARKLINE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-sparkline-kpi");
+      const chart = mainEl.querySelector("#docs-sparkline");
+      if (card) {
+        card.value = 11;
+        card.delta = -7;
+      }
+      if (chart) chart.values = [18, 24, 12, 15, 9, 11];
     },
   },
   {

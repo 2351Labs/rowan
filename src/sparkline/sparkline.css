@@ -1,0 +1,60 @@
+:host {
+  display: block;
+  min-inline-size: 6rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.chart {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.plot {
+  block-size: var(--rowan-sparkline-height, 2.25rem);
+  display: block;
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.line {
+  stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: var(--rowan-sparkline-stroke-width, 1.75);
+}
+
+:host([tone="info"]) .line,
+.plot[data-tone="info"] .line {
+  stroke: var(--rowan-sparkline-info, var(--rowan-color-accent));
+}
+
+:host([tone="success"]) .line,
+.plot[data-tone="success"] .line {
+  stroke: var(--rowan-sparkline-success, var(--rowan-color-success));
+}
+
+:host([tone="warning"]) .line,
+.plot[data-tone="warning"] .line {
+  stroke: var(--rowan-sparkline-warning, var(--rowan-color-warning));
+}
+
+:host([tone="danger"]) .line,
+.plot[data-tone="danger"] .line {
+  stroke: var(--rowan-sparkline-danger, var(--rowan-color-danger));
+}
+
+.table {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

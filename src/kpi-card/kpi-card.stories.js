@@ -1,4 +1,5 @@
 import "./kpi-card.js";
+import "../sparkline/sparkline.js";
 
 function createCard({ label, value, delta, deltaLabel, tone, loading, description } = {}) {
   const card = document.createElement("rowan-kpi-card");
@@ -82,9 +83,10 @@ export const WithChartSlot = {
       deltaLabel: "vs last week",
       tone: "warning",
     });
-    const chart = document.createElement("span");
+    const chart = document.createElement("rowan-sparkline");
     chart.slot = "chart";
-    chart.textContent = "Compact chart slot";
+    chart.label = "Open incidents this week";
+    chart.values = [18, 24, 12, 15, 9, 11];
     card.append(chart);
     return card;
   },

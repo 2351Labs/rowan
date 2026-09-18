@@ -55,6 +55,7 @@ export { RowanSideNavItem } from "./side-nav-item.js";
 export { RowanSideNavSection } from "./side-nav-section.js";
 export { RowanSkeleton } from "./skeleton.js";
 export { RowanSlider } from "./slider.js";
+export { RowanSparkline } from "./sparkline.js";
 export { RowanSpinner } from "./spinner.js";
 export { RowanSplitPane } from "./split-pane.js";
 export { RowanStatusIndicator } from "./status-indicator.js";

@@ -8328,6 +8328,14 @@
         },
         {
           "kind": "js",
+          "name": "RowanSparkline",
+          "declaration": {
+            "name": "RowanSparkline",
+            "module": "./sparkline/sparkline.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanSpinner",
           "declaration": {
             "name": "RowanSpinner",
@@ -9638,7 +9646,7 @@
         {
           "kind": "variable",
           "name": "BOOLEAN_ATTRIBUTES",
-          "default": "new Set([ \"active\", \"alert\", \"animated\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
         },
         {
           "kind": "function",
@@ -12102,6 +12110,10 @@
             },
             {
               "kind": "field",
+              "name": "hideMeta"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -12195,6 +12207,12 @@
               "name": "label",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "hide-meta",
+              "type": {
+                "text": "boolean"
               }
             }
           ],
@@ -15561,6 +15579,225 @@
           "declaration": {
             "name": "RowanSlider",
             "module": "src/slider/slider.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/sparkline/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanSparkline",
+          "declaration": {
+            "name": "RowanSparkline",
+            "module": "./sparkline.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/sparkline/sparkline.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental compact one-series line for KPI tiles. Not a density of\n`rowan-trend-chart`.",
+          "name": "RowanSparkline",
+          "cssProperties": [
+            {
+              "name": "--rowan-sparkline-stroke"
+            },
+            {
+              "name": "--rowan-sparkline-success"
+            },
+            {
+              "name": "--rowan-sparkline-danger"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "line"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "return": {
+                "type": {
+                  "text": "Array<number | null>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<number | null>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<number | null>"
+              },
+              "description": "One series. Arrays are property-only. Null is a gap."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Optional point labels for the accessible table. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-sparkline",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanSparkline",
+          "declaration": {
+            "name": "RowanSparkline",
+            "module": "src/sparkline/sparkline.js"
           }
         }
       ]

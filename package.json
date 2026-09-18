@@ -273,6 +273,10 @@
       "types": "./src/slider/slider.d.ts",
       "default": "./src/slider/slider.js"
     },
+    "./sparkline": {
+      "types": "./src/sparkline/sparkline.d.ts",
+      "default": "./src/sparkline/sparkline.js"
+    },
     "./spinner": {
       "types": "./src/spinner/spinner.d.ts",
       "default": "./src/spinner/spinner.js"
@@ -480,6 +484,7 @@
     "./src/side-nav-item/side-nav-item.js",
     "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
+    "./src/sparkline/sparkline.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",
     "./src/status-indicator/status-indicator.js",

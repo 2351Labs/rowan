@@ -30,3 +30,7 @@
   font-family: var(--rowan-font-family);
   font-size: 0.75rem;
 }
+
+.meta[hidden] {
+  display: none;
+}

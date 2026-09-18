@@ -10,6 +10,7 @@ export const BOOLEAN_ATTRIBUTES = new Set([
   "expanded",
   "external",
   "hidden",
+  "hide-meta",
   "indeterminate",
   "interactive",
   "invalid",
