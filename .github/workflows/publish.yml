@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish core and icons
+    name: Publish core, icons, and maplibre
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -23,10 +23,35 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm ci
       - name: Publish @rowan-ui/core
-        run: npm publish --access public --provenance
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          if npm view "@rowan-ui/core@${version}" version >/dev/null 2>&1; then
+            echo "skip @rowan-ui/core@${version} (already on registry)"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish @rowan-ui/icons
-        run: npm publish --access public --provenance --workspace=@rowan-ui/icons
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./packages/icons/package.json').version")
+          if npm view "@rowan-ui/icons@${version}" version >/dev/null 2>&1; then
+            echo "skip @rowan-ui/icons@${version} (already on registry)"
+          else
+            npm publish --access public --provenance --workspace=@rowan-ui/icons
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @rowan-ui/maplibre
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./packages/maplibre/package.json').version")
+          if npm view "@rowan-ui/maplibre@${version}" version >/dev/null 2>&1; then
+            echo "skip @rowan-ui/maplibre@${version} (already on registry)"
+          else
+            npm publish --access public --provenance --workspace=@rowan-ui/maplibre
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
