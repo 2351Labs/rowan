@@ -2730,7 +2730,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="table-virtualized">
         <h2>Large collection mode</h2>
-        <p>Set virtualized for a bounded, measured body viewport. Sorting, selection, row activation, and cell events retain the existing table contract because mounted rows remain semantic table rows.</p>
+        <p>Set virtualized for a bounded, measured body viewport. virtualized, virtualItemSize, virtualOverscan, and --rowan-table-virtual-height are frozen names. Sorting, selection, row activation, and cell events retain the existing table contract because mounted rows remain semantic table rows.</p>
         <div class="table-shell">
           <rowan-table id="docs-virtual-table-demo" caption="500 member records"></rowan-table>
         </div>

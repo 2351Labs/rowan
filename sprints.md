@@ -156,6 +156,4 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).
-- Publish `@rowan-ui/maplibre` (optional adapter; not in the first 0.5.0 npm cut).
-- Progress `meta` visibility and trend-chart compact density.
-- KPI/stat card as a primitive.
+- Data/dashboard track: `sprints-data.md` (stabilize the experimental four, then experimental KPI + charts).

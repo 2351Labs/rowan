@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Changed
+
+- Table virtualization is Stable: `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.
+
 ## 0.5.0 - 2026-09-17
 
 Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
