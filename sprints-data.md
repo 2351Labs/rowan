@@ -283,6 +283,20 @@ Shared rules stay the same: property-only data, matching table, native SVG, `row
 
 ---
 
+## Sprint 11 — Image display host (experimental)
+
+**Status:** done
+
+Admin stills (cameras, evidence, product shots) need overlay, caption, and an optional link. Not a rich-text node.
+
+### Done when
+
+- [x] `rowan-image` with `src`, `alt`, optional sanitised `href`, overlay/caption/fallback slots.
+- [x] Overlay is not inside the image link. Failed/missing src shows fallback.
+- [x] README Experimental. Lightbox stays a composed dialog.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

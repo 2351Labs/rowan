@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  max-inline-size: 100%;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.control {
+  color: var(--rowan-image-fg, var(--rowan-color-fg));
+  display: grid;
+  font-family: var(--rowan-font-family);
+  gap: var(--rowan-space-2, 0.5rem);
+  margin: 0;
+}
+
+.frame {
+  aspect-ratio: var(--rowan-image-aspect, 16 / 9);
+  background: var(--rowan-image-bg, var(--rowan-color-surface-muted, #f3f4ef));
+  border-radius: var(--rowan-image-radius, var(--rowan-radius-md, 0.5rem));
+  isolation: isolate;
+  overflow: clip;
+  position: relative;
+}
+
+.media {
+  display: block;
+  inset: 0;
+  position: absolute;
+}
+
+.image {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: var(--image-fit, cover);
+}
+
+.frame.is-loading .image {
+  opacity: 0;
+}
+
+.overlay {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.overlay ::slotted(*) {
+  pointer-events: auto;
+}
+
+.fallback {
+  align-items: center;
+  color: var(--rowan-color-muted, #424945);
+  display: grid;
+  font-size: var(--rowan-font-size-sm, 0.875rem);
+  inset: 0;
+  justify-items: center;
+  padding: var(--rowan-space-3, 0.75rem);
+  place-content: center;
+  position: absolute;
+  text-align: center;
+}
+
+.caption {
+  color: var(--rowan-color-muted, #424945);
+  font-size: var(--rowan-font-size-sm, 0.875rem);
+  margin: 0;
+}
+
+.image[hidden],
+.fallback[hidden],
+.caption[hidden] {
+  display: none;
+}

@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Experimental `rowan-image`: display still with optional href, overlay, caption, and fallback. Not a rich-text node.
+
 ## 0.7.0 - 2026-09-18
 
 ### Removed

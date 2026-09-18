@@ -9056,6 +9056,249 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/image/image.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental image display. Overlay and caption are slots. Optional href is a\nreal link around the image, not around overlay actions.",
+          "name": "RowanImage",
+          "cssProperties": [
+            {
+              "name": "--rowan-image-bg"
+            },
+            {
+              "name": "--rowan-image-radius"
+            },
+            {
+              "name": "--rowan-image-aspect"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "frame"
+            },
+            {
+              "name": "image"
+            },
+            {
+              "name": "overlay"
+            },
+            {
+              "name": "caption"
+            },
+            {
+              "name": "fallback"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Actions and badges on top of the image. Not inside the link.",
+              "name": "overlay"
+            },
+            {
+              "name": "caption"
+            },
+            {
+              "description": "Shown when src is missing or the image fails.",
+              "name": "fallback"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "href"
+            },
+            {
+              "kind": "field",
+              "name": "fit",
+              "return": {
+                "type": {
+                  "text": "\"cover\" | \"contain\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"cover\" | \"contain\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "return": {
+                "type": {
+                  "text": "\"lazy\" | \"eager\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"lazy\" | \"eager\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "alt",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "href",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "fit",
+              "type": {
+                "text": "\"cover\"|\"contain\""
+              }
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "\"lazy\"|\"eager\""
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-image",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanImage",
+          "declaration": {
+            "name": "RowanImage",
+            "module": "src/image/image.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/image/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanImage",
+          "declaration": {
+            "name": "RowanImage",
+            "module": "./image.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/index.js",
       "declarations": [],
       "exports": [
@@ -9489,6 +9732,14 @@
           "declaration": {
             "name": "RowanIconButton",
             "module": "./icon-button/icon-button.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanImage",
+          "declaration": {
+            "name": "RowanImage",
+            "module": "./image/image.js"
           }
         },
         {

@@ -35,6 +35,7 @@ export { RowanFormField } from "./form-field.js";
 export { RowanFormLayout } from "./form-layout.js";
 export { RowanFormWizard } from "./form-wizard.js";
 export { RowanIconButton } from "./icon-button.js";
+export { RowanImage } from "./image.js";
 export { RowanKpiCard } from "./kpi-card.js";
 export { RowanLink } from "./link.js";
 export { RowanListbox } from "./listbox.js";
