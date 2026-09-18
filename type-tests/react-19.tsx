@@ -1,13 +1,11 @@
-import { useRef } from "react";
 import type * as React from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
 import { RowanButton } from "@rowan-ui/core/react/button";
+import { RowanCombobox } from "@rowan-ui/core/react/combobox";
 import { RowanTable as Table } from "@rowan-ui/core/react/table";
 import { RowanSparkline } from "@rowan-ui/core/react/sparkline";
 import { RowanDonutChart } from "@rowan-ui/core/react/donut-chart";
 import { RowanTrendChart } from "@rowan-ui/core/react/trend-chart";
 import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
-import type { RowanTable } from "@rowan-ui/core/table";
 
 type RowanTags = Extract<keyof HTMLElementTagNameMap, `rowan-${string}`>;
 type Assert<T extends true> = T;
@@ -22,73 +20,9 @@ const tableConfig = {
 const comboboxOptions = [{ value: "ada", label: "Ada" }];
 
 function TableView() {
-  const tableRef = useRef<RowanTable>(null);
-  const listRef = useRef<HTMLElementTagNameMap["rowan-virtual-list"]>(null);
-  const comboboxRef = useRef<HTMLElementTagNameMap["rowan-combobox"]>(null);
-
-  useRowanElement(tableRef, {
-    properties: {
-      config: tableConfig,
-      columns: tableConfig.columns,
-      rows: tableConfig.rows,
-      selected: ["1"],
-      sort: null,
-      page: null,
-      density: "lg",
-      selectable: "multiple",
-    },
-    events: {
-      "rowan-select": (event) => event.type,
-    },
-  });
-
-  useRowanElement(tableRef, {
-    properties: { config: null },
-  });
-
-  useRowanElement(listRef, {
-    properties: {
-      items: tableConfig.rows,
-      renderItem: (_item, _index, itemElement) => itemElement,
-      itemKey: null,
-    },
-  });
-
-  useRowanElement(comboboxRef, {
-    properties: { options: comboboxOptions },
-  });
-
-  useRowanElement(comboboxRef, {
-    properties: {
-      // @ts-expect-error Combobox options are strings or documented option records.
-      options: [42],
-    },
-  });
-
-  useRowanElement(tableRef, {
-    properties: {
-      // @ts-expect-error Rows must be an array of record values.
-      rows: "not a row collection",
-    },
-  });
-
-  useRowanElement(tableRef, {
-    properties: {
-      // @ts-expect-error Table selection supports none, single, and multiple only.
-      selectable: "all",
-    },
-  });
-
-  useRowanElement(listRef, {
-    properties: {
-      // @ts-expect-error Virtual List item keys are strings or key functions.
-      itemKey: 1,
-    },
-  });
-
   return (
     <>
-      <rowan-table ref={tableRef} caption="Team members" sticky-header virtual-item-size={44} />
+      <rowan-table caption="Team members" sticky-header virtual-item-size={44} />
       <rowan-button disabled size="sm" variant="primary">
         Save
       </rowan-button>
@@ -96,15 +30,31 @@ function TableView() {
         Save
       </RowanButton>
       <rowan-context-menu for="member-row" label="Member actions" />
-      <rowan-virtual-list ref={listRef} />
-      <rowan-combobox ref={comboboxRef} label="Member" />
+      <rowan-virtual-list />
+      <rowan-combobox label="Member" />
     </>
   );
 }
 
-const structuredTablePropertyRequiresRef = (
-  // @ts-expect-error Structured values must use useRowanElement().
+const structuredTablePropertyRequiresWrapper = (
+  // @ts-expect-error Structured values are wrapper props, not tag attributes.
   <rowan-table config={tableConfig} />
+);
+const invalidWrapperRows = (
+  // @ts-expect-error Rows must be an array of record values.
+  <Table rows="not a row collection" />
+);
+const invalidWrapperSelectable = (
+  // @ts-expect-error Table selection supports none, single, and multiple only.
+  <Table selectable="all" />
+);
+const invalidWrapperItemKey = (
+  // @ts-expect-error Virtual List item keys are strings or key functions.
+  <RowanVirtualList itemKey={1} />
+);
+const invalidComboboxOptions = (
+  // @ts-expect-error Combobox options are strings or documented option records.
+  <RowanCombobox options={[42]} />
 );
 const invalidTableDensityAttribute = (
   // @ts-expect-error Table density supports sm, md, and lg only.
@@ -139,10 +89,15 @@ const wrapperDonut = (
     labels={["App", "Phone"]}
   />
 );
+const wrapperCombobox = <RowanCombobox options={comboboxOptions} />;
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
-void structuredTablePropertyRequiresRef;
+void structuredTablePropertyRequiresWrapper;
+void invalidWrapperRows;
+void invalidWrapperSelectable;
+void invalidWrapperItemKey;
+void invalidComboboxOptions;
 void invalidTableDensityAttribute;
 void wrapperButton;
 void invalidWrapperVariant;
@@ -151,3 +106,4 @@ void wrapperList;
 void wrapperChart;
 void wrapperSparkline;
 void wrapperDonut;
+void wrapperCombobox;

@@ -72,15 +72,6 @@ export type RowanElementOptions<Element extends HTMLElement> = {
   events?: Record<string, RowanEventListener | undefined>;
 };
 
-/**
- * Binds React state and native custom-event listeners to a Rowan element ref.
- * Import custom-element registration modules from a client-only boundary.
- */
-export function useRowanElement<Element extends HTMLElement>(
-  ref: RowanElementRef<Element>,
-  options?: RowanElementOptions<Element>,
-): void;
-
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements extends RowanIntrinsicElements {}

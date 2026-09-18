@@ -1,6 +1,5 @@
-import { useRef } from "react";
-import { useRowanElement } from "@rowan-ui/core/react";
-import type { RowanTable } from "@rowan-ui/core/table";
+import { RowanTable as Table } from "@rowan-ui/core/react/table";
+import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
 
 type RowanTags = Extract<keyof HTMLElementTagNameMap, `rowan-${string}`>;
 type Assert<T extends true> = T;
@@ -11,66 +10,48 @@ type AllRowanTagsAreTyped = Assert<
 const rows = [{ id: "1", name: "Ada" }];
 
 function TableView() {
-  const tableRef = useRef<RowanTable>(null);
-  const listRef = useRef<HTMLElementTagNameMap["rowan-virtual-list"]>(null);
-
-  useRowanElement(tableRef, {
-    properties: {
-      columns: [{ id: "name", header: "Name" }],
-      rows,
-      selected: ["1"],
-      config: null,
-      sort: null,
-      page: null,
-      density: "lg",
-      selectable: "multiple",
-    },
-    events: {
-      "rowan-select": (event) => event.type,
-    },
-  });
-
-  useRowanElement(listRef, {
-    properties: {
-      items: rows,
-      renderItem: (_item, _index, itemElement) => itemElement,
-      itemKey: null,
-    },
-  });
-
-  useRowanElement(tableRef, {
-    properties: {
-      // @ts-expect-error Table density supports sm, md, and lg only.
-      density: "compact",
-    },
-  });
-
-  useRowanElement(listRef, {
-    properties: {
-      // @ts-expect-error Virtual List renderers are functions or null.
-      renderItem: "render",
-    },
-  });
-
   return (
     <>
-      <rowan-table ref={tableRef} caption="Team members" sticky-header />
+      <rowan-table caption="Team members" sticky-header />
       <rowan-form-field for="member-table" label="Members" />
-      <rowan-virtual-list ref={listRef} />
+      <rowan-virtual-list />
+      <Table
+        columns={[{ id: "name", header: "Name" }]}
+        rows={rows}
+        selected={["1"]}
+        density="lg"
+        selectable="multiple"
+        onRowanSelect={(event) => event.type}
+      />
+      <RowanVirtualList
+        items={rows}
+        renderItem={(_item, _index, itemElement) => itemElement}
+        itemKey={null}
+      />
     </>
   );
 }
 
-const structuredTablePropertyRequiresRef = (
-  // @ts-expect-error Structured values must use useRowanElement().
+const structuredTablePropertyRequiresWrapper = (
+  // @ts-expect-error Structured values are wrapper props, not tag attributes.
   <rowan-table rows={rows} />
 );
 const invalidTableDensityAttribute = (
   // @ts-expect-error Table density supports sm, md, and lg only.
   <rowan-table density="compact" />
 );
+const invalidWrapperDensity = (
+  // @ts-expect-error Table density supports sm, md, and lg only.
+  <Table density="compact" />
+);
+const invalidWrapperRenderItem = (
+  // @ts-expect-error Virtual List renderers are functions or null.
+  <RowanVirtualList renderItem="render" />
+);
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
-void structuredTablePropertyRequiresRef;
+void structuredTablePropertyRequiresWrapper;
 void invalidTableDensityAttribute;
+void invalidWrapperDensity;
+void invalidWrapperRenderItem;

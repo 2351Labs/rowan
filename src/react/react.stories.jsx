@@ -69,7 +69,7 @@ export default {
     docs: {
       description: {
         component:
-          "Generated wrappers are the React default (`RowanButton`, `onRowanClick`). Raw tags and `useRowanElement` remain. See Integrations → Using Rowan from React.",
+          "Generated wrappers are the React default (`RowanButton`, `onRowanClick`). Raw tags stay first-class for markup. See Integrations → Using Rowan from React.",
       },
     },
   },
