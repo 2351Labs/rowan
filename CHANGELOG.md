@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Changed
+
+- `rowan-kpi-card`, `rowan-sparkline`, and `rowan-donut-chart` are Stable. `rowan-bar-chart` stays experimental.
+
 ## 0.6.2 - 2026-09-18
 
 ### Added

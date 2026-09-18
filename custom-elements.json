@@ -5895,7 +5895,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental parts-of-a-whole chart. Uses the first series. Negative values\nare treated as no-data, not slices.",
+          "description": "Frozen parts-of-a-whole chart. Uses the first series. Negative values\nare treated as no-data, not slices.",
           "name": "RowanDonutChart",
           "cssProperties": [
             {
@@ -9571,7 +9571,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental dashboard stat tile. Value and delta stay property-only.",
+          "description": "Frozen dashboard stat tile. Value and delta stay property-only.",
           "name": "RowanKpiCard",
           "cssProperties": [
             {
@@ -16684,7 +16684,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental compact one-series line for KPI tiles. Not a density of\n`rowan-trend-chart`.",
+          "description": "Frozen compact one-series line for KPI tiles. Not a density of\n`rowan-trend-chart`.",
           "name": "RowanSparkline",
           "cssProperties": [
             {

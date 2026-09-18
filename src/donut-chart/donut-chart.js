@@ -53,7 +53,7 @@ function slicePath(startAngle, endAngle) {
 }
 
 /**
- * Experimental parts-of-a-whole chart. Uses the first series. Negative values
+ * Frozen parts-of-a-whole chart. Uses the first series. Negative values
  * are treated as no-data, not slices.
  * @tag rowan-donut-chart
  * @attr {string} label
