@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Storybook **Workflows / Bulk confirm**: table + bulk bar + `rowan-dialog` alert for Flag and Assign driver.
+
 ### Fixed
 
 - Storybook manager and Docs chrome use the full dark theme (not only `base: "dark"`).

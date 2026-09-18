@@ -155,7 +155,7 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 **Goal.** Fix the CSS bugs that make shipped widgets look broken in a real admin app, then the APIs that app had to invent.
 
-**Status.** Sprint 3 done. Next: Sprint 4 (P3 docs).
+**Status.** Sprint 4 done. Admin-shell follow-through is complete.
 
 ### Sprint 1 — P0 layout bugs
 
@@ -186,10 +186,10 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ### Sprint 4 — P3 docs
 
-**Status:** pending
+**Status:** done
 
-- [ ] Storybook recipe: table + bulk actions + `rowan-dialog` alert (Flag / Assign).
-- [ ] Do not promote KPI / sparkline / donut until Sprint 2 sparkline cell type and wrapper `labels` land.
+- [x] Storybook recipe: table + bulk actions + `rowan-dialog` alert (Flag / Assign).
+- [x] Do not promote KPI / sparkline / donut until Sprint 2 sparkline cell type and wrapper `labels` land.
 
 ## Later / not this track
 
