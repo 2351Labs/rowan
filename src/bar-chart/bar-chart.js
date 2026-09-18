@@ -1,7 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-import { createSvgElement, emitPointActivate, renderChartTable } from "../chart/dom.js";
+import {
+  createSvgElement,
+  emitPointActivate,
+  pointControlFor,
+  renderChartTable,
+} from "../chart/dom.js";
 import {
   barValueDomain,
   chartSeriesColor,
@@ -456,9 +461,7 @@ export class RowanBarChart extends BaseElement {
     event.preventDefault();
     this.#activePointKey = target.key;
     this.#syncActivePoint();
-    this.#pointControls
-      .querySelector(`[data-point-key="${target.key}"]`)
-      ?.focus({ preventScroll: true });
+    pointControlFor(this.#pointControls, target.key)?.focus({ preventScroll: true });
   }
 
   #activatePoint(entry) {

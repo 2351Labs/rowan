@@ -6,6 +6,7 @@ const nextMicrotask = () => Promise.resolve();
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-stacked-bar-chart");
   chart.label = options.label ?? "Incidents";
+  if (options.description) chart.description = options.description;
   chart.labels = options.labels ?? ["Mon", "Tue"];
   chart.series = options.series ?? [
     { id: "incoming", label: "Incoming", values: [4, 2] },
@@ -62,5 +63,39 @@ describe("rowan-stacked-bar-chart", () => {
     expect(activations[0].seriesId).to.equal("incoming");
     expect(activations[0].index).to.equal(0);
     expect(activations[0].value).to.equal(4);
+  });
+
+  it("associates the description with the plot", async () => {
+    const chart = await renderChart({
+      description: "Weekly stack",
+    });
+
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("aria-describedby")).to.equal(
+      `${chart.id}__description`,
+    );
+
+    chart.description = "";
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".plot").hasAttribute("aria-describedby")).to.equal(
+      false,
+    );
+  });
+
+  it("moves keyboard focus when a series id would break a CSS selector", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
+    });
+    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
+    buttons[0].focus();
+    buttons[0].dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
   });
 });

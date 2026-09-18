@@ -1,7 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-import { createSvgElement, emitPointActivate, renderChartTable } from "../chart/dom.js";
+import {
+  createSvgElement,
+  emitPointActivate,
+  pointControlFor,
+  renderChartTable,
+} from "../chart/dom.js";
 import {
   stackedBarValueDomain,
   chartSeriesColor,
@@ -50,6 +55,8 @@ function normalizeText(value) {
  * @csspart plot
  * @csspart bar
  * @csspart legend
+ * @csspart detail
+ * @csspart summary
  * @csspart table
  * @cssprop --rowan-stacked-bar-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive bar.
@@ -267,6 +274,11 @@ export class RowanStackedBarChart extends BaseElement {
     this.renderRoot.querySelector(".description").id = this.#descriptionId;
     this.#plot.setAttribute("role", "img");
     this.#plot.setAttribute("aria-label", label || "Stacked bar chart");
+    if (description) {
+      this.#plot.setAttribute("aria-describedby", this.#descriptionId);
+    } else {
+      this.#plot.removeAttribute("aria-describedby");
+    }
   }
 
   #renderChart() {
@@ -468,9 +480,7 @@ export class RowanStackedBarChart extends BaseElement {
     event.preventDefault();
     this.#activePointKey = target.key;
     this.#syncActivePoint();
-    this.#pointControls
-      .querySelector(`[data-point-key="${target.key}"]`)
-      ?.focus({ preventScroll: true });
+    pointControlFor(this.#pointControls, target.key)?.focus({ preventScroll: true });
   }
 
   #activatePoint(entry) {

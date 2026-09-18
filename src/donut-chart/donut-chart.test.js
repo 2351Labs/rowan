@@ -25,9 +25,7 @@ describe("rowan-donut-chart", () => {
 
     expect(chart.shadowRoot.querySelectorAll("path.slice")).to.have.length(2);
     expect(chart.shadowRoot.querySelector("[part='total']").textContent).to.equal("20");
-    expect(chart.shadowRoot.querySelector("table").textContent).to.include(
-      "Sources12No data8",
-    );
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Sources12No data8");
   });
 
   it("emits rowan-point-activate from an interactive slice control", async () => {
@@ -45,5 +43,21 @@ describe("rowan-donut-chart", () => {
     expect(activations[0].seriesId).to.equal("sources");
     expect(activations[0].label).to.equal("App");
     expect(activations[0].value).to.equal(12);
+  });
+
+  it("moves keyboard focus when a series id would break a CSS selector", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["App", "Phone"],
+      series: [{ id: 'sales"q', label: "Sales", values: [12, 8] }],
+    });
+    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
+    buttons[0].focus();
+    buttons[0].dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
   });
 });
