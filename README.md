@@ -293,7 +293,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-kpi-card`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -301,14 +301,15 @@ Everything in the catalog above is usable. Surfaces marked Experimental below
 are **out of `0.5`** until they are marked Stable. Pin the version if you depend
 on them.
 
-| Surface                         | Status | Notes                                                                                                                              |
-| ------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                      |
-| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
-| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
-| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
-| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
-| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
+| Surface                         | Status       | Notes                                                                                                                              |
+| ------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                      |
+| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                     |
+| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                       |
+| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
+| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
+| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
+| `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Compact chart slot is a placeholder until sparkline.                               |
 
 ## Rowan Carousel
 
@@ -527,6 +528,27 @@ Rich mode uses the browser editing surface and native undo behavior. Rich clipbo
 ```
 
 This component's security boundary ends at its normalized document value: applications own authorization, persistence, rendering outside the component, and any collaboration or merge model. Do not turn event data into HTML; render its text runs through DOM text nodes or an application-owned trusted renderer.
+
+## Rowan KPI Card
+
+`rowan-kpi-card` is an **experimental** dashboard stat tile. `label`, `tone`, and
+`delta-label` are attributes. `value` and `delta` are property-only. Tone never
+replaces the label. Delta text includes a sign so change is not color-only. A
+null `value` shows `No data`; `loading` replaces the value with a skeleton.
+The `chart` slot is for a later compact chart and follows the label and value
+in reading order.
+
+```html
+<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+
+  const card = document.querySelector("rowan-kpi-card");
+  card.value = 19;
+  card.delta = -4;
+</script>
+```
 
 ## Rowan Trend Chart
 

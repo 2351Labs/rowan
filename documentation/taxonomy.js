@@ -99,6 +99,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "bulk-actions-bar",
       "card",
       "filter-builder",
+      "kpi-card",
       "row-details-panel",
       "table",
       "table-toolbar",

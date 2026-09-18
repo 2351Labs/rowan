@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Experimental `rowan-kpi-card`: labeled metric, signed delta, tone, and `chart` slot. `value` and `delta` are property-only.
+
 ### Changed
 
 - Table virtualization is Stable: `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.

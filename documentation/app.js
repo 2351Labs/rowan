@@ -490,6 +490,20 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
   };
 </script>`;
 
+const KPI_CARD_SNIPPET = `<rowan-kpi-card
+  label="Open incidents"
+  tone="warning"
+  delta-label="vs last week"
+></rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+
+  const card = document.querySelector("rowan-kpi-card");
+  card.value = 19;
+  card.delta = -4;
+</script>`;
+
 const MAPLIBRE_MAP_SNIPPET = `<rowan-maplibre-map
   id="dispatch-coverage"
   label="Dispatch coverage"
@@ -1714,6 +1728,36 @@ const DOC_PAGES = [
       </section>
     `,
     afterRender: setupRichTextEditorDemo,
+  },
+  {
+    id: "kpi-card",
+    group: "Components",
+    title: "Rowan KPI Card",
+    summary:
+      "Experimental dashboard stat tile with a label, value, signed delta, and optional chart slot.",
+    tags: ["data display", "kpi", "dashboard"],
+    keywords: ["kpi", "stat", "metric", "delta", "experimental"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="kpi-card-overview">
+        <h2>Stat tile</h2>
+        <p>Use a KPI card for a single labeled metric. value and delta are property-only. Tone never replaces the label. Delta text includes a sign so change is not color-only.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-kpi-card" label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="kpi-card-contract">
+        <h2>Experimental contract</h2>
+        <p>This host is experimental. Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order.</p>
+        ${codeBlock(KPI_CARD_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-kpi-card");
+      if (!card) return;
+      card.value = 19;
+      card.delta = -4;
+    },
   },
   {
     id: "trend-chart",

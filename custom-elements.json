@@ -8144,6 +8144,14 @@
         },
         {
           "kind": "js",
+          "name": "RowanKpiCard",
+          "declaration": {
+            "name": "RowanKpiCard",
+            "module": "./kpi-card/kpi-card.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanLink",
           "declaration": {
             "name": "RowanLink",
@@ -8508,6 +8516,275 @@
           "declaration": {
             "name": "reflectStringAttribute",
             "module": "./lib/reflect.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/kpi-card/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanKpiCard",
+          "declaration": {
+            "name": "RowanKpiCard",
+            "module": "./kpi-card.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/kpi-card/kpi-card.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental dashboard stat tile. Value and delta stay property-only.",
+          "name": "RowanKpiCard",
+          "cssProperties": [
+            {
+              "name": "--rowan-kpi-card-bg"
+            },
+            {
+              "name": "--rowan-kpi-card-border"
+            },
+            {
+              "name": "--rowan-kpi-card-fg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "card"
+            },
+            {
+              "name": "icon"
+            },
+            {
+              "name": "body"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "delta"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "chart"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Optional leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "Description or extra copy",
+              "name": ""
+            },
+            {
+              "description": "Optional compact chart",
+              "name": "chart"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "deltaLabel"
+            },
+            {
+              "kind": "field",
+              "name": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "return": {
+                "type": {
+                  "text": "number | string | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | string | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | string | null"
+              },
+              "description": "Displayed metric. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "delta",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Signed change. Property-only. Null hides the delta."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              }
+            },
+            {
+              "name": "delta-label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-kpi-card",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanKpiCard",
+          "declaration": {
+            "name": "RowanKpiCard",
+            "module": "src/kpi-card/kpi-card.js"
           }
         }
       ]

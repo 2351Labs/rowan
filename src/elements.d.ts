@@ -32,6 +32,7 @@ import type { RowanFormField } from "../types/form-field/form-field.js";
 import type { RowanFormLayout } from "../types/form-layout/form-layout.js";
 import type { RowanFormWizard } from "../types/form-wizard/form-wizard.js";
 import type { RowanIconButton } from "../types/icon-button/icon-button.js";
+import type { RowanKpiCard } from "../types/kpi-card/kpi-card.js";
 import type { RowanLink } from "../types/link/link.js";
 import type { RowanListbox } from "../types/listbox/listbox.js";
 import type { RowanMenu } from "../types/menu/menu.js";
@@ -112,6 +113,7 @@ declare global {
     "rowan-form-layout": RowanFormLayout;
     "rowan-form-wizard": RowanFormWizard;
     "rowan-icon-button": RowanIconButton;
+    "rowan-kpi-card": RowanKpiCard;
     "rowan-link": RowanLink;
     "rowan-listbox": RowanListbox;
     "rowan-menu": RowanMenu;

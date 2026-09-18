@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 4 done. Next: Sprint 5 (KPI card, experimental). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 5 done. Next: Sprint 6 (compact charts, experimental). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -132,7 +132,7 @@ Bar, donut, sparkline, density attribute, stacked series, axes as a public confi
 
 ## Sprint 5 — KPI card (experimental)
 
-**Status:** pending
+**Status:** done
 
 Admin dashboards need a stat tile, not a restyled `rowan-card`. New host, experimental.
 
@@ -150,10 +150,10 @@ Compose tokens with card/status. Do not fork a dashboard layout system.
 
 ### Done when
 
-- [ ] Host, CSS parts, tokens, CEM, generated React wrapper, Storybook, tests.
-- [ ] README **API stability** lists `rowan-kpi-card` as Experimental.
-- [ ] Tests: tone without text still has a label; delta `0` / `null` / negative; slotted chart does not break the label/value reading order.
-- [ ] Empty/loading: `value` null shows an empty or skeleton treatment that stays accessible.
+- [x] Host, CSS parts, tokens, CEM, generated React wrapper, Storybook, tests.
+- [x] README **API stability** lists `rowan-kpi-card` as Experimental.
+- [x] Tests: tone without text still has a label; delta `0` / `null` / negative; slotted chart does not break the label/value reading order.
+- [x] Empty/loading: `value` null shows an empty or skeleton treatment that stays accessible.
 
 ### Out of scope
 
