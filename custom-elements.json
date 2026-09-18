@@ -2945,6 +2945,18 @@
               "name": "entry"
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "pointControlFor",
+          "parameters": [
+            {
+              "name": "container"
+            },
+            {
+              "name": "key"
+            }
+          ]
         }
       ],
       "exports": [
@@ -2977,6 +2989,14 @@
           "name": "emitPointActivate",
           "declaration": {
             "name": "emitPointActivate",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pointControlFor",
+          "declaration": {
+            "name": "pointControlFor",
             "module": "src/chart/dom.js"
           }
         }
@@ -14680,6 +14700,24 @@
       "declarations": [
         {
           "kind": "function",
+          "name": "normalizeHref",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Allows http(s), mailto, in-app paths, and fragments. Drops javascript, data,\nand other schemes.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
           "name": "normalizeRuns",
           "parameters": [
             {
@@ -14857,6 +14895,14 @@
       "exports": [
         {
           "kind": "js",
+          "name": "normalizeHref",
+          "declaration": {
+            "name": "normalizeHref",
+            "module": "src/rich-text-editor/document.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "normalizeRuns",
           "declaration": {
             "name": "normalizeRuns",
@@ -14958,7 +15004,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Constrained form-associated authoring control with a property-only document value.\n\nThe rich mode supports paragraphs, ordered and unordered lists, plus bold, italic,\nand underline marks. Values are normalized to a safe document object; HTML is never\naccepted as an API value. Rich clipboard data is inserted as plain text.",
+          "description": "Constrained form-associated authoring control with a property-only document value.\n\nThe rich mode supports paragraphs, headings (levels 1–3), ordered and unordered\nlists, plus bold, italic, underline, and allowlisted links. Values are normalized\nto a safe document object; HTML is never accepted as an API value. Images are not\ndocument nodes. Rich clipboard data is inserted as plain text.",
           "name": "RowanRichTextEditor",
           "cssProperties": [
             {
@@ -18001,6 +18047,12 @@
             },
             {
               "name": "legend"
+            },
+            {
+              "name": "detail"
+            },
+            {
+              "name": "summary"
             },
             {
               "name": "table"

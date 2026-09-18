@@ -9,6 +9,7 @@ import {
   documentToPlainText,
   isDocumentEmpty,
   normalizeDocument,
+  normalizeHref,
   parseStoredDocument,
   renderDocument,
   serializeDocument,
@@ -16,13 +17,13 @@ import {
 
 let richTextEditorId = 0;
 
-const COMMANDS = [
-  { command: "bold", label: "Bold", glyph: "B" },
-  { command: "italic", label: "Italic", glyph: "I" },
-  { command: "underline", label: "Underline", glyph: "U" },
-  { command: "insertUnorderedList", label: "Bulleted list", glyph: "•" },
-  { command: "insertOrderedList", label: "Numbered list", glyph: "1." },
-];
+const MARK_COMMANDS = new Set([
+  "bold",
+  "italic",
+  "underline",
+  "insertUnorderedList",
+  "insertOrderedList",
+]);
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -35,9 +36,10 @@ function normalizeMode(value) {
 /**
  * Constrained form-associated authoring control with a property-only document value.
  *
- * The rich mode supports paragraphs, ordered and unordered lists, plus bold, italic,
- * and underline marks. Values are normalized to a safe document object; HTML is never
- * accepted as an API value. Rich clipboard data is inserted as plain text.
+ * The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered
+ * lists, plus bold, italic, underline, and allowlisted links. Values are normalized
+ * to a safe document object; HTML is never accepted as an API value. Images are not
+ * document nodes. Rich clipboard data is inserted as plain text.
  *
  * @tag rowan-rich-text-editor
  * @attr {string} name
@@ -110,6 +112,8 @@ export class RowanRichTextEditor extends BaseElement {
   #renderedValue = "";
   #renderedMode = "";
   #savedRange = null;
+  #linkPopover = null;
+  #linkHrefInput = null;
   #labelId = "";
   #descriptionId = "";
 
@@ -298,6 +302,19 @@ export class RowanRichTextEditor extends BaseElement {
             <span class="toolbar-divider" aria-hidden="true"></span>
             <button class="format-button list" part="format-button" type="button" data-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list"><span aria-hidden="true">•</span></button>
             <button class="format-button list" part="format-button" type="button" data-command="insertOrderedList" aria-label="Numbered list" title="Numbered list"><span aria-hidden="true">1.</span></button>
+            <span class="toolbar-divider" aria-hidden="true"></span>
+            <button class="format-button heading" part="format-button" type="button" data-command="heading" aria-label="Heading" title="Heading"><span aria-hidden="true">H</span></button>
+            <button class="format-button link" part="format-button" type="button" data-command="link" aria-haspopup="dialog" aria-expanded="false" aria-label="Link" title="Link"><span aria-hidden="true">↗</span></button>
+            <div class="link-popover" popover>
+              <label class="link-label">
+                URL
+                <input class="link-href" type="text" autocomplete="off" spellcheck="false" placeholder="https:// or /path" />
+              </label>
+              <div class="link-actions">
+                <button class="link-apply" type="button" data-link-action="apply">Apply</button>
+                <button class="link-remove" type="button" data-link-action="remove">Remove</button>
+              </div>
+            </div>
           </div>
           <div class="editor-shell">
             <slot class="editor-slot" name="editor-surface"></slot>
@@ -314,14 +331,24 @@ export class RowanRichTextEditor extends BaseElement {
       this.#descriptionFallback = this.renderRoot.querySelector(".description-fallback");
       this.#descriptionSlot = this.renderRoot.querySelector('slot[name="description"]');
       this.#toolbar = this.renderRoot.querySelector(".toolbar");
+      this.#linkPopover = this.renderRoot.querySelector(".link-popover");
+      this.#linkHrefInput = this.renderRoot.querySelector(".link-href");
       this.#editorSlot = this.renderRoot.querySelector(".editor-slot");
       this.#editorPlaceholder = this.renderRoot.querySelector(".editor-placeholder");
       this.#textarea = this.renderRoot.querySelector(".plain-text");
 
       this.listen(this.#toolbar, "pointerdown", (event) => {
-        if (this.#buttonFromEvent(event)) event.preventDefault();
+        if (this.#buttonFromEvent(event) || event.target.closest?.("[data-link-action]")) {
+          event.preventDefault();
+        }
       });
       this.listen(this.#toolbar, "click", (event) => this.#handleToolbarClick(event));
+      this.listen(this.#linkPopover, "toggle", (event) => this.#syncLinkPopoverState(event));
+      this.listen(this.#linkHrefInput, "keydown", (event) => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        this.#handleLinkAction("apply");
+      });
       this.listen(this.#textarea, "input", () => this.#commitPlainTextInput());
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
       this.listen(this.#descriptionSlot, "slotchange", () => this.requestRender());
@@ -421,6 +448,9 @@ export class RowanRichTextEditor extends BaseElement {
       this.listen(editor, "input", () => this.#commitEditorInput()),
       this.listen(editor, "paste", (event) => this.#handlePlainTextPaste(event)),
       this.listen(editor, "drop", (event) => this.#handlePlainTextDrop(event)),
+      this.listen(editor, "click", (event) => {
+        if (event.target.closest?.("a")) event.preventDefault();
+      }),
       this.listen(editor, "focusin", () => this.#captureSelection()),
       this.listen(editor, "keyup", () => this.#captureSelection()),
       this.listen(editor, "mouseup", () => this.#captureSelection()),
@@ -457,7 +487,7 @@ export class RowanRichTextEditor extends BaseElement {
     this.#editorPlaceholder.hidden =
       !richMode || !this.placeholder || !isDocumentEmpty(this.#value);
 
-    for (const button of this.#toolbar.querySelectorAll("button[data-command]")) {
+    for (const button of this.#toolbar.querySelectorAll("button")) {
       button.disabled = this.disabled || !supportsFormatting;
     }
 
@@ -472,9 +502,21 @@ export class RowanRichTextEditor extends BaseElement {
       const command = button.dataset.command;
       let active = false;
 
-      if (canReadState && command && typeof document.queryCommandState === "function") {
+      if (canReadState && command) {
         try {
-          active = document.queryCommandState(command);
+          if (command === "heading") {
+            const block =
+              typeof document.queryCommandValue === "function"
+                ? document.queryCommandValue("formatBlock")
+                : "";
+            active = /^h[1-3]$/i.test(block);
+          } else if (command === "link") {
+            active =
+              typeof document.queryCommandState === "function" &&
+              document.queryCommandState("createLink");
+          } else if (typeof document.queryCommandState === "function") {
+            active = document.queryCommandState(command);
+          }
         } catch (_error) {
           active = false;
         }
@@ -508,21 +550,104 @@ export class RowanRichTextEditor extends BaseElement {
   }
 
   #handleToolbarClick(event) {
+    const actionButton = event
+      .composedPath()
+      .find((node) => node instanceof HTMLButtonElement && node.dataset.linkAction);
+    if (actionButton) {
+      if (actionButton.disabled || this.mode !== "rich") return;
+      this.#handleLinkAction(actionButton.dataset.linkAction);
+      return;
+    }
+
     const button = this.#buttonFromEvent(event);
     if (!button || button.disabled || this.mode !== "rich") return;
 
     const command = button.dataset.command;
-    if (!COMMANDS.some((item) => item.command === command)) return;
-
     this.#captureSelection();
     this.#editor.focus({ preventScroll: true });
     this.#restoreSelection();
 
-    if (typeof document.execCommand !== "function") return;
+    if (command === "heading") {
+      this.#toggleHeading();
+      return;
+    }
+
+    if (command === "link") {
+      this.#toggleLinkPopover();
+      return;
+    }
+
+    if (!MARK_COMMANDS.has(command) || typeof document.execCommand !== "function") return;
     document.execCommand(command, false);
     this.#captureSelection();
     this.#commitUserDocument(documentFromEditingSurface(this.#editor));
     this.#syncToolbarState();
+  }
+
+  #toggleHeading() {
+    if (typeof document.execCommand !== "function") return;
+
+    const block =
+      typeof document.queryCommandValue === "function"
+        ? document.queryCommandValue("formatBlock")
+        : "";
+    document.execCommand("formatBlock", false, /^h[1-3]$/i.test(block) ? "div" : "h2");
+    this.#captureSelection();
+    this.#commitUserDocument(documentFromEditingSurface(this.#editor));
+    this.#syncToolbarState();
+  }
+
+  #toggleLinkPopover() {
+    if (!this.#linkPopover || typeof this.#linkPopover.showPopover !== "function") return;
+
+    if (this.#linkPopover.matches(":popover-open")) {
+      this.#linkPopover.hidePopover();
+      return;
+    }
+
+    this.#linkHrefInput.value = this.#selectionHref();
+    this.#linkPopover.showPopover();
+    this.#linkHrefInput.focus({ preventScroll: true });
+  }
+
+  #syncLinkPopoverState(event) {
+    const expanded = event.newState === "open";
+    this.#toolbar
+      ?.querySelector('button[data-command="link"]')
+      ?.setAttribute("aria-expanded", expanded ? "true" : "false");
+    if (expanded) this.#linkHrefInput.value = this.#selectionHref();
+  }
+
+  #selectionHref() {
+    const range = this.#savedRange;
+    if (!range) return "";
+
+    const node = range.commonAncestorContainer;
+    const element = node instanceof Element ? node : node.parentElement;
+    const anchor = element?.closest?.("a");
+    if (!anchor || !this.#editor.contains(anchor)) return "";
+    return normalizeHref(anchor.getAttribute("href"));
+  }
+
+  #handleLinkAction(action) {
+    this.#editor.focus({ preventScroll: true });
+    this.#restoreSelection();
+    if (typeof document.execCommand !== "function") return;
+
+    if (action === "remove") {
+      document.execCommand("unlink", false);
+    } else if (action === "apply") {
+      const href = normalizeHref(this.#linkHrefInput.value);
+      if (!href) return;
+      document.execCommand("createLink", false, href);
+    } else {
+      return;
+    }
+
+    this.#captureSelection();
+    this.#commitUserDocument(documentFromEditingSurface(this.#editor));
+    this.#syncToolbarState();
+    if (typeof this.#linkPopover.hidePopover === "function") this.#linkPopover.hidePopover();
   }
 
   #handlePlainTextPaste(event) {
@@ -567,6 +692,7 @@ export class RowanRichTextEditor extends BaseElement {
 
   #captureSelection() {
     if (!this.#editor || this.mode !== "rich") return;
+    if (this.#linkPopover?.matches(":popover-open")) return;
 
     const selection = this.#selection();
     if (!selection || selection.rangeCount === 0) return;

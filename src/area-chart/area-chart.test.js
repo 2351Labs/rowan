@@ -54,4 +54,16 @@ describe("rowan-area-chart", () => {
     expect(activations[0].index).to.equal(0);
     expect(activations[0].value).to.equal(4);
   });
+
+  it("does not supply a competing label when the author provides aria-labelledby", async () => {
+    const chart = document.createElement("rowan-area-chart");
+    chart.label = "Volume";
+    chart.setAttribute("aria-labelledby", "volume-heading");
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.getAttribute("aria-labelledby")).to.equal("volume-heading");
+    expect(chart.internals.ariaLabel).to.equal(null);
+  });
 });

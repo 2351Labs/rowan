@@ -456,9 +456,13 @@ const RICH_TEXT_EDITOR_SNIPPET = `<rowan-rich-text-editor
   const editor = document.querySelector("#incident-guidance");
   editor.value = {
     blocks: [
+      { type: "heading", level: 2, children: [{ text: "Escalation" }] },
       {
         type: "paragraph",
-        children: [{ text: "Escalate to the incident lead.", bold: true }],
+        children: [
+          { text: "Escalate to the incident lead.", bold: true },
+          { text: " Open the record", href: "/incidents/12" },
+        ],
       },
       {
         type: "unordered-list",
@@ -1740,7 +1744,7 @@ document.documentElement.dataset.theme = "lagoon";
     content: () => `
       <section class="doc-section" data-doc-section id="rich-text-editor-control">
         <h2>Constrained operational guidance</h2>
-        <p>Rich mode supports paragraphs, ordered and unordered lists, and bold, italic, or underline marks. That block and mark set is closed. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
+        <p>Rich mode supports paragraphs, headings (levels 1 to 3), ordered and unordered lists, bold, italic, underline, and allowlisted links. Images are not document nodes. The value is a property-only document object, while browser selection and undo remain native to the editable surface.</p>
         <div class="demo-row">
           <rowan-rich-text-editor
             id="docs-rich-text-editor"

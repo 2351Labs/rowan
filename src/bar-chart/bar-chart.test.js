@@ -47,4 +47,20 @@ describe("rowan-bar-chart", () => {
     expect(activations[0].index).to.equal(0);
     expect(activations[0].value).to.equal(4);
   });
+
+  it("moves keyboard focus when a series id would break a CSS selector", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
+    });
+    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
+    buttons[0].focus();
+    buttons[0].dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+  });
 });

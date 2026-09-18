@@ -64,3 +64,13 @@ export function emitPointActivate(host, emit, entry) {
     formattedValue: entry.formattedValue,
   });
 }
+
+export function pointControlFor(container, key) {
+  if (!container) return null;
+
+  return (
+    [...container.querySelectorAll("button[data-point-key]")].find(
+      (button) => button.dataset.pointKey === key,
+    ) ?? null
+  );
+}
