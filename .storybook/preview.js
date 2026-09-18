@@ -1,4 +1,5 @@
 import { setCustomElementsManifest } from "@storybook/web-components";
+import { rowanManagerTheme } from "./rowan-theme.js";
 import customElements from "../custom-elements.json";
 import iconCustomElements from "../packages/icons/custom-elements.json";
 import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
@@ -436,6 +437,7 @@ export const parameters = {
     handles: ROWAN_EVENT_HANDLES,
   },
   docs: {
+    theme: rowanManagerTheme,
     source: {
       type: "dynamic",
       language: "html",
