@@ -1082,7 +1082,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, rich-text, filter-builder, and trend-chart are Stable. KPI, sparkline, bar, and donut charts are experimental.</p>
+        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. KPI, sparkline, and donut charts are Stable. Bar chart is experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization.
@@ -1770,10 +1770,9 @@ document.documentElement.dataset.theme = "lagoon";
     id: "kpi-card",
     group: "Components",
     title: "Rowan KPI Card",
-    summary:
-      "Experimental dashboard stat tile with a label, value, signed delta, and optional chart slot.",
+    summary: "Dashboard stat tile with a label, value, signed delta, and optional chart slot.",
     tags: ["data display", "kpi", "dashboard"],
-    keywords: ["kpi", "stat", "metric", "delta", "experimental"],
+    keywords: ["kpi", "stat", "metric", "delta"],
     content: () => `
       <section class="doc-section" data-doc-section id="kpi-card-overview">
         <h2>Stat tile</h2>
@@ -1784,8 +1783,8 @@ document.documentElement.dataset.theme = "lagoon";
       </section>
 
       <section class="doc-section" data-doc-section id="kpi-card-contract">
-        <h2>Experimental contract</h2>
-        <p>This host is experimental. Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order.</p>
+        <h2>Contract</h2>
+        <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. value and delta stay property-only.</p>
         ${codeBlock(KPI_CARD_SNIPPET, "html")}
       </section>
     `,
@@ -1800,10 +1799,9 @@ document.documentElement.dataset.theme = "lagoon";
     id: "sparkline",
     group: "Components",
     title: "Rowan Sparkline",
-    summary:
-      "Experimental compact one-series line for KPI tiles, with a visually hidden data table.",
+    summary: "Compact one-series line for KPI tiles, with a visually hidden data table.",
     tags: ["data display", "sparkline", "kpi"],
-    keywords: ["sparkline", "compact chart", "kpi", "experimental"],
+    keywords: ["sparkline", "compact chart", "kpi"],
     content: () => `
       <section class="doc-section" data-doc-section id="sparkline-overview">
         <h2>Compact trend</h2>
@@ -1816,7 +1814,7 @@ document.documentElement.dataset.theme = "lagoon";
       </section>
 
       <section class="doc-section" data-doc-section id="sparkline-contract">
-        <h2>Experimental contract</h2>
+        <h2>Contract</h2>
         <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
         ${codeBlock(SPARKLINE_SNIPPET, "html")}
       </section>
@@ -1861,9 +1859,9 @@ document.documentElement.dataset.theme = "lagoon";
     id: "donut-chart",
     group: "Components",
     title: "Rowan Donut Chart",
-    summary: "Experimental parts-of-a-whole chart. Negative values are no-data.",
+    summary: "Parts-of-a-whole chart. Negative values are no-data.",
     tags: ["data display", "donut", "chart"],
-    keywords: ["donut chart", "pie", "experimental"],
+    keywords: ["donut chart", "pie"],
     content: () => `
       <section class="doc-section" data-doc-section id="donut-chart-overview">
         <h2>Parts of a whole</h2>

@@ -37,8 +37,9 @@ property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
 the top layer. Table virtualization, `rowan-rich-text-editor`,
-`rowan-filter-builder`, and `rowan-trend-chart` are Stable. KPI, sparkline, bar,
-and donut charts are experimental. This is not `1.0`.
+`rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
+and `rowan-donut-chart` are Stable. `rowan-bar-chart` is experimental. This is
+not `1.0`.
 
 ## Install
 
@@ -304,10 +305,10 @@ on them.
 | `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value.               |
 | `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                           |
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts. |
-| `rowan-kpi-card`                | Experimental | Label, value, tone, and delta may still change. Chart slot is for `rowan-sparkline`.                                               |
-| `rowan-sparkline`               | Experimental | Compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`.                                                       |
+| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline`.                 |
+| `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                |
+| `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                         |
 | `rowan-bar-chart`               | Experimental | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                        |
-| `rowan-donut-chart`             | Experimental | First series only. Negative values are no-data and omitted from the total.                                                         |
 
 ## Rowan Carousel
 
@@ -529,7 +530,7 @@ This component's security boundary ends at its normalized document value: applic
 
 ## Rowan KPI Card
 
-`rowan-kpi-card` is an **experimental** dashboard stat tile. `label`, `tone`, and
+`rowan-kpi-card` is a frozen dashboard stat tile. `label`, `tone`, and
 `delta-label` are attributes. `value` and `delta` are property-only. Tone never
 replaces the label. Delta text includes a sign so change is not color-only. A
 null `value` shows `No data`; `loading` replaces the value with a skeleton.
@@ -557,13 +558,13 @@ Interactive bars emit `rowan-point-activate` with the same detail shape as
 
 ## Rowan Donut Chart
 
-`rowan-donut-chart` is an **experimental** parts-of-a-whole chart. It draws the
+`rowan-donut-chart` is a frozen parts-of-a-whole chart. It draws the
 **first** series. Negative values are treated as no-data: they are omitted from
 slices and from the hole total, and appear as `No data` in the table.
 
 ## Rowan Sparkline
 
-`rowan-sparkline` is an **experimental** compact one-series line for KPI tiles.
+`rowan-sparkline` is a frozen compact one-series line for KPI tiles.
 It is a separate host, not a density of `rowan-trend-chart`. `values` is
 property-only (`number | null`; null is a gap). There is no legend, no
 interactive points, and no animation. A visually hidden table exposes the same
