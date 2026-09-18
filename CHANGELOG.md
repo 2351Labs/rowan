@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.7.0 - 2026-09-18
+
 ### Removed
 
 - Public `useRowanElement`. Use generated wrappers for objects, arrays, and `onRowan*` events. The helper remains internal to those wrappers.

@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/icons",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Optional, tree-shakable SVG icons for Rowan.",
   "license": "MIT AND ISC",
   "author": "2351Labs",
@@ -81,7 +81,7 @@
     "./src/elements/*.js"
   ],
   "peerDependencies": {
-    "@rowan-ui/core": "^0.6.0",
+    "@rowan-ui/core": "^0.7.0",
     "react": ">=18"
   },
   "peerDependenciesMeta": {
