@@ -167,6 +167,10 @@
   width: 100%;
 }
 
+.pagination[hidden] {
+  display: none;
+}
+
 .page-button {
   background: var(--rowan-color-bg);
   border: var(--rowan-border-width) solid var(--rowan-color-border);

@@ -10,6 +10,12 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Shipped `lagoon` and `ember` themes (`@rowan-ui/core/tokens/lagoon`, `@rowan-ui/core/tokens/ember`). Set `data-theme` to swap.
 
+### Fixed
+
+- `rowan-row-details-panel` fills the viewport so the drawer is not ~0px tall inside a `fit-content` dialog.
+- Table pagination no longer paints when `page` is unset (`hidden` wins over `display: inline-flex`).
+- Compact `rowan-app-layout` closed navigation does not peek over content.
+
 ## 0.6.0 - 2026-09-17
 
 Catalog freeze of the former experimental four. Dashboard charts stay experimental.

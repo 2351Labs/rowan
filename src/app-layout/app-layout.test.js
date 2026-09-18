@@ -86,9 +86,14 @@ describe("rowan-app-layout", () => {
       layout.addEventListener("rowan-change", (event) => events.push(event.detail));
 
       expect(toggle.hidden).to.equal(false);
+      expect(layout.shadowRoot.querySelector(".layout").classList.contains("is-compact")).to.equal(
+        true,
+      );
       expect(navigation.inert).to.equal(true);
       expect(navigation.getAttribute("aria-hidden")).to.equal("true");
       expect(backdrop.hidden).to.equal(true);
+      expect(getComputedStyle(navigation).visibility).to.equal("hidden");
+      expect(getComputedStyle(navigation).pointerEvents).to.equal("none");
 
       toggle.click();
       await nextMicrotask();

@@ -1199,6 +1199,22 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("does not paint pagination when page is unset", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const pagination = table.shadowRoot.querySelector(".pagination");
+    expect(pagination.hidden).to.equal(true);
+    expect(getComputedStyle(pagination).display).to.equal("none");
+
+    table.remove();
+  });
+
   it("numbers paginated rows against the full row set", async () => {
     const table = document.createElement("rowan-table");
     table.config = { ...createStepFiveConfig(), page: { index: 1, size: 2 } };

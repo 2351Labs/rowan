@@ -151,6 +151,46 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 - [x] Tag workflow publishes core, then icons. `v0.5.0` is tagged.
 - [x] npm org `rowan-ui` and repo secret `NPM_TOKEN`.
 
+## Admin-shell follow-through
+
+**Goal.** Fix the CSS bugs that make shipped widgets look broken in a real admin app, then the APIs that app had to invent.
+
+**Status.** Sprint 1 done. Next: Sprint 2 (P1 details panel and table cells).
+
+### Sprint 1 — P0 layout bugs
+
+**Status:** done
+
+- [x] `rowan-row-details-panel`: native `<dialog>` fills the viewport so the absolute drawer is not ~0px tall.
+- [x] Table `.pagination[hidden]` is `display: none` (author `display: inline-flex` must not beat `hidden`).
+- [x] Compact `rowan-app-layout` closed nav does not peek over content (`visibility`, `pointer-events`, no leftover shadow).
+
+### Sprint 2 — P1 details panel and table cells
+
+**Status:** pending
+
+- [ ] Details panel queue: walk a multi-select (`rowIds` / prev-next or a documented pager slot).
+- [ ] Details panel `size` (`sm | md | lg`) mapping to `--rowan-row-details-panel-width`.
+- [ ] Document `panel.show(row)` as the open API; stop React `open={false}` from clobbering an open panel.
+- [ ] Table `type: "sparkline"` (`value` is `number[]`, optional `tone`).
+- [ ] React wrappers keep chart `labels` (do not drop it because of FACE `BaseElement.labels`).
+
+### Sprint 3 — P2 composition and packaging
+
+**Status:** pending
+
+- [ ] One table chrome: toolbar = filters/density; bulk bar = selection count. Docs, no duplicate “N selected.”
+- [ ] `applyFilters(rows, filters)` from `@rowan-ui/core/filter-builder`.
+- [ ] Icons peer on published core `^0.6.0` (consume `@rowan-ui/icons@0.6.0`).
+- [ ] `caption-visually-hidden` (or equivalent) so a caption can name the table without duplicating a page `h1`.
+
+### Sprint 4 — P3 docs
+
+**Status:** pending
+
+- [ ] Storybook recipe: table + bulk actions + `rowan-dialog` alert (Flag / Assign).
+- [ ] Do not promote KPI / sparkline / donut until Sprint 2 sparkline cell type and wrapper `labels` land.
+
 ## Later / not this track
 
 - Vue/Svelte wrappers.

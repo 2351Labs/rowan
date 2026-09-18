@@ -29,6 +29,25 @@ function createTable() {
 }
 
 describe("rowan-row-details-panel", () => {
+  it("sizes the modal overlay and drawer to the viewport", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    document.body.append(panel);
+    await settle();
+
+    panel.open = true;
+    await settle();
+
+    const overlay = panel.shadowRoot.querySelector("dialog");
+    const drawer = panel.shadowRoot.querySelector(".panel");
+    const overlayBox = overlay.getBoundingClientRect();
+    const drawerBox = drawer.getBoundingClientRect();
+
+    expect(overlayBox.height).to.be.at.least(Math.min(window.innerHeight, 80) * 0.75);
+    expect(drawerBox.height).to.be.at.least(Math.min(window.innerHeight, 80) * 0.75);
+
+    panel.remove();
+  });
+
   it("makes background content inert while open", async () => {
     const outside = document.createElement("button");
     document.body.append(outside);
