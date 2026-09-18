@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- Storybook manager and Docs chrome use the full dark theme (not only `base: "dark"`).
+
 ## 0.6.1 - 2026-09-18
 
 ### Added
