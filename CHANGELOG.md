@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Shipped `lagoon` and `ember` themes (`@rowan-ui/core/tokens/lagoon`, `@rowan-ui/core/tokens/ember`). Set `data-theme` to swap.
+
 ## 0.6.0 - 2026-09-17
 
 Catalog freeze of the former experimental four. Dashboard charts stay experimental.

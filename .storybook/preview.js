@@ -5,6 +5,8 @@ import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
 import "../src/tokens/tokens.css";
 import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
+import "../src/tokens/themes/lagoon.css";
+import "../src/tokens/themes/ember.css";
 
 setCustomElementsManifest({
   ...customElements,
@@ -363,7 +365,12 @@ export const globalTypes = {
     defaultValue: "light",
     toolbar: {
       icon: "paintbrush",
-      items: ["light", "dark"],
+      items: [
+        { value: "light", title: "Light" },
+        { value: "dark", title: "Dark" },
+        { value: "lagoon", title: "Lagoon" },
+        { value: "ember", title: "Ember" },
+      ],
       dynamicTitle: true,
     },
   },

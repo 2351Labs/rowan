@@ -396,6 +396,14 @@
       "types": "./src/tokens/themes/dark.css.d.ts",
       "default": "./src/tokens/themes/dark.css"
     },
+    "./tokens/lagoon": {
+      "types": "./src/tokens/themes/lagoon.css.d.ts",
+      "default": "./src/tokens/themes/lagoon.css"
+    },
+    "./tokens/ember": {
+      "types": "./src/tokens/themes/ember.css.d.ts",
+      "default": "./src/tokens/themes/ember.css"
+    },
     "./lib/define": {
       "types": "./src/lib/define.d.ts",
       "default": "./src/lib/define.js"

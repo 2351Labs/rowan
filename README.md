@@ -193,26 +193,20 @@ fill; both default to `--rowan-color-bg` when a theme does not set them.
 Apply a theme at the same element that declares the tokens, normally `:root`. A custom
 property that references another custom property resolves where it is declared, so a
 theme scoped to a nested wrapper must also re-declare the component tokens it changes.
-The shipped `light.css` and `dark.css` do this for you.
+The shipped `light.css`, `dark.css`, `lagoon.css`, and `ember.css` do this for you.
+Add another theme by copying one of those files, changing the semantic colors, and
+importing it. Set `document.documentElement.dataset.theme` to the matching name.
 
 Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and as CSS files you can import globally.
 
-```css
-:root {
-  --rowan-color-bg: #f8f7f2;
-  --rowan-color-fg: #1f2421;
-  --rowan-color-accent: #1d432f;
-  --rowan-color-surface: #ffffff;
-  --rowan-button-bg: var(--rowan-color-accent);
-}
+```js
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";
 
-:root[data-theme="dark"] {
-  --rowan-color-bg: #111714;
-  --rowan-color-fg: #ecf0e9;
-  --rowan-color-accent: #7fc095;
-  --rowan-color-surface: #1a221d;
-  --rowan-color-accent-contrast: #10261c;
-}
+document.documentElement.dataset.theme = "lagoon";
 ```
 
 ## Locale-Aware Formatting

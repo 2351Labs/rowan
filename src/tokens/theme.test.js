@@ -108,42 +108,54 @@ describe("Rowan themes", () => {
     expect(componentTokenCssFor([])).to.equal("");
   });
 
-  it("provides AA-contrast surfaces to components in a dark theme wrapper", async () => {
+  it("provides AA-contrast surfaces in shipped theme wrappers", async () => {
     const themeStylesheets = await Promise.all(
-      ["./tokens.css", "./themes/light.css", "./themes/dark.css"].map(loadStylesheet),
+      [
+        "./tokens.css",
+        "./themes/light.css",
+        "./themes/dark.css",
+        "./themes/lagoon.css",
+        "./themes/ember.css",
+      ].map(loadStylesheet),
     );
 
     try {
-      const theme = document.createElement("div");
-      theme.setAttribute("data-theme", "dark");
+      for (const themeName of ["dark", "lagoon", "ember"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
 
-      const chip = document.createElement("rowan-chip");
-      chip.textContent = "Dark chip";
-      const card = document.createElement("rowan-card");
-      card.textContent = "Dark card";
-      const datePicker = document.createElement("rowan-date-picker");
-      datePicker.label = "Review date";
-      const calendar = document.createElement("rowan-calendar");
-      const dialog = document.createElement("rowan-dialog");
-      dialog.textContent = "Dark dialog";
-      const stepper = document.createElement("rowan-stepper");
-      stepper.steps = ["One", "Two"];
+        const chip = document.createElement("rowan-chip");
+        chip.textContent = `${themeName} chip`;
+        const card = document.createElement("rowan-card");
+        card.textContent = `${themeName} card`;
+        const datePicker = document.createElement("rowan-date-picker");
+        datePicker.label = "Review date";
+        const calendar = document.createElement("rowan-calendar");
+        const dialog = document.createElement("rowan-dialog");
+        dialog.textContent = `${themeName} dialog`;
+        const stepper = document.createElement("rowan-stepper");
+        stepper.steps = ["One", "Two"];
 
-      theme.append(chip, card, datePicker, calendar, dialog, stepper);
-      document.body.append(theme);
-      await nextTask();
-      await Promise.all([chip, card, datePicker, calendar, dialog, stepper].map(waitForStyles));
+        theme.append(chip, card, datePicker, calendar, dialog, stepper);
+        document.body.append(theme);
+        await nextTask();
+        await Promise.all([chip, card, datePicker, calendar, dialog, stepper].map(waitForStyles));
 
-      for (const [element, selector] of [
-        [chip, ".chip"],
-        [card, ".card"],
-        [datePicker, ".input"],
-        [calendar, ".calendar"],
-        [dialog, ".panel"],
-        [stepper, ".step.is-current .step-button"],
-      ]) {
-        const styles = getComputedStyle(element.shadowRoot.querySelector(selector));
-        expect(contrastRatio(styles.color, styles.backgroundColor)).to.be.at.least(4.5);
+        for (const [element, selector] of [
+          [chip, ".chip"],
+          [card, ".card"],
+          [datePicker, ".input"],
+          [calendar, ".calendar"],
+          [dialog, ".panel"],
+          [stepper, ".step.is-current .step-button"],
+        ]) {
+          const styles = getComputedStyle(element.shadowRoot.querySelector(selector));
+          expect(contrastRatio(styles.color, styles.backgroundColor), themeName).to.be.at.least(
+            4.5,
+          );
+        }
+
+        theme.remove();
       }
     } finally {
       themeStylesheets.forEach((stylesheet) => stylesheet.remove());
@@ -152,11 +164,17 @@ describe("Rowan themes", () => {
 
   it("keeps the switch thumb distinguishable from its track in both themes", async () => {
     const themeStylesheets = await Promise.all(
-      ["./tokens.css", "./themes/light.css", "./themes/dark.css"].map(loadStylesheet),
+      [
+        "./tokens.css",
+        "./themes/light.css",
+        "./themes/dark.css",
+        "./themes/lagoon.css",
+        "./themes/ember.css",
+      ].map(loadStylesheet),
     );
 
     try {
-      for (const themeName of ["light", "dark"]) {
+      for (const themeName of ["light", "dark", "lagoon", "ember"]) {
         const theme = document.createElement("div");
         theme.setAttribute("data-theme", themeName);
 

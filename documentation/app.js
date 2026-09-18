@@ -1,6 +1,8 @@
 import "../src/tokens/tokens.css";
 import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
+import "../src/tokens/themes/lagoon.css";
+import "../src/tokens/themes/ember.css";
 
 import "../src/index.js";
 import "../packages/maplibre/src/map/map.js";
@@ -77,7 +79,9 @@ const QUICKSTART_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons
 import "@rowan-ui/core";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
-import "@rowan-ui/core/tokens/dark";`;
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";`;
 
 const ICON_INSTALL_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons`;
 
@@ -1134,7 +1138,7 @@ const DOC_PAGES = [
     summary:
       "Theme Rowan through semantic tokens while preserving stable component APIs. This docs site uses the same model.",
     tags: ["tokens", "light-dark", "css"],
-    keywords: ["theme", "tokens", "dark", "light", "css variables"],
+    keywords: ["theme", "tokens", "dark", "light", "lagoon", "ember", "css variables"],
     content: () => `
       <section class="doc-section" data-doc-section id="theme-layers">
         <h2>Token layers</h2>
@@ -1160,8 +1164,17 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="theme-overrides">
         <h2>Theme override example</h2>
-        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable.</p>
-        ${codeBlock(`:root {
+        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code> or <code>@rowan-ui/core/tokens/ember</code> and set <code>data-theme</code>.</p>
+        <div class="info-grid" id="docs-theme-gallery"></div>
+        ${codeBlock(`import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";
+
+document.documentElement.dataset.theme = "lagoon";
+
+:root {
   --rowan-color-bg: #f7f6ef;
   --rowan-color-fg: #1c2320;
   --rowan-color-accent: #214d36;
@@ -1177,6 +1190,7 @@ const DOC_PAGES = [
 }`)}
       </section>
     `,
+    afterRender: setupThemeGallery,
   },
   {
     id: "tokens",
@@ -3090,7 +3104,7 @@ const mainEl = document.querySelector("#docs-main");
 const navEl = document.querySelector("#docs-nav");
 const tocEl = document.querySelector("#docs-toc");
 const searchEl = document.querySelector("#docs-search");
-const themeToggleEl = document.querySelector("#theme-toggle");
+const themeSelectEl = document.querySelector("#theme-select");
 const quickstartTriggerEl = document.querySelector("#quickstart-trigger");
 const quickstartDialogEl = document.querySelector("#quickstart-dialog");
 const copyQuickstartEl = document.querySelector("#copy-quickstart");
@@ -4295,10 +4309,44 @@ function setupCommandPaletteDemo() {
   }
 }
 
+const SHIPPED_THEMES = ["light", "dark", "lagoon", "ember"];
+
+function setupThemeGallery(mainEl) {
+  const gallery = mainEl.querySelector("#docs-theme-gallery");
+  if (!gallery) return;
+
+  gallery.replaceChildren();
+  for (const theme of [
+    { id: "light", label: "Light" },
+    { id: "dark", label: "Dark" },
+    { id: "lagoon", label: "Lagoon" },
+    { id: "ember", label: "Ember" },
+  ]) {
+    const card = document.createElement("div");
+    card.dataset.theme = theme.id;
+    card.style.background = "var(--rowan-color-bg)";
+    card.style.border = "1px solid var(--rowan-color-border)";
+    card.style.borderRadius = "var(--rowan-radius-lg)";
+    card.style.color = "var(--rowan-color-fg)";
+    card.style.display = "grid";
+    card.style.gap = "var(--rowan-space-3)";
+    card.style.padding = "var(--rowan-space-4)";
+
+    const title = document.createElement("strong");
+    title.textContent = theme.label;
+    const chip = document.createElement("rowan-chip");
+    chip.textContent = "Operational";
+    const button = document.createElement("rowan-button");
+    button.textContent = "Save";
+    card.append(title, chip, button);
+    gallery.append(card);
+  }
+}
+
 function applyTheme(theme) {
-  const nextTheme = theme === "dark" ? "dark" : "light";
+  const nextTheme = SHIPPED_THEMES.includes(theme) ? theme : "light";
   document.documentElement.dataset.theme = nextTheme;
-  themeToggleEl.checked = nextTheme === "dark";
+  if (themeSelectEl) themeSelectEl.value = nextTheme;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
 }
 
@@ -4313,11 +4361,20 @@ function wireSearch() {
 }
 
 function wireThemeToggle() {
+  if (!themeSelectEl) return;
+
+  themeSelectEl.options = [
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+    { value: "lagoon", label: "Lagoon" },
+    { value: "ember", label: "Ember" },
+  ];
+
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light";
   applyTheme(savedTheme);
 
-  themeToggleEl.addEventListener("rowan-change", (event) => {
-    applyTheme(event.detail?.checked ? "dark" : "light");
+  themeSelectEl.addEventListener("rowan-change", (event) => {
+    applyTheme(event.detail?.value ?? themeSelectEl.value);
   });
 }
 

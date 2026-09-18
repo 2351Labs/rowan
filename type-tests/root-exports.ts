@@ -47,6 +47,8 @@ import {
 } from "@rowan-ui/core/lib/reflect";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/ember";
+import "@rowan-ui/core/tokens/lagoon";
 import "@rowan-ui/core/tokens/light";
 
 const rootButton: RowanButton = document.createElement("rowan-button");

@@ -1,5 +1,7 @@
 import baseTokenSource from "./tokens.css?raw";
 import darkThemeSource from "./themes/dark.css?raw";
+import emberThemeSource from "./themes/ember.css?raw";
+import lagoonThemeSource from "./themes/lagoon.css?raw";
 import lightThemeSource from "./themes/light.css?raw";
 
 const TOKEN_DECLARATION = /^\s*(--rowan-[\w-]+)\s*:\s*([^;]+);/;
@@ -78,6 +80,11 @@ function filterByOneOfPrefixes(tokens, prefixes) {
 const baseLayers = parseLayeredTokens(baseTokenSource);
 const lightThemeTokens = parseThemeTokens(lightThemeSource);
 const darkThemeTokens = parseThemeTokens(darkThemeSource);
+export const extraShippedThemes = {
+  lagoon: parseThemeTokens(lagoonThemeSource),
+  ember: parseThemeTokens(emberThemeSource),
+};
+export const shippedThemeIds = ["light", "dark", "lagoon", "ember"];
 
 const primitiveTokens = [...baseLayers.primitive];
 
@@ -115,4 +122,6 @@ export const tokenSourcePaths = [
   "src/tokens/tokens.css",
   "src/tokens/themes/light.css",
   "src/tokens/themes/dark.css",
+  "src/tokens/themes/lagoon.css",
+  "src/tokens/themes/ember.css",
 ];
