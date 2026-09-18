@@ -76,14 +76,41 @@ application-owned credentials are absent. Before publishing icons, verify that
 the generated icon count, `NOTICE`, and Lucide source-license attribution are
 present in the packed file set.
 
+## First 0.5.0 cut
+
+`@rowan-ui/core` and `@rowan-ui/icons` publish together. Icons peers on core
+`^0.5.0`, so core must hit the registry first. `@rowan-ui/maplibre` is **not**
+part of this cut.
+
+1. Create the npm org `rowan-ui` if it does not exist, and a granular access
+   token with publish permission for `@rowan-ui/core` and `@rowan-ui/icons`.
+2. Store that token as the repo secret `NPM_TOKEN`.
+3. Merge the release commit, then push an annotated tag:
+
+   ```sh
+   git tag -a v0.5.0 -m "v0.5.0"
+   git push origin v0.5.0
+   ```
+
+4. `.github/workflows/publish.yml` publishes core, then icons, with provenance.
+   To publish from a machine instead:
+
+   ```sh
+   npm publish --access public
+   npm publish --access public --workspace=@rowan-ui/icons
+   ```
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
 2. Create an annotated version tag after the release commit is merged.
-3. Publish the scoped public package:
+3. The publish workflow publishes `@rowan-ui/core`, then `@rowan-ui/icons`. Do not
+   use `npm publish --workspaces` (that would include MapLibre and fixtures).
+   To publish a single package from a machine:
 
    ```sh
    npm publish --access public
+   npm publish --access public --workspace=@rowan-ui/icons
    ```
 
 4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`. The tarball must not include `*.test.js`, `*.stories.js`, or `src/storybook/`.

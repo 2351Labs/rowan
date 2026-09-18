@@ -3,6 +3,24 @@
   "version": "0.5.0",
   "description": "Optional MapLibre integration for Rowan Web Components.",
   "license": "MIT",
+  "author": "2351Labs",
+  "homepage": "https://2351labs.github.io/rowan/?path=/docs/integrations-maplibre-map--docs",
+  "bugs": {
+    "url": "https://github.com/2351Labs/rowan/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2351Labs/rowan.git",
+    "directory": "packages/maplibre"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "maplibre",
+    "web-components",
+    "rowan"
+  ],
   "type": "module",
   "engines": {
     "node": ">=20"

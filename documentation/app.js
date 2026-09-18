@@ -72,12 +72,14 @@ const ICON_GALLERY = [
   { create: X, label: "Close", name: "x" },
 ];
 
-const QUICKSTART_SNIPPET = `npm install @rowan-ui/core
+const QUICKSTART_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons
 
 import "@rowan-ui/core";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";`;
+
+const ICON_INSTALL_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons`;
 
 const FORMAT_SNIPPET = `import {
   formatCurrency,
@@ -1039,7 +1041,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Import the full catalog for app-level installs or cherry-pick specific components for focused bundles.</p>
+        <p>Install <code>@rowan-ui/core</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization.
@@ -1265,8 +1267,23 @@ const DOC_PAGES = [
     summary:
       "An optional, directly importable SVG icon set with deliberate accessibility defaults and no core registry.",
     tags: ["icons", "svg", "accessibility", "optional-package"],
-    keywords: ["icons", "svg", "lucide", "decorative", "meaningful", "icon-button"],
+    keywords: [
+      "icons",
+      "svg",
+      "lucide",
+      "decorative",
+      "meaningful",
+      "icon-button",
+      "install",
+      "npm",
+    ],
     content: () => `
+      <section class="doc-section" data-doc-section id="icons-install">
+        <h2>Install</h2>
+        <p>Icons ship as <code>@rowan-ui/icons</code> next to core. SVG factories and <code>rowan-icon</code> do not need core; <code>rowan-icon-button</code> and other core slots do.</p>
+        ${codeBlock(ICON_INSTALL_SNIPPET)}
+      </section>
+
       <section class="doc-section" data-doc-section id="icons-imports">
         <h2>Individual imports</h2>
         <p>Use the optional icon package when a product needs a shared visual vocabulary. Import an icon from its own module so core remains asset-free and the application keeps the narrowest bundle boundary.</p>

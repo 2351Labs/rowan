@@ -142,10 +142,20 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 - [x] `rowan-dropdown` keeps the default secondary button and accepts a `trigger` slot (avatar / icon-only).
 - [x] FACE text fields do not paint `invalid` until the user has interacted or the form was submitted (`:user-invalid` / touched).
 
+## Release — npm 0.5.0
+
+**Status:** docs and packaging ready. Publish after `NPM_TOKEN` and org `rowan-ui`.
+
+- [x] README, Storybook Home, and docs install `@rowan-ui/core @rowan-ui/icons`.
+- [x] Package metadata (`repository`, `publishConfig.access`) on core and icons.
+- [x] Tag workflow publishes core, then icons. MapLibre is not in this cut.
+- [ ] Create npm org `rowan-ui` and repo secret `NPM_TOKEN`.
+- [ ] Tag `v0.5.0` after this lands on main.
+
 ## Later / not this track
 
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).
-- Publish `@rowan-ui/icons` next to core on npm.
+- Publish `@rowan-ui/maplibre` (optional adapter; not in the first 0.5.0 npm cut).
 - Progress `meta` visibility and trend-chart compact density.
 - KPI/stat card as a primitive.

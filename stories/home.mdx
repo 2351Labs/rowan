@@ -11,7 +11,8 @@ import "./home.css";
 <div className="home-page">
   <p className="home-lede">
     A vanilla Web Component design system: Custom Elements, Shadow DOM, slots, CSS tokens, and
-    ElementInternals. Version 0.5. Package <code>@rowan-ui/core</code>.
+    ElementInternals. Version 0.5. Packages <code>@rowan-ui/core</code> and{" "}
+    <code>@rowan-ui/icons</code>.
   </p>
 
 <section className="home-why">
@@ -67,6 +68,13 @@ import "./home.css";
     </p>
   </article>
   <article className="home-card">
+    <h2>Icons</h2>
+    <p>
+      Optional package next to core. Tree-shakable SVG modules, no name registry.{" "}
+      <a href="?path=/docs/foundations-icons--docs">Icons</a>.
+    </p>
+  </article>
+  <article className="home-card">
     <h2>MapLibre</h2>
     <p>
       Optional adapter. Application-owned styles and attribution.{" "}
@@ -75,7 +83,7 @@ import "./home.css";
   </article>
 </div>
 
-<pre className="home-install">{`npm install @rowan-ui/core
+<pre className="home-install">{`npm install @rowan-ui/core @rowan-ui/icons
 import "@rowan-ui/core";
 import "@rowan-ui/core/tokens";`}</pre>
 

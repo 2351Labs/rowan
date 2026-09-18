@@ -6,25 +6,20 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
-### Fixed
+## 0.5.0 - 2026-09-17
 
-- React wrapper props keep nullable function properties (`renderItem`, `formatValue`, `valueFormatter`).
-- Boolean attributes whose value is `"false"` (React 18 SSR on raw tags) are treated as unset.
+Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
+part of `0.5` until they are marked Stable. First npm publish of
+`@rowan-ui/core` and `@rowan-ui/icons`. `@rowan-ui/maplibre` stays unpublished
+until its own cut.
 
 ### Added
 
 - Generated React wrappers from the public Custom Elements Manifest: `import { RowanButton } from "@rowan-ui/core/react/button"`. `onRowan*` maps to `rowan-*`. Objects stay property-only. `@rowan-ui/core/react` remains the hook and JSX types.
-- `@rowan-ui/icons/react/icon` and `@rowan-ui/maplibre/react/map` wrappers, generated with the same pipeline.
+- `@rowan-ui/icons` published next to core: 2,098 tree-shakable SVG modules, `rowan-icon`, and `@rowan-ui/icons/react/icon`.
+- `@rowan-ui/maplibre/react/map` wrapper, generated with the same pipeline.
 - `rowan-side-nav-section` for labeled groups in one rail. Empty `value` clears selection. In-app `href` navigation is blocked when `rowan-change` is cancelled.
 - `rowan-dropdown` accepts a `trigger` slot. Required text, textarea, and number fields do not paint `invalid` until blur, `reportValidity()`, or native form validation (`invalid` event).
-
-## 0.5.0 - 2026-09-16
-
-Catalog freeze short of `1.0`. Experimental surfaces in the README are **not**
-part of `0.5` until they are marked Stable.
-
-### Added
-
 - `rowan-radio-group` is form-associated: it submits the selected value, owns `required` / `valueMissing`, and restores the default on reset. Named child radios do not also submit.
 - `rowan-file-upload` is form-associated: `name`, `required`, `FormData` submission of `File` objects, reset, and `valueMissing`.
 - Overlay stack: dismissible layers (popover, dropdown, context-menu) share `isTopmostOverlay` with modals.
@@ -47,6 +42,8 @@ part of `0.5` until they are marked Stable.
 
 ### Fixed
 
+- React wrapper props keep nullable function properties (`renderItem`, `formatValue`, `valueFormatter`).
+- Boolean attributes whose value is `"false"` (React 18 SSR on raw tags) are treated as unset.
 - Required radio groups stay valid after a later option is selected.
 - Number, date, and time fields no longer wipe in-progress input.
 - Dropzone `accept` applies to drops and picker change.

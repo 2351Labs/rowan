@@ -46,6 +46,13 @@ the top layer. Table virtualization, `rowan-rich-text-editor`,
 npm install @rowan-ui/core
 ```
 
+Icons are a second package. Install them next to core when you need
+`rowan-icon-button` names, slotted SVGs, or `<rowan-icon>`:
+
+```bash
+npm install @rowan-ui/core @rowan-ui/icons
+```
+
 ## Use Rowan
 
 ### Register all Rowan elements
@@ -359,15 +366,16 @@ the last chip, and selected values stay property-only.
 
 ## Optional Integrations
 
-`@rowan-ui/icons` provides 2,098 individually importable SVG icon modules without
-adding icon assets or an all-icons name registry to `@rowan-ui/core`. For
-declarative HTML, an individual `@rowan-ui/icons/elements/calendar-days` import
-registers `icon="calendar-days"` for `rowan-icon-button` and `<rowan-icon
-name="calendar-days">` for other component slots. Icons are decorative by
-default and become meaningful only when callers pass an explicit accessible
-label. React: `import { RowanIcon } from "@rowan-ui/icons/react/icon"` after a
-per-icon `@rowan-ui/icons/elements/<name>` import. The wrapper optionally peers
-on `@rowan-ui/core`; SVG and HTML usage stay core-free. See the package README.
+`@rowan-ui/icons` is published next to core. It provides 2,098 individually
+importable SVG icon modules without adding icon assets or an all-icons name
+registry to `@rowan-ui/core`. For declarative HTML, an individual
+`@rowan-ui/icons/elements/calendar-days` import registers `icon="calendar-days"`
+for `rowan-icon-button` and `<rowan-icon name="calendar-days">` for other
+component slots. Icons are decorative by default and become meaningful only when
+callers pass an explicit accessible label. React:
+`import { RowanIcon } from "@rowan-ui/icons/react/icon"` after a per-icon
+`@rowan-ui/icons/elements/<name>` import. The wrapper optionally peers on
+`@rowan-ui/core`; SVG and HTML usage stay core-free. See the package README.
 
 `@rowan-ui/maplibre` provides `rowan-maplibre-map` without adding a map runtime to
 `@rowan-ui/core`. Install it with `maplibre-gl` only in applications that need map
