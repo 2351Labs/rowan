@@ -45,11 +45,8 @@
   text-align: left;
 }
 
-.caption-text[hidden] {
-  display: none;
-}
-
-:host(:not([caption])) .caption:empty {
+.caption-text[hidden],
+.caption[hidden] {
   display: none;
 }
 

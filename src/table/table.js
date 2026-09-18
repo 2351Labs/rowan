@@ -214,6 +214,7 @@ export class RowanTable extends BaseElement {
 
   #root = null;
   #tableViewport = null;
+  #captionEl = null;
   #captionSlotEl = null;
   #captionTextEl = null;
   #theadRow = null;
@@ -539,6 +540,7 @@ export class RowanTable extends BaseElement {
 
       this.#root = this.renderRoot.firstElementChild;
       this.#tableViewport = this.renderRoot.querySelector(".table-scroll");
+      this.#captionEl = this.renderRoot.querySelector("caption");
       this.#captionSlotEl = this.renderRoot.querySelector('caption slot[name="caption"]');
       this.#captionTextEl = this.renderRoot.querySelector(".caption-text");
       this.#theadRow = this.renderRoot.querySelector("thead tr");
@@ -592,6 +594,8 @@ export class RowanTable extends BaseElement {
       this.listen(this.#tbody, "rowan-click", (event) => {
         this.#handleBodyCellAction(event);
       });
+
+      this.listen(this.#captionSlotEl, "slotchange", () => this.requestRender());
     }
 
     this.#validateConfiguration();
@@ -636,18 +640,23 @@ export class RowanTable extends BaseElement {
   }
 
   #renderCaption() {
-    const hasCaptionSlot = this.querySelector('[slot="caption"]') !== null;
+    const hasCaptionSlot = this.#captionSlotEl.assignedNodes().some((node) => {
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim().length > 0;
+      return true;
+    });
     this.#captionSlotEl.hidden = !hasCaptionSlot;
 
     if (hasCaptionSlot) {
       this.#captionTextEl.hidden = true;
       this.#captionTextEl.textContent = "";
+      this.#captionEl.hidden = false;
       return;
     }
 
     const caption = this.caption.trim();
     this.#captionTextEl.hidden = caption.length === 0;
     this.#captionTextEl.textContent = caption;
+    this.#captionEl.hidden = caption.length === 0;
   }
 
   #renderHeader() {
