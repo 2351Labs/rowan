@@ -17,7 +17,7 @@
 
 .frame {
   aspect-ratio: var(--rowan-image-aspect, 16 / 9);
-  background: var(--rowan-image-bg, var(--rowan-color-surface-muted, #f3f4ef));
+  background: var(--rowan-image-bg, var(--rowan-color-surface, var(--rowan-color-bg)));
   border-radius: var(--rowan-image-radius, var(--rowan-radius-md, 0.5rem));
   isolation: isolate;
   overflow: clip;

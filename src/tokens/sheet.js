@@ -241,6 +241,10 @@ export const tokenCssText = `
   --rowan-form-layout-gap: var(--rowan-space-5);
   --rowan-form-layout-min-column-width: 14rem;
   --rowan-form-layout-label-width: 10rem;
+  --rowan-image-bg: var(--rowan-color-surface);
+  --rowan-image-fg: var(--rowan-color-fg);
+  --rowan-image-radius: var(--rowan-radius-md);
+  --rowan-image-aspect: 16 / 9;
   --rowan-listbox-bg: var(--rowan-field-bg);
   --rowan-listbox-border: var(--rowan-color-border);
   --rowan-listbox-radius: var(--rowan-radius-md);
@@ -939,6 +943,10 @@ export const unregisteredTokenNames = [
   "--rowan-form-layout-gap",
   "--rowan-form-layout-min-column-width",
   "--rowan-form-layout-label-width",
+  "--rowan-image-bg",
+  "--rowan-image-fg",
+  "--rowan-image-radius",
+  "--rowan-image-aspect",
   "--rowan-listbox-bg",
   "--rowan-listbox-border",
   "--rowan-listbox-radius",
@@ -1429,6 +1437,10 @@ export const componentTokenDeclarations = [
   ["--rowan-form-layout-gap", "var(--rowan-space-5)"],
   ["--rowan-form-layout-min-column-width", "14rem"],
   ["--rowan-form-layout-label-width", "10rem"],
+  ["--rowan-image-bg", "var(--rowan-color-surface)"],
+  ["--rowan-image-fg", "var(--rowan-color-fg)"],
+  ["--rowan-image-radius", "var(--rowan-radius-md)"],
+  ["--rowan-image-aspect", "16 / 9"],
   ["--rowan-listbox-bg", "var(--rowan-field-bg)"],
   ["--rowan-listbox-border", "var(--rowan-color-border)"],
   ["--rowan-listbox-radius", "var(--rowan-radius-md)"],

@@ -70,4 +70,23 @@ describe("rowan-image", () => {
     expect(el.shadowRoot.querySelector(".fallback").hidden).to.equal(false);
     expect(el.shadowRoot.querySelector(".frame").classList.contains("is-error")).to.equal(true);
   });
+
+  it("keeps the image node when href changes and drops the link while fallback is showing", async () => {
+    const el = await renderImage({
+      src: "photo.jpg",
+      alt: "Dock",
+      href: "https://example.test/dock",
+    });
+    const image = el.shadowRoot.querySelector("img.image");
+
+    el.href = "/cameras/dock";
+    await nextMicrotask();
+    expect(el.shadowRoot.querySelector("img.image")).to.equal(image);
+    expect(el.shadowRoot.querySelector("a.media").getAttribute("href")).to.equal("/cameras/dock");
+
+    image.dispatchEvent(new Event("error"));
+    await nextMicrotask();
+    expect(el.shadowRoot.querySelector("a.media")).to.equal(null);
+    expect(el.shadowRoot.querySelector(".fallback").hidden).to.equal(false);
+  });
 });

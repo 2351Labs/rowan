@@ -25,6 +25,7 @@ const LOADINGS = new Set(["lazy", "eager"]);
  * @csspart caption
  * @csspart fallback
  * @cssprop --rowan-image-bg
+ * @cssprop --rowan-image-fg
  * @cssprop --rowan-image-radius
  * @cssprop --rowan-image-aspect
  */
@@ -126,10 +127,11 @@ export class RowanImage extends BaseElement {
       this.#caption = this.renderRoot.querySelector(".caption");
       this.#captionSlot = this.renderRoot.querySelector('slot[name="caption"]');
       this.listen(this.#captionSlot, "slotchange", () => this.#syncCaption());
+      this.#ensureImage();
     }
 
-    this.#syncMedia();
     this.#syncImage();
+    this.#syncMedia();
     this.#syncCaption();
     this.#applyDefaultA11y();
   }
@@ -139,11 +141,31 @@ export class RowanImage extends BaseElement {
     return href === "#" ? "" : href;
   }
 
+  #linkHref() {
+    const src = this.src.trim();
+    if (!src || this.#failedSrc === src) return "";
+    return this.#safeHref();
+  }
+
+  #ensureImage() {
+    if (this.#image) return;
+
+    const image = document.createElement("img");
+    image.className = "image";
+    image.setAttribute("part", "image");
+    this.listen(image, "load", () => this.#handleLoad());
+    this.listen(image, "error", () => this.#handleError());
+    this.#media.append(image);
+    this.#image = image;
+  }
+
   #syncMedia() {
-    const href = this.#safeHref();
-    const tagName = href ? "a" : "div";
-    if (this.#media.tagName.toLowerCase() === tagName && this.#image) {
-      if (href) {
+    const href = this.#linkHref();
+    const wantAnchor = Boolean(href);
+    const isAnchor = this.#media.tagName === "A";
+
+    if (wantAnchor === isAnchor) {
+      if (wantAnchor) {
         this.#media.setAttribute("href", href);
         this.#media.setAttribute("rel", "noreferrer noopener");
       } else {
@@ -153,24 +175,15 @@ export class RowanImage extends BaseElement {
       return;
     }
 
-    const next = document.createElement(tagName);
+    const next = document.createElement(wantAnchor ? "a" : "div");
     next.className = "media";
-    if (href) {
+    if (wantAnchor) {
       next.setAttribute("href", href);
       next.setAttribute("rel", "noreferrer noopener");
     }
-
-    const image = document.createElement("img");
-    image.className = "image";
-    image.setAttribute("part", "image");
-    this.listen(image, "load", () => this.#handleLoad());
-    this.listen(image, "error", () => this.#handleError());
-    next.append(image);
+    next.append(this.#image);
     this.#media.replaceWith(next);
     this.#media = next;
-    this.#image = image;
-    this.#renderedSrc = null;
-    this.#loadedSrc = null;
   }
 
   #syncImage() {

@@ -17,6 +17,7 @@
  * @csspart caption
  * @csspart fallback
  * @cssprop --rowan-image-bg
+ * @cssprop --rowan-image-fg
  * @cssprop --rowan-image-radius
  * @cssprop --rowan-image-aspect
  */
