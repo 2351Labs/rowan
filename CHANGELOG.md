@@ -6,12 +6,22 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.8.0 - 2026-09-18
+
+### Added
+
+- Experimental `rowan-area-chart`: filled multi-series. Null breaks the line and the fill. Same property-only data contract as the line chart.
+- Experimental `rowan-stacked-bar-chart`: positive values stack from zero. Null and negatives are no-data.
+- Experimental `rowan-image`: display still with optional href, overlay, caption, and fallback. Not a rich-text node.
+- `rowan-rich-text-editor` headings (levels 1–3) and allowlisted link hrefs. Images stay out of the document.
+
 ### Fixed
 
 - `rowan-area-chart` does not set a default `ariaLabel` when the author provides `aria-labelledby`.
 - `rowan-stacked-bar-chart` associates its description with the plot and documents the `detail` and `summary` parts.
 - Chart keyboard focus looks up point controls by dataset instead of interpolating series ids into a selector.
 - Rich-text hrefs reject backslash paths and C0 controls. Heading and link styles apply on the editing surface. The link popover is named as a dialog.
+- `rowan-image` keeps one image node when href changes, drops the link while fallback is showing, and uses themed image tokens.
 
 ## 0.7.0 - 2026-09-18
 
