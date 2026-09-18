@@ -1,5 +1,5 @@
 /**
- * Experimental compact one-series line for KPI tiles. Not a density of
+ * Frozen compact one-series line for KPI tiles. Not a density of
  * `rowan-trend-chart`.
  * @tag rowan-sparkline
  * @attr {string} label

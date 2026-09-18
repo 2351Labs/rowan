@@ -1,5 +1,5 @@
 /**
- * Experimental dashboard stat tile. Value and delta stay property-only.
+ * Frozen dashboard stat tile. Value and delta stay property-only.
  * @tag rowan-kpi-card
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
