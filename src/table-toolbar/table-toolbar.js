@@ -14,7 +14,7 @@ function arraysEqual(left, right) {
 }
 
 /**
- * Table operations surface that tracks selection from a Rowan data table.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
@@ -144,7 +144,8 @@ export class RowanTableToolbar extends BaseElement {
     this.#syncTable();
 
     const count = this.selectedCount;
-    this.#selection.hidden = count === 0;
+    const bulkOwnsSelection = Boolean(this.#boundTable?.querySelector("rowan-bulk-actions-bar"));
+    this.#selection.hidden = count === 0 || bulkOwnsSelection;
     this.#selectionText.textContent = `${count} ${this.selectionLabel}`;
     this.#applyDefaultA11y();
   }

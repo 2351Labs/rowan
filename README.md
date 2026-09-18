@@ -949,7 +949,7 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 
 ## Table Operations
 
-Use `rowan-table-toolbar` for selection-aware table context and light-DOM controls. Use `rowan-bulk-actions-bar` when users need explicit actions on selected rows. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable.
+Use `rowan-table-toolbar` for filters and density. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable.
 
 ```html
 <rowan-table id="members-table">
@@ -985,8 +985,8 @@ Use `rowan-table-toolbar` for selection-aware table context and light-DOM contro
 
 Keep the source rows in application state. The filter builder reports a frozen
 flat AND list (`filters[]` of `{ id, field, operator, value }`) and does not
-mutate `table.rows`; the application applies those filters and assigns the
-derived rows. There are no nested groups. Field `type` is `text`, `number`,
+mutate `table.rows`. Import `applyFilters` from `@rowan-ui/core/filter-builder`
+and assign the derived rows. There are no nested groups. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
 operator. Import `RowanFilter` and `RowanFilterField` from
@@ -1005,7 +1005,7 @@ The panel does not modify the row record. Table columns may use
 
 <script type="module">
   import "@rowan-ui/core/table";
-  import "@rowan-ui/core/filter-builder";
+  import { applyFilters } from "@rowan-ui/core/filter-builder";
   import "@rowan-ui/core/row-details-panel";
 
   const rows = [
@@ -1030,14 +1030,7 @@ The panel does not modify the row record. Table columns may use
   ];
 
   filters.addEventListener("rowan-filter-change", (event) => {
-    const activeFilters = event.detail.filters;
-    table.rows = rows.filter((row) =>
-      activeFilters.every((filter) => {
-        const value = String(row[filter.field] ?? "").toLowerCase();
-        const expected = filter.value.toLowerCase();
-        return filter.operator === "equals" ? value === expected : value.includes(expected);
-      }),
-    );
+    table.rows = applyFilters(rows, event.detail.filters, filters.fields);
   });
 </script>
 ```

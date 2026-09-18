@@ -13,7 +13,7 @@ export {
 export { RowanAlert } from "./alert/alert.js";
 export { RowanAppLayout } from "./app-layout/app-layout.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
-export { RowanFilterBuilder } from "./filter-builder/filter-builder.js";
+export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
 export { RowanButton } from "./button/button.js";
 export { RowanCard } from "./card/card.js";
 export { RowanCheckbox } from "./checkbox/checkbox.js";

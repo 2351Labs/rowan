@@ -113,6 +113,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {string[]} [selected]
  * @property {RowanTableSort | null} [sort]
  * @property {string} [caption]
+ * @property {boolean} [captionVisuallyHidden]
  * @property {"sm" | "md" | "lg"} [density]
  * @property {boolean} [stickyHeader]
  * @property {boolean} [loading]
@@ -142,6 +143,7 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} sticky-header
  * @attr {boolean} loading
  * @attr {string} caption
+ * @attr {boolean} caption-visually-hidden
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
@@ -184,6 +186,7 @@ export class RowanTable extends BaseElement {
     "sticky-header",
     "loading",
     "caption",
+    "caption-visually-hidden",
     "virtualized",
     "virtual-item-size",
     "virtual-overscan",
@@ -200,6 +203,7 @@ export class RowanTable extends BaseElement {
     "stickyHeader",
     "loading",
     "caption",
+    "captionVisuallyHidden",
     "virtualized",
     "virtualItemSize",
     "virtualOverscan",
@@ -291,6 +295,7 @@ export class RowanTable extends BaseElement {
       stickyHeader: this.stickyHeader,
       loading: this.loading,
       caption: this.caption,
+      captionVisuallyHidden: this.captionVisuallyHidden,
       virtualized: this.virtualized,
       virtualItemSize: this.virtualItemSize,
       virtualOverscan: this.virtualOverscan,
@@ -318,6 +323,7 @@ export class RowanTable extends BaseElement {
     this.#resetConfigurationWarnings();
 
     this.caption = next.caption == null ? "" : String(next.caption);
+    this.captionVisuallyHidden = Boolean(next.captionVisuallyHidden);
     this.density = next.density;
     this.selectable = next.selectable;
     this.stickyHeader = Boolean(next.stickyHeader);
@@ -437,6 +443,14 @@ export class RowanTable extends BaseElement {
 
   set caption(value) {
     this.reflectString("caption", value);
+  }
+
+  get captionVisuallyHidden() {
+    return this.readBoolean("caption-visually-hidden");
+  }
+
+  set captionVisuallyHidden(value) {
+    this.reflectBoolean("caption-visually-hidden", Boolean(value));
   }
 
   /** @returns {boolean} */
@@ -652,6 +666,7 @@ export class RowanTable extends BaseElement {
       this.#captionTextEl.hidden = true;
       this.#captionTextEl.textContent = "";
       this.#captionEl.hidden = false;
+      this.#captionEl.classList.toggle("visually-hidden", this.captionVisuallyHidden);
       return;
     }
 
@@ -659,6 +674,10 @@ export class RowanTable extends BaseElement {
     this.#captionTextEl.hidden = caption.length === 0;
     this.#captionTextEl.textContent = caption;
     this.#captionEl.hidden = caption.length === 0;
+    this.#captionEl.classList.toggle(
+      "visually-hidden",
+      this.captionVisuallyHidden && caption.length > 0,
+    );
   }
 
   #renderHeader() {

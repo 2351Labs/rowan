@@ -804,3 +804,5 @@ export class RowanFilterBuilder extends BaseElement {
 }
 
 define("rowan-filter-builder", RowanFilterBuilder);
+
+export { applyFilters } from "./apply-filters.js";

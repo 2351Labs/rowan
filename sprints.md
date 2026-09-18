@@ -155,7 +155,7 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 **Goal.** Fix the CSS bugs that make shipped widgets look broken in a real admin app, then the APIs that app had to invent.
 
-**Status.** Sprint 2 done. Next: Sprint 3 (P2 composition and packaging).
+**Status.** Sprint 3 done. Next: Sprint 4 (P3 docs).
 
 ### Sprint 1 — P0 layout bugs
 
@@ -177,12 +177,12 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ### Sprint 3 — P2 composition and packaging
 
-**Status:** pending
+**Status:** done
 
-- [ ] One table chrome: toolbar = filters/density; bulk bar = selection count. Docs, no duplicate “N selected.”
-- [ ] `applyFilters(rows, filters)` from `@rowan-ui/core/filter-builder`.
-- [ ] Icons peer on published core `^0.6.0` (consume `@rowan-ui/icons@0.6.0`).
-- [ ] `caption-visually-hidden` (or equivalent) so a caption can name the table without duplicating a page `h1`.
+- [x] One table chrome: toolbar = filters/density; bulk bar = selection count. Docs, no duplicate “N selected.”
+- [x] `applyFilters(rows, filters)` from `@rowan-ui/core/filter-builder`.
+- [x] Icons peer on published core `^0.6.0` (consume `@rowan-ui/icons@0.6.0`).
+- [x] `caption-visually-hidden` (or equivalent) so a caption can name the table without duplicating a page `h1`.
 
 ### Sprint 4 — P3 docs
 

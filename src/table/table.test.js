@@ -330,6 +330,26 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("keeps a caption for assistive technology when caption-visually-hidden is set", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Work orders",
+      captionVisuallyHidden: true,
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const caption = table.shadowRoot.querySelector("caption");
+    expect(caption.hidden).to.equal(false);
+    expect(caption.classList.contains("visually-hidden")).to.equal(true);
+    expect(caption.textContent.trim()).to.equal("Work orders");
+    expect(getComputedStyle(caption).position).to.equal("absolute");
+
+    table.remove();
+  });
+
   it("treats config as full replacement and flattened properties as partial updates", async () => {
     const table = document.createElement("rowan-table");
     table.config = {

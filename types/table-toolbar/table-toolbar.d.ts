@@ -1,5 +1,5 @@
 /**
- * Table operations surface that tracks selection from a Rowan data table.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label

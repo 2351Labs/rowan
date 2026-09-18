@@ -34,6 +34,7 @@ describe("reflect helpers", () => {
     expect(BOOLEAN_ATTRIBUTES.has("drag-active")).to.equal(true);
     expect(BOOLEAN_ATTRIBUTES.has("navigation-open")).to.equal(true);
     expect(BOOLEAN_ATTRIBUTES.has("hide-meta")).to.equal(true);
+    expect(BOOLEAN_ATTRIBUTES.has("caption-visually-hidden")).to.equal(true);
   });
 
   it("reflects string attributes and removes empty values", () => {

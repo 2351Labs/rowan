@@ -7343,6 +7343,54 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/filter-builder/apply-filters.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "applyFilters",
+          "parameters": [
+            {
+              "name": "rows",
+              "type": {
+                "text": "object[]"
+              }
+            },
+            {
+              "name": "filters",
+              "type": {
+                "text": "Array<{ field: string, operator: string, value?: unknown }>"
+              }
+            },
+            {
+              "name": "fields",
+              "default": "[]",
+              "optional": true,
+              "type": {
+                "text": "Array<{ id: string, type?: string, accessor?: string | ((row: object) => unknown) }>"
+              }
+            }
+          ],
+          "description": "Applies a frozen flat AND filter list to rows. Unknown operators do not match.",
+          "return": {
+            "type": {
+              "text": "object[]"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "applyFilters",
+          "declaration": {
+            "name": "applyFilters",
+            "module": "src/filter-builder/apply-filters.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/filter-builder/filter-builder.js",
       "declarations": [
         {
@@ -7621,6 +7669,14 @@
             "name": "RowanFilterBuilder",
             "module": "src/filter-builder/filter-builder.js"
           }
+        },
+        {
+          "kind": "js",
+          "name": "applyFilters",
+          "declaration": {
+            "name": "applyFilters",
+            "module": "./apply-filters.js"
+          }
         }
       ]
     },
@@ -7629,6 +7685,14 @@
       "path": "src/filter-builder/index.js",
       "declarations": [],
       "exports": [
+        {
+          "kind": "js",
+          "name": "applyFilters",
+          "declaration": {
+            "name": "applyFilters",
+            "module": "./apply-filters.js"
+          }
+        },
         {
           "kind": "js",
           "name": "RowanFilterBuilder",
@@ -8802,6 +8866,14 @@
           "declaration": {
             "name": "RowanBulkActionsBar",
             "module": "./bulk-actions-bar/bulk-actions-bar.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyFilters",
+          "declaration": {
+            "name": "applyFilters",
+            "module": "./filter-builder/filter-builder.js"
           }
         },
         {
@@ -10596,7 +10668,7 @@
         {
           "kind": "variable",
           "name": "BOOLEAN_ATTRIBUTES",
-          "default": "new Set([ \"active\", \"alert\", \"animated\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
         },
         {
           "kind": "function",
@@ -18344,7 +18416,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Table operations surface that tracks selection from a Rowan data table.",
+          "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.",
           "name": "RowanTableToolbar",
           "cssProperties": [
             {
@@ -18789,6 +18861,10 @@
             },
             {
               "kind": "field",
+              "name": "captionVisuallyHidden"
+            },
+            {
+              "kind": "field",
               "name": "virtualized",
               "return": {
                 "type": {
@@ -19039,6 +19115,12 @@
               "name": "caption",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "caption-visually-hidden",
+              "type": {
+                "text": "boolean"
               }
             },
             {

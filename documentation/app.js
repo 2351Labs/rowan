@@ -304,6 +304,8 @@ const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
 </rowan-table>
 
 <script type="module">
+  import { applyFilters } from "@rowan-ui/core/filter-builder";
+
   const rows = [
     { id: "1", name: "Ada", role: "Admin" },
     { id: "2", name: "Alan", role: "Editor" },
@@ -326,13 +328,7 @@ const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
   ];
 
   filters.addEventListener("rowan-filter-change", (event) => {
-    table.rows = rows.filter((row) =>
-      event.detail.filters.every((filter) => {
-        const value = String(row[filter.field] ?? "").toLowerCase();
-        const expected = filter.value.toLowerCase();
-        return filter.operator === "equals" ? value === expected : value.includes(expected);
-      }),
-    );
+    table.rows = applyFilters(rows, event.detail.filters, filters.fields);
   });
 </script>`;
 
@@ -2989,7 +2985,7 @@ document.documentElement.dataset.theme = "lagoon";
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state; application code decides how to derive and assign the resulting rows.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and assign the derived rows.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
             <rowan-filter-builder id="docs-filter-builder" slot="toolbar"></rowan-filter-builder>
@@ -3000,7 +2996,7 @@ document.documentElement.dataset.theme = "lagoon";
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. applyFilters(rows, filters, fields) evaluates that list. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,
