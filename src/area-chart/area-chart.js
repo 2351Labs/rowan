@@ -748,7 +748,9 @@ export class RowanAreaChart extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = this.#displayLabel() || "Area chart";
+      this.internals.ariaLabel = this.hasAttribute("aria-labelledby")
+        ? null
+        : this.#displayLabel() || "Area chart";
     }
 
     if (!this.hasAttribute("aria-description") && "ariaDescription" in this.internals) {
