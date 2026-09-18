@@ -1,6 +1,8 @@
 import "../src/tokens/tokens.css";
 import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
+import "../src/tokens/themes/lagoon.css";
+import "../src/tokens/themes/ember.css";
 
 import "../src/index.js";
 import "../packages/maplibre/src/map/map.js";
@@ -77,7 +79,9 @@ const QUICKSTART_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons
 import "@rowan-ui/core";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
-import "@rowan-ui/core/tokens/dark";`;
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";`;
 
 const ICON_INSTALL_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons`;
 
@@ -300,6 +304,8 @@ const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
 </rowan-table>
 
 <script type="module">
+  import { applyFilters } from "@rowan-ui/core/filter-builder";
+
   const rows = [
     { id: "1", name: "Ada", role: "Admin" },
     { id: "2", name: "Alan", role: "Editor" },
@@ -322,32 +328,38 @@ const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
   ];
 
   filters.addEventListener("rowan-filter-change", (event) => {
-    table.rows = rows.filter((row) =>
-      event.detail.filters.every((filter) => {
-        const value = String(row[filter.field] ?? "").toLowerCase();
-        const expected = filter.value.toLowerCase();
-        return filter.operator === "equals" ? value === expected : value.includes(expected);
-      }),
-    );
+    table.rows = applyFilters(rows, event.detail.filters, filters.fields);
   });
 </script>`;
 
 const ROW_DETAILS_PANEL_SNIPPET = `<rowan-table id="members-table"></rowan-table>
-<rowan-row-details-panel for-table="members-table"></rowan-row-details-panel>
+<rowan-row-details-panel id="member-details" for-table="members-table" size="md"></rowan-row-details-panel>
+<rowan-button id="open-member">View details</rowan-button>
 
 <script type="module">
   const table = document.querySelector("#members-table");
+  const panel = document.querySelector("#member-details");
 
   table.config = {
+    selectable: "multiple",
     rowId: "id",
     columns: [
       { id: "name", header: "Name" },
       { id: "role", header: "Role" },
     ],
-    rows: [{ id: "1", name: "Ada", role: "Admin" }],
+    rows: [
+      { id: "1", name: "Ada", role: "Admin" },
+      { id: "2", name: "Alan", role: "Editor" },
+    ],
   };
 
-  // Double-click a row or press Enter on its focused row.
+  document.querySelector("#open-member").addEventListener("rowan-click", () => {
+    const selected = table.selected;
+    const rowId = selected[0] ?? table.rows[0].id;
+    const row = table.rows.find((item) => item.id === rowId);
+    panel.rowIds = selected.length ? selected : [rowId];
+    panel.show(row, rowId);
+  });
 </script>`;
 
 const ALERT_SNIPPET = `<rowan-alert tone="info">Heads up: deployment starts at 4pm.</rowan-alert>
@@ -1134,7 +1146,7 @@ const DOC_PAGES = [
     summary:
       "Theme Rowan through semantic tokens while preserving stable component APIs. This docs site uses the same model.",
     tags: ["tokens", "light-dark", "css"],
-    keywords: ["theme", "tokens", "dark", "light", "css variables"],
+    keywords: ["theme", "tokens", "dark", "light", "lagoon", "ember", "css variables"],
     content: () => `
       <section class="doc-section" data-doc-section id="theme-layers">
         <h2>Token layers</h2>
@@ -1160,8 +1172,17 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="theme-overrides">
         <h2>Theme override example</h2>
-        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable.</p>
-        ${codeBlock(`:root {
+        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code> or <code>@rowan-ui/core/tokens/ember</code> and set <code>data-theme</code>.</p>
+        <div class="info-grid" id="docs-theme-gallery"></div>
+        ${codeBlock(`import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";
+
+document.documentElement.dataset.theme = "lagoon";
+
+:root {
   --rowan-color-bg: #f7f6ef;
   --rowan-color-fg: #1c2320;
   --rowan-color-accent: #214d36;
@@ -1177,6 +1198,7 @@ const DOC_PAGES = [
 }`)}
       </section>
     `,
+    afterRender: setupThemeGallery,
   },
   {
     id: "tokens",
@@ -2963,7 +2985,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state; application code decides how to derive and assign the resulting rows.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and assign the derived rows.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
             <rowan-filter-builder id="docs-filter-builder" slot="toolbar"></rowan-filter-builder>
@@ -2974,7 +2996,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. applyFilters(rows, filters, fields) evaluates that list. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,
@@ -2991,7 +3013,7 @@ const DOC_PAGES = [
     content: () => `
       <section class="doc-section" data-doc-section id="row-details-panel-overview">
         <h2>Inspect an activated row</h2>
-        <p>Double-click a row or press Enter on a focused row to open its details. The panel reads the row record and does not mutate consumer data.</p>
+        <p>Double-click a row or press Enter on a focused row to open its details. In an app with checkboxes and action buttons, call <code>panel.show(row, rowId)</code> from your own control. Multi-select activation walks the selected ids with previous/next. The panel reads the row record and does not mutate consumer data.</p>
         <div class="table-shell">
           <rowan-table id="docs-row-details-table"></rowan-table>
         </div>
@@ -3001,7 +3023,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="row-details-panel-contract">
         <h2>Behavior contract</h2>
-        <p>The panel can be controlled through row, rowId, and open properties or bound to table activation through for-table. It emits rowan-close only for user dismissal.</p>
+        <p>The supported open API is <code>show(row, rowId)</code>. Do not pass React <code>open={false}</code> unless you fully own open state. Bound tables still open from rowan-row-activate. size is sm, md, or lg. It emits rowan-close for user dismissal and rowan-navigate when the user moves in a queue.</p>
         ${codeBlock(ROW_DETAILS_PANEL_SNIPPET, "html")}
       </section>
     `,
@@ -3090,7 +3112,7 @@ const mainEl = document.querySelector("#docs-main");
 const navEl = document.querySelector("#docs-nav");
 const tocEl = document.querySelector("#docs-toc");
 const searchEl = document.querySelector("#docs-search");
-const themeToggleEl = document.querySelector("#theme-toggle");
+const themeSelectEl = document.querySelector("#theme-select");
 const quickstartTriggerEl = document.querySelector("#quickstart-trigger");
 const quickstartDialogEl = document.querySelector("#quickstart-dialog");
 const copyQuickstartEl = document.querySelector("#copy-quickstart");
@@ -4295,10 +4317,44 @@ function setupCommandPaletteDemo() {
   }
 }
 
+const SHIPPED_THEMES = ["light", "dark", "lagoon", "ember"];
+
+function setupThemeGallery(mainEl) {
+  const gallery = mainEl.querySelector("#docs-theme-gallery");
+  if (!gallery) return;
+
+  gallery.replaceChildren();
+  for (const theme of [
+    { id: "light", label: "Light" },
+    { id: "dark", label: "Dark" },
+    { id: "lagoon", label: "Lagoon" },
+    { id: "ember", label: "Ember" },
+  ]) {
+    const card = document.createElement("div");
+    card.dataset.theme = theme.id;
+    card.style.background = "var(--rowan-color-bg)";
+    card.style.border = "1px solid var(--rowan-color-border)";
+    card.style.borderRadius = "var(--rowan-radius-lg)";
+    card.style.color = "var(--rowan-color-fg)";
+    card.style.display = "grid";
+    card.style.gap = "var(--rowan-space-3)";
+    card.style.padding = "var(--rowan-space-4)";
+
+    const title = document.createElement("strong");
+    title.textContent = theme.label;
+    const chip = document.createElement("rowan-chip");
+    chip.textContent = "Operational";
+    const button = document.createElement("rowan-button");
+    button.textContent = "Save";
+    card.append(title, chip, button);
+    gallery.append(card);
+  }
+}
+
 function applyTheme(theme) {
-  const nextTheme = theme === "dark" ? "dark" : "light";
+  const nextTheme = SHIPPED_THEMES.includes(theme) ? theme : "light";
   document.documentElement.dataset.theme = nextTheme;
-  themeToggleEl.checked = nextTheme === "dark";
+  if (themeSelectEl) themeSelectEl.value = nextTheme;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
 }
 
@@ -4313,11 +4369,20 @@ function wireSearch() {
 }
 
 function wireThemeToggle() {
+  if (!themeSelectEl) return;
+
+  themeSelectEl.options = [
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+    { value: "lagoon", label: "Lagoon" },
+    { value: "ember", label: "Ember" },
+  ];
+
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light";
   applyTheme(savedTheme);
 
-  themeToggleEl.addEventListener("rowan-change", (event) => {
-    applyTheme(event.detail?.checked ? "dark" : "light");
+  themeSelectEl.addEventListener("rowan-change", (event) => {
+    applyTheme(event.detail?.value ?? themeSelectEl.value);
   });
 }
 

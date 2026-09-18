@@ -55,6 +55,7 @@ export class RowanFilterBuilder extends BaseElement {
     refresh(): void;
     #private;
 }
+export { applyFilters } from "./apply-filters.js";
 export type RowanFilterFieldType = "text" | "number" | "date" | "boolean" | "select";
 /**
  * Operator id. Defaults are contains, equals, not-equals, starts-with,

@@ -1,0 +1,26 @@
+import { Meta, Canvas } from "@storybook/blocks";
+
+import * as ThemeStories from "../src/tokens/themes.stories.js";
+import "./home.css";
+
+<Meta of={ThemeStories} />
+
+# Themes
+
+Rowan themes are `data-theme` swaps on the semantic token layer. Light and Dark
+ship with the library. Lagoon and Ember are extra palettes in the same shape:
+copy a file, change the colors, import it.
+
+Use the toolbar Theme control to restyle every story, or compare them here:
+
+<Canvas of={ThemeStories.Gallery} />
+
+```js
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";
+
+document.documentElement.dataset.theme = "lagoon";
+```

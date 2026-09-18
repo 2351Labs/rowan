@@ -28,7 +28,7 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.6.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.6.1`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
 **`0.6` surface.** Public API is attributes, properties, slots, events, tokens,
@@ -193,26 +193,20 @@ fill; both default to `--rowan-color-bg` when a theme does not set them.
 Apply a theme at the same element that declares the tokens, normally `:root`. A custom
 property that references another custom property resolves where it is declared, so a
 theme scoped to a nested wrapper must also re-declare the component tokens it changes.
-The shipped `light.css` and `dark.css` do this for you.
+The shipped `light.css`, `dark.css`, `lagoon.css`, and `ember.css` do this for you.
+Add another theme by copying one of those files, changing the semantic colors, and
+importing it. Set `document.documentElement.dataset.theme` to the matching name.
 
 Tokens ship both as constructable stylesheets adopted by Rowan shadow roots and as CSS files you can import globally.
 
-```css
-:root {
-  --rowan-color-bg: #f8f7f2;
-  --rowan-color-fg: #1f2421;
-  --rowan-color-accent: #1d432f;
-  --rowan-color-surface: #ffffff;
-  --rowan-button-bg: var(--rowan-color-accent);
-}
+```js
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+import "@rowan-ui/core/tokens/lagoon";
+import "@rowan-ui/core/tokens/ember";
 
-:root[data-theme="dark"] {
-  --rowan-color-bg: #111714;
-  --rowan-color-fg: #ecf0e9;
-  --rowan-color-accent: #7fc095;
-  --rowan-color-surface: #1a221d;
-  --rowan-color-accent-contrast: #10261c;
-}
+document.documentElement.dataset.theme = "lagoon";
 ```
 
 ## Locale-Aware Formatting
@@ -955,7 +949,7 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 
 ## Table Operations
 
-Use `rowan-table-toolbar` for selection-aware table context and light-DOM controls. Use `rowan-bulk-actions-bar` when users need explicit actions on selected rows. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable.
+Use `rowan-table-toolbar` for filters and density. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable.
 
 ```html
 <rowan-table id="members-table">
@@ -991,13 +985,17 @@ Use `rowan-table-toolbar` for selection-aware table context and light-DOM contro
 
 Keep the source rows in application state. The filter builder reports a frozen
 flat AND list (`filters[]` of `{ id, field, operator, value }`) and does not
-mutate `table.rows`; the application applies those filters and assigns the
-derived rows. There are no nested groups. Field `type` is `text`, `number`,
+mutate `table.rows`. Import `applyFilters` from `@rowan-ui/core/filter-builder`
+and assign the derived rows. There are no nested groups. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
 operator. Import `RowanFilter` and `RowanFilterField` from
-`@rowan-ui/core/filter-builder`. The details panel listens to user row
-activation and does not modify the row record.
+`@rowan-ui/core/filter-builder`. The details panel opens from
+`panel.show(row, rowId)` or from `rowan-row-activate` when `for-table` is set.
+Do not pass React `open={false}` unless you fully control `open`. Multi-select
+activation fills `rowIds` and shows previous/next. `size` is `sm`, `md`, or `lg`.
+The panel does not modify the row record. Table columns may use
+`type: "sparkline"` with a `number[]` value.
 
 ```html
 <rowan-table id="members-table">
@@ -1007,7 +1005,7 @@ activation and does not modify the row record.
 
 <script type="module">
   import "@rowan-ui/core/table";
-  import "@rowan-ui/core/filter-builder";
+  import { applyFilters } from "@rowan-ui/core/filter-builder";
   import "@rowan-ui/core/row-details-panel";
 
   const rows = [
@@ -1032,14 +1030,7 @@ activation and does not modify the row record.
   ];
 
   filters.addEventListener("rowan-filter-change", (event) => {
-    const activeFilters = event.detail.filters;
-    table.rows = rows.filter((row) =>
-      activeFilters.every((filter) => {
-        const value = String(row[filter.field] ?? "").toLowerCase();
-        const expected = filter.value.toLowerCase();
-        return filter.operator === "equals" ? value === expected : value.includes(expected);
-      }),
-    );
+    table.rows = applyFilters(rows, event.detail.filters, filters.fields);
   });
 </script>
 ```

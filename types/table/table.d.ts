@@ -6,6 +6,7 @@
  * @attr {boolean} sticky-header
  * @attr {boolean} loading
  * @attr {string} caption
+ * @attr {boolean} caption-visually-hidden
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
@@ -47,6 +48,8 @@ export class RowanTable extends BaseElement {
     get config(): RowanTableConfig;
     set caption(value: string);
     get caption(): string;
+    set captionVisuallyHidden(value: boolean);
+    get captionVisuallyHidden(): boolean;
     /** @param {RowanTableDensity} value */
     set density(value: RowanTableDensity);
     /** @returns {RowanTableDensity} */
@@ -105,7 +108,7 @@ export class RowanTable extends BaseElement {
     } | undefined): void;
     #private;
 }
-export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "custom";
+export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "custom";
 export type RowanTableRow = Record<string, unknown>;
 export type RowanTableCellContext = {
     value: unknown;
@@ -164,6 +167,7 @@ export type RowanTableConfig = {
     selected?: string[] | undefined;
     sort?: RowanTableSort | null | undefined;
     caption?: string | undefined;
+    captionVisuallyHidden?: boolean | undefined;
     density?: "sm" | "md" | "lg" | undefined;
     stickyHeader?: boolean | undefined;
     loading?: boolean | undefined;

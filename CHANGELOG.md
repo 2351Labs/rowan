@@ -6,6 +6,30 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.6.1 - 2026-09-18
+
+### Added
+
+- Shipped `lagoon` and `ember` themes (`@rowan-ui/core/tokens/lagoon`, `@rowan-ui/core/tokens/ember`). Set `data-theme` to swap.
+- `rowan-row-details-panel` `rowIds` queue with previous/next, `size` (`sm` | `md` | `lg`), and `show(row, rowId)` as the documented open API.
+- Table cell `type: "sparkline"` for a `number[]` value and optional `tone`.
+- `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder`.
+- Table `caption-visually-hidden` keeps a caption for assistive technology without painting it.
+
+### Changed
+
+- React wrappers keep chart `labels` (`string[]`) instead of dropping FACE `labels`.
+- React wrappers ignore `open={false}` until the parent has passed `open={true}`, so `show()` is not clobbered.
+- `rowan-table-toolbar` hides its selection count when a `rowan-bulk-actions-bar` is on the same table.
+- Storybook manager chrome is dark again. Foundations/Themes is a four-palette gallery.
+
+### Fixed
+
+- `rowan-row-details-panel` fills the viewport so the drawer is not ~0px tall inside a `fit-content` dialog.
+- Table pagination no longer paints when `page` is unset (`hidden` wins over `display: inline-flex`).
+- Compact `rowan-app-layout` closed navigation does not peek over content.
+- Empty table caption no longer paints a padded bar above the header.
+
 ## 0.6.0 - 2026-09-17
 
 Catalog freeze of the former experimental four. Dashboard charts stay experimental.

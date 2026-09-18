@@ -125,11 +125,13 @@ export class RowanAppLayout extends BaseElement {
     const compact = this.#compactMedia?.matches ?? false;
     const closedCompactNavigation = compact && !this.navigationOpen;
 
+    this.#layout.classList.toggle("is-compact", compact);
     this.#navigationToggle.hidden = !compact;
     this.#navigationToggle.setAttribute("aria-controls", this.#navigation.id);
     this.#navigationToggle.setAttribute("aria-expanded", String(this.navigationOpen));
     this.#navigationToggle.setAttribute("aria-label", `Toggle ${this.navigationLabel}`);
     this.#backdrop.hidden = !compact || !this.navigationOpen;
+    this.#navigation.hidden = closedCompactNavigation;
     this.#navigation.toggleAttribute("inert", closedCompactNavigation);
     this.#navigation.setAttribute("aria-hidden", String(closedCompactNavigation));
     this.#navigation.setAttribute("aria-label", this.navigationLabel);

@@ -29,6 +29,7 @@ import { RowanEmptyState } from "@rowan-ui/core/empty-state";
 import { RowanFileItem } from "@rowan-ui/core/file-item";
 import { RowanFileUpload } from "@rowan-ui/core/file-upload";
 import {
+  applyFilters,
   RowanFilterBuilder,
   type RowanFilter,
   type RowanFilterField,
@@ -163,6 +164,8 @@ const filterPredicate: RowanFilter = {
 };
 filterBuilder.fields = [filterField];
 filterBuilder.filters = [filterPredicate];
+const filteredRows = applyFilters([{ role: "Admin" }], [filterPredicate], [filterField]);
+void filteredRows;
 const formField: RowanFormField = document.createElement("rowan-form-field");
 const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");

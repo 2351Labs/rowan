@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
+import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../checkbox/checkbox.js";
 import "../table/table.js";
 import "./table-toolbar.js";
@@ -64,6 +65,27 @@ describe("rowan-table-toolbar", () => {
     const selection = toolbar.shadowRoot.querySelector('[part="selection"]');
     expect(selection.hidden).to.equal(false);
     expect(selection.textContent.trim()).to.equal("1 selected");
+  });
+
+  it("hides the toolbar selection count when a bulk-actions-bar owns the table", async () => {
+    const table = createTable();
+    const toolbar = document.createElement("rowan-table-toolbar");
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    toolbar.slot = "toolbar";
+    bar.slot = "toolbar";
+    table.append(toolbar, bar);
+    table.selected = ["order-1"];
+
+    document.body.append(table);
+    await settle();
+
+    const selection = toolbar.shadowRoot.querySelector('[part="selection"]');
+    expect(toolbar.selectedCount).to.equal(1);
+    expect(selection.hidden).to.equal(true);
+    expect(bar.selectedCount).to.equal(1);
+    expect(bar.shadowRoot.querySelector('[part="selection-text"]').textContent).to.contain(
+      "1 selected",
+    );
   });
 
   it("synchronizes parent-driven table selection without a table event", async () => {

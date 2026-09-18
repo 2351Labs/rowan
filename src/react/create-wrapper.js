@@ -24,6 +24,7 @@ export function createRowanComponent(options) {
 
   const Component = forwardRef(function RowanWrapper(props, forwardedRef) {
     const innerRef = useRef(null);
+    const appliedOpenTrue = useRef(false);
     const { children, className, ...rest } = props;
     const properties = {};
     const events = {};
@@ -47,6 +48,17 @@ export function createRowanComponent(options) {
 
       if (ATTRIBUTE_PROPS.has(key) || key.startsWith("aria-") || key.startsWith("data-")) {
         attrs[key] = value;
+        continue;
+      }
+
+      if (key === "open") {
+        if (value === true) {
+          properties.open = true;
+          appliedOpenTrue.current = true;
+        } else if (value === false && appliedOpenTrue.current) {
+          properties.open = false;
+          appliedOpenTrue.current = false;
+        }
         continue;
       }
 

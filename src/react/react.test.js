@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import "../button/button.js";
 import "../table/table.js";
+import "../row-details-panel/row-details-panel.js";
 import { createRowanComponent } from "./create-wrapper.js";
 import { useRowanElement } from "./index.js";
 
@@ -18,6 +19,12 @@ const RowanTable = createRowanComponent({
   tagName: "rowan-table",
   displayName: "RowanTable",
   events: { onRowanSelect: "rowan-select" },
+});
+
+const RowanRowDetailsPanel = createRowanComponent({
+  tagName: "rowan-row-details-panel",
+  displayName: "RowanRowDetailsPanel",
+  events: { onRowanClose: "rowan-close" },
 });
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -327,5 +334,38 @@ describe("@rowan-ui/core/react", () => {
 
     container.querySelector("rowan-button").shadowRoot.querySelector("button").click();
     expect(clicks).to.have.length(0);
+  });
+
+  it("does not let open={false} close a panel opened with show()", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+
+    await act(async () => {
+      root.render(createElement(RowanRowDetailsPanel, { open: false, label: "Member" }));
+    });
+    await wait();
+
+    const panel = container.querySelector("rowan-row-details-panel");
+    panel.show({ id: "1", name: "Ada" }, "1");
+    await wait();
+    expect(panel.open).to.equal(true);
+
+    await act(async () => {
+      root.render(createElement(RowanRowDetailsPanel, { open: false, label: "Member" }));
+    });
+    await wait();
+    expect(panel.open).to.equal(true);
+
+    await act(async () => {
+      root.render(createElement(RowanRowDetailsPanel, { open: true, label: "Member" }));
+    });
+    await wait();
+    await act(async () => {
+      root.render(createElement(RowanRowDetailsPanel, { open: false, label: "Member" }));
+    });
+    await wait();
+    expect(panel.open).to.equal(false);
   });
 });

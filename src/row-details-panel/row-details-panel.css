@@ -11,10 +11,13 @@
   background: transparent;
   border: 0;
   box-sizing: border-box;
+  height: 100dvh;
   inset: 0;
+  margin: 0;
   max-block-size: 100dvh;
   max-inline-size: 100vw;
   padding: 0;
+  width: 100vw;
 }
 
 .overlay:not([open]) {
@@ -64,6 +67,36 @@
 
 .header {
   justify-content: space-between;
+}
+
+.header-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--rowan-row-details-panel-gap);
+}
+
+.pager {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--rowan-space-2);
+}
+
+.pager[hidden] {
+  display: none;
+}
+
+.pager-status {
+  color: var(--rowan-row-details-panel-muted-fg);
+  font-size: var(--rowan-font-size-sm);
+  white-space: nowrap;
+}
+
+:host([size="sm"]) {
+  --rowan-row-details-panel-width: 22rem;
+}
+
+:host([size="lg"]) {
+  --rowan-row-details-panel-width: 42rem;
 }
 
 .title {

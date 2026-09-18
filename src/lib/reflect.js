@@ -2,6 +2,7 @@ export const BOOLEAN_ATTRIBUTES = new Set([
   "active",
   "alert",
   "animated",
+  "caption-visually-hidden",
   "checked",
   "confirm-disabled",
   "disabled",

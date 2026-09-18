@@ -1,5 +1,6 @@
 import "./table-toolbar.js";
 import "../badge/badge.js";
+import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../table/table.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
@@ -87,6 +88,18 @@ export const WithSelectionContent = {
         customSelection: true,
       }),
     );
+    return table;
+  },
+};
+
+export const WithBulkActions = {
+  render: () => {
+    const table = createTable();
+    const toolbar = createToolbar({ label: "Team table controls" });
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(toolbar, bar);
     return table;
   },
 };

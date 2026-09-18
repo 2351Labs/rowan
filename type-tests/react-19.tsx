@@ -3,6 +3,8 @@ import type * as React from "react";
 import { useRowanElement } from "@rowan-ui/core/react";
 import { RowanButton } from "@rowan-ui/core/react/button";
 import { RowanTable as Table } from "@rowan-ui/core/react/table";
+import { RowanSparkline } from "@rowan-ui/core/react/sparkline";
+import { RowanDonutChart } from "@rowan-ui/core/react/donut-chart";
 import { RowanTrendChart } from "@rowan-ui/core/react/trend-chart";
 import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
 import type { RowanTable } from "@rowan-ui/core/table";
@@ -128,6 +130,15 @@ const wrapperList = (
   />
 );
 const wrapperChart = <RowanTrendChart series={[]} valueFormatter={(value) => String(value)} />;
+const wrapperSparkline = (
+  <RowanSparkline values={[4, 8, 3]} labels={["Mon", "Tue", "Wed"]} tone="success" />
+);
+const wrapperDonut = (
+  <RowanDonutChart
+    series={[{ id: "sources", label: "Sources", values: [12, 8] }]}
+    labels={["App", "Phone"]}
+  />
+);
 
 void TableView;
 void (null as unknown as AllRowanTagsAreTyped);
@@ -138,3 +149,5 @@ void invalidWrapperVariant;
 void wrapperTable;
 void wrapperList;
 void wrapperChart;
+void wrapperSparkline;
+void wrapperDonut;

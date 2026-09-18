@@ -23,12 +23,34 @@ function createTable() {
       { id: "role", header: "Role", type: "text" },
       { id: "edit", header: "Edit", type: "button" },
     ],
-    rows: [{ id: "member-1", name: "Ada", role: "Admin" }],
+    rows: [
+      { id: "member-1", name: "Ada", role: "Admin" },
+      { id: "member-2", name: "Alan", role: "Editor" },
+    ],
   };
   return table;
 }
 
 describe("rowan-row-details-panel", () => {
+  it("sizes the modal overlay and drawer to the viewport", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    document.body.append(panel);
+    await settle();
+
+    panel.open = true;
+    await settle();
+
+    const overlay = panel.shadowRoot.querySelector("dialog");
+    const drawer = panel.shadowRoot.querySelector(".panel");
+    const overlayBox = overlay.getBoundingClientRect();
+    const drawerBox = drawer.getBoundingClientRect();
+
+    expect(overlayBox.height).to.be.at.least(Math.min(window.innerHeight, 80) * 0.75);
+    expect(drawerBox.height).to.be.at.least(Math.min(window.innerHeight, 80) * 0.75);
+
+    panel.remove();
+  });
+
   it("makes background content inert while open", async () => {
     const outside = document.createElement("button");
     document.body.append(outside);
@@ -124,7 +146,7 @@ describe("rowan-row-details-panel", () => {
     expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Ada");
     expect(panel.shadowRoot.querySelector('[part="fields"]').textContent).to.contain("Admin");
 
-    const closeButton = panel.shadowRoot.querySelector("rowan-icon-button");
+    const closeButton = panel.shadowRoot.querySelector(".close");
     closeButton.shadowRoot.querySelector("button").click();
     await settle();
 
@@ -143,6 +165,67 @@ describe("rowan-row-details-panel", () => {
     await settle();
 
     expect(closeEvents).to.have.length(1);
+  });
+
+  it("walks a multi-select queue with previous and next", async () => {
+    const table = createTable();
+    table.selectable = "multiple";
+    table.selected = ["member-1", "member-2"];
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.forTable = "members-table";
+    const navigations = [];
+    panel.addEventListener("rowan-navigate", (event) => navigations.push(event.detail));
+
+    document.body.append(table, panel);
+    await settle();
+
+    table.shadowRoot
+      .querySelector("tbody tr")
+      .dispatchEvent(new MouseEvent("dblclick", { bubbles: true, composed: true }));
+    await settle();
+
+    expect(panel.rowIds).to.deep.equal(["member-1", "member-2"]);
+    expect(panel.rowId).to.equal("member-1");
+    expect(panel.shadowRoot.querySelector(".pager").hidden).to.equal(false);
+    expect(panel.shadowRoot.querySelector(".pager-status").textContent).to.equal("1 of 2");
+
+    panel.shadowRoot.querySelector(".next").shadowRoot.querySelector("button").click();
+    await settle();
+
+    expect(panel.rowId).to.equal("member-2");
+    expect(panel.row.name).to.equal("Alan");
+    expect(navigations[0].reason).to.equal("next");
+    expect(navigations[0].index).to.equal(1);
+  });
+
+  it("maps size to the drawer width token", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.open = true;
+    document.body.append(panel);
+    await settle();
+
+    expect(panel.size).to.equal("md");
+    panel.size = "lg";
+    await settle();
+    expect(panel.getAttribute("size")).to.equal("lg");
+    expect(getComputedStyle(panel).getPropertyValue("--rowan-row-details-panel-width")).to.include(
+      "42rem",
+    );
+  });
+
+  it("opens from show() without a rowan-close event", async () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    const closes = [];
+    panel.addEventListener("rowan-close", (event) => closes.push(event.detail));
+    document.body.append(panel);
+    await settle();
+
+    panel.show({ id: "3", name: "Grace" }, "3");
+    await settle();
+
+    expect(panel.open).to.equal(true);
+    expect(panel.rowId).to.equal("3");
+    expect(closes).to.deep.equal([]);
   });
 
   it("renders property-owned detail fields without emitting an event", async () => {
@@ -296,7 +379,7 @@ describe("rowan-row-details-panel", () => {
     outside.focus();
     await settle();
 
-    const closeButton = panel.shadowRoot.querySelector("rowan-icon-button");
+    const closeButton = panel.shadowRoot.querySelector(".close");
     expect(panel.shadowRoot.activeElement).to.equal(closeButton);
 
     closeButton.shadowRoot.querySelector("button").click();

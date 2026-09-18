@@ -330,6 +330,26 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("keeps a caption for assistive technology when caption-visually-hidden is set", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Work orders",
+      captionVisuallyHidden: true,
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const caption = table.shadowRoot.querySelector("caption");
+    expect(caption.hidden).to.equal(false);
+    expect(caption.classList.contains("visually-hidden")).to.equal(true);
+    expect(caption.textContent.trim()).to.equal("Work orders");
+    expect(getComputedStyle(caption).position).to.equal("absolute");
+
+    table.remove();
+  });
+
   it("treats config as full replacement and flattened properties as partial updates", async () => {
     const table = document.createElement("rowan-table");
     table.config = {
@@ -489,6 +509,28 @@ describe("rowan-table", () => {
     expect(table.shadowRoot.querySelectorAll("rowan-chip").length).to.equal(2);
     expect(table.shadowRoot.querySelectorAll("rowan-progress").length).to.equal(2);
     expect(table.shadowRoot.querySelectorAll(".price-pill").length).to.equal(2);
+  });
+
+  it("renders sparkline cells from a number array and optional tone", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "trend", header: "Trend", type: "sparkline", cell: { tone: "success" } },
+      ],
+      rows: [{ id: "1", name: "Wells", trend: [4, 8, 3, 9] }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const chart = table.shadowRoot.querySelector("rowan-sparkline");
+    expect(chart).to.not.equal(null);
+    expect(chart.values).to.deep.equal([4, 8, 3, 9]);
+    expect(chart.tone).to.equal("success");
+    expect(table.shadowRoot.querySelector("[data-cell-type='sparkline']")).to.equal(chart);
+
+    table.remove();
   });
 
   it("renders custom cell callbacks with the documented context", async () => {
@@ -1195,6 +1237,22 @@ describe("rowan-table", () => {
 
     const firstRendered = domRows[0];
     expect(firstRendered.getAttribute("aria-rowindex")).to.equal("2");
+
+    table.remove();
+  });
+
+  it("does not paint pagination when page is unset", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const pagination = table.shadowRoot.querySelector(".pagination");
+    expect(pagination.hidden).to.equal(true);
+    expect(getComputedStyle(pagination).display).to.equal("none");
 
     table.remove();
   });

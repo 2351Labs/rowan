@@ -30,6 +30,47 @@
   min-inline-size: 0;
 }
 
+.layout.is-compact .navigation {
+  block-size: 100dvh;
+  border-block-end: 0;
+  box-shadow: none;
+  inline-size: min(var(--rowan-app-layout-mobile-navigation-width, 21rem), 86vw);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: fixed;
+  transform: translateX(-110%);
+  visibility: hidden;
+  z-index: 2;
+}
+
+:host(:dir(rtl)) .layout.is-compact .navigation {
+  transform: translateX(110%);
+}
+
+:host([navigation-open]) .layout.is-compact .navigation {
+  box-shadow: 0 12px 28px rgb(16 38 28 / 18%);
+  pointer-events: auto;
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.layout.is-compact .navigation-toggle {
+  display: inline-flex;
+}
+
+.layout.is-compact .body {
+  display: block;
+}
+
+.layout.is-compact .backdrop:not([hidden]) {
+  background: var(--_app-layout-backdrop);
+  display: block;
+  inset: 0;
+  position: fixed;
+  z-index: 1;
+}
+
 .header {
   align-items: center;
   background: var(--_app-layout-header-bg);
@@ -55,6 +96,10 @@
   min-inline-size: 0;
   overflow: auto;
   padding: var(--rowan-app-layout-navigation-padding, var(--rowan-space-4));
+}
+
+.navigation[hidden] {
+  display: none;
 }
 
 .content {
@@ -132,24 +177,28 @@
   .navigation {
     block-size: 100dvh;
     border-block-end: 0;
-    box-shadow: 0 12px 28px rgb(16 38 28 / 18%);
+    box-shadow: none;
     inline-size: min(var(--rowan-app-layout-mobile-navigation-width, 21rem), 86vw);
     inset-block-start: 0;
     inset-inline-start: 0;
+    pointer-events: none;
     position: fixed;
-    transform: translateX(-105%);
+    transform: translateX(-110%);
     transition:
       transform 180ms ease,
-      visibility 180ms ease;
+      visibility 180ms ease,
+      box-shadow 180ms ease;
     visibility: hidden;
     z-index: 2;
   }
 
   :host(:dir(rtl)) .navigation {
-    transform: translateX(105%);
+    transform: translateX(110%);
   }
 
   :host([navigation-open]) .navigation {
+    box-shadow: 0 12px 28px rgb(16 38 28 / 18%);
+    pointer-events: auto;
     transform: translateX(0);
     visibility: visible;
   }

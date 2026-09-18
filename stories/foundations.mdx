@@ -9,6 +9,7 @@ import {
   primitiveStructuralTokens,
   primitiveTypographyTokens,
   semanticTokens,
+  shippedThemeIds,
   themeComparisonTokens,
   tokenSourcePaths,
 } from "../src/tokens/token-data.js";
@@ -51,7 +52,8 @@ import {
 <p className="tokens-note">Source of truth: {tokenSourcePaths.join(", ")}</p>
 
 <p className="tokens-theme-hint">
-  Use the Storybook toolbar Theme toggle to inspect token behavior across light and dark modes.
+  Use the Storybook toolbar Theme control to inspect {shippedThemeIds.join(", ")}. A side-by-side
+  gallery lives under Foundations/Themes.
 </p>
 
 </div>

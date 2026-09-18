@@ -144,12 +144,52 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ## Release — npm 0.5.0
 
-**Status:** `@rowan-ui/core@0.5.0` and `@rowan-ui/icons@0.5.0` are on npm. Catalog now `0.6.0` in git (`sprints-data.md` Sprint 8). Publish `0.6.0` is a later cut.
+**Status:** `@rowan-ui/core@0.6.0` is on npm. Git is `0.6.1` (themes, admin-shell follow-through). Publish `0.6.1` after this lands on `main` so GitHub Pages rebuilds Storybook.
 
 - [x] README, Storybook Home, and docs install `@rowan-ui/core @rowan-ui/icons`.
 - [x] Package metadata (`repository`, `publishConfig.access`) on core and icons.
 - [x] Tag workflow publishes core, then icons. `v0.5.0` is tagged.
 - [x] npm org `rowan-ui` and repo secret `NPM_TOKEN`.
+
+## Admin-shell follow-through
+
+**Goal.** Fix the CSS bugs that make shipped widgets look broken in a real admin app, then the APIs that app had to invent.
+
+**Status.** Sprint 3 done. Next: Sprint 4 (P3 docs).
+
+### Sprint 1 — P0 layout bugs
+
+**Status:** done
+
+- [x] `rowan-row-details-panel`: native `<dialog>` fills the viewport so the absolute drawer is not ~0px tall.
+- [x] Table `.pagination[hidden]` is `display: none` (author `display: inline-flex` must not beat `hidden`).
+- [x] Compact `rowan-app-layout` closed nav does not peek over content (`visibility`, `pointer-events`, no leftover shadow).
+
+### Sprint 2 — P1 details panel and table cells
+
+**Status:** done
+
+- [x] Details panel queue: walk a multi-select (`rowIds` / prev-next or a documented pager slot).
+- [x] Details panel `size` (`sm | md | lg`) mapping to `--rowan-row-details-panel-width`.
+- [x] Document `panel.show(row)` as the open API; stop React `open={false}` from clobbering an open panel.
+- [x] Table `type: "sparkline"` (`value` is `number[]`, optional `tone`).
+- [x] React wrappers keep chart `labels` (do not drop it because of FACE `BaseElement.labels`).
+
+### Sprint 3 — P2 composition and packaging
+
+**Status:** done
+
+- [x] One table chrome: toolbar = filters/density; bulk bar = selection count. Docs, no duplicate “N selected.”
+- [x] `applyFilters(rows, filters)` from `@rowan-ui/core/filter-builder`.
+- [x] Icons peer on published core `^0.6.0` (consume `@rowan-ui/icons@0.6.0`).
+- [x] `caption-visually-hidden` (or equivalent) so a caption can name the table without duplicating a page `h1`.
+
+### Sprint 4 — P3 docs
+
+**Status:** pending
+
+- [ ] Storybook recipe: table + bulk actions + `rowan-dialog` alert (Flag / Assign).
+- [ ] Do not promote KPI / sparkline / donut until Sprint 2 sparkline cell type and wrapper `labels` land.
 
 ## Later / not this track
 
