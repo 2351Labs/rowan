@@ -10,6 +10,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Table virtualization is Stable: `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.
 - `rowan-rich-text-editor` is Stable. The document is paragraphs, ordered/unordered lists, and bold/italic/underline runs. HTML is never a value.
+- `rowan-filter-builder` is Stable. Filters are a flat AND list of `{ id, field, operator, value }`. There are no nested groups.
 
 ## 0.5.0 - 2026-09-17
 

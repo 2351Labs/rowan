@@ -6472,11 +6472,45 @@
             },
             {
               "kind": "field",
-              "name": "fields"
+              "name": "fields",
+              "return": {
+                "type": {
+                  "text": "RowanFilterField[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFilterField[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFilterField[]"
+              },
+              "description": "Filterable fields. Arrays are property-only."
             },
             {
               "kind": "field",
-              "name": "filters"
+              "name": "filters",
+              "return": {
+                "type": {
+                  "text": "RowanFilter[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFilter[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFilter[]"
+              },
+              "description": "Flat AND list of predicates. Arrays are property-only."
             },
             {
               "kind": "field",

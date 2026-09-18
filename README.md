@@ -36,9 +36,9 @@ and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
 Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. `rowan-filter-builder` and `rowan-trend-chart` are experimental
-and **out of `0.5`** (and a later `1.0` until they are marked Stable). Table
-virtualization and `rowan-rich-text-editor` are Stable.
+the top layer. `rowan-trend-chart` is experimental and **out of `0.5`** (and a
+later `1.0` until it is marked Stable). Table virtualization,
+`rowan-rich-text-editor`, and `rowan-filter-builder` are Stable.
 
 ## Install
 
@@ -308,7 +308,7 @@ them.
 | `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                       |
 | Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.         |
 | `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, unordered-list, and ordered-list. Runs are bold, italic, and underline. HTML is never a value. |
-| `rowan-filter-builder`          | Experimental | Predicate shape may change.                                                                                          |
+| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.             |
 | `rowan-trend-chart`             | Experimental | Config shape may change.                                                                                             |
 
 ## Rowan Carousel
@@ -925,7 +925,15 @@ Use `rowan-table-toolbar` for selection-aware table context and light-DOM contro
 
 ### Filtering and row details
 
-Keep the source rows in application state. The filter builder reports user changes but does not mutate `table.rows`; the application applies those filters and assigns the derived rows. The details panel listens to user row activation and does not modify the row record.
+Keep the source rows in application state. The filter builder reports a frozen
+flat AND list (`filters[]` of `{ id, field, operator, value }`) and does not
+mutate `table.rows`; the application applies those filters and assigns the
+derived rows. There are no nested groups. Field `type` is `text`, `number`,
+`date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
+`options` are present. Unknown operators on a filter become that field's first
+operator. Import `RowanFilter` and `RowanFilterField` from
+`@rowan-ui/core/filter-builder`. The details panel listens to user row
+activation and does not modify the row record.
 
 ```html
 <rowan-table id="members-table">

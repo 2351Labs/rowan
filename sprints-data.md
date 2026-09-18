@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 2 done. Next: Sprint 3 (filter-builder predicate freeze). Wrappers track remains in `sprints.md`.
+**Status.** Sprint 3 done. Next: Sprint 4 (trend-chart line freeze). Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -74,7 +74,7 @@ Collaboration, markdown import, headings/links/images, a sanitizing HTML setter.
 
 ## Sprint 3 — Filter-builder predicate freeze
 
-**Status:** pending
+**Status:** done
 
 The experimental note was “predicate shape may change.” Freeze a **flat** list. Conjunction is implicit AND. Nested groups and OR would be a new experimental surface later.
 
@@ -91,10 +91,10 @@ The host does not evaluate predicates against rows. Applications (or a documente
 
 ### Done when
 
-- [ ] README marks `rowan-filter-builder` **Stable** and states: flat AND list, no groups.
-- [ ] Tests pin field types, valueless operators clearing `value`, table-inferred fields, and `rowan-filter-change` payloads.
-- [ ] Types for fields, filters, and operators are public. Unknown operators/types are dropped or coerced the same way they are today — that behavior is documented, not redesigned.
-- [ ] CEM lists `fields` and `filters` as property-only.
+- [x] README marks `rowan-filter-builder` **Stable** and states: flat AND list, no groups.
+- [x] Tests pin field types, valueless operators clearing `value`, table-inferred fields, and `rowan-filter-change` payloads.
+- [x] Types for fields, filters, and operators are public. Unknown operators/types are dropped or coerced the same way they are today — that behavior is documented, not redesigned.
+- [x] CEM lists `fields` and `filters` as property-only.
 
 ### Out of scope
 

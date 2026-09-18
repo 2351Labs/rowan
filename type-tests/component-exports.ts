@@ -26,7 +26,13 @@ import { RowanDropzone } from "@rowan-ui/core/dropzone";
 import { RowanEmptyState } from "@rowan-ui/core/empty-state";
 import { RowanFileItem } from "@rowan-ui/core/file-item";
 import { RowanFileUpload } from "@rowan-ui/core/file-upload";
-import { RowanFilterBuilder } from "@rowan-ui/core/filter-builder";
+import {
+  RowanFilterBuilder,
+  type RowanFilter,
+  type RowanFilterField,
+  type RowanFilterFieldType,
+  type RowanFilterOperator,
+} from "@rowan-ui/core/filter-builder";
 import { RowanFormField } from "@rowan-ui/core/form-field";
 import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
@@ -125,6 +131,23 @@ const emptyState: RowanEmptyState = document.createElement("rowan-empty-state");
 const fileItem: RowanFileItem = document.createElement("rowan-file-item");
 const fileUpload: RowanFileUpload = document.createElement("rowan-file-upload");
 const filterBuilder: RowanFilterBuilder = document.createElement("rowan-filter-builder");
+const filterFieldType: RowanFilterFieldType = "select";
+const filterOperator: RowanFilterOperator = "contains";
+const filterField: RowanFilterField = {
+  id: "role",
+  label: "Role",
+  type: filterFieldType,
+  operators: [filterOperator, "equals"],
+  options: ["Admin", "Editor"],
+};
+const filterPredicate: RowanFilter = {
+  id: "role-filter",
+  field: "role",
+  operator: "equals",
+  value: "Admin",
+};
+filterBuilder.fields = [filterField];
+filterBuilder.filters = [filterPredicate];
 const formField: RowanFormField = document.createElement("rowan-form-field");
 const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");

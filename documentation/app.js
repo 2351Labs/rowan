@@ -2831,7 +2831,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,

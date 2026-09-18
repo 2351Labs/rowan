@@ -179,4 +179,69 @@ describe("rowan-filter-builder", () => {
       },
     ]);
   });
+
+  it("keeps the five field types and coerces unknown types and operators", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [
+      { id: "name", label: "Name", type: "text" },
+      { id: "age", label: "Age", type: "number" },
+      { id: "joined", label: "Joined", type: "date" },
+      { id: "active", label: "Active", type: "boolean" },
+      { id: "role", label: "Role", type: "select", options: ["Admin", "Editor"] },
+      { id: "range", label: "Range", type: "range" },
+      { id: "status", label: "Status", type: "range", options: ["Open"] },
+    ];
+    builder.filters = [
+      { id: "age-filter", field: "age", operator: "greater-than", value: 18 },
+      { id: "name-filter", field: "name", operator: "matches", value: "Ada" },
+      { combinator: "or", filters: [{ field: "name", operator: "contains", value: "Ada" }] },
+    ];
+
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.fields.map((field) => ({ id: field.id, type: field.type }))).to.deep.equal([
+      { id: "name", type: "text" },
+      { id: "age", type: "number" },
+      { id: "joined", type: "date" },
+      { id: "active", type: "boolean" },
+      { id: "role", type: "select" },
+      { id: "range", type: "text" },
+      { id: "status", type: "select" },
+    ]);
+    expect(builder.filters).to.deep.equal([
+      { id: "age-filter", field: "age", operator: "greater-than", value: "18" },
+      { id: "name-filter", field: "name", operator: "contains", value: "Ada" },
+      { id: "filter-3", field: "name", operator: "contains", value: "" },
+    ]);
+    expect(builder.hasAttribute("fields")).to.equal(false);
+    expect(builder.hasAttribute("filters")).to.equal(false);
+
+    builder.remove();
+  });
+
+  it("emits a copied remove payload when the user deletes a filter", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [{ id: "name", label: "Name" }];
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    document.body.append(builder);
+    await settle();
+
+    const changes = [];
+    builder.addEventListener("rowan-filter-change", (event) => changes.push(event.detail));
+
+    builder.shadowRoot.querySelector('[data-action="remove"]').click();
+    await settle();
+
+    expect(builder.filters).to.deep.equal([]);
+    expect(changes).to.deep.equal([
+      {
+        action: "remove",
+        filter: { id: "name-filter", field: "name", operator: "contains", value: "Ada" },
+        filters: [],
+      },
+    ]);
+
+    builder.remove();
+  });
 });
