@@ -3,11 +3,14 @@ import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const RUNBOOK_DOCUMENT = {
   blocks: [
+    { type: "heading", level: 2, children: [{ text: "Escalation" }] },
     {
       type: "paragraph",
       children: [
         { text: "Escalation guidance: ", bold: true },
-        { text: "notify the incident lead before changing service routing." },
+        { text: "notify the incident lead before changing service routing. " },
+        { text: "Open the runbook", href: "https://example.test/runbook" },
+        { text: "." },
       ],
     },
     {
