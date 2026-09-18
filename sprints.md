@@ -195,4 +195,4 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 - Vue/Svelte wrappers.
 - Dropping `useRowanElement` (keep until wrappers cover property-only + events).
-- Data/dashboard track: `sprints-data.md` (Sprints 1–8 done; KPI / sparkline / donut promoted to Stable).
+- Data/dashboard track: `sprints-data.md` (Sprints 1–8 done; KPI, sparkline, bar, and donut are Stable).

@@ -1082,7 +1082,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. KPI, sparkline, and donut charts are Stable. Bar chart is experimental.</p>
+        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. KPI, sparkline, bar, and donut charts are Stable.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization.
@@ -1833,9 +1833,9 @@ document.documentElement.dataset.theme = "lagoon";
     id: "bar-chart",
     group: "Components",
     title: "Rowan Bar Chart",
-    summary: "Experimental small categorical bar chart with a matching data table.",
+    summary: "Small categorical bar chart with a matching data table.",
     tags: ["data display", "bar", "chart"],
-    keywords: ["bar chart", "categorical", "experimental"],
+    keywords: ["bar chart", "categorical"],
     content: () => `
       <section class="doc-section" data-doc-section id="bar-chart-overview">
         <h2>Categorical comparison</h2>

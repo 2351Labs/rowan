@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 8 done. KPI, sparkline, and donut promoted to Stable. Wrappers track remains in `sprints.md`.
+**Status.** Sprint 8 done. KPI, sparkline, bar, and donut are Stable. Wrappers track remains in `sprints.md`.
 
 ---
 

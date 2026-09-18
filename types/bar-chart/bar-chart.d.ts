@@ -1,5 +1,5 @@
 /**
- * Experimental small categorical bar chart. Native SVG, no animation.
+ * Frozen small categorical bar chart. Native SVG, no animation.
  * @tag rowan-bar-chart
  * @attr {string} label
  * @attr {string} description

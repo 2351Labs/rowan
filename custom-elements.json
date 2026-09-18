@@ -911,7 +911,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental small categorical bar chart. Native SVG, no animation.",
+          "description": "Frozen small categorical bar chart. Native SVG, no animation.",
           "name": "RowanBarChart",
           "cssProperties": [
             {
