@@ -131,6 +131,7 @@ export class RowanAppLayout extends BaseElement {
     this.#navigationToggle.setAttribute("aria-expanded", String(this.navigationOpen));
     this.#navigationToggle.setAttribute("aria-label", `Toggle ${this.navigationLabel}`);
     this.#backdrop.hidden = !compact || !this.navigationOpen;
+    this.#navigation.hidden = closedCompactNavigation;
     this.#navigation.toggleAttribute("inert", closedCompactNavigation);
     this.#navigation.setAttribute("aria-hidden", String(closedCompactNavigation));
     this.#navigation.setAttribute("aria-label", this.navigationLabel);

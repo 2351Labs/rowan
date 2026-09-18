@@ -98,6 +98,10 @@
   padding: var(--rowan-app-layout-navigation-padding, var(--rowan-space-4));
 }
 
+.navigation[hidden] {
+  display: none;
+}
+
 .content {
   min-block-size: 0;
   min-inline-size: 0;
