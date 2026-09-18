@@ -337,21 +337,33 @@ const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
 </script>`;
 
 const ROW_DETAILS_PANEL_SNIPPET = `<rowan-table id="members-table"></rowan-table>
-<rowan-row-details-panel for-table="members-table"></rowan-row-details-panel>
+<rowan-row-details-panel id="member-details" for-table="members-table" size="md"></rowan-row-details-panel>
+<rowan-button id="open-member">View details</rowan-button>
 
 <script type="module">
   const table = document.querySelector("#members-table");
+  const panel = document.querySelector("#member-details");
 
   table.config = {
+    selectable: "multiple",
     rowId: "id",
     columns: [
       { id: "name", header: "Name" },
       { id: "role", header: "Role" },
     ],
-    rows: [{ id: "1", name: "Ada", role: "Admin" }],
+    rows: [
+      { id: "1", name: "Ada", role: "Admin" },
+      { id: "2", name: "Alan", role: "Editor" },
+    ],
   };
 
-  // Double-click a row or press Enter on its focused row.
+  document.querySelector("#open-member").addEventListener("rowan-click", () => {
+    const selected = table.selected;
+    const rowId = selected[0] ?? table.rows[0].id;
+    const row = table.rows.find((item) => item.id === rowId);
+    panel.rowIds = selected.length ? selected : [rowId];
+    panel.show(row, rowId);
+  });
 </script>`;
 
 const ALERT_SNIPPET = `<rowan-alert tone="info">Heads up: deployment starts at 4pm.</rowan-alert>
@@ -3005,7 +3017,7 @@ document.documentElement.dataset.theme = "lagoon";
     content: () => `
       <section class="doc-section" data-doc-section id="row-details-panel-overview">
         <h2>Inspect an activated row</h2>
-        <p>Double-click a row or press Enter on a focused row to open its details. The panel reads the row record and does not mutate consumer data.</p>
+        <p>Double-click a row or press Enter on a focused row to open its details. In an app with checkboxes and action buttons, call <code>panel.show(row, rowId)</code> from your own control. Multi-select activation walks the selected ids with previous/next. The panel reads the row record and does not mutate consumer data.</p>
         <div class="table-shell">
           <rowan-table id="docs-row-details-table"></rowan-table>
         </div>
@@ -3015,7 +3027,7 @@ document.documentElement.dataset.theme = "lagoon";
 
       <section class="doc-section" data-doc-section id="row-details-panel-contract">
         <h2>Behavior contract</h2>
-        <p>The panel can be controlled through row, rowId, and open properties or bound to table activation through for-table. It emits rowan-close only for user dismissal.</p>
+        <p>The supported open API is <code>show(row, rowId)</code>. Do not pass React <code>open={false}</code> unless you fully own open state. Bound tables still open from rowan-row-activate. size is sm, md, or lg. It emits rowan-close for user dismissal and rowan-navigate when the user moves in a queue.</p>
         ${codeBlock(ROW_DETAILS_PANEL_SNIPPET, "html")}
       </section>
     `,

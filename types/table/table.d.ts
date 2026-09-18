@@ -105,7 +105,7 @@ export class RowanTable extends BaseElement {
     } | undefined): void;
     #private;
 }
-export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "custom";
+export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "custom";
 export type RowanTableRow = Record<string, unknown>;
 export type RowanTableCellContext = {
     value: unknown;

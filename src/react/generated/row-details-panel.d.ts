@@ -7,6 +7,7 @@ export const RowanRowDetailsPanel: ForwardRefExoticComponent<
     RowanRowDetailsPanelElement,
     {
       onRowanClose?: (event: CustomEvent) => void;
+      onRowanNavigate?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanRowDetailsPanelElement>

@@ -13,6 +13,7 @@ import "../icon-button/icon-button.js";
 import "../avatar/avatar.js";
 import "../chip/chip.js";
 import "../progress/progress.js";
+import "../sparkline/sparkline.js";
 import "../empty-state/empty-state.js";
 
 const CELL_TYPES = new Set([
@@ -28,6 +29,7 @@ const CELL_TYPES = new Set([
   "avatar",
   "chip",
   "progress",
+  "sparkline",
   "custom",
 ]);
 
@@ -49,7 +51,7 @@ function nonNegativeInteger(value, fallback) {
 }
 
 /**
- * @typedef {"text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "custom"} RowanTableCellType
+ * @typedef {"text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "custom"} RowanTableCellType
  */
 
 /** @typedef {Record<string, unknown>} RowanTableRow */
@@ -1521,6 +1523,9 @@ export class RowanTable extends BaseElement {
       case "progress":
         this.#renderProgressCell(cell, context);
         return;
+      case "sparkline":
+        this.#renderSparklineCell(cell, context);
+        return;
       case "custom":
         this.#renderCustomCell(cell, context);
         return;
@@ -1771,6 +1776,34 @@ export class RowanTable extends BaseElement {
     }
 
     cell.append(progress);
+  }
+
+  #renderSparklineCell(cell, context) {
+    const chart = customElements.get("rowan-sparkline")
+      ? document.createElement("rowan-sparkline")
+      : document.createElement("span");
+    chart.dataset.cellType = "sparkline";
+
+    const values = Array.isArray(context.value)
+      ? context.value
+      : Array.isArray(context.row?.[context.column.id])
+        ? context.row[context.column.id]
+        : [];
+
+    if (chart.tagName === "SPAN") {
+      chart.textContent = values.filter((item) => typeof item === "number").join(", ");
+      cell.append(chart);
+      return;
+    }
+
+    chart.values = values;
+    const tone = this.#resolveCellOption(context.column, "tone", context.value, context.row);
+    if (typeof tone === "string" && tone.length > 0) chart.tone = tone;
+    const label = this.#resolveCellOption(context.column, "label", context.value, context.row);
+    if (typeof label === "string" && label.length > 0) chart.label = label;
+    const labels = this.#resolveCellOption(context.column, "labels", context.value, context.row);
+    if (Array.isArray(labels)) chart.labels = labels;
+    cell.append(chart);
   }
 
   #renderCustomCell(cell, context) {

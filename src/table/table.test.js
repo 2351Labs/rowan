@@ -491,6 +491,28 @@ describe("rowan-table", () => {
     expect(table.shadowRoot.querySelectorAll(".price-pill").length).to.equal(2);
   });
 
+  it("renders sparkline cells from a number array and optional tone", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "trend", header: "Trend", type: "sparkline", cell: { tone: "success" } },
+      ],
+      rows: [{ id: "1", name: "Wells", trend: [4, 8, 3, 9] }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const chart = table.shadowRoot.querySelector("rowan-sparkline");
+    expect(chart).to.not.equal(null);
+    expect(chart.values).to.deep.equal([4, 8, 3, 9]);
+    expect(chart.tone).to.equal("success");
+    expect(table.shadowRoot.querySelector("[data-cell-type='sparkline']")).to.equal(chart);
+
+    table.remove();
+  });
+
   it("renders custom cell callbacks with the documented context", async () => {
     const table = document.createElement("rowan-table");
     const contexts = [];

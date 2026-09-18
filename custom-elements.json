@@ -14640,6 +14640,9 @@
             },
             {
               "name": "--rowan-row-details-panel-border"
+            },
+            {
+              "name": "--rowan-row-details-panel-width"
             }
           ],
           "cssParts": [
@@ -14657,6 +14660,9 @@
             },
             {
               "name": "close"
+            },
+            {
+              "name": "pager"
             },
             {
               "name": "body"
@@ -14684,6 +14690,10 @@
               "name": "empty"
             },
             {
+              "description": "Replaces the default previous/next controls",
+              "name": "pager"
+            },
+            {
               "description": "Supplemental detail content",
               "name": ""
             },
@@ -14708,6 +14718,44 @@
             {
               "kind": "field",
               "name": "rowId"
+            },
+            {
+              "kind": "field",
+              "name": "rowIds",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Queue of row ids for previous/next. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "return": {
+                "type": {
+                  "text": "\"sm\" | \"md\" | \"lg\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"sm\" | \"md\" | \"lg\""
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
@@ -14833,6 +14881,10 @@
             {
               "description": "Fired when the user dismisses the panel",
               "name": "rowan-close"
+            },
+            {
+              "description": "Fired when the user moves to another queued row",
+              "name": "rowan-navigate"
             }
           ],
           "attributes": [
@@ -14846,6 +14898,12 @@
               "name": "side",
               "type": {
                 "text": "\"start\"|\"end\""
+              }
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\"|\"md\"|\"lg\""
               }
             },
             {

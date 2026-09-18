@@ -9,5 +9,6 @@ export const RowanRowDetailsPanel = createRowanComponent({
   displayName: "RowanRowDetailsPanel",
   events: {
     onRowanClose: "rowan-close",
+    onRowanNavigate: "rowan-navigate",
   },
 });

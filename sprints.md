@@ -155,7 +155,7 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 **Goal.** Fix the CSS bugs that make shipped widgets look broken in a real admin app, then the APIs that app had to invent.
 
-**Status.** Sprint 1 done. Next: Sprint 2 (P1 details panel and table cells).
+**Status.** Sprint 2 done. Next: Sprint 3 (P2 composition and packaging).
 
 ### Sprint 1 — P0 layout bugs
 
@@ -167,13 +167,13 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ### Sprint 2 — P1 details panel and table cells
 
-**Status:** pending
+**Status:** done
 
-- [ ] Details panel queue: walk a multi-select (`rowIds` / prev-next or a documented pager slot).
-- [ ] Details panel `size` (`sm | md | lg`) mapping to `--rowan-row-details-panel-width`.
-- [ ] Document `panel.show(row)` as the open API; stop React `open={false}` from clobbering an open panel.
-- [ ] Table `type: "sparkline"` (`value` is `number[]`, optional `tone`).
-- [ ] React wrappers keep chart `labels` (do not drop it because of FACE `BaseElement.labels`).
+- [x] Details panel queue: walk a multi-select (`rowIds` / prev-next or a documented pager slot).
+- [x] Details panel `size` (`sm | md | lg`) mapping to `--rowan-row-details-panel-width`.
+- [x] Document `panel.show(row)` as the open API; stop React `open={false}` from clobbering an open panel.
+- [x] Table `type: "sparkline"` (`value` is `number[]`, optional `tone`).
+- [x] React wrappers keep chart `labels` (do not drop it because of FACE `BaseElement.labels`).
 
 ### Sprint 3 — P2 composition and packaging
 

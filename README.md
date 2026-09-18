@@ -990,8 +990,12 @@ derived rows. There are no nested groups. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
 operator. Import `RowanFilter` and `RowanFilterField` from
-`@rowan-ui/core/filter-builder`. The details panel listens to user row
-activation and does not modify the row record.
+`@rowan-ui/core/filter-builder`. The details panel opens from
+`panel.show(row, rowId)` or from `rowan-row-activate` when `for-table` is set.
+Do not pass React `open={false}` unless you fully control `open`. Multi-select
+activation fills `rowIds` and shows previous/next. `size` is `sm`, `md`, or `lg`.
+The panel does not modify the row record. Table columns may use
+`type: "sparkline"` with a `number[]` value.
 
 ```html
 <rowan-table id="members-table">

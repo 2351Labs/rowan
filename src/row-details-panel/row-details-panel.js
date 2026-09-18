@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
@@ -28,6 +29,8 @@ function hasRowId(value) {
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
+
+const PANEL_SIZES = new Set(["sm", "md", "lg"]);
 
 function normalizeFields(value) {
   const source = Array.isArray(value) ? value : [];
@@ -64,7 +67,7 @@ function isDetailColumn(column) {
     return false;
   }
 
-  return !["button", "icon-button", "custom"].includes(column.type);
+  return !["button", "icon-button", "custom", "sparkline"].includes(column.type);
 }
 
 function formatDisplayValue(value) {
@@ -94,12 +97,15 @@ function formatDisplayValue(value) {
  * @tag rowan-row-details-panel
  * @attr {boolean} open
  * @attr {"start"|"end"} side
+ * @attr {"sm"|"md"|"lg"} size
  * @attr {string} for-table
  * @attr {string} row-id
  * @attr {string} label
  * @attr {string} close-label
+ * @property {string[]} rowIds - Queue of row ids for previous/next. Arrays are property-only.
  * @slot title - Custom panel title
  * @slot empty - Content shown when no row is available
+ * @slot pager - Replaces the default previous/next controls
  * @slot - Supplemental detail content
  * @slot actions - Panel actions
  * @csspart overlay
@@ -107,6 +113,7 @@ function formatDisplayValue(value) {
  * @csspart header
  * @csspart title
  * @csspart close
+ * @csspart pager
  * @csspart body
  * @csspart fields
  * @csspart field
@@ -114,21 +121,33 @@ function formatDisplayValue(value) {
  * @csspart actions
  * @cssprop --rowan-row-details-panel-bg
  * @cssprop --rowan-row-details-panel-border
+ * @cssprop --rowan-row-details-panel-width
  * @event rowan-close - Fired when the user dismisses the panel
+ * @event rowan-navigate - Fired when the user moves to another queued row
  */
 export class RowanRowDetailsPanel extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./row-details-panel.css", import.meta.url).href;
-  static observedAttributes = ["open", "side", "for-table", "row-id", "label", "close-label"];
+  static observedAttributes = [
+    "open",
+    "side",
+    "size",
+    "for-table",
+    "row-id",
+    "label",
+    "close-label",
+  ];
   static upgradeProperties = [
     "table",
     "forTable",
     "row",
     "rowId",
+    "rowIds",
     "fields",
     "open",
     "side",
+    "size",
     "label",
     "closeLabel",
   ];
@@ -153,6 +172,13 @@ export class RowanRowDetailsPanel extends BaseElement {
   #lastFocused = null;
   #isOpen = false;
   #titleId = "";
+  #queue = [];
+  #queueIndex = 0;
+  #pager = null;
+  #pagerStatus = null;
+  #prevButton = null;
+  #nextButton = null;
+  #pagerSlot = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -194,6 +220,10 @@ export class RowanRowDetailsPanel extends BaseElement {
     if (name === "row-id" && oldValue !== newValue) {
       this.#syncRowFromTable();
     }
+
+    if (name === "size" && rewriteEnumAttribute(this, name, newValue, PANEL_SIZES, "md")) {
+      return;
+    }
   }
 
   get table() {
@@ -233,6 +263,27 @@ export class RowanRowDetailsPanel extends BaseElement {
   set rowId(value) {
     const next = normalizeRowId(value);
     this.reflectString("row-id", next.trim().length > 0 ? next : null);
+  }
+
+  /** @returns {string[]} */
+  get rowIds() {
+    return [...this.#queue];
+  }
+
+  /** @param {string[]} value */
+  set rowIds(value) {
+    this.#setQueue(value, this.rowId);
+    this.requestRender();
+  }
+
+  /** @returns {"sm" | "md" | "lg"} */
+  get size() {
+    return normalizeEnum(this.readString("size", "md"), PANEL_SIZES, "md");
+  }
+
+  /** @param {"sm" | "md" | "lg"} value */
+  set size(value) {
+    reflectEnum(this, "size", value, PANEL_SIZES, "md");
   }
 
   get fields() {
@@ -282,6 +333,11 @@ export class RowanRowDetailsPanel extends BaseElement {
   show(row = this.row, rowId = this.rowId) {
     if (isRecord(row)) this.row = row;
     if (rowId != null) this.rowId = rowId;
+    if (this.#queue.length === 0 && hasRowId(this.rowId)) {
+      this.#setQueue([this.rowId], this.rowId);
+    } else if (hasRowId(this.rowId)) {
+      this.#queueIndex = Math.max(0, this.#queue.indexOf(normalizeRowId(this.rowId)));
+    }
     this.open = true;
   }
 
@@ -303,7 +359,15 @@ export class RowanRowDetailsPanel extends BaseElement {
               <div class="heading">
                 <h2 class="title" part="title"><slot name="title"><span class="title-text"></span></slot></h2>
               </div>
-              <rowan-icon-button class="close" part="close" variant="ghost">x</rowan-icon-button>
+              <div class="header-actions">
+                <div class="pager" part="pager" hidden>
+                  <rowan-icon-button class="prev" variant="ghost">‹</rowan-icon-button>
+                  <span class="pager-status"></span>
+                  <rowan-icon-button class="next" variant="ghost">›</rowan-icon-button>
+                </div>
+                <slot name="pager"></slot>
+                <rowan-icon-button class="close" part="close" variant="ghost">x</rowan-icon-button>
+              </div>
             </header>
             <div class="body" part="body">
               <dl class="fields" part="fields"></dl>
@@ -319,7 +383,12 @@ export class RowanRowDetailsPanel extends BaseElement {
       this.#panel = this.renderRoot.querySelector(".panel");
       this.#title = this.renderRoot.querySelector(".title");
       this.#titleText = this.renderRoot.querySelector(".title-text");
-      this.#closeButton = this.renderRoot.querySelector("rowan-icon-button");
+      this.#closeButton = this.renderRoot.querySelector(".close");
+      this.#pager = this.renderRoot.querySelector(".pager");
+      this.#pagerStatus = this.renderRoot.querySelector(".pager-status");
+      this.#prevButton = this.renderRoot.querySelector(".prev");
+      this.#nextButton = this.renderRoot.querySelector(".next");
+      this.#pagerSlot = this.renderRoot.querySelector('slot[name="pager"]');
       this.#fieldsContainer = this.renderRoot.querySelector(".fields");
       this.#emptyState = this.renderRoot.querySelector(".empty");
     }
@@ -331,6 +400,9 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#panel.setAttribute("aria-labelledby", this.#titleId);
     this.#titleText.textContent = this.label;
     this.#closeButton.label = this.closeLabel;
+    this.#prevButton.label = "Previous row";
+    this.#nextButton.label = "Next row";
+    this.#renderPager();
     this.#renderDetails();
     this.#applyDefaultA11y();
     this.#syncOpenState();
@@ -360,6 +432,26 @@ export class RowanRowDetailsPanel extends BaseElement {
       },
       { signal },
     );
+
+    this.#prevButton.addEventListener(
+      "rowan-click",
+      (event) => {
+        event.stopPropagation();
+        this.#moveQueue(-1);
+      },
+      { signal },
+    );
+
+    this.#nextButton.addEventListener(
+      "rowan-click",
+      (event) => {
+        event.stopPropagation();
+        this.#moveQueue(1);
+      },
+      { signal },
+    );
+
+    this.#pagerSlot.addEventListener("slotchange", () => this.requestRender(), { signal });
 
     this.#overlay.addEventListener(
       "cancel",
@@ -439,11 +531,71 @@ export class RowanRowDetailsPanel extends BaseElement {
     const detail = event.detail;
     if (!detail || !isRecord(detail.row)) return;
 
-    this.rowId = detail.rowId;
-    this.#row = detail.row;
+    const activated = normalizeRowId(detail.rowId);
+    const selected = Array.isArray(this.#boundTable?.selected)
+      ? this.#boundTable.selected.map((id) => normalizeRowId(id)).filter((id) => hasRowId(id))
+      : [];
+    const queue =
+      selected.length > 1 && selected.includes(activated) ? selected : [activated].filter(hasRowId);
+
     this.#rowIsExplicit = false;
+    this.#setQueue(queue, activated);
+    this.#row = detail.row;
+    this.rowId = activated;
     this.open = true;
     this.requestRender();
+  }
+
+  #setQueue(value, currentId) {
+    const ids = [];
+    const seen = new Set();
+    for (const item of Array.isArray(value) ? value : []) {
+      const id = normalizeRowId(item);
+      if (!hasRowId(id) || seen.has(id)) continue;
+      seen.add(id);
+      ids.push(id);
+    }
+
+    this.#queue = ids;
+    const current = normalizeRowId(currentId);
+    const index = ids.indexOf(current);
+    this.#queueIndex = index >= 0 ? index : 0;
+  }
+
+  #moveQueue(delta) {
+    if (this.#queue.length < 2) return;
+
+    const next = this.#queueIndex + delta;
+    if (next < 0 || next >= this.#queue.length) return;
+
+    this.#queueIndex = next;
+    const rowId = this.#queue[next];
+    this.#rowIsExplicit = false;
+    this.rowId = rowId;
+    this.#syncRowFromTable();
+    this.requestRender();
+    emit(this, "rowan-navigate", {
+      reason: delta > 0 ? "next" : "previous",
+      rowId,
+      index: next,
+      rowIds: [...this.#queue],
+      row: this.#row,
+    });
+  }
+
+  #renderPager() {
+    const hasCustomPager = this.#pagerSlot.assignedNodes().some((node) => {
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim().length > 0;
+      return true;
+    });
+    const showPager = this.#queue.length > 1 && !hasCustomPager;
+    this.#pager.hidden = !showPager;
+    this.#pager.inert = !showPager;
+    if (!showPager) return;
+
+    this.#pagerStatus.textContent = `${this.#queueIndex + 1} of ${this.#queue.length}`;
+    this.#prevButton.disabled = this.#queueIndex <= 0;
+    this.#nextButton.disabled = this.#queueIndex >= this.#queue.length - 1;
   }
 
   #syncRowFromTable() {
