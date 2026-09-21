@@ -127,6 +127,24 @@ workflow only if that step is present.
 4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`. The tarball must not include `*.test.js`, `*.stories.js`, or `src/storybook/`.
 5. Publish release notes with the version tag and any browser-support changes.
 
+## Storybook Pages
+
+https://2351labs.github.io/rowan/ is Storybook, deployed by `.github/workflows/storybook-pages.yml`.
+
+GitHub Pages **Source** must be **GitHub Actions**. If it is set to Deploy from a branch (`main`), GitHub runs Jekyll on `README.md` and the Storybook UI disappears.
+
+```sh
+gh api repos/2351Labs/rowan/pages --jq .build_type
+# must print: workflow
+```
+
+To restore:
+
+```sh
+gh api repos/2351Labs/rowan/pages -X PUT -f build_type=workflow
+gh workflow run storybook-pages.yml --ref main
+```
+
 ## Browser Baseline
 
 Rowan's automated compatibility baseline covers Chromium, Firefox, and WebKit supplied by the pinned Playwright release. The CI browser matrix runs component contracts against each engine. This verifies current engine-family behavior, not a historical browser-version support window or Safari-specific integrations. Form-associated behavior remains capability-dependent: browsers without `ElementInternals` retain the internal native-control fallback, but cannot provide host-level form association.
