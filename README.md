@@ -28,7 +28,7 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.8.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.8.1`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
 **`0.8` surface.** Public API is attributes, properties, slots, events, tokens,

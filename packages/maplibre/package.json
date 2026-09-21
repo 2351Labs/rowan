@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/maplibre",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Optional MapLibre integration for Rowan Web Components.",
   "license": "MIT",
   "author": "2351Labs",
