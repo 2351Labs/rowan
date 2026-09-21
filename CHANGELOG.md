@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.8.1 - 2026-09-21
+
 ### Changed
 
 - Brand mark is `brand/rowan_icon.svg` on README, Storybook, and docs.
