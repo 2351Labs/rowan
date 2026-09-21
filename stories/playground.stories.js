@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { withPlayground } from "storybook-addon-playground";
 
 export default {
-  title: "Live playground",
+  title: "Playground",
   parameters: {
     a11y: { disable: true, test: "off" },
     rowanEventTrace: false,

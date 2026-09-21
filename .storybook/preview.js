@@ -425,7 +425,7 @@ export const parameters = {
       method: "alphabetical",
       order: [
         "Home",
-        "Live playground",
+        "Playground",
         "Foundations",
         ["Tokens", "Themes", "Icons"],
         "Integrations",
@@ -452,7 +452,7 @@ export const parameters = {
     handles: ROWAN_EVENT_HANDLES,
   },
   playground: {
-    storyId: "live-playground",
+    storyId: "playground--sandbox",
     components: { ...RowanReact },
     editorTheme: "light",
     share: true,
