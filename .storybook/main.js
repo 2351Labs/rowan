@@ -18,7 +18,7 @@ export default {
     "../stories/**/*.stories.js",
     "../stories/**/*.mdx",
   ],
-  addons: ["@storybook/addon-essentials", "@storybook/addon-a11y", "storybook-addon-playground"],
+  addons: ["@storybook/addon-essentials", "@storybook/addon-a11y"],
   framework: {
     name: "@storybook/web-components-vite",
     options: {},

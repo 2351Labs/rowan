@@ -8,7 +8,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
-- Storybook Playground: live JSX editor for Rowan React wrappers (`storybook-addon-playground`).
+- Storybook Playground: live HTML editor for Rowan custom elements.
 
 ### Changed
 
