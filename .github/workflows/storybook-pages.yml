@@ -1,5 +1,8 @@
 name: Storybook Pages
 
+# GitHub Pages must use Source: GitHub Actions (not "Deploy from a branch").
+# Branch deploy from main runs Jekyll on README.md and hides Storybook.
+
 on:
   push:
     branches: [main]
@@ -40,5 +43,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Require GitHub Actions Pages source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          type="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type)"
+          if [ "$type" != "workflow" ]; then
+            echo "GitHub Pages source is '${type}', not 'workflow'."
+            echo "Set Settings → Pages → Source to GitHub Actions."
+            echo "Branch deploy from main publishes README.md via Jekyll instead of Storybook."
+            exit 1
+          fi
       - id: deployment
         uses: actions/deploy-pages@v4
