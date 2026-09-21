@@ -1,0 +1,27 @@
+import { createRoot } from "react-dom/client";
+import { withPlayground } from "storybook-addon-playground";
+
+export default {
+  title: "Playground",
+  parameters: {
+    a11y: { disable: true, test: "off" },
+    rowanEventTrace: false,
+    layout: "fullscreen",
+  },
+};
+
+export const Playground = {
+  render: (_args, context) => {
+    const host = document.createElement("div");
+    host.style.minHeight = "100%";
+    const root = createRoot(host);
+    root.render(withPlayground(() => null, context));
+    const observer = new MutationObserver(() => {
+      if (document.contains(host)) return;
+      root.unmount();
+      observer.disconnect();
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    return host;
+  },
+};
