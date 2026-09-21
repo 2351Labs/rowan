@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Storybook Playground: live JSX editor for Rowan React wrappers (`storybook-addon-playground`).
+
 ### Changed
 
 - Storybook docs and canvas sit on a white page. The sidebar stays dark. The theme toolbar still paints the story.

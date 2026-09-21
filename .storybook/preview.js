@@ -1,5 +1,6 @@
 import { setCustomElementsManifest } from "@storybook/web-components";
 import { rowanDocsTheme } from "./rowan-theme.js";
+import * as RowanReact from "../src/react/generated/index.js";
 import customElements from "../custom-elements.json";
 import iconCustomElements from "../packages/icons/custom-elements.json";
 import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
@@ -424,6 +425,7 @@ export const parameters = {
       method: "alphabetical",
       order: [
         "Home",
+        "Playground",
         "Foundations",
         ["Tokens", "Themes", "Icons"],
         "Integrations",
@@ -448,6 +450,20 @@ export const parameters = {
   },
   actions: {
     handles: ROWAN_EVENT_HANDLES,
+  },
+  playground: {
+    storyId: "playground",
+    components: { ...RowanReact },
+    editorTheme: "light",
+    share: true,
+    introCode: {
+      jsx: `<div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+  <RowanButton>Save</RowanButton>
+  <RowanTextField label="Site" />
+  <RowanBadge>Operational</RowanBadge>
+</div>`,
+      css: "",
+    },
   },
   docs: {
     theme: rowanDocsTheme,
