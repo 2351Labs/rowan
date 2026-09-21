@@ -1,7 +1,7 @@
 # Rowan UI Core
 
 <p align="center">
-  <img src="brand/rowan.png" alt="Rowan" width="160" height="160" />
+  <img src="brand/rowan_icon.svg" alt="Rowan" width="160" height="160" />
 </p>
 
 Rowan is a plain-vanilla Web Component design system built with browser standards only:

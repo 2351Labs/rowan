@@ -6,7 +6,7 @@ export const rowanManagerTheme = create({
   base: "dark",
   brandTitle: "Rowan",
   brandUrl: "./",
-  brandImage: "./brand/rowan.png",
+  brandImage: "./brand/rowan_icon.svg",
   brandTarget: "_self",
   colorPrimary: "#7fc095",
   colorSecondary: "#7fc095",

@@ -451,7 +451,8 @@
     "README.md",
     "CHANGELOG.md",
     "brand/rowan.png",
-    "brand/rowan-64.png"
+    "brand/rowan-64.png",
+    "brand/rowan_icon.svg"
   ],
   "sideEffects": [
     "./src/index.js",
