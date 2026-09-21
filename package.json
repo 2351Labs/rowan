@@ -601,5 +601,8 @@
     "storybook-addon-playground": "^2.0.1",
     "typescript": "~5.4.5",
     "vite": "^5.4.10"
+  },
+  "overrides": {
+    "@uiw/codemirror-extensions-langs": "4.24.2"
   }
 }
