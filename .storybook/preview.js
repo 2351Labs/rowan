@@ -1,5 +1,5 @@
 import { setCustomElementsManifest } from "@storybook/web-components";
-import { rowanManagerTheme } from "./rowan-theme.js";
+import { rowanDocsTheme } from "./rowan-theme.js";
 import customElements from "../custom-elements.json";
 import iconCustomElements from "../packages/icons/custom-elements.json";
 import maplibreCustomElements from "../packages/maplibre/custom-elements.json";
@@ -398,11 +398,23 @@ export const globalTypes = {
 export const decorators = [
   (story, context) => {
     const root = document.documentElement;
-    root.dataset.theme = context.globals.theme;
+    root.dataset.theme = "light";
     root.setAttribute("dir", context.globals.direction);
     root.dataset.density = context.globals.density;
-    const storyNode = story();
-    return createEventTraceStory(storyNode, context);
+
+    let storyNode = story();
+    if (!(storyNode instanceof Node)) {
+      storyNode = document.createTextNode(String(storyNode ?? ""));
+    }
+
+    const wrap = document.createElement("div");
+    wrap.dataset.theme = context.globals.theme || "light";
+    wrap.style.background = "var(--rowan-color-bg)";
+    wrap.style.color = "var(--rowan-color-fg)";
+    if (context.viewMode === "story") wrap.style.minHeight = "100%";
+    wrap.append(storyNode);
+
+    return createEventTraceStory(wrap, context);
   },
 ];
 
@@ -438,7 +450,7 @@ export const parameters = {
     handles: ROWAN_EVENT_HANDLES,
   },
   docs: {
-    theme: rowanManagerTheme,
+    theme: rowanDocsTheme,
     source: {
       type: "dynamic",
       language: "html",
