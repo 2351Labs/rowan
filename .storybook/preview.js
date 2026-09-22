@@ -440,7 +440,7 @@ export const parameters = {
           "Other",
         ],
         "Workflows",
-        ["Bulk confirm"],
+        ["App shell", "Bulk confirm"],
       ],
     },
   },
