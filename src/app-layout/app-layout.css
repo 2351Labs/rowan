@@ -12,7 +12,7 @@
   --_app-layout-content-padding: var(--rowan-app-layout-content-padding, var(--rowan-space-5));
   --_app-layout-focus-ring: var(--rowan-app-layout-focus-ring, var(--rowan-focus-ring));
   --_app-layout-backdrop: var(--rowan-app-layout-backdrop, rgb(16 38 28 / 44%));
-  display: block;
+  display: grid;
   min-block-size: var(--rowan-app-layout-min-block-size, 100dvh);
   min-inline-size: 0;
 }
@@ -23,17 +23,30 @@
 
 .layout {
   background: var(--_app-layout-bg);
+  block-size: 100%;
   color: var(--_app-layout-fg);
   display: grid;
+  grid-template-columns: minmax(0, var(--_app-layout-navigation-width)) minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   min-block-size: inherit;
   min-inline-size: 0;
+}
+
+.layout.is-compact {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.layout.is-compact .header,
+.layout.is-compact .content {
+  grid-column: 1;
 }
 
 .layout.is-compact .navigation {
   block-size: 100dvh;
   border-block-end: 0;
   box-shadow: none;
+  grid-column: auto;
+  grid-row: auto;
   inline-size: min(var(--rowan-app-layout-mobile-navigation-width, 21rem), 86vw);
   inset-block-start: 0;
   inset-inline-start: 0;
@@ -59,10 +72,6 @@
   display: inline-flex;
 }
 
-.layout.is-compact .body {
-  display: block;
-}
-
 .layout.is-compact .backdrop:not([hidden]) {
   background: var(--_app-layout-backdrop);
   display: block;
@@ -77,21 +86,19 @@
   border-block-end: var(--rowan-border-width) solid var(--_app-layout-header-border);
   display: flex;
   gap: var(--rowan-space-3);
+  grid-column: 2;
+  grid-row: 1;
   min-block-size: var(--rowan-app-layout-header-min-block-size, 3.75rem);
   min-inline-size: 0;
   padding: var(--rowan-app-layout-header-padding, var(--rowan-space-3) var(--rowan-space-5));
 }
 
-.body {
-  display: grid;
-  grid-template-columns: minmax(0, var(--_app-layout-navigation-width)) minmax(0, 1fr);
-  min-block-size: 0;
-  min-inline-size: 0;
-}
-
 .navigation {
+  align-self: stretch;
   background: var(--_app-layout-navigation-bg);
   border-inline-end: var(--rowan-border-width) solid var(--_app-layout-navigation-border);
+  grid-column: 1;
+  grid-row: 1 / span 2;
   min-block-size: 0;
   min-inline-size: 0;
   overflow: auto;
@@ -103,6 +110,8 @@
 }
 
 .content {
+  grid-column: 2;
+  grid-row: 2;
   min-block-size: 0;
   min-inline-size: 0;
   overflow: auto;
@@ -162,12 +171,17 @@
 }
 
 @media (max-width: 48rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .header {
+    grid-column: 1;
     padding-inline: var(--rowan-space-3);
   }
 
-  .body {
-    display: block;
+  .content {
+    grid-column: 1;
   }
 
   .navigation-toggle {
@@ -178,6 +192,8 @@
     block-size: 100dvh;
     border-block-end: 0;
     box-shadow: none;
+    grid-column: auto;
+    grid-row: auto;
     inline-size: min(var(--rowan-app-layout-mobile-navigation-width, 21rem), 86vw);
     inset-block-start: 0;
     inset-inline-start: 0;

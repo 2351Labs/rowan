@@ -64,19 +64,17 @@ export class RowanAppLayout extends BaseElement {
       const navigationId = `rowan-app-layout-navigation-${appLayoutNavigationId}`;
       this.renderRoot.innerHTML = `
         <div class="layout" part="layout">
+          <aside class="navigation" part="navigation" id="${navigationId}">
+            <slot name="navigation"></slot>
+          </aside>
           <header class="header" part="header">
             <button class="navigation-toggle" part="navigation-toggle" type="button">
               <span class="navigation-toggle-icon" aria-hidden="true"></span>
             </button>
             <slot name="header"></slot>
           </header>
-          <div class="body">
-            <aside class="navigation" part="navigation" id="${navigationId}">
-              <slot name="navigation"></slot>
-            </aside>
-            <div class="backdrop" part="backdrop" aria-hidden="true"></div>
-            <main class="content" part="content"><slot></slot></main>
-          </div>
+          <div class="backdrop" part="backdrop" aria-hidden="true"></div>
+          <main class="content" part="content"><slot></slot></main>
         </div>
       `;
 

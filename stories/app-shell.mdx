@@ -7,7 +7,8 @@ import * as Recipe from "../src/app-layout/app-shell.stories.js";
 # App shell
 
 Compose `rowan-app-layout`, a sectioned `rowan-side-nav`, and `rowan-command-palette`
-from **one destination list**. Auth, claims, and route guards stay in the host.
+from **one destination list**. The navigation rail is full height; the header sits over
+the page. Auth, claims, and route guards stay in the host.
 
 1. Keep `href` on items (open-in-new-tab, no-JS).
 2. `preventDefault()` on `rowan-change`, then `navigate(detail.value)`.
