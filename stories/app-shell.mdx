@@ -1,0 +1,27 @@
+import { Meta, Canvas } from "@storybook/blocks";
+
+import * as Recipe from "../src/app-layout/app-shell.stories.js";
+
+<Meta of={Recipe} />
+
+# App shell
+
+Compose `rowan-app-layout`, a sectioned `rowan-side-nav`, and `rowan-command-palette`
+from **one destination list**. Auth, claims, and route guards stay in the host.
+
+1. Keep `href` on items (open-in-new-tab, no-JS).
+2. `preventDefault()` on `rowan-change`, then `navigate(detail.value)`.
+3. Bind the parent `value` to the current path. Use `value=""` when the path is
+   not in the catalog (unauthorized / 404). Do not revive the last item.
+4. Palette items use the same `value` and section `group`. Activation calls the
+   same `go` function.
+5. At compact widths, the drawer toggle, backdrop, and Escape close the rail.
+   The closed rail must not peek.
+
+Omitting `href` and routing only from `rowan-change` is also valid.
+
+React: generated wrappers expose `onRowanChange` / `onRowanCommand`. Call
+`event.preventDefault()`, then `navigate(event.detail.value)`. Filter the
+destination list **before** render. Do not put claims on the items.
+
+<Canvas of={Recipe.ProductShell} />

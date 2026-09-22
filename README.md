@@ -756,17 +756,19 @@ still fails immediately.
 
 ## Rowan Application Workspaces
 
-`rowan-app-layout` composes a responsive header, primary navigation, and default main-content slot. It keeps navigation state reflected through `navigation-open`; only user use of the compact toggle, backdrop, or Escape emits `rowan-change`. Compose `rowan-side-nav-item` children in `rowan-side-nav` for application destinations (Arrow, Home, End, Enter, Space). Wrap items in `rowan-side-nav-section` for labeled groups; the parent nav still has one `value`. An empty `value` means nothing is selected. Omit `href` and route from `rowan-change` for SPA destinations, or keep `href` and `preventDefault` on `rowan-change` to block full navigation.
+`rowan-app-layout` composes a responsive header, primary navigation, and default main-content slot. It keeps navigation state reflected through `navigation-open`; only user use of the compact toggle, backdrop, or Escape emits `rowan-change`. Compose `rowan-side-nav-item` children in `rowan-side-nav` for application destinations (Arrow, Home, End, Enter, Space). Wrap items in `rowan-side-nav-section` for labeled groups; the parent nav still has one `value`. An empty `value` means nothing is selected.
+
+For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-change`, then `navigate(detail.value)`. Omitting `href` and routing only from `rowan-change` is also valid. Drive `rowan-command-palette` from the **same** destination list. Storybook **Workflows / App shell** is the copyable recipe. Do not put claims on nav items; filter before render.
 
 `rowan-split-pane` provides a keyboard-operable separator for durable two-pane workspaces. Its reflected `position`, `min`, `max`, and `step` use percentage values; `snapPoints` is property-only. User drag or keyboard resizing emits `rowan-resize`, while parent assignments remain silent.
 
 ```html
 <rowan-app-layout id="workspace-shell">
   <header slot="header">Northstar</header>
-  <rowan-side-nav slot="navigation" label="Workspace navigation" value="overview">
+  <rowan-side-nav slot="navigation" label="Workspace navigation" value="/overview">
     <rowan-side-nav-section label="Workspace">
-      <rowan-side-nav-item value="overview">Overview</rowan-side-nav-item>
-      <rowan-side-nav-item value="members">Members</rowan-side-nav-item>
+      <rowan-side-nav-item value="/overview" href="/overview">Overview</rowan-side-nav-item>
+      <rowan-side-nav-item value="/members" href="/members">Members</rowan-side-nav-item>
     </rowan-side-nav-section>
   </rowan-side-nav>
   <rowan-split-pane position="32" min="20" max="80">
@@ -784,7 +786,7 @@ still fails immediately.
   const nav = document.querySelector("rowan-side-nav");
   nav.addEventListener("rowan-change", (event) => {
     event.preventDefault();
-    console.log(event.detail.value);
+    history.pushState({}, "", event.detail.value);
   });
 
   const pane = document.querySelector("rowan-split-pane");

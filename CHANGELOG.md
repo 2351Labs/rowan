@@ -8,6 +8,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- Storybook **Workflows / App shell**: `rowan-app-layout`, sectioned side-nav, SPA `preventDefault` on `rowan-change`, and a command palette from one destination list.
+
 - Storybook Playground: live HTML editor for Rowan custom elements.
 
 ### Changed
