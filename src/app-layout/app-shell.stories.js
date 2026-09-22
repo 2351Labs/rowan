@@ -152,7 +152,7 @@ function createHeader(onOpenPalette) {
   menu.append(profile);
   account.append(trigger, menu);
 
-  header.append(brand, search, account);
+  header.append(search, account);
   return header;
 }
 
