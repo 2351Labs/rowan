@@ -7,6 +7,7 @@ import type { RowanBadge } from "../types/badge/badge.js";
 import type { RowanBarChart } from "../types/bar-chart/bar-chart.js";
 import type { RowanBreadcrumb } from "../types/breadcrumb/breadcrumb.js";
 import type { RowanBulkActionsBar } from "../types/bulk-actions-bar/bulk-actions-bar.js";
+import type { RowanBulletChart } from "../types/bullet-chart/bullet-chart.js";
 import type { RowanButton } from "../types/button/button.js";
 import type { RowanFilterBuilder } from "../types/filter-builder/filter-builder.js";
 import type { RowanCalendar } from "../types/calendar/calendar.js";
@@ -94,6 +95,7 @@ declare global {
     "rowan-bar-chart": RowanBarChart;
     "rowan-breadcrumb": RowanBreadcrumb;
     "rowan-bulk-actions-bar": RowanBulkActionsBar;
+    "rowan-bullet-chart": RowanBulletChart;
     "rowan-button": RowanButton;
     "rowan-filter-builder": RowanFilterBuilder;
     "rowan-calendar": RowanCalendar;

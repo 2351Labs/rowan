@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  min-inline-size: 8rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.chart {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.plot {
+  block-size: var(--rowan-bullet-chart-height, 2.25rem);
+  display: block;
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.range {
+  fill: var(--rowan-bullet-chart-range, var(--rowan-color-muted));
+  fill-opacity: 0.22;
+}
+
+.range[data-tone="info"] {
+  fill: var(--rowan-bullet-chart-info, var(--rowan-color-accent));
+}
+
+.range[data-tone="success"] {
+  fill: var(--rowan-bullet-chart-success, var(--rowan-color-success));
+}
+
+.range[data-tone="warning"] {
+  fill: var(--rowan-bullet-chart-warning, var(--rowan-color-warning));
+}
+
+.range[data-tone="danger"] {
+  fill: var(--rowan-bullet-chart-danger, var(--rowan-color-danger));
+}
+
+.actual {
+  fill: var(--rowan-bullet-chart-actual, var(--rowan-color-fg));
+}
+
+.target {
+  stroke: var(--rowan-bullet-chart-target, var(--rowan-color-fg));
+  stroke-linecap: square;
+  stroke-width: var(--rowan-bullet-chart-target-width, 2);
+}
+
+.table {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

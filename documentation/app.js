@@ -502,6 +502,27 @@ const TREND_CHART_SNIPPET = `<rowan-trend-chart
   };
 </script>`;
 
+const BULLET_CHART_SNIPPET = `<rowan-kpi-card label="Fill rate" tone="success" delta-label="vs target">
+  <rowan-bullet-chart slot="chart" label="Fill rate versus target"></rowan-bullet-chart>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/bullet-chart";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-bullet-chart");
+  card.value = 82;
+  card.delta = -8;
+  chart.value = 82;
+  chart.target = 90;
+  chart.ranges = [
+    { from: 0, to: 60, label: "Poor", tone: "danger" },
+    { from: 60, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
+</script>`;
+
 const SPARKLINE_SNIPPET = `<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
   <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
 </rowan-kpi-card>
@@ -1855,6 +1876,47 @@ document.documentElement.dataset.theme = "lagoon";
         card.delta = -7;
       }
       if (chart) chart.values = [18, 24, 12, 15, 9, 11];
+    },
+  },
+  {
+    id: "bullet-chart",
+    group: "Components",
+    title: "Rowan Bullet Chart",
+    summary: "Compact ranges, actual, and target for KPI tiles.",
+    tags: ["data display", "bullet", "kpi"],
+    keywords: ["bullet chart", "target", "range"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bullet-chart-overview">
+        <h2>Actual versus target</h2>
+        <p>rowan-bullet-chart is a separate host, not a density of rowan-bar-chart. Qualitative ranges, an actual value, and a target marker. Null actual or target is no-data. Native SVG, no animation, matching table.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-bullet-kpi" label="Fill rate" tone="success" delta-label="vs target">
+            <rowan-bullet-chart id="docs-bullet-chart" slot="chart" label="Fill rate versus target"></rowan-bullet-chart>
+          </rowan-kpi-card>
+        </div>
+      </section>
+      <section class="doc-section" data-doc-section id="bullet-chart-contract">
+        <h2>Contract</h2>
+        <p>ranges, value, and target are property-only. Invalid or zero-width ranges are dropped. Reversed from/to are swapped.</p>
+        ${codeBlock(BULLET_CHART_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-bullet-kpi");
+      const chart = mainEl.querySelector("#docs-bullet-chart");
+      if (card) {
+        card.value = 82;
+        card.delta = -8;
+      }
+      if (chart) {
+        chart.value = 82;
+        chart.target = 90;
+        chart.ranges = [
+          { from: 0, to: 60, label: "Poor", tone: "danger" },
+          { from: 60, to: 80, label: "Fair", tone: "warning" },
+          { from: 80, to: 100, label: "Good", tone: "success" },
+        ];
+      }
     },
   },
   {
