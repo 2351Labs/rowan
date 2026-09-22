@@ -7,6 +7,7 @@ export { RowanBadge } from "./badge.js";
 export { RowanBarChart } from "./bar-chart.js";
 export { RowanBreadcrumb } from "./breadcrumb.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar.js";
+export { RowanBulletChart } from "./bullet-chart.js";
 export { RowanButton } from "./button.js";
 export { RowanCalendar } from "./calendar.js";
 export { RowanCard } from "./card.js";

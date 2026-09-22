@@ -61,6 +61,10 @@
       "types": "./src/bulk-actions-bar/bulk-actions-bar.d.ts",
       "default": "./src/bulk-actions-bar/bulk-actions-bar.js"
     },
+    "./bullet-chart": {
+      "types": "./src/bullet-chart/bullet-chart.d.ts",
+      "default": "./src/bullet-chart/bullet-chart.js"
+    },
     "./button": {
       "types": "./src/button/button.d.ts",
       "default": "./src/button/button.js"
@@ -462,6 +466,7 @@
     "./src/app-layout/app-layout.js",
     "./src/avatar/avatar.js",
     "./src/bulk-actions-bar/bulk-actions-bar.js",
+    "./src/bullet-chart/bullet-chart.js",
     "./src/filter-builder/filter-builder.js",
     "./src/breadcrumb/breadcrumb.js",
     "./src/chip/chip.js",

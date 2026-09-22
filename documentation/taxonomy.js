@@ -99,6 +99,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "avatar",
       "bar-chart",
       "bulk-actions-bar",
+      "bullet-chart",
       "card",
       "donut-chart",
       "filter-builder",

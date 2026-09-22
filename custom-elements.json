@@ -1873,6 +1873,233 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/bullet-chart/bullet-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Compact qualitative comparison: ranges, actual, and target. Experimental.\nSeparate host from sparkline and bar chart.",
+          "name": "RowanBulletChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-bullet-chart-actual"
+            },
+            {
+              "name": "--rowan-bullet-chart-target"
+            },
+            {
+              "name": "--rowan-bullet-chart-range"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "range"
+            },
+            {
+              "name": "actual"
+            },
+            {
+              "name": "target"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Actual measure. Property-only. Null is no-data."
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Target marker. Property-only. Null hides the marker."
+            },
+            {
+              "kind": "field",
+              "name": "ranges",
+              "return": {
+                "type": {
+                  "text": "RowanBulletChartRange[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBulletChartRange[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBulletChartRange[]"
+              },
+              "description": "Qualitative bands. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-bullet-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBulletChart",
+          "declaration": {
+            "name": "RowanBulletChart",
+            "module": "src/bullet-chart/bullet-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/bullet-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBulletChart",
+          "declaration": {
+            "name": "RowanBulletChart",
+            "module": "./bullet-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/button/button.js",
       "declarations": [
         {
@@ -9451,6 +9678,14 @@
           "declaration": {
             "name": "RowanBulkActionsBar",
             "module": "./bulk-actions-bar/bulk-actions-bar.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanBulletChart",
+          "declaration": {
+            "name": "RowanBulletChart",
+            "module": "./bullet-chart/bullet-chart.js"
           }
         },
         {

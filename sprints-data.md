@@ -301,6 +301,20 @@ Expand the Stable document without accepting HTML or images.
 
 ---
 
+## Sprint 12 — Bullet chart (experimental)
+
+**Status:** done
+
+Admin KPIs need actual versus target in qualitative bands. Separate host so sparkline and bar stay frozen.
+
+### Done when
+
+- [x] `rowan-bullet-chart` with property-only `ranges`, `value`, and `target`.
+- [x] Null actual/target is no-data. Invalid ranges dropped. Matching table.
+- [x] README Experimental. KPI `chart` slot example.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

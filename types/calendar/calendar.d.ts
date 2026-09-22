@@ -48,9 +48,9 @@ export class RowanCalendar extends BaseElement {
     set max(value: string);
     get max(): string;
     /** @param {"single" | "range"} value */
-    set selectionMode(value: "single" | "range");
+    set selectionMode(value: "range" | "single");
     /** @returns {"single" | "range"} */
-    get selectionMode(): "single" | "range";
+    get selectionMode(): "range" | "single";
     set start(value: string);
     get start(): string;
     set end(value: string);
