@@ -130,10 +130,7 @@ function createHeader(onOpenPalette) {
   header.style.display = "flex";
   header.style.gap = "var(--rowan-space-2)";
   header.style.inlineSize = "100%";
-
-  const brand = document.createElement("strong");
-  brand.textContent = "Operations Console";
-  brand.style.marginInlineEnd = "auto";
+  header.style.justifyContent = "end";
 
   const search = document.createElement("rowan-icon-button");
   search.icon = "search";
@@ -186,8 +183,15 @@ export const ProductShell = {
     layout.style.borderRadius = "var(--rowan-radius-md)";
     layout.style.overflow = "hidden";
 
+    const rail = document.createElement("div");
+    rail.slot = "navigation";
+    rail.style.display = "grid";
+    rail.style.alignContent = "start";
+    rail.style.gap = "var(--rowan-space-4)";
+    const brand = document.createElement("strong");
+    brand.textContent = "Operations Console";
     const nav = createSideNav();
-    nav.slot = "navigation";
+    rail.append(brand, nav);
 
     const palette = createPalette();
     const header = createHeader(() => palette.show());
@@ -238,7 +242,7 @@ export const ProductShell = {
     });
 
     renderPage();
-    layout.append(header, nav, page);
+    layout.append(header, rail, page);
     wrapper.append(layout, palette);
     return wrapper;
   },

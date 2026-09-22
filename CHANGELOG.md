@@ -14,6 +14,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Changed
 
+- `rowan-app-layout` paints the navigation rail the full host height beside the header.
 - Storybook docs and canvas sit on a white page. The sidebar stays dark. The theme toolbar still paints the story.
 
 ## 0.8.1 - 2026-09-21

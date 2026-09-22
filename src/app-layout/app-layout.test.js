@@ -9,6 +9,34 @@ describe("rowan-app-layout", () => {
     document.body.innerHTML = "";
   });
 
+  it("paints the navigation rail the full host height beside the header", async () => {
+    const layout = document.createElement("rowan-app-layout");
+    layout.style.blockSize = "400px";
+    layout.style.setProperty("--rowan-app-layout-min-block-size", "400px");
+    const header = document.createElement("header");
+    const navigation = document.createElement("nav");
+    const content = document.createElement("article");
+    header.slot = "header";
+    header.textContent = "Header";
+    navigation.slot = "navigation";
+    navigation.textContent = "Nav";
+    content.textContent = "Main";
+    layout.append(header, navigation, content);
+    document.body.append(layout);
+    await nextMicrotask();
+    const stylesheet = layout.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (stylesheet && !stylesheet.sheet) {
+      await new Promise((resolve) => stylesheet.addEventListener("load", resolve, { once: true }));
+    }
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const hostBox = layout.getBoundingClientRect();
+    const navBox = layout.shadowRoot.querySelector(".navigation").getBoundingClientRect();
+    const headerBox = layout.shadowRoot.querySelector(".header").getBoundingClientRect();
+    expect(navBox.height).to.be.at.least(hostBox.height - 1);
+    expect(headerBox.left).to.be.at.least(navBox.right - 1);
+  });
+
   it("composes named header and navigation slots with default main content", async () => {
     const layout = document.createElement("rowan-app-layout");
     const header = document.createElement("header");
