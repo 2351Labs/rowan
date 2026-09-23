@@ -244,10 +244,10 @@ export function donutSlices(series) {
 }
 
 export const CHART_SERIES_COLORS = [
-  "var(--rowan-chart-series-1, var(--rowan-color-accent))",
-  "var(--rowan-chart-series-2, var(--rowan-color-success))",
-  "var(--rowan-chart-series-3, var(--rowan-color-warning))",
-  "var(--rowan-chart-series-4, var(--rowan-color-danger))",
+  "var(--rowan-chart-series-1, var(--rowan-chart-info, var(--rowan-color-accent)))",
+  "var(--rowan-chart-series-2, var(--rowan-chart-success, var(--rowan-color-success)))",
+  "var(--rowan-chart-series-3, var(--rowan-chart-warning, var(--rowan-color-warning)))",
+  "var(--rowan-chart-series-4, var(--rowan-chart-danger, var(--rowan-color-danger)))",
 ];
 
 /**

@@ -1,5 +1,6 @@
 import "./bar-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 export default {
   title: "Components/Data Display/Bar Chart",
@@ -23,4 +24,10 @@ export const Playground = {
     ];
     return chart;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  parameters: Playground.parameters,
+  render: () => withVibrantChartPalette(Playground.render()),
 };

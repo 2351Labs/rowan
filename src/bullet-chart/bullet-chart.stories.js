@@ -1,5 +1,6 @@
 import "./bullet-chart.js";
 import "../kpi-card/kpi-card.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 function sampleRanges() {
   return [
@@ -43,4 +44,9 @@ export const InKpiCard = {
     card.append(chart);
     return card;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  render: () => withVibrantChartPalette(InKpiCard.render()),
 };

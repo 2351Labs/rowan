@@ -1,5 +1,6 @@
 import "./kpi-card.js";
 import "../sparkline/sparkline.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 function createCard({ label, value, delta, deltaLabel, tone, loading, description } = {}) {
   const card = document.createElement("rowan-kpi-card");
@@ -90,4 +91,9 @@ export const WithChartSlot = {
     card.append(chart);
     return card;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  render: () => withVibrantChartPalette(Tones.render()),
 };

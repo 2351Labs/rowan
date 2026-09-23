@@ -103,6 +103,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "card",
       "donut-chart",
       "filter-builder",
+      "gauge-chart",
       "image",
       "kpi-card",
       "row-details-panel",

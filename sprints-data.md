@@ -315,6 +315,19 @@ Admin KPIs need actual versus target in qualitative bands. Separate host so spar
 
 ---
 
+## Sprint 13 — Gauge chart (experimental)
+
+**Status:** done
+
+Admin KPIs need a speedometer: ranges, min/max, needle, optional target. Separate host from bullet and donut.
+
+### Done when
+
+- [x] `rowan-gauge-chart` with `min`/`max` attributes and property-only `ranges`, `value`, `target`.
+- [x] Null actual/target is no-data. Matching table. README Experimental.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

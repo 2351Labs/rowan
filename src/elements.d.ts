@@ -35,6 +35,7 @@ import type { RowanFileUpload } from "../types/file-upload/file-upload.js";
 import type { RowanFormField } from "../types/form-field/form-field.js";
 import type { RowanFormLayout } from "../types/form-layout/form-layout.js";
 import type { RowanFormWizard } from "../types/form-wizard/form-wizard.js";
+import type { RowanGaugeChart } from "../types/gauge-chart/gauge-chart.js";
 import type { RowanIconButton } from "../types/icon-button/icon-button.js";
 import type { RowanImage } from "../types/image/image.js";
 import type { RowanKpiCard } from "../types/kpi-card/kpi-card.js";
@@ -123,6 +124,7 @@ declare global {
     "rowan-form-field": RowanFormField;
     "rowan-form-layout": RowanFormLayout;
     "rowan-form-wizard": RowanFormWizard;
+    "rowan-gauge-chart": RowanGaugeChart;
     "rowan-icon-button": RowanIconButton;
     "rowan-image": RowanImage;
     "rowan-kpi-card": RowanKpiCard;

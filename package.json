@@ -65,6 +65,10 @@
       "types": "./src/bullet-chart/bullet-chart.d.ts",
       "default": "./src/bullet-chart/bullet-chart.js"
     },
+    "./gauge-chart": {
+      "types": "./src/gauge-chart/gauge-chart.d.ts",
+      "default": "./src/gauge-chart/gauge-chart.js"
+    },
     "./button": {
       "types": "./src/button/button.d.ts",
       "default": "./src/button/button.js"
@@ -420,6 +424,10 @@
       "types": "./src/tokens/themes/ember.css.d.ts",
       "default": "./src/tokens/themes/ember.css"
     },
+    "./tokens/charts-vibrant": {
+      "types": "./src/tokens/charts-vibrant.css.d.ts",
+      "default": "./src/tokens/charts-vibrant.css"
+    },
     "./lib/define": {
       "types": "./src/lib/define.d.ts",
       "default": "./src/lib/define.js"
@@ -467,6 +475,7 @@
     "./src/avatar/avatar.js",
     "./src/bulk-actions-bar/bulk-actions-bar.js",
     "./src/bullet-chart/bullet-chart.js",
+    "./src/gauge-chart/gauge-chart.js",
     "./src/filter-builder/filter-builder.js",
     "./src/breadcrumb/breadcrumb.js",
     "./src/chip/chip.js",

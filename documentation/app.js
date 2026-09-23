@@ -3,6 +3,7 @@ import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 import "../src/tokens/themes/lagoon.css";
 import "../src/tokens/themes/ember.css";
+import "../src/tokens/charts-vibrant.css";
 
 import "../src/index.js";
 import "../packages/maplibre/src/map/map.js";
@@ -519,6 +520,27 @@ const BULLET_CHART_SNIPPET = `<rowan-kpi-card label="Fill rate" tone="success" d
   chart.ranges = [
     { from: 0, to: 60, label: "Poor", tone: "danger" },
     { from: 60, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
+</script>`;
+
+const GAUGE_CHART_SNIPPET = `<rowan-kpi-card label="Utilization" tone="warning" delta-label="vs target">
+  <rowan-gauge-chart slot="chart" label="Utilization versus target" min="0" max="100"></rowan-gauge-chart>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/gauge-chart";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-gauge-chart");
+  card.value = 72;
+  card.delta = -8;
+  chart.value = 72;
+  chart.target = 80;
+  chart.ranges = [
+    { from: 0, to: 50, label: "Low", tone: "danger" },
+    { from: 50, to: 80, label: "Fair", tone: "warning" },
     { from: 80, to: 100, label: "Good", tone: "success" },
   ];
 </script>`;
@@ -1166,7 +1188,7 @@ const DOC_PAGES = [
     summary:
       "Theme Rowan through semantic tokens while preserving stable component APIs. This docs site uses the same model.",
     tags: ["tokens", "light-dark", "css"],
-    keywords: ["theme", "tokens", "dark", "light", "lagoon", "ember", "css variables"],
+    keywords: ["theme", "tokens", "dark", "light", "lagoon", "ember", "chart palette", "css variables"],
     content: () => `
       <section class="doc-section" data-doc-section id="theme-layers">
         <h2>Token layers</h2>
@@ -1217,8 +1239,19 @@ document.documentElement.dataset.theme = "lagoon";
   --rowan-color-accent-contrast: #0f1612;
 }`)}
       </section>
+      <section class="doc-section" data-doc-section id="theme-chart-palette">
+        <h2>Chart palette</h2>
+        <p>KPI and chart tones default to the UI colors, so forest and sand can wash out in small plots. Import <code>@rowan-ui/core/tokens/charts-vibrant</code> and set <code>data-rowan-charts="vibrant"</code> on a dashboard region. Buttons and navigation stay on the Rowan theme.</p>
+        <div class="demo-row" data-rowan-charts="vibrant" id="docs-chart-palette"></div>
+        ${codeBlock(`import "@rowan-ui/core/tokens/charts-vibrant";
+
+document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`, "js")}
+      </section>
     `,
-    afterRender: setupThemeGallery,
+    afterRender: (mainEl) => {
+      setupThemeGallery(mainEl);
+      setupChartPaletteDemo(mainEl);
+    },
   },
   {
     id: "tokens",
@@ -1917,6 +1950,46 @@ document.documentElement.dataset.theme = "lagoon";
           { from: 80, to: 100, label: "Good", tone: "success" },
         ];
       }
+    },
+  },
+  {
+    id: "gauge-chart",
+    group: "Components",
+    title: "Rowan Gauge Chart",
+    summary: "Speedometer with ranges, min/max, actual, and optional target.",
+    tags: ["data display", "gauge", "kpi"],
+    keywords: ["gauge", "speedometer", "meter"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="gauge-chart-overview">
+        <h2>Speedometer</h2>
+        <p>rowan-gauge-chart is a separate host from bullet and donut charts. Semicircle scale, qualitative ranges, min and max, an actual needle, and an optional target tick. Null actual or target is no-data. Native SVG, no animation, matching table.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-gauge-kpi" label="Utilization" tone="warning" delta-label="vs target">
+            <rowan-gauge-chart id="docs-gauge-chart" slot="chart" label="Utilization versus target" min="0" max="100"></rowan-gauge-chart>
+          </rowan-kpi-card>
+        </div>
+      </section>
+      <section class="doc-section" data-doc-section id="gauge-chart-contract">
+        <h2>Contract</h2>
+        <p>min and max are attributes (default 0 and 100). value, target, and ranges are property-only. Invalid or zero-width ranges are dropped.</p>
+        ${codeBlock(GAUGE_CHART_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-gauge-kpi");
+      const chart = mainEl.querySelector("#docs-gauge-chart");
+      if (card) {
+        card.value = 72;
+        card.delta = -8;
+      }
+      if (!chart) return;
+      chart.value = 72;
+      chart.target = 80;
+      chart.ranges = [
+        { from: 0, to: 50, label: "Low", tone: "danger" },
+        { from: 50, to: 80, label: "Fair", tone: "warning" },
+        { from: 80, to: 100, label: "Good", tone: "success" },
+      ];
     },
   },
   {
@@ -4490,6 +4563,31 @@ function setupThemeGallery(mainEl) {
     card.append(title, chip, button);
     gallery.append(card);
   }
+}
+
+function setupChartPaletteDemo(mainEl) {
+  const demo = mainEl.querySelector("#docs-chart-palette");
+  if (!demo) return;
+
+  const card = document.createElement("rowan-kpi-card");
+  card.label = "Utilization";
+  card.tone = "warning";
+  card.deltaLabel = "vs target";
+  card.value = 72;
+  card.delta = -8;
+
+  const chart = document.createElement("rowan-gauge-chart");
+  chart.slot = "chart";
+  chart.label = "Utilization versus target";
+  chart.value = 72;
+  chart.target = 80;
+  chart.ranges = [
+    { from: 0, to: 50, label: "Low", tone: "danger" },
+    { from: 50, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
+  card.append(chart);
+  demo.replaceChildren(card);
 }
 
 function applyTheme(theme) {

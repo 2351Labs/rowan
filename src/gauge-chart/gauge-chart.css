@@ -1,0 +1,100 @@
+:host {
+  display: block;
+  min-inline-size: 10rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.chart {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.plot {
+  block-size: var(--rowan-gauge-chart-height, 8rem);
+  display: block;
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.track,
+.range {
+  fill: none;
+  stroke-linecap: butt;
+  stroke-linejoin: round;
+}
+
+.track {
+  stroke: var(--rowan-gauge-chart-track, var(--rowan-chart-neutral, var(--rowan-color-muted)));
+  stroke-opacity: 0.16;
+}
+
+.range {
+  stroke: var(--rowan-gauge-chart-range, var(--rowan-chart-neutral, var(--rowan-color-muted)));
+  stroke-opacity: var(--rowan-gauge-chart-range-opacity, 0.7);
+}
+
+.range[data-tone="info"] {
+  stroke: var(--rowan-gauge-chart-info, var(--rowan-chart-info, var(--rowan-color-accent)));
+}
+
+.range[data-tone="success"] {
+  stroke: var(--rowan-gauge-chart-success, var(--rowan-chart-success, var(--rowan-color-success)));
+}
+
+.range[data-tone="warning"] {
+  stroke: var(--rowan-gauge-chart-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
+}
+
+.range[data-tone="danger"] {
+  stroke: var(--rowan-gauge-chart-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
+}
+
+.needle {
+  stroke: var(--rowan-gauge-chart-needle, var(--rowan-color-fg));
+  stroke-linecap: round;
+  stroke-width: var(--rowan-gauge-chart-needle-width, 2.5);
+}
+
+.hub {
+  fill: var(--rowan-gauge-chart-needle, var(--rowan-color-fg));
+}
+
+.target {
+  stroke: var(--rowan-gauge-chart-target, var(--rowan-color-fg));
+  stroke-linecap: square;
+  stroke-width: var(--rowan-gauge-chart-target-width, 2);
+}
+
+.tick {
+  stroke: var(--rowan-gauge-chart-tick, var(--rowan-color-muted));
+  stroke-linecap: square;
+  stroke-width: 1;
+}
+
+.tick-label,
+.readout {
+  fill: var(--rowan-gauge-chart-fg, var(--rowan-color-fg));
+  font-family: var(--rowan-font-family, system-ui, sans-serif);
+  font-size: 9px;
+}
+
+.readout {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.table {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
