@@ -3,8 +3,27 @@ import "../../../src/icon-button/icon-button.js";
 import { createIcon } from "@rowan-ui/icons";
 import { registerIcon, RowanIcon } from "@rowan-ui/icons/element";
 import "@rowan-ui/icons/elements/calendar-days";
+import "@rowan-ui/icons/elements/triangle-alert";
 
 const nextMicrotask = () => Promise.resolve();
+
+function luminance(color) {
+  const channels = color
+    .match(/[\d.]+/g)
+    .slice(0, 3)
+    .map((channel) => {
+      const normalized = Number(channel) / 255;
+      return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+    });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function contrast(foreground, background) {
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort(
+    (left, right) => right - left,
+  );
+  return (lighter + 0.05) / (darker + 0.05);
+}
 
 describe("rowan-icon", () => {
   afterEach(() => {
@@ -127,6 +146,85 @@ describe("rowan-icon", () => {
     expect(icon.shadowRoot.querySelector("svg")?.getAttribute("data-icon")).to.equal(
       "reconnect-check",
     );
+  });
+
+  it("applies tone through currentColor and keeps stroke-width", async () => {
+    const icon = document.createElement("rowan-icon");
+    icon.name = "calendar-days";
+    icon.tone = "danger";
+    icon.strokeWidth = 1.5;
+    document.body.append(icon);
+    await nextMicrotask();
+
+    const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (stylesheet && !stylesheet.sheet) {
+      await new Promise((resolve, reject) => {
+        stylesheet.addEventListener("load", resolve, { once: true });
+        stylesheet.addEventListener("error", reject, { once: true });
+      });
+    }
+
+    expect(icon.getAttribute("tone")).to.equal("danger");
+    expect(icon.shadowRoot.querySelector("svg")?.getAttribute("stroke")).to.equal("currentColor");
+    expect(icon.shadowRoot.querySelector("svg")?.getAttribute("stroke-width")).to.equal("1.5");
+    expect(getComputedStyle(icon).color).to.equal("rgb(180, 57, 45)");
+
+    icon.tone = "none";
+    expect(icon.hasAttribute("tone")).to.equal(false);
+  });
+
+  it("keeps toned icons readable on light and dark surfaces", async () => {
+    const palettes = [
+      {
+        name: "light",
+        background: "rgb(248, 247, 242)",
+        tokens: {
+          "--rowan-color-accent": "#1d432f",
+          "--rowan-color-success": "#2f7a4d",
+          "--rowan-color-warning": "#9b7018",
+          "--rowan-color-danger": "#b4392d",
+        },
+      },
+      {
+        name: "dark",
+        background: "rgb(17, 23, 20)",
+        tokens: {
+          "--rowan-color-accent": "#7fc095",
+          "--rowan-color-success": "#6fb587",
+          "--rowan-color-warning": "#cfa44f",
+          "--rowan-color-danger": "#e37f74",
+        },
+      },
+    ];
+
+    for (const palette of palettes) {
+      for (const tone of ["info", "success", "warning", "danger"]) {
+        const surface = document.createElement("div");
+        surface.style.background = palette.background;
+        surface.style.padding = "8px";
+        for (const [token, value] of Object.entries(palette.tokens)) {
+          surface.style.setProperty(token, value);
+        }
+        const icon = document.createElement("rowan-icon");
+        icon.name = "triangle-alert";
+        icon.tone = tone;
+        surface.append(icon);
+        document.body.append(surface);
+        await nextMicrotask();
+        const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
+        if (stylesheet && !stylesheet.sheet) {
+          await new Promise((resolve, reject) => {
+            stylesheet.addEventListener("load", resolve, { once: true });
+            stylesheet.addEventListener("error", reject, { once: true });
+          });
+        }
+        expect(
+          contrast(getComputedStyle(icon).color, palette.background),
+          `${palette.name} ${tone}`,
+        ).to.be.at.least(3);
+        surface.remove();
+      }
+    }
   });
 
   it("rejects invalid declarative registrations", () => {

@@ -11,6 +11,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Chart hover readouts: bullet and gauge show actual/target (and the matching range); sparkline shows the nearest point; bar, donut, and stacked bar show the hovered mark.
 - `rowan-side-nav-item` `tone`, `count`, and `count-label` for exception cues. Slotted `suffix` still wins.
 - Experimental `rowan-data-state`: `ready` / `loading` / `empty` / `error` region wrapper. Retry stays the author's `actions` slot.
+- `rowan-icon` `tone` (`info` / `success` / `warning` / `danger`) maps to status tokens via `currentColor`.
 
 ## 0.9.0 - 2026-09-23
 

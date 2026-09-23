@@ -1,7 +1,10 @@
 import "../../../src/icon-button/icon-button.js";
 import "./elements/arrow-right.js";
 import "./elements/calendar-days.js";
+import "./elements/bell.js";
+import "./elements/circle-alert.js";
 import "./elements/circle-check.js";
+import "./elements/triangle-alert.js";
 import "./elements/download.js";
 import "./elements/menu.js";
 import "./elements/search.js";
@@ -113,5 +116,42 @@ export const MeaningfulIcon = {
 
     message.append(icon, text);
     return message;
+  },
+};
+
+export const Tones = {
+  render: () => {
+    const row = document.createElement("div");
+    row.style.alignItems = "end";
+    row.style.display = "flex";
+    row.style.flexWrap = "wrap";
+    row.style.gap = "1.25rem";
+
+    const samples = [
+      { name: "bell", tone: "none", caption: "inherit" },
+      { name: "circle-alert", tone: "info", caption: "info" },
+      { name: "circle-check", tone: "success", caption: "success" },
+      { name: "triangle-alert", tone: "warning", caption: "warning" },
+      { name: "triangle-alert", tone: "danger", caption: "danger" },
+    ];
+
+    for (const sample of samples) {
+      const item = document.createElement("div");
+      item.style.display = "grid";
+      item.style.gap = "0.35rem";
+      item.style.justifyItems = "center";
+      const icon = document.createElement("rowan-icon");
+      icon.name = sample.name;
+      icon.tone = sample.tone;
+      icon.size = 28;
+      icon.label = sample.caption;
+      const caption = document.createElement("code");
+      caption.textContent = sample.caption;
+      caption.style.fontSize = "0.75rem";
+      item.append(icon, caption);
+      row.append(item);
+    }
+
+    return row;
   },
 };

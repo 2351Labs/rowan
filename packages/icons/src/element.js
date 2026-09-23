@@ -11,6 +11,13 @@ function normalizeName(value) {
   return normalizeString(value).toLowerCase();
 }
 
+const TONES = new Set(["none", "info", "success", "warning", "danger"]);
+
+function normalizeTone(value) {
+  const tone = normalizeName(value);
+  return TONES.has(tone) ? tone : "none";
+}
+
 /**
  * Registers an icon factory for declarative `<rowan-icon>` use.
  *
@@ -45,10 +52,11 @@ export function registerIcon(name, factory) {
  * @attr {string} size
  * @attr {string} stroke-width
  * @attr {string} label
+ * @attr {"none"|"info"|"success"|"warning"|"danger"} tone
  * @csspart icon
  */
 export class RowanIcon extends HTMLElement {
-  static observedAttributes = ["name", "size", "stroke-width", "label"];
+  static observedAttributes = ["name", "size", "stroke-width", "label", "tone"];
 
   #iconContainer = null;
 
@@ -64,7 +72,7 @@ export class RowanIcon extends HTMLElement {
     this.shadowRoot.append(stylesheet, this.#iconContainer);
     ICON_REFRESHERS.set(this, () => this.#render());
 
-    for (const property of ["name", "size", "strokeWidth", "label"]) {
+    for (const property of ["name", "size", "strokeWidth", "label", "tone"]) {
       this.#upgradeProperty(property);
     }
   }
@@ -112,6 +120,17 @@ export class RowanIcon extends HTMLElement {
 
   set label(value) {
     this.#reflectString("label", normalizeString(value));
+  }
+
+  /** @returns {"none" | "info" | "success" | "warning" | "danger"} */
+  get tone() {
+    return normalizeTone(this.getAttribute("tone"));
+  }
+
+  /** @param {"none" | "info" | "success" | "warning" | "danger"} value */
+  set tone(value) {
+    const next = normalizeTone(value);
+    this.#reflectString("tone", next === "none" ? "" : next);
   }
 
   #reflectString(attribute, value) {

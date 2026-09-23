@@ -15,6 +15,7 @@ export function registerIcon(name: string, factory: (options?: import("./icon.js
  * @attr {string} size
  * @attr {string} stroke-width
  * @attr {string} label
+ * @attr {"none"|"info"|"success"|"warning"|"danger"} tone
  * @csspart icon
  */
 export class RowanIcon extends HTMLElement {
@@ -30,5 +31,9 @@ export class RowanIcon extends HTMLElement {
     get strokeWidth(): string;
     set label(value: string);
     get label(): string;
+    /** @param {"none" | "info" | "success" | "warning" | "danger"} value */
+    set tone(value: "none" | "info" | "success" | "warning" | "danger");
+    /** @returns {"none" | "info" | "success" | "warning" | "danger"} */
+    get tone(): "none" | "info" | "success" | "warning" | "danger";
     #private;
 }
