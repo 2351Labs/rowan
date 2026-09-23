@@ -129,6 +129,7 @@
 
 .point-controls {
   inset: 0;
+  pointer-events: none;
   position: absolute;
 }
 
@@ -139,6 +140,7 @@
   inline-size: var(--point-width);
   inset-block-start: var(--point-y);
   inset-inline-start: var(--point-x);
+  pointer-events: auto;
   position: absolute;
 }
 

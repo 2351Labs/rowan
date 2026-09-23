@@ -593,6 +593,12 @@
             },
             {
               "name": "line"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "reference-line"
             }
           ],
           "slots": [
@@ -706,6 +712,27 @@
                 "text": "RowanTrendChartValueFormatter | null"
               },
               "description": "Formats chart and table values. Its context includes tick for compact axis labels. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "referenceLines",
+              "return": {
+                "type": {
+                  "text": "RowanChartReferenceLine[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartReferenceLine[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartReferenceLine[]"
+              },
+              "description": "Horizontal overlays. Arrays are property-only."
             },
             {
               "kind": "field",
@@ -3154,12 +3181,27 @@
               }
             },
             {
-              "name": "{ caption, labels, series, formatValue }"
+              "name": "{ caption, labels, series, formatValue, referenceLines = [] }"
             },
             {
               "name": "options",
               "type": {
                 "text": "{\n *   caption: string,\n *   labels: string[],\n *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,\n *   formatValue: (value: number, series: unknown, index: number, label: string) => string,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "createReferenceLine",
+          "parameters": [
+            {
+              "name": "{\n  x1,\n  x2,\n  y,\n  tone = \"neutral\",\n  label = \"\",\n  formattedValue = \"\",\n}"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   x1: number,\n *   x2: number,\n *   y: number,\n *   tone?: string,\n *   label?: string,\n *   formattedValue?: string,\n * }"
               }
             }
           ]
@@ -3214,6 +3256,14 @@
           "name": "renderChartTable",
           "declaration": {
             "name": "renderChartTable",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createReferenceLine",
+          "declaration": {
+            "name": "createReferenceLine",
             "module": "src/chart/dom.js"
           }
         },
@@ -3331,6 +3381,15 @@
         },
         {
           "kind": "function",
+          "name": "referenceLineHoverText",
+          "parameters": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "nearestPointByClientX",
           "parameters": [
             {
@@ -3413,6 +3472,14 @@
           "name": "seriesHoverText",
           "declaration": {
             "name": "seriesHoverText",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "referenceLineHoverText",
+          "declaration": {
+            "name": "referenceLineHoverText",
             "module": "src/chart/hover.js"
           }
         },
@@ -3628,6 +3695,27 @@
               }
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeReferenceLines",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "expandDomainWithReferenceLines",
+          "parameters": [
+            {
+              "name": "domain"
+            },
+            {
+              "name": "lines"
+            }
+          ]
         }
       ],
       "exports": [
@@ -3724,6 +3812,22 @@
           "name": "formatChartValue",
           "declaration": {
             "name": "formatChartValue",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeReferenceLines",
+          "declaration": {
+            "name": "normalizeReferenceLines",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "expandDomainWithReferenceLines",
+          "declaration": {
+            "name": "expandDomainWithReferenceLines",
             "module": "src/chart/model.js"
           }
         }
@@ -19021,6 +19125,9 @@
               "name": "hover"
             },
             {
+              "name": "reference-line"
+            },
+            {
               "name": "summary"
             },
             {
@@ -19136,6 +19243,27 @@
                 "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats chart and table values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "referenceLines",
+              "return": {
+                "type": {
+                  "text": "RowanChartReferenceLine[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartReferenceLine[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartReferenceLine[]"
+              },
+              "description": "Horizontal overlays. Arrays are property-only."
             },
             {
               "kind": "field",

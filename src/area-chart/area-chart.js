@@ -310,7 +310,6 @@ export class RowanAreaChart extends BaseElement {
       bindChartHover(this, {
         target: this.renderRoot.querySelector(".chart"),
         bubble: this.#hover,
-        anchor: this.#plot,
         textForEvent: (event) => this.#hoverText(event),
       });
 
