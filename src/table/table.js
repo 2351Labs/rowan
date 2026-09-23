@@ -121,6 +121,14 @@ function nonNegativeInteger(value, fallback) {
  * @property {boolean} [virtualized]
  * @property {number} [virtualItemSize]
  * @property {number} [virtualOverscan]
+ * @property {string | RowanTableGroupBy | null} [groupBy]
+ */
+
+/**
+ * @typedef {object} RowanTableGroupBy
+ * @property {string} id
+ * @property {boolean} [subtotals]
+ * @property {boolean} [collapsed]
  */
 
 /** @typedef {"sm" | "md" | "lg"} RowanTableDensity */
@@ -176,6 +184,7 @@ function isDevelopmentEnvironment() {
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
+ * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -207,6 +216,7 @@ export class RowanTable extends BaseElement {
     "virtualized",
     "virtualItemSize",
     "virtualOverscan",
+    "groupBy",
   ];
 
   #state = {
@@ -216,7 +226,9 @@ export class RowanTable extends BaseElement {
     selected: [],
     sort: null,
     page: null,
+    groupBy: null,
   };
+  #toggledGroups = new Map();
 
   #root = null;
   #tableViewport = null;
@@ -299,6 +311,7 @@ export class RowanTable extends BaseElement {
       virtualized: this.virtualized,
       virtualItemSize: this.virtualItemSize,
       virtualOverscan: this.virtualOverscan,
+      groupBy: this.groupBy,
     };
   }
 
@@ -315,7 +328,9 @@ export class RowanTable extends BaseElement {
         : [],
       sort: this.#normalizeSort(next.sort),
       page: this.#normalizePage(next.page),
+      groupBy: this.#normalizeGroupBy(next.groupBy),
     };
+    this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
     this.#viewNeedsReconciliation = true;
     this.#selectionNeedsSync = false;
@@ -491,6 +506,19 @@ export class RowanTable extends BaseElement {
     this.reflectNumber("virtual-overscan", next === DEFAULT_VIRTUAL_OVERSCAN ? null : next);
   }
 
+  /** @returns {RowanTableGroupBy | null} */
+  get groupBy() {
+    return this.#state.groupBy;
+  }
+
+  /** @param {string | RowanTableGroupBy | null | undefined} value */
+  set groupBy(value) {
+    this.#state.groupBy = this.#normalizeGroupBy(value);
+    this.#toggledGroups = new Map();
+    this.#bodyNeedsRender = true;
+    this.requestRender();
+  }
+
   /** @returns {RowanTableRow[]} */
   get selectedRows() {
     const selectedIds = new Set(this.#state.selected);
@@ -617,10 +645,10 @@ export class RowanTable extends BaseElement {
     this.#validateConfiguration();
     const view = this.#buildView();
     this.#pruneSelection(view.entries);
-    this.#visibleRows = view.rows;
+    this.#visibleRows = view.dataRows;
 
     this.#renderHeader();
-    this.#renderBody(view.rows, view.hasDuplicateRowIds);
+    this.#renderBody(view.renderRows, view.hasDuplicateRowIds);
     this.#renderPagination(view.pageInfo);
 
     const table = this.renderRoot.querySelector("table");
@@ -1119,7 +1147,73 @@ export class RowanTable extends BaseElement {
     });
   }
 
+  #bodyColumnCount() {
+    return (this.selectable !== "none" ? 1 : 0) + this.#renderableColumns().length;
+  }
+
+  #createGroupRow(entry) {
+    const tr = document.createElement("tr");
+    tr.className = "group-row";
+    tr.part = "tr";
+    tr.dataset.rowId = entry.rowId;
+    tr.dataset.groupKey = entry.groupKey;
+
+    const cell = document.createElement("td");
+    cell.className = "td group-cell sticky-start";
+    cell.colSpan = this.#bodyColumnCount();
+    cell.style.insetInlineStart = "0px";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "group-toggle";
+    button.dataset.tableAction = "toggle-group";
+    button.dataset.groupKey = entry.groupKey;
+    button.setAttribute("aria-expanded", entry.expanded ? "true" : "false");
+    button.textContent = `${entry.label} (${entry.count})`;
+    cell.append(button);
+    tr.append(cell);
+    return tr;
+  }
+
+  #createSubtotalRow(entry) {
+    const tr = document.createElement("tr");
+    tr.className = "subtotal-row";
+    tr.part = "tr";
+    tr.dataset.rowId = entry.rowId;
+    tr.dataset.groupKey = entry.groupKey;
+
+    if (this.selectable !== "none") {
+      const selectCell = document.createElement("td");
+      selectCell.className = "td select-column sticky-start";
+      selectCell.dataset.columnId = SELECT_COLUMN_ID;
+      tr.append(selectCell);
+    }
+
+    this.#renderableColumns().forEach((column, index) => {
+      const cell = document.createElement("td");
+      cell.className = "td";
+      cell.dataset.columnId = column.id;
+      if (column.align) cell.style.textAlign = this.#alignToCss(column.align);
+      if (column.sticky === "start") cell.classList.add("sticky-start");
+      if (column.sticky === "end") cell.classList.add("sticky-end");
+
+      const total = entry.totals?.[column.id];
+      if (total != null) {
+        cell.textContent = this.#formatValue(column, total, {}, -1);
+      } else if (index === 0) {
+        cell.textContent = "Subtotal";
+      }
+
+      tr.append(cell);
+    });
+
+    return tr;
+  }
+
   #createBodyRow(entry) {
+    if (entry.kind === "group") return this.#createGroupRow(entry);
+    if (entry.kind === "subtotal") return this.#createSubtotalRow(entry);
+
     const tr = document.createElement("tr");
     tr.part = "tr";
     tr.dataset.rowId = entry.rowId;
@@ -1222,6 +1316,12 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyClick(event) {
+    const toggle = this.#findActionElement(event, "toggle-group");
+    if (toggle) {
+      this.#toggleGroup(toggle.dataset.groupKey);
+      return;
+    }
+
     const selector = this.#findActionElement(event, "select-row");
     if (selector) {
       this.#selectionModifiers.set(selector, Boolean(event.shiftKey));
@@ -2047,15 +2147,151 @@ export class RowanTable extends BaseElement {
     const hasDuplicateRowIds = this.#hasDuplicateRowIds(entries);
     this.#validateRowIds(entries);
     const sorted = this.#applySort(entries);
-    const pageInfo = this.#resolvePageInfo(sorted.length);
-    const paged = pageInfo ? sorted.slice(pageInfo.start, pageInfo.end) : sorted;
+    const grouped = this.#groupSortedEntries(sorted);
+    const dataEntries = grouped ? grouped.flatMap((group) => group.members) : sorted;
+    const pageInfo = this.#resolvePageInfo(dataEntries.length);
+    const pagedData = pageInfo ? dataEntries.slice(pageInfo.start, pageInfo.end) : dataEntries;
+    const { renderRows, dataRows } = this.#buildRenderRows(grouped, pagedData);
 
-    const rows = paged.map((entry, visibleIndex) => ({
+    const rows = dataRows.map((entry, visibleIndex) => ({
       ...entry,
       visibleIndex,
     }));
 
-    return { entries, rows, pageInfo, hasDuplicateRowIds };
+    return { entries, rows, dataRows: rows, renderRows, pageInfo, hasDuplicateRowIds };
+  }
+
+  #normalizeGroupBy(value) {
+    if (typeof value === "string" && value.trim()) {
+      return { id: value.trim(), subtotals: false, collapsed: false };
+    }
+
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const id = this.#normalizeText(value.id);
+    if (!id) return null;
+
+    return {
+      id,
+      subtotals: Boolean(value.subtotals),
+      collapsed: Boolean(value.collapsed),
+    };
+  }
+
+  #groupKey(value) {
+    const text = this.#normalizeText(value);
+    return text || "__empty";
+  }
+
+  #isGroupExpanded(groupKey) {
+    if (this.#toggledGroups.has(groupKey)) return this.#toggledGroups.get(groupKey);
+    return !this.#state.groupBy?.collapsed;
+  }
+
+  #toggleGroup(groupKey) {
+    const key = this.#normalizeText(groupKey);
+    if (!key || !this.#state.groupBy) return;
+
+    const expanded = !this.#isGroupExpanded(key);
+    this.#toggledGroups.set(key, expanded);
+    this.#bodyNeedsRender = true;
+    this.requestRender();
+    emit(this, "rowan-group-toggle", { groupKey: key, expanded });
+  }
+
+  #groupSortedEntries(entries) {
+    const groupBy = this.#state.groupBy;
+    if (!groupBy) return null;
+
+    const column = this.#findColumn(groupBy.id);
+    if (!column) return null;
+
+    const groups = [];
+    const indexByKey = new Map();
+
+    for (const entry of entries) {
+      const value = this.#resolveValue(entry.row, entry.rowIndex, column);
+      const key = this.#groupKey(value);
+      let group = indexByKey.get(key);
+      if (!group) {
+        const label = this.#formatValue(column, value, entry.row, entry.rowIndex) || "—";
+        group = { key, label, members: [] };
+        indexByKey.set(key, group);
+        groups.push(group);
+      }
+      group.members.push(entry);
+    }
+
+    return groups;
+  }
+
+  #groupTotals(members) {
+    const totals = {};
+
+    for (const column of this.#renderableColumns()) {
+      const type = column.cell?.type ?? column.type;
+      if (type !== "number") continue;
+
+      let sum = 0;
+      let any = false;
+      for (const member of members) {
+        const numeric = Number(this.#resolveValue(member.row, member.rowIndex, column));
+        if (!Number.isFinite(numeric)) continue;
+        sum += numeric;
+        any = true;
+      }
+      totals[column.id] = any ? sum : null;
+    }
+
+    return totals;
+  }
+
+  #buildRenderRows(grouped, pagedData) {
+    if (!grouped) {
+      const dataRows = pagedData.map((entry) => ({ ...entry, kind: "row" }));
+      return { renderRows: dataRows, dataRows };
+    }
+
+    const pagedKeys = new Set(pagedData.map((entry) => entry.rowId));
+    const renderRows = [];
+    const dataRows = [];
+
+    for (const group of grouped) {
+      const members = group.members.filter((member) => pagedKeys.has(member.rowId));
+      if (!members.length) continue;
+
+      const expanded = this.#isGroupExpanded(group.key);
+      renderRows.push({
+        kind: "group",
+        rowId: `__group:${group.key}`,
+        groupKey: group.key,
+        label: group.label,
+        count: group.members.length,
+        expanded,
+        row: null,
+        rowIndex: -1,
+      });
+
+      if (!expanded) continue;
+
+      for (const member of members) {
+        const rowEntry = { ...member, kind: "row" };
+        renderRows.push(rowEntry);
+        dataRows.push(rowEntry);
+      }
+
+      if (this.#state.groupBy.subtotals) {
+        renderRows.push({
+          kind: "subtotal",
+          rowId: `__subtotal:${group.key}`,
+          groupKey: group.key,
+          totals: this.#groupTotals(members),
+          row: null,
+          rowIndex: -1,
+        });
+      }
+    }
+
+    return { renderRows, dataRows };
   }
 
   #applySort(entries) {

@@ -39,6 +39,7 @@
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click
+ * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  */
 export class RowanTable extends BaseElement {
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -94,6 +95,10 @@ export class RowanTable extends BaseElement {
     set page(value: RowanTablePage | null);
     /** @returns {RowanTablePage | null} */
     get page(): RowanTablePage | null;
+    /** @param {string | RowanTableGroupBy | null | undefined} value */
+    set groupBy(value: RowanTableGroupBy | null);
+    /** @returns {RowanTableGroupBy | null} */
+    get groupBy(): RowanTableGroupBy | null;
     /** @returns {RowanTableRow[]} */
     get selectedRows(): Record<string, unknown>[];
     selectAll(): void;
@@ -175,6 +180,12 @@ export type RowanTableConfig = {
     virtualized?: boolean | undefined;
     virtualItemSize?: number | undefined;
     virtualOverscan?: number | undefined;
+    groupBy?: string | RowanTableGroupBy | null | undefined;
+};
+export type RowanTableGroupBy = {
+    id: string;
+    subtotals?: boolean | undefined;
+    collapsed?: boolean | undefined;
 };
 export type RowanTableDensity = "sm" | "md" | "lg";
 export type RowanTableSelectable = "none" | "single" | "multiple";
