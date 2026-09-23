@@ -1528,4 +1528,90 @@ describe("rowan-table", () => {
 
     table.remove();
   });
+
+  it("pins leading and trailing columns while preserving DOM order", async () => {
+    const table = document.createElement("rowan-table");
+    table.style.maxInlineSize = "18rem";
+    table.config = {
+      rowId: "id",
+      selectable: "multiple",
+      stickyHeader: true,
+      columns: [
+        { id: "name", header: "Name", sticky: "start", minWidth: "8rem" },
+        { id: "team", header: "Team", minWidth: "8rem" },
+        { id: "site", header: "Site", minWidth: "8rem" },
+        { id: "status", header: "Status", sticky: "end", minWidth: "6rem" },
+      ],
+      rows: [{ id: "1", name: "Ada", team: "Ops", site: "East", status: "Watch" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+    await nextFrame();
+
+    const headerIds = [...table.shadowRoot.querySelectorAll("thead th")].map(
+      (cell) => cell.dataset.columnId,
+    );
+    expect(headerIds).to.deep.equal(["__select", "name", "team", "site", "status"]);
+
+    const select = table.shadowRoot.querySelector('th[data-column-id="__select"]');
+    const name = table.shadowRoot.querySelector('th[data-column-id="name"]');
+    const team = table.shadowRoot.querySelector('th[data-column-id="team"]');
+    const status = table.shadowRoot.querySelector('th[data-column-id="status"]');
+    expect(select.classList.contains("sticky-start")).to.equal(true);
+    expect(name.classList.contains("sticky-start")).to.equal(true);
+    expect(team.classList.contains("sticky-start")).to.equal(false);
+    expect(status.classList.contains("sticky-end")).to.equal(true);
+    expect(name.classList.contains("is-edge-start")).to.equal(true);
+    expect(status.classList.contains("is-edge-end")).to.equal(true);
+
+    const nameInset = Number.parseFloat(name.style.insetInlineStart || "0");
+    expect(nameInset).to.be.greaterThan(0);
+    expect(status.style.insetInlineEnd).to.equal("0px");
+
+    const bodyName = table.shadowRoot.querySelector('td[data-column-id="name"]');
+    expect(bodyName.classList.contains("sticky-start")).to.equal(true);
+    expect(bodyName.style.insetInlineStart).to.equal(name.style.insetInlineStart);
+  });
+
+  it("keeps sticky classes on a virtualized body", async () => {
+    const rows = Array.from({ length: 40 }, (_value, index) => ({
+      id: `row-${index}`,
+      name: `Row ${index}`,
+      status: "Watch",
+    }));
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      virtualized: true,
+      virtualItemSize: 24,
+      virtualOverscan: 1,
+      columns: [
+        { id: "name", header: "Name", sticky: "start" },
+        { id: "status", header: "Status", sticky: "end" },
+      ],
+      rows,
+    };
+    document.body.append(table);
+    await nextMicrotask();
+    const viewport = table.shadowRoot.querySelector(".table-scroll");
+    viewport.style.height = "80px";
+    await nextFrame();
+    await nextMicrotask();
+
+    expect(
+      table.shadowRoot
+        .querySelector("th[data-column-id='name']")
+        .classList.contains("sticky-start"),
+    ).to.equal(true);
+    expect(
+      table.shadowRoot
+        .querySelector("td[data-column-id='name']")
+        .classList.contains("sticky-start"),
+    ).to.equal(true);
+    expect(
+      table.shadowRoot
+        .querySelector("td[data-column-id='status']")
+        .classList.contains("sticky-end"),
+    ).to.equal(true);
+  });
 });

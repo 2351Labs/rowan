@@ -31,7 +31,6 @@
   border-spacing: 0;
   border: var(--rowan-border-width) solid var(--rowan-color-border);
   border-radius: var(--rowan-radius-lg);
-  overflow: hidden;
   width: 100%;
 }
 
@@ -144,7 +143,7 @@
 :host([sticky-header]) .thead {
   inset-block-start: 0;
   position: sticky;
-  z-index: 1;
+  z-index: 3;
 }
 
 .link {
@@ -157,18 +156,32 @@
   outline: none;
 }
 
-.sticky-start {
-  background: var(--rowan-color-bg);
-  inset-inline-start: 0;
+.sticky-start,
+.sticky-end {
+  background: var(--rowan-table-cell-bg, var(--rowan-color-bg));
   position: sticky;
   z-index: 2;
 }
 
-.sticky-end {
-  background: var(--rowan-color-bg);
-  inset-inline-end: 0;
-  position: sticky;
-  z-index: 2;
+.thead .sticky-start,
+.thead .sticky-end {
+  background: var(
+    --rowan-table-head-bg,
+    color-mix(in srgb, var(--rowan-color-fg) 5%, var(--rowan-color-bg))
+  );
+}
+
+:host([sticky-header]) .thead .sticky-start,
+:host([sticky-header]) .thead .sticky-end {
+  z-index: 4;
+}
+
+.sticky-start.is-edge-start {
+  box-shadow: 8px 0 8px -8px rgb(16 38 28 / 28%);
+}
+
+.sticky-end.is-edge-end {
+  box-shadow: -8px 0 8px -8px rgb(16 38 28 / 28%);
 }
 
 .pagination {

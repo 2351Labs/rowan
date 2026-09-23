@@ -814,3 +814,50 @@ export const VirtualizedBody = {
     return table;
   },
 };
+
+export const PinnedColumns = {
+  render: () => {
+    const table = document.createElement("rowan-table");
+    table.style.maxInlineSize = "36rem";
+    table.config = {
+      caption: "Pinned name and status while the middle columns scroll",
+      rowId: "id",
+      selectable: "multiple",
+      stickyHeader: true,
+      columns: [
+        { id: "name", header: "Member", sticky: "start", minWidth: "10rem", sortable: true },
+        { id: "team", header: "Team", minWidth: "8rem" },
+        { id: "site", header: "Site", minWidth: "8rem" },
+        { id: "shift", header: "Shift", minWidth: "8rem" },
+        { id: "status", header: "Status", sticky: "end", minWidth: "7rem", type: "badge" },
+      ],
+      rows: [
+        {
+          id: "1",
+          name: "Ada Lovelace",
+          team: "Ops",
+          site: "East",
+          shift: "Days",
+          status: "Watch",
+        },
+        {
+          id: "2",
+          name: "Alan Turing",
+          team: "Platform",
+          site: "West",
+          shift: "Nights",
+          status: "Ready",
+        },
+        {
+          id: "3",
+          name: "Grace Hopper",
+          team: "Ops",
+          site: "North",
+          shift: "Days",
+          status: "Alert",
+        },
+      ],
+    };
+    return table;
+  },
+};
