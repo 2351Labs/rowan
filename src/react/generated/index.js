@@ -20,6 +20,7 @@ export { RowanCommandItem } from "./command-item.js";
 export { RowanCommandPalette } from "./command-palette.js";
 export { RowanConfirmDialog } from "./confirm-dialog.js";
 export { RowanContextMenu } from "./context-menu.js";
+export { RowanDataState } from "./data-state.js";
 export { RowanDatePicker } from "./date-picker.js";
 export { RowanDateRangePicker } from "./date-range-picker.js";
 export { RowanDialog } from "./dialog.js";

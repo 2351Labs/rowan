@@ -141,6 +141,10 @@
       "types": "./src/date-range-picker/date-range-picker.d.ts",
       "default": "./src/date-range-picker/date-range-picker.js"
     },
+    "./data-state": {
+      "types": "./src/data-state/data-state.d.ts",
+      "default": "./src/data-state/data-state.js"
+    },
     "./dialog": {
       "types": "./src/dialog/dialog.d.ts",
       "default": "./src/dialog/dialog.js"
@@ -491,6 +495,7 @@
     "./src/color-picker/color-picker.js",
     "./src/date-picker/date-picker.js",
     "./src/date-range-picker/date-range-picker.js",
+    "./src/data-state/data-state.js",
     "./src/divider/divider.js",
     "./src/checkbox/checkbox.js",
     "./src/dialog/dialog.js",

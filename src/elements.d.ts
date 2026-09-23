@@ -29,6 +29,7 @@ import type { RowanDialog } from "../types/dialog/dialog.js";
 import type { RowanDropzone } from "../types/dropzone/dropzone.js";
 import type { RowanDrawer } from "../types/drawer/drawer.js";
 import type { RowanDropdown } from "../types/dropdown/dropdown.js";
+import type { RowanDataState } from "../types/data-state/data-state.js";
 import type { RowanEmptyState } from "../types/empty-state/empty-state.js";
 import type { RowanFileItem } from "../types/file-item/file-item.js";
 import type { RowanFileUpload } from "../types/file-upload/file-upload.js";
@@ -118,6 +119,7 @@ declare global {
     "rowan-dropzone": RowanDropzone;
     "rowan-drawer": RowanDrawer;
     "rowan-dropdown": RowanDropdown;
+    "rowan-data-state": RowanDataState;
     "rowan-empty-state": RowanEmptyState;
     "rowan-file-item": RowanFileItem;
     "rowan-file-upload": RowanFileUpload;

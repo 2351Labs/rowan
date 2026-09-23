@@ -364,7 +364,7 @@ Custom status icons, command-palette parity, changing `rowan-side-nav` selection
 
 ## Sprint 15 — Data-state wrapper
 
-**Status:** pending
+**Status:** done
 
 One experimental host for page/widget async chrome. Do not add `state=` to frozen charts or KPI.
 
@@ -376,9 +376,9 @@ One experimental host for page/widget async chrome. Do not add `state=` to froze
 
 ### Done when
 
-- [ ] Host hides inactive slots (`hidden` + display)
-- [ ] Tests for each state, slot fallback copy, and `ready` showing children
-- [ ] README experimental. Story with retry
+- [x] Host hides inactive slots (`hidden` + display)
+- [x] Tests for each state, slot fallback copy, and `ready` showing children
+- [x] README experimental. Story with retry
 
 ### Out of scope
 

@@ -7,6 +7,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "badge",
       "button",
       "chip",
+      "data-state",
       "empty-state",
       "icon-button",
       "link",
