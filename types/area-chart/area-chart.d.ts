@@ -9,6 +9,7 @@
  * @property {string[]} labels - Point labels shared across series. Arrays are property-only.
  * @property {import("../trend-chart/model.js").RowanTrendChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../trend-chart/model.js").RowanTrendChartValueFormatter | null} valueFormatter - Formats chart and table values. Its context includes tick for compact axis labels. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Arrays are property-only.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -25,6 +26,8 @@
  * @csspart table
  * @csspart area
  * @csspart line
+ * @csspart hover
+ * @csspart reference-line
  * @cssprop --rowan-area-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive data point.
  */
@@ -56,6 +59,10 @@ export class RowanAreaChart extends BaseElement {
     set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
     /** @returns {import("../trend-chart/model.js").RowanTrendChartValueFormatter | null} */
     get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+    /** @param {import("../chart/model.js").RowanChartReferenceLine[]} value */
+    set referenceLines(value: import("../chart/model.js").RowanChartReferenceLine[]);
+    /** @returns {import("../chart/model.js").RowanChartReferenceLine[]} */
+    get referenceLines(): import("../chart/model.js").RowanChartReferenceLine[];
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

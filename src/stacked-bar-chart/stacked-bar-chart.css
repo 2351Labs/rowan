@@ -67,6 +67,37 @@
   stroke-width: 1;
 }
 
+.reference-line-hit {
+  fill: none;
+  pointer-events: stroke;
+  stroke: transparent;
+  stroke-width: 12;
+}
+
+.reference-line {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--rowan-chart-neutral, var(--rowan-color-muted));
+  stroke-dasharray: 6 4;
+  stroke-width: 1.75;
+}
+
+.reference-line[data-tone="info"] {
+  stroke: var(--rowan-chart-info, var(--rowan-color-accent));
+}
+
+.reference-line[data-tone="success"] {
+  stroke: var(--rowan-chart-success, var(--rowan-color-success));
+}
+
+.reference-line[data-tone="warning"] {
+  stroke: var(--rowan-chart-warning, var(--rowan-color-warning));
+}
+
+.reference-line[data-tone="danger"] {
+  stroke: var(--rowan-chart-danger, var(--rowan-color-danger));
+}
+
 .x-axis {
   display: grid;
   font-size: var(--rowan-font-size-sm);

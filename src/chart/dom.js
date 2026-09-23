@@ -20,7 +20,10 @@ export function createCell(tagName, text, scope = "") {
  *   formatValue: (value: number, series: unknown, index: number, label: string) => string,
  * }} options
  */
-export function renderChartTable(table, { caption, labels, series, formatValue }) {
+export function renderChartTable(
+  table,
+  { caption, labels, series, formatValue, referenceLines = [] },
+) {
   const fragment = document.createDocumentFragment();
   const captionEl = document.createElement("caption");
   captionEl.className = "sr-only";
@@ -51,7 +54,74 @@ export function renderChartTable(table, { caption, labels, series, formatValue }
     body.append(row);
   }
   fragment.append(body);
+
+  if (referenceLines.length) {
+    const refs = document.createElement("tbody");
+    refs.className = "reference-lines";
+    const span = Math.max(1, labels.length);
+    for (const line of referenceLines) {
+      const row = document.createElement("tr");
+      row.append(createCell("th", line.label || "Reference", "row"));
+      const cell = document.createElement("td");
+      cell.colSpan = span;
+      cell.textContent = formatValue(
+        line.value,
+        { label: line.label || "Reference" },
+        0,
+        line.label,
+      );
+      row.append(cell);
+      refs.append(row);
+    }
+    fragment.append(refs);
+  }
+
   table.replaceChildren(fragment);
+}
+
+/**
+ * @param {{
+ *   x1: number,
+ *   x2: number,
+ *   y: number,
+ *   tone?: string,
+ *   label?: string,
+ *   formattedValue?: string,
+ * }} options
+ */
+export function createReferenceLine({
+  x1,
+  x2,
+  y,
+  tone = "neutral",
+  label = "",
+  formattedValue = "",
+}) {
+  const group = createSvgElement("g");
+  group.setAttribute("class", "reference-line-group");
+  group.dataset.refLine = "true";
+  group.dataset.tone = tone;
+  if (label) group.dataset.refLabel = label;
+  group.dataset.refValue = formattedValue || String(y);
+
+  const hit = createSvgElement("line");
+  hit.setAttribute("class", "reference-line-hit");
+  hit.setAttribute("x1", String(x1));
+  hit.setAttribute("x2", String(x2));
+  hit.setAttribute("y1", String(y));
+  hit.setAttribute("y2", String(y));
+
+  const line = createSvgElement("line");
+  line.setAttribute("class", "reference-line");
+  line.setAttribute("part", "reference-line");
+  line.dataset.tone = tone;
+  line.setAttribute("x1", String(x1));
+  line.setAttribute("x2", String(x2));
+  line.setAttribute("y1", String(y));
+  line.setAttribute("y2", String(y));
+
+  group.append(hit, line);
+  return group;
 }
 
 export function emitPointActivate(host, emit, entry) {

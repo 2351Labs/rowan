@@ -168,6 +168,37 @@
   stroke-width: 1;
 }
 
+.reference-line-hit {
+  fill: none;
+  pointer-events: stroke;
+  stroke: transparent;
+  stroke-width: 12;
+}
+
+.reference-line {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--rowan-chart-neutral, var(--rowan-color-muted, #424945));
+  stroke-dasharray: 6 4;
+  stroke-width: 1.75;
+}
+
+.reference-line[data-tone="info"] {
+  stroke: var(--rowan-chart-info, var(--rowan-color-accent, #1d432f));
+}
+
+.reference-line[data-tone="success"] {
+  stroke: var(--rowan-chart-success, var(--rowan-color-success, #2f7a4d));
+}
+
+.reference-line[data-tone="warning"] {
+  stroke: var(--rowan-chart-warning, var(--rowan-color-warning, #9b7018));
+}
+
+.reference-line[data-tone="danger"] {
+  stroke: var(--rowan-chart-danger, var(--rowan-color-danger, #b4392d));
+}
+
 .empty-label {
   fill: var(--_trend-chart-muted-fg);
   font-family: var(--_trend-chart-font-family);

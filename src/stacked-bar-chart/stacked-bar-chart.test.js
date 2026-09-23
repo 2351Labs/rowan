@@ -98,4 +98,19 @@ describe("rowan-stacked-bar-chart", () => {
 
     expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
   });
+
+  it("draws reference lines and lists them in the matching table", async () => {
+    const chart = await renderChart();
+    chart.referenceLines = [{ value: 5, label: "Capacity", tone: "warning" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const line = chart.shadowRoot.querySelector("g.reference-line-group");
+    expect(line).to.not.equal(null);
+    expect(line.dataset.refLabel).to.equal("Capacity");
+    expect(chart.shadowRoot.querySelector("line.reference-line").dataset.tone).to.equal("warning");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Capacity");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("5");
+    expect(chart.hasAttribute("reference-lines")).to.equal(false);
+  });
 });

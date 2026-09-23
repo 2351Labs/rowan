@@ -9,6 +9,7 @@
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {import("../chart/model.js").RowanChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Arrays are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -20,6 +21,7 @@
  * @csspart legend
  * @csspart detail
  * @csspart hover
+ * @csspart reference-line
  * @csspart summary
  * @csspart table
  * @cssprop --rowan-stacked-bar-chart-bg
@@ -52,6 +54,10 @@ export class RowanStackedBarChart extends BaseElement {
     set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
     /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
     get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+    /** @param {import("../chart/model.js").RowanChartReferenceLine[]} value */
+    set referenceLines(value: import("../chart/model.js").RowanChartReferenceLine[]);
+    /** @returns {import("../chart/model.js").RowanChartReferenceLine[]} */
+    get referenceLines(): import("../chart/model.js").RowanChartReferenceLine[];
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";
