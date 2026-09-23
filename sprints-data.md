@@ -369,6 +369,7 @@ Custom status icons, command-palette parity, changing `rowan-side-nav` selection
 One experimental host for page/widget async chrome. Do not add `state=` to frozen charts or KPI.
 
 `rowan-data-state`:
+
 - `state`: `ready` | `loading` | `empty` | `error` (stale/partial as optional flags later, not equal states)
 - Slots: default (ready), `loading`, `empty`, `error`, `actions` (retry)
 - Keyboard: retry control in the error slot is the author’s button; wrapper does not invent a second focus system
@@ -474,7 +475,7 @@ Confidence intervals, event annotations, brushing, adding overlays to frozen tre
 
 ## Sprint 20 — Source meta + filter session module
 
-**Status:** pending
+**Status:** done
 
 Two small pieces, not a provider.
 
@@ -483,9 +484,9 @@ Two small pieces, not a provider.
 
 ### Done when
 
-- [ ] Source-meta host + tests + story
-- [ ] Filter session unit tests: set, clear, subscribe, snapshot for deep links
-- [ ] Cookbook snippet in app-shell or a dashboard MDX — no implicit chart coupling
+- [x] Source-meta host + tests + story
+- [x] Filter session unit tests: set, clear, subscribe, snapshot for deep links
+- [x] Cookbook snippet in app-shell or a dashboard MDX — no implicit chart coupling
 
 ### Out of scope
 

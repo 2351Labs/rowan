@@ -15,6 +15,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-table` column `sticky: "start" | "end"` pins leading or trailing columns. The selection column is pinned start when selectable.
 - `rowan-table` `groupBy` groups local rows with expand/collapse (`rowan-group-toggle`) and optional number subtotals.
 - Experimental area and stacked-bar charts accept property-only `referenceLines` (`{ value, label?, tone? }`). Hover and the matching table include the overlay.
+- Experimental `rowan-source-meta`: `source` and `as-of` provenance for KPI description, chart description, or table caption.
+- `createDashboardFilters()` in `@rowan-ui/core/dashboard-filters`: set, clear, subscribe, snapshot, and replace. Apps wire chart and table events; hosts do not auto-subscribe.
 
 ## 0.9.0 - 2026-09-23
 

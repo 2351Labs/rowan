@@ -5862,6 +5862,57 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/dashboard-filters/dashboard-filters.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createDashboardFilters",
+          "parameters": [
+            {
+              "name": "initial",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "RowanDashboardFilterSnapshot"
+              }
+            }
+          ],
+          "description": "In-memory dashboard filter session. Apps subscribe and apply values to\ntables and charts. Hosts do not auto-subscribe. `snapshot()` is a shallow\ncopy for deep links; writing the URL stays the app's concern.",
+          "return": {
+            "type": {
+              "text": "RowanDashboardFilters"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createDashboardFilters",
+          "declaration": {
+            "name": "createDashboardFilters",
+            "module": "src/dashboard-filters/dashboard-filters.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/dashboard-filters/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createDashboardFilters",
+          "declaration": {
+            "name": "createDashboardFilters",
+            "module": "./dashboard-filters.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/data-state/data-state.js",
       "declarations": [
         {
@@ -10441,6 +10492,14 @@
         },
         {
           "kind": "js",
+          "name": "createDashboardFilters",
+          "declaration": {
+            "name": "createDashboardFilters",
+            "module": "./dashboard-filters/dashboard-filters.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "applyFilters",
           "declaration": {
             "name": "applyFilters",
@@ -10949,6 +11008,14 @@
           "declaration": {
             "name": "RowanSlider",
             "module": "./slider/slider.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanSourceMeta",
+          "declaration": {
+            "name": "RowanSourceMeta",
+            "module": "./source-meta/source-meta.js"
           }
         },
         {
@@ -18361,6 +18428,170 @@
           "declaration": {
             "name": "RowanSlider",
             "module": "src/slider/slider.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/source-meta/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanSourceMeta",
+          "declaration": {
+            "name": "RowanSourceMeta",
+            "module": "./source-meta.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/source-meta/source-meta.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental provenance line for KPI description, chart description, or table caption.\nDoes not add fields to those frozen hosts.",
+          "name": "RowanSourceMeta",
+          "cssParts": [
+            {
+              "name": "meta"
+            },
+            {
+              "name": "source"
+            },
+            {
+              "name": "as-of"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Replaces the source attribute.",
+              "name": "source"
+            },
+            {
+              "description": "Replaces the as-of attribute.",
+              "name": "as-of"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "source"
+            },
+            {
+              "kind": "field",
+              "name": "asOf"
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "source",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "as-of",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-source-meta",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanSourceMeta",
+          "declaration": {
+            "name": "RowanSourceMeta",
+            "module": "src/source-meta/source-meta.js"
           }
         }
       ]

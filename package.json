@@ -141,6 +141,10 @@
       "types": "./src/date-range-picker/date-range-picker.d.ts",
       "default": "./src/date-range-picker/date-range-picker.js"
     },
+    "./dashboard-filters": {
+      "types": "./src/dashboard-filters/dashboard-filters.d.ts",
+      "default": "./src/dashboard-filters/dashboard-filters.js"
+    },
     "./data-state": {
       "types": "./src/data-state/data-state.d.ts",
       "default": "./src/data-state/data-state.js"
@@ -296,6 +300,10 @@
     "./slider": {
       "types": "./src/slider/slider.d.ts",
       "default": "./src/slider/slider.js"
+    },
+    "./source-meta": {
+      "types": "./src/source-meta/source-meta.d.ts",
+      "default": "./src/source-meta/source-meta.js"
     },
     "./sparkline": {
       "types": "./src/sparkline/sparkline.d.ts",
@@ -534,6 +542,7 @@
     "./src/side-nav-item/side-nav-item.js",
     "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
+    "./src/source-meta/source-meta.js",
     "./src/sparkline/sparkline.js",
     "./src/stacked-bar-chart/stacked-bar-chart.js",
     "./src/spinner/spinner.js",
