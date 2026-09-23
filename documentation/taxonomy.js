@@ -108,6 +108,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "image",
       "kpi-card",
       "row-details-panel",
+      "source-meta",
       "sparkline",
       "stacked-bar-chart",
       "table",

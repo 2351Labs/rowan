@@ -280,7 +280,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -306,6 +306,7 @@ are frozen; pin the version if you depend on them.
 | `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                                                                       |
 | `rowan-image`                   | Experimental | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                     |
 | `rowan-data-state`              | Experimental | Region wrapper for `ready` / `loading` / `empty` / `error`. Table and KPI keep their own `loading`.                                                                                    |
+| `rowan-source-meta`             | Experimental | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                      |
 
 ## Rowan Data State
 
@@ -322,6 +323,49 @@ their own `loading`.
   <p slot="error">The fill-rate query failed.</p>
   <button slot="actions" type="button">Retry</button>
 </rowan-data-state>
+```
+
+## Rowan Source Meta
+
+`rowan-source-meta` is an experimental provenance line. `source` and `as-of`
+are reflected text. Named slots `source` and `as-of` replace the attributes.
+Drop the host into a KPI default slot, a chart `description` slot, or a table
+`caption` slot. Frozen KPI, chart, and table APIs do not gain source fields.
+
+```html
+<rowan-kpi-card label="Fill rate">
+  <rowan-source-meta source="Warehouse events" as-of="2026-09-23 14:02 UTC"></rowan-source-meta>
+</rowan-kpi-card>
+```
+
+## Dashboard filters
+
+`createDashboardFilters()` in `@rowan-ui/core/dashboard-filters` is an in-memory
+session: `set`, `clear`, `subscribe`, `snapshot`, and `replace`. Apps listen to
+`rowan-point-activate`, `rowan-change`, and `rowan-select` and call `set`
+themselves. Components do not auto-subscribe. `snapshot()` is a shallow copy
+for deep links; writing the URL is the app's concern. Storybook **Workflows /
+Dashboard filters** shows the wiring.
+
+```js
+import { createDashboardFilters } from "@rowan-ui/core/dashboard-filters";
+import { applyFilters } from "@rowan-ui/core/filter-builder";
+
+const session = createDashboardFilters();
+session.subscribe((snapshot) => {
+  table.rows = applyFilters(
+    rows,
+    Object.entries(snapshot).map(([field, value]) => ({
+      field,
+      operator: "equals",
+      value,
+    })),
+  );
+});
+
+chart.addEventListener("rowan-point-activate", (event) => {
+  session.set("day", event.detail.label);
+});
 ```
 
 ## Rowan Carousel

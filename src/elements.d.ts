@@ -62,6 +62,7 @@ import type { RowanSideNavItem } from "../types/side-nav-item/side-nav-item.js";
 import type { RowanSideNavSection } from "../types/side-nav-section/side-nav-section.js";
 import type { RowanSkeleton } from "../types/skeleton/skeleton.js";
 import type { RowanSlider } from "../types/slider/slider.js";
+import type { RowanSourceMeta } from "../types/source-meta/source-meta.js";
 import type { RowanSparkline } from "../types/sparkline/sparkline.js";
 import type { RowanSpinner } from "../types/spinner/spinner.js";
 import type { RowanStackedBarChart } from "../types/stacked-bar-chart/stacked-bar-chart.js";
@@ -152,6 +153,7 @@ declare global {
     "rowan-side-nav-section": RowanSideNavSection;
     "rowan-skeleton": RowanSkeleton;
     "rowan-slider": RowanSlider;
+    "rowan-source-meta": RowanSourceMeta;
     "rowan-sparkline": RowanSparkline;
     "rowan-spinner": RowanSpinner;
     "rowan-stacked-bar-chart": RowanStackedBarChart;
