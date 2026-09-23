@@ -12,6 +12,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-side-nav-item` `tone`, `count`, and `count-label` for exception cues. Slotted `suffix` still wins.
 - Experimental `rowan-data-state`: `ready` / `loading` / `empty` / `error` region wrapper. Retry stays the author's `actions` slot.
 - `rowan-icon` `tone` (`info` / `success` / `warning` / `danger`) maps to status tokens via `currentColor`.
+- `rowan-table` column `sticky: "start" | "end"` pins leading or trailing columns. The selection column is pinned start when selectable.
 
 ## 0.9.0 - 2026-09-23
 

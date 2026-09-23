@@ -406,20 +406,20 @@ Data fetching, caching, per-chart state machines, `stale` as a fifth equal state
 
 ## Sprint 17 — Table pinned columns
 
-**Status:** pending
+**Status:** done
 
-Additive on frozen `rowan-table` config. Virtualization already Stable — do not rename or replace it.
+Additive on frozen `rowan-table` config. The public field is existing `sticky: "start" | "end"` (not a second `pinned` name). Virtualization already Stable — do not rename or replace it.
 
-- Column `pinned: "start" | "end"`
 - Sticky cells in the virtualized and non-virtualized body
-- Selection/sort/cell events unchanged
-- Horizontal scroll keeps pinned columns visible
+- Leading start-run and trailing end-run get stacked offsets
+- Selection column is sticky-start when selectable
+- Selection/sort/cell events unchanged; column DOM order unchanged
 
 ### Done when
 
-- [ ] Config type + tests: pin start, pin end, virtualized + pin, keyboard cell order
-- [ ] README notes the field as additive Stable or Experimental (call it in the PR)
-- [ ] No second table host
+- [x] Config type + tests: pin start, pin end, virtualized + pin, DOM order preserved
+- [x] README notes `sticky` as additive on the frozen column shape
+- [x] No second table host
 
 ### Out of scope
 

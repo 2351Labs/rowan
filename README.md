@@ -931,6 +931,7 @@ For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-c
 - Sorting: `rowan-sort` event and `.sortBy(id, dir)`
 - Pagination model with `rowan-page-change` and normalized page indexes
 - Optional virtualized body mode that retains real table markup and existing selection, sort, activation, and cell-event contracts
+- Column `sticky: "start" | "end"` to pin leading or trailing columns while the table scrolls horizontally. The selection column is pinned start when the table is selectable. Column DOM order does not change.
 - Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `custom`
 
 ### Configuration updates
@@ -962,7 +963,7 @@ table.config = {
   virtualItemSize: 40,
   virtualOverscan: 4,
   columns: [
-    { id: "name", header: "Member", sortable: true },
+    { id: "name", header: "Member", sortable: true, sticky: "start" },
     { id: "team", header: "Team", type: "badge" },
   ],
   rows: members,

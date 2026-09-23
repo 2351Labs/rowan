@@ -628,6 +628,7 @@ export class RowanTable extends BaseElement {
     this.#syncRowCountSemantics(table, view);
 
     this.#renderCaption();
+    this.#applyStickyOffsets();
   }
 
   /** Virtualized and paginated tables hold only a window of rows, so AT needs the real totals. */
@@ -740,7 +741,7 @@ export class RowanTable extends BaseElement {
 
   #createSelectionHeaderCell() {
     const th = document.createElement("th");
-    th.className = "th select-column";
+    th.className = "th select-column sticky-start";
     th.part = "th";
     th.scope = "col";
     th.dataset.columnId = SELECT_COLUMN_ID;
@@ -1180,7 +1181,7 @@ export class RowanTable extends BaseElement {
 
   #createSelectionBodyCell(entry) {
     const td = document.createElement("td");
-    td.className = "td select-column";
+    td.className = "td select-column sticky-start";
     td.part = "td";
     td.dataset.columnId = SELECT_COLUMN_ID;
 
@@ -1383,6 +1384,61 @@ export class RowanTable extends BaseElement {
 
   #renderableColumns() {
     return this.#configuredColumns().filter((column) => !column.hidden);
+  }
+
+  #applyStickyOffsets() {
+    if (!this.#theadRow) return;
+
+    const headerCells = [...this.#theadRow.children];
+    this.renderRoot.querySelectorAll(".is-edge-start, .is-edge-end").forEach((cell) => {
+      cell.classList.remove("is-edge-start", "is-edge-end");
+    });
+
+    const startRun = [];
+    for (const cell of headerCells) {
+      if (cell.classList.contains("sticky-start")) startRun.push(cell);
+      else break;
+    }
+
+    const endRun = [];
+    for (let index = headerCells.length - 1; index >= 0; index -= 1) {
+      if (headerCells[index].classList.contains("sticky-end")) endRun.push(headerCells[index]);
+      else break;
+    }
+
+    let offset = 0;
+    startRun.forEach((cell, index) => {
+      this.#setStickyInset(cell.dataset.columnId, "start", offset);
+      offset += cell.getBoundingClientRect().width;
+      if (index === startRun.length - 1) this.#markStickyEdge(cell.dataset.columnId, "start");
+    });
+
+    offset = 0;
+    endRun.forEach((cell, index) => {
+      this.#setStickyInset(cell.dataset.columnId, "end", offset);
+      offset += cell.getBoundingClientRect().width;
+      if (index === endRun.length - 1) this.#markStickyEdge(cell.dataset.columnId, "end");
+    });
+  }
+
+  #setStickyInset(columnId, edge, offset) {
+    const property = edge === "start" ? "inset-inline-start" : "inset-inline-end";
+    this.#cellsForColumn(columnId).forEach((cell) => {
+      cell.style.setProperty(property, `${Math.max(0, offset)}px`);
+    });
+  }
+
+  #markStickyEdge(columnId, edge) {
+    const className = edge === "start" ? "is-edge-start" : "is-edge-end";
+    this.#cellsForColumn(columnId).forEach((cell) => {
+      cell.classList.add(className);
+    });
+  }
+
+  #cellsForColumn(columnId) {
+    const id = this.#normalizeText(columnId);
+    if (!id || !this.renderRoot) return [];
+    return [...this.renderRoot.querySelectorAll(`[data-column-id="${CSS.escape(id)}"]`)];
   }
 
   #columnId(column) {
