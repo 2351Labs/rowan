@@ -1,7 +1,24 @@
 :host {
+  color: inherit;
   display: inline-block;
   line-height: 0;
   vertical-align: middle;
+}
+
+:host([tone="info"]) {
+  color: var(--rowan-color-accent, #1d432f);
+}
+
+:host([tone="success"]) {
+  color: var(--rowan-color-success, #2f7a4d);
+}
+
+:host([tone="warning"]) {
+  color: var(--rowan-color-warning, #9b7018);
+}
+
+:host([tone="danger"]) {
+  color: var(--rowan-color-danger, #b4392d);
 }
 
 :host([hidden]) {

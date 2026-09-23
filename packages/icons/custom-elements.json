@@ -50,6 +50,23 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"none\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"none\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
             }
           ],
           "attributes": [
@@ -75,6 +92,12 @@
               "name": "label",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"none\"|\"info\"|\"success\"|\"warning\"|\"danger\""
               }
             }
           ],

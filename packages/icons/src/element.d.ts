@@ -15,6 +15,8 @@ export class RowanIcon extends HTMLElement {
   set strokeWidth(value: string | number);
   get label(): string;
   set label(value: string);
+  get tone(): "none" | "info" | "success" | "warning" | "danger";
+  set tone(value: "none" | "info" | "success" | "warning" | "danger");
 }
 
 declare global {

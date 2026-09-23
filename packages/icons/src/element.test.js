@@ -3,8 +3,27 @@ import "../../../src/icon-button/icon-button.js";
 import { createIcon } from "@rowan-ui/icons";
 import { registerIcon, RowanIcon } from "@rowan-ui/icons/element";
 import "@rowan-ui/icons/elements/calendar-days";
+import "@rowan-ui/icons/elements/triangle-alert";
 
 const nextMicrotask = () => Promise.resolve();
+
+function luminance(color) {
+  const channels = color
+    .match(/[\d.]+/g)
+    .slice(0, 3)
+    .map((channel) => {
+      const normalized = Number(channel) / 255;
+      return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+    });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function contrast(foreground, background) {
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort(
+    (left, right) => right - left,
+  );
+  return (lighter + 0.05) / (darker + 0.05);
+}
 
 describe("rowan-icon", () => {
   afterEach(() => {
@@ -127,6 +146,81 @@ describe("rowan-icon", () => {
     expect(icon.shadowRoot.querySelector("svg")?.getAttribute("data-icon")).to.equal(
       "reconnect-check",
     );
+  });
+
+  it("applies tone through currentColor and keeps stroke-width", async () => {
+    const icon = document.createElement("rowan-icon");
+    icon.name = "calendar-days";
+    icon.tone = "danger";
+    icon.strokeWidth = 1.5;
+    document.body.append(icon);
+    await nextMicrotask();
+
+    const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (stylesheet && !stylesheet.sheet) {
+      await new Promise((resolve, reject) => {
+        stylesheet.addEventListener("load", resolve, { once: true });
+        stylesheet.addEventListener("error", reject, { once: true });
+      });
+    }
+
+    expect(icon.getAttribute("tone")).to.equal("danger");
+    expect(icon.shadowRoot.querySelector("svg")?.getAttribute("stroke")).to.equal("currentColor");
+    expect(icon.shadowRoot.querySelector("svg")?.getAttribute("stroke-width")).to.equal("1.5");
+    expect(getComputedStyle(icon).color).to.equal("rgb(180, 57, 45)");
+
+    icon.tone = "none";
+    expect(icon.hasAttribute("tone")).to.equal(false);
+  });
+
+  it("keeps toned icons readable on light and dark surfaces", async () => {
+    const sheets = await Promise.all(
+      ["../../../src/tokens/tokens.css", "../../../src/tokens/themes/dark.css"].map((path) => {
+        const stylesheet = document.createElement("link");
+        stylesheet.rel = "stylesheet";
+        stylesheet.href = new URL(path, import.meta.url).href;
+        document.head.append(stylesheet);
+        if (stylesheet.sheet) return Promise.resolve(stylesheet);
+        return new Promise((resolve, reject) => {
+          stylesheet.addEventListener("load", () => resolve(stylesheet), { once: true });
+          stylesheet.addEventListener("error", reject, { once: true });
+        });
+      }),
+    );
+
+    try {
+      for (const [theme, background] of [
+        ["light", "rgb(248, 247, 242)"],
+        ["dark", "rgb(17, 23, 20)"],
+      ]) {
+        for (const tone of ["info", "success", "warning", "danger"]) {
+          const surface = document.createElement("div");
+          if (theme === "dark") surface.dataset.theme = "dark";
+          surface.style.background = "var(--rowan-color-bg)";
+          surface.style.padding = "8px";
+          const icon = document.createElement("rowan-icon");
+          icon.name = "triangle-alert";
+          icon.tone = tone;
+          surface.append(icon);
+          document.body.append(surface);
+          await nextMicrotask();
+          const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
+          if (stylesheet && !stylesheet.sheet) {
+            await new Promise((resolve, reject) => {
+              stylesheet.addEventListener("load", resolve, { once: true });
+              stylesheet.addEventListener("error", reject, { once: true });
+            });
+          }
+          expect(
+            contrast(getComputedStyle(icon).color, background),
+            `${theme} ${tone}`,
+          ).to.be.at.least(3);
+          surface.remove();
+        }
+      }
+    } finally {
+      sheets.forEach((sheet) => sheet.remove());
+    }
   });
 
   it("rejects invalid declarative registrations", () => {

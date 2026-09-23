@@ -50,8 +50,9 @@ import "@rowan-ui/icons/elements/calendar-days";
 
 `icon` and `name` use the icon module's kebab-case name. `rowan-icon` remains
 available for slots in other Rowan components and accepts `size`, `stroke-width`,
-and `label`; omit `label` when the icon is decorative, including inside a labeled
-`rowan-icon-button`.
+`label`, and `tone` (`none` | `info` | `success` | `warning` | `danger`).
+`tone` sets `color` from Rowan status tokens; omit it to inherit. Omit `label`
+when the icon is decorative, including inside a labeled `rowan-icon-button`.
 
 ## React
 

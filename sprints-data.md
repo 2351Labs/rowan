@@ -388,15 +388,15 @@ Data fetching, caching, per-chart state machines, `stale` as a fifth equal state
 
 ## Sprint 16 — Icon tone
 
-**Status:** pending
+**Status:** done
 
 `rowan-icon` `tone` sets `color` from the same tokens as badge/KPI (`currentColor` on the SVG). `stroke-width` stays. No filled catalog.
 
 ### Done when
 
-- [ ] `tone` attr on `rowan-icon`; default currentColor / inherit
-- [ ] Contrast: danger/warning/success/info on light and dark surfaces
-- [ ] Tests + icon stories
+- [x] `tone` attr on `rowan-icon`; default currentColor / inherit
+- [x] Contrast: danger/warning/success/info on light and dark surfaces
+- [x] Tests + icon stories
 
 ### Out of scope
 
