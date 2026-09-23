@@ -2800,18 +2800,21 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`, "js"
     group: "Components",
     title: "Rowan Side Navigation Item",
     summary:
-      "Composable navigation destination with link semantics, active-state styling, and prefix or suffix slots.",
+      "Composable navigation destination with link semantics, active-state styling, prefix or suffix slots, and optional tone and count.",
     tags: ["navigation", "link", "composition"],
-    keywords: ["side nav item", "navigation item", "active", "href", "prefix", "suffix"],
+    keywords: ["side nav item", "navigation item", "active", "href", "prefix", "suffix", "tone", "count"],
     content: () => `
       <section class="doc-section" data-doc-section id="side-nav-item-overview">
         <h2>Destination content</h2>
-        <p>Use href for full navigation, or omit it and route from the parent rowan-change for SPA destinations. Items receive roving focus when they belong to a rowan-side-nav, including inside a section.</p>
+        <p>Use href for full navigation, or omit it and route from the parent rowan-change for SPA destinations. Items receive roving focus when they belong to a rowan-side-nav, including inside a section. tone and count paint an exception cue; a slotted suffix replaces it.</p>
         <div class="docs-side-nav-item-demo">
           <rowan-side-nav-item value="overview" href="#side-nav-item-contract" active>
             <span slot="prefix" class="docs-side-nav-item-mark" aria-hidden="true"></span>
             Overview
             <span slot="suffix" class="docs-side-nav-item-meta">Current</span>
+          </rowan-side-nav-item>
+          <rowan-side-nav-item value="incidents" href="#side-nav-item-contract" tone="danger" count="3">
+            Incidents
           </rowan-side-nav-item>
         </div>
       </section>

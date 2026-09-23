@@ -16945,6 +16945,15 @@
             },
             {
               "name": "label"
+            },
+            {
+              "name": "status"
+            },
+            {
+              "name": "status-dot"
+            },
+            {
+              "name": "status-count"
             }
           ],
           "slots": [
@@ -16987,6 +16996,44 @@
             {
               "kind": "field",
               "name": "external"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"none\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"none\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "count",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "countLabel"
             },
             {
               "kind": "method",
@@ -17116,6 +17163,24 @@
               "name": "external",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"none\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              }
+            },
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "count-label",
+              "type": {
+                "text": "string"
               }
             },
             {

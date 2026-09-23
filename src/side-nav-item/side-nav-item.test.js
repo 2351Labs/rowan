@@ -68,4 +68,56 @@ describe("rowan-side-nav-item", () => {
     expect(control.tabIndex).to.equal(-1);
     expect(clickCount).to.equal(0);
   });
+
+  it("renders a tone dot and a count chip, and slotted suffix wins", async () => {
+    const item = document.createElement("rowan-side-nav-item");
+    item.label = "Incidents";
+    item.tone = "danger";
+    document.body.append(item);
+    await nextMicrotask();
+
+    expect(item.shadowRoot.querySelector(".status").hidden).to.equal(false);
+    expect(item.shadowRoot.querySelector(".status-dot").hidden).to.equal(false);
+    expect(item.shadowRoot.querySelector(".status-count").hidden).to.equal(true);
+    expect(item.shadowRoot.querySelector("a").getAttribute("aria-label")).to.equal(
+      "Incidents, alerts",
+    );
+
+    item.count = 3;
+    await nextMicrotask();
+    expect(item.shadowRoot.querySelector(".status-dot").hidden).to.equal(true);
+    expect(item.shadowRoot.querySelector(".status-count").textContent).to.equal("3");
+    expect(item.shadowRoot.querySelector("a").getAttribute("aria-label")).to.equal(
+      "Incidents, 3 alerts",
+    );
+
+    item.count = 0;
+    await nextMicrotask();
+    expect(item.shadowRoot.querySelector(".status").hidden).to.equal(false);
+    expect(item.shadowRoot.querySelector(".status-dot").hidden).to.equal(false);
+
+    item.count = 4;
+    const suffix = document.createElement("span");
+    suffix.slot = "suffix";
+    suffix.textContent = "Live";
+    item.append(suffix);
+    await nextMicrotask();
+    expect(item.shadowRoot.querySelector(".status").hidden).to.equal(true);
+    expect(item.shadowRoot.querySelector(".suffix").classList.contains("is-empty")).to.equal(false);
+  });
+
+  it("colors a count without tone as danger", async () => {
+    const item = document.createElement("rowan-side-nav-item");
+    item.label = "Inbox";
+    item.count = 12;
+    item.countLabel = "unread";
+    document.body.append(item);
+    await nextMicrotask();
+
+    expect(item.shadowRoot.querySelector(".status").dataset.tone).to.equal("danger");
+    expect(item.shadowRoot.querySelector(".status-count").textContent).to.equal("12");
+    expect(item.shadowRoot.querySelector("a").getAttribute("aria-label")).to.equal(
+      "Inbox, 12 unread",
+    );
+  });
 });

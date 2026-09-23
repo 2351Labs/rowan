@@ -838,7 +838,7 @@ still fails immediately.
 
 ## Rowan Application Workspaces
 
-`rowan-app-layout` composes a responsive header, primary navigation, and default main-content slot. It keeps navigation state reflected through `navigation-open`; only user use of the compact toggle, backdrop, or Escape emits `rowan-change`. Compose `rowan-side-nav-item` children in `rowan-side-nav` for application destinations (Arrow, Home, End, Enter, Space). Wrap items in `rowan-side-nav-section` for labeled groups; the parent nav still has one `value`. An empty `value` means nothing is selected.
+`rowan-app-layout` composes a responsive header, primary navigation, and default main-content slot. It keeps navigation state reflected through `navigation-open`; only user use of the compact toggle, backdrop, or Escape emits `rowan-change`. Compose `rowan-side-nav-item` children in `rowan-side-nav` for application destinations (Arrow, Home, End, Enter, Space). Wrap items in `rowan-side-nav-section` for labeled groups; the parent nav still has one `value`. An empty `value` means nothing is selected. Items accept `tone` and optional `count` for exception cues; a slotted `suffix` replaces the built-in status.
 
 For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-change`, then `navigate(detail.value)`. Omitting `href` and routing only from `rowan-change` is also valid. Drive `rowan-command-palette` from the **same** destination list. Storybook **Workflows / App shell** is the copyable recipe. Do not put claims on nav items; filter before render.
 
