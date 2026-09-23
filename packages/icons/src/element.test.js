@@ -174,52 +174,56 @@ describe("rowan-icon", () => {
   });
 
   it("keeps toned icons readable on light and dark surfaces", async () => {
-    const sheets = await Promise.all(
-      ["../../../src/tokens/tokens.css", "../../../src/tokens/themes/dark.css"].map((path) => {
-        const stylesheet = document.createElement("link");
-        stylesheet.rel = "stylesheet";
-        stylesheet.href = new URL(path, import.meta.url).href;
-        document.head.append(stylesheet);
-        if (stylesheet.sheet) return Promise.resolve(stylesheet);
-        return new Promise((resolve, reject) => {
-          stylesheet.addEventListener("load", () => resolve(stylesheet), { once: true });
-          stylesheet.addEventListener("error", reject, { once: true });
-        });
-      }),
-    );
+    const palettes = [
+      {
+        name: "light",
+        background: "rgb(248, 247, 242)",
+        tokens: {
+          "--rowan-color-accent": "#1d432f",
+          "--rowan-color-success": "#2f7a4d",
+          "--rowan-color-warning": "#9b7018",
+          "--rowan-color-danger": "#b4392d",
+        },
+      },
+      {
+        name: "dark",
+        background: "rgb(17, 23, 20)",
+        tokens: {
+          "--rowan-color-accent": "#7fc095",
+          "--rowan-color-success": "#6fb587",
+          "--rowan-color-warning": "#cfa44f",
+          "--rowan-color-danger": "#e37f74",
+        },
+      },
+    ];
 
-    try {
-      for (const [theme, background] of [
-        ["light", "rgb(248, 247, 242)"],
-        ["dark", "rgb(17, 23, 20)"],
-      ]) {
-        for (const tone of ["info", "success", "warning", "danger"]) {
-          const surface = document.createElement("div");
-          if (theme === "dark") surface.dataset.theme = "dark";
-          surface.style.background = "var(--rowan-color-bg)";
-          surface.style.padding = "8px";
-          const icon = document.createElement("rowan-icon");
-          icon.name = "triangle-alert";
-          icon.tone = tone;
-          surface.append(icon);
-          document.body.append(surface);
-          await nextMicrotask();
-          const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
-          if (stylesheet && !stylesheet.sheet) {
-            await new Promise((resolve, reject) => {
-              stylesheet.addEventListener("load", resolve, { once: true });
-              stylesheet.addEventListener("error", reject, { once: true });
-            });
-          }
-          expect(
-            contrast(getComputedStyle(icon).color, background),
-            `${theme} ${tone}`,
-          ).to.be.at.least(3);
-          surface.remove();
+    for (const palette of palettes) {
+      for (const tone of ["info", "success", "warning", "danger"]) {
+        const surface = document.createElement("div");
+        surface.style.background = palette.background;
+        surface.style.padding = "8px";
+        for (const [token, value] of Object.entries(palette.tokens)) {
+          surface.style.setProperty(token, value);
         }
+        const icon = document.createElement("rowan-icon");
+        icon.name = "triangle-alert";
+        icon.tone = tone;
+        surface.append(icon);
+        document.body.append(surface);
+        await nextMicrotask();
+        const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
+        if (stylesheet && !stylesheet.sheet) {
+          await new Promise((resolve, reject) => {
+            stylesheet.addEventListener("load", resolve, { once: true });
+            stylesheet.addEventListener("error", reject, { once: true });
+          });
+        }
+        expect(
+          contrast(getComputedStyle(icon).color, palette.background),
+          `${palette.name} ${tone}`,
+        ).to.be.at.least(3);
+        surface.remove();
       }
-    } finally {
-      sheets.forEach((sheet) => sheet.remove());
     }
   });
 
