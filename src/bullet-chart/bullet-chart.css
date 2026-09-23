@@ -1,5 +1,3 @@
-@import "../chart/hover.css";
-
 :host {
   display: block;
   min-inline-size: 8rem;

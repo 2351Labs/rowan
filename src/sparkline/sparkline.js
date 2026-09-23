@@ -165,6 +165,7 @@ export class RowanSparkline extends BaseElement {
       bindChartHover(this, {
         target: this.#plot,
         bubble: this.#hover,
+        anchor: this.#plot,
         textForEvent: (event) => this.#hoverText(event),
       });
       this.listen(this.#plot, "pointerleave", () => this.#syncHoverPoint(null));

@@ -1,3 +1,5 @@
+const hoverStyleUrl = new URL("./hover.css", import.meta.url).href;
+
 /**
  * @param {string[]} lines
  * @returns {string}
@@ -6,12 +8,27 @@ export function formatHoverLines(lines) {
   return lines.filter((line) => Boolean(line && String(line).trim())).join("\n");
 }
 
+export function ensureChartHoverStyles(root) {
+  if (!root || root.querySelector("link[data-rowan-chart-hover]")) return;
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = hoverStyleUrl;
+  link.dataset.rowanChartHover = "";
+  root.append(link);
+}
+
 export function createChartHoverBubble() {
   const bubble = document.createElement("div");
   bubble.className = "hover";
   bubble.setAttribute("part", "hover");
   bubble.setAttribute("role", "tooltip");
+  bubble.setAttribute("popover", "manual");
   bubble.hidden = true;
+  bubble.style.position = "fixed";
+  bubble.style.inset = "auto";
+  bubble.style.margin = "0";
+  bubble.style.border = "var(--rowan-border-width, 1px) solid var(--rowan-color-border, #d8dcd5)";
   return bubble;
 }
 
@@ -29,7 +46,27 @@ export function hideChartHover(bubble) {
   }
 }
 
-export function showChartHover(bubble, text, clientX, clientY) {
+function positionChartHover(bubble, clientX, anchor) {
+  const bounds =
+    anchor instanceof Element
+      ? anchor.getBoundingClientRect()
+      : { left: clientX, right: clientX, top: 0, bottom: 0, height: 0 };
+  const left = Math.round(
+    Math.min(Math.max(clientX, bounds.left + 12), Math.max(bounds.left + 12, bounds.right - 12)),
+  );
+  const gap = 8;
+  const below = bounds.bottom + gap;
+  const bubbleHeight = bubble.offsetHeight || 48;
+  const top =
+    below + bubbleHeight > window.innerHeight - 8
+      ? Math.max(8, bounds.top - gap - bubbleHeight)
+      : below;
+
+  bubble.style.top = `${Math.round(top)}px`;
+  bubble.style.left = `${left}px`;
+}
+
+export function showChartHover(bubble, text, event, anchor) {
   if (!bubble) return;
 
   const content = String(text ?? "").trim();
@@ -38,22 +75,23 @@ export function showChartHover(bubble, text, clientX, clientY) {
     return;
   }
 
+  const clientX = event?.clientX ?? 0;
   bubble.textContent = content;
   bubble.hidden = false;
-  bubble.style.top = `${Math.round(clientY + 12)}px`;
-  bubble.style.left = `${Math.round(clientX)}px`;
 
-  if (typeof bubble.showPopover !== "function") return;
+  if (typeof bubble.showPopover === "function") {
+    if (bubble.getAttribute("popover") !== "manual") {
+      bubble.setAttribute("popover", "manual");
+    }
 
-  if (bubble.getAttribute("popover") !== "manual") {
-    bubble.setAttribute("popover", "manual");
+    try {
+      if (!bubble.matches(":popover-open")) bubble.showPopover();
+    } catch {
+      bubble.hidden = false;
+    }
   }
 
-  try {
-    if (!bubble.matches(":popover-open")) bubble.showPopover();
-  } catch {
-    bubble.hidden = false;
-  }
+  positionChartHover(bubble, clientX, anchor);
 }
 
 /**
@@ -62,11 +100,14 @@ export function showChartHover(bubble, text, clientX, clientY) {
  *   target: EventTarget,
  *   bubble: HTMLElement,
  *   textForEvent: (event: PointerEvent) => string,
+ *   anchor?: Element,
  * }} options
  */
-export function bindChartHover(element, { target, bubble, textForEvent }) {
+export function bindChartHover(element, { target, bubble, textForEvent, anchor }) {
+  ensureChartHoverStyles(element.shadowRoot);
+
   const show = (event) => {
-    showChartHover(bubble, textForEvent(event), event.clientX, event.clientY);
+    showChartHover(bubble, textForEvent(event), event, anchor ?? target);
   };
   const hide = () => hideChartHover(bubble);
 

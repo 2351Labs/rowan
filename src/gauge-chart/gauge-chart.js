@@ -193,6 +193,7 @@ export class RowanGaugeChart extends BaseElement {
       bindChartHover(this, {
         target: this.#plot,
         bubble: this.#hover,
+        anchor: this.#plot,
         textForEvent: () => this.#hoverText(),
       });
     }

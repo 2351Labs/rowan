@@ -236,6 +236,7 @@ export class RowanStackedBarChart extends BaseElement {
       bindChartHover(this, {
         target: this.renderRoot.querySelector(".chart"),
         bubble: this.#hover,
+        anchor: this.#plot,
         textForEvent: (event) => seriesHoverText(this.#entries, event),
       });
 

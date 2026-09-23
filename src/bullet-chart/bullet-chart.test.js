@@ -76,11 +76,21 @@ describe("rowan-bullet-chart", () => {
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
-    plot.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 12, clientY: 8 }));
+    const plotBox = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: plotBox.left + plotBox.width / 2,
+        clientY: plotBox.top + 8,
+      }),
+    );
     expect(hover.hidden).to.equal(false);
     expect(hover.textContent).to.include("Actual 82");
     expect(hover.textContent).to.include("Target 90");
     expect(hover.textContent).to.include("Good 80–100");
+    const hoverBox = hover.getBoundingClientRect();
+    expect(hoverBox.top).to.be.at.least(plotBox.top - 72);
+    expect(hoverBox.top).to.be.at.most(plotBox.bottom + 72);
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
