@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.10.0 - 2026-09-23
+
 ### Added
 
 - Chart hover readouts: bullet and gauge show actual/target (and the matching range); sparkline shows the nearest point; bar, donut, and stacked bar show the hovered mark.
