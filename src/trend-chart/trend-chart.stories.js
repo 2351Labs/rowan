@@ -1,5 +1,6 @@
 import "./trend-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 const ON_CALL_SERIES = [
   {
@@ -83,4 +84,10 @@ export const NonInteractiveSnapshot = {
     chart.label = "Weekly incident snapshot";
     return chart;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  parameters: Playground.parameters,
+  render: (args) => withVibrantChartPalette(Playground.render(args)),
 };

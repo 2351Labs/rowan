@@ -20,24 +20,24 @@
 }
 
 .range {
-  fill: var(--rowan-bullet-chart-range, var(--rowan-color-muted));
-  fill-opacity: 0.22;
+  fill: var(--rowan-bullet-chart-range, var(--rowan-chart-neutral, var(--rowan-color-muted)));
+  fill-opacity: var(--rowan-bullet-chart-range-opacity, 0.22);
 }
 
 .range[data-tone="info"] {
-  fill: var(--rowan-bullet-chart-info, var(--rowan-color-accent));
+  fill: var(--rowan-bullet-chart-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
 .range[data-tone="success"] {
-  fill: var(--rowan-bullet-chart-success, var(--rowan-color-success));
+  fill: var(--rowan-bullet-chart-success, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
 .range[data-tone="warning"] {
-  fill: var(--rowan-bullet-chart-warning, var(--rowan-color-warning));
+  fill: var(--rowan-bullet-chart-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
 .range[data-tone="danger"] {
-  fill: var(--rowan-bullet-chart-danger, var(--rowan-color-danger));
+  fill: var(--rowan-bullet-chart-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 .actual {

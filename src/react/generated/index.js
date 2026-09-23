@@ -35,6 +35,7 @@ export { RowanFilterBuilder } from "./filter-builder.js";
 export { RowanFormField } from "./form-field.js";
 export { RowanFormLayout } from "./form-layout.js";
 export { RowanFormWizard } from "./form-wizard.js";
+export { RowanGaugeChart } from "./gauge-chart.js";
 export { RowanIconButton } from "./icon-button.js";
 export { RowanImage } from "./image.js";
 export { RowanKpiCard } from "./kpi-card.js";

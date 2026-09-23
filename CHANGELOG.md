@@ -9,6 +9,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - Experimental `rowan-bullet-chart`: qualitative ranges, actual value, and target. Property-only data. Null is no-data.
+- Experimental `rowan-gauge-chart`: speedometer with `min` / `max`, qualitative ranges, actual needle, and optional target. Null is no-data.
+- Opt-in vibrant chart palette (`@rowan-ui/core/tokens/charts-vibrant` + `data-rowan-charts="vibrant"`). KPI and chart tones only; UI chrome stays on the Rowan theme.
 - Storybook **Workflows / App shell**: `rowan-app-layout`, sectioned side-nav, SPA `preventDefault` on `rowan-change`, and a command palette from one destination list.
 
 - Storybook Playground: live HTML editor for Rowan custom elements.

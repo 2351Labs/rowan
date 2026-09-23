@@ -1,0 +1,34 @@
+/**
+ * Opt-in chart / KPI palette. Import next to the theme files, then set
+ * `data-rowan-charts="vibrant"` on a dashboard region or a chart host.
+ * Buttons, nav, and form chrome keep the Rowan UI colors.
+ */
+[data-rowan-charts="vibrant"] {
+  --rowan-chart-info: #1d4ed8;
+  --rowan-chart-success: #15803d;
+  --rowan-chart-warning: #b45309;
+  --rowan-chart-danger: #dc2626;
+  --rowan-chart-neutral: #57534e;
+  --rowan-chart-series-1: var(--rowan-chart-info);
+  --rowan-chart-series-2: var(--rowan-chart-success);
+  --rowan-chart-series-3: var(--rowan-chart-warning);
+  --rowan-chart-series-4: var(--rowan-chart-danger);
+  --rowan-trend-chart-series-1: var(--rowan-chart-info);
+  --rowan-trend-chart-series-2: var(--rowan-chart-danger);
+  --rowan-trend-chart-series-3: var(--rowan-chart-warning);
+  --rowan-trend-chart-series-4: #0f766e;
+  --rowan-gauge-chart-range-opacity: 0.92;
+  --rowan-bullet-chart-range-opacity: 0.5;
+}
+
+[data-theme="dark"][data-rowan-charts="vibrant"],
+[data-theme="dark"] [data-rowan-charts="vibrant"],
+[data-theme="ember"][data-rowan-charts="vibrant"],
+[data-theme="ember"] [data-rowan-charts="vibrant"] {
+  --rowan-chart-info: #93c5fd;
+  --rowan-chart-success: #4ade80;
+  --rowan-chart-warning: #fbbf24;
+  --rowan-chart-danger: #f87171;
+  --rowan-chart-neutral: #a8a29e;
+  --rowan-trend-chart-series-4: #2dd4bf;
+}

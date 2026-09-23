@@ -28,22 +28,22 @@
 
 :host([tone="info"]) .line,
 .plot[data-tone="info"] .line {
-  stroke: var(--rowan-sparkline-info, var(--rowan-color-accent));
+  stroke: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
 :host([tone="success"]) .line,
 .plot[data-tone="success"] .line {
-  stroke: var(--rowan-sparkline-success, var(--rowan-color-success));
+  stroke: var(--rowan-sparkline-success, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
 :host([tone="warning"]) .line,
 .plot[data-tone="warning"] .line {
-  stroke: var(--rowan-sparkline-warning, var(--rowan-color-warning));
+  stroke: var(--rowan-sparkline-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
 :host([tone="danger"]) .line,
 .plot[data-tone="danger"] .line {
-  stroke: var(--rowan-sparkline-danger, var(--rowan-color-danger));
+  stroke: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 .table {

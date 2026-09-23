@@ -8,6 +8,7 @@ import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 import "../src/tokens/themes/lagoon.css";
 import "../src/tokens/themes/ember.css";
+import "../src/tokens/charts-vibrant.css";
 
 setCustomElementsManifest({
   ...customElements,

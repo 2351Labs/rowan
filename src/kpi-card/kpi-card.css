@@ -57,19 +57,19 @@
 }
 
 :host([tone="info"]) .delta {
-  color: var(--rowan-kpi-card-info-fg, var(--rowan-color-accent));
+  color: var(--rowan-kpi-card-info-fg, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
 :host([tone="success"]) .delta {
-  color: var(--rowan-kpi-card-success-fg, var(--rowan-color-success));
+  color: var(--rowan-kpi-card-success-fg, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
 :host([tone="warning"]) .delta {
-  color: var(--rowan-kpi-card-warning-fg, var(--rowan-color-warning));
+  color: var(--rowan-kpi-card-warning-fg, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
 :host([tone="danger"]) .delta {
-  color: var(--rowan-kpi-card-danger-fg, var(--rowan-color-danger));
+  color: var(--rowan-kpi-card-danger-fg, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 .description {

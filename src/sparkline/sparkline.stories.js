@@ -1,5 +1,6 @@
 import "./sparkline.js";
 import "../kpi-card/kpi-card.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 export default {
   title: "Components/Data Display/Sparkline",
@@ -32,4 +33,9 @@ export const InKpiCard = {
     card.append(chart);
     return card;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  render: () => withVibrantChartPalette(InKpiCard.render()),
 };

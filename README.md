@@ -193,6 +193,14 @@ import "@rowan-ui/core/tokens/ember";
 document.documentElement.dataset.theme = "lagoon";
 ```
 
+Chart and KPI tones default to those same UI colors, so forest and sand can wash out in small plots. Import `@rowan-ui/core/tokens/charts-vibrant` and set `data-rowan-charts="vibrant"` on a dashboard region (or a single chart host) for a louder blue / green / amber / red palette. Buttons, navigation, and form chrome stay on the Rowan theme.
+
+```js
+import "@rowan-ui/core/tokens/charts-vibrant";
+
+document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";
+```
+
 ## Locale-Aware Formatting
 
 Locale formatting is a pure utility, not a display-only custom element. Import it from
@@ -272,7 +280,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-kpi-card`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -288,9 +296,10 @@ are frozen; pin the version if you depend on them.
 | `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes. |
 | `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                               |
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                     |
-| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for `rowan-sparkline` or `rowan-bullet-chart`.                                             |
+| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                        |
 | `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                    |
 | `rowan-bullet-chart`            | Experimental | Compact ranges, actual, and target. Property-only `ranges` / `value` / `target`. Null is no-data.                                                                                      |
+| `rowan-gauge-chart`             | Experimental | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                             |
 | `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
 | `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
 | `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill.                                                     |
@@ -541,7 +550,7 @@ compose a dialog if you need one.
 `delta-label` are attributes. `value` and `delta` are property-only. Tone never
 replaces the label. Delta text includes a sign so change is not color-only. A
 null `value` shows `No data`; `loading` replaces the value with a skeleton.
-The `chart` slot is for `rowan-sparkline` or `rowan-bullet-chart` and follows the label and value in
+The `chart` slot is for compact charts (`rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`) and follows the label and value in
 reading order.
 
 ```html
@@ -594,6 +603,23 @@ interactive points, and no animation. A visually hidden table exposes the same
 values to assistive technology. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
 
+```html
+<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
+</script>
+```
+
 ## Rowan Bullet Chart
 
 `rowan-bullet-chart` is an experimental compact comparison for KPI tiles:
@@ -626,26 +652,47 @@ not a density of `rowan-bar-chart`.
 </script>
 ```
 
+## Rowan Gauge Chart
+
+`rowan-gauge-chart` is an experimental speedometer: a semicircle scale with
+qualitative `ranges`, `min` / `max`, an actual `value` needle, and an optional
+`target` tick. `value` and `target` are property-only; null is no-data. `min`
+and `max` are attributes (default 0 and 100). If `max` is not greater than `min`,
+the scale falls back to 0–100. Invalid or zero-width ranges are dropped; reversed
+`from`/`to` are swapped. Native SVG, no animation, matching visually hidden table.
+Separate host from `rowan-bullet-chart` and `rowan-donut-chart`.
+
 ```html
-<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
-  <rowan-sparkline slot="chart" label="Open incidents this week"></rowan-sparkline>
+<rowan-kpi-card label="Utilization" tone="warning" delta-label="vs target">
+  <rowan-gauge-chart
+    slot="chart"
+    label="Utilization versus target"
+    min="0"
+    max="100"
+  ></rowan-gauge-chart>
 </rowan-kpi-card>
 
 <script type="module">
   import "@rowan-ui/core/kpi-card";
-  import "@rowan-ui/core/sparkline";
+  import "@rowan-ui/core/gauge-chart";
 
   const card = document.querySelector("rowan-kpi-card");
-  const chart = document.querySelector("rowan-sparkline");
-  card.value = 11;
-  card.delta = -7;
-  chart.values = [18, 24, 12, 15, 9, 11];
+  const chart = document.querySelector("rowan-gauge-chart");
+  card.value = 72;
+  card.delta = -8;
+  chart.value = 72;
+  chart.target = 80;
+  chart.ranges = [
+    { from: 0, to: 50, label: "Low", tone: "danger" },
+    { from: 50, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
 </script>
 ```
 
 ## Rowan Trend Chart
 
-`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Area, bar, stacked bar, donut, sparkline, and bullet charts are separate hosts, not extra `config` keys.
+`rowan-trend-chart` is a frozen small multi-series **line** chart for operational comparisons such as incoming versus resolved incidents. It is scoped to small local data sets. `series`, `labels`, `config`, and `valueFormatter` are property-only APIs; no data is serialized to attributes. Import `RowanTrendChartConfig` from `@rowan-ui/core/trend-chart`. Area, bar, stacked bar, donut, sparkline, bullet, and gauge charts are separate hosts, not extra `config` keys.
 
 The component always provides the same values in a semantic table beneath the chart. A `null` value is an intentional no-data gap: it breaks the visual line, has no interactive point control, and appears as `No data` in the table. Set `interactive` to expose each available data point as a keyboard-focusable control; Arrow keys move between points, and Enter or Space emits `rowan-point-activate`. It uses native SVG and no charting runtime dependency. There is no animation, so reduced-motion users receive the same stable rendering.
 

@@ -1,5 +1,6 @@
 import "./donut-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
 export default {
   title: "Components/Data Display/Donut Chart",
@@ -19,4 +20,10 @@ export const Playground = {
     chart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
     return chart;
   },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  parameters: Playground.parameters,
+  render: () => withVibrantChartPalette(Playground.render()),
 };

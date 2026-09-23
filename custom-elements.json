@@ -3388,7 +3388,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-color-accent))\", \"var(--rowan-chart-series-2, var(--rowan-color-success))\", \"var(--rowan-chart-series-3, var(--rowan-color-warning))\", \"var(--rowan-chart-series-4, var(--rowan-color-danger))\", ]"
+          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-chart-info, var(--rowan-color-accent)))\", \"var(--rowan-chart-series-2, var(--rowan-chart-success, var(--rowan-color-success)))\", \"var(--rowan-chart-series-3, var(--rowan-chart-warning, var(--rowan-color-warning)))\", \"var(--rowan-chart-series-4, var(--rowan-chart-danger, var(--rowan-color-danger)))\", ]"
         },
         {
           "kind": "function",
@@ -9034,6 +9034,268 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/gauge-chart/gauge-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Compact speedometer gauge: ranges, min/max, actual, and optional target.\nExperimental. Separate host from bullet and donut charts.",
+          "name": "RowanGaugeChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-gauge-chart-needle"
+            },
+            {
+              "name": "--rowan-gauge-chart-track"
+            },
+            {
+              "name": "--rowan-gauge-chart-range"
+            },
+            {
+              "name": "--rowan-gauge-chart-target"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "track"
+            },
+            {
+              "name": "range"
+            },
+            {
+              "name": "needle"
+            },
+            {
+              "name": "hub"
+            },
+            {
+              "name": "target"
+            },
+            {
+              "name": "readout"
+            },
+            {
+              "name": "tick-label"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Actual measure. Property-only. Null is no-data."
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Target tick. Property-only. Null hides the tick."
+            },
+            {
+              "kind": "field",
+              "name": "ranges",
+              "return": {
+                "type": {
+                  "text": "RowanGaugeChartRange[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanGaugeChartRange[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanGaugeChartRange[]"
+              },
+              "description": "Qualitative bands. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-gauge-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanGaugeChart",
+          "declaration": {
+            "name": "RowanGaugeChart",
+            "module": "src/gauge-chart/gauge-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/gauge-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanGaugeChart",
+          "declaration": {
+            "name": "RowanGaugeChart",
+            "module": "./gauge-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icon-button/icon-button.js",
       "declarations": [
         {
@@ -9982,6 +10244,14 @@
           "declaration": {
             "name": "RowanFormWizard",
             "module": "./form-wizard/form-wizard.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanGaugeChart",
+          "declaration": {
+            "name": "RowanGaugeChart",
+            "module": "./gauge-chart/gauge-chart.js"
           }
         },
         {
@@ -18933,6 +19203,39 @@
           "declaration": {
             "name": "RowanStepper",
             "module": "src/stepper/stepper.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/storybook/chart-palette.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "withVibrantChartPalette",
+          "parameters": [
+            {
+              "name": "node",
+              "type": {
+                "text": "Node"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "HTMLDivElement"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "withVibrantChartPalette",
+          "declaration": {
+            "name": "withVibrantChartPalette",
+            "module": "src/storybook/chart-palette.js"
           }
         }
       ]

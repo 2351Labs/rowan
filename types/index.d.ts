@@ -41,6 +41,7 @@ export { RowanFileUpload } from "./file-upload/file-upload.js";
 export { RowanFormField } from "./form-field/form-field.js";
 export { RowanFormLayout } from "./form-layout/form-layout.js";
 export { RowanFormWizard } from "./form-wizard/form-wizard.js";
+export { RowanGaugeChart } from "./gauge-chart/gauge-chart.js";
 export { RowanIconButton } from "./icon-button/icon-button.js";
 export { RowanImage } from "./image/image.js";
 export { RowanKpiCard } from "./kpi-card/kpi-card.js";
