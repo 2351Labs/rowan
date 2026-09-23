@@ -15,5 +15,6 @@ export const RowanTable = createRowanComponent({
     onRowanCellBind: "rowan-cell-bind",
     onRowanPageChange: "rowan-page-change",
     onRowanRowActivate: "rowan-row-activate",
+    onRowanGroupToggle: "rowan-group-toggle",
   },
 });

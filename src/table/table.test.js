@@ -1646,12 +1646,12 @@ describe("rowan-table", () => {
       table.shadowRoot.querySelectorAll("tr[data-row-id='1'], tr[data-row-id='2']"),
     ).to.have.lengthOf(2);
 
-    table.shadowRoot.querySelector('[data-group-key="Ops"] .group-toggle').click();
+    table.shadowRoot.querySelector('[data-group-key="rowan:value:Ops"] .group-toggle').click();
     await nextMicrotask();
 
     expect(
       table.shadowRoot
-        .querySelector('[data-group-key="Ops"] .group-toggle')
+        .querySelector('[data-group-key="rowan:value:Ops"] .group-toggle')
         .getAttribute("aria-expanded"),
     ).to.equal("false");
     expect(table.shadowRoot.querySelector("tr[data-row-id='1']")).to.equal(null);
@@ -1680,5 +1680,28 @@ describe("rowan-table", () => {
     const subtotal = table.shadowRoot.querySelector("tr.subtotal-row");
     expect(subtotal.querySelector('td[data-column-id="name"]').textContent).to.equal("Subtotal");
     expect(subtotal.querySelector('td[data-column-id="score"]').textContent).to.equal("14");
+  });
+
+  it("keeps empty group values distinct from an __empty label", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      groupBy: "team",
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team" },
+      ],
+      rows: [
+        { id: "1", name: "Ada", team: "" },
+        { id: "2", name: "Alan", team: "__empty" },
+      ],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const headers = [...table.shadowRoot.querySelectorAll("tr.group-row .group-toggle")].map(
+      (button) => button.textContent,
+    );
+    expect(headers).to.deep.equal(["— (1)", "__empty (1)"]);
   });
 });

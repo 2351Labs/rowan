@@ -34,6 +34,10 @@ const CELL_TYPES = new Set([
 ]);
 
 const SELECT_COLUMN_ID = "__select";
+const EMPTY_GROUP_KEY = "rowan:empty";
+const VALUE_GROUP_PREFIX = "rowan:value:";
+const GROUP_RENDER_PREFIX = "rowan:group:";
+const SUBTOTAL_RENDER_PREFIX = "rowan:subtotal:";
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 const SELECTABLE_MODES = new Set(["none", "single", "multiple"]);
 const DENSITIES = new Set(["sm", "md", "lg"]);
@@ -672,14 +676,18 @@ export class RowanTable extends BaseElement {
     }
 
     // aria-rowindex is 1-based and counts the header row, so data rows start at 2.
-    table.setAttribute("aria-rowcount", String(view.entries.length + 1));
+    const countEntries = view.a11yRows ?? view.entries;
+    table.setAttribute("aria-rowcount", String(countEntries.length + 1));
     this.renderRoot.querySelector("thead tr")?.setAttribute("aria-rowindex", "1");
 
-    const offset = view.pageInfo ? view.pageInfo.start : 0;
-    const positions = new Map(view.rows.map((entry, index) => [entry.rowId, offset + index + 2]));
+    const offset = view.a11yRows || !view.pageInfo ? 0 : view.pageInfo.start;
+    const indexEntries = view.a11yRows ?? view.rows;
+    const positions = new Map(
+      indexEntries.map((entry, index) => [this.#entryKey(entry), offset + index + 2]),
+    );
 
     renderedRows.forEach((row) => {
-      const position = positions.get(row.dataset.rowId);
+      const position = positions.get(row.dataset.renderKey || row.dataset.rowId);
       if (position !== undefined) row.setAttribute("aria-rowindex", String(position));
     });
   }
@@ -831,9 +839,12 @@ export class RowanTable extends BaseElement {
     }
 
     for (const [index, entry] of viewRows.entries()) {
-      const rendered = canReconcile ? this.#renderedBodyRows.get(entry.rowId) : null;
+      const rendered = canReconcile ? this.#renderedBodyRows.get(this.#entryKey(entry)) : null;
       const canReuse =
-        rendered && rendered.row === entry.row && rendered.rowIndex === entry.rowIndex;
+        rendered &&
+        rendered.row === entry.row &&
+        rendered.rowIndex === entry.rowIndex &&
+        rendered.rowId === entry.rowId;
       const element = canReuse ? rendered.element : this.#createBodyRow(entry);
 
       staleRows.delete(element);
@@ -842,10 +853,11 @@ export class RowanTable extends BaseElement {
         this.#tbody.insertBefore(element, reference ?? null);
       }
       if (!hasDuplicateRowIds) {
-        nextRows.set(entry.rowId, {
+        nextRows.set(this.#entryKey(entry), {
           element,
           row: entry.row,
           rowIndex: entry.rowIndex,
+          rowId: entry.rowId,
         });
       }
     }
@@ -894,6 +906,9 @@ export class RowanTable extends BaseElement {
   #renderVirtualBody(viewRows) {
     const anchor = this.#captureScrollAnchor();
 
+    this.#virtualCollection.itemKey = viewRows.some((entry) => entry.renderKey)
+      ? "renderKey"
+      : "rowId";
     this.#virtualCollection.items = viewRows;
     this.#virtualCollection.estimatedItemSize = this.virtualItemSize;
 
@@ -933,7 +948,10 @@ export class RowanTable extends BaseElement {
       const rowEntry = entry.item;
       const rendered = canReconcile ? this.#renderedBodyRows.get(entry.key) : null;
       const canReuse =
-        rendered && rendered.row === rowEntry.row && rendered.rowIndex === rowEntry.rowIndex;
+        rendered &&
+        rendered.row === rowEntry.row &&
+        rendered.rowIndex === rowEntry.rowIndex &&
+        rendered.rowId === rowEntry.rowId;
       const element = canReuse ? rendered.element : this.#createBodyRow(rowEntry);
 
       staleRows.delete(element);
@@ -1156,6 +1174,7 @@ export class RowanTable extends BaseElement {
     tr.className = "group-row";
     tr.part = "tr";
     tr.dataset.rowId = entry.rowId;
+    tr.dataset.renderKey = entry.renderKey;
     tr.dataset.groupKey = entry.groupKey;
 
     const cell = document.createElement("td");
@@ -1180,6 +1199,7 @@ export class RowanTable extends BaseElement {
     tr.className = "subtotal-row";
     tr.part = "tr";
     tr.dataset.rowId = entry.rowId;
+    tr.dataset.renderKey = entry.renderKey;
     tr.dataset.groupKey = entry.groupKey;
 
     if (this.selectable !== "none") {
@@ -1217,6 +1237,7 @@ export class RowanTable extends BaseElement {
     const tr = document.createElement("tr");
     tr.part = "tr";
     tr.dataset.rowId = entry.rowId;
+    if (entry.renderKey) tr.dataset.renderKey = entry.renderKey;
     tr.dataset.rowIndex = String(entry.rowIndex);
     tr.tabIndex = 0;
 
@@ -2152,13 +2173,14 @@ export class RowanTable extends BaseElement {
     const pageInfo = this.#resolvePageInfo(dataEntries.length);
     const pagedData = pageInfo ? dataEntries.slice(pageInfo.start, pageInfo.end) : dataEntries;
     const { renderRows, dataRows } = this.#buildRenderRows(grouped, pagedData);
+    const a11yRows = grouped ? this.#buildRenderRows(grouped, dataEntries).renderRows : null;
 
     const rows = dataRows.map((entry, visibleIndex) => ({
       ...entry,
       visibleIndex,
     }));
 
-    return { entries, rows, dataRows: rows, renderRows, pageInfo, hasDuplicateRowIds };
+    return { entries, rows, dataRows: rows, renderRows, a11yRows, pageInfo, hasDuplicateRowIds };
   }
 
   #normalizeGroupBy(value) {
@@ -2179,7 +2201,11 @@ export class RowanTable extends BaseElement {
 
   #groupKey(value) {
     const text = this.#normalizeText(value);
-    return text || "__empty";
+    return text ? `${VALUE_GROUP_PREFIX}${text}` : EMPTY_GROUP_KEY;
+  }
+
+  #entryKey(entry) {
+    return entry.renderKey || entry.rowId;
   }
 
   #isGroupExpanded(groupKey) {
@@ -2195,7 +2221,16 @@ export class RowanTable extends BaseElement {
     this.#toggledGroups.set(key, expanded);
     this.#bodyNeedsRender = true;
     this.requestRender();
-    emit(this, "rowan-group-toggle", { groupKey: key, expanded });
+    emit(this, "rowan-group-toggle", {
+      groupKey: this.#groupKeyForEvent(key),
+      expanded,
+    });
+  }
+
+  #groupKeyForEvent(key) {
+    if (key === EMPTY_GROUP_KEY) return "";
+    if (key.startsWith(VALUE_GROUP_PREFIX)) return key.slice(VALUE_GROUP_PREFIX.length);
+    return key;
   }
 
   #groupSortedEntries(entries) {
@@ -2251,18 +2286,19 @@ export class RowanTable extends BaseElement {
       return { renderRows: dataRows, dataRows };
     }
 
-    const pagedKeys = new Set(pagedData.map((entry) => entry.rowId));
+    const pagedEntries = new Set(pagedData);
     const renderRows = [];
     const dataRows = [];
 
     for (const group of grouped) {
-      const members = group.members.filter((member) => pagedKeys.has(member.rowId));
+      const members = group.members.filter((member) => pagedEntries.has(member));
       if (!members.length) continue;
 
       const expanded = this.#isGroupExpanded(group.key);
       renderRows.push({
         kind: "group",
-        rowId: `__group:${group.key}`,
+        rowId: `${GROUP_RENDER_PREFIX}${group.key}`,
+        renderKey: `${GROUP_RENDER_PREFIX}${group.key}`,
         groupKey: group.key,
         label: group.label,
         count: group.members.length,
@@ -2274,7 +2310,11 @@ export class RowanTable extends BaseElement {
       if (!expanded) continue;
 
       for (const member of members) {
-        const rowEntry = { ...member, kind: "row" };
+        const rowEntry = {
+          ...member,
+          kind: "row",
+          renderKey: `rowan:row:${member.rowIndex}:${member.rowId}`,
+        };
         renderRows.push(rowEntry);
         dataRows.push(rowEntry);
       }
@@ -2282,7 +2322,8 @@ export class RowanTable extends BaseElement {
       if (this.#state.groupBy.subtotals) {
         renderRows.push({
           kind: "subtotal",
-          rowId: `__subtotal:${group.key}`,
+          rowId: `${SUBTOTAL_RENDER_PREFIX}${group.key}`,
+          renderKey: `${SUBTOTAL_RENDER_PREFIX}${group.key}`,
           groupKey: group.key,
           totals: this.#groupTotals(members),
           row: null,
