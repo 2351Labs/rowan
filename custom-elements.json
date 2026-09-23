@@ -3388,7 +3388,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-color-accent))\", \"var(--rowan-chart-series-2, var(--rowan-color-success))\", \"var(--rowan-chart-series-3, var(--rowan-color-warning))\", \"var(--rowan-chart-series-4, var(--rowan-color-danger))\", ]"
+          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-chart-info, var(--rowan-color-accent)))\", \"var(--rowan-chart-series-2, var(--rowan-chart-success, var(--rowan-color-success)))\", \"var(--rowan-chart-series-3, var(--rowan-chart-warning, var(--rowan-color-warning)))\", \"var(--rowan-chart-series-4, var(--rowan-chart-danger, var(--rowan-color-danger)))\", ]"
         },
         {
           "kind": "function",
@@ -19203,6 +19203,39 @@
           "declaration": {
             "name": "RowanStepper",
             "module": "src/stepper/stepper.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/storybook/chart-palette.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "withVibrantChartPalette",
+          "parameters": [
+            {
+              "name": "node",
+              "type": {
+                "text": "Node"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "HTMLDivElement"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "withVibrantChartPalette",
+          "declaration": {
+            "name": "withVibrantChartPalette",
+            "module": "src/storybook/chart-palette.js"
           }
         }
       ]

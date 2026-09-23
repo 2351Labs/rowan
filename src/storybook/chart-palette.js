@@ -1,3 +1,7 @@
+/**
+ * @param {Node} node
+ * @returns {HTMLDivElement}
+ */
 export function withVibrantChartPalette(node) {
   const wrap = document.createElement("div");
   wrap.dataset.rowanCharts = "vibrant";
