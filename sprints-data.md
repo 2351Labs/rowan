@@ -328,9 +328,165 @@ Admin KPIs need a speedometer: ranges, min/max, needle, optional target. Separat
 
 ---
 
+## Dashboard authoring track
+
+**Goal.** Ops-dashboard primitives without thawing frozen hosts or becoming a BI runtime. Events stay user-action only. Icons stay import-registered (no string registry in core). KPI `tone` / `delta` / `delta-label` stay the KPI vocabulary.
+
+Pulse RFC items that are **out of this track:** KPI `thresholdState` / `trendDirection` / `freshnessTimestamp` (duplicates frozen KPI fields), filled Lucide catalog, React-style filter context, hover-driven `hoverLink` buses.
+
+---
+
+## Sprint 14 — Side-nav item tone and count
+
+**Status:** done
+
+Exception cues on `rowan-side-nav-item` without custom suffix markup. Reuse KPI/badge `tone`. Do not add `statusIcon` strings.
+
+- `tone`: `none` (default) | `info` | `success` | `warning` | `danger`
+- `count`: optional number. Hidden when null or ≤ 0. When count is set without tone, color as `danger`
+- `count-label`: optional accessible phrase (`alerts`). Defaults from tone
+- Slotted `suffix` wins; built-in status hides
+- Dot when tone is set and there is no count; count chip otherwise
+- Accessible name includes label, count, and count-label
+
+### Done when
+
+- [x] Attributes and properties on the host, CEM, types, React wrapper
+- [x] Tests: dot, count, suffix slot wins, aria-label includes count-label, count ≤ 0 hides
+- [x] Story: several tones and a slotted suffix
+- [x] Colors follow success/warning/danger/info tokens (light, dark, ember)
+
+### Out of scope
+
+Custom status icons, command-palette parity, changing `rowan-side-nav` selection API.
+
+---
+
+## Sprint 15 — Data-state wrapper
+
+**Status:** pending
+
+One experimental host for page/widget async chrome. Do not add `state=` to frozen charts or KPI.
+
+`rowan-data-state`:
+- `state`: `ready` | `loading` | `empty` | `error` (stale/partial as optional flags later, not equal states)
+- Slots: default (ready), `loading`, `empty`, `error`, `actions` (retry)
+- Keyboard: retry control in the error slot is the author’s button; wrapper does not invent a second focus system
+- Table/KPI keep their own `loading`; this wraps a region
+
+### Done when
+
+- [ ] Host hides inactive slots (`hidden` + display)
+- [ ] Tests for each state, slot fallback copy, and `ready` showing children
+- [ ] README experimental. Story with retry
+
+### Out of scope
+
+Data fetching, caching, per-chart state machines, `stale` as a fifth equal state.
+
+---
+
+## Sprint 16 — Icon tone
+
+**Status:** pending
+
+`rowan-icon` `tone` sets `color` from the same tokens as badge/KPI (`currentColor` on the SVG). `stroke-width` stays. No filled catalog.
+
+### Done when
+
+- [ ] `tone` attr on `rowan-icon`; default currentColor / inherit
+- [ ] Contrast: danger/warning/success/info on light and dark surfaces
+- [ ] Tests + icon stories
+
+### Out of scope
+
+`variant: filled` for 2,098 Lucide icons. A tiny filled alert set would be a later icons sprint.
+
+---
+
+## Sprint 17 — Table pinned columns
+
+**Status:** pending
+
+Additive on frozen `rowan-table` config. Virtualization already Stable — do not rename or replace it.
+
+- Column `pinned: "start" | "end"`
+- Sticky cells in the virtualized and non-virtualized body
+- Selection/sort/cell events unchanged
+- Horizontal scroll keeps pinned columns visible
+
+### Done when
+
+- [ ] Config type + tests: pin start, pin end, virtualized + pin, keyboard cell order
+- [ ] README notes the field as additive Stable or Experimental (call it in the PR)
+- [ ] No second table host
+
+### Out of scope
+
+Grouped rows and subtotals (sprint 17b if this lands). Column virtualization.
+
+---
+
+## Sprint 18 — Table grouped rows
+
+**Status:** pending
+
+Depends on 17 if pinning and grouping share header math; otherwise can follow immediately.
+
+- `groupBy` field id on config
+- Group header row + optional subtotal row
+- Expand/collapse is user action → `rowan-group-toggle` (name TBD)
+- Works with local rows; server paging remains `pageInfo`
+
+### Out of scope
+
+Tree grids, nested groups of groups, Excel-style pivot.
+
+---
+
+## Sprint 19 — Chart reference lines (experimental hosts)
+
+**Status:** pending
+
+Overlays on **experimental** charts only. Frozen trend/bar/donut/sparkline stay as they are.
+
+- Property-only `referenceLines: { value, label?, tone? }[]` on area and stacked-bar (gauge/bullet already have target)
+- Token-aware stroke; hover readout includes the line label
+- Matching table row
+
+### Out of scope
+
+Confidence intervals, event annotations, brushing, adding overlays to frozen trend/bar.
+
+---
+
+## Sprint 20 — Source meta + filter session module
+
+**Status:** pending
+
+Two small pieces, not a provider.
+
+1. `rowan-source-meta`: `source` and `as-of` text. Drop into KPI description, chart description, or table caption. No new props on frozen hosts.
+2. `createDashboardFilters()` in `@rowan-ui/core/dashboard-filters` (name TBD): subscribe/set/clear. Apps wire `rowan-point-activate` / `rowan-change` / `rowan-select` themselves. Components do not auto-subscribe.
+
+### Done when
+
+- [ ] Source-meta host + tests + story
+- [ ] Filter session unit tests: set, clear, subscribe, snapshot for deep links
+- [ ] Cookbook snippet in app-shell or a dashboard MDX — no implicit chart coupling
+
+### Out of scope
+
+Context provider, hover-link bus, `drillTo`, persisting to URL (app concern; session can serialize).
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.
 - Rich-text images (not document nodes). Image display host with overlay/caption/link.
 - Table column virtualization.
 - Vue/Svelte wrappers.
+- KPI `thresholdState` / `trendDirection` (use `tone` and `delta`).
+- Filled Lucide catalog.
+- Cross-filter as a custom-element provider.

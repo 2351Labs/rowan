@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - Chart hover readouts: bullet and gauge show actual/target (and the matching range); sparkline shows the nearest point; bar, donut, and stacked bar show the hovered mark.
+- `rowan-side-nav-item` `tone`, `count`, and `count-label` for exception cues. Slotted `suffix` still wins.
 
 ## 0.9.0 - 2026-09-23
 
