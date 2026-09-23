@@ -1,6 +1,12 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  formatHoverLines,
+  nearestPointByClientX,
+} from "../chart/hover.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
@@ -65,6 +71,7 @@ function pathData(points) {
  * @csspart chart
  * @csspart plot
  * @csspart line
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-sparkline-stroke
  * @cssprop --rowan-sparkline-success
@@ -80,6 +87,8 @@ export class RowanSparkline extends BaseElement {
   #chart = null;
   #plot = null;
   #table = null;
+  #hover = null;
+  #hoverPoint = null;
   #values = [];
   #labels = [];
   #toneExplicit = false;
@@ -151,6 +160,15 @@ export class RowanSparkline extends BaseElement {
       this.#chart = this.renderRoot.querySelector(".chart");
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#table = this.renderRoot.querySelector(".table");
+      this.#hover = createChartHoverBubble();
+      this.#chart.append(this.#hover);
+      bindChartHover(this, {
+        target: this.#plot,
+        bubble: this.#hover,
+        textForEvent: (event) => this.#hoverText(event),
+      });
+      this.listen(this.#plot, "pointerleave", () => this.#syncHoverPoint(null));
+      this.listen(this.#plot, "pointercancel", () => this.#syncHoverPoint(null));
     }
 
     const points = this.#plotPoints();
@@ -195,6 +213,33 @@ export class RowanSparkline extends BaseElement {
     path.setAttribute("d", pathData(points));
     fragment.append(path);
     this.#plot.replaceChildren(fragment);
+    this.#hoverPoint = null;
+  }
+
+  #hoverText(event) {
+    const point = nearestPointByClientX(this.#plot, this.#plotPoints(), event.clientX);
+    this.#syncHoverPoint(point);
+    if (!point) return "";
+    const name = this.#labels[point.index];
+    return formatHoverLines([name, String(point.value)]);
+  }
+
+  #syncHoverPoint(point) {
+    if (!point) {
+      this.#hoverPoint?.remove();
+      this.#hoverPoint = null;
+      return;
+    }
+
+    if (!this.#hoverPoint) {
+      this.#hoverPoint = createSvgElement("circle");
+      this.#hoverPoint.setAttribute("class", "hover-point");
+      this.#hoverPoint.setAttribute("r", "2.25");
+    }
+
+    this.#hoverPoint.setAttribute("cx", point.x.toFixed(2));
+    this.#hoverPoint.setAttribute("cy", point.y.toFixed(2));
+    this.#plot.append(this.#hoverPoint);
   }
 
   #renderTable() {

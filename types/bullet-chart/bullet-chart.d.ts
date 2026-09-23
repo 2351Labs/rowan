@@ -11,6 +11,7 @@
  * @csspart range
  * @csspart actual
  * @csspart target
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-bullet-chart-actual
  * @cssprop --rowan-bullet-chart-target

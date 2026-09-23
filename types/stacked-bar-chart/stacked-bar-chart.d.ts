@@ -19,6 +19,7 @@
  * @csspart bar
  * @csspart legend
  * @csspart detail
+ * @csspart hover
  * @csspart summary
  * @csspart table
  * @cssprop --rowan-stacked-bar-chart-bg

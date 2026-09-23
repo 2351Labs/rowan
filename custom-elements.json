@@ -1239,6 +1239,9 @@
               "name": "legend"
             },
             {
+              "name": "hover"
+            },
+            {
               "name": "table"
             }
           ],
@@ -1905,6 +1908,9 @@
             },
             {
               "name": "target"
+            },
+            {
+              "name": "hover"
             },
             {
               "name": "table"
@@ -3225,6 +3231,197 @@
           "declaration": {
             "name": "pointControlFor",
             "module": "src/chart/dom.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/hover.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "formatHoverLines",
+          "parameters": [
+            {
+              "name": "lines",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "createChartHoverBubble"
+        },
+        {
+          "kind": "function",
+          "name": "hideChartHover",
+          "parameters": [
+            {
+              "name": "bubble"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "showChartHover",
+          "parameters": [
+            {
+              "name": "bubble"
+            },
+            {
+              "name": "text"
+            },
+            {
+              "name": "clientX"
+            },
+            {
+              "name": "clientY"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "bindChartHover",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "BaseElement"
+              }
+            },
+            {
+              "name": "{ target, bubble, textForEvent }"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   target: EventTarget,\n *   bubble: HTMLElement,\n *   textForEvent: (event: PointerEvent) => string,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "hoverKeyFromEvent",
+          "parameters": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "seriesHoverText",
+          "parameters": [
+            {
+              "name": "entries"
+            },
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "nearestPointByClientX",
+          "parameters": [
+            {
+              "name": "svg",
+              "type": {
+                "text": "SVGSVGElement"
+              }
+            },
+            {
+              "name": "points",
+              "type": {
+                "text": "T[]"
+              }
+            },
+            {
+              "name": "clientX",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "T | null"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "formatHoverLines",
+          "declaration": {
+            "name": "formatHoverLines",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createChartHoverBubble",
+          "declaration": {
+            "name": "createChartHoverBubble",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hideChartHover",
+          "declaration": {
+            "name": "hideChartHover",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "showChartHover",
+          "declaration": {
+            "name": "showChartHover",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindChartHover",
+          "declaration": {
+            "name": "bindChartHover",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hoverKeyFromEvent",
+          "declaration": {
+            "name": "hoverKeyFromEvent",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "seriesHoverText",
+          "declaration": {
+            "name": "seriesHoverText",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "nearestPointByClientX",
+          "declaration": {
+            "name": "nearestPointByClientX",
+            "module": "src/chart/hover.js"
           }
         }
       ]
@@ -6488,6 +6685,9 @@
               "name": "legend"
             },
             {
+              "name": "hover"
+            },
+            {
               "name": "table"
             }
           ],
@@ -9081,6 +9281,9 @@
             },
             {
               "name": "tick-label"
+            },
+            {
+              "name": "hover"
             },
             {
               "name": "table"
@@ -17848,6 +18051,9 @@
               "name": "line"
             },
             {
+              "name": "hover"
+            },
+            {
               "name": "table"
             }
           ],
@@ -18555,6 +18761,9 @@
             },
             {
               "name": "detail"
+            },
+            {
+              "name": "hover"
             },
             {
               "name": "summary"

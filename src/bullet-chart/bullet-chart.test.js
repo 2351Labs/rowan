@@ -61,4 +61,28 @@ describe("rowan-bullet-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("ActualNo data");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("TargetNo data");
   });
+
+  it("shows actual, target, and the matching range on hover", async () => {
+    const chart = await renderChart({
+      label: "Fill rate",
+      value: 82,
+      target: 90,
+      ranges: [
+        { from: 0, to: 60, label: "Poor", tone: "danger" },
+        { from: 60, to: 80, label: "Fair", tone: "warning" },
+        { from: 80, to: 100, label: "Good", tone: "success" },
+      ],
+    });
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    plot.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 12, clientY: 8 }));
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Actual 82");
+    expect(hover.textContent).to.include("Target 90");
+    expect(hover.textContent).to.include("Good 80–100");
+
+    plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+  });
 });

@@ -17,6 +17,7 @@
  * @csspart plot
  * @csspart bar
  * @csspart legend
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-bar-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive bar.

@@ -599,8 +599,8 @@ slices and from the hole total, and appear as `No data` in the table.
 `rowan-sparkline` is a frozen compact one-series line for KPI tiles.
 It is a separate host, not a density of `rowan-trend-chart`. `values` is
 property-only (`number | null`; null is a gap). There is no legend, no
-interactive points, and no animation. A visually hidden table exposes the same
-values to assistive technology. `rowan-progress` `hide-meta` hides the percent
+interactive points, and no animation. Hover shows the nearest labeled value.
+A visually hidden table exposes the same values to assistive technology. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
 
 ```html
@@ -626,8 +626,9 @@ caption without dropping the progressbar name.
 qualitative `ranges`, an actual `value`, and a `target` marker. All three are
 property-only. Null actual or target is no-data and is omitted from the plot.
 Invalid or zero-width ranges are dropped; reversed `from`/`to` are swapped.
-Native SVG, no animation, matching visually hidden table. It is a separate host,
-not a density of `rowan-bar-chart`.
+Native SVG, no animation, matching visually hidden table. Hover shows actual,
+target, and the matching range. It is a separate host, not a density of
+`rowan-bar-chart`.
 
 ```html
 <rowan-kpi-card label="Fill rate" tone="success" delta-label="vs target">
@@ -660,7 +661,8 @@ qualitative `ranges`, `min` / `max`, an actual `value` needle, and an optional
 and `max` are attributes (default 0 and 100). If `max` is not greater than `min`,
 the scale falls back to 0–100. Invalid or zero-width ranges are dropped; reversed
 `from`/`to` are swapped. Native SVG, no animation, matching visually hidden table.
-Separate host from `rowan-bullet-chart` and `rowan-donut-chart`.
+Hover shows actual, target, and the matching range. Separate host from
+`rowan-bullet-chart` and `rowan-donut-chart`.
 
 ```html
 <rowan-kpi-card label="Utilization" tone="warning" delta-label="vs target">
