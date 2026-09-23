@@ -5758,6 +5758,188 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/data-state/data-state.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental region wrapper for ready, loading, empty, and error chrome.\nTable and KPI keep their own loading. Does not fetch data.",
+          "name": "RowanDataState",
+          "cssParts": [
+            {
+              "name": "ready"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "empty"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "actions"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Ready content",
+              "name": ""
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "empty"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "description": "Retry or empty actions. Shown for empty and error.",
+              "name": "actions"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "return": {
+                "type": {
+                  "text": "\"ready\" | \"loading\" | \"empty\" | \"error\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"ready\" | \"loading\" | \"empty\" | \"error\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "\"ready\"|\"loading\"|\"empty\"|\"error\""
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-data-state",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanDataState",
+          "declaration": {
+            "name": "RowanDataState",
+            "module": "src/data-state/data-state.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/data-state/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanDataState",
+          "declaration": {
+            "name": "RowanDataState",
+            "module": "./data-state.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/date-picker/date-picker.js",
       "declarations": [
         {
@@ -10367,6 +10549,14 @@
           "declaration": {
             "name": "RowanContextMenu",
             "module": "./context-menu/context-menu.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanDataState",
+          "declaration": {
+            "name": "RowanDataState",
+            "module": "./data-state/data-state.js"
           }
         },
         {

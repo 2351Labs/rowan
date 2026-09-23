@@ -276,7 +276,7 @@ prefer the browser's native `validationMessage` when the engine provides one.
 
 Implemented components currently include:
 
-- Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
+- Actions and status: `rowan-button`, `rowan-icon-button`, `rowan-link`, `rowan-badge`, `rowan-chip`, `rowan-avatar`, `rowan-alert`, `rowan-status-indicator`, `rowan-spinner`, `rowan-progress`, `rowan-skeleton`, `rowan-divider`, `rowan-empty-state`, `rowan-data-state`, `rowan-toast`, `rowan-toaster`, `rowan-file-item`
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
@@ -305,6 +305,24 @@ are frozen; pin the version if you depend on them.
 | `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill.                                                     |
 | `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                                                                       |
 | `rowan-image`                   | Experimental | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                     |
+| `rowan-data-state`              | Experimental | Region wrapper for `ready` / `loading` / `empty` / `error`. Table and KPI keep their own `loading`.                                                                                    |
+
+## Rowan Data State
+
+`rowan-data-state` is an experimental region wrapper for dashboard chrome.
+`state` is `ready` (default), `loading`, `empty`, or `error`. Ready content is
+the default slot. Named slots `loading`, `empty`, and `error` replace the
+fallback copy. `actions` (retry) is shown for empty and error. The wrapper does
+not fetch data or emit events; retry is the author's button. Table and KPI keep
+their own `loading`.
+
+```html
+<rowan-data-state state="error">
+  <p>Fill rate is 82%.</p>
+  <p slot="error">The fill-rate query failed.</p>
+  <button slot="actions" type="button">Retry</button>
+</rowan-data-state>
+```
 
 ## Rowan Carousel
 

@@ -40,6 +40,7 @@ export { RowanCommandItem } from "./command-item/command-item.js";
 export { RowanCommandPalette } from "./command-palette/command-palette.js";
 export { RowanConfirmDialog } from "./confirm-dialog/confirm-dialog.js";
 export { RowanContextMenu } from "./context-menu/context-menu.js";
+export { RowanDataState } from "./data-state/data-state.js";
 export { RowanDivider } from "./divider/divider.js";
 export { RowanDonutChart } from "./donut-chart/donut-chart.js";
 export { RowanDrawer } from "./drawer/drawer.js";
