@@ -61,4 +61,32 @@ describe("rowan-sparkline", () => {
     const falling = await renderSparkline({ values: [9, 4, 1] });
     expect(falling.tone).to.equal("danger");
   });
+
+  it("shows the nearest labeled value on hover", async () => {
+    const chart = await renderSparkline({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "200px";
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    const box = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width - 2,
+        clientY: box.top + 4,
+      }),
+    );
+
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Wed");
+    expect(hover.textContent).to.include("8");
+    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.not.equal(null);
+
+    plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.equal(null);
+  });
 });

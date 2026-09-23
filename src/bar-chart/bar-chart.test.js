@@ -48,6 +48,20 @@ describe("rowan-bar-chart", () => {
     expect(activations[0].value).to.equal(4);
   });
 
+  it("shows the hovered bar value", async () => {
+    const chart = await renderChart();
+    const bar = chart.shadowRoot.querySelector("rect.bar");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    bar.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 24, clientY: 24 }));
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.match(/Incoming, Mon: 4/);
+
+    chart.shadowRoot
+      .querySelector(".chart")
+      .dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+  });
+
   it("moves keyboard focus when a series id would break a CSS selector", async () => {
     const chart = await renderChart({
       interactive: true,

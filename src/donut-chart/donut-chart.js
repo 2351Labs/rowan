@@ -7,6 +7,7 @@ import {
   pointControlFor,
   renderChartTable,
 } from "../chart/dom.js";
+import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
 import {
   chartSeriesColor,
   cloneChartSeries,
@@ -76,6 +77,7 @@ function slicePath(startAngle, endAngle) {
  * @csspart slice
  * @csspart total
  * @csspart legend
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-donut-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive slice.
@@ -107,6 +109,7 @@ export class RowanDonutChart extends BaseElement {
   #legend = null;
   #pointControls = null;
   #detail = null;
+  #hover = null;
   #summaryTable = null;
   #seriesInput = [];
   #series = [];
@@ -245,6 +248,13 @@ export class RowanDonutChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#hover = createChartHoverBubble();
+      this.renderRoot.querySelector(".chart").append(this.#hover);
+      bindChartHover(this, {
+        target: this.renderRoot.querySelector(".chart"),
+        bubble: this.#hover,
+        textForEvent: (event) => seriesHoverText(this.#entries, event),
+      });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
       this.listen(this.#descriptionSlot, "slotchange", () => this.requestRender());

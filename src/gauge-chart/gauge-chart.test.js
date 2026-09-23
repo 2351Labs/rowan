@@ -97,4 +97,29 @@ describe("rowan-gauge-chart", () => {
     expect(chart.shadowRoot.querySelectorAll("text.tick-label")[0].textContent).to.equal("0");
     expect(chart.shadowRoot.querySelectorAll("text.tick-label")[1].textContent).to.equal("100");
   });
+
+  it("shows actual, target, and the matching range on hover", async () => {
+    const chart = await renderChart({
+      value: 72,
+      target: 80,
+      ranges: [
+        { from: 0, to: 50, label: "Low", tone: "danger" },
+        { from: 50, to: 80, label: "Fair", tone: "warning" },
+        { from: 80, to: 100, label: "Good", tone: "success" },
+      ],
+    });
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 20, clientY: 20 }),
+    );
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Actual 72");
+    expect(hover.textContent).to.include("Target 80");
+    expect(hover.textContent).to.include("Fair 50–80");
+
+    plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+  });
 });

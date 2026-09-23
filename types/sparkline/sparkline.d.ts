@@ -9,6 +9,7 @@
  * @csspart chart
  * @csspart plot
  * @csspart line
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-sparkline-stroke
  * @cssprop --rowan-sparkline-success

@@ -1,3 +1,5 @@
+@import "../chart/hover.css";
+
 :host {
   display: block;
   min-inline-size: 6rem;
@@ -26,9 +28,19 @@
   stroke-width: var(--rowan-sparkline-stroke-width, 1.75);
 }
 
+.hover-point {
+  fill: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
+  pointer-events: none;
+}
+
 :host([tone="info"]) .line,
 .plot[data-tone="info"] .line {
   stroke: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
+}
+
+:host([tone="info"]) .hover-point,
+.plot[data-tone="info"] .hover-point {
+  fill: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
 :host([tone="success"]) .line,
@@ -36,14 +48,29 @@
   stroke: var(--rowan-sparkline-success, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
+:host([tone="success"]) .hover-point,
+.plot[data-tone="success"] .hover-point {
+  fill: var(--rowan-sparkline-success, var(--rowan-chart-success, var(--rowan-color-success)));
+}
+
 :host([tone="warning"]) .line,
 .plot[data-tone="warning"] .line {
   stroke: var(--rowan-sparkline-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
+:host([tone="warning"]) .hover-point,
+.plot[data-tone="warning"] .hover-point {
+  fill: var(--rowan-sparkline-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
+}
+
 :host([tone="danger"]) .line,
 .plot[data-tone="danger"] .line {
   stroke: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
+}
+
+:host([tone="danger"]) .hover-point,
+.plot[data-tone="danger"] .hover-point {
+  fill: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 .table {

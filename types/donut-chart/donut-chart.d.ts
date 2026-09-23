@@ -17,6 +17,7 @@
  * @csspart slice
  * @csspart total
  * @csspart legend
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-donut-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive slice.

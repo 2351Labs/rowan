@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { createSvgElement } from "../chart/dom.js";
+import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 200;
@@ -95,6 +96,7 @@ function bandPath(t0, t1) {
  * @csspart target
  * @csspart readout
  * @csspart tick-label
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-gauge-chart-needle
  * @cssprop --rowan-gauge-chart-track
@@ -111,6 +113,7 @@ export class RowanGaugeChart extends BaseElement {
   #chart = null;
   #plot = null;
   #table = null;
+  #hover = null;
   #value = null;
   #target = null;
   #ranges = [];
@@ -185,6 +188,13 @@ export class RowanGaugeChart extends BaseElement {
       this.#chart = this.renderRoot.querySelector(".chart");
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#table = this.renderRoot.querySelector(".table");
+      this.#hover = createChartHoverBubble();
+      this.#chart.append(this.#hover);
+      bindChartHover(this, {
+        target: this.#plot,
+        bubble: this.#hover,
+        textForEvent: () => this.#hoverText(),
+      });
     }
 
     this.#renderPlot();
@@ -303,6 +313,18 @@ export class RowanGaugeChart extends BaseElement {
     fragment.append(readout);
 
     this.#plot.replaceChildren(fragment);
+  }
+
+  #hoverText() {
+    const range =
+      this.#value === null
+        ? null
+        : this.#ranges.find((item) => this.#value >= item.from && this.#value <= item.to);
+    return formatHoverLines([
+      this.#value === null ? "" : `Actual ${this.#value}`,
+      this.#target === null ? "" : `Target ${this.#target}`,
+      range ? `${range.label} ${range.from}–${range.to}` : "",
+    ]);
   }
 
   #renderTable() {

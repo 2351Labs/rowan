@@ -17,6 +17,7 @@
  * @csspart target
  * @csspart readout
  * @csspart tick-label
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-gauge-chart-needle
  * @cssprop --rowan-gauge-chart-track

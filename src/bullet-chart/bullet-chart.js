@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { createSvgElement } from "../chart/dom.js";
+import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 100;
@@ -60,6 +61,7 @@ function cloneRanges(ranges) {
  * @csspart range
  * @csspart actual
  * @csspart target
+ * @csspart hover
  * @csspart table
  * @cssprop --rowan-bullet-chart-actual
  * @cssprop --rowan-bullet-chart-target
@@ -75,6 +77,7 @@ export class RowanBulletChart extends BaseElement {
   #chart = null;
   #plot = null;
   #table = null;
+  #hover = null;
   #value = null;
   #target = null;
   #ranges = [];
@@ -131,6 +134,13 @@ export class RowanBulletChart extends BaseElement {
       this.#chart = this.renderRoot.querySelector(".chart");
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#table = this.renderRoot.querySelector(".table");
+      this.#hover = createChartHoverBubble();
+      this.#chart.append(this.#hover);
+      bindChartHover(this, {
+        target: this.#plot,
+        bubble: this.#hover,
+        textForEvent: () => this.#hoverText(),
+      });
     }
 
     this.#renderPlot();
@@ -204,6 +214,18 @@ export class RowanBulletChart extends BaseElement {
     }
 
     this.#plot.replaceChildren(fragment);
+  }
+
+  #hoverText() {
+    const range =
+      this.#value === null
+        ? null
+        : this.#ranges.find((item) => this.#value >= item.from && this.#value <= item.to);
+    return formatHoverLines([
+      this.#value === null ? "" : `Actual ${this.#value}`,
+      this.#target === null ? "" : `Target ${this.#target}`,
+      range ? `${range.label} ${range.from}–${range.to}` : "",
+    ]);
   }
 
   #renderTable() {
