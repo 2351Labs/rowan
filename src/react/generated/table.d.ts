@@ -13,6 +13,7 @@ export const RowanTable: ForwardRefExoticComponent<
       onRowanCellBind?: (event: CustomEvent) => void;
       onRowanPageChange?: (event: CustomEvent) => void;
       onRowanRowActivate?: (event: CustomEvent) => void;
+      onRowanGroupToggle?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanTableElement>

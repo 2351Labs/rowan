@@ -429,14 +429,20 @@ Grouped rows and subtotals (sprint 17b if this lands). Column virtualization.
 
 ## Sprint 18 — Table grouped rows
 
-**Status:** pending
+**Status:** done
 
-Depends on 17 if pinning and grouping share header math; otherwise can follow immediately.
+Additive `groupBy` on frozen `rowan-table` config.
 
-- `groupBy` field id on config
-- Group header row + optional subtotal row
-- Expand/collapse is user action → `rowan-group-toggle` (name TBD)
-- Works with local rows; server paging remains `pageInfo`
+- `groupBy`: column id string or `{ id, subtotals?, collapsed? }`
+- Group header row; optional number subtotals
+- User expand/collapse emits `rowan-group-toggle`
+- Paging still slices data rows; group headers appear for groups on the page
+
+### Done when
+
+- [x] Config + tests: headers, collapse event, subtotals
+- [x] README
+- [x] No nested groups
 
 ### Out of scope
 

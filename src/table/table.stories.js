@@ -815,6 +815,30 @@ export const VirtualizedBody = {
   },
 };
 
+export const GroupedRows = {
+  render: () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Members grouped by team",
+      rowId: "id",
+      selectable: "multiple",
+      groupBy: { id: "team", subtotals: true },
+      columns: [
+        { id: "name", header: "Member", sticky: "start", minWidth: "10rem" },
+        { id: "team", header: "Team" },
+        { id: "score", header: "Score", type: "number", align: "end" },
+      ],
+      rows: [
+        { id: "1", name: "Ada Lovelace", team: "Ops", score: 12 },
+        { id: "2", name: "Alan Turing", team: "Platform", score: 9 },
+        { id: "3", name: "Grace Hopper", team: "Ops", score: 7 },
+        { id: "4", name: "Katherine Johnson", team: "Platform", score: 15 },
+      ],
+    };
+    return table;
+  },
+};
+
 export const PinnedColumns = {
   render: () => {
     const table = document.createElement("rowan-table");

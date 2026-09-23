@@ -7,6 +7,7 @@ export {
 	type RowanTableCellType,
 	type RowanTableColumn,
 	type RowanTableConfig,
+	type RowanTableGroupBy,
 	type RowanTableDensity,
 	type RowanTablePage,
 	type RowanTableRow,

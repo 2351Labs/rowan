@@ -20849,6 +20849,23 @@
             },
             {
               "kind": "field",
+              "name": "groupBy",
+              "return": {
+                "type": {
+                  "text": "RowanTableGroupBy | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string | RowanTableGroupBy | null | undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "selectedRows",
               "return": {
                 "type": {
@@ -21005,6 +21022,10 @@
             {
               "description": "Fired on row activation by keyboard or double click",
               "name": "rowan-row-activate"
+            },
+            {
+              "description": "Fired when a group header is expanded or collapsed by the user",
+              "name": "rowan-group-toggle"
             }
           ],
           "attributes": [

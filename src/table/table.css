@@ -119,6 +119,47 @@
   border-bottom: none;
 }
 
+.group-row .group-cell {
+  background: var(
+    --rowan-table-group-bg,
+    color-mix(in srgb, var(--rowan-color-fg) 6%, var(--rowan-color-bg))
+  );
+  font-weight: 600;
+}
+
+.group-toggle {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: var(--rowan-space-2);
+  padding: 0;
+}
+
+.group-toggle:focus-visible {
+  box-shadow: var(--rowan-focus-ring);
+  outline: none;
+}
+
+.group-toggle::before {
+  content: "▾";
+  display: inline-block;
+  inline-size: 1em;
+  text-align: center;
+}
+
+.group-toggle[aria-expanded="false"]::before {
+  content: "▸";
+}
+
+.subtotal-row .td {
+  color: var(--rowan-color-muted);
+  font-weight: 600;
+}
+
 .virtual-spacer .td {
   block-size: inherit;
   border-bottom: none;
