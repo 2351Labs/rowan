@@ -21,6 +21,7 @@ export function bindChartHover(element: import("../lib/base-element.js").BaseEle
 }): void;
 export function hoverKeyFromEvent(event: any): string;
 export function seriesHoverText(entries: any, event: any): string;
+export function referenceLineHoverText(event: any): string;
 /**
  * @template {{ x: number }} T
  * @param {SVGSVGElement} svg

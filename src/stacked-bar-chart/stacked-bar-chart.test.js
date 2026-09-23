@@ -98,4 +98,59 @@ describe("rowan-stacked-bar-chart", () => {
 
     expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
   });
+
+  it("draws reference lines and lists them in the matching table", async () => {
+    const chart = await renderChart();
+    chart.referenceLines = [{ value: 5, label: "Capacity", tone: "warning" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const line = chart.shadowRoot.querySelector("g.reference-line-group");
+    expect(line).to.not.equal(null);
+    expect(line.dataset.refLabel).to.equal("Capacity");
+    expect(chart.shadowRoot.querySelector("line.reference-line").dataset.tone).to.equal("warning");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Capacity");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("5");
+    expect(chart.hasAttribute("reference-lines")).to.equal(false);
+  });
+
+  it("shows the reference line on hover when interactive", async () => {
+    const chart = await renderChart({ interactive: true });
+    chart.referenceLines = [{ value: 5, label: "Capacity", tone: "warning" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(
+      getComputedStyle(chart.shadowRoot.querySelector(".point-controls")).pointerEvents,
+    ).to.equal("none");
+    expect(
+      getComputedStyle(chart.shadowRoot.querySelector(".point-button")).pointerEvents,
+    ).to.equal("auto");
+
+    const hover = chart.shadowRoot.querySelector(".hover");
+    chart.shadowRoot
+      .querySelector("g.reference-line-group")
+      .dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 24, clientY: 24 }));
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Capacity");
+    expect(hover.textContent).to.include("5");
+
+    chart.shadowRoot
+      .querySelector(".chart")
+      .dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+  });
+
+  it("expands the value domain for a reference line outside the series range", async () => {
+    const chart = await renderChart();
+    const barY = Number(chart.shadowRoot.querySelector("rect.bar").getAttribute("y"));
+    chart.referenceLines = [{ value: 12, label: "Ceiling" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(Number(chart.shadowRoot.querySelector("rect.bar").getAttribute("y"))).to.be.above(barY);
+    expect(
+      Number(chart.shadowRoot.querySelector("line.reference-line").getAttribute("y1")),
+    ).to.be.below(Number(chart.shadowRoot.querySelector("rect.bar").getAttribute("y")));
+  });
 });

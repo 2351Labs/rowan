@@ -2,20 +2,28 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import {
+  createReferenceLine,
   createSvgElement,
   emitPointActivate,
   pointControlFor,
   renderChartTable,
 } from "../chart/dom.js";
-import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  referenceLineHoverText,
+  seriesHoverText,
+} from "../chart/hover.js";
 import {
   stackedBarValueDomain,
   chartSeriesColor,
   cloneChartSeries,
   cloneChartSeriesInput,
+  expandDomainWithReferenceLines,
   formatChartValue,
   normalizeChartLabels,
   normalizeChartSeries,
+  normalizeReferenceLines,
   resolveChartLabels,
 } from "../chart/model.js";
 
@@ -47,6 +55,7 @@ function normalizeText(value) {
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {import("../chart/model.js").RowanChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Arrays are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -58,6 +67,7 @@ function normalizeText(value) {
  * @csspart legend
  * @csspart detail
  * @csspart hover
+ * @csspart reference-line
  * @csspart summary
  * @csspart table
  * @cssprop --rowan-stacked-bar-chart-bg
@@ -77,6 +87,7 @@ export class RowanStackedBarChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "referenceLines",
   ];
 
   #control = null;
@@ -96,6 +107,7 @@ export class RowanStackedBarChart extends BaseElement {
   #series = [];
   #labels = [];
   #valueFormatter = null;
+  #referenceLines = [];
   #entries = [];
   #activePointKey = "";
   #labelId = "";
@@ -168,6 +180,7 @@ export class RowanStackedBarChart extends BaseElement {
       labels: this.labels,
       interactive: this.interactive,
       valueFormatter: this.valueFormatter,
+      referenceLines: this.referenceLines,
     };
   }
 
@@ -179,6 +192,7 @@ export class RowanStackedBarChart extends BaseElement {
     this.#series = normalizeChartSeries(this.#seriesInput, this.#labels);
     this.#valueFormatter =
       typeof source.valueFormatter === "function" ? source.valueFormatter : null;
+    this.#referenceLines = normalizeReferenceLines(source.referenceLines);
     this.reflectBoolean("interactive", Boolean(source.interactive));
     this.#activePointKey = "";
     this.requestRender();
@@ -192,6 +206,17 @@ export class RowanStackedBarChart extends BaseElement {
   /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
+    this.requestRender();
+  }
+
+  /** @returns {import("../chart/model.js").RowanChartReferenceLine[]} */
+  get referenceLines() {
+    return this.#referenceLines.map((line) => ({ ...line }));
+  }
+
+  /** @param {import("../chart/model.js").RowanChartReferenceLine[]} value */
+  set referenceLines(value) {
+    this.#referenceLines = normalizeReferenceLines(value);
     this.requestRender();
   }
 
@@ -236,7 +261,8 @@ export class RowanStackedBarChart extends BaseElement {
       bindChartHover(this, {
         target: this.renderRoot.querySelector(".chart"),
         bubble: this.#hover,
-        textForEvent: (event) => seriesHoverText(this.#entries, event),
+        textForEvent: (event) =>
+          referenceLineHoverText(event) || seriesHoverText(this.#entries, event),
       });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
@@ -293,7 +319,10 @@ export class RowanStackedBarChart extends BaseElement {
 
   #renderChart() {
     const labels = resolveChartLabels(this.#series, this.#labels);
-    const domain = stackedBarValueDomain(this.#series);
+    const domain = expandDomainWithReferenceLines(
+      stackedBarValueDomain(this.#series),
+      this.#referenceLines,
+    );
     this.#entries = this.#createEntries(labels, domain);
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
       this.#activePointKey = "";
@@ -313,6 +342,7 @@ export class RowanStackedBarChart extends BaseElement {
       })),
       formatValue: (value, series, index, label) =>
         formatChartValue(this.#valueFormatter, value, { series, index, label }),
+      referenceLines: this.#referenceLines,
     });
     this.#syncActivePoint();
   }
@@ -393,6 +423,23 @@ export class RowanStackedBarChart extends BaseElement {
       bar.setAttribute("height", String(Math.max(entry.height, 1)));
       bar.style.fill = chartSeriesColor(entry.series, entry.seriesIndex);
       fragment.append(bar);
+    }
+
+    const plotHeight = SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
+    for (const line of this.#referenceLines) {
+      const y = PLOT_TOP + ((domain.max - line.value) / range) * plotHeight;
+      fragment.append(
+        createReferenceLine({
+          x1: PLOT_LEFT,
+          x2: PLOT_LEFT + plotWidth,
+          y,
+          tone: line.tone,
+          label: line.label,
+          formattedValue: formatChartValue(this.#valueFormatter, line.value, {
+            label: line.label || "Reference",
+          }),
+        }),
+      );
     }
 
     this.#plot.replaceChildren(fragment);

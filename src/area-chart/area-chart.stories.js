@@ -26,6 +26,15 @@ export const Playground = {
   },
 };
 
+export const ReferenceLines = {
+  render: () => {
+    const chart = Playground.render();
+    chart.description = "Dashed overlay is the throughput target.";
+    chart.referenceLines = [{ value: 16, label: "Target", tone: "danger" }];
+    return chart;
+  },
+};
+
 export const VibrantPalette = {
   name: "Vibrant palette",
   parameters: Playground.parameters,

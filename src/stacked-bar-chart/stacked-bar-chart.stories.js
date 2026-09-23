@@ -27,6 +27,15 @@ export const Playground = {
   },
 };
 
+export const ReferenceLines = {
+  render: () => {
+    const chart = Playground.render();
+    chart.description = "Dashed overlay is the daily capacity target.";
+    chart.referenceLines = [{ value: 10, label: "Capacity", tone: "warning" }];
+    return chart;
+  },
+};
+
 export const VibrantPalette = {
   name: "Vibrant palette",
   parameters: Playground.parameters,

@@ -66,4 +66,49 @@ describe("rowan-area-chart", () => {
     expect(chart.getAttribute("aria-labelledby")).to.equal("volume-heading");
     expect(chart.internals.ariaLabel).to.equal(null);
   });
+
+  it("draws reference lines and lists them in the matching table", async () => {
+    const chart = await renderChart();
+    chart.referenceLines = [{ value: 6, label: "Target", tone: "danger" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector("g.reference-line-group")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelector("line.reference-line").dataset.tone).to.equal("danger");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Target");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("6");
+    expect(chart.hasAttribute("reference-lines")).to.equal(false);
+  });
+
+  it("shows the reference line on hover", async () => {
+    const chart = await renderChart();
+    chart.referenceLines = [{ value: 6, label: "Target", tone: "danger" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const hover = chart.shadowRoot.querySelector(".hover");
+    chart.shadowRoot
+      .querySelector("g.reference-line-group")
+      .dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 24, clientY: 24 }));
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Target");
+    expect(hover.textContent).to.include("6");
+
+    chart.shadowRoot
+      .querySelector(".chart")
+      .dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+    expect(hover.hidden).to.equal(true);
+  });
+
+  it("expands the value domain for a reference line outside the series range", async () => {
+    const chart = await renderChart();
+    chart.referenceLines = [{ value: 20, label: "Ceiling" }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".axis-y-label").textContent).to.equal("20");
+    expect(
+      Number(chart.shadowRoot.querySelector("line.reference-line").getAttribute("y1")),
+    ).to.equal(Number(chart.shadowRoot.querySelector(".grid line").getAttribute("y1")));
+  });
 });

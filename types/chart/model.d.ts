@@ -70,6 +70,15 @@ export function chartSeriesColor(series: RowanNormalizedChartSeries, index: numb
  * @param {RowanChartFormatContext} context
  */
 export function formatChartValue(formatter: RowanChartValueFormatter | null, value: number, context: RowanChartFormatContext): string;
+export function normalizeReferenceLines(value: any): {
+    value: number;
+    label: string;
+    tone: string;
+}[];
+export function expandDomainWithReferenceLines(domain: any, lines: any): {
+    min: any;
+    max: any;
+};
 export const CHART_SERIES_COLORS: string[];
 /**
  * Shared series/point model for Rowan charts. `rowan-trend-chart` keeps its
@@ -97,6 +106,11 @@ export type RowanChartConfig = {
     labels?: string[] | undefined;
     interactive?: boolean | undefined;
     valueFormatter?: RowanChartValueFormatter | null | undefined;
+};
+export type RowanChartReferenceLine = {
+    value: number;
+    label?: string | undefined;
+    tone?: "info" | "success" | "warning" | "danger" | "neutral" | undefined;
 };
 export type RowanNormalizedChartPoint = {
     value: number | null;

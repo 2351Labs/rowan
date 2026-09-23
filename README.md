@@ -596,14 +596,16 @@ Interactive bars emit `rowan-point-activate` with the same detail shape as
 same property-only `series`, `labels`, `config`, and `valueFormatter` as
 `rowan-trend-chart`. Series are independent fills, not stacked. A `null` value
 breaks both the line and the fill and appears as `No data` in the table.
-Interactive points emit `rowan-point-activate`. Native SVG, no animation.
+Interactive points emit `rowan-point-activate`. Property-only `referenceLines`
+(`{ value, label?, tone? }`) draw horizontal overlays. Native SVG, no animation.
 
 ## Rowan Stacked Bar Chart
 
 `rowan-stacked-bar-chart` is an experimental categorical stack. Positive values
 stack from zero in series order. `null` and negatives are no-data: they do not
 contribute height and appear as `No data` in the table. Interactive segments
-emit `rowan-point-activate`. Native SVG, no animation. Grouped bars stay on
+emit `rowan-point-activate`. Property-only `referenceLines` (`{ value, label?, tone? }`)
+draw horizontal overlays. Native SVG, no animation. Grouped bars stay on
 `rowan-bar-chart`.
 
 ## Rowan Donut Chart

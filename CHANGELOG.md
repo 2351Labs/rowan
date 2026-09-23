@@ -14,6 +14,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-icon` `tone` (`info` / `success` / `warning` / `danger`) maps to status tokens via `currentColor`.
 - `rowan-table` column `sticky: "start" | "end"` pins leading or trailing columns. The selection column is pinned start when selectable.
 - `rowan-table` `groupBy` groups local rows with expand/collapse (`rowan-group-toggle`) and optional number subtotals.
+- Experimental area and stacked-bar charts accept property-only `referenceLines` (`{ value, label?, tone? }`). Hover and the matching table include the overlay.
 
 ## 0.9.0 - 2026-09-23
 

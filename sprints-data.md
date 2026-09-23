@@ -452,13 +452,19 @@ Tree grids, nested groups of groups, Excel-style pivot.
 
 ## Sprint 19 — Chart reference lines (experimental hosts)
 
-**Status:** pending
+**Status:** done
 
 Overlays on **experimental** charts only. Frozen trend/bar/donut/sparkline stay as they are.
 
 - Property-only `referenceLines: { value, label?, tone? }[]` on area and stacked-bar (gauge/bullet already have target)
 - Token-aware stroke; hover readout includes the line label
 - Matching table row
+
+### Done when
+
+- [x] Lines render, expand the value domain, stay off frozen trend/bar
+- [x] Hover + matching table
+- [x] Tests and stories
 
 ### Out of scope
 

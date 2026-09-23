@@ -1,6 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { createReferenceLine } from "../chart/dom.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  nearestPointByClientX,
+  referenceLineHoverText,
+} from "../chart/hover.js";
+import { expandDomainWithReferenceLines, normalizeReferenceLines } from "../chart/model.js";
 import {
   cloneTrendSeries,
   normalizeTrendLabels,
@@ -74,6 +82,7 @@ function createCell(tagName, text, scope = "") {
  * @property {string[]} labels - Point labels shared across series. Arrays are property-only.
  * @property {import("../trend-chart/model.js").RowanTrendChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../trend-chart/model.js").RowanTrendChartValueFormatter | null} valueFormatter - Formats chart and table values. Its context includes tick for compact axis labels. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Arrays are property-only.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -90,6 +99,8 @@ function createCell(tagName, text, scope = "") {
  * @csspart table
  * @csspart area
  * @csspart line
+ * @csspart hover
+ * @csspart reference-line
  * @cssprop --rowan-area-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive data point.
  */
@@ -107,6 +118,7 @@ export class RowanAreaChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "referenceLines",
   ];
 
   #control = null;
@@ -121,11 +133,13 @@ export class RowanAreaChart extends BaseElement {
   #legend = null;
   #pointControls = null;
   #detail = null;
+  #hover = null;
   #summaryTable = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
   #valueFormatter = null;
+  #referenceLines = [];
   #entries = [];
   #activePointKey = "";
   #labelId = "";
@@ -208,6 +222,7 @@ export class RowanAreaChart extends BaseElement {
       labels: this.labels,
       interactive: this.interactive,
       valueFormatter: this.valueFormatter,
+      referenceLines: this.referenceLines,
     };
   }
 
@@ -219,6 +234,7 @@ export class RowanAreaChart extends BaseElement {
     this.#series = normalizeTrendSeries(this.#seriesInput, this.#labels);
     this.#valueFormatter =
       typeof source.valueFormatter === "function" ? source.valueFormatter : null;
+    this.#referenceLines = normalizeReferenceLines(source.referenceLines);
     this.reflectBoolean("interactive", Boolean(source.interactive));
     this.#activePointKey = "";
     this.requestRender();
@@ -232,6 +248,17 @@ export class RowanAreaChart extends BaseElement {
   /** @param {import("../trend-chart/model.js").RowanTrendChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
+    this.requestRender();
+  }
+
+  /** @returns {import("../chart/model.js").RowanChartReferenceLine[]} */
+  get referenceLines() {
+    return this.#referenceLines.map((line) => ({ ...line }));
+  }
+
+  /** @param {import("../chart/model.js").RowanChartReferenceLine[]} value */
+  set referenceLines(value) {
+    this.#referenceLines = normalizeReferenceLines(value);
     this.requestRender();
   }
 
@@ -278,6 +305,13 @@ export class RowanAreaChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#hover = createChartHoverBubble();
+      this.renderRoot.querySelector(".chart").append(this.#hover);
+      bindChartHover(this, {
+        target: this.renderRoot.querySelector(".chart"),
+        bubble: this.#hover,
+        textForEvent: (event) => this.#hoverText(event),
+      });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
       this.listen(this.#descriptionSlot, "slotchange", () => this.requestRender());
@@ -318,14 +352,17 @@ export class RowanAreaChart extends BaseElement {
 
   #renderChart() {
     const labels = resolveTrendLabels(this.#series, this.#labels);
-    const domain = trendValueDomain(this.#series);
+    const domain = expandDomainWithReferenceLines(
+      trendValueDomain(this.#series),
+      this.#referenceLines,
+    );
     this.#entries = this.#createEntries(labels, domain);
 
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
       this.#activePointKey = "";
     }
 
-    this.#renderPlot();
+    this.#renderPlot(domain);
     this.#renderAxes(labels, domain);
     this.#renderLegend();
     this.#renderPointControls();
@@ -370,7 +407,7 @@ export class RowanAreaChart extends BaseElement {
     );
   }
 
-  #renderPlot() {
+  #renderPlot(domain) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
     title.textContent = this.#displayLabel() || "Area chart";
@@ -393,7 +430,6 @@ export class RowanAreaChart extends BaseElement {
     const markers = createSvgElement("g");
     markers.setAttribute("class", "series-markers");
 
-    const domain = trendValueDomain(this.#series);
     const range = domain.max - domain.min || 1;
     const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
     const baselineValue = domain.min > 0 ? domain.min : Math.min(0, domain.max);
@@ -433,6 +469,21 @@ export class RowanAreaChart extends BaseElement {
     }
 
     fragment.append(paths, markers);
+
+    const plotWidth = VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT;
+    for (const line of this.#referenceLines) {
+      const y = PLOT_TOP + ((domain.max - line.value) / range) * plotHeight;
+      fragment.append(
+        createReferenceLine({
+          x1: PLOT_LEFT,
+          x2: PLOT_LEFT + plotWidth,
+          y,
+          tone: line.tone,
+          label: line.label,
+          formattedValue: this.#formatValue(line.value, { label: line.label || "Reference" }),
+        }),
+      );
+    }
 
     if (this.#entries.length === 0) {
       const empty = createSvgElement("text");
@@ -575,7 +626,30 @@ export class RowanAreaChart extends BaseElement {
     }
     fragment.append(body);
 
+    if (this.#referenceLines.length) {
+      const refs = document.createElement("tbody");
+      const span = Math.max(1, labels.length);
+      for (const line of this.#referenceLines) {
+        const row = document.createElement("tr");
+        row.append(createCell("th", line.label || "Reference", "row"));
+        const cell = document.createElement("td");
+        cell.colSpan = span;
+        cell.textContent = this.#formatValue(line.value, { label: line.label || "Reference" });
+        row.append(cell);
+        refs.append(row);
+      }
+      fragment.append(refs);
+    }
+
     this.#summaryTable.replaceChildren(fragment);
+  }
+
+  #hoverText(event) {
+    const reference = referenceLineHoverText(event);
+    if (reference) return reference;
+    const nearest = nearestPointByClientX(this.#plot, this.#entries, event.clientX);
+    if (!nearest) return "";
+    return `${nearest.series.label}, ${nearest.label}: ${nearest.formattedValue}`;
   }
 
   #syncActivePoint() {

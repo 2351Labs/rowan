@@ -38,6 +38,13 @@ const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
  */
 
 /**
+ * @typedef {object} RowanChartReferenceLine
+ * @property {number} value
+ * @property {string} [label]
+ * @property {"neutral" | "info" | "success" | "warning" | "danger"} [tone]
+ */
+
+/**
  * @typedef {object} RowanNormalizedChartPoint
  * @property {number | null} value
  * @property {string} label
@@ -271,4 +278,34 @@ export function formatChartValue(formatter, value, context) {
   } catch (_error) {
     return String(value);
   }
+}
+
+const REFERENCE_TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
+
+export function normalizeReferenceLines(value) {
+  if (!Array.isArray(value)) return [];
+
+  const lines = [];
+  for (const item of value) {
+    if (!isObject(item)) continue;
+    const numeric = Number(item.value);
+    if (!Number.isFinite(numeric)) continue;
+    const tone = normalizeText(item.tone).toLowerCase();
+    lines.push({
+      value: numeric,
+      label: normalizeText(item.label),
+      tone: REFERENCE_TONES.has(tone) ? tone : "neutral",
+    });
+  }
+  return lines;
+}
+
+export function expandDomainWithReferenceLines(domain, lines) {
+  let min = domain.min;
+  let max = domain.max;
+  for (const line of lines) {
+    if (line.value < min) min = line.value;
+    if (line.value > max) max = line.value;
+  }
+  return { min, max };
 }
