@@ -6,16 +6,19 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
-### Changed
-
-- Storybook data-display Playgrounds (KPI, charts, source-meta, image, empty-state, status-indicator) bind Controls. Event Trace listens for remaining `rowan-*` user events and is labeled instead of an unnamed landmark.
-- Storybook table leftover stories expose `density` / `selectable`. Tabs Playground binds `value`. Calendar has autodocs and a Playground.
-- Storybook a11y skips axe rule `label` for FACE inner inputs. Accessible name stays on the host; `npm test` still audits it.
+## 0.11.0 - 2026-09-24
 
 ### Added
 
 - `rowan-table` column `type: "bullet"` mounts `rowan-bullet-chart` from `{ value, target?, ranges? }` or a number plus shared `cell.ranges`. Virtualized rows keep the host.
 - `rowan-table` interactive-cell contract: built-in action cells (and `cell.interactive`) do not emit `rowan-row-activate`. `rowActivate: "none"` disables row activation. Default stays double-click / Enter on the row.
+- `rowan-popover` `trigger` is `click` (default) or `manual`. Manual disables click-to-toggle; Escape and outside pointer still dismiss. Hover stays on `rowan-tooltip`.
+
+### Changed
+
+- Storybook data-display Playgrounds (KPI, charts, source-meta, image, empty-state, status-indicator) bind Controls. Event Trace listens for remaining `rowan-*` user events and is labeled instead of an unnamed landmark.
+- Storybook table leftover stories expose `density` / `selectable`. Tabs Playground binds `value`. Calendar has autodocs and a Playground.
+- Storybook a11y skips axe rule `label` for FACE inner inputs. Accessible name stays on the host; `npm test` still audits it.
 
 ## 0.10.0 - 2026-09-23
 
