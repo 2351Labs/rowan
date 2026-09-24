@@ -839,6 +839,43 @@ export const GroupedRows = {
   },
 };
 
+export const BulletCells = {
+  render: () => {
+    const ranges = [
+      { from: 0, to: 50, label: "Low", tone: "danger" },
+      { from: 50, to: 80, label: "Fair", tone: "warning" },
+      { from: 80, to: 100, label: "Good", tone: "success" },
+    ];
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Yard fill versus target",
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Yard", sticky: "start" },
+        { id: "fill", header: "Fill", type: "bullet" },
+      ],
+      rows: [
+        {
+          id: "north",
+          name: "North",
+          fill: { value: 82, target: 90, ranges },
+        },
+        {
+          id: "south",
+          name: "South",
+          fill: { value: 64, target: 90, ranges },
+        },
+        {
+          id: "east",
+          name: "East",
+          fill: { value: 91, target: 90, ranges },
+        },
+      ],
+    };
+    return table;
+  },
+};
+
 export const PinnedColumns = {
   render: () => {
     const table = document.createElement("rowan-table");

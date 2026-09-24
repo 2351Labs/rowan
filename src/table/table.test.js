@@ -533,6 +533,86 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("renders bullet cells from a payload or column ranges", async () => {
+    const table = document.createElement("rowan-table");
+    const ranges = [
+      { from: 0, to: 50, label: "Low", tone: "danger" },
+      { from: 50, to: 80, label: "Fair", tone: "warning" },
+      { from: 80, to: 100, label: "Good", tone: "success" },
+    ];
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Yard" },
+        { id: "fill", header: "Fill", type: "bullet" },
+        {
+          id: "score",
+          header: "Score",
+          type: "bullet",
+          cell: { ranges },
+        },
+      ],
+      rows: [
+        {
+          id: "north",
+          name: "North",
+          fill: { value: 82, target: 90, ranges },
+          score: { value: 74, target: 90 },
+        },
+      ],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const charts = [...table.shadowRoot.querySelectorAll("rowan-bullet-chart")];
+    expect(charts).to.have.length(2);
+    expect(charts[0].value).to.equal(82);
+    expect(charts[0].target).to.equal(90);
+    expect(charts[0].ranges).to.have.length(3);
+    expect(charts[0].label).to.equal("Fill");
+    expect(charts[1].value).to.equal(74);
+    expect(charts[1].target).to.equal(90);
+    expect(charts[1].ranges.map((range) => range.label)).to.deep.equal(["Low", "Fair", "Good"]);
+    expect(table.shadowRoot.querySelector("[data-cell-type='bullet']")).to.equal(charts[0]);
+
+    table.remove();
+  });
+
+  it("keeps bullet cells in the virtualized row window", async () => {
+    const rows = Array.from({ length: 40 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Yard ${index + 1}`,
+      fill: { value: 60 + (index % 20), target: 90 },
+    }));
+    const table = document.createElement("rowan-table");
+    table.style.setProperty("--rowan-table-virtual-height", "80px");
+    table.config = {
+      rowId: "id",
+      virtualized: true,
+      virtualItemSize: 20,
+      virtualOverscan: 1,
+      columns: [
+        { id: "name", header: "Yard" },
+        { id: "fill", header: "Fill", type: "bullet" },
+      ],
+      rows,
+    };
+    document.body.append(table);
+    await nextMicrotask();
+    await nextFrame();
+    await nextMicrotask();
+
+    const mounted = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+    expect(mounted).to.not.equal(null);
+    expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.be.below(
+      rows.length,
+    );
+    expect(mounted.querySelector("rowan-bullet-chart")).to.not.equal(null);
+    expect(mounted.querySelector("rowan-bullet-chart").target).to.equal(90);
+
+    table.remove();
+  });
+
   it("renders custom cell callbacks with the documented context", async () => {
     const table = document.createElement("rowan-table");
     const contexts = [];
