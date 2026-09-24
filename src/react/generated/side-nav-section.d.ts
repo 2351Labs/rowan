@@ -3,5 +3,11 @@ import type { RowanSideNavSection as RowanSideNavSectionElement } from "../../si
 import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const RowanSideNavSection: ForwardRefExoticComponent<
-  RowanWrapperProps<RowanSideNavSectionElement, {}> & RefAttributes<RowanSideNavSectionElement>
+  RowanWrapperProps<
+    RowanSideNavSectionElement,
+    {
+      onRowanToggle?: (event: CustomEvent) => void;
+    }
+  > &
+    RefAttributes<RowanSideNavSectionElement>
 >;

@@ -617,6 +617,30 @@ Changing FACE internals, wrapping breadcrumb in a second `<nav>`.
 
 ---
 
+## Sprint 28 — Hierarchical side-nav groups
+
+**Status:** done
+
+Collapsible `rowan-side-nav-section`, not a second selection model. One `value` on `rowan-side-nav`.
+
+- `collapsible` opt-in; without it the group stays always-open
+- `collapsed` defaults false (open). Controlled by the attribute/property
+- User toggle emits `rowan-toggle` on the section (`{ collapsed, expanded }`)
+- Arrow Left collapses the containing group; Arrow Down from the control focuses the first item
+- Setting nav `value` to a child expands ancestor groups (silent)
+
+### Done when
+
+- [x] Default unlabeled/always-open groups unchanged
+- [x] Tests: toggle does not emit nav `rowan-change`; value match expands; collapsed hides items
+- [x] Story + README
+
+### Out of scope
+
+Stealing `rowan-tree` into the rail. Per-item open state. P2 config nav.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

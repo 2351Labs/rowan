@@ -7,5 +7,7 @@ import { createRowanComponent } from "../create-wrapper.js";
 export const RowanSideNavSection = createRowanComponent({
   tagName: "rowan-side-nav-section",
   displayName: "RowanSideNavSection",
-  events: {},
+  events: {
+    onRowanToggle: "rowan-toggle",
+  },
 });

@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-side-nav-section` `collapsible` and `collapsed`. Opt-in disclosure; default groups stay always-open. User toggle emits `rowan-toggle`. The parent nav still has one `value`.
+
 ## 0.11.0 - 2026-09-24
 
 ### Added

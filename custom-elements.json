@@ -12346,7 +12346,7 @@
         {
           "kind": "variable",
           "name": "BOOLEAN_ATTRIBUTES",
-          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"collapsed\", \"collapsible\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
         },
         {
           "kind": "function",
@@ -17611,7 +17611,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Labeled group of destinations inside rowan-side-nav.",
+          "description": "Labeled group of destinations inside rowan-side-nav.\nOpt-in `collapsible` adds a disclosure control. `collapsed` defaults false\n(open). The parent nav still has one `value`; this host is not a destination.",
           "name": "RowanSideNavSection",
           "cssProperties": [
             {
@@ -17633,6 +17633,12 @@
             },
             {
               "name": "label"
+            },
+            {
+              "name": "trigger"
+            },
+            {
+              "name": "items"
             }
           ],
           "slots": [
@@ -17645,6 +17651,38 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "collapsible"
+            },
+            {
+              "kind": "field",
+              "name": "collapsed"
+            },
+            {
+              "kind": "field",
+              "name": "expanded",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "focusTrigger"
+            },
+            {
+              "kind": "method",
+              "name": "toggleFromUser",
+              "parameters": [
+                {
+                  "name": "collapsed",
+                  "default": "!this.collapsed"
+                }
+              ]
             },
             {
               "kind": "field",
@@ -17724,11 +17762,29 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Fired when a user expands or collapses a collapsible section",
+              "name": "rowan-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "collapsible",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "collapsed",
+              "type": {
+                "text": "boolean"
               }
             }
           ],

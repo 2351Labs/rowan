@@ -12,6 +12,7 @@ function createItem(value, label) {
 
 export default {
   title: "Components/Navigation & Layout/Side Navigation Section",
+  component: "rowan-side-nav-section",
   tags: ["autodocs"],
 };
 
@@ -31,6 +32,35 @@ export const GroupedRail = {
 
     const ptms = document.createElement("rowan-side-nav-section");
     ptms.label = "PTMS";
+    ptms.append(createItem("ptms-overview", "Overview"), createItem("ptms-routes", "Routes"));
+
+    nav.append(invexus, ptms);
+    return nav;
+  },
+};
+
+export const Collapsible = {
+  parameters: createEventScriptParameters({
+    steps: [
+      "Click Invexus to collapse it. Destinations hide; the nav value does not change.",
+      "Arrow Down from the section control focuses the first item when expanded.",
+    ],
+    events: ["rowan-toggle", "rowan-change"],
+  }),
+  render: () => {
+    const nav = document.createElement("rowan-side-nav");
+    nav.label = "Products";
+    nav.value = "invexus-overview";
+
+    const invexus = document.createElement("rowan-side-nav-section");
+    invexus.label = "Invexus";
+    invexus.collapsible = true;
+    invexus.append(createItem("invexus-overview", "Overview"), createItem("invexus-jobs", "Jobs"));
+
+    const ptms = document.createElement("rowan-side-nav-section");
+    ptms.label = "PTMS";
+    ptms.collapsible = true;
+    ptms.collapsed = true;
     ptms.append(createItem("ptms-overview", "Overview"), createItem("ptms-routes", "Routes"));
 
     nav.append(invexus, ptms);

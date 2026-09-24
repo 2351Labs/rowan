@@ -101,7 +101,7 @@ export class RowanSideNav extends BaseElement {
   #observeItems() {
     this.#itemObserver?.observe(this, {
       attributes: true,
-      attributeFilter: ["active", "disabled", "hidden", "slot", "value"],
+      attributeFilter: ["active", "collapsed", "disabled", "hidden", "slot", "value"],
       childList: true,
       subtree: true,
     });
@@ -113,6 +113,28 @@ export class RowanSideNav extends BaseElement {
     );
   }
 
+  #itemIsAvailable(item) {
+    if (item.disabled || item.hidden) return false;
+    let node = item.parentElement;
+    while (node && node !== this) {
+      if (node.localName === "rowan-side-nav-section" && node.collapsible && node.collapsed) {
+        return false;
+      }
+      node = node.parentElement;
+    }
+    return true;
+  }
+
+  #expandAncestors(item) {
+    let node = item.parentElement;
+    while (node && node !== this) {
+      if (node.localName === "rowan-side-nav-section" && node.collapsible && node.collapsed) {
+        node.collapsed = false;
+      }
+      node = node.parentElement;
+    }
+  }
+
   #syncActiveItem(items) {
     const requested = this.value;
     const requestedItem = requested ? items.find((item) => item.value === requested) : null;
@@ -120,6 +142,7 @@ export class RowanSideNav extends BaseElement {
     const declaredItem = items.find((item) => item.active) ?? null;
     const next = requestedItem ?? (explicitEmpty ? null : requested ? null : declaredItem);
 
+    if (next && next !== this.#activeItem) this.#expandAncestors(next);
     this.#activeItem = next;
 
     for (const item of items) {
@@ -132,7 +155,7 @@ export class RowanSideNav extends BaseElement {
 
   #syncRovingTabIndex(items) {
     const managedItems = new Set(items);
-    const available = items.filter((item) => !item.disabled && !item.hidden);
+    const available = items.filter((item) => this.#itemIsAvailable(item));
 
     if (!available.includes(this.#focusItem)) {
       this.#focusItem =
@@ -175,7 +198,7 @@ export class RowanSideNav extends BaseElement {
     const item = this.#itemFromEvent(event);
     if (!item || item.disabled) return;
 
-    const items = this.#items().filter((candidate) => !candidate.disabled && !candidate.hidden);
+    const items = this.#items().filter((candidate) => this.#itemIsAvailable(candidate));
     const index = items.indexOf(item);
     if (index === -1) return;
 
@@ -200,6 +223,32 @@ export class RowanSideNav extends BaseElement {
     if (event.key === keys.END) {
       event.preventDefault();
       this.#setFocusItem(items.at(-1));
+      return;
+    }
+
+    if (event.key === keys.ARROW_LEFT) {
+      const section = item.closest("rowan-side-nav-section");
+      if (
+        section?.collapsible &&
+        !section.collapsed &&
+        typeof section.toggleFromUser === "function"
+      ) {
+        event.preventDefault();
+        section.toggleFromUser(true);
+      }
+      return;
+    }
+
+    if (event.key === keys.ARROW_RIGHT) {
+      const section = item.closest("rowan-side-nav-section");
+      if (
+        section?.collapsible &&
+        section.collapsed &&
+        typeof section.toggleFromUser === "function"
+      ) {
+        event.preventDefault();
+        section.toggleFromUser(false);
+      }
       return;
     }
 

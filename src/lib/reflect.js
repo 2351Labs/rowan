@@ -4,6 +4,8 @@ export const BOOLEAN_ATTRIBUTES = new Set([
   "animated",
   "caption-visually-hidden",
   "checked",
+  "collapsed",
+  "collapsible",
   "confirm-disabled",
   "disabled",
   "dismissible",
