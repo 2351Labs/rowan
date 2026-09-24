@@ -6,6 +6,7 @@ const monthValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padSta
 export default {
   title: "Components/Forms & Input/Calendar",
   component: "rowan-calendar",
+  tags: ["autodocs"],
   args: {
     label: "Choose a date",
     month: monthValue,
@@ -52,7 +53,7 @@ function renderCalendar(args) {
   return element;
 }
 
-export const Default = {
+export const Playground = {
   render: renderCalendar,
 };
 

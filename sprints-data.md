@@ -584,12 +584,12 @@ Table leftover stories, app-shell, FACE axe false positives.
 
 ## Sprint 26 — Storybook: table and layout leftover knobs
 
-**Status:** pending
+**Status:** done
 
 - Table `GroupedRows`, `InteractiveCells`, `BulletCells`, `PinnedColumns`: at least `density` / `selectable`
 - Tabs Playground: initial `value`
 - Calendar: `tags: ["autodocs"]` and a Playground alias (argTypes already exist)
-- Card / breadcrumb / menu: only if a meaningful host attr exists
+- Card / breadcrumb / menu: skipped (no meaningful host attrs; slot-only composition)
 
 ### Out of scope
 

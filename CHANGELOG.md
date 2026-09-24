@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Changed
 
 - Storybook data-display Playgrounds (KPI, charts, source-meta, image, empty-state, status-indicator) bind Controls. Event Trace listens for remaining `rowan-*` user events and is labeled instead of an unnamed landmark.
+- Storybook table leftover stories expose `density` / `selectable`. Tabs Playground binds `value`. Calendar has autodocs and a Playground.
 
 ### Added
 
