@@ -1168,7 +1168,11 @@ operator. Import `RowanFilter` and `RowanFilterField` from
 Do not pass React `open={false}` unless you fully control `open`. Multi-select
 activation fills `rowIds` and shows previous/next. `size` is `sm`, `md`, or `lg`.
 The panel does not modify the row record. Table columns may use
-`type: "sparkline"` with a `number[]` value.
+`type: "sparkline"` with a `number[]` value, and `type: "bullet"` with
+`{ value, target?, ranges? }` or a number plus shared `cell.ranges`.
+(`cell.target` stays the link window target.) Bullet cells mount
+`rowan-bullet-chart` in a virtualized body. Row details stay on
+`rowan-row-details-panel`.
 
 ```html
 <rowan-table id="members-table">
