@@ -979,11 +979,12 @@ For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-c
 - Optional virtualized body mode that retains real table markup and existing selection, sort, activation, and cell-event contracts
 - Column `sticky: "start" | "end"` to pin leading or trailing columns while the table scrolls horizontally. The selection column is pinned start when the table is selectable. Column DOM order does not change.
 - `groupBy` (`string` or `{ id, subtotals?, collapsed? }`) inserts group headers. User expand/collapse emits `rowan-group-toggle`. Optional number subtotals. Local rows; `page` still slices data rows.
-- Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `custom`
+- Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `sparkline`, `bullet`, `custom`
+- Built-in `link` / `checkbox` / `switch` / `button` / `icon-button` cells are interactive: double-click does not emit `rowan-row-activate`. Set `cell.interactive: true` on custom cells that host controls. `rowActivate: "none"` turns row activation off. Default remains double-click on the row and Enter when the row is focused.
 
 ### Configuration updates
 
-Assigning `.config` replaces the complete table state. Omitted values reset to their defaults: empty columns and rows, `rowId: "id"`, no selection, no sort or page, `selectable: "none"`, `density: "md"`, no caption, and disabled sticky/loading states.
+Assigning `.config` replaces the complete table state. Omitted values reset to their defaults: empty columns and rows, `rowId: "id"`, no selection, no sort or page, `selectable: "none"`, `density: "md"`, `rowActivate: "dblclick"`, no caption, and disabled sticky/loading states.
 
 Use flattened properties for partial updates that retain the rest of the current configuration:
 

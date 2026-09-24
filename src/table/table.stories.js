@@ -839,6 +839,38 @@ export const GroupedRows = {
   },
 };
 
+export const InteractiveCells = {
+  parameters: createEventScriptParameters({
+    steps: [
+      "Double-click a name cell. The row activates.",
+      "Double-click Edit. That is an interactive cell: rowan-cell-action fires, not rowan-row-activate.",
+    ],
+    events: ["rowan-row-activate", "rowan-cell-action"],
+  }),
+  render: () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Interactive cells do not activate the row",
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Member", sortable: true },
+        {
+          id: "edit",
+          header: "",
+          type: "icon-button",
+          cell: { label: "Edit", icon: "edit" },
+          width: "3rem",
+        },
+      ],
+      rows: [
+        { id: "1", name: "Ada Lovelace" },
+        { id: "2", name: "Alan Turing" },
+      ],
+    };
+    return table;
+  },
+};
+
 export const BulletCells = {
   render: () => {
     const ranges = [

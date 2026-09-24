@@ -517,6 +517,29 @@ Interactive-cell contract, popover trigger modes, hierarchical side-nav.
 
 ---
 
+## Sprint 22 — Table interactive-cell contract
+
+**Status:** done
+
+Additive on frozen `rowan-table`. Default row activation stays double-click on the row and Enter when the row is focused.
+
+- Built-in `link` / `checkbox` / `switch` / `button` / `icon-button` cells suppress `rowan-row-activate`
+- `cell.interactive: true` marks a custom cell as a hit target; `false` opts a built-in type out
+- Native controls in the composed path also suppress (no `stopPropagation` in app code)
+- `rowActivate: "dblclick" | "none"` (default `dblclick`). Omitted `.config` resets to `dblclick`
+
+### Done when
+
+- [x] Tests: control dblclick does not activate; row dblclick still does; custom interactive; `none`; config reset
+- [x] README
+- [x] Default activation unchanged
+
+### Out of scope
+
+Single-click row activate. Popover trigger modes. Hierarchical side-nav.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.
