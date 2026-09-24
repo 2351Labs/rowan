@@ -5,12 +5,22 @@ import { createEventScriptParameters } from "../storybook/event-script.js";
 
 export default {
   title: "Components/Navigation & Layout/Tabs",
+  component: "rowan-tabs",
   tags: ["autodocs"],
+  args: {
+    value: "overview",
+  },
+  argTypes: {
+    value: {
+      control: "select",
+      options: ["overview", "settings"],
+    },
+  },
 };
 
-const createTabs = () => {
+const createTabs = ({ value = "overview" } = {}) => {
   const tabs = document.createElement("rowan-tabs");
-  tabs.value = "overview";
+  tabs.value = value;
 
   const items = [
     { value: "overview", label: "Overview", content: "Overview content." },
@@ -37,5 +47,5 @@ export const Playground = {
     steps: ["Click a tab to switch the active panel."],
     events: ["rowan-change"],
   }),
-  render: () => createTabs(),
+  render: (args) => createTabs(args),
 };

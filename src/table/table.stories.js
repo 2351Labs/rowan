@@ -5,6 +5,19 @@ const SELECTABLE_OPTIONS = ["none", "single", "multiple"];
 const DENSITY_OPTIONS = ["sm", "md", "lg"];
 const TONE_OPTIONS = ["info", "success", "warning", "danger"];
 
+const TABLE_KNOB_ARG_TYPES = {
+  selectable: {
+    control: "inline-radio",
+    options: SELECTABLE_OPTIONS,
+    description: "Selection mode.",
+  },
+  density: {
+    control: "inline-radio",
+    options: DENSITY_OPTIONS,
+    description: "Vertical spacing profile.",
+  },
+};
+
 const EXACT_COLUMNS = [
   {
     id: "name",
@@ -816,12 +829,18 @@ export const VirtualizedBody = {
 };
 
 export const GroupedRows = {
-  render: () => {
+  args: {
+    selectable: "multiple",
+    density: "md",
+  },
+  argTypes: TABLE_KNOB_ARG_TYPES,
+  render: ({ selectable, density }) => {
     const table = document.createElement("rowan-table");
     table.config = {
       caption: "Members grouped by team",
       rowId: "id",
-      selectable: "multiple",
+      selectable,
+      density,
       groupBy: { id: "team", subtotals: true },
       columns: [
         { id: "name", header: "Member", sticky: "start", minWidth: "10rem" },
@@ -847,11 +866,18 @@ export const InteractiveCells = {
     ],
     events: ["rowan-row-activate", "rowan-cell-action"],
   }),
-  render: () => {
+  args: {
+    selectable: "none",
+    density: "md",
+  },
+  argTypes: TABLE_KNOB_ARG_TYPES,
+  render: ({ selectable, density }) => {
     const table = document.createElement("rowan-table");
     table.config = {
       caption: "Interactive cells do not activate the row",
       rowId: "id",
+      selectable,
+      density,
       columns: [
         { id: "name", header: "Member", sortable: true },
         {
@@ -872,7 +898,12 @@ export const InteractiveCells = {
 };
 
 export const BulletCells = {
-  render: () => {
+  args: {
+    selectable: "none",
+    density: "md",
+  },
+  argTypes: TABLE_KNOB_ARG_TYPES,
+  render: ({ selectable, density }) => {
     const ranges = [
       { from: 0, to: 50, label: "Low", tone: "danger" },
       { from: 50, to: 80, label: "Fair", tone: "warning" },
@@ -882,6 +913,8 @@ export const BulletCells = {
     table.config = {
       caption: "Yard fill versus target",
       rowId: "id",
+      selectable,
+      density,
       columns: [
         { id: "name", header: "Yard", sticky: "start" },
         { id: "fill", header: "Fill", type: "bullet" },
@@ -909,13 +942,19 @@ export const BulletCells = {
 };
 
 export const PinnedColumns = {
-  render: () => {
+  args: {
+    selectable: "multiple",
+    density: "md",
+  },
+  argTypes: TABLE_KNOB_ARG_TYPES,
+  render: ({ selectable, density }) => {
     const table = document.createElement("rowan-table");
     table.style.maxInlineSize = "36rem";
     table.config = {
       caption: "Pinned name and status while the middle columns scroll",
       rowId: "id",
-      selectable: "multiple",
+      selectable,
+      density,
       stickyHeader: true,
       columns: [
         { id: "name", header: "Member", sticky: "start", minWidth: "10rem", sortable: true },
