@@ -1315,6 +1315,14 @@ Pages → Source: GitHub Actions**. The project site is
 at `/`.
 
 - `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit of representative widgets
+
+Storybook's a11y addon (`test: "error"`) skips axe rule `label`. FACE controls put the
+accessible name on the host via `ElementInternals`; axe still flags the inner native
+`<input>` as unlabeled. That is a Storybook false positive — do not add a second name
+on the inner control. `npm test` still audits the host. Chart Playgrounds that document
+keyboard keep `interactive: true`. Breadcrumb stories stay a slot demo; the host
+already renders `<nav aria-label="Breadcrumb">`.
+
 - `npm run test:browser` runs the same serial component contracts with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`
 - `npm run types` regenerates publishable declaration files in `/types`
 - `npm run typecheck` verifies root and per-component package imports, including `HTMLElementTagNameMap` discovery

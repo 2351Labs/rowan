@@ -599,11 +599,21 @@ App-shell cookbook, command palette internals.
 
 ## Sprint 27 — Storybook a11y leftovers
 
-**Status:** pending
+**Status:** done
 
 - FACE inner `<input>` unlabeled: axe false positive vs host `ElementInternals`. Document or suppress in the Storybook a11y config, do not thaw FACE.
 - Chart Playgrounds that document keyboard must keep `interactive: true` (sprint 24).
 - Breadcrumb remains a slot demo, not a `<nav>` wrapper.
+
+### Done when
+
+- [x] Storybook a11y disables rule `label`; README and docs explain FACE vs inner input
+- [x] Chart Playgrounds keep `interactive: true` by default (sprint 24)
+- [x] Breadcrumb Playground is still slotted items only
+
+### Out of scope
+
+Changing FACE internals, wrapping breadcrumb in a second `<nav>`.
 
 ---
 

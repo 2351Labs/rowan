@@ -1188,7 +1188,16 @@ const DOC_PAGES = [
     summary:
       "Theme Rowan through semantic tokens while preserving stable component APIs. This docs site uses the same model.",
     tags: ["tokens", "light-dark", "css"],
-    keywords: ["theme", "tokens", "dark", "light", "lagoon", "ember", "chart palette", "css variables"],
+    keywords: [
+      "theme",
+      "tokens",
+      "dark",
+      "light",
+      "lagoon",
+      "ember",
+      "chart palette",
+      "css variables",
+    ],
     content: () => `
       <section class="doc-section" data-doc-section id="theme-layers">
         <h2>Token layers</h2>
@@ -1243,9 +1252,12 @@ document.documentElement.dataset.theme = "lagoon";
         <h2>Chart palette</h2>
         <p>KPI and chart tones default to the UI colors, so forest and sand can wash out in small plots. Import <code>@rowan-ui/core/tokens/charts-vibrant</code> and set <code>data-rowan-charts="vibrant"</code> on a dashboard region. Buttons and navigation stay on the Rowan theme.</p>
         <div class="demo-row" data-rowan-charts="vibrant" id="docs-chart-palette"></div>
-        ${codeBlock(`import "@rowan-ui/core/tokens/charts-vibrant";
+        ${codeBlock(
+          `import "@rowan-ui/core/tokens/charts-vibrant";
 
-document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`, "js")}
+document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
+          "js",
+        )}
       </section>
     `,
     afterRender: (mainEl) => {
@@ -2802,7 +2814,16 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`, "js"
     summary:
       "Composable navigation destination with link semantics, active-state styling, prefix or suffix slots, and optional tone and count.",
     tags: ["navigation", "link", "composition"],
-    keywords: ["side nav item", "navigation item", "active", "href", "prefix", "suffix", "tone", "count"],
+    keywords: [
+      "side nav item",
+      "navigation item",
+      "active",
+      "href",
+      "prefix",
+      "suffix",
+      "tone",
+      "count",
+    ],
     content: () => `
       <section class="doc-section" data-doc-section id="side-nav-item-overview">
         <h2>Destination content</h2>
@@ -3258,6 +3279,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`, "js"
       <section class="doc-section" data-doc-section id="quality-a11y">
         <h2>Accessibility defaults</h2>
         <p>Default ARIA roles and states are applied through ElementInternals when supported, without overriding author-defined roles.</p>
+        <p>Storybook's a11y addon skips axe rule <code>label</code>. FACE controls name the host, not the inner native input; axe still reports that shadow input as unlabeled. <code>npm test</code> audits the host. Do not add a second accessible name on the inner control.</p>
         <rowan-alert tone="success">
           Form-associated controls synchronize validity and form values via ElementInternals APIs.
         </rowan-alert>
