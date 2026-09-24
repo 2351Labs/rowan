@@ -979,7 +979,7 @@ For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-c
 - Optional virtualized body mode that retains real table markup and existing selection, sort, activation, and cell-event contracts
 - Column `sticky: "start" | "end"` to pin leading or trailing columns while the table scrolls horizontally. The selection column is pinned start when the table is selectable. Column DOM order does not change.
 - `groupBy` (`string` or `{ id, subtotals?, collapsed? }`) inserts group headers. User expand/collapse emits `rowan-group-toggle`. Optional number subtotals. Local rows; `page` still slices data rows.
-- Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `sparkline`, `custom`
+- Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `sparkline`, `bullet`, `custom`
 - Built-in `link` / `checkbox` / `switch` / `button` / `icon-button` cells are interactive: double-click does not emit `rowan-row-activate`. Set `cell.interactive: true` on custom cells that host controls. `rowActivate: "none"` turns row activation off. Default remains double-click on the row and Enter when the row is focused.
 
 ### Configuration updates
@@ -1169,7 +1169,11 @@ operator. Import `RowanFilter` and `RowanFilterField` from
 Do not pass React `open={false}` unless you fully control `open`. Multi-select
 activation fills `rowIds` and shows previous/next. `size` is `sm`, `md`, or `lg`.
 The panel does not modify the row record. Table columns may use
-`type: "sparkline"` with a `number[]` value.
+`type: "sparkline"` with a `number[]` value, and `type: "bullet"` with
+`{ value, target?, ranges? }` or a number plus shared `cell.ranges`.
+(`cell.target` stays the link window target.) Bullet cells mount
+`rowan-bullet-chart` in a virtualized body. Row details stay on
+`rowan-row-details-panel`.
 
 ```html
 <rowan-table id="members-table">

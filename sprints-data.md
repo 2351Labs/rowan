@@ -494,6 +494,29 @@ Context provider, hover-link bus, `drillTo`, persisting to URL (app concern; ses
 
 ---
 
+## Sprint 21 — Bullet table cell
+
+**Status:** done
+
+Additive `type: "bullet"` on frozen `rowan-table`, same pattern as sparkline. Mounts experimental `rowan-bullet-chart`. No custom Node hook. Details stay `rowan-row-details-panel`.
+
+- Row value `{ value, target?, ranges? }` or a number
+- Column `cell.ranges` / `cell.label` overlay when set. Do not use `cell.target` (that is the link window target).
+- Virtualized body keeps a real `<td>` + host
+- Unknown types still fall back to text
+
+### Done when
+
+- [x] Cell type + tests (payload, column ranges, virtualized window)
+- [x] README + story
+- [x] No thaw of table config names; no KPI fields
+
+### Out of scope
+
+Interactive-cell contract, popover trigger modes, hierarchical side-nav.
+
+---
+
 ## Sprint 22 — Table interactive-cell contract
 
 **Status:** done

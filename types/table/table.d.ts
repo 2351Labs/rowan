@@ -117,7 +117,7 @@ export class RowanTable extends BaseElement {
     } | undefined): void;
     #private;
 }
-export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "custom";
+export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "bullet" | "custom";
 export type RowanTableRow = Record<string, unknown>;
 export type RowanTableCellContext = {
     value: unknown;
@@ -139,6 +139,7 @@ export type RowanTableCellConfig = {
     title?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
     icon?: string | undefined;
     interactive?: boolean | undefined;
+    ranges?: unknown[] | ((value: unknown, row: RowanTableRow) => unknown[]) | undefined;
     slot?: string | undefined;
     render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
 };

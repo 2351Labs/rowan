@@ -14,6 +14,7 @@ import "../avatar/avatar.js";
 import "../chip/chip.js";
 import "../progress/progress.js";
 import "../sparkline/sparkline.js";
+import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
 
 const CELL_TYPES = new Set([
@@ -30,6 +31,7 @@ const CELL_TYPES = new Set([
   "chip",
   "progress",
   "sparkline",
+  "bullet",
   "custom",
 ]);
 
@@ -58,7 +60,7 @@ function nonNegativeInteger(value, fallback) {
 }
 
 /**
- * @typedef {"text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "custom"} RowanTableCellType
+ * @typedef {"text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "bullet" | "custom"} RowanTableCellType
  */
 
 /** @typedef {Record<string, unknown>} RowanTableRow */
@@ -86,6 +88,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {string | ((value: unknown, row: RowanTableRow) => string)} [title]
  * @property {string} [icon]
  * @property {boolean} [interactive]
+ * @property {unknown[] | ((value: unknown, row: RowanTableRow) => unknown[])} [ranges]
  * @property {string} [slot]
  * @property {(context: RowanTableCellContext) => Node | string | void} [render]
  */
@@ -1785,6 +1788,9 @@ export class RowanTable extends BaseElement {
       case "sparkline":
         this.#renderSparklineCell(cell, context);
         return;
+      case "bullet":
+        this.#renderBulletCell(cell, context);
+        return;
       case "custom":
         this.#renderCustomCell(cell, context);
         return;
@@ -2062,6 +2068,65 @@ export class RowanTable extends BaseElement {
     if (typeof label === "string" && label.length > 0) chart.label = label;
     const labels = this.#resolveCellOption(context.column, "labels", context.value, context.row);
     if (Array.isArray(labels)) chart.labels = labels;
+    cell.append(chart);
+  }
+
+  #normalizeBulletValue(value) {
+    if (value == null || value === "") {
+      return { value: null, target: null, ranges: undefined };
+    }
+
+    if (typeof value === "number") {
+      return { value, target: null, ranges: undefined };
+    }
+
+    if (typeof value === "object" && !Array.isArray(value)) {
+      return {
+        value: "value" in value ? value.value : null,
+        target: "target" in value ? value.target : null,
+        ranges: Array.isArray(value.ranges) ? value.ranges : undefined,
+      };
+    }
+
+    return { value: null, target: null, ranges: undefined };
+  }
+
+  #renderBulletCell(cell, context) {
+    const chart = customElements.get("rowan-bullet-chart")
+      ? document.createElement("rowan-bullet-chart")
+      : document.createElement("span");
+    chart.dataset.cellType = "bullet";
+
+    const payload = this.#normalizeBulletValue(context.value);
+    const label = this.#resolveCellOption(context.column, "label", context.value, context.row);
+    const rangesOption = this.#resolveCellOption(
+      context.column,
+      "ranges",
+      context.value,
+      context.row,
+    );
+    const target = payload.target;
+    const ranges = Array.isArray(rangesOption) ? rangesOption : payload.ranges;
+
+    if (chart.tagName === "SPAN") {
+      const parts = [];
+      if (typeof payload.value === "number" && Number.isFinite(payload.value)) {
+        parts.push(String(payload.value));
+      }
+      if (typeof target === "number" && Number.isFinite(target)) parts.push(String(target));
+      chart.textContent = parts.join(" / ");
+      cell.append(chart);
+      return;
+    }
+
+    chart.value = payload.value ?? null;
+    chart.target = target ?? null;
+    if (Array.isArray(ranges)) chart.ranges = ranges;
+    if (typeof label === "string" && label.length > 0) chart.label = label;
+    else if (typeof context.column.header === "string" && context.column.header) {
+      chart.label = context.column.header;
+    }
+
     cell.append(chart);
   }
 
