@@ -38,7 +38,7 @@
  * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
- * @event rowan-row-activate - Fired on row activation by keyboard or double click
+ * @event rowan-row-activate - Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  */
 export class RowanTable extends BaseElement {
@@ -99,6 +99,10 @@ export class RowanTable extends BaseElement {
     set groupBy(value: RowanTableGroupBy | null);
     /** @returns {RowanTableGroupBy | null} */
     get groupBy(): RowanTableGroupBy | null;
+    /** @param {"dblclick" | "none"} value */
+    set rowActivate(value: "none" | "dblclick");
+    /** @returns {"dblclick" | "none"} */
+    get rowActivate(): "none" | "dblclick";
     /** @returns {RowanTableRow[]} */
     get selectedRows(): Record<string, unknown>[];
     selectAll(): void;
@@ -134,6 +138,7 @@ export type RowanTableCellConfig = {
     indeterminate?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
     title?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
     icon?: string | undefined;
+    interactive?: boolean | undefined;
     slot?: string | undefined;
     render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
 };
@@ -181,6 +186,7 @@ export type RowanTableConfig = {
     virtualItemSize?: number | undefined;
     virtualOverscan?: number | undefined;
     groupBy?: string | RowanTableGroupBy | null | undefined;
+    rowActivate?: "none" | "dblclick" | undefined;
 };
 export type RowanTableGroupBy = {
     id: string;

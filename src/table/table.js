@@ -41,6 +41,9 @@ const SUBTOTAL_RENDER_PREFIX = "rowan:subtotal:";
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 const SELECTABLE_MODES = new Set(["none", "single", "multiple"]);
 const DENSITIES = new Set(["sm", "md", "lg"]);
+const ROW_ACTIVATE_MODES = new Set(["dblclick", "none"]);
+const INTERACTIVE_CELL_TYPES = new Set(["link", "checkbox", "switch", "button", "icon-button"]);
+const INTERACTIVE_CONTROL_TAGS = new Set(["a", "button", "input", "select", "textarea"]);
 const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
 const DEFAULT_VIRTUAL_OVERSCAN = 3;
 
@@ -82,6 +85,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {boolean | ((value: unknown, row: RowanTableRow) => boolean)} [indeterminate]
  * @property {string | ((value: unknown, row: RowanTableRow) => string)} [title]
  * @property {string} [icon]
+ * @property {boolean} [interactive]
  * @property {string} [slot]
  * @property {(context: RowanTableCellContext) => Node | string | void} [render]
  */
@@ -126,6 +130,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {number} [virtualItemSize]
  * @property {number} [virtualOverscan]
  * @property {string | RowanTableGroupBy | null} [groupBy]
+ * @property {"dblclick" | "none"} [rowActivate]
  */
 
 /**
@@ -187,7 +192,7 @@ function isDevelopmentEnvironment() {
  * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
  * @event rowan-cell-bind - Fired once for each cloned custom slot cell
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
- * @event rowan-row-activate - Fired on row activation by keyboard or double click
+ * @event rowan-row-activate - Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  */
 export class RowanTable extends BaseElement {
@@ -221,6 +226,7 @@ export class RowanTable extends BaseElement {
     "virtualItemSize",
     "virtualOverscan",
     "groupBy",
+    "rowActivate",
   ];
 
   #state = {
@@ -231,6 +237,7 @@ export class RowanTable extends BaseElement {
     sort: null,
     page: null,
     groupBy: null,
+    rowActivate: "dblclick",
   };
   #toggledGroups = new Map();
 
@@ -316,6 +323,7 @@ export class RowanTable extends BaseElement {
       virtualItemSize: this.virtualItemSize,
       virtualOverscan: this.virtualOverscan,
       groupBy: this.groupBy,
+      rowActivate: this.rowActivate,
     };
   }
 
@@ -333,6 +341,7 @@ export class RowanTable extends BaseElement {
       sort: this.#normalizeSort(next.sort),
       page: this.#normalizePage(next.page),
       groupBy: this.#normalizeGroupBy(next.groupBy),
+      rowActivate: this.#normalizeRowActivate(next.rowActivate),
     };
     this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
@@ -521,6 +530,16 @@ export class RowanTable extends BaseElement {
     this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
     this.requestRender();
+  }
+
+  /** @returns {"dblclick" | "none"} */
+  get rowActivate() {
+    return this.#state.rowActivate;
+  }
+
+  /** @param {"dblclick" | "none"} value */
+  set rowActivate(value) {
+    this.#state.rowActivate = this.#normalizeRowActivate(value);
   }
 
   /** @returns {RowanTableRow[]} */
@@ -1360,6 +1379,9 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyDoubleClick(event) {
+    if (this.rowActivate !== "dblclick") return;
+    if (this.#shouldSuppressRowActivate(event)) return;
+
     const entry = this.#findEventRow(event);
     if (!entry) return;
 
@@ -1377,6 +1399,7 @@ export class RowanTable extends BaseElement {
     if (!entry) return;
 
     if (event.key === "Enter") {
+      if (this.rowActivate === "none") return;
       emit(this, "rowan-row-activate", {
         rowId: entry.rowId,
         row: entry.row,
@@ -1454,6 +1477,46 @@ export class RowanTable extends BaseElement {
     }
 
     return null;
+  }
+
+  #findEventCellElement(event) {
+    for (const node of event.composedPath()) {
+      if (node instanceof HTMLTableCellElement && node.dataset.columnId) {
+        return node;
+      }
+
+      if (node === this.#root) break;
+    }
+
+    return null;
+  }
+
+  #columnIsInteractive(column) {
+    if (!column) return false;
+    if (column.cell?.interactive === true) return true;
+    if (column.cell?.interactive === false) return false;
+    const type = column.cell?.type ?? column.type ?? "text";
+    return INTERACTIVE_CELL_TYPES.has(type);
+  }
+
+  #pathHitsControl(event) {
+    for (const node of event.composedPath()) {
+      if (node === this.#root) break;
+      if (!(node instanceof HTMLElement)) continue;
+      if (node.dataset.tableAction) return true;
+      if (INTERACTIVE_CONTROL_TAGS.has(node.localName)) return true;
+      if (node.getAttribute("role") === "button") return true;
+      if (node.isContentEditable) return true;
+    }
+
+    return false;
+  }
+
+  #shouldSuppressRowActivate(event) {
+    if (this.#pathHitsControl(event)) return true;
+    const cell = this.#findEventCellElement(event);
+    if (!cell) return false;
+    return this.#columnIsInteractive(this.#findColumn(cell.dataset.columnId));
   }
 
   #findCellContext(element) {
@@ -2197,6 +2260,11 @@ export class RowanTable extends BaseElement {
       subtotals: Boolean(value.subtotals),
       collapsed: Boolean(value.collapsed),
     };
+  }
+
+  #normalizeRowActivate(value) {
+    const text = this.#normalizeText(value);
+    return ROW_ACTIVATE_MODES.has(text) ? text : "dblclick";
   }
 
   #groupKey(value) {

@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-table` interactive-cell contract: built-in action cells (and `cell.interactive`) do not emit `rowan-row-activate`. `rowActivate: "none"` disables row activation. Default stays double-click / Enter on the row.
+
 ## 0.10.0 - 2026-09-23
 
 ### Added
