@@ -28,10 +28,10 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.10.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.11.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.10` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.11` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
@@ -285,7 +285,7 @@ Implemented components currently include:
 ### API stability
 
 Everything in the catalog above is usable. Surfaces marked Experimental below
-are **out of `0.10`** until they are marked Stable. The listed dashboard hosts
+are **out of `0.11`** until they are marked Stable. The listed dashboard hosts
 are frozen; pin the version if you depend on them.
 
 | Surface                         | Status       | Notes                                                                                                                                                                                  |
