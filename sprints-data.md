@@ -540,6 +540,73 @@ Single-click row activate. Popover trigger modes. Hierarchical side-nav.
 
 ---
 
+## Sprint 24 — Storybook: data-display Playground controls
+
+**Status:** done
+
+Playgrounds that should have Controls but currently hardcode `render: () =>`. Follow Button: `component`, `argTypes`, `args`, `render(args)`.
+
+- KPI: `label`, `value`, `delta`, `deltaLabel`, `tone`, `loading`
+- Sparkline: `label`, `tone`
+- Bullet / gauge: `label`, `value`, `target` (gauge also `min` / `max`)
+- Area / bar / donut / stacked-bar: `label`, `description`, `interactive`
+- Source meta: `source`, `asOf` argTypes
+- Image: `alt`, `href`, `fit`
+- Empty state: title / body / action label as slot args
+- Status indicator: add Playground with `tone`, `size`, `pulse`, `label`
+
+### Done when
+
+- [x] Named Playground on each host above binds Controls
+- [x] Variant stories keep working (call a shared factory, not `Playground.render()` with no args)
+
+### Out of scope
+
+Table leftover stories, app-shell, FACE axe false positives.
+
+---
+
+## Sprint 25 — Storybook: Event Trace and Actions completeness
+
+**Status:** done
+
+`.storybook/preview.js` `ROWAN_EVENT_HANDLES` misses confirm, group-toggle, filter-change, files-*, command, bulk-action, and others. Event Trace wraps stories in an unnamed `<section>` landmark.
+
+- Expand the listen list to every `rowan-*` user event
+- Replace the unnamed `<section>` with a non-landmark or `aria-label="Event Trace"`
+
+### Done when
+
+- [x] Confirm / group-toggle / filter-change / files-* / command appear in Actions and Event Trace
+- [x] Event Trace is not an extra unlabeled landmark
+
+---
+
+## Sprint 26 — Storybook: table and layout leftover knobs
+
+**Status:** pending
+
+- Table `GroupedRows`, `InteractiveCells`, `BulletCells`, `PinnedColumns`: at least `density` / `selectable`
+- Tabs Playground: initial `value`
+- Calendar: `tags: ["autodocs"]` and a Playground alias (argTypes already exist)
+- Card / breadcrumb / menu: only if a meaningful host attr exists
+
+### Out of scope
+
+App-shell cookbook, command palette internals.
+
+---
+
+## Sprint 27 — Storybook a11y leftovers
+
+**Status:** pending
+
+- FACE inner `<input>` unlabeled: axe false positive vs host `ElementInternals`. Document or suppress in the Storybook a11y config, do not thaw FACE.
+- Chart Playgrounds that document keyboard must keep `interactive: true` (sprint 24).
+- Breadcrumb remains a slot demo, not a `<nav>` wrapper.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

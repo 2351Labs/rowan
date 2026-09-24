@@ -11,7 +11,30 @@ function createIndicator(tone, label, options = {}) {
 
 export default {
   title: "Components/Actions & Feedback/Status Indicator",
+  component: "rowan-status-indicator",
   tags: ["autodocs"],
+  args: {
+    tone: "info",
+    size: "md",
+    label: "Syncing",
+    pulse: true,
+  },
+  argTypes: {
+    tone: {
+      control: "select",
+      options: ["neutral", "info", "success", "warning", "danger"],
+    },
+    size: {
+      control: "select",
+      options: ["sm", "md", "lg"],
+    },
+    label: { control: "text" },
+    pulse: { control: "boolean" },
+  },
+};
+
+export const Playground = {
+  render: ({ tone, size, label, pulse }) => createIndicator(tone, label, { size, pulse }),
 };
 
 export const Tones = {

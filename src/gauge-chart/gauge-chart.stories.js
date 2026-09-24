@@ -23,17 +23,26 @@ function makeGauge({ label, min = 0, max = 100, value, target, ranges }) {
 
 export default {
   title: "Components/Data Display/Gauge Chart",
+  component: "rowan-gauge-chart",
   tags: ["autodocs"],
+  args: {
+    label: "Utilization",
+    min: 0,
+    max: 100,
+    value: 72,
+    target: 80,
+  },
+  argTypes: {
+    label: { control: "text" },
+    min: { control: "number" },
+    max: { control: "number" },
+    value: { control: "number" },
+    target: { control: "number" },
+  },
 };
 
 export const Playground = {
-  render: () =>
-    makeGauge({
-      label: "Utilization",
-      value: 72,
-      target: 80,
-      ranges: sampleRanges(),
-    }),
+  render: (args) => makeGauge({ ...args, ranges: sampleRanges() }),
 };
 
 export const InKpiCard = {

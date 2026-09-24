@@ -13,23 +13,47 @@ const SAMPLE_SRC =
 
 export default {
   title: "Components/Data Display/Image",
+  component: "rowan-image",
   tags: ["autodocs"],
+  args: {
+    alt: "North yard camera",
+    href: "https://example.test/cameras/north-yard",
+    fit: "cover",
+    caption: "North yard · live still",
+    overlay: "Needs review",
+  },
+  argTypes: {
+    alt: { control: "text" },
+    href: { control: "text" },
+    fit: {
+      control: "select",
+      options: ["cover", "contain"],
+    },
+    caption: { control: "text" },
+    overlay: { control: "text" },
+  },
 };
 
 export const Playground = {
-  render: () => {
+  render: ({ alt, href, fit, caption, overlay }) => {
     const el = document.createElement("rowan-image");
     el.src = SAMPLE_SRC;
-    el.alt = "North yard camera";
-    el.href = "https://example.test/cameras/north-yard";
-    const caption = document.createElement("span");
-    caption.slot = "caption";
-    caption.textContent = "North yard · live still";
-    const badge = document.createElement("rowan-badge");
-    badge.slot = "overlay";
-    badge.tone = "warning";
-    badge.textContent = "Needs review";
-    el.append(badge, caption);
+    el.alt = alt;
+    el.href = href;
+    el.fit = fit;
+    if (caption) {
+      const captionEl = document.createElement("span");
+      captionEl.slot = "caption";
+      captionEl.textContent = caption;
+      el.append(captionEl);
+    }
+    if (overlay) {
+      const badge = document.createElement("rowan-badge");
+      badge.slot = "overlay";
+      badge.tone = "warning";
+      badge.textContent = overlay;
+      el.append(badge);
+    }
     return el;
   },
 };

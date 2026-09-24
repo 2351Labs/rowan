@@ -2,19 +2,39 @@ import "./sparkline.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
+function createSparkline({
+  label = "Open incidents",
+  tone,
+  values = [18, 24, null, 12, 15, 9, 11],
+  labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+} = {}) {
+  const chart = document.createElement("rowan-sparkline");
+  chart.label = label;
+  if (tone && tone !== "neutral") chart.tone = tone;
+  chart.values = values;
+  chart.labels = labels;
+  return chart;
+}
+
 export default {
   title: "Components/Data Display/Sparkline",
+  component: "rowan-sparkline",
   tags: ["autodocs"],
+  args: {
+    label: "Open incidents",
+    tone: "neutral",
+  },
+  argTypes: {
+    label: { control: "text" },
+    tone: {
+      control: "select",
+      options: ["neutral", "info", "success", "warning", "danger"],
+    },
+  },
 };
 
 export const Playground = {
-  render: () => {
-    const chart = document.createElement("rowan-sparkline");
-    chart.label = "Open incidents";
-    chart.values = [18, 24, null, 12, 15, 9, 11];
-    chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    return chart;
-  },
+  render: (args) => createSparkline(args),
 };
 
 export const InKpiCard = {
