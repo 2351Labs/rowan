@@ -517,6 +517,28 @@ Interactive-cell contract, popover trigger modes, hierarchical side-nav.
 
 ---
 
+## Sprint 23 — Popover trigger mode
+
+**Status:** done
+
+Additive `trigger` on frozen `rowan-popover`. Default stays click-to-toggle.
+
+- `click` (default): slotted trigger toggles `open` and emits `rowan-change`
+- `manual`: trigger click does not toggle; apps set `open`. Escape and outside pointer still dismiss
+- Unknown values coerce to `click`. Hover/focus/`openDelay` stay on `rowan-tooltip` (popover is `role="dialog"`)
+
+### Done when
+
+- [x] Tests: manual does not toggle; switching to manual unbinds click; unknown → click; dismiss still works
+- [x] README + story
+- [x] Default click behavior unchanged
+
+### Out of scope
+
+Hover/focus popover, openDelay/closeDelay on the dialog, hierarchical side-nav.
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.

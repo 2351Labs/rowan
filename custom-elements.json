@@ -14646,6 +14646,23 @@
             },
             {
               "kind": "field",
+              "name": "trigger",
+              "return": {
+                "type": {
+                  "text": "\"click\" | \"manual\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"click\" | \"manual\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -14739,6 +14756,12 @@
               "name": "label",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "trigger",
+              "type": {
+                "text": "\"click\"|\"manual\""
               }
             }
           ],

@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - `rowan-table` column `type: "bullet"` mounts `rowan-bullet-chart` from `{ value, target?, ranges? }` or a number plus shared `cell.ranges`. Virtualized rows keep the host.
+- `rowan-popover` `trigger` is `click` (default) or `manual`. Manual disables click-to-toggle; Escape and outside pointer still dismiss. Hover stays on `rowan-tooltip`.
 
 ## 0.10.0 - 2026-09-23
 

@@ -829,7 +829,10 @@ Use `show()`, `hide()`, or `toggle()` for parent-driven state. An optional `hotk
 `rowan-dropdown`, `rowan-popover`, and `rowan-tooltip` paint on the top layer
 (Popover API), so `overflow: hidden` ancestors do not clip them. `rowan-dropdown`
 keeps a default secondary trigger and accepts a `trigger` slot for an avatar or
-icon-only control.
+icon-only control. `rowan-popover` `trigger` is `click` (default) or `manual`.
+Manual disables click-to-toggle; set `open` from app code. Escape and outside
+pointer still dismiss and emit `rowan-change`. Hover and focus delays stay on
+`rowan-tooltip` — a popover is a dialog, not a hover surface.
 
 Required `rowan-text-field`, `rowan-textarea`, and `rowan-number-field` stay
 visually valid until blur or `reportValidity()` (form submit). `checkValidity()`
