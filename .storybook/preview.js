@@ -470,6 +470,18 @@ export const parameters = {
   },
   a11y: {
     test: "error",
+    config: {
+      rules: [
+        {
+          // FACE hosts expose name/role on the custom element via ElementInternals.
+          // Axe still walks the shadow <input> and reports "Form elements must have
+          // labels". Do not put a second name on that inner control. npm test still
+          // runs axe against the host.
+          id: "label",
+          enabled: false,
+        },
+      ],
+    },
   },
   actions: {
     handles: ROWAN_EVENT_HANDLES,
