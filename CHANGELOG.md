@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Changed
+
+- Storybook data-display Playgrounds (KPI, charts, source-meta, image, empty-state, status-indicator) bind Controls. Event Trace listens for remaining `rowan-*` user events and is labeled instead of an unnamed landmark.
+
 ### Added
 
 - `rowan-table` column `type: "bullet"` mounts `rowan-bullet-chart` from `{ value, target?, ranges? }` or a number plus shared `cell.ranges`. Virtualized rows keep the host.

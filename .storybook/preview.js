@@ -93,6 +93,8 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-change",
   "rowan-close",
   "rowan-dismiss",
+  "rowan-confirm",
+  "rowan-cancel",
   "rowan-sort",
   "rowan-select",
   "rowan-cell-change",
@@ -100,9 +102,29 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-cell-bind",
   "rowan-page-change",
   "rowan-row-activate",
+  "rowan-group-toggle",
   "rowan-point-activate",
   "rowan-location-activate",
   "rowan-layer-change",
+  "rowan-filter-change",
+  "rowan-command",
+  "rowan-toggle",
+  "rowan-resize",
+  "rowan-complete",
+  "rowan-step-change",
+  "rowan-invalid",
+  "rowan-jump",
+  "rowan-navigate",
+  "rowan-bulk-action",
+  "rowan-clear-selection",
+  "rowan-files-add",
+  "rowan-file-remove",
+  "rowan-file-retry",
+  "rowan-file-cancel",
+  "rowan-retry",
+  "rowan-remove",
+  "rowan-toast-show",
+  "rowan-toast-dismiss",
 ];
 
 function describeEventTarget(target) {
@@ -171,7 +193,7 @@ function createEventTraceStory(storyNode, context) {
   const scriptSteps = normalizeTraceList(traceOptions?.script);
   const expectedEvents = normalizeTraceList(traceOptions?.events);
 
-  const wrapper = document.createElement("section");
+  const wrapper = document.createElement("div");
   wrapper.style.display = "grid";
   wrapper.style.gap = "1rem";
   wrapper.style.alignItems = "start";
@@ -184,6 +206,7 @@ function createEventTraceStory(storyNode, context) {
   stage.append(storyNode);
 
   const panel = document.createElement("aside");
+  panel.setAttribute("aria-label", "Event Trace");
   panel.style.border = "1px solid var(--rowan-color-border, #ced3ca)";
   panel.style.borderRadius = "8px";
   panel.style.background = "var(--rowan-color-bg, #ffffff)";

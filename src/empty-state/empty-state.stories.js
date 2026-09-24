@@ -3,29 +3,40 @@ import "../button/button.js";
 
 export default {
   title: "Components/Actions & Feedback/Empty State",
+  component: "rowan-empty-state",
   tags: ["autodocs"],
+  args: {
+    title: "No saved trails",
+    body: "Create your first trail plan to get started.",
+    actionLabel: "Create trail",
+  },
+  argTypes: {
+    title: { control: "text" },
+    body: { control: "text" },
+    actionLabel: { control: "text" },
+  },
 };
 
 export const Playground = {
-  render: () => {
+  render: ({ title, body, actionLabel }) => {
     const el = document.createElement("rowan-empty-state");
 
     const icon = document.createElement("span");
     icon.slot = "icon";
     icon.textContent = "◌";
 
-    const title = document.createElement("span");
-    title.slot = "title";
-    title.textContent = "No saved trails";
+    const titleEl = document.createElement("span");
+    titleEl.slot = "title";
+    titleEl.textContent = title;
 
-    const body = document.createElement("p");
-    body.textContent = "Create your first trail plan to get started.";
+    const bodyEl = document.createElement("p");
+    bodyEl.textContent = body;
 
     const button = document.createElement("rowan-button");
     button.slot = "actions";
-    button.textContent = "Create trail";
+    button.textContent = actionLabel;
 
-    el.append(icon, title, body, button);
+    el.append(icon, titleEl, bodyEl, button);
     return el;
   },
 };

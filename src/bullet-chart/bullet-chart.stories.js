@@ -10,20 +10,38 @@ function sampleRanges() {
   ];
 }
 
+function createBullet({
+  label = "Fill rate",
+  value = 82,
+  target = 90,
+  ranges = sampleRanges(),
+} = {}) {
+  const chart = document.createElement("rowan-bullet-chart");
+  chart.label = label;
+  chart.value = value;
+  chart.target = target;
+  chart.ranges = ranges;
+  return chart;
+}
+
 export default {
   title: "Components/Data Display/Bullet Chart",
+  component: "rowan-bullet-chart",
   tags: ["autodocs"],
+  args: {
+    label: "Fill rate",
+    value: 82,
+    target: 90,
+  },
+  argTypes: {
+    label: { control: "text" },
+    value: { control: "number" },
+    target: { control: "number" },
+  },
 };
 
 export const Playground = {
-  render: () => {
-    const chart = document.createElement("rowan-bullet-chart");
-    chart.label = "Fill rate";
-    chart.value = 82;
-    chart.target = 90;
-    chart.ranges = sampleRanges();
-    return chart;
-  },
+  render: (args) => createBullet(args),
 };
 
 export const InKpiCard = {

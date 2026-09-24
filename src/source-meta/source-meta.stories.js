@@ -12,10 +12,15 @@ function createMeta({ source, asOf } = {}) {
 
 export default {
   title: "Components/Data Display/Source Meta",
+  component: "rowan-source-meta",
   tags: ["autodocs"],
   args: {
     source: "Warehouse events",
     asOf: "2026-09-23 14:02 UTC",
+  },
+  argTypes: {
+    source: { control: "text" },
+    asOf: { control: "text" },
   },
 };
 

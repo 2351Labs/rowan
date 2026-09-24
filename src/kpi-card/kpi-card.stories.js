@@ -20,18 +20,33 @@ function createCard({ label, value, delta, deltaLabel, tone, loading, descriptio
 
 export default {
   title: "Components/Data Display/KPI Card",
+  component: "rowan-kpi-card",
   tags: ["autodocs"],
+  args: {
+    label: "Open incidents",
+    value: 128,
+    delta: -4,
+    deltaLabel: "vs last week",
+    tone: "warning",
+    loading: false,
+    description: "Unacknowledged incidents in the current window.",
+  },
+  argTypes: {
+    label: { control: "text" },
+    value: { control: "number" },
+    delta: { control: "number" },
+    deltaLabel: { control: "text" },
+    tone: {
+      control: "select",
+      options: ["neutral", "info", "success", "warning", "danger"],
+    },
+    loading: { control: "boolean" },
+    description: { control: "text" },
+  },
 };
 
 export const Playground = {
-  render: () =>
-    createCard({
-      value: 128,
-      delta: -4,
-      deltaLabel: "vs last week",
-      tone: "warning",
-      description: "Unacknowledged incidents in the current window.",
-    }),
+  render: (args) => createCard(args),
 };
 
 export const Tones = {
