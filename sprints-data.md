@@ -517,25 +517,26 @@ Interactive-cell contract, popover trigger modes, hierarchical side-nav.
 
 ---
 
-## Sprint 23 — Popover trigger mode
+## Sprint 22 — Table interactive-cell contract
 
 **Status:** done
 
-Additive `trigger` on frozen `rowan-popover`. Default stays click-to-toggle.
+Additive on frozen `rowan-table`. Default row activation stays double-click on the row and Enter when the row is focused.
 
-- `click` (default): slotted trigger toggles `open` and emits `rowan-change`
-- `manual`: trigger click does not toggle; apps set `open`. Escape and outside pointer still dismiss
-- Unknown values coerce to `click`. Hover/focus/`openDelay` stay on `rowan-tooltip` (popover is `role="dialog"`)
+- Built-in `link` / `checkbox` / `switch` / `button` / `icon-button` cells suppress `rowan-row-activate`
+- `cell.interactive: true` marks a custom cell as a hit target; `false` opts a built-in type out
+- Native controls in the composed path also suppress (no `stopPropagation` in app code)
+- `rowActivate: "dblclick" | "none"` (default `dblclick`). Omitted `.config` resets to `dblclick`
 
 ### Done when
 
-- [x] Tests: manual does not toggle; switching to manual unbinds click; unknown → click; dismiss still works
-- [x] README + story
-- [x] Default click behavior unchanged
+- [x] Tests: control dblclick does not activate; row dblclick still does; custom interactive; `none`; config reset
+- [x] README
+- [x] Default activation unchanged
 
 ### Out of scope
 
-Hover/focus popover, openDelay/closeDelay on the dialog, hierarchical side-nav.
+Single-click row activate. Popover trigger modes. Hierarchical side-nav.
 
 ---
 

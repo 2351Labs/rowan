@@ -1039,6 +1039,84 @@ describe("rowan-table", () => {
     ]);
   });
 
+  it("does not activate the row from interactive cell controls", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      ...createStepFiveConfig(),
+      page: null,
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const activations = [];
+    table.addEventListener("rowan-row-activate", (event) => activations.push(event.detail.rowId));
+
+    const row = table.shadowRoot.querySelector("tbody tr");
+    const dblclick = () => new MouseEvent("dblclick", { bubbles: true, composed: true });
+    row.querySelector("rowan-icon-button").dispatchEvent(dblclick());
+    row.querySelector('td[data-column-id="name"]').dispatchEvent(dblclick());
+    await nextMicrotask();
+
+    expect(activations).to.deep.equal([]);
+
+    row.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await nextMicrotask();
+    expect(activations).to.deep.equal(["1"]);
+  });
+
+  it("treats cell.interactive as a whole-cell hit target and can disable row activation", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name" },
+        {
+          id: "note",
+          header: "Note",
+          type: "custom",
+          cell: {
+            interactive: true,
+            render: () => {
+              const span = document.createElement("span");
+              span.className = "note";
+              span.textContent = "Open";
+              return span;
+            },
+          },
+        },
+      ],
+      rows: [{ id: "1", name: "Ada", note: "Open" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const activations = [];
+    table.addEventListener("rowan-row-activate", (event) => activations.push(event.detail.rowId));
+
+    table.shadowRoot
+      .querySelector(".note")
+      .dispatchEvent(new MouseEvent("dblclick", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    expect(activations).to.deep.equal([]);
+
+    table.rowActivate = "none";
+    table.shadowRoot
+      .querySelector("tbody tr")
+      .dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    table.shadowRoot
+      .querySelector("tbody tr")
+      .dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Enter" }));
+    await nextMicrotask();
+    expect(activations).to.deep.equal([]);
+
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    expect(table.rowActivate).to.equal("dblclick");
+  });
+
   it("emits rowan-cell-change for switch cells", async () => {
     const table = document.createElement("rowan-table");
     table.config = createStepFiveConfig();
