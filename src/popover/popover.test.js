@@ -220,4 +220,72 @@ describe("rowan-popover", () => {
     expect(panelRect.height).to.be.above(clipRect.height);
     expect(panelRect.bottom).to.be.above(clipRect.bottom);
   });
+
+  it("does not toggle from the trigger when trigger is manual", async () => {
+    const popover = document.createElement("rowan-popover");
+    popover.trigger = "manual";
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More";
+    popover.append(trigger);
+    document.body.append(popover);
+    await settle();
+
+    const changes = [];
+    popover.addEventListener("rowan-change", (event) => changes.push(event.detail));
+
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(false);
+    expect(changes).to.deep.equal([]);
+
+    popover.open = true;
+    await settle();
+    expect(popover.open).to.equal(true);
+
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+    expect(changes).to.deep.equal([]);
+
+    const outside = document.createElement("button");
+    document.body.append(outside);
+    outside.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    await settle();
+    expect(popover.open).to.equal(false);
+    expect(changes).to.deep.equal([{ open: false }]);
+  });
+
+  it("stops toggling from click after switching to manual", async () => {
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More";
+    popover.append(trigger);
+    document.body.append(popover);
+    await settle();
+
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+
+    popover.trigger = "manual";
+    await settle();
+    expect(popover.trigger).to.equal("manual");
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+  });
+
+  it("coerces unknown trigger values to click", async () => {
+    const popover = document.createElement("rowan-popover");
+    document.body.append(popover);
+    await settle();
+
+    expect(popover.trigger).to.equal("click");
+    popover.trigger = "hover";
+    await settle();
+    expect(popover.trigger).to.equal("click");
+    expect(popover.hasAttribute("trigger")).to.equal(false);
+  });
 });

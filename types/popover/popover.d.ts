@@ -3,6 +3,7 @@
  * @tag rowan-popover
  * @attr {boolean} open
  * @attr {string} label
+ * @attr {"click"|"manual"} trigger
  * @slot trigger
  * @slot - Content
  * @csspart trigger
@@ -14,6 +15,11 @@ export class RowanPopover extends BaseElement {
     get open(): boolean;
     set label(value: string);
     get label(): string;
+    /** @param {"click" | "manual"} value */
+    set trigger(value: "click" | "manual");
+    /** @returns {"click" | "manual"} */
+    get trigger(): "click" | "manual";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

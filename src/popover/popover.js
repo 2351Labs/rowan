@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { keys } from "../lib/keys.js";
@@ -11,6 +12,8 @@ import {
 } from "../lib/overlay-stack.js";
 
 let popoverId = 0;
+
+const TRIGGER_MODES = new Set(["click", "manual"]);
 
 function isHTMLElement(value) {
   return value instanceof HTMLElement;
@@ -47,6 +50,7 @@ function setElementReferences(element, property, elements) {
  * @tag rowan-popover
  * @attr {boolean} open
  * @attr {string} label
+ * @attr {"click"|"manual"} trigger
  * @slot trigger
  * @slot - Content
  * @csspart trigger
@@ -55,8 +59,8 @@ function setElementReferences(element, property, elements) {
  */
 export class RowanPopover extends BaseElement {
   static styleUrl = new URL("./popover.css", import.meta.url).href;
-  static observedAttributes = ["open", "label"];
-  static upgradeProperties = ["open", "label"];
+  static observedAttributes = ["open", "label", "trigger"];
+  static upgradeProperties = ["open", "label", "trigger"];
 
   #triggerContainer = null;
   #triggerSlot = null;
@@ -103,6 +107,26 @@ export class RowanPopover extends BaseElement {
     this.reflectString("label", next && next !== "Popover" ? next : null);
   }
 
+  /** @returns {"click" | "manual"} */
+  get trigger() {
+    return normalizeEnum(this.readString("trigger", "click"), TRIGGER_MODES, "click");
+  }
+
+  /** @param {"click" | "manual"} value */
+  set trigger(value) {
+    reflectEnum(this, "trigger", value, TRIGGER_MODES, "click");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    if (name === "trigger" && rewriteEnumAttribute(this, name, newValue, TRIGGER_MODES, "click")) {
+      return;
+    }
+
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+
   render() {
     if (!this.#panel) {
       this.renderRoot.innerHTML = `
@@ -131,12 +155,9 @@ export class RowanPopover extends BaseElement {
     if (trigger !== this.#trigger) {
       this.#releaseTrigger();
       this.#trigger = trigger;
-      if (trigger) {
-        this.#removeTriggerClickListener = this.listen(trigger, "click", () =>
-          this.#toggleFromUser(),
-        );
-      }
     }
+
+    this.#syncTriggerClick();
 
     if (!this.#trigger) return;
 
@@ -154,6 +175,20 @@ export class RowanPopover extends BaseElement {
       "rowanPopoverExpanded",
     );
     this.#syncManagedAttribute("aria-haspopup", "dialog", "rowanPopoverHasPopup");
+  }
+
+  #syncTriggerClick() {
+    const shouldListen = this.trigger === "click" && this.#trigger;
+    if (!shouldListen) {
+      this.#removeTriggerClickListener?.();
+      this.#removeTriggerClickListener = null;
+      return;
+    }
+
+    if (this.#removeTriggerClickListener) return;
+    this.#removeTriggerClickListener = this.listen(this.#trigger, "click", () =>
+      this.#toggleFromUser(),
+    );
   }
 
   #releaseTrigger() {
