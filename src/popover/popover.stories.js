@@ -31,15 +31,15 @@ export const Playground = {
     popover.trigger = trigger;
     if (open) popover.setAttribute("open", "");
 
-    const trigger = document.createElement("rowan-button");
-    trigger.slot = "trigger";
-    trigger.textContent = "Open popover";
+    const triggerButton = document.createElement("rowan-button");
+    triggerButton.slot = "trigger";
+    triggerButton.textContent = "Open popover";
 
     const text = document.createElement("p");
     text.textContent = "Popover content can hold actions, text, or filters.";
     text.style.margin = "0";
 
-    popover.append(trigger, text);
+    popover.append(triggerButton, text);
     return popover;
   },
 };
