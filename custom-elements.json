@@ -21225,6 +21225,23 @@
             },
             {
               "kind": "field",
+              "name": "rowActivate",
+              "return": {
+                "type": {
+                  "text": "\"dblclick\" | \"none\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"dblclick\" | \"none\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "selectedRows",
               "return": {
                 "type": {
@@ -21379,7 +21396,7 @@
               "name": "rowan-page-change"
             },
             {
-              "description": "Fired on row activation by keyboard or double click",
+              "description": "Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.",
               "name": "rowan-row-activate"
             },
             {
