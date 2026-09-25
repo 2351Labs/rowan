@@ -150,6 +150,7 @@ export type RowanTableColumn = {
     width?: string | undefined;
     minWidth?: string | undefined;
     align?: "center" | "start" | "end" | undefined;
+    verticalAlign?: "center" | "start" | "end" | undefined;
     sortable?: boolean | undefined;
     sortDir?: "desc" | "asc" | null | undefined;
     sticky?: "start" | "end" | undefined;

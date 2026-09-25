@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-table` column `verticalAlign`: `"start"` | `"center"` | `"end"` (top / middle / bottom). Omitted stays middle. `align` remains inline.
+
 ### Changed
 
 - Promote `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-area-chart`, `rowan-stacked-bar-chart`, `rowan-image`, `rowan-data-state`, and `rowan-source-meta` to Stable. `referenceLines` stay on area and stacked-bar only. `data-state` stays `ready` / `loading` / `empty` / `error`. Image stays a display host, not a rich-text node.

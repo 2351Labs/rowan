@@ -1004,6 +1004,7 @@ For a client-routed app, keep `href` on items and `preventDefault()` on `rowan-c
 - Column `sticky: "start" | "end"` to pin leading or trailing columns while the table scrolls horizontally. The selection column is pinned start when the table is selectable. Column DOM order does not change.
 - `groupBy` (`string` or `{ id, subtotals?, collapsed? }`) inserts group headers. User expand/collapse emits `rowan-group-toggle`. Optional number subtotals. Local rows; `page` still slices data rows.
 - Cell composition for `text`, `number`, `date`, `badge`, `link`, `checkbox`, `switch`, `button`, `icon-button`, `avatar`, `chip`, `progress`, `sparkline`, `bullet`, `custom`
+- Column `align` and `verticalAlign`: `"start"` | `"center"` | `"end"` (inline and block). Omitted vertical align stays middle.
 - Built-in `link` / `checkbox` / `switch` / `button` / `icon-button` cells are interactive: double-click does not emit `rowan-row-activate`. Set `cell.interactive: true` on custom cells that host controls. `rowActivate: "none"` turns row activation off. Default remains double-click on the row and Enter when the row is focused.
 
 ### Configuration updates
@@ -1073,7 +1074,7 @@ table.config = {
         type: "badge",
         cell: { tone: (v) => (v === "Admin" ? "warning" : "info") },
       },
-      { id: "active", header: "Active", type: "switch", align: "center" },
+      { id: "active", header: "Active", type: "switch", align: "center", verticalAlign: "center" },
       { id: "quota", header: "Quota", type: "progress" },
       {
         id: "edit",

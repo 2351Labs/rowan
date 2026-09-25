@@ -314,6 +314,27 @@ describe("rowan-table", () => {
     expect(table.columns[0].hidden).to.equal(undefined);
   });
 
+  it("applies column align and verticalAlign to cells", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", align: "end", verticalAlign: "start" },
+        { id: "score", header: "Score" },
+      ],
+      rows: [{ id: "1", name: "Ada", score: 12 }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const name = table.shadowRoot.querySelector('td[data-column-id="name"]');
+    const score = table.shadowRoot.querySelector('td[data-column-id="score"]');
+    expect(name.style.textAlign).to.equal("right");
+    expect(name.style.verticalAlign).to.equal("top");
+    expect(score.style.textAlign).to.equal("");
+    expect(score.style.verticalAlign).to.equal("");
+  });
+
   it("does not emit table events when parent sets properties", async () => {
     const table = document.createElement("rowan-table");
     table.config = createConfig();
