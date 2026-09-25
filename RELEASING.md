@@ -130,6 +130,13 @@ call this `1.0`. Experimental source-meta, data-state, area, stacked-bar,
 bullet, gauge, and image may still change. Publish is a separate step after
 this catalog commit is on `main`: tag `v0.12.0`.
 
+## 0.13.0 cut
+
+Version in `package.json` is `0.13.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Experimental source-meta, data-state, area, stacked-bar,
+bullet, gauge, and image may still change. Publish is a separate step after
+this catalog commit is on `main`: tag `v0.13.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

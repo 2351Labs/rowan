@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.13.0 - 2026-09-25
+
 ### Added
 
 - `createTableCsv()` and `visibleColumns()` in `@rowan-ui/core/table-csv`. App owns download. Hidden columns are omitted unless `includeHidden`.
