@@ -16,6 +16,7 @@ import type { RowanColorPicker } from "../types/color-picker/color-picker.js";
 import type { RowanCard } from "../types/card/card.js";
 import type { RowanCheckbox } from "../types/checkbox/checkbox.js";
 import type { RowanChip } from "../types/chip/chip.js";
+import type { RowanComboChart } from "../types/combo-chart/combo-chart.js";
 import type { RowanCombobox } from "../types/combobox/combobox.js";
 import type { RowanCommandItem } from "../types/command-item/command-item.js";
 import type { RowanCommandPalette } from "../types/command-palette/command-palette.js";
@@ -107,6 +108,7 @@ declare global {
     "rowan-card": RowanCard;
     "rowan-checkbox": RowanCheckbox;
     "rowan-chip": RowanChip;
+    "rowan-combo-chart": RowanComboChart;
     "rowan-combobox": RowanCombobox;
     "rowan-command-item": RowanCommandItem;
     "rowan-command-palette": RowanCommandPalette;

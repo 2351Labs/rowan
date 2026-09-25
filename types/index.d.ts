@@ -92,4 +92,5 @@ export { RowanValidationSummary } from "./validation-summary/validation-summary.
 export { RowanVirtualList } from "./virtual-list/virtual-list.js";
 export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
+export { RowanComboChart, createParetoData } from "./combo-chart/combo-chart.js";
 export { readBooleanAttribute, readNumberAttribute, readStringAttribute, reflectBooleanAttribute, reflectNumberAttribute, reflectStringAttribute } from "./lib/reflect.js";

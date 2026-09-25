@@ -4604,6 +4604,375 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/combo-chart/combo-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Categorical combo chart: bars and lines on a shared category axis.\nOptional `axis: \"secondary\"` for a second value scale (Pareto cumulative %).",
+          "name": "RowanComboChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-combo-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "bar"
+            },
+            {
+              "name": "line"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "Chart series with optional geometry (bar|line) and axis (primary|secondary). Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "object"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats chart and table values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "referenceLines",
+              "type": {
+                "text": "RowanChartReferenceLine[]"
+              },
+              "description": "Horizontal overlays. Optional axis primary|secondary. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive mark.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-combo-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createParetoData",
+          "declaration": {
+            "name": "createParetoData",
+            "module": "src/combo-chart/combo-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanComboChart",
+          "declaration": {
+            "name": "RowanComboChart",
+            "module": "src/combo-chart/combo-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/combo-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanComboChart",
+          "declaration": {
+            "name": "RowanComboChart",
+            "module": "./combo-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createParetoData",
+          "declaration": {
+            "name": "createParetoData",
+            "module": "./combo-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/combo-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "cloneComboSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeComboSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "labels",
+              "default": "[]",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "comboAxisDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "Array<{ axis?: string, values: Array<{ value: number | null }> }>"
+              }
+            },
+            {
+              "name": "axis",
+              "type": {
+                "text": "\"primary\" | \"secondary\""
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cloneComboSeriesInput",
+          "declaration": {
+            "name": "cloneComboSeriesInput",
+            "module": "src/combo-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeComboSeries",
+          "declaration": {
+            "name": "normalizeComboSeries",
+            "module": "src/combo-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "comboAxisDomain",
+          "declaration": {
+            "name": "comboAxisDomain",
+            "module": "src/combo-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeChartLabels",
+          "declaration": {
+            "name": "normalizeChartLabels",
+            "module": "src/combo-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/combo-chart/pareto.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createParetoData",
+          "parameters": [
+            {
+              "name": "input",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{\n *   values?: Array<number | null>,\n *   labels?: string[],\n *   bar?: { id?: string, label?: string },\n *   line?: { id?: string, label?: string },\n * }"
+              }
+            }
+          ],
+          "description": "Sort categories descending and build bar + cumulative-% series for\n`rowan-combo-chart`. Nulls are omitted. The app assigns the result to\n`labels` / `series`; the host does not auto-sort.",
+          "return": {
+            "type": {
+              "text": "{ labels: string[], series: object[] }"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createParetoData",
+          "declaration": {
+            "name": "createParetoData",
+            "module": "src/combo-chart/pareto.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/combobox/combobox.js",
       "declarations": [
         {
@@ -10624,6 +10993,22 @@
           "declaration": {
             "name": "RowanBarChart",
             "module": "./bar-chart/bar-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanComboChart",
+          "declaration": {
+            "name": "RowanComboChart",
+            "module": "./combo-chart/combo-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createParetoData",
+          "declaration": {
+            "name": "createParetoData",
+            "module": "./combo-chart/combo-chart.js"
           }
         },
         {

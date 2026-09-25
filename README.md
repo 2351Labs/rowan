@@ -280,7 +280,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -302,6 +302,7 @@ are frozen; pin the version if you depend on them.
 | `rowan-gauge-chart`             | Experimental | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                             |
 | `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
 | `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
+| `rowan-combo-chart`             | Experimental | Bars and lines on one category axis. Series `geometry` (`bar` \| `line`) and `axis` (`primary` \| `secondary`). `createParetoData()` builds a sorted count + cumulative-% pair.        |
 | `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill.                                                     |
 | `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                                                                       |
 | `rowan-image`                   | Experimental | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                     |
@@ -651,6 +652,28 @@ contribute height and appear as `No data` in the table. Interactive segments
 emit `rowan-point-activate`. Property-only `referenceLines` (`{ value, label?, tone? }`)
 draw horizontal overlays. Native SVG, no animation. Grouped bars stay on
 `rowan-bar-chart`.
+
+## Rowan Combo Chart
+
+`rowan-combo-chart` is an experimental categorical combo: bars and lines share
+one category axis. Set `geometry: "bar"` or `"line"` on each series (`bar` is
+the default). Set `axis: "secondary"` for a second value scale (Pareto
+cumulative percent). Property-only `series`, `labels`, `config`, and
+`valueFormatter`. `null` is no-data. `createParetoData({ values, labels })`
+sorts descending and returns labels plus bar + cumulative-% series. The host
+does not auto-sort. Frozen bar and trend charts are unchanged.
+
+```js
+import { createParetoData } from "@rowan-ui/core/combo-chart";
+
+const { labels, series } = createParetoData({
+  labels: ["Seal", "Hinge", "Wiring"],
+  values: [42, 28, 16],
+});
+chart.labels = labels;
+chart.series = series;
+chart.referenceLines = [{ value: 80, label: "80%", axis: "secondary" }];
+```
 
 ## Rowan Donut Chart
 

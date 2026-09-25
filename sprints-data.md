@@ -684,7 +684,7 @@ Position: ops dashboard design system (vanilla WC). Not a CRUD scaffold (Ant Pro
 - KPI `thresholdState` / `trendDirection` / `freshnessTimestamp` (use `tone`, `delta`, `source-meta`)
 - Filled Lucide catalog
 - Filter session as a custom-element provider
-- Heatmap / combo / funnel / scatter as 0.13 (revisit only if Pulse names a screen)
+- Heatmap / funnel / scatter (combo/Pareto shipped as experimental `rowan-combo-chart`)
 - Vue/Svelte wrappers, table column virtualization, rich-text images-in-document
 
 ### 0.13 done when

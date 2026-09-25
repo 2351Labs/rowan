@@ -15,6 +15,7 @@ export { RowanCarousel } from "./carousel.js";
 export { RowanCheckbox } from "./checkbox.js";
 export { RowanChip } from "./chip.js";
 export { RowanColorPicker } from "./color-picker.js";
+export { RowanComboChart } from "./combo-chart.js";
 export { RowanCombobox } from "./combobox.js";
 export { RowanCommandItem } from "./command-item.js";
 export { RowanCommandPalette } from "./command-palette.js";

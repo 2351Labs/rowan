@@ -29,6 +29,7 @@ export { RowanTableToolbar } from "./table-toolbar/table-toolbar.js";
 export { RowanTextField } from "./text-field/text-field.js";
 export { RowanBadge } from "./badge/badge.js";
 export { RowanBarChart } from "./bar-chart/bar-chart.js";
+export { RowanComboChart, createParetoData } from "./combo-chart/combo-chart.js";
 export { RowanAccordion } from "./accordion/accordion.js";
 export { RowanAreaChart } from "./area-chart/area-chart.js";
 export { RowanAvatar } from "./avatar/avatar.js";

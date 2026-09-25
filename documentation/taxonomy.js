@@ -102,6 +102,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "bulk-actions-bar",
       "bullet-chart",
       "card",
+      "combo-chart",
       "donut-chart",
       "filter-builder",
       "gauge-chart",
