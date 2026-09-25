@@ -194,4 +194,4 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 ## Later / not this track
 
 - Vue/Svelte wrappers.
-- Data/dashboard track: `sprints-data.md` (Sprints 1–10 done; KPI, sparkline, bar, and donut are Stable; area and stacked bar are experimental; rich-text headings and links shipped).
+- Data/dashboard track: `sprints-data.md` (area, stacked-bar, bullet, gauge, image, data-state, and source-meta are Stable).

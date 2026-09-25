@@ -1,5 +1,5 @@
 /**
- * Experimental stacked categorical bar chart. Positive values stack from zero.
+ * Stacked categorical bar chart. Positive values stack from zero.
  * Null and negatives are no-data.
  * @tag rowan-stacked-bar-chart
  * @attr {string} label

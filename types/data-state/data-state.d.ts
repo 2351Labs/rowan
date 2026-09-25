@@ -1,5 +1,5 @@
 /**
- * Experimental region wrapper for ready, loading, empty, and error chrome.
+ * Region wrapper for ready, loading, empty, and error chrome.
  * Table and KPI keep their own loading. Does not fetch data.
  * @tag rowan-data-state
  * @attr {"ready"|"loading"|"empty"|"error"} state
