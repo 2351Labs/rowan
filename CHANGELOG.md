@@ -10,6 +10,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Promote `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-area-chart`, `rowan-stacked-bar-chart`, `rowan-image`, `rowan-data-state`, and `rowan-source-meta` to Stable. `referenceLines` stay on area and stacked-bar only. `data-state` stays `ready` / `loading` / `empty` / `error`. Image stays a display host, not a rich-text node.
 
+## 0.13.0 - 2026-09-25
+
 ### Added
 
 - `createTableCsv()` and `visibleColumns()` in `@rowan-ui/core/table-csv`. App owns download. Hidden columns are omitted unless `includeHidden`.
