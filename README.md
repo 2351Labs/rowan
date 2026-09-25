@@ -284,34 +284,32 @@ Implemented components currently include:
 
 ### API stability
 
-Everything in the catalog above is usable. Surfaces marked Experimental below
-are **out of `0.13`** until they are marked Stable. The listed dashboard hosts
-are frozen; pin the version if you depend on them.
+Everything in the catalog above is usable. The listed dashboard hosts are
+frozen; pin the version if you depend on them. This is not `1.0`.
 
-| Surface                         | Status       | Notes                                                                                                                                                                                  |
-| ------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable       | Attributes, properties, slots, events, and parts are settled.                                                                                                                          |
-| `rowan-table` config and events | Stable       | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                         |
-| Table virtualization            | Stable       | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                           |
-| `rowan-rich-text-editor`        | Stable       | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes. |
-| `rowan-filter-builder`          | Stable       | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                               |
-| `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                     |
-| `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                        |
-| `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                    |
-| `rowan-bullet-chart`            | Experimental | Compact ranges, actual, and target. Property-only `ranges` / `value` / `target`. Null is no-data.                                                                                      |
-| `rowan-gauge-chart`             | Experimental | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                             |
-| `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
-| `rowan-bar-chart`               | Stable       | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
-| `rowan-combo-chart`             | Experimental | Bars and lines on one category axis. Series `geometry` (`bar` \| `line`) and `axis` (`primary` \| `secondary`). `createParetoData()` builds a sorted count + cumulative-% pair.        |
-| `rowan-area-chart`              | Experimental | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill.                                                     |
-| `rowan-stacked-bar-chart`       | Experimental | Positive values stack from zero. Null and negatives are no-data.                                                                                                                       |
-| `rowan-image`                   | Experimental | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                     |
-| `rowan-data-state`              | Experimental | Region wrapper for `ready` / `loading` / `empty` / `error`. Table and KPI keep their own `loading`.                                                                                    |
-| `rowan-source-meta`             | Experimental | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                      |
+| Surface                         | Status | Notes                                                                                                                                                                                  |
+| ------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                                                                          |
+| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                         |
+| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                           |
+| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes. |
+| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                               |
+| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                     |
+| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                        |
+| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                    |
+| `rowan-bullet-chart`            | Stable | Compact ranges, actual, and target. Property-only `ranges` / `value` / `target`. Null is no-data.                                                                                      |
+| `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                             |
+| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
+| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
+| `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. `referenceLines` are frozen on this host only.      |
+| `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only.                                                                        |
+| `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                     |
+| `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                               |
+| `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                      |
 
 ## Rowan Data State
 
-`rowan-data-state` is an experimental region wrapper for dashboard chrome.
+`rowan-data-state` is a frozen region wrapper for dashboard chrome.
 `state` is `ready` (default), `loading`, `empty`, or `error`. Ready content is
 the default slot. Named slots `loading`, `empty`, and `error` replace the
 fallback copy. `actions` (retry) is shown for empty and error. The wrapper does
@@ -328,7 +326,7 @@ their own `loading`.
 
 ## Rowan Source Meta
 
-`rowan-source-meta` is an experimental provenance line. `source` and `as-of`
+`rowan-source-meta` is a frozen provenance line. `source` and `as-of`
 are reflected text. Named slots `source` and `as-of` replace the attributes.
 Drop the host into a KPI default slot, a chart `description` slot, or a table
 `caption` slot. Frozen KPI, chart, and table APIs do not gain source fields.
@@ -593,7 +591,7 @@ This component's security boundary ends at its normalized document value: applic
 
 ## Rowan Image
 
-`rowan-image` is an experimental display host for a still. `src` and `alt` are
+`rowan-image` is a frozen display host for a still. `src` and `alt` are
 attributes. Optional `href` is a real link around the image only, using the
 same navigation sanitizer as `rowan-link`. Overlay actions stay outside that
 link. A caption slot renders as `figcaption`. Missing or failed images show
@@ -637,7 +635,7 @@ Interactive bars emit `rowan-point-activate` with the same detail shape as
 
 ## Rowan Area Chart
 
-`rowan-area-chart` is an experimental filled multi-series chart. It uses the
+`rowan-area-chart` is a frozen filled multi-series chart. It uses the
 same property-only `series`, `labels`, `config`, and `valueFormatter` as
 `rowan-trend-chart`. Series are independent fills, not stacked. A `null` value
 breaks both the line and the fill and appears as `No data` in the table.
@@ -646,7 +644,7 @@ Interactive points emit `rowan-point-activate`. Property-only `referenceLines`
 
 ## Rowan Stacked Bar Chart
 
-`rowan-stacked-bar-chart` is an experimental categorical stack. Positive values
+`rowan-stacked-bar-chart` is a frozen categorical stack. Positive values
 stack from zero in series order. `null` and negatives are no-data: they do not
 contribute height and appear as `No data` in the table. Interactive segments
 emit `rowan-point-activate`. Property-only `referenceLines` (`{ value, label?, tone? }`)
@@ -709,7 +707,7 @@ caption without dropping the progressbar name.
 
 ## Rowan Bullet Chart
 
-`rowan-bullet-chart` is an experimental compact comparison for KPI tiles:
+`rowan-bullet-chart` is a frozen compact comparison for KPI tiles:
 qualitative `ranges`, an actual `value`, and a `target` marker. All three are
 property-only. Null actual or target is no-data and is omitted from the plot.
 Invalid or zero-width ranges are dropped; reversed `from`/`to` are swapped.
@@ -742,7 +740,7 @@ target, and the matching range. It is a separate host, not a density of
 
 ## Rowan Gauge Chart
 
-`rowan-gauge-chart` is an experimental speedometer: a semicircle scale with
+`rowan-gauge-chart` is a frozen speedometer: a semicircle scale with
 qualitative `ranges`, `min` / `max`, an actual `value` needle, and an optional
 `target` tick. `value` and `target` are property-only; null is no-data. `min`
 and `max` are attributes (default 0 and 100). If `max` is not greater than `min`,

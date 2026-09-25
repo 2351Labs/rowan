@@ -544,7 +544,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental filled multi-series area chart. Same data contract as the line\nchart. Null values break both the line and the fill.",
+          "description": "Filled multi-series area chart. Same data contract as the line\nchart. Null values break both the line and the fill.",
           "name": "RowanAreaChart",
           "cssProperties": [
             {
@@ -1907,7 +1907,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Compact qualitative comparison: ranges, actual, and target. Experimental.\nSeparate host from sparkline and bar chart.",
+          "description": "Compact qualitative comparison: ranges, actual, and target.\nSeparate host from sparkline and bar chart.",
           "name": "RowanBulletChart",
           "cssProperties": [
             {
@@ -6286,7 +6286,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental region wrapper for ready, loading, empty, and error chrome.\nTable and KPI keep their own loading. Does not fetch data.",
+          "description": "Region wrapper for ready, loading, empty, and error chrome.\nTable and KPI keep their own loading. Does not fetch data.",
           "name": "RowanDataState",
           "cssParts": [
             {
@@ -9944,7 +9944,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Compact speedometer gauge: ranges, min/max, actual, and optional target.\nExperimental. Separate host from bullet and donut charts.",
+          "description": "Compact speedometer gauge: ranges, min/max, actual, and optional target.\nSeparate host from bullet and donut charts.",
           "name": "RowanGaugeChart",
           "cssProperties": [
             {
@@ -10478,7 +10478,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental image display. Overlay and caption are slots. Optional href is a\nreal link around the image, not around overlay actions.",
+          "description": "Image display. Overlay and caption are slots. Optional href is a\nreal link around the image, not around overlay actions.",
           "name": "RowanImage",
           "cssProperties": [
             {
@@ -18933,7 +18933,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental provenance line for KPI description, chart description, or table caption.\nDoes not add fields to those frozen hosts.",
+          "description": "Provenance line for KPI description, chart description, or table caption.\nDoes not add fields to those frozen hosts.",
           "name": "RowanSourceMeta",
           "cssParts": [
             {
@@ -19800,7 +19800,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental stacked categorical bar chart. Positive values stack from zero.\nNull and negatives are no-data.",
+          "description": "Stacked categorical bar chart. Positive values stack from zero.\nNull and negatives are no-data.",
           "name": "RowanStackedBarChart",
           "cssProperties": [
             {

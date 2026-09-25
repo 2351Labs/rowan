@@ -1,5 +1,5 @@
 /**
- * Experimental image display. Overlay and caption are slots. Optional href is a
+ * Image display. Overlay and caption are slots. Optional href is a
  * real link around the image, not around overlay actions.
  * @tag rowan-image
  * @attr {string} src

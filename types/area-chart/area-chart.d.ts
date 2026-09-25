@@ -1,5 +1,5 @@
 /**
- * Experimental filled multi-series area chart. Same data contract as the line
+ * Filled multi-series area chart. Same data contract as the line
  * chart. Null values break both the line and the fill.
  * @tag rowan-area-chart
  * @attr {string} label

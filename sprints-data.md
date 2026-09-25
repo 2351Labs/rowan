@@ -13,7 +13,7 @@
 - New KPI and chart hosts ship **experimental**. They do not block marking the original four Stable.
 - Objects stay property-only. Series, filters, documents, and KPI numeric payloads never round-trip through attributes.
 
-**Status.** Sprint 10 done. KPI, sparkline, bar, and donut are Stable. Area and stacked bar are experimental. Rich-text headings and links shipped. Wrappers track remains in `sprints.md`.
+**Status.** Remaining dashboard hosts (area, stacked-bar, bullet, gauge, image, data-state, source-meta) are Stable. Wrappers track remains in `sprints.md`.
 
 ---
 
@@ -638,6 +638,26 @@ Collapsible `rowan-side-nav-section`, not a second selection model. One `value` 
 ### Out of scope
 
 Stealing `rowan-tree` into the rail. Per-item open state. P2 config nav.
+
+---
+
+## Sprint 29 — Stabilize remaining experimental hosts
+
+**Status:** done
+
+Promote bullet, gauge, area, stacked-bar, image, data-state, and source-meta to Stable.
+
+Frozen constraints:
+
+- `referenceLines` only on area and stacked-bar (not trend/bar/donut/sparkline)
+- `data-state` is `ready` / `loading` / `empty` / `error` only (no `stale` / `partial` as equal states)
+- `rowan-image` is a display host, not a rich-text document node
+
+### Done when
+
+- [x] README stability table
+- [x] Host JSDoc no longer says Experimental
+- [x] CHANGELOG
 
 ---
 
