@@ -113,6 +113,10 @@
       "types": "./src/chip/chip.d.ts",
       "default": "./src/chip/chip.js"
     },
+    "./combo-chart": {
+      "types": "./src/combo-chart/combo-chart.d.ts",
+      "default": "./src/combo-chart/combo-chart.js"
+    },
     "./combobox": {
       "types": "./src/combobox/combobox.d.ts",
       "default": "./src/combobox/combobox.js"
@@ -495,6 +499,7 @@
     "./src/filter-builder/filter-builder.js",
     "./src/breadcrumb/breadcrumb.js",
     "./src/chip/chip.js",
+    "./src/combo-chart/combo-chart.js",
     "./src/combobox/combobox.js",
     "./src/command-item/command-item.js",
     "./src/command-palette/command-palette.js",
