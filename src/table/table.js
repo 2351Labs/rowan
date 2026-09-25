@@ -101,6 +101,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {string} [width]
  * @property {string} [minWidth]
  * @property {"start" | "center" | "end"} [align]
+ * @property {"start" | "center" | "end"} [verticalAlign]
  * @property {boolean} [sortable]
  * @property {"asc" | "desc" | null} [sortDir]
  * @property {"start" | "end"} [sticky]
@@ -788,7 +789,7 @@ export class RowanTable extends BaseElement {
 
       if (column.width) th.style.width = column.width;
       if (column.minWidth) th.style.minWidth = column.minWidth;
-      if (column.align) th.style.textAlign = this.#alignToCss(column.align);
+      this.#applyColumnAlign(th, column);
 
       if (column.sticky === "start") th.classList.add("sticky-start");
       if (column.sticky === "end") th.classList.add("sticky-end");
@@ -1235,7 +1236,7 @@ export class RowanTable extends BaseElement {
       const cell = document.createElement("td");
       cell.className = "td";
       cell.dataset.columnId = column.id;
-      if (column.align) cell.style.textAlign = this.#alignToCss(column.align);
+      this.#applyColumnAlign(cell, column);
       if (column.sticky === "start") cell.classList.add("sticky-start");
       if (column.sticky === "end") cell.classList.add("sticky-end");
 
@@ -1273,9 +1274,7 @@ export class RowanTable extends BaseElement {
       td.part = "td";
       td.dataset.columnId = column.id;
 
-      if (column.align) {
-        td.style.textAlign = this.#alignToCss(column.align);
-      }
+      this.#applyColumnAlign(td, column);
 
       if (column.sticky === "start") td.classList.add("sticky-start");
       if (column.sticky === "end") td.classList.add("sticky-end");
@@ -2730,6 +2729,18 @@ export class RowanTable extends BaseElement {
     if (align === "center") return "center";
     if (align === "end") return "right";
     return "left";
+  }
+
+  #verticalAlignToCss(align) {
+    if (align === "start") return "top";
+    if (align === "end") return "bottom";
+    return "middle";
+  }
+
+  #applyColumnAlign(cell, column) {
+    if (column.align) cell.style.textAlign = this.#alignToCss(column.align);
+    if (column.verticalAlign)
+      cell.style.verticalAlign = this.#verticalAlignToCss(column.verticalAlign);
   }
 
   #visibleColumnCount() {
