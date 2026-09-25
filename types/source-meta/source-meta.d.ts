@@ -1,5 +1,5 @@
 /**
- * Experimental provenance line for KPI description, chart description, or table caption.
+ * Provenance line for KPI description, chart description, or table caption.
  * Does not add fields to those frozen hosts.
  * @tag rowan-source-meta
  * @attr {string} source

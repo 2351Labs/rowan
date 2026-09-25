@@ -1,6 +1,6 @@
 /**
  * Compact speedometer gauge: ranges, min/max, actual, and optional target.
- * Experimental. Separate host from bullet and donut charts.
+ * Separate host from bullet and donut charts.
  * @tag rowan-gauge-chart
  * @attr {string} label
  * @attr {number} min

@@ -49,7 +49,7 @@ function cloneRanges(ranges) {
 }
 
 /**
- * Compact qualitative comparison: ranges, actual, and target. Experimental.
+ * Compact qualitative comparison: ranges, actual, and target.
  * Separate host from sparkline and bar chart.
  * @tag rowan-bullet-chart
  * @attr {string} label
