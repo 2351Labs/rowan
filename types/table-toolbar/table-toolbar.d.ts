@@ -4,6 +4,7 @@
  * @attr {string} for-table
  * @attr {string} label
  * @attr {string} selection-label
+ * @attr {boolean} column-picker
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
  * @slot - Primary table controls
@@ -14,6 +15,8 @@
  * @csspart selection-text
  * @csspart content
  * @csspart end
+ * @csspart column-picker
+ * @csspart column-picker-menu
  * @cssprop --rowan-table-toolbar-bg
  * @cssprop --rowan-table-toolbar-border
  * @cssprop --rowan-table-toolbar-selection-bg
@@ -28,6 +31,8 @@ export class RowanTableToolbar extends BaseElement {
     get label(): string;
     set selectionLabel(value: string);
     get selectionLabel(): string;
+    set columnPicker(value: boolean);
+    get columnPicker(): boolean;
     get selected(): any[];
     get selectedRows(): any[];
     get selectedCount(): number;

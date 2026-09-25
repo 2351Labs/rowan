@@ -148,4 +148,34 @@ describe("rowan-table-toolbar", () => {
     expect(toolbar.internals.role).to.equal("toolbar");
     expect(toolbar.internals.ariaLabel).to.equal("Order controls");
   });
+
+  it("toggles column.hidden from the optional column picker", async () => {
+    const table = createTable();
+    table.config = {
+      ...table.config,
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team" },
+      ],
+    };
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.columnPicker = true;
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+
+    const picker = toolbar.shadowRoot.querySelector(".column-picker");
+    expect(picker.hidden).to.equal(false);
+    const team = toolbar.shadowRoot.querySelector('input[data-column-id="team"]');
+    team.checked = false;
+    team.dispatchEvent(new Event("change", { bubbles: true }));
+    await settle();
+
+    expect(table.columns.find((column) => column.id === "team").hidden).to.equal(true);
+    expect(table.shadowRoot.querySelector('th[data-column-id="team"]')).to.equal(null);
+
+    const name = toolbar.shadowRoot.querySelector('input[data-column-id="name"]');
+    expect(name.disabled).to.equal(true);
+  });
 });

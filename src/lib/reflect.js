@@ -5,6 +5,7 @@ export const BOOLEAN_ATTRIBUTES = new Set([
   "caption-visually-hidden",
   "checked",
   "collapsed",
+  "column-picker",
   "collapsible",
   "confirm-disabled",
   "disabled",

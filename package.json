@@ -345,6 +345,10 @@
       "types": "./src/table/table.d.ts",
       "default": "./src/table/table.js"
     },
+    "./table-csv": {
+      "types": "./src/table-csv/table-csv.d.ts",
+      "default": "./src/table-csv/table-csv.js"
+    },
     "./table-toolbar": {
       "types": "./src/table-toolbar/table-toolbar.d.ts",
       "default": "./src/table-toolbar/table-toolbar.js"

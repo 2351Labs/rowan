@@ -641,6 +641,60 @@ Stealing `rowan-tree` into the rail. Per-item open state. P2 config nav.
 
 ---
 
+## Rowan vs admin/dashboard libraries (0.13 planning)
+
+Position: ops dashboard design system (vanilla WC). Not a CRUD scaffold (Ant Pro / Refine) and not a spreadsheet grid (AG Grid / MUI X Premium). Closest neighbors: **Carbon** (ops chrome, multi-framework) plus a small **Tremor-like** chart/KPI kit.
+
+| Capability                        | Rowan                                                               | Ant Design Pro                                        | MUI X                                        | Carbon                         |
+| --------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------- | ------------------------------ |
+| Stack                             | Vanilla WC + React wrappers                                         | React (Vue via ant-design-vue)                        | React                                        | React / Vue / Svelte / vanilla |
+| App shell + side nav              | `app-layout`, collapsible sections, tone/count                      | ProLayout                                             | Drawer + AppBar (compose)                    | UI Shell                       |
+| KPI + sparkline                   | Frozen hosts                                                        | ChartCard / Statistic                                 | Compose Charts                               | Compose Carbon Charts          |
+| Ops charts                        | Native SVG trend/bar/area/donut/stacked/bullet/gauge                | G2 / BizCharts suite                                  | MUI Charts (some paid)                       | ~26 chart types                |
+| Matching data table on charts     | Yes                                                                 | Unusual                                               | Unusual                                      | Unusual                        |
+| Provenance                        | `source-meta`                                                       | Copy                                                  | DIY                                          | DIY                            |
+| Operational table                 | Sort, page, select, sticky, groupBy, virtualize, bulk, bullet cells | **ProTable** (`request`, search form, column manager) | Community grid; grouping/virtualize **paid** | Toolbar, batch, expand         |
+| Filters                           | Flat AND builder + `applyFilters` + session module                  | QueryFilter / in ProTable                             | Column filters                               | Toolbar filter                 |
+| Hosts fetch data                  | **No**                                                              | ProTable `request`                                    | Partial / Pro                                | No                             |
+| Excel / CSV                       | CSV module (app download); no Excel                                 | Common                                                | CSV free; Excel Premium                      | App                            |
+| Pivot / tree table / range select | **No**                                                              | Tree in Table                                         | Pro / Premium                                | Not a pivot                    |
+| Chart↔grid brushing               | Session module only                                                 | App                                                   | Premium integration                          | App                            |
+| FACE forms                        | Strong                                                              | ProForm                                               | Strong                                       | Strong                         |
+| Auth / CRUD pages                 | Out of library                                                      | Pro scaffold                                          | Templates                                    | IBM Cloud patterns             |
+| Maps                              | `@rowan-ui/maplibre`                                                | Often AntV L7                                         | DIY                                          | Carbon maps                    |
+
+**Do not chase:** ProTable `request`, Excel, pivot, Chart.js type catalogs, hover-link bus. Those blow freeze and “hosts do not fetch.”
+
+---
+
+## 0.13 in / out
+
+### In
+
+- **CSV as a module** (same shape as `applyFilters`): `createTableCsv(columns, rows)` in `@rowan-ui/core/table-csv` or similar. App triggers download. No new table events, no fetch, no Excel.
+- **Column visibility**, additive on frozen table: `column.hidden` (and optional toolbar control on `rowan-table-toolbar`). Unknown keys stay ignored.
+- **Column-visibility helper** optional: `visibleColumns(columns, hiddenIds)` if toolbar needs a pure function.
+
+### Out (this track)
+
+- ProTable-style `request` / built-in data source
+- Excel `.xlsx`, clipboard range, fill handle, pivot
+- Tree table, nested filter OR groups
+- Hover-link bus / chart–grid brushing as a host
+- KPI `thresholdState` / `trendDirection` / `freshnessTimestamp` (use `tone`, `delta`, `source-meta`)
+- Filled Lucide catalog
+- Filter session as a custom-element provider
+- Heatmap / combo / funnel / scatter as 0.13 (revisit only if Pulse names a screen)
+- Vue/Svelte wrappers, table column virtualization, rich-text images-in-document
+
+### 0.13 done when
+
+- [x] CSV module + tests + README (app owns the `<a download>`)
+- [x] `column.hidden` + toolbar show/hide; omitted `.config` resets hidden
+- [x] No thaw of table `columns` / `rows` names; no new fetch API
+
+---
+
 ## Later / not this track
 
 - Nested filter groups / OR.
@@ -650,3 +704,4 @@ Stealing `rowan-tree` into the rail. Per-item open state. P2 config nav.
 - KPI `thresholdState` / `trendDirection` (use `tone` and `delta`).
 - Filled Lucide catalog.
 - Cross-filter as a custom-element provider.
+- Excel, pivot, tree table, ProTable `request`, hover-link bus.
