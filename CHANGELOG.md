@@ -6,8 +6,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.14.0 - 2026-09-25
+
 ### Added
 
+- Experimental `rowan-combo-chart`: bars and lines on one category axis, optional secondary scale. `createParetoData()` sorts counts and builds a cumulative-% line. Frozen bar and trend APIs unchanged.
 - `rowan-table` column `verticalAlign`: `"start"` | `"center"` | `"end"` (top / middle / bottom). Omitted stays middle. `align` remains inline.
 
 ### Changed
