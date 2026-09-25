@@ -1126,7 +1126,10 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 
 ## Table Operations
 
-Use `rowan-table-toolbar` for filters and density. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
+Use `rowan-table-toolbar` for filters and density. Set `column-picker` to show or
+hide columns (`column.hidden`). Use `createTableCsv(columns, rows)` from
+`@rowan-ui/core/table-csv` for CSV text; the app owns download. `visibleColumns()`
+filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
 
 ```html
 <rowan-table id="members-table">
@@ -1156,6 +1159,17 @@ Use `rowan-table-toolbar` for filters and density. Use `rowan-bulk-actions-bar` 
     console.log(event.detail.action, event.detail.selectedRows);
   });
 </script>
+```
+
+```js
+import { createTableCsv } from "@rowan-ui/core/table-csv";
+
+const csv = createTableCsv(table.columns, table.rows);
+const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+```
+
+```html
+<rowan-table-toolbar slot="toolbar" column-picker></rowan-table-toolbar>
 ```
 
 ### Filtering and row details

@@ -55,10 +55,12 @@ export default {
   argTypes: {
     label: { control: "text" },
     selectionLabel: { control: "text" },
+    columnPicker: { control: "boolean" },
   },
   args: {
     label: "Team table controls",
     selectionLabel: "selected",
+    columnPicker: false,
   },
 };
 
@@ -71,9 +73,11 @@ export const Playground = {
     ],
     events: ["rowan-select"],
   }),
-  render: ({ label, selectionLabel }) => {
+  render: ({ label, selectionLabel, columnPicker }) => {
     const table = createTable();
-    table.append(createToolbar({ label, selectionLabel }));
+    const toolbar = createToolbar({ label, selectionLabel });
+    toolbar.columnPicker = Boolean(columnPicker);
+    table.append(toolbar);
     return table;
   },
 };

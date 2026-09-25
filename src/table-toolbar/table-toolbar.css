@@ -53,6 +53,45 @@
   display: none;
 }
 
+.column-picker {
+  position: relative;
+}
+
+.column-picker[hidden] {
+  display: none;
+}
+
+.column-picker summary {
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  list-style: none;
+}
+
+.column-picker summary::-webkit-details-marker {
+  display: none;
+}
+
+.column-picker-menu {
+  background: var(--rowan-table-toolbar-bg, #f8f7f2);
+  border: 1px solid var(--rowan-table-toolbar-border, #ced3ca);
+  border-radius: var(--rowan-radius-sm);
+  display: grid;
+  gap: 0.35rem;
+  inset-block-start: calc(100% + 0.25rem);
+  inset-inline-end: 0;
+  min-inline-size: 10rem;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 2;
+}
+
+.column-picker-option {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
 @media (max-width: 34rem) {
   .end {
     margin-inline-start: 0;

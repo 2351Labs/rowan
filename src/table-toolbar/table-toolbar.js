@@ -19,6 +19,7 @@ function arraysEqual(left, right) {
  * @attr {string} for-table
  * @attr {string} label
  * @attr {string} selection-label
+ * @attr {boolean} column-picker
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
  * @slot - Primary table controls
@@ -29,6 +30,8 @@ function arraysEqual(left, right) {
  * @csspart selection-text
  * @csspart content
  * @csspart end
+ * @csspart column-picker
+ * @csspart column-picker-menu
  * @cssprop --rowan-table-toolbar-bg
  * @cssprop --rowan-table-toolbar-border
  * @cssprop --rowan-table-toolbar-selection-bg
@@ -36,8 +39,8 @@ function arraysEqual(left, right) {
 export class RowanTableToolbar extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./table-toolbar.css", import.meta.url).href;
-  static observedAttributes = ["for-table", "label", "selection-label"];
-  static upgradeProperties = ["table", "forTable", "label", "selectionLabel"];
+  static observedAttributes = ["for-table", "label", "selection-label", "column-picker"];
+  static upgradeProperties = ["table", "forTable", "label", "selectionLabel", "columnPicker"];
 
   #tableOverride = null;
   #boundTable = null;
@@ -48,6 +51,8 @@ export class RowanTableToolbar extends BaseElement {
   #toolbar = null;
   #selection = null;
   #selectionText = null;
+  #columnPicker = null;
+  #columnPickerMenu = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -104,6 +109,14 @@ export class RowanTableToolbar extends BaseElement {
     this.reflectString("selection-label", next && next !== "selected" ? next : null);
   }
 
+  get columnPicker() {
+    return this.readBoolean("column-picker");
+  }
+
+  set columnPicker(value) {
+    this.reflectBoolean("column-picker", Boolean(value));
+  }
+
   get selected() {
     return [...this.#selected];
   }
@@ -132,13 +145,21 @@ export class RowanTableToolbar extends BaseElement {
             <span class="selection-text" part="selection-text"></span>
           </div>
           <div class="content" part="content"><slot></slot></div>
-          <div class="end" part="end"><slot name="end"></slot></div>
+          <div class="end" part="end">
+            <details class="column-picker" part="column-picker" hidden>
+              <summary>Columns</summary>
+              <div class="column-picker-menu" part="column-picker-menu" role="group" aria-label="Visible columns"></div>
+            </details>
+            <slot name="end"></slot>
+          </div>
         </section>
       `;
 
       this.#toolbar = this.renderRoot.querySelector(".toolbar");
       this.#selection = this.renderRoot.querySelector(".selection");
       this.#selectionText = this.renderRoot.querySelector(".selection-text");
+      this.#columnPicker = this.renderRoot.querySelector(".column-picker");
+      this.#columnPickerMenu = this.renderRoot.querySelector(".column-picker-menu");
     }
 
     this.#syncTable();
@@ -147,7 +168,63 @@ export class RowanTableToolbar extends BaseElement {
     const bulkOwnsSelection = Boolean(this.#boundTable?.querySelector("rowan-bulk-actions-bar"));
     this.#selection.hidden = count === 0 || bulkOwnsSelection;
     this.#selectionText.textContent = `${count} ${this.selectionLabel}`;
+    this.#syncColumnPicker();
     this.#applyDefaultA11y();
+  }
+
+  #syncColumnPicker() {
+    if (!this.#columnPicker || !this.#columnPickerMenu) return;
+
+    const table = this.#boundTable;
+    const columns = Array.isArray(table?.columns)
+      ? table.columns.filter((column) => column?.id)
+      : [];
+    const enabled = this.columnPicker && columns.length > 0;
+    this.#columnPicker.hidden = !enabled;
+    if (!enabled) return;
+
+    const visibleCount = columns.filter((column) => !column.hidden).length;
+    this.#columnPickerMenu.replaceChildren(
+      ...columns.map((column) => {
+        const row = document.createElement("label");
+        row.className = "column-picker-option";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = !column.hidden;
+        input.disabled = input.checked && visibleCount <= 1;
+        input.dataset.columnId = column.id;
+        const text = document.createElement("span");
+        text.textContent = column.header || column.id;
+        row.append(input, text);
+        return row;
+      }),
+    );
+
+    if (!this.#columnPickerMenu.dataset.bound) {
+      this.#columnPickerMenu.dataset.bound = "true";
+      this.listen(this.#columnPickerMenu, "change", (event) => this.#onColumnPickerChange(event));
+    }
+  }
+
+  #onColumnPickerChange(event) {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || input.type !== "checkbox") return;
+    const columnId = input.dataset.columnId;
+    const table = this.#boundTable;
+    if (!columnId || !table) return;
+
+    const columns = Array.isArray(table.columns) ? table.columns : [];
+    const visibleCount = columns.filter((column) => column?.id && !column.hidden).length;
+    const hiding = !input.checked;
+    if (hiding && visibleCount <= 1) {
+      input.checked = true;
+      return;
+    }
+
+    table.columns = columns.map((column) =>
+      column?.id === columnId ? { ...column, hidden: hiding } : column,
+    );
+    this.requestRender();
   }
 
   #syncTable() {

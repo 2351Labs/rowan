@@ -10516,6 +10516,22 @@
         },
         {
           "kind": "js",
+          "name": "createTableCsv",
+          "declaration": {
+            "name": "createTableCsv",
+            "module": "./table-csv/table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "visibleColumns",
+          "declaration": {
+            "name": "visibleColumns",
+            "module": "./table-csv/table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanButton",
           "declaration": {
             "name": "RowanButton",
@@ -12346,7 +12362,7 @@
         {
           "kind": "variable",
           "name": "BOOLEAN_ATTRIBUTES",
-          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"collapsed\", \"collapsible\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"collapsed\", \"column-picker\", \"collapsible\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
         },
         {
           "kind": "function",
@@ -20756,6 +20772,113 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table-csv/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createTableCsv",
+          "declaration": {
+            "name": "createTableCsv",
+            "module": "./table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "visibleColumns",
+          "declaration": {
+            "name": "visibleColumns",
+            "module": "./table-csv.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table-csv/table-csv.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "visibleColumns",
+          "parameters": [
+            {
+              "name": "columns",
+              "optional": true,
+              "type": {
+                "text": "Array<{ id?: string, hidden?: boolean } | null | undefined>"
+              }
+            },
+            {
+              "name": "hiddenIds",
+              "optional": true,
+              "type": {
+                "text": "Iterable<string> | null"
+              }
+            }
+          ],
+          "description": "Columns that should render or export. Pass `hiddenIds` to override\n`column.hidden`; otherwise `column.hidden` is the source of truth.",
+          "return": {
+            "type": {
+              "text": "object[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "createTableCsv",
+          "parameters": [
+            {
+              "name": "columns",
+              "optional": true,
+              "type": {
+                "text": "object[]"
+              }
+            },
+            {
+              "name": "rows",
+              "optional": true,
+              "type": {
+                "text": "object[]"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{ includeHidden?: boolean }"
+              }
+            }
+          ],
+          "description": "RFC 4180 CSV text for table columns and rows. Hidden columns are omitted\nunless `includeHidden` is true. The app owns download / Blob / URL writes.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "visibleColumns",
+          "declaration": {
+            "name": "visibleColumns",
+            "module": "src/table-csv/table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createTableCsv",
+          "declaration": {
+            "name": "createTableCsv",
+            "module": "src/table-csv/table-csv.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table-toolbar/index.js",
       "declarations": [],
       "exports": [
@@ -20806,6 +20929,12 @@
             },
             {
               "name": "end"
+            },
+            {
+              "name": "column-picker"
+            },
+            {
+              "name": "column-picker-menu"
             }
           ],
           "slots": [
@@ -20842,6 +20971,10 @@
             {
               "kind": "field",
               "name": "selectionLabel"
+            },
+            {
+              "kind": "field",
+              "name": "columnPicker"
             },
             {
               "kind": "field",
@@ -20957,6 +21090,12 @@
               "name": "selection-label",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "column-picker",
+              "type": {
+                "text": "boolean"
               }
             }
           ],

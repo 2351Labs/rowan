@@ -276,6 +276,44 @@ describe("rowan-table", () => {
     expect(blocked.defaultPrevented).to.equal(true);
   });
 
+  it("omits hidden columns from the rendered table", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team", hidden: true },
+        { id: "score", header: "Score" },
+      ],
+      rows: [{ id: "1", name: "Ada", team: "Ops", score: 12 }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    const headers = [...table.shadowRoot.querySelectorAll("thead th")].map(
+      (cell) => cell.dataset.columnId,
+    );
+    expect(headers).to.deep.equal(["name", "score"]);
+    expect(table.shadowRoot.querySelector('td[data-column-id="team"]')).to.equal(null);
+    expect(table.shadowRoot.querySelector('td[data-column-id="name"]').textContent).to.include(
+      "Ada",
+    );
+
+    table.columns = table.columns.map((column) =>
+      column.id === "team" ? { ...column, hidden: false } : column,
+    );
+    await nextMicrotask();
+    expect(table.shadowRoot.querySelector('th[data-column-id="team"]')).to.not.equal(null);
+
+    table.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    await nextMicrotask();
+    expect(table.columns[0].hidden).to.equal(undefined);
+  });
+
   it("does not emit table events when parent sets properties", async () => {
     const table = document.createElement("rowan-table");
     table.config = createConfig();
