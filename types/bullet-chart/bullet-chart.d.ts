@@ -1,25 +1,35 @@
 /**
- * Compact qualitative comparison: ranges, actual, and target.
- * Separate host from sparkline and bar chart.
+ * Compact qualitative comparison after Stephen Few's bullet graph spec.
  * @tag rowan-bullet-chart
  * @attr {string} label
- * @property {number | null} value - Actual measure. Property-only. Null is no-data.
- * @property {number | null} target - Target marker. Property-only. Null hides the marker.
- * @property {RowanBulletChartRange[]} ranges - Qualitative bands. Arrays are property-only.
+ * @attr {boolean} scale - Show quantitative ticks. Default true.
+ * @attr {"higher"|"lower"} intent - Dark bands encode poor performance.
+ * @attr {"ink"|"accent"|"status"|"tone"} encoding - Range fill. `ink` grayscale (default). `accent` one theme hue. `status` poor→good mix. `tone` per-range hues.
+ * @property {number | null} value
+ * @property {number | null} target
+ * @property {RowanBulletChartRange[]} ranges
  * @csspart chart
  * @csspart plot
  * @csspart range
  * @csspart actual
  * @csspart target
+ * @csspart tick
  * @csspart hover
  * @csspart table
- * @cssprop --rowan-bullet-chart-actual
- * @cssprop --rowan-bullet-chart-target
- * @cssprop --rowan-bullet-chart-range
  */
 export class RowanBulletChart extends BaseElement {
     set label(value: string);
     get label(): string;
+    set scale(value: boolean);
+    get scale(): boolean;
+    set intent(value: "higher" | "lower");
+    /** @returns {"higher" | "lower"} */
+    get intent(): "higher" | "lower";
+    /** @param {"ink" | "accent" | "status" | "tone"} value */
+    set encoding(value: "tone" | "status" | "ink" | "accent");
+    /** @returns {"ink" | "accent" | "status" | "tone"} */
+    get encoding(): "tone" | "status" | "ink" | "accent";
+    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
     /** @param {number | null} value */
     set value(value: number | null);
     /** @returns {number | null} */

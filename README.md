@@ -297,7 +297,7 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                     |
 | `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                        |
 | `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                    |
-| `rowan-bullet-chart`            | Stable | Compact ranges, actual, and target. Property-only `ranges` / `value` / `target`. Null is no-data.                                                                                      |
+| `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                        |
 | `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                             |
 | `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total.                                                                                                             |
 | `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data.                                                                                            |
@@ -707,13 +707,15 @@ caption without dropping the progressbar name.
 
 ## Rowan Bullet Chart
 
-`rowan-bullet-chart` is a frozen compact comparison for KPI tiles:
-qualitative `ranges`, an actual `value`, and a `target` marker. All three are
-property-only. Null actual or target is no-data and is omitted from the plot.
-Invalid or zero-width ranges are dropped; reversed `from`/`to` are swapped.
-Native SVG, no animation, matching visually hidden table. Hover shows actual,
-target, and the matching range. It is a separate host, not a density of
-`rowan-bar-chart`.
+`rowan-bullet-chart` is a frozen compact comparison after Stephen Few:
+qualitative `ranges` as grayscale intensities by default (`encoding="ink"`;
+dark = poor when `intent` is `higher`). `encoding="accent"` uses one theme hue
+at those same intensities. `encoding="status"` mixes danger → success (not six
+named greens/reds). `encoding="tone"` uses each range's `tone`. An actual
+`value` bar at one-third of the track, and a `target` tick. `scale` (default
+true) draws quantitative ticks. Set `scale="false"` in tight table cells. All of `ranges` / `value` / `target` are property-only.
+Null actual or target is no-data. Hover shows actual, target, and the matching
+range. It is a separate host, not a density of `rowan-bar-chart`.
 
 ```html
 <rowan-kpi-card label="Fill rate" tone="success" delta-label="vs target">

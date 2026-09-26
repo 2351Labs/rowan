@@ -14,12 +14,18 @@ function createBullet({
   label = "Fill rate",
   value = 82,
   target = 90,
+  scale = true,
+  intent = "higher",
+  encoding = "ink",
   ranges = sampleRanges(),
 } = {}) {
   const chart = document.createElement("rowan-bullet-chart");
   chart.label = label;
   chart.value = value;
   chart.target = target;
+  chart.scale = scale;
+  chart.intent = intent;
+  chart.encoding = encoding;
   chart.ranges = ranges;
   return chart;
 }
@@ -32,11 +38,23 @@ export default {
     label: "Fill rate",
     value: 82,
     target: 90,
+    scale: true,
+    intent: "higher",
+    encoding: "ink",
   },
   argTypes: {
     label: { control: "text" },
     value: { control: "number" },
     target: { control: "number" },
+    scale: { control: "boolean" },
+    intent: {
+      control: "select",
+      options: ["higher", "lower"],
+    },
+    encoding: {
+      control: "select",
+      options: ["ink", "accent", "status", "tone"],
+    },
   },
 };
 
