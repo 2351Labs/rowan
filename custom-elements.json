@@ -1907,19 +1907,8 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Compact qualitative comparison: ranges, actual, and target.\nSeparate host from sparkline and bar chart.",
+          "description": "Compact qualitative comparison after Stephen Few's bullet graph spec.",
           "name": "RowanBulletChart",
-          "cssProperties": [
-            {
-              "name": "--rowan-bullet-chart-actual"
-            },
-            {
-              "name": "--rowan-bullet-chart-target"
-            },
-            {
-              "name": "--rowan-bullet-chart-range"
-            }
-          ],
           "cssParts": [
             {
               "name": "chart"
@@ -1937,6 +1926,9 @@
               "name": "target"
             },
             {
+              "name": "tick"
+            },
+            {
               "name": "hover"
             },
             {
@@ -1947,6 +1939,36 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "scale"
+            },
+            {
+              "kind": "field",
+              "name": "intent",
+              "return": {
+                "type": {
+                  "text": "\"higher\" | \"lower\""
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "encoding",
+              "return": {
+                "type": {
+                  "text": "\"ink\" | \"accent\" | \"status\" | \"tone\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"ink\" | \"accent\" | \"status\" | \"tone\""
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
@@ -1966,8 +1988,7 @@
               ],
               "type": {
                 "text": "number | null"
-              },
-              "description": "Actual measure. Property-only. Null is no-data."
+              }
             },
             {
               "kind": "field",
@@ -1987,8 +2008,7 @@
               ],
               "type": {
                 "text": "number | null"
-              },
-              "description": "Target marker. Property-only. Null hides the marker."
+              }
             },
             {
               "kind": "field",
@@ -2008,8 +2028,7 @@
               ],
               "type": {
                 "text": "RowanBulletChartRange[]"
-              },
-              "description": "Qualitative bands. Arrays are property-only."
+              }
             },
             {
               "kind": "field",
@@ -2095,6 +2114,27 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "scale",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Show quantitative ticks. Default true."
+            },
+            {
+              "name": "intent",
+              "type": {
+                "text": "\"higher\"|\"lower\""
+              },
+              "description": "Dark bands encode poor performance."
+            },
+            {
+              "name": "encoding",
+              "type": {
+                "text": "\"ink\"|\"accent\"|\"status\"|\"tone\""
+              },
+              "description": "Range fill. `ink` grayscale (default). `accent` one theme hue. `status` poor→good mix. `tone` per-range hues."
             }
           ],
           "superclass": {

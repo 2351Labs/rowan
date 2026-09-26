@@ -15,41 +15,95 @@
 }
 
 .plot {
-  block-size: var(--rowan-bullet-chart-height, 2.25rem);
+  block-size: var(--rowan-bullet-chart-height, 3rem);
   display: block;
   inline-size: 100%;
   overflow: visible;
 }
 
 .range {
-  fill: var(--rowan-bullet-chart-range, var(--rowan-chart-neutral, var(--rowan-color-muted)));
-  fill-opacity: var(--rowan-bullet-chart-range-opacity, 0.22);
+  fill: color-mix(
+    in srgb,
+    var(--rowan-bullet-chart-range, var(--rowan-color-fg, #111)) var(--range-ink, 25%),
+    transparent
+  );
 }
 
-.range[data-tone="info"] {
+:host([encoding="accent"]) .range {
+  fill: color-mix(
+    in srgb,
+    var(--rowan-bullet-chart-accent, var(--rowan-color-accent, #3d6b4f)) var(--range-ink, 25%),
+    transparent
+  );
+}
+
+:host([encoding="status"]) .range[data-status="poor"] {
+  fill: color-mix(
+    in srgb,
+    var(--rowan-bullet-chart-danger, var(--rowan-color-danger, #b42318)) var(--range-ink, 25%),
+    transparent
+  );
+}
+
+:host([encoding="status"]) .range[data-status="mid"] {
+  fill: color-mix(
+    in srgb,
+    var(--rowan-bullet-chart-warning, var(--rowan-color-warning, #b54708)) var(--range-ink, 25%),
+    transparent
+  );
+}
+
+:host([encoding="status"]) .range[data-status="good"] {
+  fill: color-mix(
+    in srgb,
+    var(--rowan-bullet-chart-success, var(--rowan-color-success, #067647)) var(--range-ink, 25%),
+    transparent
+  );
+}
+
+:host([encoding="tone"]) .range {
+  fill-opacity: var(--rowan-bullet-chart-range-opacity, 0.32);
+}
+
+:host([encoding="tone"]) .range[data-tone="neutral"] {
+  fill: var(--rowan-bullet-chart-range, var(--rowan-chart-neutral, var(--rowan-color-muted)));
+}
+
+:host([encoding="tone"]) .range[data-tone="info"] {
   fill: var(--rowan-bullet-chart-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
-.range[data-tone="success"] {
+:host([encoding="tone"]) .range[data-tone="success"] {
   fill: var(--rowan-bullet-chart-success, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
-.range[data-tone="warning"] {
+:host([encoding="tone"]) .range[data-tone="warning"] {
   fill: var(--rowan-bullet-chart-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
-.range[data-tone="danger"] {
+:host([encoding="tone"]) .range[data-tone="danger"] {
   fill: var(--rowan-bullet-chart-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 .actual {
-  fill: var(--rowan-bullet-chart-actual, var(--rowan-color-fg));
+  fill: var(--rowan-bullet-chart-actual, var(--rowan-color-fg, #111));
 }
 
 .target {
-  stroke: var(--rowan-bullet-chart-target, var(--rowan-color-fg));
+  stroke: var(--rowan-bullet-chart-target, var(--rowan-color-fg, #111));
   stroke-linecap: square;
-  stroke-width: var(--rowan-bullet-chart-target-width, 2);
+  stroke-width: var(--rowan-bullet-chart-target-width, 1.75);
+}
+
+.tick {
+  stroke: color-mix(in srgb, var(--rowan-color-fg, #111) 35%, transparent);
+  stroke-width: 0.6;
+}
+
+.tick-label {
+  fill: var(--rowan-color-fg, #111);
+  font-size: 3.1px;
+  text-anchor: middle;
 }
 
 .table {

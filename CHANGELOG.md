@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Changed
+
+- `rowan-bullet-chart` follows Stephen Few: grayscale range intensities, measure bar at ⅓ track height, target tick at 72% height, quantitative scale ticks. Additive `scale` (default true), `intent` (`higher` | `lower`), and `encoding` (`ink` default, `accent` theme hue, `status` poor→good, `tone` per-range hues). `value` / `target` / `ranges` unchanged.
+
 ## 0.14.0 - 2026-09-25
 
 ### Added
