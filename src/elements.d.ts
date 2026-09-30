@@ -10,6 +10,7 @@ import type { RowanBulkActionsBar } from "../types/bulk-actions-bar/bulk-actions
 import type { RowanBulletChart } from "../types/bullet-chart/bullet-chart.js";
 import type { RowanButton } from "../types/button/button.js";
 import type { RowanFilterBuilder } from "../types/filter-builder/filter-builder.js";
+import type { RowanFunnelChart } from "../types/funnel-chart/funnel-chart.js";
 import type { RowanCalendar } from "../types/calendar/calendar.js";
 import type { RowanCarousel } from "../types/carousel/carousel.js";
 import type { RowanColorPicker } from "../types/color-picker/color-picker.js";
@@ -38,6 +39,7 @@ import type { RowanFormField } from "../types/form-field/form-field.js";
 import type { RowanFormLayout } from "../types/form-layout/form-layout.js";
 import type { RowanFormWizard } from "../types/form-wizard/form-wizard.js";
 import type { RowanGaugeChart } from "../types/gauge-chart/gauge-chart.js";
+import type { RowanHeatmapChart } from "../types/heatmap-chart/heatmap-chart.js";
 import type { RowanIconButton } from "../types/icon-button/icon-button.js";
 import type { RowanImage } from "../types/image/image.js";
 import type { RowanKpiCard } from "../types/kpi-card/kpi-card.js";
@@ -56,6 +58,7 @@ import type { RowanRadioGroup } from "../types/radio-group/radio-group.js";
 import type { RowanRating } from "../types/rating/rating.js";
 import type { RowanRichTextEditor } from "../types/rich-text-editor/rich-text-editor.js";
 import type { RowanRowDetailsPanel } from "../types/row-details-panel/row-details-panel.js";
+import type { RowanScatterChart } from "../types/scatter-chart/scatter-chart.js";
 import type { RowanSelect } from "../types/select/select.js";
 import type { RowanSegmentedControl } from "../types/segmented-control/segmented-control.js";
 import type { RowanSideNav } from "../types/side-nav/side-nav.js";
@@ -88,6 +91,7 @@ import type { RowanToaster } from "../types/toaster/toaster.js";
 import type { RowanTooltip } from "../types/tooltip/tooltip.js";
 import type { RowanValidationSummary } from "../types/validation-summary/validation-summary.js";
 import type { RowanVirtualList } from "../types/virtual-list/virtual-list.js";
+import type { RowanWaterfallChart } from "../types/waterfall-chart/waterfall-chart.js";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -103,6 +107,7 @@ declare global {
     "rowan-bullet-chart": RowanBulletChart;
     "rowan-button": RowanButton;
     "rowan-filter-builder": RowanFilterBuilder;
+    "rowan-funnel-chart": RowanFunnelChart;
     "rowan-calendar": RowanCalendar;
     "rowan-carousel": RowanCarousel;
     "rowan-color-picker": RowanColorPicker;
@@ -131,6 +136,7 @@ declare global {
     "rowan-form-layout": RowanFormLayout;
     "rowan-form-wizard": RowanFormWizard;
     "rowan-gauge-chart": RowanGaugeChart;
+    "rowan-heatmap-chart": RowanHeatmapChart;
     "rowan-icon-button": RowanIconButton;
     "rowan-image": RowanImage;
     "rowan-kpi-card": RowanKpiCard;
@@ -149,6 +155,7 @@ declare global {
     "rowan-rating": RowanRating;
     "rowan-rich-text-editor": RowanRichTextEditor;
     "rowan-row-details-panel": RowanRowDetailsPanel;
+    "rowan-scatter-chart": RowanScatterChart;
     "rowan-select": RowanSelect;
     "rowan-segmented-control": RowanSegmentedControl;
     "rowan-side-nav": RowanSideNav;
@@ -181,6 +188,7 @@ declare global {
     "rowan-tooltip": RowanTooltip;
     "rowan-validation-summary": RowanValidationSummary;
     "rowan-virtual-list": RowanVirtualList;
+    "rowan-waterfall-chart": RowanWaterfallChart;
   }
 }
 

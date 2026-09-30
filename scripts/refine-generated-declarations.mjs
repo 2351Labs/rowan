@@ -31,6 +31,11 @@ const nullableSetters = [
     setter: "config",
     valueType: "RowanStackedAreaChartConfig | null | undefined",
   },
+  {
+    file: new URL("../types/funnel-chart/funnel-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: "RowanFunnelChartConfig | null | undefined",
+  },
 ];
 
 for (const { file, setter, valueType } of nullableSetters) {

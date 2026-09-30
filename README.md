@@ -280,7 +280,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-area-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-area-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`, `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -692,6 +692,59 @@ const { labels, series } = createParetoData({
 chart.labels = labels;
 chart.series = series;
 chart.referenceLines = [{ value: 80, label: "80%", axis: "secondary" }];
+```
+
+## Rowan Scatter Chart
+
+`rowan-scatter-chart` is an experimental x/y point chart. Each series is
+`{ id, label, color?, points: [{ x, y, size?, label? }] }`. Null x or y is
+no-data and is omitted from the plot and table. When any plotted point has
+`size`, radius encodes that value (bubble); omitted size is a scatter. This is
+not frozen categorical `series.values`. Interactive points emit
+`rowan-point-activate` with `x`, `y`, and `size`. Native SVG, no animation,
+matching table.
+
+## Rowan Heatmap Chart
+
+`rowan-heatmap-chart` is an experimental categorical matrix. Set `rows`,
+`columns`, and `values[][]`, or `points` as `{ x, y, value }` / `{ column, row, value }`
+triples (unique labels keep appearance order). Intensity is a single hue via
+fill-opacity, not a rainbow. Null is empty and `No data` in the table.
+Interactive cells emit `rowan-point-activate` with `row`, `column`,
+`rowIndex`, `columnIndex`, and `value`.
+
+## Rowan Funnel Chart
+
+`rowan-funnel-chart` is an experimental one-series stage chart. It draws the
+**first** series. `variant` is `funnel` (default, stage 0 at the top), `cone`
+(last stage tapers to a point), or `pyramid` (stage 0 at the bottom). The host
+does not auto-sort. Null and negatives are no-data. Interactive stages emit
+`rowan-point-activate`.
+
+## Rowan Waterfall Chart
+
+`rowan-waterfall-chart` is an experimental running-total chart. The first
+series is signed deltas. `{ type: "total" }` is an absolute bar from zero, then
+sets the running total. The host does not invent totals. Null is no-data.
+Positive bars use success, negatives danger, totals info. Interactive bars emit
+`rowan-point-activate` with `type`.
+
+## Histogram bins
+
+`createHistogramData({ values, bins })` from `@rowan-ui/core/histogram` counts
+samples into equal-width bins (default 5) or an explicit edge array. Nulls are
+omitted. Assign the result to frozen `rowan-bar-chart` `labels` / `series`. The
+bar host does not bin.
+
+```js
+import { createHistogramData } from "@rowan-ui/core/histogram";
+
+const { labels, series } = createHistogramData({
+  values: [1, 2, 2, null, 9],
+  bins: 2,
+});
+chart.labels = labels;
+chart.series = series;
 ```
 
 ## Rowan Donut Chart

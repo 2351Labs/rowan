@@ -80,6 +80,86 @@ export function renderChartTable(
 }
 
 /**
+ * @param {HTMLTableElement} table
+ * @param {{
+ *   caption: string,
+ *   columns: Array<{ key: string, header: string }>,
+ *   rows: Array<Record<string, string | null | undefined>>,
+ * }} options
+ */
+export function renderKeyedChartTable(table, { caption, columns, rows }) {
+  const fragment = document.createDocumentFragment();
+  const captionEl = document.createElement("caption");
+  captionEl.className = "sr-only";
+  captionEl.textContent = caption;
+  fragment.append(captionEl);
+
+  const head = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  for (const column of columns) {
+    headerRow.append(createCell("th", column.header, "col"));
+  }
+  head.append(headerRow);
+  fragment.append(head);
+
+  const body = document.createElement("tbody");
+  for (const row of rows) {
+    const tr = document.createElement("tr");
+    for (const column of columns) {
+      const value = row[column.key];
+      tr.append(createCell("td", value == null || value === "" ? "No data" : String(value)));
+    }
+    body.append(tr);
+  }
+  fragment.append(body);
+  table.replaceChildren(fragment);
+}
+
+/**
+ * @param {HTMLTableElement} table
+ * @param {{
+ *   caption: string,
+ *   rows: string[],
+ *   columns: string[],
+ *   values: Array<Array<number | null | undefined>>,
+ *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,
+ * }} options
+ */
+export function renderMatrixChartTable(table, { caption, rows, columns, values, formatValue }) {
+  const fragment = document.createDocumentFragment();
+  const captionEl = document.createElement("caption");
+  captionEl.className = "sr-only";
+  captionEl.textContent = caption;
+  fragment.append(captionEl);
+
+  const head = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  headerRow.append(createCell("th", "", "col"));
+  for (const column of columns) {
+    headerRow.append(createCell("th", column, "col"));
+  }
+  head.append(headerRow);
+  fragment.append(head);
+
+  const body = document.createElement("tbody");
+  rows.forEach((rowLabel, rowIndex) => {
+    const tr = document.createElement("tr");
+    tr.append(createCell("th", rowLabel, "row"));
+    columns.forEach((_column, columnIndex) => {
+      const value = values[rowIndex]?.[columnIndex];
+      const text =
+        value === null || value === undefined
+          ? "No data"
+          : formatValue(value, rowIndex, columnIndex);
+      tr.append(createCell("td", text));
+    });
+    body.append(tr);
+  });
+  fragment.append(body);
+  table.replaceChildren(fragment);
+}
+
+/**
  * Horizontal overlay: `x1`, `x2`, `y`. Vertical overlay: `x`, `y1`, `y2`.
  * @param {{
  *   x1?: number,
@@ -136,14 +216,18 @@ export function createReferenceLine({
 }
 
 export function emitPointActivate(host, emit, entry) {
-  emit(host, "rowan-point-activate", {
-    seriesId: entry.series.id,
-    seriesLabel: entry.series.label,
+  const detail = {
+    seriesId: entry.series?.id,
+    seriesLabel: entry.series?.label,
     index: entry.index,
     label: entry.label,
     value: entry.value,
     formattedValue: entry.formattedValue,
-  });
+  };
+  for (const key of ["x", "y", "size", "row", "column", "rowIndex", "columnIndex", "type"]) {
+    if (entry[key] !== undefined) detail[key] = entry[key];
+  }
+  emit(host, "rowan-point-activate", detail);
 }
 
 export function pointControlFor(container, key) {

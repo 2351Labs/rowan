@@ -69,6 +69,14 @@
       "types": "./src/gauge-chart/gauge-chart.d.ts",
       "default": "./src/gauge-chart/gauge-chart.js"
     },
+    "./heatmap-chart": {
+      "types": "./src/heatmap-chart/heatmap-chart.d.ts",
+      "default": "./src/heatmap-chart/heatmap-chart.js"
+    },
+    "./histogram": {
+      "types": "./src/histogram/histogram.d.ts",
+      "default": "./src/histogram/histogram.js"
+    },
     "./button": {
       "types": "./src/button/button.d.ts",
       "default": "./src/button/button.js"
@@ -201,6 +209,10 @@
       "types": "./src/form-wizard/form-wizard.d.ts",
       "default": "./src/form-wizard/form-wizard.js"
     },
+    "./funnel-chart": {
+      "types": "./src/funnel-chart/funnel-chart.d.ts",
+      "default": "./src/funnel-chart/funnel-chart.js"
+    },
     "./icon-button": {
       "types": "./src/icon-button/icon-button.d.ts",
       "default": "./src/icon-button/icon-button.js"
@@ -309,6 +321,10 @@
       "types": "./src/source-meta/source-meta.d.ts",
       "default": "./src/source-meta/source-meta.js"
     },
+    "./scatter-chart": {
+      "types": "./src/scatter-chart/scatter-chart.d.ts",
+      "default": "./src/scatter-chart/scatter-chart.js"
+    },
     "./sparkline": {
       "types": "./src/sparkline/sparkline.d.ts",
       "default": "./src/sparkline/sparkline.js"
@@ -405,6 +421,10 @@
       "types": "./src/virtual-list/virtual-list.d.ts",
       "default": "./src/virtual-list/virtual-list.js"
     },
+    "./waterfall-chart": {
+      "types": "./src/waterfall-chart/waterfall-chart.d.ts",
+      "default": "./src/waterfall-chart/waterfall-chart.js"
+    },
     "./badge": {
       "types": "./src/badge/badge.d.ts",
       "default": "./src/badge/badge.js"
@@ -500,7 +520,9 @@
     "./src/bulk-actions-bar/bulk-actions-bar.js",
     "./src/bullet-chart/bullet-chart.js",
     "./src/gauge-chart/gauge-chart.js",
+    "./src/heatmap-chart/heatmap-chart.js",
     "./src/filter-builder/filter-builder.js",
+    "./src/funnel-chart/funnel-chart.js",
     "./src/breadcrumb/breadcrumb.js",
     "./src/chip/chip.js",
     "./src/combo-chart/combo-chart.js",
@@ -556,6 +578,7 @@
     "./src/side-nav-section/side-nav-section.js",
     "./src/slider/slider.js",
     "./src/source-meta/source-meta.js",
+    "./src/scatter-chart/scatter-chart.js",
     "./src/sparkline/sparkline.js",
     "./src/stacked-area-chart/stacked-area-chart.js",
     "./src/stacked-bar-chart/stacked-bar-chart.js",
@@ -579,6 +602,7 @@
     "./src/tooltip/tooltip.js",
     "./src/validation-summary/validation-summary.js",
     "./src/virtual-list/virtual-list.js",
+    "./src/waterfall-chart/waterfall-chart.js",
     "./src/badge/badge.js",
     "./src/bar-chart/bar-chart.js",
     "./src/donut-chart/donut-chart.js",
