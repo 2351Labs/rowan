@@ -15,6 +15,9 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Experimental `rowan-heatmap-chart`: `{ rows, columns, values[][] }` or `{ x, y, value }` / `{ row, column, value }` points. Single-hue intensity (fill-opacity). Null is empty / `No data`.
 - Experimental `rowan-funnel-chart`: first series of stages. `variant` is `funnel` (default), `cone`, or `pyramid`. Does not auto-sort. Null and negatives are no-data.
 - Experimental `rowan-waterfall-chart`: category + signed delta. Totals are authored `{ type: "total" }` from zero; the host does not invent them. Null is no-data.
+- Experimental `rowan-range-chart`: per-category `{ low, high }`. `variant` is `bar` (default) or `area`. Null low or high is no-data. Own series model — not frozen categorical `series.values`.
+- Experimental `rowan-box-plot-chart`: `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data.
+- Experimental `rowan-radar-chart`: frozen categorical `series` on polar axes. `geometry` is `line` (default) or `area`. Null is no-data and breaks the ring. Nightingale and radial bars are not this host.
 - `createHistogramData({ values, bins })` in `@rowan-ui/core/histogram` bins samples for `rowan-bar-chart`. Nulls are omitted. Not a host.
 
 ## 0.14.1 - 2026-09-26

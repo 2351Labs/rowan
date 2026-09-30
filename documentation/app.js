@@ -2245,6 +2245,98 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     },
   },
   {
+    id: "range-chart",
+    group: "Components",
+    title: "Rowan Range Chart",
+    summary: "Experimental low–high ranges. variant is bar or area. Null low or high is no-data.",
+    tags: ["data display", "range", "chart"],
+    keywords: ["range", "range bar", "range area", "sla"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="range-chart-overview">
+        <h2>Low and high</h2>
+        <p>rowan-range-chart is experimental. Each series is category values with low and high. variant is bar (default) or area. Null low or high is no-data. This is not frozen categorical series.values. Interactive ranges emit rowan-point-activate with low and high.</p>
+        <div class="demo-row">
+          <rowan-range-chart id="docs-range-chart" label="Dwell window" interactive></rowan-range-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-range-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed"];
+      chart.series = [
+        {
+          id: "dwell",
+          label: "Dwell",
+          values: [
+            { low: 8, high: 18 },
+            { low: 10, high: 22 },
+            { low: 9, high: 15 },
+          ],
+        },
+      ];
+    },
+  },
+  {
+    id: "box-plot-chart",
+    group: "Components",
+    title: "Rowan Box Plot Chart",
+    summary: "Experimental five-number summaries. The host does not compute quartiles.",
+    tags: ["data display", "box plot", "chart"],
+    keywords: ["box plot", "quartile", "outlier"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="box-plot-chart-overview">
+        <h2>Five-number summary</h2>
+        <p>rowan-box-plot-chart is experimental. Each point is min, q1, median, q3, max, and optional outliers. The host does not invent quartiles. Null in the five-number summary is no-data. Interactive boxes emit rowan-point-activate with those fields.</p>
+        <div class="demo-row">
+          <rowan-box-plot-chart id="docs-box-plot-chart" label="Lane dwell" interactive></rowan-box-plot-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-box-plot-chart");
+      if (!chart) return;
+      chart.labels = ["North", "South", "West"];
+      chart.series = [
+        {
+          id: "dwell",
+          label: "Dwell",
+          values: [
+            { min: 4, q1: 8, median: 12, q3: 16, max: 22, outliers: [30] },
+            { min: 6, q1: 9, median: 11, q3: 15, max: 19 },
+            { min: 3, q1: 7, median: 10, q3: 14, max: 18 },
+          ],
+        },
+      ];
+    },
+  },
+  {
+    id: "radar-chart",
+    group: "Components",
+    title: "Rowan Radar Chart",
+    summary: "Experimental polar comparison. geometry is line or area. Null is no-data.",
+    tags: ["data display", "radar", "chart"],
+    keywords: ["radar", "spider", "polar"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="radar-chart-overview">
+        <h2>Polar axes</h2>
+        <p>rowan-radar-chart is experimental. Categories are axes around the ring. geometry is line (default) or area. Null is no-data and breaks the ring. Interactive vertices emit rowan-point-activate. Nightingale and radial bars are not this host.</p>
+        <div class="demo-row">
+          <rowan-radar-chart id="docs-radar-chart" label="Yard profile" interactive></rowan-radar-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-radar-chart");
+      if (!chart) return;
+      chart.labels = ["Fill", "Dwell", "Damage", "OTD", "Turns"];
+      chart.series = [
+        { id: "north", label: "North", values: [82, 44, 18, 76, 61] },
+        { id: "south", label: "South", values: [64, 58, 12, 88, 40] },
+      ];
+    },
+  },
+  {
     id: "trend-chart",
     group: "Components",
     title: "Rowan Trend Chart",

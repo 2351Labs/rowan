@@ -280,7 +280,7 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-area-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`, `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-area-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`, `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`, `rowan-range-chart`, `rowan-box-plot-chart`, `rowan-radar-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
@@ -728,6 +728,29 @@ series is signed deltas. `{ type: "total" }` is an absolute bar from zero, then
 sets the running total. The host does not invent totals. Null is no-data.
 Positive bars use success, negatives danger, totals info. Interactive bars emit
 `rowan-point-activate` with `type`.
+
+## Rowan Range Chart
+
+`rowan-range-chart` is an experimental categorical low–high chart. Each series
+is `{ id, label, color?, values: [{ low, high }] }`. `variant` is `bar`
+(default) or `area`. Null low or high is no-data. This is not frozen
+categorical `series.values`. Interactive ranges emit `rowan-point-activate`
+with `low` and `high`. Native SVG, matching table.
+
+## Rowan Box Plot Chart
+
+`rowan-box-plot-chart` is an experimental five-number-summary chart. Each point
+is `{ min, q1, median, q3, max, outliers? }`. The host does not compute
+quartiles. Null in the five-number summary is no-data. Interactive boxes emit
+`rowan-point-activate` with those fields. Native SVG, matching table.
+
+## Rowan Radar Chart
+
+`rowan-radar-chart` is an experimental polar comparison. Frozen categorical
+`series` and `labels` are the axes around the ring. `geometry` is `line`
+(default) or `area`. Null is no-data and breaks that series' ring; a gap is
+not drawn as zero. Interactive vertices emit `rowan-point-activate`. Native
+SVG, matching table. Nightingale and radial column/bar are not this host.
 
 ## Histogram bins
 

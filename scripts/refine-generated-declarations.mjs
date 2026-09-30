@@ -36,6 +36,21 @@ const nullableSetters = [
     setter: "config",
     valueType: "RowanFunnelChartConfig | null | undefined",
   },
+  {
+    file: new URL("../types/radar-chart/radar-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: "RowanRadarChartConfig | null | undefined",
+  },
+  {
+    file: new URL("../types/range-chart/range-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: "RowanRangeChartConfig | null | undefined",
+  },
+  {
+    file: new URL("../types/box-plot-chart/box-plot-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: "RowanBoxPlotChartConfig | null | undefined",
+  },
 ];
 
 for (const { file, setter, valueType } of nullableSetters) {
