@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import {
   createReferenceLine,
@@ -15,7 +16,8 @@ import {
   seriesHoverText,
 } from "../chart/hover.js";
 import {
-  stackedBarValueDomain,
+  categoricalBarRect,
+  categoricalBaseline,
   chartSeriesColor,
   cloneChartSeries,
   cloneChartSeriesInput,
@@ -25,6 +27,8 @@ import {
   normalizeChartSeries,
   normalizeReferenceLines,
   resolveChartLabels,
+  stackedBarCategoryTotal,
+  stackedBarPlotDomain,
 } from "../chart/model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
@@ -33,6 +37,8 @@ const PLOT_LEFT = 18;
 const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
+const ORIENTATIONS = new Set(["vertical", "horizontal"]);
+const STACK_MODES = new Set(["absolute", "normalized"]);
 
 let stackedBarChartId = 0;
 
@@ -45,17 +51,27 @@ function normalizeText(value) {
 }
 
 /**
+ * @typedef {import("../chart/model.js").RowanChartConfig & {
+ *   orientation?: "vertical" | "horizontal",
+ *   stackMode?: "absolute" | "normalized",
+ *   referenceLines?: import("../chart/model.js").RowanChartReferenceLine[],
+ * }} RowanStackedBarChartConfig
+ */
+
+/**
  * Stacked categorical bar chart. Positive values stack from zero.
  * Null and negatives are no-data.
  * @tag rowan-stacked-bar-chart
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {"vertical"|"horizontal"} orientation - Category axis. Default `vertical`.
+ * @attr {"absolute"|"normalized"} stack-mode - `normalized` scales each category to 100. Default `absolute`.
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - Chart series. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
- * @property {import("../chart/model.js").RowanChartConfig} config - Replaces the complete chart configuration.
+ * @property {RowanStackedBarChartConfig} config - Replaces the complete chart configuration. Omitted `orientation` / `stackMode` reset to vertical / absolute.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
- * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Arrays are property-only.
+ * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Overlays on the value axis. Arrays are property-only. Normalized mode uses a 0–100 scale.
  * @slot label
  * @slot description
  * @csspart control
@@ -78,11 +94,13 @@ export class RowanStackedBarChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./stacked-bar-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-stacked-bar-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "orientation", "stack-mode"];
   static upgradeProperties = [
     "label",
     "description",
     "interactive",
+    "orientation",
+    "stackMode",
     "series",
     "labels",
     "config",
@@ -147,6 +165,42 @@ export class RowanStackedBarChart extends BaseElement {
     this.reflectBoolean("interactive", Boolean(value));
   }
 
+  /** @returns {"vertical" | "horizontal"} */
+  get orientation() {
+    return normalizeEnum(this.readString("orientation", "vertical"), ORIENTATIONS, "vertical");
+  }
+
+  /** @param {"vertical" | "horizontal"} value */
+  set orientation(value) {
+    reflectEnum(this, "orientation", value, ORIENTATIONS, "vertical");
+  }
+
+  /** @returns {"absolute" | "normalized"} */
+  get stackMode() {
+    return normalizeEnum(this.readString("stack-mode", "absolute"), STACK_MODES, "absolute");
+  }
+
+  /** @param {"absolute" | "normalized"} value */
+  set stackMode(value) {
+    reflectEnum(this, "stack-mode", value, STACK_MODES, "absolute");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (
+      name === "orientation" &&
+      rewriteEnumAttribute(this, name, newValue, ORIENTATIONS, "vertical")
+    ) {
+      return;
+    }
+    if (
+      name === "stack-mode" &&
+      rewriteEnumAttribute(this, name, newValue, STACK_MODES, "absolute")
+    ) {
+      return;
+    }
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+
   /** @returns {Array<import("../chart/model.js").RowanChartSeries>} */
   get series() {
     return cloneChartSeries(this.#series);
@@ -173,7 +227,7 @@ export class RowanStackedBarChart extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {import("../chart/model.js").RowanChartConfig} */
+  /** @returns {RowanStackedBarChartConfig} */
   get config() {
     return {
       series: this.series,
@@ -181,10 +235,12 @@ export class RowanStackedBarChart extends BaseElement {
       interactive: this.interactive,
       valueFormatter: this.valueFormatter,
       referenceLines: this.referenceLines,
+      orientation: this.orientation,
+      stackMode: this.stackMode,
     };
   }
 
-  /** @param {import("../chart/model.js").RowanChartConfig | null | undefined} value */
+  /** @param {RowanStackedBarChartConfig | null | undefined} value */
   set config(value) {
     const source = isObject(value) ? value : {};
     this.#labels = normalizeChartLabels(source.labels);
@@ -194,6 +250,8 @@ export class RowanStackedBarChart extends BaseElement {
       typeof source.valueFormatter === "function" ? source.valueFormatter : null;
     this.#referenceLines = normalizeReferenceLines(source.referenceLines);
     this.reflectBoolean("interactive", Boolean(source.interactive));
+    reflectEnum(this, "orientation", source.orientation, ORIENTATIONS, "vertical");
+    reflectEnum(this, "stack-mode", source.stackMode, STACK_MODES, "absolute");
     this.#activePointKey = "";
     this.requestRender();
   }
@@ -229,11 +287,13 @@ export class RowanStackedBarChart extends BaseElement {
             <div class="description" part="description"><slot name="description"><span class="description-fallback"></span></slot></div>
           </div>
           <figure class="chart" part="chart">
-            <div class="plot-wrap">
-              <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-              <div class="point-controls"></div>
+            <div class="plot-band">
+              <div class="plot-wrap">
+                <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
+                <div class="point-controls"></div>
+              </div>
+              <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <div class="x-axis" aria-hidden="true"></div>
             <ul class="legend" part="legend" aria-label="Series"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
@@ -317,12 +377,24 @@ export class RowanStackedBarChart extends BaseElement {
     }
   }
 
+  #plotBox() {
+    return {
+      left: PLOT_LEFT,
+      top: PLOT_TOP,
+      width: SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT,
+      height: SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM,
+    };
+  }
+
+  #valueDomain() {
+    const plotDomain = stackedBarPlotDomain(this.#series, this.stackMode);
+    if (this.stackMode === "normalized") return plotDomain;
+    return expandDomainWithReferenceLines(plotDomain, this.#referenceLines);
+  }
+
   #renderChart() {
     const labels = resolveChartLabels(this.#series, this.#labels);
-    const domain = expandDomainWithReferenceLines(
-      stackedBarValueDomain(this.#series),
-      this.#referenceLines,
-    );
+    const domain = this.#valueDomain();
     this.#entries = this.#createEntries(labels, domain);
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
       this.#activePointKey = "";
@@ -348,25 +420,37 @@ export class RowanStackedBarChart extends BaseElement {
   }
 
   #createEntries(labels, domain) {
+    const orientation = this.orientation;
+    const stackMode = this.stackMode;
     const categoryCount = Math.max(labels.length, 1);
-    const plotWidth = SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT;
-    const plotHeight = SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
-    const range = domain.max - domain.min || 1;
-    const groupWidth = plotWidth / categoryCount;
-    const barWidth = groupWidth * 0.62;
+    const plot = this.#plotBox();
+    const groupSpan = orientation === "horizontal" ? plot.height : plot.width;
+    const groupSize = groupSpan / categoryCount;
+    const barThickness = groupSize * 0.62;
+    const axisStart = orientation === "horizontal" ? plot.top : plot.left;
     const entries = [];
 
     for (let index = 0; index < labels.length; index += 1) {
       let stack = 0;
-      const groupX = PLOT_LEFT + index * groupWidth + (groupWidth - barWidth) / 2;
+      const categoryTotal = stackedBarCategoryTotal(this.#series, index);
+      const groupStart = axisStart + index * groupSize + (groupSize - barThickness) / 2;
 
       this.#series.forEach((series, seriesIndex) => {
         const point = series.values[index];
         if (!point || point.value === null || point.value <= 0) return;
 
         const value = point.value;
-        const yTop = PLOT_TOP + ((domain.max - (stack + value)) / range) * plotHeight;
-        const yBottom = PLOT_TOP + ((domain.max - stack) / range) * plotHeight;
+        const plotValue =
+          stackMode === "normalized" && categoryTotal > 0 ? (value / categoryTotal) * 100 : value;
+        const rect = categoricalBarRect({
+          orientation,
+          from: stack,
+          to: stack + plotValue,
+          domain,
+          groupStart,
+          thickness: barThickness,
+          plot,
+        });
         const formattedValue = formatChartValue(this.#valueFormatter, value, {
           series,
           index,
@@ -381,13 +465,13 @@ export class RowanStackedBarChart extends BaseElement {
           label: labels[index] || point.label,
           value,
           formattedValue,
-          x: groupX,
-          y: yTop,
-          width: barWidth,
-          height: Math.max(yBottom - yTop, 1),
-          barY: yTop,
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: Math.max(rect.height, 1),
+          barY: rect.y,
         });
-        stack += value;
+        stack += plotValue;
       });
     }
 
@@ -400,16 +484,14 @@ export class RowanStackedBarChart extends BaseElement {
     title.textContent = this.#displayLabel() || "Stacked bar chart";
     fragment.append(title);
 
-    const range = domain.max - domain.min || 1;
-    const plotWidth = SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT;
-    const baseline =
-      PLOT_TOP + ((domain.max - 0) / range) * (SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM);
+    const plot = this.#plotBox();
+    const baseline = categoricalBaseline(this.orientation, domain, plot);
     const axis = createSvgElement("line");
     axis.setAttribute("class", "zero-line");
-    axis.setAttribute("x1", String(PLOT_LEFT));
-    axis.setAttribute("x2", String(PLOT_LEFT + plotWidth));
-    axis.setAttribute("y1", String(baseline));
-    axis.setAttribute("y2", String(baseline));
+    axis.setAttribute("x1", String(baseline.x1));
+    axis.setAttribute("x2", String(baseline.x2));
+    axis.setAttribute("y1", String(baseline.y1));
+    axis.setAttribute("y2", String(baseline.y2));
     fragment.append(axis);
 
     for (const entry of this.#entries) {
@@ -425,19 +507,35 @@ export class RowanStackedBarChart extends BaseElement {
       fragment.append(bar);
     }
 
-    const plotHeight = SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
+    const range = domain.max - domain.min || 1;
     for (const line of this.#referenceLines) {
-      const y = PLOT_TOP + ((domain.max - line.value) / range) * plotHeight;
+      const formattedValue = formatChartValue(this.#valueFormatter, line.value, {
+        label: line.label || "Reference",
+      });
+      if (this.orientation === "horizontal") {
+        const x = plot.left + ((line.value - domain.min) / range) * plot.width;
+        fragment.append(
+          createReferenceLine({
+            x,
+            y1: plot.top,
+            y2: plot.top + plot.height,
+            tone: line.tone,
+            label: line.label,
+            formattedValue,
+          }),
+        );
+        continue;
+      }
+
+      const y = plot.top + ((domain.max - line.value) / range) * plot.height;
       fragment.append(
         createReferenceLine({
-          x1: PLOT_LEFT,
-          x2: PLOT_LEFT + plotWidth,
+          x1: plot.left,
+          x2: plot.left + plot.width,
           y,
           tone: line.tone,
           label: line.label,
-          formattedValue: formatChartValue(this.#valueFormatter, line.value, {
-            label: line.label || "Reference",
-          }),
+          formattedValue,
         }),
       );
     }
@@ -451,6 +549,7 @@ export class RowanStackedBarChart extends BaseElement {
     for (const label of labels) {
       const item = document.createElement("span");
       item.textContent = label;
+      item.title = label;
       fragment.append(item);
     }
     this.#xAxis.append(fragment);

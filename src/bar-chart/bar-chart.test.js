@@ -12,6 +12,7 @@ async function renderChart(options = {}) {
     { id: "resolved", label: "Resolved", values: [2, 7, 6] },
   ];
   if (options.interactive) chart.interactive = true;
+  if (options.orientation) chart.orientation = options.orientation;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -27,10 +28,73 @@ describe("rowan-bar-chart", () => {
     const chart = await renderChart();
 
     expect(chart.hasAttribute("series")).to.equal(false);
+    expect(chart.orientation).to.equal("vertical");
+    expect(chart.hasAttribute("orientation")).to.equal(false);
     expect(chart.shadowRoot.querySelectorAll("rect.bar")).to.have.length(5);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming4No data8");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Resolved276");
     expect(chart.shadowRoot.querySelectorAll("button")).to.have.length(0);
+  });
+
+  it("keeps default vertical geometry when orientation is omitted or invalid", async () => {
+    const chart = await renderChart();
+    const first = chart.shadowRoot.querySelector("rect.bar");
+    const geometry = ["x", "y", "width", "height"].map((name) => first.getAttribute(name));
+
+    chart.orientation = "vertical";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(
+      ["x", "y", "width", "height"].map((name) =>
+        chart.shadowRoot.querySelector("rect.bar").getAttribute(name),
+      ),
+    ).to.deep.equal(geometry);
+
+    chart.orientation = "diagonal";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.orientation).to.equal("vertical");
+    expect(chart.hasAttribute("orientation")).to.equal(false);
+    expect(
+      ["x", "y", "width", "height"].map((name) =>
+        chart.shadowRoot.querySelector("rect.bar").getAttribute(name),
+      ),
+    ).to.deep.equal(geometry);
+  });
+
+  it("draws horizontal bars with truncated category labels", async () => {
+    const chart = await renderChart({
+      orientation: "horizontal",
+      labels: ["Mon", "Tuesday overnight backlog", "Wed"],
+    });
+    const first = chart.shadowRoot.querySelector("rect.bar");
+    expect(chart.getAttribute("orientation")).to.equal("horizontal");
+    expect(Number(first.getAttribute("width"))).to.be.above(Number(first.getAttribute("height")));
+    const longLabel = [...chart.shadowRoot.querySelectorAll(".x-axis span")].find(
+      (item) => item.textContent === "Tuesday overnight backlog",
+    );
+    expect(longLabel.title).to.equal("Tuesday overnight backlog");
+    expect(getComputedStyle(longLabel).textOverflow).to.equal("ellipsis");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming4No data8");
+  });
+
+  it("does not emit when orientation is set, and config without orientation resets vertical", async () => {
+    const chart = await renderChart({ orientation: "horizontal" });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    chart.orientation = "vertical";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(activations).to.have.length(0);
+
+    chart.orientation = "horizontal";
+    chart.config = { labels: chart.labels, series: chart.series };
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.orientation).to.equal("vertical");
+    expect(chart.hasAttribute("orientation")).to.equal(false);
+    expect(activations).to.have.length(0);
   });
 
   it("emits rowan-point-activate from an interactive bar", async () => {

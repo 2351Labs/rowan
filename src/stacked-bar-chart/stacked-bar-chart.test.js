@@ -13,6 +13,8 @@ async function renderChart(options = {}) {
     { id: "resolved", label: "Resolved", values: [1, null] },
   ];
   if (options.interactive) chart.interactive = true;
+  if (options.orientation) chart.orientation = options.orientation;
+  if (options.stackMode) chart.stackMode = options.stackMode;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -28,6 +30,10 @@ describe("rowan-stacked-bar-chart", () => {
     const chart = await renderChart();
 
     expect(chart.hasAttribute("series")).to.equal(false);
+    expect(chart.orientation).to.equal("vertical");
+    expect(chart.stackMode).to.equal("absolute");
+    expect(chart.hasAttribute("orientation")).to.equal(false);
+    expect(chart.hasAttribute("stack-mode")).to.equal(false);
     const bars = [...chart.shadowRoot.querySelectorAll("rect.bar")];
     expect(bars).to.have.length(3);
     const mondayIncoming = Number(bars[0].getAttribute("y"));
@@ -36,6 +42,63 @@ describe("rowan-stacked-bar-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming42");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Resolved1No data");
     expect(chart.shadowRoot.querySelectorAll("button")).to.have.length(0);
+  });
+
+  it("keeps default stack geometry when stack-mode is omitted or invalid", async () => {
+    const chart = await renderChart();
+    const first = chart.shadowRoot.querySelector("rect.bar");
+    const geometry = ["x", "y", "width", "height"].map((name) => first.getAttribute(name));
+
+    chart.stackMode = "percent";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.stackMode).to.equal("absolute");
+    expect(chart.hasAttribute("stack-mode")).to.equal(false);
+    expect(
+      ["x", "y", "width", "height"].map((name) =>
+        chart.shadowRoot.querySelector("rect.bar").getAttribute(name),
+      ),
+    ).to.deep.equal(geometry);
+  });
+
+  it("normalizes each category to 100 and keeps raw values in the table", async () => {
+    const chart = await renderChart({
+      stackMode: "normalized",
+      series: [
+        { id: "incoming", label: "Incoming", values: [4, 2] },
+        { id: "resolved", label: "Resolved", values: [1, 2] },
+      ],
+    });
+    const bars = [...chart.shadowRoot.querySelectorAll("rect.bar")];
+    const mondayHeight =
+      Number(bars[0].getAttribute("height")) + Number(bars[1].getAttribute("height"));
+    const tuesdayHeight =
+      Number(bars[2].getAttribute("height")) + Number(bars[3].getAttribute("height"));
+    expect(chart.getAttribute("stack-mode")).to.equal("normalized");
+    expect(mondayHeight).to.be.closeTo(354, 0.5);
+    expect(tuesdayHeight).to.be.closeTo(354, 0.5);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming42");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Resolved12");
+  });
+
+  it("draws horizontal stacks and does not emit when layout flags change", async () => {
+    const chart = await renderChart({ orientation: "horizontal" });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+    const first = chart.shadowRoot.querySelector("rect.bar");
+    expect(Number(first.getAttribute("width"))).to.be.above(Number(first.getAttribute("height")));
+
+    chart.stackMode = "normalized";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(activations).to.have.length(0);
+
+    chart.config = { labels: chart.labels, series: chart.series };
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.orientation).to.equal("vertical");
+    expect(chart.stackMode).to.equal("absolute");
+    expect(activations).to.have.length(0);
   });
 
   it("skips negatives in the stack and table", async () => {

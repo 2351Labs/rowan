@@ -1295,6 +1295,23 @@
             },
             {
               "kind": "field",
+              "name": "orientation",
+              "return": {
+                "type": {
+                  "text": "\"vertical\" | \"horizontal\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"vertical\" | \"horizontal\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "series",
               "return": {
                 "type": {
@@ -1345,21 +1362,21 @@
               "name": "config",
               "return": {
                 "type": {
-                  "text": "RowanChartConfig"
+                  "text": "RowanBarChartConfig"
                 }
               },
               "parameters": [
                 {
                   "name": "value",
                   "type": {
-                    "text": "RowanChartConfig | null | undefined"
+                    "text": "RowanBarChartConfig | null | undefined"
                   }
                 }
               ],
               "type": {
-                "text": "RowanChartConfig"
+                "text": "RowanBarChartConfig"
               },
-              "description": "Replaces the complete chart configuration."
+              "description": "Replaces the complete chart configuration. Omitted `orientation` resets to vertical."
             },
             {
               "kind": "field",
@@ -1475,6 +1492,13 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"vertical\"|\"horizontal\""
+              },
+              "description": "Category axis. Default `vertical`."
             }
           ],
           "superclass": {
@@ -3236,15 +3260,16 @@
           "name": "createReferenceLine",
           "parameters": [
             {
-              "name": "{\n  x1,\n  x2,\n  y,\n  tone = \"neutral\",\n  label = \"\",\n  formattedValue = \"\",\n}"
+              "name": "{\n  x1,\n  x2,\n  y,\n  x,\n  y1,\n  y2,\n  tone = \"neutral\",\n  label = \"\",\n  formattedValue = \"\",\n}"
             },
             {
               "name": "options",
               "type": {
-                "text": "{\n *   x1: number,\n *   x2: number,\n *   y: number,\n *   tone?: string,\n *   label?: string,\n *   formattedValue?: string,\n * }"
+                "text": "{\n *   x1?: number,\n *   x2?: number,\n *   y?: number,\n *   x?: number,\n *   y1?: number,\n *   y2?: number,\n *   tone?: string,\n *   label?: string,\n *   formattedValue?: string,\n * }"
               }
             }
-          ]
+          ],
+          "description": "Horizontal overlay: `x1`, `x2`, `y`. Vertical overlay: `x`, `y1`, `y2`."
         },
         {
           "kind": "function",
@@ -3675,6 +3700,87 @@
         },
         {
           "kind": "function",
+          "name": "stackedBarCategoryTotal",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            },
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Positive contribution at one category. Null and negatives are no-data."
+        },
+        {
+          "kind": "function",
+          "name": "stackedBarPlotDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            },
+            {
+              "name": "stackMode",
+              "default": "\"absolute\"",
+              "optional": true,
+              "type": {
+                "text": "\"absolute\" | \"normalized\""
+              }
+            }
+          ],
+          "description": "Absolute stacks use the category sum. Normalized stacks always plot 0–100."
+        },
+        {
+          "kind": "function",
+          "name": "categoricalBarRect",
+          "parameters": [
+            {
+              "name": "{\n  orientation = \"vertical\",\n  from = 0,\n  to,\n  domain,\n  groupStart,\n  offset = 0,\n  thickness,\n  plot,\n}"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   orientation?: \"vertical\" | \"horizontal\",\n *   from?: number,\n *   to: number,\n *   domain: { min: number, max: number },\n *   groupStart: number,\n *   offset?: number,\n *   thickness: number,\n *   plot: RowanCategoricalPlotBox,\n * }"
+              }
+            }
+          ],
+          "description": "Rectangle for a categorical bar or stack segment. `from`/`to` are values on\nthe domain; grouped bars use `from: 0`."
+        },
+        {
+          "kind": "function",
+          "name": "categoricalBaseline",
+          "parameters": [
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"vertical\" | \"horizontal\""
+              }
+            },
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "plot",
+              "type": {
+                "text": "RowanCategoricalPlotBox"
+              }
+            }
+          ],
+          "description": "Zero baseline for a categorical plot."
+        },
+        {
+          "kind": "function",
           "name": "donutSlices",
           "parameters": [
             {
@@ -3820,6 +3926,38 @@
           "name": "stackedBarValueDomain",
           "declaration": {
             "name": "stackedBarValueDomain",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stackedBarCategoryTotal",
+          "declaration": {
+            "name": "stackedBarCategoryTotal",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stackedBarPlotDomain",
+          "declaration": {
+            "name": "stackedBarPlotDomain",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "categoricalBarRect",
+          "declaration": {
+            "name": "categoricalBarRect",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "categoricalBaseline",
+          "declaration": {
+            "name": "categoricalBaseline",
             "module": "src/chart/model.js"
           }
         },
@@ -7460,6 +7598,23 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "return": {
+                "type": {
+                  "text": "\"donut\" | \"pie\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"donut\" | \"pie\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "series",
               "return": {
                 "type": {
@@ -7510,20 +7665,21 @@
               "name": "config",
               "return": {
                 "type": {
-                  "text": "RowanChartConfig"
+                  "text": "RowanDonutChartConfig"
                 }
               },
               "parameters": [
                 {
                   "name": "value",
                   "type": {
-                    "text": "RowanChartConfig | null | undefined"
+                    "text": "RowanDonutChartConfig | null | undefined"
                   }
                 }
               ],
               "type": {
-                "text": "RowanChartConfig"
-              }
+                "text": "RowanDonutChartConfig"
+              },
+              "description": "Replaces the complete chart configuration. Omitted `variant` resets to donut."
             },
             {
               "kind": "field",
@@ -7638,6 +7794,13 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"donut\"|\"pie\""
+              },
+              "description": "`pie` fills the hole. Default `donut`. Total stays in the matching table."
             }
           ],
           "superclass": {
@@ -19908,6 +20071,40 @@
             },
             {
               "kind": "field",
+              "name": "orientation",
+              "return": {
+                "type": {
+                  "text": "\"vertical\" | \"horizontal\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"vertical\" | \"horizontal\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "stackMode",
+              "return": {
+                "type": {
+                  "text": "\"absolute\" | \"normalized\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"absolute\" | \"normalized\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "series",
               "return": {
                 "type": {
@@ -19958,21 +20155,21 @@
               "name": "config",
               "return": {
                 "type": {
-                  "text": "RowanChartConfig"
+                  "text": "RowanStackedBarChartConfig"
                 }
               },
               "parameters": [
                 {
                   "name": "value",
                   "type": {
-                    "text": "RowanChartConfig | null | undefined"
+                    "text": "RowanStackedBarChartConfig | null | undefined"
                   }
                 }
               ],
               "type": {
-                "text": "RowanChartConfig"
+                "text": "RowanStackedBarChartConfig"
               },
-              "description": "Replaces the complete chart configuration."
+              "description": "Replaces the complete chart configuration. Omitted `orientation` / `stackMode` reset to vertical / absolute."
             },
             {
               "kind": "field",
@@ -20014,7 +20211,7 @@
               "type": {
                 "text": "RowanChartReferenceLine[]"
               },
-              "description": "Horizontal overlays. Arrays are property-only."
+              "description": "Overlays on the value axis. Arrays are property-only. Normalized mode uses a 0–100 scale."
             },
             {
               "kind": "field",
@@ -20109,6 +20306,20 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"vertical\"|\"horizontal\""
+              },
+              "description": "Category axis. Default `vertical`."
+            },
+            {
+              "name": "stack-mode",
+              "type": {
+                "text": "\"absolute\"|\"normalized\""
+              },
+              "description": "`normalized` scales each category to 100. Default `absolute`."
             }
           ],
           "superclass": {

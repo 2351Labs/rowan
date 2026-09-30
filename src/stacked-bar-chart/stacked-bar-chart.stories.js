@@ -6,11 +6,15 @@ function createStackedBarChart({
   label = "Incidents by day",
   description = "Series stack from zero. Null is no-data.",
   interactive = true,
+  orientation = "vertical",
+  stackMode = "absolute",
 } = {}) {
   const chart = document.createElement("rowan-stacked-bar-chart");
   chart.label = label;
   chart.description = description;
   chart.interactive = Boolean(interactive);
+  chart.orientation = orientation;
+  chart.stackMode = stackMode;
   chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   chart.series = [
     { id: "p1", label: "P1", values: [2, 1, 0, 3, 1] },
@@ -28,11 +32,15 @@ export default {
     label: "Incidents by day",
     description: "Series stack from zero. Null is no-data.",
     interactive: true,
+    orientation: "vertical",
+    stackMode: "absolute",
   },
   argTypes: {
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
+    orientation: { control: "inline-radio", options: ["vertical", "horizontal"] },
+    stackMode: { control: "inline-radio", options: ["absolute", "normalized"] },
   },
 };
 
@@ -41,6 +49,21 @@ export const Playground = {
     steps: ["Activate a segment with the pointer or keyboard."],
     events: ["rowan-point-activate"],
   }),
+  render: (args) => createStackedBarChart(args),
+};
+
+export const Horizontal = {
+  args: { orientation: "horizontal" },
+  parameters: Playground.parameters,
+  render: (args) => createStackedBarChart(args),
+};
+
+export const Normalized = {
+  args: {
+    stackMode: "normalized",
+    description: "Each day fills to 100%. The table still shows raw counts.",
+  },
+  parameters: Playground.parameters,
   render: (args) => createStackedBarChart(args),
 };
 

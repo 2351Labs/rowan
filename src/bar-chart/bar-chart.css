@@ -43,7 +43,13 @@
   padding: var(--rowan-space-3);
 }
 
+.plot-band {
+  display: grid;
+  grid-template-areas: "plot" "axis";
+}
+
 .plot-wrap {
+  grid-area: plot;
   position: relative;
 }
 
@@ -61,8 +67,33 @@
 .x-axis {
   display: grid;
   font-size: var(--rowan-font-size-sm);
+  grid-area: axis;
   grid-template-columns: repeat(var(--category-count, 1), minmax(0, 1fr));
   text-align: center;
+}
+
+:host([orientation="horizontal"]) .plot-band {
+  align-items: stretch;
+  gap: var(--rowan-space-2);
+  grid-template-areas: "axis plot";
+  grid-template-columns: minmax(4.5rem, 8rem) minmax(0, 1fr);
+}
+
+:host([orientation="horizontal"]) .x-axis {
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--category-count, 1), minmax(0, 1fr));
+  text-align: end;
+}
+
+:host([orientation="horizontal"]) .x-axis span {
+  align-items: center;
+  display: flex;
+  justify-content: end;
+  min-block-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .legend {
