@@ -349,6 +349,7 @@ export class RowanHeatmapChart extends BaseElement {
           plotY: y,
           width: Math.max(cellWidth - CELL_GAP, 1),
           height: Math.max(cellHeight - CELL_GAP, 1),
+          detail: { row, column, rowIndex, columnIndex },
         });
       });
     });

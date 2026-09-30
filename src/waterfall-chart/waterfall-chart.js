@@ -361,6 +361,7 @@ export class RowanWaterfallChart extends BaseElement {
         barY: rect.y,
         fromY: yFor(step.from),
         toY: yFor(step.to),
+        detail: { type: step.type },
       });
     }
     return entries;

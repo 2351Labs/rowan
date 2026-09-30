@@ -35,6 +35,19 @@ function normalizeText(value) {
   return String(value ?? "").trim();
 }
 
+function scatterRadius(size, sizeDomain, sizeRange) {
+  if (size === null || !sizeDomain) return 5;
+  const radius = MIN_RADIUS + ((size - sizeDomain.min) / sizeRange) * (MAX_RADIUS - MIN_RADIUS);
+  return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, radius));
+}
+
+function formatScatterPoint(formatter, point, context) {
+  const x = formatChartValue(formatter, point.x, context);
+  const y = formatChartValue(formatter, point.y, context);
+  if (point.size === null) return `x=${x}, y=${y}`;
+  return `x=${x}, y=${y}, size=${formatChartValue(formatter, point.size, context)}`;
+}
+
 /**
  * Experimental scatter / bubble chart. Bubble is a `size` encoding, not a
  * second tag. Null x or y is no-data.
@@ -302,12 +315,8 @@ export class RowanScatterChart extends BaseElement {
         if (point.x === null || point.y === null) return;
         const x = plot.left + ((point.x - domains.x.min) / xRange) * plot.width;
         const y = plot.top + ((domains.y.max - point.y) / yRange) * plot.height;
-        const radius = domains.size
-          ? MIN_RADIUS +
-            ((point.size === null ? domains.size.min : point.size - domains.size.min) / sizeRange) *
-              (MAX_RADIUS - MIN_RADIUS)
-          : 5;
-        const formattedValue = formatChartValue(this.#valueFormatter, point.y, {
+        const radius = scatterRadius(point.size, domains.size, sizeRange);
+        const formattedValue = formatScatterPoint(this.#valueFormatter, point, {
           series,
           index,
           label: point.label,
@@ -326,6 +335,7 @@ export class RowanScatterChart extends BaseElement {
           plotX: x,
           plotY: y,
           radius,
+          detail: { x: point.x, y: point.y, size: point.size },
         });
       });
     });

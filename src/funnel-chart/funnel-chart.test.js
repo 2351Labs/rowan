@@ -42,6 +42,27 @@ describe("rowan-funnel-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.match(/10.*40.*No data.*20/);
   });
 
+  it("keeps finite 0 as a stage and does not divide by zero", async () => {
+    const chart = await renderChart({
+      labels: ["Leads", "None", "Won"],
+      series: [{ id: "flow", label: "Flow", values: [10, 0, 4] }],
+    });
+    expect(chart.shadowRoot.querySelectorAll("path.stage")).to.have.length(3);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.match(/10.*0.*4/);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.not.include("No data");
+
+    chart.remove();
+    const zeros = await renderChart({
+      labels: ["A", "B"],
+      series: [{ id: "flow", label: "Flow", values: [0, 0] }],
+    });
+    const stages = [...zeros.shadowRoot.querySelectorAll("path.stage")];
+    expect(stages).to.have.length(2);
+    for (const stage of stages) {
+      expect(stage.getAttribute("d")).to.not.match(/NaN/);
+    }
+  });
+
   it("puts stage 0 at the bottom for pyramid and tapers cone", async () => {
     const pyramid = await renderChart({ variant: "pyramid" });
     const first = pyramid.shadowRoot.querySelector('path[data-point-key="flow::0"]');

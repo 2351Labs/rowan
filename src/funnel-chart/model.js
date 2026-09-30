@@ -1,12 +1,20 @@
-import { donutSlices } from "../chart/model.js";
-
 /**
- * Funnel stages skip null and negatives, like donut slices. The host does
+ * Funnel stages skip null and negatives. Finite 0 is a stage. The host does
  * not auto-sort.
  * @param {import("../chart/model.js").RowanNormalizedChartSeries | undefined} series
  */
 export function funnelStages(series) {
-  return donutSlices(series);
+  if (!series) return [];
+
+  return series.values.map((point, index) => {
+    const usable = point.value !== null && point.value >= 0;
+    return {
+      index,
+      label: point.label,
+      value: usable ? point.value : null,
+      included: usable,
+    };
+  });
 }
 
 /**
@@ -19,14 +27,15 @@ export function funnelTrapezoids(stages, variant, plot) {
   if (!included.length) return [];
 
   const max = Math.max(...included.map((stage) => stage.value));
+  const scale = max === 0 ? 0 : plot.width / max;
   const count = included.length;
   const band = plot.height / count;
   const center = plot.left + plot.width / 2;
 
   return included.map((stage, order) => {
     const next = included[order + 1];
-    const currentWidth = (stage.value / max) * plot.width;
-    let nextWidth = next ? (next.value / max) * plot.width : currentWidth;
+    const currentWidth = stage.value * scale;
+    let nextWidth = next ? next.value * scale : currentWidth;
     if (variant === "cone" && !next) nextWidth = 0;
     const pyramid = variant === "pyramid";
     const topWidth = pyramid ? nextWidth : currentWidth;

@@ -1,5 +1,5 @@
 /**
- * Funnel stages skip null and negatives, like donut slices. The host does
+ * Funnel stages skip null and negatives. Finite 0 is a stage. The host does
  * not auto-sort.
  * @param {import("../chart/model.js").RowanNormalizedChartSeries | undefined} series
  */

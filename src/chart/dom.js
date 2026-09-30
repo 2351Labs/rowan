@@ -215,7 +215,13 @@ export function createReferenceLine({
   return group;
 }
 
+/**
+ * Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields
+ * (scatter x/y/size, heatmap row/column, waterfall type) belong on
+ * `entry.detail` so plot coordinates are not copied into the event.
+ */
 export function emitPointActivate(host, emit, entry) {
+  const extra = entry.detail && typeof entry.detail === "object" ? entry.detail : {};
   const detail = {
     seriesId: entry.series?.id,
     seriesLabel: entry.series?.label,
@@ -225,7 +231,7 @@ export function emitPointActivate(host, emit, entry) {
     formattedValue: entry.formattedValue,
   };
   for (const key of ["x", "y", "size", "row", "column", "rowIndex", "columnIndex", "type"]) {
-    if (entry[key] !== undefined) detail[key] = entry[key];
+    if (extra[key] !== undefined) detail[key] = extra[key];
   }
   emit(host, "rowan-point-activate", detail);
 }
