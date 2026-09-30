@@ -42,7 +42,10 @@ import {
 import { RowanFormField } from "@rowan-ui/core/form-field";
 import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
+import { RowanFunnelChart } from "@rowan-ui/core/funnel-chart";
 import { RowanGaugeChart, type RowanGaugeChartRange } from "@rowan-ui/core/gauge-chart";
+import { RowanHeatmapChart } from "@rowan-ui/core/heatmap-chart";
+import { createHistogramData } from "@rowan-ui/core/histogram";
 import { RowanIconButton } from "@rowan-ui/core/icon-button";
 import { RowanImage } from "@rowan-ui/core/image";
 import { RowanKpiCard } from "@rowan-ui/core/kpi-card";
@@ -71,6 +74,7 @@ import {
   type RowanRichTextRun,
 } from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
+import { RowanScatterChart } from "@rowan-ui/core/scatter-chart";
 import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
 import {
   RowanSegmentedControl,
@@ -119,6 +123,7 @@ import { RowanTree } from "@rowan-ui/core/tree";
 import { RowanTreeItem } from "@rowan-ui/core/tree-item";
 import { RowanValidationSummary } from "@rowan-ui/core/validation-summary";
 import { RowanVirtualList } from "@rowan-ui/core/virtual-list";
+import { RowanWaterfallChart } from "@rowan-ui/core/waterfall-chart";
 
 const accordion: RowanAccordion = document.createElement("rowan-accordion");
 const alert: RowanAlert = document.createElement("rowan-alert");
@@ -130,6 +135,9 @@ const barChart: RowanBarChart = document.createElement("rowan-bar-chart");
 const barSeries: RowanChartSeries = { id: "incoming", label: "Incoming", values: [4, null, 8] };
 barChart.series = [barSeries];
 barChart.labels = ["Mon", "Tue", "Wed"];
+const histogram = createHistogramData({ values: [1, 2, null, 9], bins: 2 });
+barChart.labels = histogram.labels;
+barChart.series = histogram.series;
 const breadcrumb: RowanBreadcrumb = document.createElement("rowan-breadcrumb");
 const bulkActionsBar: RowanBulkActionsBar = document.createElement("rowan-bulk-actions-bar");
 const bulletChart: RowanBulletChart = document.createElement("rowan-bullet-chart");
@@ -154,6 +162,17 @@ const dialog: RowanDialog = document.createElement("rowan-dialog");
 const divider: RowanDivider = document.createElement("rowan-divider");
 const donutChart: RowanDonutChart = document.createElement("rowan-donut-chart");
 donutChart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
+const funnelChart: RowanFunnelChart = document.createElement("rowan-funnel-chart");
+funnelChart.variant = "cone";
+funnelChart.series = [{ id: "flow", label: "Flow", values: [10, 4] }];
+const heatmapChart: RowanHeatmapChart = document.createElement("rowan-heatmap-chart");
+heatmapChart.rows = ["North"];
+heatmapChart.columns = ["Mon"];
+heatmapChart.values = [[4]];
+const scatterChart: RowanScatterChart = document.createElement("rowan-scatter-chart");
+scatterChart.series = [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }];
+const waterfallChart: RowanWaterfallChart = document.createElement("rowan-waterfall-chart");
+waterfallChart.series = [{ id: "cash", label: "Cash", values: [10, { value: 6, type: "total" }] }];
 const drawer: RowanDrawer = document.createElement("rowan-drawer");
 const dropdown: RowanDropdown = document.createElement("rowan-dropdown");
 const dropzone: RowanDropzone = document.createElement("rowan-dropzone");

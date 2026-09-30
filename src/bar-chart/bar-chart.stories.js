@@ -1,4 +1,5 @@
 import "./bar-chart.js";
+import { createHistogramData } from "../histogram/histogram.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 
@@ -51,6 +52,23 @@ export const Horizontal = {
   args: { orientation: "horizontal" },
   parameters: Playground.parameters,
   render: (args) => createBarChart(args),
+};
+
+export const Histogram = {
+  name: "Histogram bins",
+  parameters: Playground.parameters,
+  render: (args) => {
+    const chart = createBarChart(args);
+    chart.label = args.label || "Fill samples";
+    chart.description = args.description || "createHistogramData bins for the bar chart.";
+    const data = createHistogramData({
+      values: [1, 2, 2, 3, 8, 9, 9, 10, null],
+      bins: 4,
+    });
+    chart.labels = data.labels;
+    chart.series = data.series;
+    return chart;
+  },
 };
 
 export const VibrantPalette = {

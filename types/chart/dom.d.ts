@@ -21,6 +21,39 @@ export function renderChartTable(table: HTMLTableElement, { caption, labels, ser
     formatValue: (value: number, series: unknown, index: number, label: string) => string;
 }): void;
 /**
+ * @param {HTMLTableElement} table
+ * @param {{
+ *   caption: string,
+ *   columns: Array<{ key: string, header: string }>,
+ *   rows: Array<Record<string, string | null | undefined>>,
+ * }} options
+ */
+export function renderKeyedChartTable(table: HTMLTableElement, { caption, columns, rows }: {
+    caption: string;
+    columns: Array<{
+        key: string;
+        header: string;
+    }>;
+    rows: Array<Record<string, string | null | undefined>>;
+}): void;
+/**
+ * @param {HTMLTableElement} table
+ * @param {{
+ *   caption: string,
+ *   rows: string[],
+ *   columns: string[],
+ *   values: Array<Array<number | null | undefined>>,
+ *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,
+ * }} options
+ */
+export function renderMatrixChartTable(table: HTMLTableElement, { caption, rows, columns, values, formatValue }: {
+    caption: string;
+    rows: string[];
+    columns: string[];
+    values: Array<Array<number | null | undefined>>;
+    formatValue: (value: number, rowIndex: number, columnIndex: number) => string;
+}): void;
+/**
  * Horizontal overlay: `x1`, `x2`, `y`. Vertical overlay: `x`, `y1`, `y2`.
  * @param {{
  *   x1?: number,
@@ -45,5 +78,10 @@ export function createReferenceLine({ x1, x2, y, x, y1, y2, tone, label, formatt
     label?: string;
     formattedValue?: string;
 }): any;
+/**
+ * Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields
+ * (scatter x/y/size, heatmap row/column, waterfall type) belong on
+ * `entry.detail` so plot coordinates are not copied into the event.
+ */
 export function emitPointActivate(host: any, emit: any, entry: any): void;
 export function pointControlFor(container: any, key: any): any;

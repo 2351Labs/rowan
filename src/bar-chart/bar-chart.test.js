@@ -109,6 +109,8 @@ describe("rowan-bar-chart", () => {
     expect(activations[0].seriesId).to.equal("incoming");
     expect(activations[0].index).to.equal(0);
     expect(activations[0].value).to.equal(4);
+    expect(activations[0]).to.not.have.property("x");
+    expect(activations[0]).to.not.have.property("y");
   });
 
   it("shows the hovered bar value", async () => {

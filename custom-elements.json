@@ -3257,6 +3257,48 @@
         },
         {
           "kind": "function",
+          "name": "renderKeyedChartTable",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLTableElement"
+              }
+            },
+            {
+              "name": "{ caption, columns, rows }"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   caption: string,\n *   columns: Array<{ key: string, header: string }>,\n *   rows: Array<Record<string, string | null | undefined>>,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "renderMatrixChartTable",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLTableElement"
+              }
+            },
+            {
+              "name": "{ caption, rows, columns, values, formatValue }"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   caption: string,\n *   rows: string[],\n *   columns: string[],\n *   values: Array<Array<number | null | undefined>>,\n *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "createReferenceLine",
           "parameters": [
             {
@@ -3284,7 +3326,8 @@
             {
               "name": "entry"
             }
-          ]
+          ],
+          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type) belong on\n`entry.detail` so plot coordinates are not copied into the event."
         },
         {
           "kind": "function",
@@ -3321,6 +3364,22 @@
           "name": "renderChartTable",
           "declaration": {
             "name": "renderChartTable",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "renderKeyedChartTable",
+          "declaration": {
+            "name": "renderKeyedChartTable",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "renderMatrixChartTable",
+          "declaration": {
+            "name": "renderMatrixChartTable",
             "module": "src/chart/dom.js"
           }
         },
@@ -10288,6 +10347,376 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/funnel-chart/funnel-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental one-series stage chart. Does not auto-sort. Negatives and\nnull are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers\nthe last stage to a point.",
+          "name": "RowanFunnelChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-funnel-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "stage"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "return": {
+                "type": {
+                  "text": "\"funnel\" | \"cone\" | \"pyramid\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"funnel\" | \"cone\" | \"pyramid\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "First series is drawn. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Stage labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanFunnelChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFunnelChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFunnelChartConfig"
+              },
+              "description": "Replaces the complete chart configuration. Omitted `variant` resets to funnel."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive stage.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"funnel\"|\"cone\"|\"pyramid\""
+              },
+              "description": "Default `funnel`."
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-funnel-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanFunnelChart",
+          "declaration": {
+            "name": "RowanFunnelChart",
+            "module": "src/funnel-chart/funnel-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/funnel-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanFunnelChart",
+          "declaration": {
+            "name": "RowanFunnelChart",
+            "module": "./funnel-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/funnel-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "funnelStages",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries | undefined"
+              }
+            }
+          ],
+          "description": "Funnel stages skip null and negatives. Finite 0 is a stage. The host does\nnot auto-sort."
+        },
+        {
+          "kind": "function",
+          "name": "funnelTrapezoids",
+          "parameters": [
+            {
+              "name": "stages",
+              "type": {
+                "text": "ReturnType<typeof funnelStages>"
+              }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"funnel\" | \"cone\" | \"pyramid\""
+              }
+            },
+            {
+              "name": "plot",
+              "type": {
+                "text": "{ left: number, top: number, width: number, height: number }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "funnelPath",
+          "parameters": [
+            {
+              "name": "shape"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "funnelStages",
+          "declaration": {
+            "name": "funnelStages",
+            "module": "src/funnel-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "funnelTrapezoids",
+          "declaration": {
+            "name": "funnelTrapezoids",
+            "module": "src/funnel-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "funnelPath",
+          "declaration": {
+            "name": "funnelPath",
+            "module": "src/funnel-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/gauge-chart/gauge-chart.js",
       "declarations": [
         {
@@ -10547,6 +10976,397 @@
           "declaration": {
             "name": "RowanGaugeChart",
             "module": "./gauge-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/heatmap-chart/heatmap-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental categorical heatmap. Single-hue intensity via fill-opacity.\nNull is empty / no-data. Accepts a matrix or `{ x, y, value }` points.",
+          "name": "RowanHeatmapChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-heatmap-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "cell"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "rows",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Row labels. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Column labels. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "type": {
+                "text": "Array<Array<number | null>>"
+              },
+              "description": "Matrix of cell values. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "points",
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "object"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats table and hover values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive cell.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-heatmap-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanHeatmapChart",
+          "declaration": {
+            "name": "RowanHeatmapChart",
+            "module": "src/heatmap-chart/heatmap-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/heatmap-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanHeatmapChart",
+          "declaration": {
+            "name": "RowanHeatmapChart",
+            "module": "./heatmap-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/heatmap-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizeHeatmap",
+          "parameters": [
+            {
+              "name": "input",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{\n *   rows?: unknown,\n *   columns?: unknown,\n *   values?: unknown,\n *   points?: unknown,\n * }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "heatmapValueDomain",
+          "parameters": [
+            {
+              "name": "values"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "cloneHeatmapValues",
+          "parameters": [
+            {
+              "name": "values"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "cloneHeatmapInput",
+          "parameters": [
+            {
+              "name": "value",
+              "default": "{}"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "cloneHeatmap",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizeHeatmap",
+          "declaration": {
+            "name": "normalizeHeatmap",
+            "module": "src/heatmap-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "heatmapValueDomain",
+          "declaration": {
+            "name": "heatmapValueDomain",
+            "module": "src/heatmap-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneHeatmapValues",
+          "declaration": {
+            "name": "cloneHeatmapValues",
+            "module": "src/heatmap-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneHeatmapInput",
+          "declaration": {
+            "name": "cloneHeatmapInput",
+            "module": "src/heatmap-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneHeatmap",
+          "declaration": {
+            "name": "cloneHeatmap",
+            "module": "src/heatmap-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/histogram/histogram.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createHistogramData",
+          "parameters": [
+            {
+              "name": "input",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{\n *   values?: Array<number | null>,\n *   bins?: number | number[],\n *   id?: string,\n *   label?: string,\n * }"
+              }
+            }
+          ],
+          "description": "Bin numeric samples for `rowan-bar-chart`. Nulls are omitted. The app\nassigns the result to `labels` / `series`; the host does not bin.",
+          "return": {
+            "type": {
+              "text": "{ labels: string[], series: Array<{ id: string, label: string, values: number[] }> }"
+            }
+          }
+        },
+        {
+          "kind": "variable",
+          "name": "label"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createHistogramData",
+          "declaration": {
+            "name": "createHistogramData",
+            "module": "src/histogram/histogram.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/histogram/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createHistogramData",
+          "declaration": {
+            "name": "createHistogramData",
+            "module": "./histogram.js"
           }
         }
       ]
@@ -11357,6 +12177,46 @@
           "declaration": {
             "name": "createParetoData",
             "module": "./combo-chart/combo-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanFunnelChart",
+          "declaration": {
+            "name": "RowanFunnelChart",
+            "module": "./funnel-chart/funnel-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanHeatmapChart",
+          "declaration": {
+            "name": "RowanHeatmapChart",
+            "module": "./heatmap-chart/heatmap-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createHistogramData",
+          "declaration": {
+            "name": "createHistogramData",
+            "module": "./histogram/histogram.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanScatterChart",
+          "declaration": {
+            "name": "RowanScatterChart",
+            "module": "./scatter-chart/scatter-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanWaterfallChart",
+          "declaration": {
+            "name": "RowanWaterfallChart",
+            "module": "./waterfall-chart/waterfall-chart.js"
           }
         },
         {
@@ -17502,6 +18362,301 @@
           "declaration": {
             "name": "RowanRowDetailsPanel",
             "module": "src/row-details-panel/row-details-panel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/scatter-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanScatterChart",
+          "declaration": {
+            "name": "RowanScatterChart",
+            "module": "./scatter-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/scatter-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "cloneScatterSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeScatterSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "cloneScatterSeries",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "scatterDomains",
+          "parameters": [
+            {
+              "name": "series"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cloneScatterSeriesInput",
+          "declaration": {
+            "name": "cloneScatterSeriesInput",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeScatterSeries",
+          "declaration": {
+            "name": "normalizeScatterSeries",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneScatterSeries",
+          "declaration": {
+            "name": "cloneScatterSeries",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "scatterDomains",
+          "declaration": {
+            "name": "scatterDomains",
+            "module": "src/scatter-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/scatter-chart/scatter-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental scatter / bubble chart. Bubble is a `size` encoding, not a\nsecond tag. Null x or y is no-data.",
+          "name": "RowanScatterChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-scatter-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "point"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "Series of `{ id, label, color?, points: [{ x, y, size?, label? }] }`. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "object"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats table and hover values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive point.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-scatter-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanScatterChart",
+          "declaration": {
+            "name": "RowanScatterChart",
+            "module": "src/scatter-chart/scatter-chart.js"
           }
         }
       ]
@@ -25887,6 +27042,340 @@
           "declaration": {
             "name": "RowanVirtualList",
             "module": "src/virtual-list/virtual-list.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/waterfall-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanWaterfallChart",
+          "declaration": {
+            "name": "RowanWaterfallChart",
+            "module": "./waterfall-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/waterfall-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "cloneWaterfallSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeWaterfallSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "labels",
+              "default": "[]",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "First series only. Point `type: \"total\"` is preserved; other points are deltas."
+        },
+        {
+          "kind": "function",
+          "name": "cloneWaterfallSeries",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "waterfallEntries",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "{ values: Array<{ value: number | null, label: string, type: \"delta\" | \"total\" }> } | undefined"
+              }
+            },
+            {
+              "name": "labels",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "Waterfall does not invent totals. `type: \"total\"` is an absolute bar from\nzero; other finite values are signed deltas from the running total. Null\nis no-data."
+        },
+        {
+          "kind": "function",
+          "name": "waterfallDomain",
+          "parameters": [
+            {
+              "name": "entries"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cloneWaterfallSeriesInput",
+          "declaration": {
+            "name": "cloneWaterfallSeriesInput",
+            "module": "src/waterfall-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeWaterfallSeries",
+          "declaration": {
+            "name": "normalizeWaterfallSeries",
+            "module": "src/waterfall-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneWaterfallSeries",
+          "declaration": {
+            "name": "cloneWaterfallSeries",
+            "module": "src/waterfall-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "waterfallEntries",
+          "declaration": {
+            "name": "waterfallEntries",
+            "module": "src/waterfall-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "waterfallDomain",
+          "declaration": {
+            "name": "waterfallDomain",
+            "module": "src/waterfall-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/waterfall-chart/waterfall-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental waterfall. Signed deltas from a running total. Totals are\n`{ type: \"total\" }` from zero; the host does not invent them. Null is no-data.",
+          "name": "RowanWaterfallChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-waterfall-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "bar"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "First series of `{ value, type?: \"total\" }`. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "object"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats table and hover values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive bar.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-waterfall-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanWaterfallChart",
+          "declaration": {
+            "name": "RowanWaterfallChart",
+            "module": "src/waterfall-chart/waterfall-chart.js"
           }
         }
       ]

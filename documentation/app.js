@@ -2014,7 +2014,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="bar-chart-overview">
         <h2>Categorical comparison</h2>
-        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. orientation is vertical (default) or horizontal. Interactive bars emit rowan-point-activate.</p>
+        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. orientation is vertical (default) or horizontal. Interactive bars emit rowan-point-activate. Histogram bins are createHistogramData in @rowan-ui/core/histogram; the host does not bin.</p>
         <div class="demo-row">
           <rowan-bar-chart id="docs-bar-chart" label="Incidents by day" interactive></rowan-bar-chart>
         </div>
@@ -2131,6 +2131,117 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       if (!chart) return;
       chart.labels = ["App", "Email", "Phone"];
       chart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
+    },
+  },
+  {
+    id: "scatter-chart",
+    group: "Components",
+    title: "Rowan Scatter Chart",
+    summary: "Experimental x/y points. Size encodes a bubble. Null x or y is no-data.",
+    tags: ["data display", "scatter", "chart"],
+    keywords: ["scatter", "bubble"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="scatter-chart-overview">
+        <h2>Points and bubbles</h2>
+        <p>rowan-scatter-chart is experimental. Each series has points with x, y, optional size, and optional label. Null x or y is no-data. When size is present, radius encodes it. Interactive points emit rowan-point-activate with x, y, and size. This is not frozen categorical series.values.</p>
+        <div class="demo-row">
+          <rowan-scatter-chart id="docs-scatter-chart" label="Dwell vs fill" interactive></rowan-scatter-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-scatter-chart");
+      if (!chart) return;
+      chart.series = [
+        {
+          id: "north",
+          label: "North",
+          points: [
+            { x: 12, y: 64, size: 8, label: "Dock 1" },
+            { x: 18, y: 72, size: 14, label: "Dock 2" },
+            { x: null, y: 90, size: 4, label: "Skipped" },
+          ],
+        },
+      ];
+    },
+  },
+  {
+    id: "heatmap-chart",
+    group: "Components",
+    title: "Rowan Heatmap Chart",
+    summary: "Experimental matrix. Single-hue intensity. Null is no-data.",
+    tags: ["data display", "heatmap", "chart"],
+    keywords: ["heatmap", "matrix"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="heatmap-chart-overview">
+        <h2>Categorical matrix</h2>
+        <p>rowan-heatmap-chart is experimental. Set rows, columns, and values, or points as x/y/value triples. Intensity is one hue via fill-opacity. Null is empty and No data in the table. Interactive cells emit rowan-point-activate with row, column, and value.</p>
+        <div class="demo-row">
+          <rowan-heatmap-chart id="docs-heatmap-chart" label="Lane dwell" interactive></rowan-heatmap-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-heatmap-chart");
+      if (!chart) return;
+      chart.rows = ["North", "South"];
+      chart.columns = ["Mon", "Tue", "Wed"];
+      chart.values = [
+        [12, null, 18],
+        [9, 22, 14],
+      ];
+    },
+  },
+  {
+    id: "funnel-chart",
+    group: "Components",
+    title: "Rowan Funnel Chart",
+    summary: "Experimental stages. Does not auto-sort. Null and negatives are no-data.",
+    tags: ["data display", "funnel", "chart"],
+    keywords: ["funnel", "cone", "pyramid"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="funnel-chart-overview">
+        <h2>Stages</h2>
+        <p>rowan-funnel-chart is experimental. It draws the first series in input order. variant is funnel (default), cone, or pyramid. Null and negatives are no-data. Interactive stages emit rowan-point-activate.</p>
+        <div class="demo-row">
+          <rowan-funnel-chart id="docs-funnel-chart" label="Conversion" interactive></rowan-funnel-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-funnel-chart");
+      if (!chart) return;
+      chart.labels = ["Leads", "Qualified", "Won"];
+      chart.series = [{ id: "flow", label: "Flow", values: [120, 64, 18] }];
+    },
+  },
+  {
+    id: "waterfall-chart",
+    group: "Components",
+    title: "Rowan Waterfall Chart",
+    summary: "Experimental signed deltas. Totals are authored; the host does not invent them.",
+    tags: ["data display", "waterfall", "chart"],
+    keywords: ["waterfall", "delta", "total"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="waterfall-chart-overview">
+        <h2>Running total</h2>
+        <p>rowan-waterfall-chart is experimental. The first series is signed deltas. type total is an absolute bar from zero. The host does not invent totals. Null is no-data. Interactive bars emit rowan-point-activate with type.</p>
+        <div class="demo-row">
+          <rowan-waterfall-chart id="docs-waterfall-chart" label="Cash movement" interactive></rowan-waterfall-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-waterfall-chart");
+      if (!chart) return;
+      chart.labels = ["Start", "In", "Out", "End"];
+      chart.series = [
+        {
+          id: "cash",
+          label: "Cash",
+          values: [{ value: 40, type: "total" }, 18, -7, { value: 51, type: "total" }],
+        },
+      ];
     },
   },
   {
