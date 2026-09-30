@@ -87,10 +87,9 @@
 }
 
 :host([orientation="horizontal"]) .x-axis span {
-  align-items: center;
-  display: flex;
-  justify-content: end;
-  min-block-size: 0;
+  align-self: center;
+  display: block;
+  min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
