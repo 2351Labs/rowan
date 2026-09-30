@@ -149,6 +149,14 @@ Version in `package.json` is `0.14.1` for core, icons, and MapLibre. Do **not**
 call this `1.0`. Bullet Few rendering and encodings. Publish after this catalog
 commit is on `main`: tag `v0.14.1`.
 
+## 0.15.0 cut
+
+Version in `package.json` is `0.15.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Experimental scatter, heatmap, funnel, waterfall, range,
+box-plot, radar, and combo may still change. Frozen stacked-area and additive
+bar/donut layout flags ship here. Publish after this catalog commit is on
+`main`: tag `v0.15.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

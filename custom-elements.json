@@ -1537,6 +1537,386 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/box-plot-chart/box-plot-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental box plot. Per-category `{ min, q1, median, q3, max, outliers? }`.\nThe host does not compute quartiles. Null in the five-number summary is\nno-data. Own series model — not frozen categorical `series.values`.",
+          "name": "RowanBoxPlotChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-box-plot-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "box"
+            },
+            {
+              "name": "whisker"
+            },
+            {
+              "name": "median"
+            },
+            {
+              "name": "outlier"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<object>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<object>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "Series of `{ id, label, color?, values: [{ min, q1, median, q3, max, outliers? }] }`. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanBoxPlotChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBoxPlotChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBoxPlotChartConfig"
+              },
+              "description": "Replaces the complete chart configuration."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats table and hover values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive box. Detail includes min, q1, median, q3, and max.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-box-plot-chart",
+          "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "label"
+        },
+        {
+          "kind": "variable",
+          "name": "index"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBoxPlotChart",
+          "declaration": {
+            "name": "RowanBoxPlotChart",
+            "module": "src/box-plot-chart/box-plot-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/box-plot-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanBoxPlotChart",
+          "declaration": {
+            "name": "RowanBoxPlotChart",
+            "module": "./box-plot-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/box-plot-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "cloneBoxPlotSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeBoxPlotSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "labels",
+              "default": "[]",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "Five-number summaries are authored. The host does not compute quartiles."
+        },
+        {
+          "kind": "function",
+          "name": "cloneBoxPlotSeries",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "boxPlotIncluded",
+          "parameters": [
+            {
+              "name": "point"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "boxPlotDomain",
+          "parameters": [
+            {
+              "name": "series"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cloneBoxPlotSeriesInput",
+          "declaration": {
+            "name": "cloneBoxPlotSeriesInput",
+            "module": "src/box-plot-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeBoxPlotSeries",
+          "declaration": {
+            "name": "normalizeBoxPlotSeries",
+            "module": "src/box-plot-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneBoxPlotSeries",
+          "declaration": {
+            "name": "cloneBoxPlotSeries",
+            "module": "src/box-plot-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "boxPlotIncluded",
+          "declaration": {
+            "name": "boxPlotIncluded",
+            "module": "src/box-plot-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "boxPlotDomain",
+          "declaration": {
+            "name": "boxPlotDomain",
+            "module": "src/box-plot-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/breadcrumb/breadcrumb.js",
       "declarations": [
         {
@@ -3327,7 +3707,7 @@
               "name": "entry"
             }
           ],
-          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type) belong on\n`entry.detail` so plot coordinates are not copied into the event."
+          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type, range low/high,\nbox-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates\nare not copied into the event."
         },
         {
           "kind": "function",
@@ -12021,6 +12401,14 @@
         },
         {
           "kind": "js",
+          "name": "RowanBoxPlotChart",
+          "declaration": {
+            "name": "RowanBoxPlotChart",
+            "module": "./box-plot-chart/box-plot-chart.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RowanBulletChart",
           "declaration": {
             "name": "RowanBulletChart",
@@ -12201,6 +12589,22 @@
           "declaration": {
             "name": "createHistogramData",
             "module": "./histogram/histogram.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanRadarChart",
+          "declaration": {
+            "name": "RowanRadarChart",
+            "module": "./radar-chart/radar-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanRangeChart",
+          "declaration": {
+            "name": "RowanRangeChart",
+            "module": "./range-chart/range-chart.js"
           }
         },
         {
@@ -16577,6 +16981,622 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/radar-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanRadarChart",
+          "declaration": {
+            "name": "RowanRadarChart",
+            "module": "./radar-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/radar-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "radarAngle",
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Polar helpers for `rowan-radar-chart`. Functions only — not a public chart\nbase. Angle 0 is the first category at the top; later categories go clockwise."
+        },
+        {
+          "kind": "function",
+          "name": "radarRadius",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number | null"
+              }
+            },
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "maxRadius",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarPoint",
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number | null"
+              }
+            },
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "cx",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cy",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "maxRadius",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarRingPoint",
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cx",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cy",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "radius",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarPolygonPath",
+          "parameters": [
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cx",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cy",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "radius",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarLinePath",
+          "parameters": [
+            {
+              "name": "points",
+              "type": {
+                "text": "Array<{ index: number, x: number, y: number }>"
+              }
+            },
+            {
+              "name": "categoryCount",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarAreaPath",
+          "parameters": [
+            {
+              "name": "points",
+              "type": {
+                "text": "Array<{ index: number, x: number, y: number }>"
+              }
+            },
+            {
+              "name": "categoryCount",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Fill only a complete ring. A null axis breaks the fill so the gap is not\nread as zero."
+        },
+        {
+          "kind": "function",
+          "name": "radarDomain",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarTextAnchor",
+          "parameters": [
+            {
+              "name": "angle",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "radarDominantBaseline",
+          "parameters": [
+            {
+              "name": "angle",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "radarAngle",
+          "declaration": {
+            "name": "radarAngle",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarRadius",
+          "declaration": {
+            "name": "radarRadius",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarPoint",
+          "declaration": {
+            "name": "radarPoint",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarRingPoint",
+          "declaration": {
+            "name": "radarRingPoint",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarPolygonPath",
+          "declaration": {
+            "name": "radarPolygonPath",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarLinePath",
+          "declaration": {
+            "name": "radarLinePath",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarAreaPath",
+          "declaration": {
+            "name": "radarAreaPath",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarDomain",
+          "declaration": {
+            "name": "radarDomain",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarTextAnchor",
+          "declaration": {
+            "name": "radarTextAnchor",
+            "module": "src/radar-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "radarDominantBaseline",
+          "declaration": {
+            "name": "radarDominantBaseline",
+            "module": "src/radar-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/radar-chart/radar-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental polar comparison. Categories are axes around the ring.\n`geometry` is `line` (default) or `area`. Null is no-data and breaks the\nring; the host does not treat a gap as zero. Frozen categorical `series`.\nNightingale and radial bars are not this host.",
+          "name": "RowanRadarChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-radar-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "line"
+            },
+            {
+              "name": "area"
+            },
+            {
+              "name": "point"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "geometry",
+              "return": {
+                "type": {
+                  "text": "\"line\" | \"area\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"line\" | \"area\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "Chart series. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Axis labels around the ring. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanRadarChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRadarChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRadarChartConfig"
+              },
+              "description": "Replaces the complete chart configuration. Omitted `geometry` resets to line."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive vertex.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "geometry",
+              "type": {
+                "text": "\"line\"|\"area\""
+              },
+              "description": "Default `line`."
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-radar-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanRadarChart",
+          "declaration": {
+            "name": "RowanRadarChart",
+            "module": "src/radar-chart/radar-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/radio-group/index.js",
       "declarations": [],
       "exports": [
@@ -17030,6 +18050,404 @@
           "declaration": {
             "name": "RowanRadio",
             "module": "src/radio/radio.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/range-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanRangeChart",
+          "declaration": {
+            "name": "RowanRangeChart",
+            "module": "./range-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/range-chart/model.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "cloneRangeSeriesInput",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "normalizeRangeSeries",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "labels",
+              "default": "[]",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "Own `{ low, high }` series model — not frozen categorical `series.values`."
+        },
+        {
+          "kind": "function",
+          "name": "cloneRangeSeries",
+          "parameters": [
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "rangePointIncluded",
+          "parameters": [
+            {
+              "name": "point"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "rangeDomain",
+          "parameters": [
+            {
+              "name": "series"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cloneRangeSeriesInput",
+          "declaration": {
+            "name": "cloneRangeSeriesInput",
+            "module": "src/range-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeRangeSeries",
+          "declaration": {
+            "name": "normalizeRangeSeries",
+            "module": "src/range-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "cloneRangeSeries",
+          "declaration": {
+            "name": "cloneRangeSeries",
+            "module": "src/range-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rangePointIncluded",
+          "declaration": {
+            "name": "rangePointIncluded",
+            "module": "src/range-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rangeDomain",
+          "declaration": {
+            "name": "rangeDomain",
+            "module": "src/range-chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/range-chart/range-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental categorical range. Per-category `{ low, high }`. `variant` is\n`bar` (default) or `area`. Null low or high is no-data. Own series model —\nnot frozen categorical `series.values`.",
+          "name": "RowanRangeChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-range-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "bar"
+            },
+            {
+              "name": "area"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "return": {
+                "type": {
+                  "text": "\"bar\" | \"area\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"bar\" | \"area\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<object>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<object>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<object>"
+              },
+              "description": "Series of `{ id, label, color?, values: [{ low, high }] }`. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanRangeChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRangeChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRangeChartConfig"
+              },
+              "description": "Replaces the complete chart configuration. Omitted `variant` resets to bar."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "type": {
+                "text": "Function | null"
+              },
+              "description": "Formats table and hover values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive range. Detail includes `low` and `high`.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"bar\"|\"area\""
+              },
+              "description": "Default `bar`."
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-range-chart",
+          "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "label"
+        },
+        {
+          "kind": "variable",
+          "name": "index"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanRangeChart",
+          "declaration": {
+            "name": "RowanRangeChart",
+            "module": "src/range-chart/range-chart.js"
           }
         }
       ]

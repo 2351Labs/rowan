@@ -42,6 +42,7 @@ import {
 import { RowanFormField } from "@rowan-ui/core/form-field";
 import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
+import { RowanBoxPlotChart } from "@rowan-ui/core/box-plot-chart";
 import { RowanFunnelChart } from "@rowan-ui/core/funnel-chart";
 import { RowanGaugeChart, type RowanGaugeChartRange } from "@rowan-ui/core/gauge-chart";
 import { RowanHeatmapChart } from "@rowan-ui/core/heatmap-chart";
@@ -64,6 +65,8 @@ import { RowanPopover } from "@rowan-ui/core/popover";
 import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
+import { RowanRadarChart } from "@rowan-ui/core/radar-chart";
+import { RowanRangeChart } from "@rowan-ui/core/range-chart";
 import { RowanRating } from "@rowan-ui/core/rating";
 import {
   RowanRichTextEditor,
@@ -173,6 +176,16 @@ const scatterChart: RowanScatterChart = document.createElement("rowan-scatter-ch
 scatterChart.series = [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }];
 const waterfallChart: RowanWaterfallChart = document.createElement("rowan-waterfall-chart");
 waterfallChart.series = [{ id: "cash", label: "Cash", values: [10, { value: 6, type: "total" }] }];
+const rangeChart: RowanRangeChart = document.createElement("rowan-range-chart");
+rangeChart.variant = "area";
+rangeChart.series = [{ id: "dwell", label: "Dwell", values: [{ low: 4, high: 12 }] }];
+const boxPlotChart: RowanBoxPlotChart = document.createElement("rowan-box-plot-chart");
+boxPlotChart.series = [
+  { id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] },
+];
+const radarChart: RowanRadarChart = document.createElement("rowan-radar-chart");
+radarChart.geometry = "area";
+radarChart.series = [{ id: "north", label: "North", values: [80, 40, 20] }];
 const drawer: RowanDrawer = document.createElement("rowan-drawer");
 const dropdown: RowanDropdown = document.createElement("rowan-dropdown");
 const dropzone: RowanDropzone = document.createElement("rowan-dropzone");

@@ -80,8 +80,9 @@ export function createReferenceLine({ x1, x2, y, x, y1, y2, tone, label, formatt
 }): any;
 /**
  * Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields
- * (scatter x/y/size, heatmap row/column, waterfall type) belong on
- * `entry.detail` so plot coordinates are not copied into the event.
+ * (scatter x/y/size, heatmap row/column, waterfall type, range low/high,
+ * box-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates
+ * are not copied into the event.
  */
 export function emitPointActivate(host: any, emit: any, entry: any): void;
 export function pointControlFor(container: any, key: any): any;

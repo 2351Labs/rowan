@@ -13,6 +13,7 @@ export {
 export { RowanAlert } from "./alert/alert.js";
 export { RowanAppLayout } from "./app-layout/app-layout.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
+export { RowanBoxPlotChart } from "./box-plot-chart/box-plot-chart.js";
 export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
 export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
@@ -33,6 +34,8 @@ export { RowanComboChart, createParetoData } from "./combo-chart/combo-chart.js"
 export { RowanFunnelChart } from "./funnel-chart/funnel-chart.js";
 export { RowanHeatmapChart } from "./heatmap-chart/heatmap-chart.js";
 export { createHistogramData } from "./histogram/histogram.js";
+export { RowanRadarChart } from "./radar-chart/radar-chart.js";
+export { RowanRangeChart } from "./range-chart/range-chart.js";
 export { RowanScatterChart } from "./scatter-chart/scatter-chart.js";
 export { RowanWaterfallChart } from "./waterfall-chart/waterfall-chart.js";
 export { RowanAccordion } from "./accordion/accordion.js";

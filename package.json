@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/core",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "description": "Rowan vanilla Web Components design system.",
   "license": "MIT",
   "author": "2351Labs",
@@ -64,6 +64,10 @@
     "./bullet-chart": {
       "types": "./src/bullet-chart/bullet-chart.d.ts",
       "default": "./src/bullet-chart/bullet-chart.js"
+    },
+    "./box-plot-chart": {
+      "types": "./src/box-plot-chart/box-plot-chart.d.ts",
+      "default": "./src/box-plot-chart/box-plot-chart.js"
     },
     "./gauge-chart": {
       "types": "./src/gauge-chart/gauge-chart.d.ts",
@@ -273,9 +277,17 @@
       "types": "./src/radio-group/radio-group.d.ts",
       "default": "./src/radio-group/radio-group.js"
     },
+    "./radar-chart": {
+      "types": "./src/radar-chart/radar-chart.d.ts",
+      "default": "./src/radar-chart/radar-chart.js"
+    },
     "./rating": {
       "types": "./src/rating/rating.d.ts",
       "default": "./src/rating/rating.js"
+    },
+    "./range-chart": {
+      "types": "./src/range-chart/range-chart.d.ts",
+      "default": "./src/range-chart/range-chart.js"
     },
     "./rich-text-editor": {
       "types": "./src/rich-text-editor/rich-text-editor.d.ts",
@@ -519,6 +531,7 @@
     "./src/avatar/avatar.js",
     "./src/bulk-actions-bar/bulk-actions-bar.js",
     "./src/bullet-chart/bullet-chart.js",
+    "./src/box-plot-chart/box-plot-chart.js",
     "./src/gauge-chart/gauge-chart.js",
     "./src/heatmap-chart/heatmap-chart.js",
     "./src/filter-builder/filter-builder.js",
@@ -566,7 +579,9 @@
     "./src/progress/progress.js",
     "./src/radio/radio.js",
     "./src/radio-group/radio-group.js",
+    "./src/radar-chart/radar-chart.js",
     "./src/rating/rating.js",
+    "./src/range-chart/range-chart.js",
     "./src/rich-text-editor/rich-text-editor.js",
     "./src/trend-chart/trend-chart.js",
     "./src/row-details-panel/row-details-panel.js",
