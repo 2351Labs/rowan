@@ -280,32 +280,33 @@ Implemented components currently include:
 - Forms: `rowan-text-field`, `rowan-textarea`, `rowan-checkbox`, `rowan-switch`, `rowan-radio`, `rowan-radio-group`, `rowan-rating`, `rowan-rich-text-editor`, `rowan-select`, `rowan-combobox`, `rowan-listbox`, `rowan-option`, `rowan-multi-select-combobox`, `rowan-segmented-control`, `rowan-date-picker`, `rowan-date-range-picker`, `rowan-time-picker`, `rowan-color-picker`, `rowan-calendar`, `rowan-number-field`, `rowan-slider`, `rowan-form-field`, `rowan-form-layout`, `rowan-dropzone`, `rowan-file-upload`, `rowan-validation-summary`, `rowan-form-wizard`
 - Surfaces and overlays: `rowan-card`, `rowan-dialog`, `rowan-confirm-dialog`, `rowan-command-palette`, `rowan-command-item`, `rowan-context-menu`, `rowan-drawer`, `rowan-dropdown`, `rowan-popover`, `rowan-tooltip`
 - Navigation and workspaces: `rowan-menu`, `rowan-menu-item`, `rowan-tabs`, `rowan-tab`, `rowan-tab-panel`, `rowan-tree`, `rowan-tree-item`, `rowan-side-nav`, `rowan-side-nav-item`, `rowan-side-nav-section`, `rowan-app-layout`, `rowan-split-pane`, `rowan-accordion`, `rowan-pagination`, `rowan-breadcrumb`, `rowan-stepper`, `rowan-carousel`
-- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
+- Data display and operations: `rowan-trend-chart`, `rowan-area-chart`, `rowan-bar-chart`, `rowan-stacked-area-chart`, `rowan-stacked-bar-chart`, `rowan-combo-chart`, `rowan-donut-chart`, `rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`, `rowan-kpi-card`, `rowan-source-meta`, `rowan-image`, `rowan-virtual-list`, `rowan-table`, `rowan-table-toolbar`, `rowan-bulk-actions-bar`, `rowan-filter-builder`, `rowan-row-details-panel`
 
 ### API stability
 
 Everything in the catalog above is usable. The listed dashboard hosts are
 frozen; pin the version if you depend on them. This is not `1.0`.
 
-| Surface                         | Status | Notes                                                                                                                                                                                                |
-| ------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                                                                                        |
-| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                                       |
-| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                                         |
-| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.               |
-| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                                             |
-| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                   |
-| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                      |
-| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                  |
-| `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                      |
-| `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                           |
-| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                       |
-| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data. Additive `orientation`: `vertical` (default) or `horizontal`.                                            |
-| `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. `referenceLines` are frozen on this host only.                    |
-| `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only. Additive `orientation` and `stack-mode` (`absolute` default, or `normalized` 0–100). |
-| `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                                   |
-| `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                                             |
-| `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                                    |
+| Surface                         | Status | Notes                                                                                                                                                                                                             |
+| ------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                                                                                                     |
+| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                                                    |
+| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                                                      |
+| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.                            |
+| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                                                          |
+| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                |
+| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                   |
+| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                               |
+| `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                   |
+| `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                        |
+| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                                    |
+| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data. Additive `orientation`: `vertical` (default) or `horizontal`.                                                         |
+| `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. Independent fills, not stacked. `referenceLines` are frozen on this host only. |
+| `rowan-stacked-area-chart`      | Stable | Positive values stack from zero as filled bands. Null and negatives are no-data. Additive `stack-mode` (`absolute` default, or `normalized` 0–100). Independent fills stay on `rowan-area-chart`.                 |
+| `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only. Additive `orientation` and `stack-mode` (`absolute` default, or `normalized` 0–100).              |
+| `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                                                |
+| `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                                                          |
+| `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                                                 |
 
 ## Rowan Data State
 
@@ -643,6 +644,19 @@ same property-only `series`, `labels`, `config`, and `valueFormatter` as
 breaks both the line and the fill and appears as `No data` in the table.
 Interactive points emit `rowan-point-activate`. Property-only `referenceLines`
 (`{ value, label?, tone? }`) draw horizontal overlays. Native SVG, no animation.
+Stacked fills live on `rowan-stacked-area-chart`.
+
+## Rowan Stacked Area Chart
+
+`rowan-stacked-area-chart` is a frozen categorical stack of filled bands.
+Positive values stack from zero in series order. `null` and negatives are
+no-data: they do not contribute height, break that series' fill, and appear as
+`No data` in the table. Other series still stack at that category. Additive
+`stack-mode` is `absolute` (default) or `normalized` (each category fills to
+100; the table still shows raw values; `referenceLines` use the 0–100 scale).
+Interactive points emit `rowan-point-activate`. Property-only `referenceLines`
+(`{ value, label?, tone? }`) draw horizontal overlays. Native SVG, no animation.
+Independent fills stay on `rowan-area-chart`.
 
 ## Rowan Stacked Bar Chart
 
@@ -658,13 +672,15 @@ draw overlays on the value axis. Native SVG, no animation. Grouped bars stay on
 
 ## Rowan Combo Chart
 
-`rowan-combo-chart` is an experimental categorical combo: bars and lines share
-one category axis. Set `geometry: "bar"` or `"line"` on each series (`bar` is
-the default). Set `axis: "secondary"` for a second value scale (Pareto
-cumulative percent). Property-only `series`, `labels`, `config`, and
-`valueFormatter`. `null` is no-data. `createParetoData({ values, labels })`
-sorts descending and returns labels plus bar + cumulative-% series. The host
-does not auto-sort. Frozen bar and trend charts are unchanged.
+`rowan-combo-chart` is an experimental categorical combo: bars, lines, and
+areas share one category axis. Set `geometry: "bar"`, `"line"`, or `"area"` on
+each series (`bar` is the default; unknown values fall back to `bar`). Areas
+draw behind bars, then lines. Series overlay; they do not stack. Set
+`axis: "secondary"` for a second value scale (Pareto cumulative percent).
+Property-only `series`, `labels`, `config`, and `valueFormatter`. `null` is
+no-data. `createParetoData({ values, labels })` sorts descending and returns
+labels plus bar + cumulative-% series. The host does not auto-sort. Frozen bar,
+area, and trend charts are unchanged.
 
 ```js
 import { createParetoData } from "@rowan-ui/core/combo-chart";

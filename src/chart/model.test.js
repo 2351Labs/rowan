@@ -1,7 +1,12 @@
 import { expect } from "@esm-bundle/chai";
 import {
+  areaBandPath,
+  areaLinePath,
   categoricalBarRect,
   categoricalBaseline,
+  categoricalPointX,
+  categoricalValueY,
+  stackedAreaStacks,
   stackedBarCategoryTotal,
   stackedBarPlotDomain,
 } from "./model.js";
@@ -39,5 +44,60 @@ describe("chart model cartesian helpers", () => {
     expect(line.x1).to.equal(line.x2);
     expect(line.y1).to.equal(plot.top);
     expect(line.y2).to.equal(plot.top + plot.height);
+  });
+
+  it("spans stacked-area x from plot edge to edge", () => {
+    expect(categoricalPointX(0, 3, plot)).to.equal(plot.left);
+    expect(categoricalPointX(2, 3, plot)).to.equal(plot.left + plot.width);
+    expect(categoricalPointX(0, 1, plot)).to.equal(plot.left + plot.width / 2);
+  });
+
+  it("stacks area bands and breaks the fill on a gap", () => {
+    const series = [
+      {
+        id: "a",
+        label: "A",
+        color: "",
+        values: [
+          { value: 4, label: "Mon" },
+          { value: null, label: "Tue" },
+          { value: 2, label: "Wed" },
+        ],
+      },
+      {
+        id: "b",
+        label: "B",
+        color: "",
+        values: [
+          { value: 1, label: "Mon" },
+          { value: 3, label: "Tue" },
+          { value: -1, label: "Wed" },
+        ],
+      },
+    ];
+    const stacks = stackedAreaStacks(series, "absolute");
+    expect(stacks).to.deep.equal([
+      { index: 0, seriesIndex: 0, from: 0, to: 4, value: 4, plotValue: 4 },
+      { index: 0, seriesIndex: 1, from: 4, to: 5, value: 1, plotValue: 1 },
+      { index: 1, seriesIndex: 1, from: 0, to: 3, value: 3, plotValue: 3 },
+      { index: 2, seriesIndex: 0, from: 0, to: 2, value: 2, plotValue: 2 },
+    ]);
+
+    const domain = stackedBarPlotDomain(series, "absolute");
+    const points = stacks
+      .filter((stack) => stack.seriesIndex === 0)
+      .map((stack) => ({
+        index: stack.index,
+        x: categoricalPointX(stack.index, 3, plot),
+        yTop: categoricalValueY(stack.to, domain, plot),
+        yBottom: categoricalValueY(stack.from, domain, plot),
+      }));
+    const band = areaBandPath(points);
+    expect(band).to.include("Z");
+    expect(
+      areaLinePath(points)
+        .split(" ")
+        .map((part) => part[0]),
+    ).to.deep.equal(["M", "M"]);
   });
 });

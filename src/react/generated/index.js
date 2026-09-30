@@ -67,6 +67,7 @@ export { RowanSourceMeta } from "./source-meta.js";
 export { RowanSparkline } from "./sparkline.js";
 export { RowanSpinner } from "./spinner.js";
 export { RowanSplitPane } from "./split-pane.js";
+export { RowanStackedAreaChart } from "./stacked-area-chart.js";
 export { RowanStackedBarChart } from "./stacked-bar-chart.js";
 export { RowanStatusIndicator } from "./status-indicator.js";
 export { RowanStepper } from "./stepper.js";

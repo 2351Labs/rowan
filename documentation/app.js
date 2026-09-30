@@ -2057,6 +2057,33 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     },
   },
   {
+    id: "stacked-area-chart",
+    group: "Components",
+    title: "Rowan Stacked Area Chart",
+    summary: "Positive values stack from zero as filled bands. Null and negatives are no-data.",
+    tags: ["data display", "stacked area", "chart"],
+    keywords: ["stacked area", "stack", "normalized area"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="stacked-area-chart-overview">
+        <h2>Stacked fill</h2>
+        <p>rowan-stacked-area-chart stacks positive values from zero as filled bands. Null and negatives are no-data: they break that series' fill, do not contribute height, and appear as No data in the table. stack-mode is absolute (default) or normalized (each category fills to 100; the table still shows raw values). Interactive points emit rowan-point-activate. Independent fills stay on rowan-area-chart.</p>
+        <div class="demo-row">
+          <rowan-stacked-area-chart id="docs-stacked-area-chart" label="Incidents by day" interactive></rowan-stacked-area-chart>
+        </div>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-stacked-area-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      chart.series = [
+        { id: "p1", label: "P1", values: [2, 1, 0, 3, 1] },
+        { id: "p2", label: "P2", values: [4, 5, 2, 1, 3] },
+        { id: "p3", label: "P3", values: [6, 4, null, 5, 4] },
+      ];
+    },
+  },
+  {
     id: "stacked-bar-chart",
     group: "Components",
     title: "Rowan Stacked Bar Chart",

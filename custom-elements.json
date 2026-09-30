@@ -3781,6 +3781,108 @@
         },
         {
           "kind": "function",
+          "name": "categoricalPointX",
+          "parameters": [
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "categoryCount",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "plot",
+              "type": {
+                "text": "RowanCategoricalPlotBox"
+              }
+            }
+          ],
+          "description": "X for a category index. Spans the plot like the area chart: first and last\nsit on the plot edges when there are two or more categories."
+        },
+        {
+          "kind": "function",
+          "name": "categoricalValueY",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "plot",
+              "type": {
+                "text": "RowanCategoricalPlotBox"
+              }
+            }
+          ],
+          "description": "Y for a value on a vertical domain (max at the top)."
+        },
+        {
+          "kind": "function",
+          "name": "stackedAreaStacks",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanNormalizedChartSeries[]"
+              }
+            },
+            {
+              "name": "stackMode",
+              "default": "\"absolute\"",
+              "optional": true,
+              "type": {
+                "text": "\"absolute\" | \"normalized\""
+              }
+            }
+          ],
+          "description": "Per-category stacked contributions. Null and negatives are no-data and do\nnot contribute; other series still stack at that category.",
+          "return": {
+            "type": {
+              "text": "Array<{\n *   index: number,\n *   seriesIndex: number,\n *   from: number,\n *   to: number,\n *   value: number,\n *   plotValue: number,\n * }>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "areaBandPath",
+          "parameters": [
+            {
+              "name": "points",
+              "type": {
+                "text": "Array<{ x: number, yTop: number, yBottom: number, index: number }>"
+              }
+            }
+          ],
+          "description": "Closed fill for consecutive points. Gaps in `index` break the band."
+        },
+        {
+          "kind": "function",
+          "name": "areaLinePath",
+          "parameters": [
+            {
+              "name": "points",
+              "type": {
+                "text": "Array<{ x: number, yTop: number, index: number }>"
+              }
+            }
+          ],
+          "description": "Stroke along consecutive tops. Gaps in `index` break the line."
+        },
+        {
+          "kind": "function",
           "name": "donutSlices",
           "parameters": [
             {
@@ -3958,6 +4060,46 @@
           "name": "categoricalBaseline",
           "declaration": {
             "name": "categoricalBaseline",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "categoricalPointX",
+          "declaration": {
+            "name": "categoricalPointX",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "categoricalValueY",
+          "declaration": {
+            "name": "categoricalValueY",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stackedAreaStacks",
+          "declaration": {
+            "name": "stackedAreaStacks",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "areaBandPath",
+          "declaration": {
+            "name": "areaBandPath",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "areaLinePath",
+          "declaration": {
+            "name": "areaLinePath",
             "module": "src/chart/model.js"
           }
         },
@@ -4786,7 +4928,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Categorical combo chart: bars and lines on a shared category axis.\nOptional `axis: \"secondary\"` for a second value scale (Pareto cumulative %).",
+          "description": "Categorical combo chart: bars, lines, and areas on a shared category axis.\nOptional `axis: \"secondary\"` for a second value scale (Pareto cumulative %).",
           "name": "RowanComboChart",
           "cssProperties": [
             {
@@ -4805,6 +4947,9 @@
             },
             {
               "name": "line"
+            },
+            {
+              "name": "area"
             },
             {
               "name": "hover"
@@ -4840,7 +4985,7 @@
               "type": {
                 "text": "Array<object>"
               },
-              "description": "Chart series with optional geometry (bar|line) and axis (primary|secondary). Arrays are property-only."
+              "description": "Chart series with optional geometry (bar|line|area) and axis (primary|secondary). Arrays are property-only. Invalid geometry falls back to bar."
             },
             {
               "kind": "field",
@@ -11628,6 +11773,14 @@
           "declaration": {
             "name": "RowanSparkline",
             "module": "./sparkline/sparkline.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanStackedAreaChart",
+          "declaration": {
+            "name": "RowanStackedAreaChart",
+            "module": "./stacked-area-chart/stacked-area-chart.js"
           }
         },
         {
@@ -19978,6 +20131,344 @@
           "declaration": {
             "name": "RowanSplitPane",
             "module": "src/split-pane/split-pane.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/stacked-area-chart/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanStackedAreaChart",
+          "declaration": {
+            "name": "RowanStackedAreaChart",
+            "module": "./stacked-area-chart.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/stacked-area-chart/stacked-area-chart.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Stacked categorical area chart. Positive values stack from zero.\nNull and negatives are no-data.",
+          "name": "RowanStackedAreaChart",
+          "cssProperties": [
+            {
+              "name": "--rowan-stacked-area-chart-bg"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "control"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "area"
+            },
+            {
+              "name": "line"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "detail"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "reference-line"
+            },
+            {
+              "name": "summary"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "slots": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "interactive"
+            },
+            {
+              "kind": "field",
+              "name": "stackMode",
+              "return": {
+                "type": {
+                  "text": "\"absolute\" | \"normalized\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"absolute\" | \"normalized\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "series",
+              "return": {
+                "type": {
+                  "text": "Array<RowanChartSeries>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<RowanChartSeries>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<RowanChartSeries>"
+              },
+              "description": "Chart series. Arrays are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Category labels. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanStackedAreaChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanStackedAreaChartConfig | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanStackedAreaChartConfig"
+              },
+              "description": "Replaces the complete chart configuration. Omitted `stackMode` resets to absolute."
+            },
+            {
+              "kind": "field",
+              "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartValueFormatter | null"
+              },
+              "description": "Formats chart and table values. Functions are property-only."
+            },
+            {
+              "kind": "field",
+              "name": "referenceLines",
+              "return": {
+                "type": {
+                  "text": "RowanChartReferenceLine[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartReferenceLine[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanChartReferenceLine[]"
+              },
+              "description": "Horizontal overlays. Arrays are property-only. Normalized mode uses a 0–100 scale."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a user activates an interactive point.",
+              "name": "rowan-point-activate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "stack-mode",
+              "type": {
+                "text": "\"absolute\"|\"normalized\""
+              },
+              "description": "`normalized` scales each category to 100. Default `absolute`."
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-stacked-area-chart",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanStackedAreaChart",
+          "declaration": {
+            "name": "RowanStackedAreaChart",
+            "module": "src/stacked-area-chart/stacked-area-chart.js"
           }
         }
       ]

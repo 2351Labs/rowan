@@ -82,6 +82,7 @@ export { RowanSideNavSection } from "./side-nav-section/side-nav-section.js";
 export { RowanSlider } from "./slider/slider.js";
 export { RowanSourceMeta } from "./source-meta/source-meta.js";
 export { RowanSparkline } from "./sparkline/sparkline.js";
+export { RowanStackedAreaChart } from "./stacked-area-chart/stacked-area-chart.js";
 export { RowanStackedBarChart } from "./stacked-bar-chart/stacked-bar-chart.js";
 export { RowanSpinner } from "./spinner/spinner.js";
 export { RowanSplitPane } from "./split-pane/split-pane.js";

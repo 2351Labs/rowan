@@ -49,6 +49,25 @@ export const Playground = {
   render: (args) => createCombo(args),
 };
 
+export const AreaColumn = {
+  args: {
+    description: "Area behind bars on one category axis.",
+  },
+  parameters: Playground.parameters,
+  render: (args) => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = args.label || "Volume mix";
+    chart.description = args.description;
+    chart.interactive = Boolean(args.interactive);
+    chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    chart.series = [
+      { id: "trend", label: "Trend", geometry: "area", values: [14, 18, 11, 16, 13] },
+      { id: "volume", label: "Volume", geometry: "bar", values: [18, 24, 12, 20, 16] },
+    ];
+    return chart;
+  },
+};
+
 export const Pareto = {
   parameters: Playground.parameters,
   render: (args) => {

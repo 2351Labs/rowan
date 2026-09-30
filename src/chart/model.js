@@ -328,6 +328,124 @@ export function categoricalBaseline(orientation, domain, plot) {
 }
 
 /**
+ * X for a category index. Spans the plot like the area chart: first and last
+ * sit on the plot edges when there are two or more categories.
+ * @param {number} index
+ * @param {number} categoryCount
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalPointX(index, categoryCount, plot) {
+  if (categoryCount <= 1) return plot.left + plot.width / 2;
+  return plot.left + (index / (categoryCount - 1)) * plot.width;
+}
+
+/**
+ * Y for a value on a vertical domain (max at the top).
+ * @param {number} value
+ * @param {{ min: number, max: number }} domain
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalValueY(value, domain, plot) {
+  const range = domain.max - domain.min || 1;
+  return plot.top + ((domain.max - value) / range) * plot.height;
+}
+
+/**
+ * Per-category stacked contributions. Null and negatives are no-data and do
+ * not contribute; other series still stack at that category.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {"absolute" | "normalized"} [stackMode]
+ * @returns {Array<{
+ *   index: number,
+ *   seriesIndex: number,
+ *   from: number,
+ *   to: number,
+ *   value: number,
+ *   plotValue: number,
+ * }>}
+ */
+export function stackedAreaStacks(series, stackMode = "absolute") {
+  const length = Math.max(0, ...series.map((item) => item.values.length));
+  const stacks = [];
+
+  for (let index = 0; index < length; index += 1) {
+    let stack = 0;
+    const categoryTotal = stackedBarCategoryTotal(series, index);
+
+    series.forEach((_item, seriesIndex) => {
+      const value = series[seriesIndex].values[index]?.value;
+      if (value === null || value === undefined || value <= 0) return;
+
+      const plotValue =
+        stackMode === "normalized" && categoryTotal > 0 ? (value / categoryTotal) * 100 : value;
+      stacks.push({
+        index,
+        seriesIndex,
+        from: stack,
+        to: stack + plotValue,
+        value,
+        plotValue,
+      });
+      stack += plotValue;
+    });
+  }
+
+  return stacks;
+}
+
+/**
+ * Closed fill for consecutive points. Gaps in `index` break the band.
+ * @param {Array<{ x: number, yTop: number, yBottom: number, index: number }>} points
+ */
+export function areaBandPath(points) {
+  const segments = [];
+  let current = [];
+
+  for (const point of points) {
+    if (current.length > 0 && point.index !== current.at(-1).index + 1) {
+      segments.push(current);
+      current = [];
+    }
+    current.push(point);
+  }
+  if (current.length) segments.push(current);
+
+  return segments
+    .map((segment) => {
+      const top = segment
+        .map((point, index) => {
+          const command = index === 0 ? "M" : "L";
+          return `${command}${point.x.toFixed(2)},${point.yTop.toFixed(2)}`;
+        })
+        .join(" ");
+      const bottom = [...segment]
+        .reverse()
+        .map((point) => `L${point.x.toFixed(2)},${point.yBottom.toFixed(2)}`)
+        .join(" ");
+      return `${top} ${bottom} Z`;
+    })
+    .join(" ");
+}
+
+/**
+ * Stroke along consecutive tops. Gaps in `index` break the line.
+ * @param {Array<{ x: number, yTop: number, index: number }>} points
+ */
+export function areaLinePath(points) {
+  let hasPrevious = false;
+  let previousIndex = -1;
+
+  return points
+    .map((point) => {
+      const command = hasPrevious && point.index === previousIndex + 1 ? "L" : "M";
+      hasPrevious = true;
+      previousIndex = point.index;
+      return `${command}${point.x.toFixed(2)},${point.yTop.toFixed(2)}`;
+    })
+    .join(" ");
+}
+
+/**
  * Donut slices skip null and negative values. Negatives become no-data.
  * @param {RowanNormalizedChartSeries | undefined} series
  */

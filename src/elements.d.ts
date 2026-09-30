@@ -66,6 +66,7 @@ import type { RowanSlider } from "../types/slider/slider.js";
 import type { RowanSourceMeta } from "../types/source-meta/source-meta.js";
 import type { RowanSparkline } from "../types/sparkline/sparkline.js";
 import type { RowanSpinner } from "../types/spinner/spinner.js";
+import type { RowanStackedAreaChart } from "../types/stacked-area-chart/stacked-area-chart.js";
 import type { RowanStackedBarChart } from "../types/stacked-bar-chart/stacked-bar-chart.js";
 import type { RowanSplitPane } from "../types/split-pane/split-pane.js";
 import type { RowanStatusIndicator } from "../types/status-indicator/status-indicator.js";
@@ -158,6 +159,7 @@ declare global {
     "rowan-source-meta": RowanSourceMeta;
     "rowan-sparkline": RowanSparkline;
     "rowan-spinner": RowanSpinner;
+    "rowan-stacked-area-chart": RowanStackedAreaChart;
     "rowan-stacked-bar-chart": RowanStackedBarChart;
     "rowan-split-pane": RowanSplitPane;
     "rowan-status-indicator": RowanStatusIndicator;

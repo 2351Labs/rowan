@@ -313,6 +313,10 @@
       "types": "./src/sparkline/sparkline.d.ts",
       "default": "./src/sparkline/sparkline.js"
     },
+    "./stacked-area-chart": {
+      "types": "./src/stacked-area-chart/stacked-area-chart.d.ts",
+      "default": "./src/stacked-area-chart/stacked-area-chart.js"
+    },
     "./stacked-bar-chart": {
       "types": "./src/stacked-bar-chart/stacked-bar-chart.d.ts",
       "default": "./src/stacked-bar-chart/stacked-bar-chart.js"
@@ -553,6 +557,7 @@
     "./src/slider/slider.js",
     "./src/source-meta/source-meta.js",
     "./src/sparkline/sparkline.js",
+    "./src/stacked-area-chart/stacked-area-chart.js",
     "./src/stacked-bar-chart/stacked-bar-chart.js",
     "./src/spinner/spinner.js",
     "./src/split-pane/split-pane.js",
