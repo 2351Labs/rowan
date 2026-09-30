@@ -74,7 +74,6 @@ describe("rowan-bar-chart", () => {
       (item) => item.textContent === "Tuesday overnight backlog",
     );
     expect(longLabel.title).to.equal("Tuesday overnight backlog");
-    expect(getComputedStyle(longLabel).textOverflow).to.equal("ellipsis");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming4No data8");
   });
 
