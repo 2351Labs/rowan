@@ -1,6 +1,7 @@
 import "../elements.js";
 
 export { RowanStackedBarChart } from "../../types/stacked-bar-chart/stacked-bar-chart.js";
+export type { RowanStackedBarChartConfig } from "../../types/stacked-bar-chart/stacked-bar-chart.js";
 export type {
   RowanChartConfig,
   RowanChartSeries,

@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Additive chart layout flags (defaults unchanged): `rowan-bar-chart` / `rowan-stacked-bar-chart` `orientation` (`vertical` default, or `horizontal`); `rowan-stacked-bar-chart` `stack-mode` (`absolute` default, or `normalized` 0–100); `rowan-donut-chart` `variant` (`donut` default, or `pie`). Property-only `series` / `labels` / `config` stay frozen. No new tags.
+
 ## 0.14.1 - 2026-09-26
 
 ### Changed

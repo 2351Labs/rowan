@@ -50,6 +50,75 @@ export function stackedBarValueDomain(series: RowanNormalizedChartSeries[]): {
     max: number;
 };
 /**
+ * Positive contribution at one category. Null and negatives are no-data.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {number} index
+ */
+export function stackedBarCategoryTotal(series: RowanNormalizedChartSeries[], index: number): number;
+/**
+ * Absolute stacks use the category sum. Normalized stacks always plot 0–100.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {"absolute" | "normalized"} [stackMode]
+ */
+export function stackedBarPlotDomain(series: RowanNormalizedChartSeries[], stackMode?: "absolute" | "normalized" | undefined): {
+    min: number;
+    max: number;
+};
+/**
+ * @typedef {object} RowanCategoricalPlotBox
+ * @property {number} left
+ * @property {number} top
+ * @property {number} width
+ * @property {number} height
+ */
+/**
+ * Rectangle for a categorical bar or stack segment. `from`/`to` are values on
+ * the domain; grouped bars use `from: 0`.
+ * @param {{
+ *   orientation?: "vertical" | "horizontal",
+ *   from?: number,
+ *   to: number,
+ *   domain: { min: number, max: number },
+ *   groupStart: number,
+ *   offset?: number,
+ *   thickness: number,
+ *   plot: RowanCategoricalPlotBox,
+ * }} options
+ */
+export function categoricalBarRect({ orientation, from, to, domain, groupStart, offset, thickness, plot, }: {
+    orientation?: "vertical" | "horizontal";
+    from?: number;
+    to: number;
+    domain: {
+        min: number;
+        max: number;
+    };
+    groupStart: number;
+    offset?: number;
+    thickness: number;
+    plot: RowanCategoricalPlotBox;
+}): {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
+/**
+ * Zero baseline for a categorical plot.
+ * @param {"vertical" | "horizontal"} orientation
+ * @param {{ min: number, max: number }} domain
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalBaseline(orientation: "vertical" | "horizontal", domain: {
+    min: number;
+    max: number;
+}, plot: RowanCategoricalPlotBox): {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+};
+/**
  * Donut slices skip null and negative values. Negatives become no-data.
  * @param {RowanNormalizedChartSeries | undefined} series
  */
@@ -121,4 +190,10 @@ export type RowanNormalizedChartSeries = {
     label: string;
     values: RowanNormalizedChartPoint[];
     color: string;
+};
+export type RowanCategoricalPlotBox = {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
 };

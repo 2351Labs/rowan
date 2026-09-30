@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import {
   createSvgElement,
@@ -24,6 +25,7 @@ const CX = 100;
 const CY = 100;
 const OUTER = 78;
 const INNER = 46;
+const VARIANTS = new Set(["donut", "pie"]);
 
 let donutChartId = 0;
 
@@ -35,27 +37,39 @@ function normalizeText(value) {
   return String(value ?? "").trim();
 }
 
+/**
+ * @typedef {import("../chart/model.js").RowanChartConfig & {
+ *   variant?: "donut" | "pie",
+ * }} RowanDonutChartConfig
+ */
+
 function polar(radius, angle) {
   return [CX + radius * Math.cos(angle), CY + radius * Math.sin(angle)];
 }
 
-function slicePath(startAngle, endAngle) {
+function slicePath(startAngle, endAngle, inner = INNER, outer = OUTER) {
   const twoPi = Math.PI * 2;
   const span = endAngle - startAngle;
   if (span >= twoPi - 1e-6) {
-    const [ox1, oy1] = polar(OUTER, -Math.PI / 2);
-    const [ox2, oy2] = polar(OUTER, Math.PI / 2);
-    const [ix1, iy1] = polar(INNER, Math.PI / 2);
-    const [ix2, iy2] = polar(INNER, -Math.PI / 2);
-    return `M${ox1},${oy1} A${OUTER},${OUTER} 0 1 1 ${ox2},${oy2} A${OUTER},${OUTER} 0 1 1 ${ox1},${oy1} M${ix2},${iy2} A${INNER},${INNER} 0 1 0 ${ix1},${iy1} A${INNER},${INNER} 0 1 0 ${ix2},${iy2} Z`;
+    if (inner <= 0) {
+      return `M${CX - outer},${CY} A${outer},${outer} 0 1 1 ${CX + outer},${CY} A${outer},${outer} 0 1 1 ${CX - outer},${CY} Z`;
+    }
+    const [ox1, oy1] = polar(outer, -Math.PI / 2);
+    const [ox2, oy2] = polar(outer, Math.PI / 2);
+    const [ix1, iy1] = polar(inner, Math.PI / 2);
+    const [ix2, iy2] = polar(inner, -Math.PI / 2);
+    return `M${ox1},${oy1} A${outer},${outer} 0 1 1 ${ox2},${oy2} A${outer},${outer} 0 1 1 ${ox1},${oy1} M${ix2},${iy2} A${inner},${inner} 0 1 0 ${ix1},${iy1} A${inner},${inner} 0 1 0 ${ix2},${iy2} Z`;
   }
 
   const large = span > Math.PI ? 1 : 0;
-  const [x1, y1] = polar(OUTER, startAngle);
-  const [x2, y2] = polar(OUTER, endAngle);
-  const [x3, y3] = polar(INNER, endAngle);
-  const [x4, y4] = polar(INNER, startAngle);
-  return `M${x1},${y1} A${OUTER},${OUTER} 0 ${large} 1 ${x2},${y2} L${x3},${y3} A${INNER},${INNER} 0 ${large} 0 ${x4},${y4} Z`;
+  const [x1, y1] = polar(outer, startAngle);
+  const [x2, y2] = polar(outer, endAngle);
+  if (inner <= 0) {
+    return `M${x1},${y1} A${outer},${outer} 0 ${large} 1 ${x2},${y2} L${CX},${CY} Z`;
+  }
+  const [x3, y3] = polar(inner, endAngle);
+  const [x4, y4] = polar(inner, startAngle);
+  return `M${x1},${y1} A${outer},${outer} 0 ${large} 1 ${x2},${y2} L${x3},${y3} A${inner},${inner} 0 ${large} 0 ${x4},${y4} Z`;
 }
 
 /**
@@ -65,9 +79,10 @@ function slicePath(startAngle, endAngle) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {"donut"|"pie"} variant - `pie` fills the hole. Default `donut`. Total stays in the matching table.
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - First series is drawn. Arrays are property-only.
  * @property {string[]} labels - Slice labels. Arrays are property-only.
- * @property {import("../chart/model.js").RowanChartConfig} config
+ * @property {RowanDonutChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to donut.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter
  * @slot label
  * @slot description
@@ -87,11 +102,12 @@ export class RowanDonutChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./donut-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-donut-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "variant"];
   static upgradeProperties = [
     "label",
     "description",
     "interactive",
+    "variant",
     "series",
     "labels",
     "config",
@@ -152,6 +168,23 @@ export class RowanDonutChart extends BaseElement {
     this.reflectBoolean("interactive", Boolean(value));
   }
 
+  /** @returns {"donut" | "pie"} */
+  get variant() {
+    return normalizeEnum(this.readString("variant", "donut"), VARIANTS, "donut");
+  }
+
+  /** @param {"donut" | "pie"} value */
+  set variant(value) {
+    reflectEnum(this, "variant", value, VARIANTS, "donut");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "variant" && rewriteEnumAttribute(this, name, newValue, VARIANTS, "donut")) {
+      return;
+    }
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+
   /** @returns {Array<import("../chart/model.js").RowanChartSeries>} */
   get series() {
     return cloneChartSeries(this.#series);
@@ -178,17 +211,18 @@ export class RowanDonutChart extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {import("../chart/model.js").RowanChartConfig} */
+  /** @returns {RowanDonutChartConfig} */
   get config() {
     return {
       series: this.series,
       labels: this.labels,
       interactive: this.interactive,
       valueFormatter: this.valueFormatter,
+      variant: this.variant,
     };
   }
 
-  /** @param {import("../chart/model.js").RowanChartConfig | null | undefined} value */
+  /** @param {RowanDonutChartConfig | null | undefined} value */
   set config(value) {
     const source = isObject(value) ? value : {};
     this.#labels = normalizeChartLabels(source.labels);
@@ -197,6 +231,7 @@ export class RowanDonutChart extends BaseElement {
     this.#valueFormatter =
       typeof source.valueFormatter === "function" ? source.valueFormatter : null;
     this.reflectBoolean("interactive", Boolean(source.interactive));
+    reflectEnum(this, "variant", source.variant, VARIANTS, "donut");
     this.#activePointKey = "";
     this.requestRender();
   }
@@ -292,7 +327,11 @@ export class RowanDonutChart extends BaseElement {
     this.#descriptionFallback.hidden = hasDescriptionSlot || !this.description;
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Donut chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
+  }
+
+  #chartName() {
+    return this.variant === "pie" ? "Pie chart" : "Donut chart";
   }
 
   #renderChart() {
@@ -304,9 +343,10 @@ export class RowanDonutChart extends BaseElement {
 
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Donut chart";
+    title.textContent = this.#displayLabel() || this.#chartName();
     fragment.append(title);
 
+    const inner = this.variant === "pie" ? 0 : INNER;
     let angle = -Math.PI / 2;
     slices.forEach((slice, colorIndex) => {
       if (slice.value === null || total <= 0) return;
@@ -334,20 +374,24 @@ export class RowanDonutChart extends BaseElement {
       path.setAttribute("class", "slice");
       path.setAttribute("part", "slice");
       path.dataset.pointKey = entry.key;
-      path.setAttribute("d", slicePath(start, end));
+      path.setAttribute("d", slicePath(start, end, inner, OUTER));
       path.style.fill = chartSeriesColor({ ...series, color: "" }, colorIndex);
       fragment.append(path);
     });
 
     this.#plot.replaceChildren(fragment);
-    this.#total.textContent = total
-      ? formatChartValue(this.#valueFormatter, total, { series, label: "Total" })
-      : "No data";
+    const isPie = this.variant === "pie";
+    this.#total.hidden = isPie;
+    this.#total.textContent = isPie
+      ? ""
+      : total
+        ? formatChartValue(this.#valueFormatter, total, { series, label: "Total" })
+        : "No data";
 
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Donut chart"} data table`,
+      caption: `${this.#displayLabel() || this.#chartName()} data table`,
       labels,
       series: series
         ? [
@@ -462,7 +506,7 @@ export class RowanDonutChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Donut chart";
+      this.internals.ariaLabel = this.#displayLabel() || this.#chartName();
     }
   }
 }

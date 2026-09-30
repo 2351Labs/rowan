@@ -2014,7 +2014,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="bar-chart-overview">
         <h2>Categorical comparison</h2>
-        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. Interactive bars emit rowan-point-activate.</p>
+        <p>rowan-bar-chart is a small local data set. Null is no-data, not zero. series, labels, config, and valueFormatter are property-only. orientation is vertical (default) or horizontal. Interactive bars emit rowan-point-activate.</p>
         <div class="demo-row">
           <rowan-bar-chart id="docs-bar-chart" label="Incidents by day" interactive></rowan-bar-chart>
         </div>
@@ -2066,7 +2066,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="stacked-bar-chart-overview">
         <h2>Stacked comparison</h2>
-        <p>rowan-stacked-bar-chart stacks positive values from zero. Null and negatives are no-data: they do not contribute height and appear as No data in the table. Interactive segments emit rowan-point-activate. Grouped bars stay on rowan-bar-chart.</p>
+        <p>rowan-stacked-bar-chart stacks positive values from zero. Null and negatives are no-data: they do not contribute height and appear as No data in the table. orientation is vertical (default) or horizontal. stack-mode is absolute (default) or normalized (each category fills to 100; the table still shows raw values). Interactive segments emit rowan-point-activate. Grouped bars stay on rowan-bar-chart.</p>
         <div class="demo-row">
           <rowan-stacked-bar-chart id="docs-stacked-bar-chart" label="Incidents by day" interactive></rowan-stacked-bar-chart>
         </div>
@@ -2093,7 +2093,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="donut-chart-overview">
         <h2>Parts of a whole</h2>
-        <p>rowan-donut-chart draws the first series. Negative values are treated as no-data and omitted from the total. The hole shows the positive total. The data table includes skipped slices as No data.</p>
+        <p>rowan-donut-chart draws the first series. Negative values are treated as no-data and omitted from the total. variant is donut (default, total in the hole) or pie (filled; the total stays in the matching table). The data table includes skipped slices as No data.</p>
         <div class="demo-row">
           <rowan-donut-chart id="docs-donut-chart" label="Incident sources" interactive></rowan-donut-chart>
         </div>

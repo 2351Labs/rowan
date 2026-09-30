@@ -1,6 +1,7 @@
 import "../elements.js";
 
 export { RowanBarChart } from "../../types/bar-chart/bar-chart.js";
+export type { RowanBarChartConfig } from "../../types/bar-chart/bar-chart.js";
 export type {
   RowanChartConfig,
   RowanChartSeries,

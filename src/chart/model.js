@@ -233,6 +233,101 @@ export function stackedBarValueDomain(series) {
 }
 
 /**
+ * Positive contribution at one category. Null and negatives are no-data.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {number} index
+ */
+export function stackedBarCategoryTotal(series, index) {
+  let sum = 0;
+  for (const item of series) {
+    const value = item.values[index]?.value;
+    if (value !== null && value > 0) sum += value;
+  }
+  return sum;
+}
+
+/**
+ * Absolute stacks use the category sum. Normalized stacks always plot 0–100.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {"absolute" | "normalized"} [stackMode]
+ */
+export function stackedBarPlotDomain(series, stackMode = "absolute") {
+  if (stackMode === "normalized") return { min: 0, max: 100 };
+  return stackedBarValueDomain(series);
+}
+
+/**
+ * @typedef {object} RowanCategoricalPlotBox
+ * @property {number} left
+ * @property {number} top
+ * @property {number} width
+ * @property {number} height
+ */
+
+/**
+ * Rectangle for a categorical bar or stack segment. `from`/`to` are values on
+ * the domain; grouped bars use `from: 0`.
+ * @param {{
+ *   orientation?: "vertical" | "horizontal",
+ *   from?: number,
+ *   to: number,
+ *   domain: { min: number, max: number },
+ *   groupStart: number,
+ *   offset?: number,
+ *   thickness: number,
+ *   plot: RowanCategoricalPlotBox,
+ * }} options
+ */
+export function categoricalBarRect({
+  orientation = "vertical",
+  from = 0,
+  to,
+  domain,
+  groupStart,
+  offset = 0,
+  thickness,
+  plot,
+}) {
+  const range = domain.max - domain.min || 1;
+  if (orientation === "horizontal") {
+    const xStart = plot.left + ((from - domain.min) / range) * plot.width;
+    const xEnd = plot.left + ((to - domain.min) / range) * plot.width;
+    return {
+      x: Math.min(xStart, xEnd),
+      y: groupStart + offset,
+      width: Math.abs(xEnd - xStart),
+      height: thickness,
+    };
+  }
+
+  const yStart = plot.top + ((domain.max - from) / range) * plot.height;
+  const yEnd = plot.top + ((domain.max - to) / range) * plot.height;
+  return {
+    x: groupStart + offset,
+    y: Math.min(yStart, yEnd),
+    width: thickness,
+    height: Math.abs(yEnd - yStart),
+  };
+}
+
+/**
+ * Zero baseline for a categorical plot.
+ * @param {"vertical" | "horizontal"} orientation
+ * @param {{ min: number, max: number }} domain
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalBaseline(orientation, domain, plot) {
+  const range = domain.max - domain.min || 1;
+  if (orientation === "horizontal") {
+    const x = plot.left + ((0 - domain.min) / range) * plot.width;
+    return { x1: x, x2: x, y1: plot.top, y2: plot.top + plot.height };
+  }
+
+  const y = plot.top + ((domain.max - 0) / range) * plot.height;
+  return { x1: plot.left, x2: plot.left + plot.width, y1: y, y2: y };
+}
+
+/**
  * Donut slices skip null and negative values. Negatives become no-data.
  * @param {RowanNormalizedChartSeries | undefined} series
  */

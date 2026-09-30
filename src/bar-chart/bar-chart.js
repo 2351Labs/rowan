@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import {
   createSvgElement,
@@ -10,6 +11,8 @@ import {
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
 import {
   barValueDomain,
+  categoricalBarRect,
+  categoricalBaseline,
   chartSeriesColor,
   cloneChartSeries,
   cloneChartSeriesInput,
@@ -25,6 +28,7 @@ const PLOT_LEFT = 18;
 const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
+const ORIENTATIONS = new Set(["vertical", "horizontal"]);
 
 let barChartId = 0;
 
@@ -37,14 +41,21 @@ function normalizeText(value) {
 }
 
 /**
+ * @typedef {import("../chart/model.js").RowanChartConfig & {
+ *   orientation?: "vertical" | "horizontal",
+ * }} RowanBarChartConfig
+ */
+
+/**
  * Frozen small categorical bar chart. Native SVG, no animation.
  * @tag rowan-bar-chart
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {"vertical"|"horizontal"} orientation - Category axis. Default `vertical`.
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - Chart series. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
- * @property {import("../chart/model.js").RowanChartConfig} config - Replaces the complete chart configuration.
+ * @property {RowanBarChartConfig} config - Replaces the complete chart configuration. Omitted `orientation` resets to vertical.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
  * @slot label
  * @slot description
@@ -65,11 +76,12 @@ export class RowanBarChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./bar-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-bar-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "orientation"];
   static upgradeProperties = [
     "label",
     "description",
     "interactive",
+    "orientation",
     "series",
     "labels",
     "config",
@@ -132,6 +144,26 @@ export class RowanBarChart extends BaseElement {
     this.reflectBoolean("interactive", Boolean(value));
   }
 
+  /** @returns {"vertical" | "horizontal"} */
+  get orientation() {
+    return normalizeEnum(this.readString("orientation", "vertical"), ORIENTATIONS, "vertical");
+  }
+
+  /** @param {"vertical" | "horizontal"} value */
+  set orientation(value) {
+    reflectEnum(this, "orientation", value, ORIENTATIONS, "vertical");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (
+      name === "orientation" &&
+      rewriteEnumAttribute(this, name, newValue, ORIENTATIONS, "vertical")
+    ) {
+      return;
+    }
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+
   /** @returns {Array<import("../chart/model.js").RowanChartSeries>} */
   get series() {
     return cloneChartSeries(this.#series);
@@ -158,17 +190,18 @@ export class RowanBarChart extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {import("../chart/model.js").RowanChartConfig} */
+  /** @returns {RowanBarChartConfig} */
   get config() {
     return {
       series: this.series,
       labels: this.labels,
       interactive: this.interactive,
       valueFormatter: this.valueFormatter,
+      orientation: this.orientation,
     };
   }
 
-  /** @param {import("../chart/model.js").RowanChartConfig | null | undefined} value */
+  /** @param {RowanBarChartConfig | null | undefined} value */
   set config(value) {
     const source = isObject(value) ? value : {};
     this.#labels = normalizeChartLabels(source.labels);
@@ -177,6 +210,7 @@ export class RowanBarChart extends BaseElement {
     this.#valueFormatter =
       typeof source.valueFormatter === "function" ? source.valueFormatter : null;
     this.reflectBoolean("interactive", Boolean(source.interactive));
+    reflectEnum(this, "orientation", source.orientation, ORIENTATIONS, "vertical");
     this.#activePointKey = "";
     this.requestRender();
   }
@@ -201,11 +235,13 @@ export class RowanBarChart extends BaseElement {
             <div class="description" part="description"><slot name="description"><span class="description-fallback"></span></slot></div>
           </div>
           <figure class="chart" part="chart">
-            <div class="plot-wrap">
-              <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-              <div class="point-controls"></div>
+            <div class="plot-band">
+              <div class="plot-wrap">
+                <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
+                <div class="point-controls"></div>
+              </div>
+              <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <div class="x-axis" aria-hidden="true"></div>
             <ul class="legend" part="legend" aria-label="Series"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
@@ -304,22 +340,38 @@ export class RowanBarChart extends BaseElement {
     this.#syncActivePoint();
   }
 
+  #plotBox() {
+    return {
+      left: PLOT_LEFT,
+      top: PLOT_TOP,
+      width: SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT,
+      height: SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM,
+    };
+  }
+
   #createEntries(labels, domain) {
+    const orientation = this.orientation;
     const categoryCount = Math.max(labels.length, 1);
     const seriesCount = Math.max(this.#series.length, 1);
-    const plotWidth = SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT;
-    const plotHeight = SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
-    const range = domain.max - domain.min || 1;
-    const groupWidth = plotWidth / categoryCount;
-    const barWidth = groupWidth / (seriesCount + 1);
-    const baseline = PLOT_TOP + ((domain.max - 0) / range) * plotHeight;
+    const plot = this.#plotBox();
+    const groupSpan = orientation === "horizontal" ? plot.height : plot.width;
+    const groupSize = groupSpan / categoryCount;
+    const barThickness = groupSize / (seriesCount + 1);
+    const axisStart = orientation === "horizontal" ? plot.top : plot.left;
 
     return this.#series.flatMap((series, seriesIndex) =>
       series.values.flatMap((point, index) => {
         if (point.value === null) return [];
-        const groupX = PLOT_LEFT + index * groupWidth;
-        const x = groupX + barWidth / 2 + seriesIndex * barWidth;
-        const y = PLOT_TOP + ((domain.max - point.value) / range) * plotHeight;
+        const rect = categoricalBarRect({
+          orientation,
+          from: 0,
+          to: point.value,
+          domain,
+          groupStart: axisStart + index * groupSize,
+          offset: barThickness / 2 + seriesIndex * barThickness,
+          thickness: barThickness,
+          plot,
+        });
         const formattedValue = formatChartValue(this.#valueFormatter, point.value, {
           series,
           index,
@@ -334,11 +386,11 @@ export class RowanBarChart extends BaseElement {
             label: labels[index] || point.label,
             value: point.value,
             formattedValue,
-            x,
-            y,
-            width: barWidth,
-            height: Math.abs(baseline - y),
-            barY: Math.min(y, baseline),
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+            barY: rect.y,
           },
         ];
       }),
@@ -351,16 +403,13 @@ export class RowanBarChart extends BaseElement {
     title.textContent = this.#displayLabel() || "Bar chart";
     fragment.append(title);
 
-    const range = domain.max - domain.min || 1;
-    const plotWidth = SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT;
-    const baseline =
-      PLOT_TOP + ((domain.max - 0) / range) * (SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM);
+    const baseline = categoricalBaseline(this.orientation, domain, this.#plotBox());
     const axis = createSvgElement("line");
     axis.setAttribute("class", "zero-line");
-    axis.setAttribute("x1", String(PLOT_LEFT));
-    axis.setAttribute("x2", String(PLOT_LEFT + plotWidth));
-    axis.setAttribute("y1", String(baseline));
-    axis.setAttribute("y2", String(baseline));
+    axis.setAttribute("x1", String(baseline.x1));
+    axis.setAttribute("x2", String(baseline.x2));
+    axis.setAttribute("y1", String(baseline.y1));
+    axis.setAttribute("y2", String(baseline.y2));
     fragment.append(axis);
 
     for (const entry of this.#entries) {
@@ -385,6 +434,7 @@ export class RowanBarChart extends BaseElement {
     for (const label of labels) {
       const item = document.createElement("span");
       item.textContent = label;
+      item.title = label;
       fragment.append(item);
     }
     this.#xAxis.append(fragment);
