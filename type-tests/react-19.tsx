@@ -5,6 +5,7 @@ import { RowanTable as Table } from "@rowan-ui/core/react/table";
 import { RowanSparkline } from "@rowan-ui/core/react/sparkline";
 import { RowanDonutChart } from "@rowan-ui/core/react/donut-chart";
 import { RowanAreaChart } from "@rowan-ui/core/react/area-chart";
+import { RowanStackedAreaChart } from "@rowan-ui/core/react/stacked-area-chart";
 import { RowanStackedBarChart } from "@rowan-ui/core/react/stacked-bar-chart";
 import { RowanTrendChart } from "@rowan-ui/core/react/trend-chart";
 import { RowanVirtualList } from "@rowan-ui/core/react/virtual-list";
@@ -83,6 +84,12 @@ const wrapperList = (
 );
 const wrapperChart = <RowanTrendChart series={[]} valueFormatter={(value) => String(value)} />;
 const wrapperArea = <RowanAreaChart series={[]} labels={["Mon"]} />;
+const wrapperStackedArea = (
+  <RowanStackedAreaChart
+    series={[{ id: "p1", label: "P1", values: [2, 1] }]}
+    labels={["Mon", "Tue"]}
+  />
+);
 const wrapperStackedBar = (
   <RowanStackedBarChart
     series={[{ id: "p1", label: "P1", values: [2, 1] }]}

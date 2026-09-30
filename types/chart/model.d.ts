@@ -119,6 +119,65 @@ export function categoricalBaseline(orientation: "vertical" | "horizontal", doma
     y2: number;
 };
 /**
+ * X for a category index. Spans the plot like the area chart: first and last
+ * sit on the plot edges when there are two or more categories.
+ * @param {number} index
+ * @param {number} categoryCount
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalPointX(index: number, categoryCount: number, plot: RowanCategoricalPlotBox): number;
+/**
+ * Y for a value on a vertical domain (max at the top).
+ * @param {number} value
+ * @param {{ min: number, max: number }} domain
+ * @param {RowanCategoricalPlotBox} plot
+ */
+export function categoricalValueY(value: number, domain: {
+    min: number;
+    max: number;
+}, plot: RowanCategoricalPlotBox): number;
+/**
+ * Per-category stacked contributions. Null and negatives are no-data and do
+ * not contribute; other series still stack at that category.
+ * @param {RowanNormalizedChartSeries[]} series
+ * @param {"absolute" | "normalized"} [stackMode]
+ * @returns {Array<{
+ *   index: number,
+ *   seriesIndex: number,
+ *   from: number,
+ *   to: number,
+ *   value: number,
+ *   plotValue: number,
+ * }>}
+ */
+export function stackedAreaStacks(series: RowanNormalizedChartSeries[], stackMode?: "absolute" | "normalized" | undefined): Array<{
+    index: number;
+    seriesIndex: number;
+    from: number;
+    to: number;
+    value: number;
+    plotValue: number;
+}>;
+/**
+ * Closed fill for consecutive points. Gaps in `index` break the band.
+ * @param {Array<{ x: number, yTop: number, yBottom: number, index: number }>} points
+ */
+export function areaBandPath(points: Array<{
+    x: number;
+    yTop: number;
+    yBottom: number;
+    index: number;
+}>): string;
+/**
+ * Stroke along consecutive tops. Gaps in `index` break the line.
+ * @param {Array<{ x: number, yTop: number, index: number }>} points
+ */
+export function areaLinePath(points: Array<{
+    x: number;
+    yTop: number;
+    index: number;
+}>): string;
+/**
  * Donut slices skip null and negative values. Negatives become no-data.
  * @param {RowanNormalizedChartSeries | undefined} series
  */

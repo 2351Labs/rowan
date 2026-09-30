@@ -5,7 +5,7 @@ import {
   normalizeChartSeries,
 } from "../chart/model.js";
 
-const GEOMETRIES = new Set(["bar", "line"]);
+const GEOMETRIES = new Set(["bar", "line", "area"]);
 const AXES = new Set(["primary", "secondary"]);
 
 function isObject(value) {

@@ -9,6 +9,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - Additive chart layout flags (defaults unchanged): `rowan-bar-chart` / `rowan-stacked-bar-chart` `orientation` (`vertical` default, or `horizontal`); `rowan-stacked-bar-chart` `stack-mode` (`absolute` default, or `normalized` 0–100); `rowan-donut-chart` `variant` (`donut` default, or `pie`). Property-only `series` / `labels` / `config` stay frozen. No new tags.
+- `rowan-stacked-area-chart`: positive values stack from zero as filled bands. Additive `stack-mode` (`absolute` default, or `normalized` 0–100; the table still shows raw values). Null and negatives are no-data and break that series' fill. Frozen `rowan-area-chart` stays independent fills.
+- Experimental `rowan-combo-chart` `geometry: "area"` (default stays `bar`; unknown values still fall back to `bar`). Areas draw behind bars, then lines. Combo stays experimental.
 
 ## 0.14.1 - 2026-09-26
 

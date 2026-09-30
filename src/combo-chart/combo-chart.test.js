@@ -55,6 +55,41 @@ describe("rowan-combo-chart", () => {
     expect(pareto.series[1].values[3]).to.equal(100);
   });
 
+  it("defaults geometry to bar and falls back from invalid values", async () => {
+    const chart = await renderChart({
+      labels: ["A", "B"],
+      series: [
+        { id: "count", label: "Count", values: [10, 4] },
+        { id: "share", label: "Share", geometry: "scatter", values: [2, 3] },
+      ],
+    });
+
+    expect(chart.series[0].geometry).to.equal("bar");
+    expect(chart.series[1].geometry).to.equal("bar");
+    expect(chart.shadowRoot.querySelectorAll("rect.bar")).to.have.length(4);
+    expect(chart.shadowRoot.querySelector("path.area")).to.equal(null);
+  });
+
+  it("draws an area fill behind bars", async () => {
+    const chart = await renderChart({
+      labels: ["A", "B", "C"],
+      series: [
+        { id: "volume", label: "Volume", geometry: "area", values: [8, null, 4] },
+        { id: "count", label: "Count", geometry: "bar", values: [10, 6, 4] },
+      ],
+    });
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const area = plot.querySelector("path.area");
+    const firstBar = plot.querySelector("rect.bar");
+    expect(area).to.not.equal(null);
+    expect(area.getAttribute("d")).to.include("Z");
+    expect(area.compareDocumentPosition(firstBar) & Node.DOCUMENT_POSITION_FOLLOWING).to.not.equal(
+      0,
+    );
+    expect(chart.shadowRoot.querySelectorAll("circle.line-point")).to.have.length(2);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Volume8No data4");
+  });
+
   it("emits rowan-point-activate from an interactive bar", async () => {
     const chart = await renderChart({
       interactive: true,

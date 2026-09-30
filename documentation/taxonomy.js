@@ -111,6 +111,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "row-details-panel",
       "source-meta",
       "sparkline",
+      "stacked-area-chart",
       "stacked-bar-chart",
       "table",
       "table-toolbar",
