@@ -3326,7 +3326,8 @@
             {
               "name": "entry"
             }
-          ]
+          ],
+          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type) belong on\n`entry.detail` so plot coordinates are not copied into the event."
         },
         {
           "kind": "function",
@@ -10651,7 +10652,7 @@
               }
             }
           ],
-          "description": "Funnel stages skip null and negatives, like donut slices. The host does\nnot auto-sort."
+          "description": "Funnel stages skip null and negatives. Finite 0 is a stage. The host does\nnot auto-sort."
         },
         {
           "kind": "function",
