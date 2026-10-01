@@ -1,0 +1,4 @@
+/* SVG viewBox x is physical. Overlay hit targets must not follow host RTL. */
+.point-controls {
+  direction: ltr;
+}

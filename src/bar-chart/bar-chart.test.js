@@ -127,6 +127,26 @@ describe("rowan-bar-chart", () => {
     expect(hover.hidden).to.equal(true);
   });
 
+  it("keeps overlay hit targets on SVG bars in an RTL host", async () => {
+    const chart = await renderChart({ interactive: true });
+    chart.dir = "rtl";
+    chart.style.inlineSize = "400px";
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const controls = chart.shadowRoot.querySelector(".point-controls");
+    expect(getComputedStyle(controls).direction).to.equal("ltr");
+
+    const key = "incoming::0";
+    const bar = chart.shadowRoot.querySelector(`rect.bar[data-point-key="${key}"]`);
+    const button = chart.shadowRoot.querySelector(`button[data-point-key="${key}"]`);
+    const barBox = bar.getBoundingClientRect();
+    const buttonBox = button.getBoundingClientRect();
+    expect(Math.abs(buttonBox.left - barBox.left)).to.be.below(2);
+    expect(Math.abs(buttonBox.top - barBox.top)).to.be.below(2);
+    expect(Math.abs(buttonBox.width - barBox.width)).to.be.below(2);
+  });
+
   it("moves keyboard focus when a series id would break a CSS selector", async () => {
     const chart = await renderChart({
       interactive: true,

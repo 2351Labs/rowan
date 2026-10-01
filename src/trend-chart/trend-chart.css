@@ -1,3 +1,5 @@
+@import "../chart/point-controls.css";
+
 :host {
   --_trend-chart-bg: var(--rowan-trend-chart-bg, var(--rowan-card-bg, #ffffff));
   --_trend-chart-fg: var(--rowan-trend-chart-fg, var(--rowan-color-fg, #1f2421));

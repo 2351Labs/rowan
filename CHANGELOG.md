@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- Interactive chart overlays keep hit targets on the SVG marks when the host is RTL. `.point-controls` is `direction: ltr` so physical `--point-x` matches the viewBox. Donut's button list is not an overlay and is unchanged.
+
 ## 0.16.0 - 2026-10-01
 
 ### Added
