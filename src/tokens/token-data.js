@@ -3,6 +3,8 @@ import darkThemeSource from "./themes/dark.css?raw";
 import emberThemeSource from "./themes/ember.css?raw";
 import lagoonThemeSource from "./themes/lagoon.css?raw";
 import lightThemeSource from "./themes/light.css?raw";
+import midnightThemeSource from "./themes/midnight.css?raw";
+import slateThemeSource from "./themes/slate.css?raw";
 
 const TOKEN_DECLARATION = /^\s*(--rowan-[\w-]+)\s*:\s*([^;]+);/;
 
@@ -83,8 +85,10 @@ const darkThemeTokens = parseThemeTokens(darkThemeSource);
 export const extraShippedThemes = {
   lagoon: parseThemeTokens(lagoonThemeSource),
   ember: parseThemeTokens(emberThemeSource),
+  slate: parseThemeTokens(slateThemeSource),
+  midnight: parseThemeTokens(midnightThemeSource),
 };
-export const shippedThemeIds = ["light", "dark", "lagoon", "ember"];
+export const shippedThemeIds = ["light", "dark", "lagoon", "ember", "slate", "midnight"];
 
 const primitiveTokens = [...baseLayers.primitive];
 
@@ -124,4 +128,6 @@ export const tokenSourcePaths = [
   "src/tokens/themes/dark.css",
   "src/tokens/themes/lagoon.css",
   "src/tokens/themes/ember.css",
+  "src/tokens/themes/slate.css",
+  "src/tokens/themes/midnight.css",
 ];

@@ -1,11 +1,18 @@
 import { expect } from "@esm-bundle/chai";
+import "../app-layout/app-layout.js";
+import "../area-chart/area-chart.js";
+import "../button/button.js";
 import "../calendar/calendar.js";
 import "../card/card.js";
 import "../chip/chip.js";
 import "../date-picker/date-picker.js";
 import "../dialog/dialog.js";
+import "../form-wizard/form-wizard.js";
+import "../icon-button/icon-button.js";
+import "../side-nav-item/side-nav-item.js";
 import "../stepper/stepper.js";
 import "../switch/switch.js";
+import "../table-toolbar/table-toolbar.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
@@ -116,11 +123,13 @@ describe("Rowan themes", () => {
         "./themes/dark.css",
         "./themes/lagoon.css",
         "./themes/ember.css",
+        "./themes/slate.css",
+        "./themes/midnight.css",
       ].map(loadStylesheet),
     );
 
     try {
-      for (const themeName of ["dark", "lagoon", "ember"]) {
+      for (const themeName of ["dark", "lagoon", "ember", "slate", "midnight"]) {
         const theme = document.createElement("div");
         theme.setAttribute("data-theme", themeName);
 
@@ -170,11 +179,13 @@ describe("Rowan themes", () => {
         "./themes/dark.css",
         "./themes/lagoon.css",
         "./themes/ember.css",
+        "./themes/slate.css",
+        "./themes/midnight.css",
       ].map(loadStylesheet),
     );
 
     try {
-      for (const themeName of ["light", "dark", "lagoon", "ember"]) {
+      for (const themeName of ["light", "dark", "lagoon", "ember", "slate", "midnight"]) {
         const theme = document.createElement("div");
         theme.setAttribute("data-theme", themeName);
 
@@ -243,6 +254,215 @@ describe("Rowan themes", () => {
       document.documentElement.removeAttribute("data-theme");
       consumerTheme.remove();
       themeStylesheet.remove();
+    }
+  });
+
+  it("keeps nested dark and midnight app shells readable against a light :root", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css", "./themes/midnight.css"].map(
+        loadStylesheet,
+      ),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      for (const themeName of ["dark", "midnight"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
+
+        const layout = document.createElement("rowan-app-layout");
+        layout.style.setProperty("--rowan-app-layout-min-block-size", "16rem");
+
+        const header = document.createElement("div");
+        header.slot = "header";
+        const ghost = document.createElement("rowan-icon-button");
+        ghost.variant = "ghost";
+        ghost.label = "Jump to";
+        header.append(ghost);
+
+        const rail = document.createElement("div");
+        rail.slot = "navigation";
+        const item = document.createElement("rowan-side-nav-item");
+        item.label = "Overview";
+        item.append("Overview");
+        rail.append(item);
+
+        const heading = document.createElement("h2");
+        heading.textContent = "Customers overview";
+        const secondary = document.createElement("rowan-button");
+        secondary.variant = "secondary";
+        secondary.textContent = "Simulate unknown path";
+
+        layout.append(header, rail, heading, secondary);
+        theme.append(layout);
+        document.body.append(theme);
+        await nextTask();
+        await Promise.all([layout, item, ghost, secondary].map(waitForStyles));
+
+        const layoutSurface = layout.shadowRoot.querySelector(".layout");
+        const headerSurface = layout.shadowRoot.querySelector(".header");
+        const navigationSurface = layout.shadowRoot.querySelector(".navigation");
+        const layoutStyles = getComputedStyle(layoutSurface);
+        const headingStyles = getComputedStyle(heading);
+        const itemStyles = getComputedStyle(item.shadowRoot.querySelector(".item"));
+        const ghostStyles = getComputedStyle(ghost.shadowRoot.querySelector(".button"));
+        const secondaryStyles = getComputedStyle(secondary.shadowRoot.querySelector(".button"));
+
+        expect(relativeLuminance(layoutStyles.backgroundColor), themeName).to.be.below(0.2);
+        expect(
+          contrastRatio(headingStyles.color, layoutStyles.backgroundColor),
+          themeName,
+        ).to.be.at.least(4.5);
+        expect(
+          contrastRatio(itemStyles.color, getComputedStyle(navigationSurface).backgroundColor),
+          themeName,
+        ).to.be.at.least(4.5);
+        expect(
+          contrastRatio(ghostStyles.color, getComputedStyle(headerSurface).backgroundColor),
+          themeName,
+        ).to.be.at.least(3);
+        expect(
+          contrastRatio(secondaryStyles.color, secondaryStyles.backgroundColor),
+          themeName,
+        ).to.be.at.least(4.5);
+
+        theme.remove();
+      }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("keeps nested dark form wizards and table toolbars readable against a light :root", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css", "./themes/midnight.css"].map(
+        loadStylesheet,
+      ),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      for (const themeName of ["dark", "midnight"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
+        theme.style.background = "var(--rowan-color-bg)";
+        theme.style.color = "var(--rowan-color-fg)";
+
+        const wizard = document.createElement("rowan-form-wizard");
+        wizard.steps = [
+          { id: "details", label: "Details" },
+          { id: "review", label: "Review" },
+        ];
+        const panel = document.createElement("section");
+        panel.slot = "step-details";
+        const copy = document.createElement("p");
+        copy.textContent = "Capture the core account details before continuing.";
+        panel.append(copy);
+        wizard.append(panel);
+
+        const toolbar = document.createElement("rowan-table-toolbar");
+        const density = document.createElement("span");
+        density.slot = "end";
+        density.textContent = "Density stays on the toolbar.";
+        toolbar.append(density);
+
+        theme.append(wizard, toolbar);
+        document.body.append(theme);
+        await nextTask();
+        await Promise.all([wizard, toolbar].map(waitForStyles));
+
+        const previous = wizard.shadowRoot.querySelector(".previous-button");
+        const next = wizard.shadowRoot.querySelector(".next-button");
+        const toolbarSurface = toolbar.shadowRoot.querySelector(".toolbar");
+        const themeBg = getComputedStyle(theme).backgroundColor;
+
+        expect(contrastRatio(getComputedStyle(copy).color, themeBg), themeName).to.be.at.least(4.5);
+        expect(contrastRatio(getComputedStyle(previous).color, themeBg), themeName).to.be.at.least(
+          4.5,
+        );
+        expect(
+          contrastRatio(getComputedStyle(next).color, getComputedStyle(next).backgroundColor),
+          themeName,
+        ).to.be.at.least(4.5);
+        expect(
+          contrastRatio(
+            getComputedStyle(density).color,
+            getComputedStyle(toolbarSurface).backgroundColor,
+          ),
+          themeName,
+        ).to.be.at.least(4.5);
+
+        theme.remove();
+      }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("keeps nested slate fields readable against a dark :root", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/dark.css", "./themes/slate.css"].map(loadStylesheet),
+    );
+    document.documentElement.setAttribute("data-theme", "dark");
+
+    try {
+      const theme = document.createElement("div");
+      theme.setAttribute("data-theme", "slate");
+
+      const datePicker = document.createElement("rowan-date-picker");
+      datePicker.label = "Review date";
+      const card = document.createElement("rowan-card");
+      card.textContent = "Slate card";
+      theme.append(datePicker, card);
+      document.body.append(theme);
+      await nextTask();
+      await Promise.all([datePicker, card].map(waitForStyles));
+
+      const input = getComputedStyle(datePicker.shadowRoot.querySelector(".input"));
+      const cardSurface = getComputedStyle(card.shadowRoot.querySelector(".card"));
+      expect(relativeLuminance(input.backgroundColor)).to.be.above(0.8);
+      expect(contrastRatio(input.color, input.backgroundColor)).to.be.at.least(4.5);
+      expect(contrastRatio(cardSurface.color, cardSurface.backgroundColor)).to.be.at.least(4.5);
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("keeps nested dark and ember area-chart plots on the themed surface", async () => {
+    const themeStylesheets = await Promise.all(
+      [
+        "./tokens.css",
+        "./themes/light.css",
+        "./themes/dark.css",
+        "./themes/ember.css",
+        "./themes/midnight.css",
+      ].map(loadStylesheet),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      for (const themeName of ["dark", "ember", "midnight"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
+
+        const chart = document.createElement("rowan-area-chart");
+        chart.labels = ["Apr", "May"];
+        chart.series = [{ name: "Revenue", values: [12, 18] }];
+        theme.append(chart);
+        document.body.append(theme);
+        await nextTask();
+        await waitForStyles(chart);
+        const plotBg = await paintedBackground(chart, ".control");
+        expect(relativeLuminance(plotBg), themeName).to.be.below(0.2);
+
+        theme.remove();
+      }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
     }
   });
 });

@@ -26893,7 +26893,7 @@
           "type": {
             "text": "object"
           },
-          "default": "{ lagoon: parseThemeTokens(lagoonThemeSource), ember: parseThemeTokens(emberThemeSource), }"
+          "default": "{ lagoon: parseThemeTokens(lagoonThemeSource), ember: parseThemeTokens(emberThemeSource), slate: parseThemeTokens(slateThemeSource), midnight: parseThemeTokens(midnightThemeSource), }"
         },
         {
           "kind": "variable",
@@ -26901,7 +26901,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[\"light\", \"dark\", \"lagoon\", \"ember\"]"
+          "default": "[\"light\", \"dark\", \"lagoon\", \"ember\", \"slate\", \"midnight\"]"
         },
         {
           "kind": "variable",
@@ -26941,7 +26941,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[ \"src/tokens/tokens.css\", \"src/tokens/themes/light.css\", \"src/tokens/themes/dark.css\", \"src/tokens/themes/lagoon.css\", \"src/tokens/themes/ember.css\", ]"
+          "default": "[ \"src/tokens/tokens.css\", \"src/tokens/themes/light.css\", \"src/tokens/themes/dark.css\", \"src/tokens/themes/lagoon.css\", \"src/tokens/themes/ember.css\", \"src/tokens/themes/slate.css\", \"src/tokens/themes/midnight.css\", ]"
         }
       ],
       "exports": [

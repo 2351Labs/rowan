@@ -179,4 +179,80 @@ describe("vibrant chart palette", () => {
       sheets.forEach((sheet) => sheet.remove());
     }
   });
+
+  it("keeps nested midnight vibrant deltas on the dark palette inside a light wrap", async () => {
+    const sheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/midnight.css", "./charts-vibrant.css"].map(
+        loadStylesheet,
+      ),
+    );
+
+    try {
+      document.documentElement.setAttribute("data-theme", "light");
+      const wrap = document.createElement("div");
+      wrap.dataset.theme = "light";
+      const midnight = document.createElement("div");
+      midnight.dataset.theme = "midnight";
+      midnight.dataset.rowanCharts = "vibrant";
+
+      const card = document.createElement("rowan-kpi-card");
+      card.label = "Revenue";
+      card.tone = "success";
+      card.value = 48;
+      card.delta = 12;
+      midnight.append(card);
+      wrap.append(midnight);
+      document.body.append(wrap);
+      await nextTask();
+      await waitForStyles(card);
+
+      const delta = getComputedStyle(card.shadowRoot.querySelector(".delta"));
+      const surface = getComputedStyle(card.shadowRoot.querySelector(".card"));
+      expect(rgb(delta.color)).to.deep.equal([74, 222, 128]);
+      expect(contrastRatio(delta.color, surface.backgroundColor)).to.be.at.least(4.5);
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      sheets.forEach((sheet) => sheet.remove());
+    }
+  });
+
+  it("keeps nested slate vibrant deltas on the light palette inside a dark wrap", async () => {
+    const sheets = await Promise.all(
+      [
+        "./tokens.css",
+        "./themes/light.css",
+        "./themes/dark.css",
+        "./themes/slate.css",
+        "./charts-vibrant.css",
+      ].map(loadStylesheet),
+    );
+
+    try {
+      document.documentElement.setAttribute("data-theme", "light");
+      const wrap = document.createElement("div");
+      wrap.dataset.theme = "dark";
+      const slate = document.createElement("div");
+      slate.dataset.theme = "slate";
+      slate.dataset.rowanCharts = "vibrant";
+
+      const card = document.createElement("rowan-kpi-card");
+      card.label = "Revenue";
+      card.tone = "success";
+      card.value = 48;
+      card.delta = 12;
+      slate.append(card);
+      wrap.append(slate);
+      document.body.append(wrap);
+      await nextTask();
+      await waitForStyles(card);
+
+      const delta = getComputedStyle(card.shadowRoot.querySelector(".delta"));
+      const surface = getComputedStyle(card.shadowRoot.querySelector(".card"));
+      expect(rgb(delta.color)).to.deep.equal([21, 128, 61]);
+      expect(contrastRatio(delta.color, surface.backgroundColor)).to.be.at.least(4.5);
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      sheets.forEach((sheet) => sheet.remove());
+    }
+  });
 });

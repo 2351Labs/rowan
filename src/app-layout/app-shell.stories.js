@@ -10,59 +10,58 @@ import "../menu/menu.js";
 import "../menu-item/menu-item.js";
 import "../button/button.js";
 import "@rowan-ui/icons/elements/search";
-import "@rowan-ui/icons/elements/layout-dashboard";
-import "@rowan-ui/icons/elements/boxes";
-import "@rowan-ui/icons/elements/building";
-import "@rowan-ui/icons/elements/droplet";
+import "@rowan-ui/icons/elements/users";
+import "@rowan-ui/icons/elements/shopping-cart";
+import "@rowan-ui/icons/elements/receipt";
 import "@rowan-ui/icons/elements/user";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const DESTINATIONS = [
   {
-    section: "Invexus",
-    value: "/invexus",
-    href: "/invexus",
+    section: "Customers",
+    value: "/customers",
+    href: "/customers",
     label: "Overview",
-    icon: "layout-dashboard",
+    icon: "users",
   },
   {
-    section: "Invexus",
-    value: "/invexus/assets",
-    href: "/invexus/assets",
-    label: "Assets",
-    icon: "boxes",
+    section: "Customers",
+    value: "/customers/directory",
+    href: "/customers/directory",
+    label: "Directory",
+    icon: "users",
   },
   {
-    section: "PTMS",
-    value: "/ptms",
-    href: "/ptms",
+    section: "Orders",
+    value: "/orders",
+    href: "/orders",
     label: "Overview",
-    icon: "building",
+    icon: "shopping-cart",
   },
   {
-    section: "OFM",
-    value: "/ofm",
-    href: "/ofm",
+    section: "Invoices",
+    value: "/invoices",
+    href: "/invoices",
     label: "Overview",
-    icon: "droplet",
+    icon: "receipt",
   },
 ];
 
 const PAGES = {
-  "/invexus": {
-    title: "Invexus overview",
+  "/customers": {
+    title: "Customers overview",
     body: "Current path is a catalog item. Hosts call navigate(detail.value) after preventDefault().",
   },
-  "/invexus/assets": {
-    title: "Invexus assets",
+  "/customers/directory": {
+    title: "Customer directory",
     body: "Same destination list drives the side nav and the command palette.",
   },
-  "/ptms": {
-    title: "PTMS overview",
+  "/orders": {
+    title: "Orders overview",
     body: "Keep href on items so open-in-new-tab and no-JS still work.",
   },
-  "/ofm": {
-    title: "OFM overview",
+  "/invoices": {
+    title: "Invoices overview",
     body: "Omitting href and routing only from rowan-change is also valid.",
   },
 };
@@ -87,7 +86,7 @@ function createNavItem(destination) {
 function createSideNav() {
   const nav = document.createElement("rowan-side-nav");
   nav.label = "Product navigation";
-  nav.value = "/invexus";
+  nav.value = "/customers";
 
   const sections = new Map();
   for (const destination of DESTINATIONS) {
@@ -172,7 +171,7 @@ export const ProductShell = {
   }),
   render: () => {
     const known = new Set(DESTINATIONS.map((item) => item.value));
-    let path = "/invexus";
+    let path = "/customers";
 
     const wrapper = document.createElement("div");
     const layout = document.createElement("rowan-app-layout");
@@ -189,7 +188,7 @@ export const ProductShell = {
     rail.style.alignContent = "start";
     rail.style.gap = "var(--rowan-space-4)";
     const brand = document.createElement("strong");
-    brand.textContent = "Operations Console";
+    brand.textContent = "Workspace";
     const nav = createSideNav();
     rail.append(brand, nav);
 

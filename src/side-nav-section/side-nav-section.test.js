@@ -13,16 +13,16 @@ describe("rowan-side-nav-section", () => {
 
   it("exposes a labeled group without becoming a nested navigation landmark", async () => {
     const section = document.createElement("rowan-side-nav-section");
-    section.label = "Invexus";
+    section.label = "Customers";
     document.body.append(section);
     await nextMicrotask();
 
     expect(section.internals.role).to.equal("group");
     expect(section.shadowRoot.querySelector("nav")).to.equal(null);
-    expect(section.shadowRoot.querySelector(".label").textContent).to.equal("Invexus");
+    expect(section.shadowRoot.querySelector(".label").textContent).to.equal("Customers");
     expect(section.shadowRoot.querySelector(".label").hidden).to.equal(false);
     expect(section.shadowRoot.querySelector(".trigger").hidden).to.equal(true);
-    expect(section.internals.ariaLabel).to.equal("Invexus");
+    expect(section.internals.ariaLabel).to.equal("Customers");
   });
 
   it("toggles a collapsible group from the user without changing nav value", async () => {
@@ -31,7 +31,7 @@ describe("rowan-side-nav-section", () => {
     nav.value = "jobs";
 
     const section = document.createElement("rowan-side-nav-section");
-    section.label = "Invexus";
+    section.label = "Customers";
     section.collapsible = true;
 
     const overview = document.createElement("rowan-side-nav-item");
@@ -77,7 +77,7 @@ describe("rowan-side-nav-section", () => {
   it("opens a collapsed section when the nav value matches a child", async () => {
     const nav = document.createElement("rowan-side-nav");
     const section = document.createElement("rowan-side-nav-section");
-    section.label = "Invexus";
+    section.label = "Customers";
     section.collapsible = true;
     section.collapsed = true;
     const jobs = document.createElement("rowan-side-nav-item");

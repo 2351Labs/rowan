@@ -53,6 +53,11 @@
   text-align: start;
 }
 
+.trigger[hidden],
+.label[hidden] {
+  display: none;
+}
+
 .trigger:focus-visible {
   border-radius: var(--rowan-radius-sm);
   box-shadow: var(--rowan-focus-ring);

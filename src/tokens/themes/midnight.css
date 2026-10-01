@@ -1,14 +1,29 @@
-[data-theme="lagoon"] {
-  --rowan-color-bg: #eef6f7;
-  --rowan-color-fg: #14303a;
-  --rowan-color-muted: #3f616b;
-  --rowan-color-accent: #0e6e7c;
-  --rowan-color-border: #c3d4d8;
-  --rowan-color-danger: #b4392d;
-  --rowan-color-success: #1f7a5c;
-  --rowan-color-warning: #9a6b12;
-  --rowan-color-surface: #ffffff;
-  --rowan-color-accent-contrast: #ffffff;
+[data-theme="midnight"] {
+  --rowan-color-bg: #09090b;
+  --rowan-color-fg: #fafafa;
+  --rowan-color-muted: #a1a1aa;
+  --rowan-color-accent: #2dd4bf;
+  --rowan-color-border: #27272a;
+  --rowan-color-danger: #f87171;
+  --rowan-color-success: #34d399;
+  --rowan-color-warning: #fbbf24;
+  --rowan-color-surface: #18181b;
+  --rowan-color-accent-contrast: #09090b;
+
+  --rowan-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rowan-radius-lg: 0.75rem;
+  --rowan-trend-chart-bg: var(--rowan-card-bg);
+  --rowan-trend-chart-fg: var(--rowan-color-fg);
+  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
+  --rowan-trend-chart-border: var(--rowan-color-border);
+  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
+  --rowan-area-chart-bg: var(--rowan-card-bg);
+  --rowan-donut-chart-bg: var(--rowan-card-bg);
+  --rowan-button-shadow: none;
+  --rowan-button-secondary-shadow: none;
+  --rowan-button-danger-shadow: none;
+  --rowan-button-font-weight: 500;
+  --rowan-focus-ring: 0 0 0 2px rgb(45 212 191 / 40%);
 
   /* Re-declared so a nested [data-theme] scope re-resolves these against this theme. */
   --rowan-button-fg: var(--rowan-color-accent-contrast);
@@ -18,13 +33,6 @@
   --rowan-button-secondary-fg: var(--rowan-color-fg);
   --rowan-button-secondary-border: var(--rowan-color-border);
   --rowan-button-ghost-fg: var(--rowan-color-accent);
-  --rowan-trend-chart-bg: var(--rowan-card-bg);
-  --rowan-trend-chart-fg: var(--rowan-color-fg);
-  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
-  --rowan-trend-chart-border: var(--rowan-color-border);
-  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
-  --rowan-area-chart-bg: var(--rowan-card-bg);
-  --rowan-donut-chart-bg: var(--rowan-card-bg);
   --rowan-app-layout-bg: var(--rowan-color-bg);
   --rowan-app-layout-fg: var(--rowan-color-fg);
   --rowan-app-layout-header-bg: var(--rowan-color-bg);
@@ -128,6 +136,6 @@
   --rowan-toast-bg: var(--rowan-card-bg);
   --rowan-toast-fg: var(--rowan-color-fg);
   --rowan-toast-border: var(--rowan-color-border);
-  --rowan-toast-shadow: 0 10px 24px rgb(14 40 48 / 16%);
-  --rowan-overlay-backdrop: rgb(14 40 48 / 46%);
+  --rowan-toast-shadow: 0 12px 30px rgb(0 0 0 / 46%);
+  --rowan-overlay-backdrop: rgb(0 0 0 / 62%);
 }

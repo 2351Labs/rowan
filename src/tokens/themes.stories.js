@@ -8,6 +8,8 @@ const THEMES = [
   { id: "dark", label: "Dark" },
   { id: "lagoon", label: "Lagoon" },
   { id: "ember", label: "Ember" },
+  { id: "slate", label: "Slate" },
+  { id: "midnight", label: "Midnight" },
 ];
 
 function createThemeSample(theme) {
