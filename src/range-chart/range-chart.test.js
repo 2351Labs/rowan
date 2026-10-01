@@ -41,6 +41,25 @@ describe("rowan-range-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("No data");
   });
 
+  it("treats whitespace and reversed ranges as no-data", async () => {
+    const chart = await renderChart({
+      series: [
+        {
+          id: "dwell",
+          label: "Dwell",
+          values: [
+            { low: " ", high: 12 },
+            { low: 12, high: 4 },
+            { low: 6, high: 6 },
+          ],
+        },
+      ],
+    });
+    expect(chart.shadowRoot.querySelectorAll("rect.bar")).to.have.length(1);
+    expect(chart.series[0].values[0].low).to.equal(null);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.match(/No data.*No data/s);
+  });
+
   it("draws an area band and omitted config variant resets to bar", async () => {
     const chart = await renderChart({
       variant: "area",

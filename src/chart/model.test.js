@@ -6,12 +6,28 @@ import {
   categoricalBaseline,
   categoricalPointX,
   categoricalValueY,
+  finiteOrNull,
+  normalizeChartSeries,
   stackedAreaStacks,
   stackedBarCategoryTotal,
   stackedBarPlotDomain,
 } from "./model.js";
 
 describe("chart model cartesian helpers", () => {
+  it("treats blank numeric strings as no-data and keeps zero", () => {
+    expect(finiteOrNull(" ")).to.equal(null);
+    expect(finiteOrNull("\t")).to.equal(null);
+    expect(finiteOrNull("")).to.equal(null);
+    expect(finiteOrNull("0")).to.equal(0);
+    expect(finiteOrNull(0)).to.equal(0);
+    expect(finiteOrNull("  2  ")).to.equal(2);
+    expect(
+      normalizeChartSeries([{ id: "a", values: [" ", "", 0, "3"] }])[0].values.map(
+        (point) => point.value,
+      ),
+    ).to.deep.equal([null, null, 0, 3]);
+  });
+
   const plot = { left: 18, top: 18, width: 964, height: 354 };
 
   it("matches vertical grouped bars from zero", () => {

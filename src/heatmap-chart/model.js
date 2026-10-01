@@ -1,15 +1,11 @@
+import { finiteOrNull } from "../chart/model.js";
+
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function finiteOrNull(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
 }
 
 function uniqueLabels(values) {

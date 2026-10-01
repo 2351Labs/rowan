@@ -7,6 +7,7 @@ import {
   formatHoverLines,
   nearestPointByClientX,
 } from "../chart/hover.js";
+import { finiteOrNull } from "../chart/model.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
@@ -21,11 +22,7 @@ function normalizeText(value) {
 function normalizeValues(value) {
   if (!Array.isArray(value)) return [];
 
-  return value.map((item) => {
-    if (item === null || item === undefined || item === "") return null;
-    const numeric = typeof item === "number" ? item : Number(item);
-    return Number.isFinite(numeric) ? numeric : null;
-  });
+  return value.map((item) => finiteOrNull(item));
 }
 
 function cloneValues(value) {

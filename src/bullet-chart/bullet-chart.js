@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { createSvgElement } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
+import { finiteOrNull } from "../chart/model.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const ENCODINGS = new Set(["ink", "accent", "status", "tone"]);
@@ -47,9 +48,7 @@ function normalizeText(value) {
 }
 
 function normalizeNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const numeric = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
+  return finiteOrNull(value);
 }
 
 function normalizeBooleanAttribute(value) {

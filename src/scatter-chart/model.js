@@ -1,3 +1,5 @@
+import { finiteOrNull } from "../chart/model.js";
+
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
 
@@ -7,12 +9,6 @@ function isObject(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function finiteOrNull(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
 }
 
 function normalizeColor(value) {

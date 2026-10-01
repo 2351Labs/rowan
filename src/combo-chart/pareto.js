@@ -1,3 +1,5 @@
+import { finiteOrNull } from "../chart/model.js";
+
 function isFiniteNumber(value) {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -21,7 +23,7 @@ export function createParetoData(input = {}) {
   const pairs = values
     .map((value, index) => ({
       label: String(labels[index] ?? `Category ${index + 1}`).trim() || `Category ${index + 1}`,
-      value: value == null ? null : Number(value),
+      value: finiteOrNull(value),
     }))
     .filter((item) => isFiniteNumber(item.value) && item.value >= 0)
     .sort((left, right) => right.value - left.value);

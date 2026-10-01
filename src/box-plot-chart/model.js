@@ -1,3 +1,5 @@
+import { finiteOrNull } from "../chart/model.js";
+
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
 
@@ -7,12 +9,6 @@ function isObject(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function finiteOrNull(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
 }
 
 function normalizeColor(value) {
@@ -117,7 +113,14 @@ export function cloneBoxPlotSeries(value) {
 }
 
 export function boxPlotIncluded(point) {
-  return [point.min, point.q1, point.median, point.q3, point.max].every((value) => value !== null);
+  const { min, q1, median, q3, max } = point;
+  return (
+    [min, q1, median, q3, max].every((value) => value !== null) &&
+    min <= q1 &&
+    q1 <= median &&
+    median <= q3 &&
+    q3 <= max
+  );
 }
 
 export function boxPlotDomain(series) {

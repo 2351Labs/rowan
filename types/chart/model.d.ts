@@ -1,4 +1,10 @@
 /**
+ * Blank strings are no-data. `"0"` and `0` stay zero.
+ * @param {unknown} value
+ * @returns {number | null}
+ */
+export function finiteOrNull(value: unknown): number | null;
+/**
  * @param {unknown} value
  * @returns {string[]}
  */

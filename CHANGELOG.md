@@ -13,6 +13,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Experimental range, box-plot, scatter, heatmap, combo, and waterfall charts type `valueFormatter` as `RowanChartValueFormatter | null` on the public accessors, matching runtime.
 - Chart hover hide stays registered across reconnects, so a second detach does not leave a stale tooltip. `addCleanup(fn, { persist: true })` keeps the callback after disconnect.
 - Interactive chart overlays restore keyboard focus to the active point after a rerender when that control still exists.
+- Chart numeric normalizers treat blank and whitespace-only strings as no-data. `"0"` stays zero.
+- Range points require `low <= high`. Box plots require `min <= q1 <= median <= q3 <= max`. Unordered summaries are no-data; bounds are not swapped.
 
 ## 0.16.0 - 2026-10-01
 
