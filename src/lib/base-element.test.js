@@ -66,6 +66,45 @@ describe("BaseElement", () => {
     document.documentElement.style.removeProperty("--rowan-button-bg");
   });
 
+  it("runs persistent cleanup on every disconnect", async () => {
+    const element = document.createElement(TEST_TAG);
+    let count = 0;
+    element.addCleanup(
+      () => {
+        count += 1;
+      },
+      { persist: true },
+    );
+    document.body.append(element);
+    await nextTask();
+
+    element.remove();
+    expect(count).to.equal(1);
+
+    document.body.append(element);
+    await nextTask();
+    element.remove();
+    expect(count).to.equal(2);
+  });
+
+  it("drops one-shot cleanup after the first disconnect", async () => {
+    const element = document.createElement(TEST_TAG);
+    let count = 0;
+    element.addCleanup(() => {
+      count += 1;
+    });
+    document.body.append(element);
+    await nextTask();
+
+    element.remove();
+    expect(count).to.equal(1);
+
+    document.body.append(element);
+    await nextTask();
+    element.remove();
+    expect(count).to.equal(1);
+  });
+
   it("disconnects and restores configured observers across reconnection", async () => {
     const element = document.createElement(TEST_TAG);
     document.body.append(element);

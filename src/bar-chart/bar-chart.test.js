@@ -147,6 +147,33 @@ describe("rowan-bar-chart", () => {
     expect(Math.abs(buttonBox.width - barBox.width)).to.be.below(2);
   });
 
+  it("hides hover after a second disconnect", async () => {
+    const chart = await renderChart();
+    const hover = chart.shadowRoot.querySelector(".hover");
+    const showHover = () => {
+      chart.shadowRoot
+        .querySelector("rect.bar")
+        .dispatchEvent(
+          new PointerEvent("pointermove", { bubbles: true, clientX: 24, clientY: 24 }),
+        );
+    };
+
+    showHover();
+    expect(hover.hidden).to.equal(false);
+
+    chart.remove();
+    expect(hover.hidden).to.equal(true);
+
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    showHover();
+    expect(hover.hidden).to.equal(false);
+
+    chart.remove();
+    expect(hover.hidden).to.equal(true);
+  });
+
   it("moves keyboard focus when a series id would break a CSS selector", async () => {
     const chart = await renderChart({
       interactive: true,
