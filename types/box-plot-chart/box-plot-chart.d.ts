@@ -3,7 +3,7 @@
  *   labels?: string[],
  *   series?: Array<object>,
  *   interactive?: boolean,
- *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
+ *   valueFormatter?: import("./model.js").RowanBoxPlotChartValueFormatter | null,
  * }} RowanBoxPlotChartConfig
  */
 /**
@@ -17,7 +17,7 @@
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ min, q1, median, q3, max, outliers? }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanBoxPlotChartConfig} config - Replaces the complete chart configuration.
- * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("./model.js").RowanBoxPlotChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -54,16 +54,16 @@ export class RowanBoxPlotChart extends BaseElement {
     set config(value: RowanBoxPlotChartConfig | null | undefined);
     /** @returns {RowanBoxPlotChartConfig} */
     get config(): RowanBoxPlotChartConfig;
-    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
-    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
-    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
-    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+    /** @param {import("./model.js").RowanBoxPlotChartValueFormatter | null} value */
+    set valueFormatter(value: import("./model.js").RowanBoxPlotChartValueFormatter | null);
+    /** @returns {import("./model.js").RowanBoxPlotChartValueFormatter | null} */
+    get valueFormatter(): import("./model.js").RowanBoxPlotChartValueFormatter | null;
     #private;
 }
 export type RowanBoxPlotChartConfig = {
     labels?: string[];
     series?: Array<object>;
     interactive?: boolean;
-    valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null;
+    valueFormatter?: import("./model.js").RowanBoxPlotChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

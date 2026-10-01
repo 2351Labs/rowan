@@ -4,7 +4,7 @@
  *   series?: Array<object>,
  *   interactive?: boolean,
  *   variant?: "bar" | "area",
- *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
+ *   valueFormatter?: import("./model.js").RowanRangeChartValueFormatter | null,
  * }} RowanRangeChartConfig
  */
 /**
@@ -19,7 +19,7 @@
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ low, high }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanRangeChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to bar.
- * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("./model.js").RowanRangeChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -59,10 +59,10 @@ export class RowanRangeChart extends BaseElement {
     set config(value: RowanRangeChartConfig | null | undefined);
     /** @returns {RowanRangeChartConfig} */
     get config(): RowanRangeChartConfig;
-    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
-    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
-    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
-    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+    /** @param {import("./model.js").RowanRangeChartValueFormatter | null} value */
+    set valueFormatter(value: import("./model.js").RowanRangeChartValueFormatter | null);
+    /** @returns {import("./model.js").RowanRangeChartValueFormatter | null} */
+    get valueFormatter(): import("./model.js").RowanRangeChartValueFormatter | null;
     #private;
 }
 export type RowanRangeChartConfig = {
@@ -70,6 +70,6 @@ export type RowanRangeChartConfig = {
     series?: Array<object>;
     interactive?: boolean;
     variant?: "bar" | "area";
-    valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null;
+    valueFormatter?: import("./model.js").RowanRangeChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

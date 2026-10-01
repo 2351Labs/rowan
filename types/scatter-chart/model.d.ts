@@ -26,3 +26,28 @@ export function scatterDomains(series: any): {
         max: number;
     } | null;
 };
+/**
+ * Normalized scatter point passed to a value formatter.
+ */
+export type RowanScatterChartPoint = {
+    x: number | null;
+    y: number | null;
+    size: number | null;
+    label: string;
+};
+/**
+ * Normalized scatter series passed to a value formatter.
+ */
+export type RowanScatterChartSeries = {
+    id: string;
+    label: string;
+    color: string;
+    points: RowanScatterChartPoint[];
+};
+export type RowanScatterChartFormatContext = {
+    series?: RowanScatterChartSeries | undefined;
+    index?: number | undefined;
+    label?: string | undefined;
+    tick?: boolean | undefined;
+};
+export type RowanScatterChartValueFormatter = (value: number, context: RowanScatterChartFormatContext) => string;

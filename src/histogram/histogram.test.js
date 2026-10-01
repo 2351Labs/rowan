@@ -41,4 +41,14 @@ describe("createHistogramData", () => {
     expect(data.series[0].id).to.equal("n");
     expect(data.series[0].label).to.equal("N");
   });
+
+  it("treats whitespace samples and explicit edges as no-data", () => {
+    const data = createHistogramData({
+      values: [" ", 0, 5, "10"],
+      bins: [" ", 0, 5, 10],
+    });
+
+    expect(data.labels).to.deep.equal(["0–5", "5–10"]);
+    expect(data.series[0].values).to.deep.equal([1, 2]);
+  });
 });
