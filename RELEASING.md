@@ -157,6 +157,13 @@ box-plot, radar, and combo may still change. Frozen stacked-area and additive
 bar/donut layout flags ship here. Publish after this catalog commit is on
 `main`: tag `v0.15.0`.
 
+## 0.16.0 cut
+
+Version in `package.json` is `0.16.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Slate and midnight zinc themes ship here. Experimental scatter,
+heatmap, funnel, waterfall, range, box-plot, radar, and combo may still change.
+Publish after this catalog commit is on `main`: tag `v0.16.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

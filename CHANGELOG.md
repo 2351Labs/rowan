@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.16.0 - 2026-10-01
+
 ### Added
 
 - `slate` and `midnight` themes (`@rowan-ui/core/tokens/slate`, `@rowan-ui/core/tokens/midnight`): zinc palettes, teal accent, flatter buttons, Inter stack, 0.75rem large radius. Nested `[data-theme]` still re-declares component tokens.
