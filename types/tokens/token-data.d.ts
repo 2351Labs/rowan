@@ -1,6 +1,8 @@
 export namespace extraShippedThemes {
     let lagoon: Map<any, any>;
     let ember: Map<any, any>;
+    let slate: Map<any, any>;
+    let midnight: Map<any, any>;
 }
 export const shippedThemeIds: string[];
 export const primitiveColorTokens: any;
