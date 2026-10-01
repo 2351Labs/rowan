@@ -50,6 +50,14 @@ function formatScatterPoint(formatter, point, context) {
 }
 
 /**
+ * @typedef {{
+ *   series?: Array<object>,
+ *   interactive?: boolean,
+ *   valueFormatter?: import("./model.js").RowanScatterChartValueFormatter | null,
+ * }} RowanScatterChartConfig
+ */
+
+/**
  * Experimental scatter / bubble chart. Bubble is a `size` encoding, not a
  * second tag. Null x or y is no-data.
  * @tag rowan-scatter-chart
@@ -57,8 +65,8 @@ function formatScatterPoint(formatter, point, context) {
  * @attr {string} description
  * @attr {boolean} interactive
  * @property {Array<object>} series - Series of `{ id, label, color?, points: [{ x, y, size?, label? }] }`. Arrays are property-only.
- * @property {object} config - Replaces the complete chart configuration.
- * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanScatterChartConfig} config - Replaces the complete chart configuration.
+ * @property {import("./model.js").RowanScatterChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -151,6 +159,7 @@ export class RowanScatterChart extends BaseElement {
     this.requestRender();
   }
 
+  /** @returns {RowanScatterChartConfig} */
   get config() {
     return {
       series: this.series,
@@ -159,6 +168,7 @@ export class RowanScatterChart extends BaseElement {
     };
   }
 
+  /** @param {RowanScatterChartConfig | null | undefined} value */
   set config(value) {
     const source = isObject(value) ? value : {};
     this.#seriesInput = cloneScatterSeriesInput(source.series);
@@ -170,12 +180,12 @@ export class RowanScatterChart extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+  /** @returns {import("./model.js").RowanScatterChartValueFormatter | null} */
   get valueFormatter() {
     return this.#valueFormatter;
   }
 
-  /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+  /** @param {import("./model.js").RowanScatterChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
     this.requestRender();

@@ -47,7 +47,7 @@ function normalizeText(value) {
  *   labels?: string[],
  *   series?: Array<object>,
  *   interactive?: boolean,
- *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
+ *   valueFormatter?: import("./model.js").RowanBoxPlotChartValueFormatter | null,
  * }} RowanBoxPlotChartConfig
  */
 
@@ -62,7 +62,7 @@ function normalizeText(value) {
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ min, q1, median, q3, max, outliers? }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanBoxPlotChartConfig} config - Replaces the complete chart configuration.
- * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("./model.js").RowanBoxPlotChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -196,12 +196,12 @@ export class RowanBoxPlotChart extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+  /** @returns {import("./model.js").RowanBoxPlotChartValueFormatter | null} */
   get valueFormatter() {
     return this.#valueFormatter;
   }
 
-  /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+  /** @param {import("./model.js").RowanBoxPlotChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
     this.requestRender();

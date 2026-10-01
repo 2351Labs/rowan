@@ -487,9 +487,10 @@ export function chartSeriesColor(series, index) {
 }
 
 /**
- * @param {RowanChartValueFormatter | null} formatter
+ * @template Context
+ * @param {((value: number, context: Context) => string) | null} formatter
  * @param {number} value
- * @param {RowanChartFormatContext} context
+ * @param {Context} context
  */
 export function formatChartValue(formatter, value, context) {
   if (!formatter) return String(value);

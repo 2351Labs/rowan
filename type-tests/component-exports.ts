@@ -14,6 +14,7 @@ import { RowanCarousel } from "@rowan-ui/core/carousel";
 import { RowanCard } from "@rowan-ui/core/card";
 import { RowanCheckbox } from "@rowan-ui/core/checkbox";
 import { RowanChip } from "@rowan-ui/core/chip";
+import { RowanComboChart } from "@rowan-ui/core/combo-chart";
 import { RowanCombobox, type RowanComboboxOption } from "@rowan-ui/core/combobox";
 import { RowanCommandItem } from "@rowan-ui/core/command-item";
 import { RowanCommandPalette } from "@rowan-ui/core/command-palette";
@@ -42,7 +43,10 @@ import {
 import { RowanFormField } from "@rowan-ui/core/form-field";
 import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
-import { RowanBoxPlotChart } from "@rowan-ui/core/box-plot-chart";
+import {
+  RowanBoxPlotChart,
+  type RowanBoxPlotChartValueFormatter,
+} from "@rowan-ui/core/box-plot-chart";
 import { RowanFunnelChart } from "@rowan-ui/core/funnel-chart";
 import { RowanGaugeChart, type RowanGaugeChartRange } from "@rowan-ui/core/gauge-chart";
 import { RowanHeatmapChart } from "@rowan-ui/core/heatmap-chart";
@@ -66,7 +70,7 @@ import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRadarChart } from "@rowan-ui/core/radar-chart";
-import { RowanRangeChart } from "@rowan-ui/core/range-chart";
+import { RowanRangeChart, type RowanRangeChartValueFormatter } from "@rowan-ui/core/range-chart";
 import { RowanRating } from "@rowan-ui/core/rating";
 import {
   RowanRichTextEditor,
@@ -77,7 +81,10 @@ import {
   type RowanRichTextRun,
 } from "@rowan-ui/core/rich-text-editor";
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
-import { RowanScatterChart } from "@rowan-ui/core/scatter-chart";
+import {
+  RowanScatterChart,
+  type RowanScatterChartValueFormatter,
+} from "@rowan-ui/core/scatter-chart";
 import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
 import {
   RowanSegmentedControl,
@@ -138,6 +145,7 @@ const barChart: RowanBarChart = document.createElement("rowan-bar-chart");
 const barSeries: RowanChartSeries = { id: "incoming", label: "Incoming", values: [4, null, 8] };
 barChart.series = [barSeries];
 barChart.labels = ["Mon", "Tue", "Wed"];
+barChart.valueFormatter = (value) => String(value);
 const histogram = createHistogramData({ values: [1, 2, null, 9], bins: 2 });
 barChart.labels = histogram.labels;
 barChart.series = histogram.series;
@@ -154,6 +162,8 @@ const carousel: RowanCarousel = document.createElement("rowan-carousel");
 const card: RowanCard = document.createElement("rowan-card");
 const checkbox: RowanCheckbox = document.createElement("rowan-checkbox");
 const chip: RowanChip = document.createElement("rowan-chip");
+const comboChart: RowanComboChart = document.createElement("rowan-combo-chart");
+comboChart.valueFormatter = (value) => String(value);
 const combobox: RowanCombobox = document.createElement("rowan-combobox");
 const commandItem: RowanCommandItem = document.createElement("rowan-command-item");
 const commandPalette: RowanCommandPalette = document.createElement("rowan-command-palette");
@@ -165,6 +175,7 @@ const dialog: RowanDialog = document.createElement("rowan-dialog");
 const divider: RowanDivider = document.createElement("rowan-divider");
 const donutChart: RowanDonutChart = document.createElement("rowan-donut-chart");
 donutChart.series = [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
+donutChart.valueFormatter = (value) => String(value);
 const funnelChart: RowanFunnelChart = document.createElement("rowan-funnel-chart");
 funnelChart.variant = "cone";
 funnelChart.series = [{ id: "flow", label: "Flow", values: [10, 4] }];
@@ -172,20 +183,32 @@ const heatmapChart: RowanHeatmapChart = document.createElement("rowan-heatmap-ch
 heatmapChart.rows = ["North"];
 heatmapChart.columns = ["Mon"];
 heatmapChart.values = [[4]];
+heatmapChart.valueFormatter = (value) => String(value);
 const scatterChart: RowanScatterChart = document.createElement("rowan-scatter-chart");
 scatterChart.series = [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }];
+const scatterFormatter: RowanScatterChartValueFormatter = (value, context) =>
+  String(context.series?.points[0]?.x ?? value);
+scatterChart.valueFormatter = scatterFormatter;
 const waterfallChart: RowanWaterfallChart = document.createElement("rowan-waterfall-chart");
 waterfallChart.series = [{ id: "cash", label: "Cash", values: [10, { value: 6, type: "total" }] }];
+waterfallChart.valueFormatter = (value) => String(value);
 const rangeChart: RowanRangeChart = document.createElement("rowan-range-chart");
 rangeChart.variant = "area";
 rangeChart.series = [{ id: "dwell", label: "Dwell", values: [{ low: 4, high: 12 }] }];
+const rangeFormatter: RowanRangeChartValueFormatter = (value, context) =>
+  String(context.series?.values[0]?.low ?? value);
+rangeChart.valueFormatter = rangeFormatter;
 const boxPlotChart: RowanBoxPlotChart = document.createElement("rowan-box-plot-chart");
 boxPlotChart.series = [
   { id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] },
 ];
+const boxPlotFormatter: RowanBoxPlotChartValueFormatter = (value, context) =>
+  String(context.series?.values[0]?.q1 ?? value);
+boxPlotChart.valueFormatter = boxPlotFormatter;
 const radarChart: RowanRadarChart = document.createElement("rowan-radar-chart");
 radarChart.geometry = "area";
 radarChart.series = [{ id: "north", label: "North", values: [80, 40, 20] }];
+radarChart.valueFormatter = (value) => String(value);
 const drawer: RowanDrawer = document.createElement("rowan-drawer");
 const dropdown: RowanDropdown = document.createElement("rowan-dropdown");
 const dropzone: RowanDropzone = document.createElement("rowan-dropzone");
@@ -509,6 +532,7 @@ void [
   card,
   checkbox,
   chip,
+  comboChart,
   combobox,
   commandItem,
   commandPalette,

@@ -3,6 +3,36 @@ import { finiteOrNull } from "../chart/model.js";
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
 
+/**
+ * Normalized scatter point passed to a value formatter.
+ * @typedef {object} RowanScatterChartPoint
+ * @property {number | null} x
+ * @property {number | null} y
+ * @property {number | null} size
+ * @property {string} label
+ */
+
+/**
+ * Normalized scatter series passed to a value formatter.
+ * @typedef {object} RowanScatterChartSeries
+ * @property {string} id
+ * @property {string} label
+ * @property {string} color
+ * @property {RowanScatterChartPoint[]} points
+ */
+
+/**
+ * @typedef {object} RowanScatterChartFormatContext
+ * @property {RowanScatterChartSeries} [series]
+ * @property {number} [index]
+ * @property {string} [label]
+ * @property {boolean} [tick]
+ */
+
+/**
+ * @typedef {(value: number, context: RowanScatterChartFormatContext) => string} RowanScatterChartValueFormatter
+ */
+
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
