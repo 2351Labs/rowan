@@ -2,9 +2,17 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { normalizeCalendarDate } from "../lib/calendar-date.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 let dateRangePickerId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  clear: "Clear",
+  end: "End",
+  rangeEndpoint: "{label} {endpoint}",
+  separator: "to",
+  start: "Start",
+});
 
 function normalizeDateValue(value) {
   return normalizeCalendarDate(value);
@@ -28,6 +36,15 @@ function parseRangeState(state) {
 }
 
 /**
+ * @typedef {object} RowanDateRangePickerMessages
+ * @property {string} [clear]
+ * @property {string} [end]
+ * @property {string | ((context: { endpoint: string, label: string }) => string)} [rangeEndpoint]
+ * @property {string} [separator]
+ * @property {string} [start]
+ */
+
+/**
  * Date range input with form association and ordered range validation.
  * @tag rowan-date-range-picker
  * @attr {string} name
@@ -41,6 +58,7 @@ function parseRangeState(state) {
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @property {RowanDateRangePickerMessages} messages - Property-only built-in message overrides.
  * @csspart control
  * @csspart start-input
  * @csspart end-input
@@ -64,6 +82,7 @@ export class RowanDateRangePicker extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "messages",
   ];
   static upgradeProperties = [
     "name",
@@ -78,17 +97,20 @@ export class RowanDateRangePicker extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "messages",
   ];
 
   #startInput = null;
   #endInput = null;
   #fallbackLabel = null;
   #clearButton = null;
+  #separator = null;
   #defaultStart = null;
   #defaultEnd = null;
   #startInputId = "";
   #endInputId = "";
   #autoInvalid = false;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -246,6 +268,17 @@ export class RowanDateRangePicker extends BaseElement {
     this.reflectBoolean("invalid", Boolean(value));
   }
 
+  /** @returns {RowanDateRangePickerMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanDateRangePickerMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   clear() {
     if (this.disabled) return;
     if (!this.start && !this.end) return;
@@ -335,9 +368,9 @@ export class RowanDateRangePicker extends BaseElement {
         <div class="control" part="control">
           <label class="sr-only" part="label"></label>
           <input class="input" part="start-input" type="date" data-field="start" />
-          <span class="separator" part="separator" aria-hidden="true">to</span>
+          <span class="separator" part="separator" aria-hidden="true"></span>
           <input class="input" part="end-input" type="date" data-field="end" />
-          <button class="clear-button" part="clear-button" type="button" data-action="clear">Clear</button>
+          <button class="clear-button" part="clear-button" type="button" data-action="clear"></button>
         </div>
       `;
 
@@ -345,6 +378,7 @@ export class RowanDateRangePicker extends BaseElement {
       this.#endInput = this.renderRoot.querySelector('[data-field="end"]');
       this.#fallbackLabel = this.renderRoot.querySelector("label");
       this.#clearButton = this.renderRoot.querySelector('[data-action="clear"]');
+      this.#separator = this.renderRoot.querySelector(".separator");
 
       this.listen(this.#startInput, "input", () => {
         this.start = this.#startInput.value;
@@ -386,6 +420,8 @@ export class RowanDateRangePicker extends BaseElement {
     this.#endInput.required = this.required;
 
     this.#syncClearButtonState();
+    this.#separator.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "separator");
+    this.#clearButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "clear");
 
     const fallbackLabelText = (this.label || this.externalLabelText).trim();
     this.#fallbackLabel.textContent = fallbackLabelText;
@@ -393,8 +429,8 @@ export class RowanDateRangePicker extends BaseElement {
     this.#fallbackLabel.htmlFor = this.#startInputId;
 
     if (fallbackLabelText.length > 0) {
-      this.#startInput.setAttribute("aria-label", `${fallbackLabelText} start`);
-      this.#endInput.setAttribute("aria-label", `${fallbackLabelText} end`);
+      this.#startInput.setAttribute("aria-label", this.#inputLabel(fallbackLabelText, "start"));
+      this.#endInput.setAttribute("aria-label", this.#inputLabel(fallbackLabelText, "end"));
     } else {
       this.#startInput.removeAttribute("aria-label");
       this.#endInput.removeAttribute("aria-label");
@@ -417,6 +453,13 @@ export class RowanDateRangePicker extends BaseElement {
   #syncClearButtonState() {
     if (!this.#clearButton) return;
     this.#clearButton.disabled = this.disabled || (!this.start && !this.end);
+  }
+
+  #inputLabel(label, endpoint) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "rangeEndpoint", {
+      endpoint: resolveMessage(this.#messages, DEFAULT_MESSAGES, endpoint),
+      label,
+    });
   }
 
   #syncFormValue() {

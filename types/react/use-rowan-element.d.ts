@@ -11,9 +11,14 @@
  * @param {{ current: HTMLElement | null }} ref
  * @param {{ properties?: Record<string, unknown>, events?: Record<string, EventListener | undefined> }} [options]
  */
-export function useRowanElement(ref: {
+export function useRowanElement(
+  ref: {
     current: HTMLElement | null;
-}, options?: {
-    properties?: Record<string, unknown> | undefined;
-    events?: Record<string, EventListener | undefined> | undefined;
-} | undefined): void;
+  },
+  options?:
+    | {
+        properties?: Record<string, unknown> | undefined;
+        events?: Record<string, EventListener | undefined> | undefined;
+      }
+    | undefined,
+): void;

@@ -6,48 +6,61 @@ export function cloneScatterSeriesInput(value: unknown): any[];
  * @param {unknown} value
  */
 export function normalizeScatterSeries(value: unknown): {
-    id: string;
-    label: string;
-    color: string;
-    points: any;
+  id: string;
+  label: string;
+  color: string;
+  points: any;
 }[];
 export function cloneScatterSeries(value: any): any;
+/**
+ * @param {RowanScatterChartPoint} point
+ * @param {number} index
+ * @param {(index: number) => string} [resolveFallbackLabel]
+ */
+export function resolveScatterPointLabel(
+  point: RowanScatterChartPoint,
+  index: number,
+  resolveFallbackLabel?: ((index: number) => string) | undefined,
+): string;
 export function scatterDomains(series: any): {
-    x: {
-        min: number;
-        max: number;
-    };
-    y: {
-        min: number;
-        max: number;
-    };
-    size: {
-        min: number;
-        max: number;
-    } | null;
+  x: {
+    min: number;
+    max: number;
+  };
+  y: {
+    min: number;
+    max: number;
+  };
+  size: {
+    min: number;
+    max: number;
+  } | null;
 };
 /**
  * Normalized scatter point passed to a value formatter.
  */
 export type RowanScatterChartPoint = {
-    x: number | null;
-    y: number | null;
-    size: number | null;
-    label: string;
+  x: number | null;
+  y: number | null;
+  size: number | null;
+  label: string;
 };
 /**
  * Normalized scatter series passed to a value formatter.
  */
 export type RowanScatterChartSeries = {
-    id: string;
-    label: string;
-    color: string;
-    points: RowanScatterChartPoint[];
+  id: string;
+  label: string;
+  color: string;
+  points: RowanScatterChartPoint[];
 };
 export type RowanScatterChartFormatContext = {
-    series?: RowanScatterChartSeries | undefined;
-    index?: number | undefined;
-    label?: string | undefined;
-    tick?: boolean | undefined;
+  series?: RowanScatterChartSeries | undefined;
+  index?: number | undefined;
+  label?: string | undefined;
+  tick?: boolean | undefined;
 };
-export type RowanScatterChartValueFormatter = (value: number, context: RowanScatterChartFormatContext) => string;
+export type RowanScatterChartValueFormatter = (
+  value: number,
+  context: RowanScatterChartFormatContext,
+) => string;

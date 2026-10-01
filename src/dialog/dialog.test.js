@@ -319,6 +319,27 @@ describe("rowan-dialog", () => {
     expect(panel.hasAttribute("aria-modal")).to.equal(false);
   });
 
+  it("uses property-only close and fallback title messages without emitting rowan-close", async () => {
+    const dialog = document.createElement("rowan-dialog");
+    document.body.append(dialog);
+    await wait();
+
+    const closes = [];
+    dialog.addEventListener("rowan-close", (event) => closes.push(event.detail));
+    dialog.messages = { closeLabel: "Fermer la boite de dialogue", title: "Boite de dialogue" };
+    dialog.open = true;
+    await settle();
+
+    expect(dialog.getAttribute("messages")).to.equal(null);
+    expect(dialog.shadowRoot.querySelector('[part="close"]').getAttribute("aria-label")).to.equal(
+      "Fermer la boite de dialogue",
+    );
+    expect(dialog.shadowRoot.querySelector("dialog").getAttribute("aria-label")).to.equal(
+      "Boite de dialogue",
+    );
+    expect(closes).to.deep.equal([]);
+  });
+
   it("traps Tab focus within the panel", async () => {
     const dialog = document.createElement("rowan-dialog");
     document.body.append(dialog);

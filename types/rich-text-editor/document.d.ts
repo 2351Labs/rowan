@@ -61,24 +61,24 @@ export function renderDocument(root: HTMLElement, value: unknown): void;
  */
 export function documentFromEditingSurface(root: HTMLElement): RowanRichTextDocument;
 export type RowanRichTextRun = {
-    text: string;
-    bold?: boolean | undefined;
-    italic?: boolean | undefined;
-    underline?: boolean | undefined;
-    href?: string | undefined;
+  text: string;
+  bold?: boolean | undefined;
+  italic?: boolean | undefined;
+  underline?: boolean | undefined;
+  href?: string | undefined;
 };
 export type RowanRichTextParagraph = {
-    type: "paragraph";
-    children: RowanRichTextRun[];
+  type: "paragraph";
+  children: RowanRichTextRun[];
 };
 export type RowanRichTextHeading = {
-    type: "heading";
-    level: 1 | 2 | 3;
-    children: RowanRichTextRun[];
+  type: "heading";
+  level: 1 | 2 | 3;
+  children: RowanRichTextRun[];
 };
 export type RowanRichTextList = {
-    type: "unordered-list" | "ordered-list";
-    items: RowanRichTextRun[][];
+  type: "unordered-list" | "ordered-list";
+  items: RowanRichTextRun[][];
 };
 /**
  * Public document. Blocks are paragraph, heading (levels 1–3), unordered-list,
@@ -86,5 +86,5 @@ export type RowanRichTextList = {
  * allowlisted href. HTML is never an API value. Images are not document nodes.
  */
 export type RowanRichTextDocument = {
-    blocks: Array<RowanRichTextParagraph | RowanRichTextHeading | RowanRichTextList>;
+  blocks: Array<RowanRichTextParagraph | RowanRichTextHeading | RowanRichTextList>;
 };

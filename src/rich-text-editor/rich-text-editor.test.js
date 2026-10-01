@@ -291,6 +291,40 @@ describe("rowan-rich-text-editor", () => {
     );
   });
 
+  it("uses property-only messages for generated toolbar and link copy without an event", async () => {
+    const editor = await renderEditor();
+    const changes = [];
+    editor.addEventListener("rowan-change", (event) => changes.push(event));
+
+    editor.messages = {
+      apply: "Aplicar",
+      bold: "Negrita",
+      linkUrl: "URL del enlace",
+      toolbarLabel: "Formato de {label}",
+      url: "Dirección",
+      urlPlaceholder: "https:// o /ruta",
+    };
+    await nextMicrotask();
+
+    expect(editor.getAttribute("messages")).to.equal(null);
+    expect(
+      editor.shadowRoot.querySelector('[data-command="bold"]').getAttribute("aria-label"),
+    ).to.equal("Negrita");
+    expect(editor.shadowRoot.querySelector('[data-command="bold"]').title).to.equal("Negrita");
+    expect(editor.shadowRoot.querySelector(".toolbar").getAttribute("aria-label")).to.equal(
+      "Formato de Operational guidance",
+    );
+    expect(editor.shadowRoot.querySelector(".link-popover").getAttribute("aria-label")).to.equal(
+      "URL del enlace",
+    );
+    expect(editor.shadowRoot.querySelector(".link-label-text").textContent).to.equal("Dirección");
+    expect(editor.shadowRoot.querySelector(".link-href").placeholder).to.equal("https:// o /ruta");
+    expect(editor.shadowRoot.querySelector('[data-link-action="apply"]').textContent).to.equal(
+      "Aplicar",
+    );
+    expect(changes).to.deep.equal([]);
+  });
+
   it("toggles a heading off when formatBlock reports <h2>", async () => {
     const editor = await renderEditor({
       value: { blocks: [{ type: "heading", level: 2, children: [{ text: "Containment" }] }] },

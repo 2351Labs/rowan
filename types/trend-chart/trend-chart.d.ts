@@ -1,4 +1,16 @@
 /**
+ * @typedef {object} RowanTrendChartMessages
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string} [noMetricData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [reference]
+ * @property {string} [series]
+ */
+/**
  * Frozen small multi-series line chart for operational data sets. Native SVG,
  * no animation, and an equivalent semantic table. Other geometries are
  * separate hosts.
@@ -6,10 +18,12 @@
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {Array<import("./model.js").RowanTrendChartSeries>} series - Chart series. Arrays are property-only.
  * @property {string[]} labels - Point labels shared across series. Arrays are property-only.
  * @property {import("./model.js").RowanTrendChartConfig} config - Replaces the complete chart configuration.
  * @property {import("./model.js").RowanTrendChartValueFormatter | null} valueFormatter - Formats chart and table values. Its context includes tick for compact axis labels. Functions are property-only.
+ * @property {RowanTrendChartMessages} messages - Property-only built-in message overrides.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -30,33 +44,50 @@
  * @event rowan-point-activate - Fired when a user activates an interactive data point.
  */
 export class RowanTrendChart extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set label(value: string);
-    get label(): string;
-    set description(value: string);
-    get description(): string;
-    set interactive(value: boolean);
-    get interactive(): boolean;
-    /** @param {Array<import("./model.js").RowanTrendChartSeries>} value */
-    set series(value: import("../chart/model.js").RowanChartSeries[]);
-    /** @returns {Array<import("./model.js").RowanTrendChartSeries>} */
-    get series(): import("../chart/model.js").RowanChartSeries[];
-    /** @param {string[]} value */
-    set labels(value: string[]);
-    /** @returns {string[]} */
-    get labels(): string[];
-    /** @param {import("./model.js").RowanTrendChartConfig | null | undefined} value */
-    set config(value: import("./model.js").RowanTrendChartConfig | null | undefined);
-    /** @returns {import("./model.js").RowanTrendChartConfig} */
-    get config(): import("../chart/model.js").RowanChartConfig;
-    /** @param {import("./model.js").RowanTrendChartValueFormatter | null} value */
-    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
-    /** @returns {import("./model.js").RowanTrendChartValueFormatter | null} */
-    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set label(value: string);
+  get label(): string;
+  set description(value: string);
+  get description(): string;
+  set locale(value: string);
+  get locale(): string;
+  /** @param {RowanTrendChartMessages | null | undefined} value */
+  set messages(value: RowanTrendChartMessages | null | undefined);
+  /** @returns {RowanTrendChartMessages} */
+  get messages(): RowanTrendChartMessages;
+  set interactive(value: boolean);
+  get interactive(): boolean;
+  /** @param {Array<import("./model.js").RowanTrendChartSeries>} value */
+  set series(value: import("../chart/model.js").RowanChartSeries[]);
+  /** @returns {Array<import("./model.js").RowanTrendChartSeries>} */
+  get series(): import("../chart/model.js").RowanChartSeries[];
+  /** @param {string[]} value */
+  set labels(value: string[]);
+  /** @returns {string[]} */
+  get labels(): string[];
+  /** @param {import("./model.js").RowanTrendChartConfig | null | undefined} value */
+  set config(value: import("./model.js").RowanTrendChartConfig | null | undefined);
+  /** @returns {import("./model.js").RowanTrendChartConfig} */
+  get config(): import("../chart/model.js").RowanChartConfig;
+  /** @param {import("./model.js").RowanTrendChartValueFormatter | null} value */
+  set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
+  /** @returns {import("./model.js").RowanTrendChartValueFormatter | null} */
+  get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+  #private;
 }
+export type RowanTrendChartMessages = {
+  chart?: string | undefined;
+  dataTable?: string | undefined;
+  dataTableCaption?: string | ((context: { chart: string }) => string) | undefined;
+  metric?: string | undefined;
+  noData?: string | undefined;
+  noMetricData?: string | undefined;
+  point?: string | ((context: { index: string }) => string) | undefined;
+  reference?: string | undefined;
+  series?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

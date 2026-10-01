@@ -7,3 +7,4 @@ export type {
   RowanChartSeries,
   RowanChartValueFormatter,
 } from "../../types/chart/model.js";
+export type { RowanStackedAreaChartMessages } from "../../types/stacked-area-chart/stacked-area-chart.js";

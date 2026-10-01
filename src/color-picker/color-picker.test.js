@@ -126,4 +126,51 @@ describe("rowan-color-picker", () => {
     expect(picker.getAttribute("aria-label")).to.equal("Brand color for project");
     expect(picker.internals.ariaLabel).to.equal("Project color");
   });
+
+  it("uses property-only messages and visual swatch arrows in RTL", async () => {
+    const palette = [
+      { value: "#10261c", label: "Forest" },
+      { value: "#153224", label: "Moss" },
+      { value: "#1d432f", label: "Pine" },
+    ];
+    const picker = await renderPicker({ palette, value: "#153224" });
+    picker.dir = "rtl";
+    const changes = [];
+    picker.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    picker.messages = {
+      customColor: "Color personalizado",
+      customColorLabel: "{label}: color personalizado",
+      opacity: "Opacidad",
+      opacityLabel: "{label}: opacidad",
+      paletteLabel: "Paleta de {label}",
+      swatchLabel: "{label} ({value})",
+    };
+    await nextMicrotask();
+
+    const colorInput = picker.shadowRoot.querySelector("input[type='color']");
+    const alphaInput = picker.shadowRoot.querySelector("input[type='range']");
+    const swatches = picker.shadowRoot.querySelector(".swatches");
+    const middle = picker.shadowRoot.querySelector("button[data-value='#153224']");
+    expect(picker.getAttribute("messages")).to.equal(null);
+    expect(picker.shadowRoot.querySelector(".custom-color-label").textContent).to.equal(
+      "Color personalizado",
+    );
+    expect(colorInput.getAttribute("aria-label")).to.equal("Project color: color personalizado");
+    expect(picker.shadowRoot.querySelector(".opacity-label").textContent).to.equal("Opacidad");
+    expect(alphaInput.getAttribute("aria-label")).to.equal("Project color: opacidad");
+    expect(swatches.getAttribute("aria-label")).to.equal("Paleta de Project color");
+    expect(changes).to.deep.equal([]);
+
+    middle.focus();
+    middle.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(picker.value).to.equal("#10261c");
+    expect(picker.shadowRoot.activeElement).to.equal(
+      picker.shadowRoot.querySelector("button[data-value='#10261c']"),
+    );
+  });
 });

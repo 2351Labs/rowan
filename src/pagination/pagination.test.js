@@ -90,6 +90,62 @@ describe("rowan-pagination", () => {
     expect(el.shadowRoot.querySelector('[data-action="next"]').disabled).to.equal(true);
   });
 
+  it("uses property-only message overrides without emitting a page change", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.page = 2;
+    el.totalPages = 5;
+    document.body.append(el);
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-page-change", (event) => changes.push(event.detail));
+    el.messages = {
+      navigationLabel: "Navegacion de paginas",
+      previousPage: "Anterior",
+      nextPage: "Siguiente",
+      pageStatus: "{page} de {total}",
+    };
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.messages).to.deep.equal({
+      navigationLabel: "Navegacion de paginas",
+      previousPage: "Anterior",
+      nextPage: "Siguiente",
+      pageStatus: "{page} de {total}",
+    });
+    expect(el.shadowRoot.querySelector("nav").getAttribute("aria-label")).to.equal(
+      "Navegacion de paginas",
+    );
+    expect(el.shadowRoot.querySelector('[data-action="prev"]').textContent).to.equal("Anterior");
+    expect(el.shadowRoot.querySelector('[data-action="next"]').textContent).to.equal("Siguiente");
+    expect(el.shadowRoot.querySelector(".status").textContent).to.equal("2 de 5");
+    expect(changes).to.deep.equal([]);
+  });
+
+  it("accepts a dynamic status message function", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.page = 2;
+    el.totalPages = 5;
+    el.messages = {
+      pageStatus: ({ page, total }) => `${page} de ${total} paginas`,
+    };
+    document.body.append(el);
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector(".status").textContent).to.equal("2 de 5 paginas");
+  });
+
+  it("uses the default slot as an optional custom label", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.textContent = "Results 21 to 30";
+    document.body.append(el);
+    await nextMicrotask();
+
+    const label = el.shadowRoot.querySelector("slot");
+    expect(label.assignedNodes()).to.deep.equal([el.firstChild]);
+  });
+
   it("shares a 0-based index with rowan-table", async () => {
     const table = document.createElement("rowan-table");
     table.config = {

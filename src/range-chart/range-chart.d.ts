@@ -8,3 +8,4 @@ export type {
   RowanRangeChartSeries,
   RowanRangeChartValueFormatter,
 } from "../../types/range-chart/model.js";
+export type { RowanRangeChartMessages } from "../../types/range-chart/range-chart.js";

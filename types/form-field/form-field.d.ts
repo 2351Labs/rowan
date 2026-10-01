@@ -1,4 +1,8 @@
 /**
+ * @typedef {object} RowanFormFieldMessages
+ * @property {string} [required]
+ */
+/**
  * Accessible label, support text, and error composition for a form control.
  * @tag rowan-form-field
  * @attr {string} label
@@ -9,6 +13,7 @@
  * @attr {"top"|"start"} label-position
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @property {RowanFormFieldMessages} messages - Property-only built-in message overrides.
  * @slot - A direct form control or grouped control
  * @slot label - Replaces the label attribute
  * @slot hint - Replaces the hint attribute
@@ -30,22 +35,29 @@
  * @cssprop --rowan-form-field-error-fg
  */
 export class RowanFormField extends BaseElement {
-    set label(value: string);
-    get label(): string;
-    set hint(value: string);
-    get hint(): string;
-    set description(value: string);
-    get description(): string;
-    set error(value: string);
-    get error(): string;
-    set htmlFor(value: string);
-    get htmlFor(): string;
-    set labelPosition(value: "start" | "top");
-    get labelPosition(): "start" | "top";
-    set required(value: boolean);
-    get required(): boolean;
-    set invalid(value: boolean);
-    get invalid(): boolean;
-    #private;
+  set label(value: string);
+  get label(): string;
+  set hint(value: string);
+  get hint(): string;
+  set description(value: string);
+  get description(): string;
+  set error(value: string);
+  get error(): string;
+  set htmlFor(value: string);
+  get htmlFor(): string;
+  set labelPosition(value: "start" | "top");
+  get labelPosition(): "start" | "top";
+  set required(value: boolean);
+  get required(): boolean;
+  set invalid(value: boolean);
+  get invalid(): boolean;
+  /** @param {RowanFormFieldMessages | null | undefined} value */
+  set messages(value: RowanFormFieldMessages | null | undefined);
+  /** @returns {RowanFormFieldMessages} */
+  get messages(): RowanFormFieldMessages;
+  #private;
 }
+export type RowanFormFieldMessages = {
+  required?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

@@ -7,6 +7,7 @@ import "../button/button.js";
 import "../table/table.js";
 import "../row-details-panel/row-details-panel.js";
 import { createRowanComponent } from "./create-wrapper.js";
+import { RowanCheckbox } from "./generated/checkbox.js";
 import { useRowanElement } from "./use-rowan-element.js";
 
 const RowanButton = createRowanComponent({
@@ -291,6 +292,36 @@ describe("@rowan-ui/core/react", () => {
     expect(table.hasAttribute("config")).to.equal(false);
     expect(table.config.rows).to.deep.equal(config.rows);
     expect(table.selectable).to.equal("multiple");
+  });
+
+  it("submits a FACE value and receives a native change through the generated wrapper", async () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    roots.push(root);
+    const changes = [];
+
+    await act(async () => {
+      root.render(
+        createElement(
+          "form",
+          null,
+          createElement(
+            RowanCheckbox,
+            { name: "consent", value: "yes", onRowanChange: (event) => changes.push(event) },
+            "Accept terms",
+          ),
+        ),
+      );
+    });
+    await wait();
+
+    const form = container.querySelector("form");
+    const checkbox = form.querySelector("rowan-checkbox");
+    checkbox.shadowRoot.querySelector('input[type="checkbox"]').click();
+
+    expect(changes).to.have.length(1);
+    expect(new FormData(form).get("consent")).to.equal("yes");
   });
 
   it("omits disabled={false} from wrapper SSR markup", () => {

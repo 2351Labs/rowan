@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 
@@ -139,14 +140,15 @@ export class RowanSideNavSection extends BaseElement {
     });
 
     this.#removeTriggerKey = this.listen(this.#trigger, "keydown", (event) => {
-      if (event.key === keys.ARROW_DOWN || event.key === keys.ARROW_RIGHT) {
+      const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+      if (event.key === keys.ARROW_DOWN || horizontalOffset > 0) {
         event.preventDefault();
         if (this.collapsed) this.toggleFromUser(false);
         this.#firstItem()?.focus({ preventScroll: true });
         return;
       }
 
-      if (event.key === keys.ARROW_LEFT && !this.collapsed) {
+      if (horizontalOffset < 0 && !this.collapsed) {
         event.preventDefault();
         this.toggleFromUser(true);
       }

@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { RowanTreeItem } from "../tree-item/tree-item.js";
@@ -302,7 +303,8 @@ export class RowanTree extends BaseElement {
       return;
     }
 
-    if (event.key === keys.ARROW_RIGHT) {
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset > 0) {
       event.preventDefault();
       if (item.hasChildren && !item.expanded) {
         this.#setExpanded(item, true);
@@ -315,7 +317,7 @@ export class RowanTree extends BaseElement {
       return;
     }
 
-    if (event.key === keys.ARROW_LEFT) {
+    if (horizontalOffset < 0) {
       event.preventDefault();
       if (item.hasChildren && item.expanded) {
         this.#setExpanded(item, false);

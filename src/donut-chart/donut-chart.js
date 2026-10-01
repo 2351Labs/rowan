@@ -2,6 +2,9 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -27,6 +30,17 @@ const CY = 100;
 const OUTER = 78;
 const INNER = 46;
 const VARIANTS = new Set(["donut", "pie"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: ({ variant }) => (variant === "pie" ? "Pie chart" : "Donut chart"),
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  metric: "Metric",
+  noData: "No data",
+  point: "Point {index}",
+  reference: "Reference",
+  slices: "Slices",
+  total: "Total",
+});
 
 let donutChartId = 0;
 
@@ -37,6 +51,19 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanDonutChartMessages
+ * @property {string | ((context: { variant: "donut" | "pie" }) => string)} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [reference]
+ * @property {string} [slices]
+ * @property {string} [total]
+ */
 
 /**
  * @typedef {import("../chart/model.js").RowanChartConfig & {
@@ -81,10 +108,12 @@ function slicePath(startAngle, endAngle, inner = INNER, outer = OUTER) {
  * @attr {string} description
  * @attr {boolean} interactive
  * @attr {"donut"|"pie"} variant - `pie` fills the hole. Default `donut`. Total stays in the matching table.
+ * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - First series is drawn. Arrays are property-only.
  * @property {string[]} labels - Slice labels. Arrays are property-only.
  * @property {RowanDonutChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to donut.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter
+ * @property {RowanDonutChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -103,7 +132,7 @@ export class RowanDonutChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./donut-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-donut-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "variant"];
+  static observedAttributes = ["label", "description", "interactive", "variant", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -113,6 +142,8 @@ export class RowanDonutChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -128,6 +159,7 @@ export class RowanDonutChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -135,6 +167,7 @@ export class RowanDonutChart extends BaseElement {
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -159,6 +192,25 @@ export class RowanDonutChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanDonutChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanDonutChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -262,11 +314,11 @@ export class RowanDonutChart extends BaseElement {
               <div class="total" part="total"></div>
               <div class="point-controls"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Slices"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -284,6 +336,7 @@ export class RowanDonutChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -300,6 +353,7 @@ export class RowanDonutChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -332,12 +386,26 @@ export class RowanDonutChart extends BaseElement {
   }
 
   #chartName() {
-    return this.variant === "pie" ? "Pie chart" : "Donut chart";
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart", { variant: this.variant });
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
   }
 
   #renderChart() {
     const series = this.#primarySeries();
-    const labels = resolveChartLabels(this.#series.slice(0, 1), this.#labels);
+    const labels = resolveChartLabels(this.#series.slice(0, 1), this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const slices = donutSlices(series);
     const total = slices.reduce((sum, slice) => sum + (slice.value ?? 0), 0);
     this.#entries = [];
@@ -355,7 +423,7 @@ export class RowanDonutChart extends BaseElement {
       const start = angle;
       const end = angle + sweep;
       angle = end;
-      const formattedValue = formatChartValue(this.#valueFormatter, slice.value, {
+      const formattedValue = this.#formatValue(slice.value, {
         series,
         index: slice.index,
         label: labels[slice.index],
@@ -386,13 +454,18 @@ export class RowanDonutChart extends BaseElement {
     this.#total.textContent = isPie
       ? ""
       : total
-        ? formatChartValue(this.#valueFormatter, total, { series, label: "Total" })
-        : "No data";
+        ? this.#formatValue(total, {
+            series,
+            label: resolveMessage(this.#messages, DEFAULT_MESSAGES, "total"),
+          })
+        : resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData");
 
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || this.#chartName()} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#displayLabel() || this.#chartName(),
+      }),
       labels,
       series: series
         ? [
@@ -403,13 +476,18 @@ export class RowanDonutChart extends BaseElement {
           ]
         : [],
       formatValue: (value, item, index, label) =>
-        formatChartValue(this.#valueFormatter, value, { series, index, label }),
+        this.#formatValue(value, { series, index, label }),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "slices"),
+    );
     const fragment = document.createDocumentFragment();
     this.#entries.forEach((entry, index) => {
       const item = document.createElement("li");

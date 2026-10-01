@@ -2,6 +2,9 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -35,6 +38,15 @@ const SVG_NAMESPACE_WIDTH = 1000;
 const SVG_NAMESPACE_HEIGHT = 1000;
 const PLOT_PAD = 88;
 const GEOMETRIES = new Set(["line", "area"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: ({ geometry }) => (geometry === "area" ? "Radar area chart" : "Radar chart"),
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  metric: "Metric",
+  noData: "No data",
+  point: "Point {index}",
+  series: "Series",
+});
 
 let radarChartId = 0;
 
@@ -45,6 +57,17 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanRadarChartMessages
+ * @property {string | ((context: { geometry: "line" | "area" }) => string)} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [series]
+ */
 
 /**
  * @typedef {import("../chart/model.js").RowanChartConfig & {
@@ -62,10 +85,12 @@ function normalizeText(value) {
  * @attr {string} description
  * @attr {boolean} interactive
  * @attr {"line"|"area"} geometry - Default `line`.
+ * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - Chart series. Arrays are property-only.
  * @property {string[]} labels - Axis labels around the ring. Arrays are property-only.
  * @property {RowanRadarChartConfig} config - Replaces the complete chart configuration. Omitted `geometry` resets to line.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter
+ * @property {RowanRadarChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -83,7 +108,7 @@ export class RowanRadarChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./radar-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-radar-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "geometry"];
+  static observedAttributes = ["label", "description", "interactive", "geometry", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -93,6 +118,8 @@ export class RowanRadarChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -107,6 +134,7 @@ export class RowanRadarChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -114,6 +142,7 @@ export class RowanRadarChart extends BaseElement {
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -138,6 +167,25 @@ export class RowanRadarChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanRadarChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanRadarChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -240,11 +288,11 @@ export class RowanRadarChart extends BaseElement {
               <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
               <div class="point-controls" dir="ltr"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -260,6 +308,7 @@ export class RowanRadarChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -275,6 +324,7 @@ export class RowanRadarChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -290,7 +340,7 @@ export class RowanRadarChart extends BaseElement {
   }
 
   #chartName() {
-    return this.geometry === "area" ? "Radar area chart" : "Radar chart";
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart", { geometry: this.geometry });
   }
 
   #plotBox() {
@@ -319,7 +369,9 @@ export class RowanRadarChart extends BaseElement {
   }
 
   #renderChart() {
-    const labels = resolveChartLabels(this.#series, this.#labels);
+    const labels = resolveChartLabels(this.#series, this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const domain = radarDomain(this.#series);
     const plot = this.#plotBox();
     this.#entries = this.#createEntries(labels, domain, plot);
@@ -330,15 +382,18 @@ export class RowanRadarChart extends BaseElement {
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || this.#chartName()} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#displayLabel() || this.#chartName(),
+      }),
       labels,
       series: this.#series,
       formatValue: (value, item, index, label) =>
-        formatChartValue(this.#valueFormatter, value, {
+        this.#formatValue(value, {
           series: item,
           index,
           label,
         }),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
@@ -366,7 +421,7 @@ export class RowanRadarChart extends BaseElement {
           index,
           label,
           value: point.value,
-          formattedValue: formatChartValue(this.#valueFormatter, point.value, {
+          formattedValue: this.#formatValue(point.value, {
             series,
             index,
             label,
@@ -413,7 +468,7 @@ export class RowanRadarChart extends BaseElement {
       label.setAttribute("class", "tick-label");
       label.setAttribute("x", String(plot.cx + 8));
       label.setAttribute("y", String(plot.cy - radarRadius(tick, domain, plot.radius)));
-      label.textContent = formatChartValue(this.#valueFormatter, tick, { tick: true });
+      label.textContent = this.#formatValue(tick, { tick: true });
       fragment.append(label);
     }
 
@@ -486,6 +541,10 @@ export class RowanRadarChart extends BaseElement {
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "series"),
+    );
     const fragment = document.createDocumentFragment();
     for (const [seriesIndex, series] of this.#series.entries()) {
       const item = document.createElement("li");
@@ -578,6 +637,18 @@ export class RowanRadarChart extends BaseElement {
       .find((node) => node instanceof HTMLButtonElement && node.dataset.pointKey);
     if (!button) return null;
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
   }
 
   #applyDefaultA11y() {

@@ -244,4 +244,82 @@ describe("rowan-filter-builder", () => {
 
     builder.remove();
   });
+
+  it("uses property-only messages for generated filter controls without an event", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [
+      { id: "active", label: "Active", type: "boolean" },
+      { id: "role", label: "Role", options: ["Admin"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [
+      { id: "active-filter", field: "active", operator: "equals", value: "true" },
+      { id: "role-filter", field: "role", operator: "equals", value: "" },
+      { id: "name-filter", field: "name", operator: "is-empty", value: "" },
+    ];
+    document.body.append(builder);
+    await settle();
+
+    const events = [];
+    builder.addEventListener("rowan-filter-change", () => events.push(true));
+    builder.messages = {
+      addLabel: "Agregar filtro",
+      booleanFalse: "Falso",
+      booleanTrue: "Verdadero",
+      chooseValue: "Elegir valor",
+      clearLabel: "Limpiar filtros",
+      empty: "No hay filtros.",
+      fieldLabel: "Campo de filtro",
+      label: "Filtros",
+      noValue: "Sin valor",
+      operatorLabel: ({ operator }) => (operator === "equals" ? "es" : operator),
+      operatorSelectLabel: "Operador de filtro",
+      remove: "Quitar",
+      removeFilter: "Quitar filtro {field}",
+      value: "Valor",
+      valueFor: "Valor para {label}",
+    };
+    await settle();
+
+    const activeRow = builder.shadowRoot.querySelector('[data-filter-id="active-filter"]');
+    const roleRow = builder.shadowRoot.querySelector('[data-filter-id="role-filter"]');
+    const nameRow = builder.shadowRoot.querySelector('[data-filter-id="name-filter"]');
+    expect(builder.getAttribute("messages")).to.equal(null);
+    expect(builder.shadowRoot.querySelector(".title").textContent).to.equal("Filtros");
+    expect(builder.shadowRoot.querySelector('[data-action="add"]').textContent).to.equal(
+      "Agregar filtro",
+    );
+    expect(builder.shadowRoot.querySelector('[data-action="clear"]').textContent).to.equal(
+      "Limpiar filtros",
+    );
+    expect(
+      activeRow.querySelector('[data-filter-part="field"]').getAttribute("aria-label"),
+    ).to.equal("Campo de filtro");
+    expect(
+      activeRow.querySelector('[data-filter-part="operator"]').getAttribute("aria-label"),
+    ).to.equal("Operador de filtro");
+    expect(
+      activeRow.querySelector('[data-filter-part="operator"] option:checked').textContent,
+    ).to.equal("es");
+    expect(activeRow.querySelector('[data-filter-part="value"] option').textContent).to.equal(
+      "Verdadero",
+    );
+    expect(roleRow.querySelector('[data-filter-part="value"] option').textContent).to.equal(
+      "Elegir valor",
+    );
+    expect(nameRow.querySelector('[part="value-control"]').textContent).to.equal("Sin valor");
+    expect(activeRow.querySelector('[data-action="remove"]').textContent).to.equal("Quitar");
+    expect(activeRow.querySelector('[data-action="remove"]').getAttribute("aria-label")).to.equal(
+      "Quitar filtro Active",
+    );
+    expect(events).to.deep.equal([]);
+
+    builder.filters = [];
+    await settle();
+
+    expect(builder.shadowRoot.querySelector('[part="empty"]').textContent).to.equal(
+      "No hay filtros.",
+    );
+    expect(events).to.deep.equal([]);
+  });
 });

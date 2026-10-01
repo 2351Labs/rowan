@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { validityMessage } from "../lib/validity-messages.js";
@@ -315,9 +316,10 @@ export class RowanSegmentedControl extends BaseElement {
     if (index === -1) return;
 
     let target = null;
-    if (event.key === keys.ARROW_RIGHT || event.key === keys.ARROW_DOWN) {
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset > 0 || event.key === keys.ARROW_DOWN) {
       target = buttons[index + 1] ?? buttons.at(0);
-    } else if (event.key === keys.ARROW_LEFT || event.key === keys.ARROW_UP) {
+    } else if (horizontalOffset < 0 || event.key === keys.ARROW_UP) {
       target = buttons[index - 1] ?? buttons.at(-1);
     } else if (event.key === keys.HOME) {
       target = buttons.at(0);

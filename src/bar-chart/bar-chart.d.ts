@@ -7,3 +7,4 @@ export type {
   RowanChartSeries,
   RowanChartValueFormatter,
 } from "../../types/chart/model.js";
+export type { RowanBarChartMessages } from "../../types/bar-chart/bar-chart.js";

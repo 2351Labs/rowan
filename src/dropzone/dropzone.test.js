@@ -220,4 +220,35 @@ describe("rowan-dropzone", () => {
     await nextMicrotask();
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("uses property-only messages for generated visual and accessible copy", async () => {
+    const element = document.createElement("rowan-dropzone");
+    document.body.append(element);
+    await nextMicrotask();
+
+    const events = [];
+    element.addEventListener("rowan-files-add", () => events.push(true));
+    element.messages = {
+      ariaLabel: "Selector de archivos",
+      description: "Arrastra archivos o abre el selector.",
+      label: "Suelta archivos aqui",
+    };
+    await nextMicrotask();
+
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.shadowRoot.querySelector('[part="label"]').textContent).to.equal(
+      "Suelta archivos aqui",
+    );
+    expect(element.shadowRoot.querySelector('[part="description"]').textContent).to.equal(
+      "Arrastra archivos o abre el selector.",
+    );
+    expect(element.internals.ariaLabel).to.equal("Selector de archivos");
+    expect(events).to.deep.equal([]);
+
+    element.label = "Manual";
+    element.messages = { label: "Ignored" };
+    await nextMicrotask();
+
+    expect(element.shadowRoot.querySelector('[part="label"]').textContent).to.equal("Manual");
+  });
 });

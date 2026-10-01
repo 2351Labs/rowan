@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { createSvgElement } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
@@ -20,6 +23,13 @@ const ACTUAL_Y = PLOT_Y + (PLOT_H - ACTUAL_H) / 2;
 const TARGET_H = PLOT_H * 0.72;
 const TARGET_Y1 = PLOT_Y + (PLOT_H - TARGET_H) / 2;
 const TARGET_Y2 = TARGET_Y1 + TARGET_H;
+const DEFAULT_MESSAGES = Object.freeze({
+  actual: "Actual",
+  chart: "Bullet chart",
+  noData: "No data",
+  range: "Range {index}",
+  target: "Target",
+});
 
 const RANGE_INTENSITY = {
   2: [40, 10],
@@ -72,15 +82,11 @@ function normalizeBulletRanges(value) {
     if (from === null || to === null || from === to) return [];
     if (from > to) [from, to] = [to, from];
     const tone = TONES.has(item.tone) ? item.tone : "neutral";
-    return [{ from, to, label: normalizeText(item.label) || `Range ${index + 1}`, tone }];
+    return [{ from, to, label: normalizeText(item.label), fallbackIndex: index + 1, tone }];
   });
 
   ranges.sort((a, b) => a.from - b.from || a.to - b.to);
   return ranges;
-}
-
-function cloneRanges(ranges) {
-  return ranges.map((item) => ({ ...item }));
 }
 
 function niceStep(span) {
@@ -90,15 +96,29 @@ function niceStep(span) {
   return [1, 2, 2.5, 5, 10].map((n) => n * mag).find((n) => span / n <= 6) ?? mag;
 }
 
-function formatTick(value) {
+function formatTick(value, locale) {
   if (Math.abs(value) >= 1000) {
-    return new Intl.NumberFormat(undefined, {
-      maximumFractionDigits: 1,
-      notation: "compact",
-    }).format(value);
+    return formatNumber(value, {
+      fallback: String(value),
+      locale,
+      options: { maximumFractionDigits: 1, notation: "compact" },
+    });
   }
-  return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(value);
+  return formatNumber(value, {
+    fallback: String(value),
+    locale,
+    options: { maximumFractionDigits: 2 },
+  });
 }
+
+/**
+ * @typedef {object} RowanBulletChartMessages
+ * @property {string} [actual]
+ * @property {string} [chart]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [range]
+ * @property {string} [target]
+ */
 
 /**
  * Compact qualitative comparison after Stephen Few's bullet graph spec.
@@ -107,9 +127,11 @@ function formatTick(value) {
  * @attr {boolean} scale - Show quantitative ticks. Default true.
  * @attr {"higher"|"lower"} intent - Dark bands encode poor performance.
  * @attr {"ink"|"accent"|"status"|"tone"} encoding - Range fill. `ink` grayscale (default). `accent` one theme hue. `status` poor→good mix. `tone` per-range hues.
+ * @attr {string} locale
  * @property {number | null} value
  * @property {number | null} target
  * @property {RowanBulletChartRange[]} ranges
+ * @property {RowanBulletChartMessages} messages - Property-only built-in message overrides.
  * @csspart chart
  * @csspart plot
  * @csspart range
@@ -122,8 +144,18 @@ function formatTick(value) {
 export class RowanBulletChart extends BaseElement {
   static styleUrl = new URL("./bullet-chart.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "scale", "intent", "encoding"];
-  static upgradeProperties = ["label", "value", "target", "ranges", "scale", "intent", "encoding"];
+  static observedAttributes = ["label", "scale", "intent", "encoding", "locale"];
+  static upgradeProperties = [
+    "label",
+    "value",
+    "target",
+    "ranges",
+    "scale",
+    "intent",
+    "encoding",
+    "locale",
+    "messages",
+  ];
   static componentTokenPrefixes = ["--rowan-bullet-chart-"];
 
   #chart = null;
@@ -133,6 +165,7 @@ export class RowanBulletChart extends BaseElement {
   #value = null;
   #target = null;
   #ranges = [];
+  #messages = {};
 
   get label() {
     return this.readString("label", "");
@@ -140,6 +173,25 @@ export class RowanBulletChart extends BaseElement {
 
   set label(value) {
     this.reflectString("label", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanBulletChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanBulletChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get scale() {
@@ -206,7 +258,12 @@ export class RowanBulletChart extends BaseElement {
 
   /** @returns {RowanBulletChartRange[]} */
   get ranges() {
-    return cloneRanges(this.#ranges);
+    return this.#ranges.map((range) => ({
+      from: range.from,
+      to: range.to,
+      label: this.#rangeLabel(range),
+      tone: range.tone,
+    }));
   }
 
   /** @param {RowanBulletChartRange[]} value */
@@ -332,7 +389,7 @@ export class RowanBulletChart extends BaseElement {
         label.setAttribute("part", "tick-label");
         label.setAttribute("x", x);
         label.setAttribute("y", LABEL_Y.toFixed(2));
-        label.textContent = formatTick(tickValue);
+        label.textContent = formatTick(tickValue, this.locale);
         fragment.append(label);
       }
     }
@@ -371,38 +428,45 @@ export class RowanBulletChart extends BaseElement {
         ? null
         : this.#ranges.find((item) => this.#value >= item.from && this.#value <= item.to);
     return formatHoverLines([
-      this.#value === null ? "" : `Actual ${this.#value}`,
-      this.#target === null ? "" : `Target ${this.#target}`,
-      range ? `${range.label} ${range.from}–${range.to}` : "",
+      this.#value === null
+        ? ""
+        : `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "actual")} ${this.#formatValue(this.#value)}`,
+      this.#target === null
+        ? ""
+        : `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "target")} ${this.#formatValue(this.#target)}`,
+      range ? `${this.#rangeLabel(range)} ${this.#formatRange(range.from, range.to)}` : "",
     ]);
   }
 
   #renderTable() {
     const caption = document.createElement("caption");
-    caption.textContent = this.label || "Bullet chart";
+    caption.textContent = this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     const body = document.createElement("tbody");
 
     for (const range of this.#ranges) {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
-      heading.textContent = range.label;
+      heading.textContent = this.#rangeLabel(range);
       const cell = document.createElement("td");
-      cell.textContent = `${range.from}–${range.to}`;
+      cell.textContent = this.#formatRange(range.from, range.to);
       row.append(heading, cell);
       body.append(row);
     }
 
     for (const [name, value] of [
-      ["Actual", this.#value],
-      ["Target", this.#target],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "actual"), this.#value],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "target"), this.#target],
     ]) {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
       heading.textContent = name;
       const cell = document.createElement("td");
-      cell.textContent = value === null ? "No data" : String(value);
+      cell.textContent =
+        value === null
+          ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData")
+          : this.#formatValue(value);
       row.append(heading, cell);
       body.append(row);
     }
@@ -422,8 +486,26 @@ export class RowanBulletChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.label || "Bullet chart";
+      this.internals.ariaLabel =
+        this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     }
+  }
+
+  #formatRange(from, to) {
+    return `${this.#formatValue(from)}–${this.#formatValue(to)}`;
+  }
+
+  #formatValue(value) {
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #rangeLabel(range) {
+    return (
+      range.label ||
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "range", {
+        index: String(range.fallbackIndex),
+      })
+    );
   }
 }
 

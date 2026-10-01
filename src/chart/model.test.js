@@ -8,6 +8,7 @@ import {
   categoricalValueY,
   finiteOrNull,
   normalizeChartSeries,
+  resolveChartLabels,
   stackedAreaStacks,
   stackedBarCategoryTotal,
   stackedBarPlotDomain,
@@ -26,6 +27,24 @@ describe("chart model cartesian helpers", () => {
         (point) => point.value,
       ),
     ).to.deep.equal([null, null, 0, 3]);
+  });
+
+  it("allows hosts to localize generated point labels without replacing authored labels", () => {
+    const series = normalizeChartSeries([
+      {
+        id: "queue",
+        values: [4, { label: "Point 1", value: 8 }, null],
+      },
+    ]);
+
+    expect(resolveChartLabels(series, [], (index) => `Punkt ${index + 1}`)).to.deep.equal([
+      "Punkt 1",
+      "Point 1",
+      "Punkt 3",
+    ]);
+    expect(
+      resolveChartLabels(series, ["Configured label"], (index) => `Punkt ${index + 1}`),
+    ).to.deep.equal(["Configured label", "Point 1", "Punkt 3"]);
   });
 
   const plot = { left: 18, top: 18, width: 964, height: 354 };

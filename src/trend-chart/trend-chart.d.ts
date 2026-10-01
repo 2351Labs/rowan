@@ -8,3 +8,4 @@ export type {
   RowanTrendChartSeries,
   RowanTrendChartValueFormatter,
 } from "../../types/trend-chart/model.js";
+export type { RowanTrendChartMessages } from "../../types/trend-chart/trend-chart.js";

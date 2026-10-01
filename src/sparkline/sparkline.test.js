@@ -7,8 +7,10 @@ async function renderSparkline(options = {}) {
   const chart = document.createElement("rowan-sparkline");
   if (options.label !== undefined) chart.label = options.label;
   if (options.tone !== undefined) chart.tone = options.tone;
+  if (options.locale !== undefined) chart.locale = options.locale;
   if (options.values !== undefined) chart.values = options.values;
   if (options.labels !== undefined) chart.labels = options.labels;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -88,5 +90,26 @@ describe("rowan-sparkline", () => {
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
     expect(chart.shadowRoot.querySelector("circle.hover-point")).to.equal(null);
+  });
+
+  it("localizes generated chart copy and number values through properties", async () => {
+    const chart = await renderSparkline({
+      locale: "de-DE",
+      values: [1234.5, null],
+      messages: {
+        chart: "Verlauf",
+        noData: "Keine Daten",
+        point: "Punkt {index}",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.internals.ariaLabel).to.equal("Verlauf");
+    expect(table.querySelector("caption").textContent).to.equal("Verlauf");
+    expect(table.textContent).to.include(`Punkt 1${formatted}`);
+    expect(table.textContent).to.include("Punkt 2Keine Daten");
   });
 });

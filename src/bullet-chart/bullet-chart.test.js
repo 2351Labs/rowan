@@ -6,9 +6,11 @@ const nextMicrotask = () => Promise.resolve();
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-bullet-chart");
   if (options.label !== undefined) chart.label = options.label;
+  if (options.locale !== undefined) chart.locale = options.locale;
   if (options.value !== undefined) chart.value = options.value;
   if (options.target !== undefined) chart.target = options.target;
   if (options.ranges !== undefined) chart.ranges = options.ranges;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -158,5 +160,31 @@ describe("rowan-bullet-chart", () => {
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
+  });
+
+  it("localizes fallback chart copy and values through properties", async () => {
+    const chart = await renderChart({
+      locale: "de-DE",
+      value: 1234.5,
+      target: null,
+      ranges: [{ from: 0, to: 2000 }],
+      messages: {
+        actual: "Ist",
+        chart: "Aufzählungsdiagramm",
+        noData: "Keine Daten",
+        range: "Bereich {index}",
+        target: "Ziel",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.ranges[0].label).to.equal("Bereich 1");
+    expect(chart.internals.ariaLabel).to.equal("Aufzählungsdiagramm");
+    expect(table.querySelector("caption").textContent).to.equal("Aufzählungsdiagramm");
+    expect(table.textContent).to.include(`Ist${formatted}`);
+    expect(table.textContent).to.include("ZielKeine Daten");
   });
 });

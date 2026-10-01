@@ -6,3 +6,4 @@ export type {
   RowanTrendChartSeries,
   RowanTrendChartValueFormatter,
 } from "../../types/trend-chart/model.js";
+export type { RowanAreaChartMessages } from "../../types/area-chart/area-chart.js";

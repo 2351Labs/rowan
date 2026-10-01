@@ -36,7 +36,7 @@
 }
 
 .previous-button {
-  margin-right: auto;
+  margin-inline-end: auto;
 }
 
 .action-button {

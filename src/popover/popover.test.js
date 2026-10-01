@@ -288,4 +288,28 @@ describe("rowan-popover", () => {
     expect(popover.trigger).to.equal("click");
     expect(popover.hasAttribute("trigger")).to.equal(false);
   });
+
+  it("uses property-only messages for its fallback dialog label without an event", async () => {
+    const popover = document.createElement("rowan-popover");
+    document.body.append(popover);
+    await settle();
+
+    const changes = [];
+    popover.addEventListener("rowan-change", (event) => changes.push(event));
+    popover.messages = { label: "Options" };
+    await settle();
+
+    expect(popover.getAttribute("messages")).to.equal(null);
+    expect(popover.shadowRoot.querySelector(".panel").getAttribute("aria-label")).to.equal(
+      "Options",
+    );
+    expect(changes).to.deep.equal([]);
+
+    popover.label = "Filters";
+    await settle();
+
+    expect(popover.shadowRoot.querySelector(".panel").getAttribute("aria-label")).to.equal(
+      "Filters",
+    );
+  });
 });

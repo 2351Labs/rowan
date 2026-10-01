@@ -1,5 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+
+const DEFAULT_MESSAGES = Object.freeze({ asOf: "As of" });
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -13,11 +16,17 @@ function hasAssignedContent(slot) {
 }
 
 /**
+ * @typedef {object} RowanSourceMetaMessages
+ * @property {string} [asOf]
+ */
+
+/**
  * Provenance line for KPI description, chart description, or table caption.
  * Does not add fields to those frozen hosts.
  * @tag rowan-source-meta
  * @attr {string} source
  * @attr {string} as-of
+ * @property {RowanSourceMetaMessages} messages - Property-only built-in message overrides.
  * @slot source - Replaces the source attribute.
  * @slot as-of - Replaces the as-of attribute.
  * @csspart meta
@@ -27,7 +36,7 @@ function hasAssignedContent(slot) {
 export class RowanSourceMeta extends BaseElement {
   static styleUrl = new URL("./source-meta.css", import.meta.url).href;
   static observedAttributes = ["source", "as-of"];
-  static upgradeProperties = ["source", "asOf"];
+  static upgradeProperties = ["source", "asOf", "messages"];
 
   #sourceItem = null;
   #asOfItem = null;
@@ -35,6 +44,8 @@ export class RowanSourceMeta extends BaseElement {
   #asOfSlot = null;
   #sourceFallback = null;
   #asOfFallback = null;
+  #term = null;
+  #messages = {};
 
   get source() {
     return this.readString("source", "");
@@ -50,6 +61,17 @@ export class RowanSourceMeta extends BaseElement {
 
   set asOf(value) {
     this.reflectString("as-of", normalizeText(value) || null);
+  }
+
+  /** @returns {RowanSourceMetaMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanSourceMetaMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   render() {
@@ -71,6 +93,7 @@ export class RowanSourceMeta extends BaseElement {
       this.#asOfSlot = this.renderRoot.querySelector('slot[name="as-of"]');
       this.#sourceFallback = this.renderRoot.querySelector(".source-fallback");
       this.#asOfFallback = this.renderRoot.querySelector(".as-of-fallback");
+      this.#term = this.renderRoot.querySelector(".term");
       this.listen(this.#sourceSlot, "slotchange", () => this.requestRender());
       this.listen(this.#asOfSlot, "slotchange", () => this.requestRender());
     }
@@ -84,6 +107,7 @@ export class RowanSourceMeta extends BaseElement {
     const sourceText = this.source;
     const asOfText = this.asOf;
 
+    this.#term.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "asOf");
     this.#sourceFallback.textContent = sourceText;
     this.#sourceFallback.hidden = sourceAssigned || !sourceText;
     this.#sourceItem.hidden = !sourceAssigned && !sourceText;

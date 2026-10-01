@@ -58,6 +58,45 @@ import {
 
 </div>
 
+## Design-Tool Handoff
+
+`@rowan-ui/core/tokens.json` is generated from the same CSS source as the tables on this
+page. It contains DTCG-shaped `$value` and `$type` records, direct CSS aliases as
+references such as `{semantic.color.accent}`, and `org.rowan` metadata for the original CSS name,
+value, and token layer.
+
+```js
+import rowanTokens from "@rowan-ui/core/tokens.json" with { type: "json" };
+```
+
+For path-based tools, import `node_modules/@rowan-ui/core/tokens.json`. CSS remains the
+runtime source of truth; this artifact does not add a JavaScript theme runtime. Preserve
+`$type: "custom"` entries because they represent CSS expressions that cannot be safely
+reduced to a single design-tool color or dimension.
+
+## Semantic Customization
+
+Set semantic tokens at `:root` after importing `@rowan-ui/core/tokens`. The shipped theme
+validator requires background, foreground, muted, accent, border, danger, success, warning,
+surface, and accent-contrast values; it also verifies readable foreground and accent pairs.
+For a nested theme wrapper, copy the component aliases from a shipped theme file so their
+references resolve in that nested scope.
+
+```css
+:root[data-theme="workbench"] {
+  --rowan-color-bg: #f4f7f2;
+  --rowan-color-fg: #17231b;
+  --rowan-color-muted: #4c5b50;
+  --rowan-color-accent: #2b6847;
+  --rowan-color-border: #c8d2c9;
+  --rowan-color-danger: #b83b31;
+  --rowan-color-success: #287249;
+  --rowan-color-warning: #916a15;
+  --rowan-color-surface: #ffffff;
+  --rowan-color-accent-contrast: #ffffff;
+}
+```
+
 ## Primitive: Color
 
 <div className="tokens-table-wrap">

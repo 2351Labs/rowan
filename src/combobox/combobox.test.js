@@ -240,4 +240,39 @@ describe("rowan-combobox", () => {
 
     expect(el.internals.ariaInvalid).to.equal("false");
   });
+
+  it("uses inherited locale and property-only messages for filtering feedback", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "tr-TR";
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Istanbul"];
+    wrapper.append(el);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-change", () => changes.push(true));
+    el.messages = { noMatchingOptions: "Sin resultados." };
+    await nextMicrotask();
+
+    const input = el.shadowRoot.querySelector("input");
+    input.value = "\u0131st";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.locale).to.equal("tr-TR");
+    expect(el.shadowRoot.querySelectorAll("rowan-option")).to.have.length(1);
+    expect(changes).to.deep.equal([]);
+
+    input.value = "zzz";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector('[part="empty"]').textContent).to.equal("Sin resultados.");
+    expect(changes).to.deep.equal([]);
+  });
 });

@@ -198,6 +198,50 @@ import "@rowan-ui/core/tokens/midnight";
 document.documentElement.dataset.theme = "slate";
 ```
 
+### Design-Tool Handoff
+
+`@rowan-ui/core/tokens.json` is generated from `src/tokens/tokens.css` alongside the
+constructable stylesheet. It uses DTCG-shaped `$value` and `$type` records, preserves
+direct CSS aliases as references such as `{semantic.color.accent}`, and adds
+`$extensions["org.rowan"]` metadata for the original CSS property name, CSS value, and
+token layer. Point a design-token importer at
+`node_modules/@rowan-ui/core/tokens.json`, or load it directly in modern ESM tooling:
+
+```js
+import rowanTokens from "@rowan-ui/core/tokens.json" with { type: "json" };
+```
+
+The JSON artifact is for design-tool handoff and build-time inspection. CSS remains the
+runtime source of truth; no JavaScript theme provider is required. Some component values
+are CSS expressions, so entries with `$type: "custom"` should be preserved rather than
+coerced into a design-tool color or dimension.
+
+### Customize Semantic Tokens
+
+Create product themes by defining the semantic layer at `:root` after importing Rowan's
+base tokens. The shipped theme validator requires these values for every first-party theme
+and checks readable foreground/surface and accent-contrast pairs.
+
+```css
+:root[data-theme="workbench"] {
+  --rowan-color-bg: #f4f7f2;
+  --rowan-color-fg: #17231b;
+  --rowan-color-muted: #4c5b50;
+  --rowan-color-accent: #2b6847;
+  --rowan-color-border: #c8d2c9;
+  --rowan-color-danger: #b83b31;
+  --rowan-color-success: #287249;
+  --rowan-color-warning: #916a15;
+  --rowan-color-surface: #ffffff;
+  --rowan-color-accent-contrast: #ffffff;
+}
+```
+
+For a nested theme scope, copy a shipped theme file's component aliases too. Custom
+properties resolve where those aliases are declared, so aliases such as
+`--rowan-button-bg: var(--rowan-color-accent)` must be re-declared inside the nested
+theme wrapper.
+
 Chart and KPI tones default to those same UI colors, so forest and sand can wash out in small plots. Import `@rowan-ui/core/tokens/charts-vibrant` and set `data-rowan-charts="vibrant"` on a dashboard region (or a single chart host) for a louder blue / green / amber / red palette. Buttons, navigation, and form chrome stay on the Rowan theme.
 
 ```js
@@ -249,6 +293,43 @@ their existing `format` callback:
   format: (value) => formatCurrency(value, { currency: "USD", locale: "en-US" }),
 }
 ```
+
+## Component Messages, Locale Inheritance, and RTL
+
+Components that expose a `messages` property accept a property-only map for their
+documented generated copy. Do not serialize message maps to attributes. Assigning a
+new map updates fallback text without emitting a user-interaction event, so the host
+can replace translations when application locale state changes.
+
+Set `lang` and `dir` on an application or regional wrapper. A component resolves its
+locale from an explicit `locale` property first, then the nearest inherited `lang`,
+then the browser locale, and finally `en-US`. Horizontal keyboard controls follow
+logical inline direction under `dir="rtl"`.
+
+```js
+const workspace = document.querySelector("#team-workspace");
+workspace.lang = "ar-EG";
+workspace.dir = "rtl";
+
+const calendar = workspace.querySelector("rowan-calendar");
+calendar.messages = {
+  previousMonth: "السابق",
+  nextMonth: "التالي",
+  dayLabel: "اختيار {date}",
+};
+
+const table = workspace.querySelector("rowan-table");
+table.messages = {
+  selectAllRows: "تحديد كل الصفوف",
+  selectRow: "تحديد الصف {rowId}",
+};
+```
+
+Messages only fill Rowan-generated copy. Explicit attributes, slots, configured
+labels, and point labels remain author-owned, even if an authored string matches a
+default such as `Point 1`. An explicit formatter remains ahead of automatic locale
+formatting. Consult each component's API for its supported message keys and callback
+contexts.
 
 ## Constraint Messages
 
@@ -1313,7 +1394,12 @@ operator. Import `RowanFilter` and `RowanFilterField` from
 `panel.show(row, rowId)` or from `rowan-row-activate` when `for-table` is set.
 Do not pass React `open={false}` unless you fully control `open`. Multi-select
 activation fills `rowIds` and shows previous/next. `size` is `sm`, `md`, or `lg`.
-The panel does not modify the row record. Table columns may use
+The panel does not modify the row record. Inline draft editing is intentionally
+not part of the stable table API. For edits, project application-owned controls
+into the panel's default and `actions` slots, clone the selected row into host
+state, validate and persist the draft, then replace `table.rows` with new row
+objects. This keeps virtualized table rows transient and preserves consumer data
+ownership. Table columns may use
 `type: "sparkline"` with a `number[]` value, and `type: "bullet"` with
 `{ value, target?, ranges? }` or a number plus shared `cell.ranges`.
 (`cell.target` stays the link window target.) Bullet cells mount
@@ -1483,6 +1569,33 @@ npm run analyze
 ## Browser Support
 
 Rowan's automated compatibility baseline covers Chromium, Firefox, and WebKit supplied by the pinned Playwright release. Component contracts run in CI on each engine. This verifies current engine-family behavior, not a historical browser-version support window or Safari-specific integrations. Form-associated behavior uses `ElementInternals` when available; where the platform lacks it, controls retain their native internal-control fallback but cannot participate in host-level form association.
+
+## Compatibility Evidence
+
+Rowan's core is browser-native. Framework fixtures verify that native custom-element
+contracts work without a Vue, Svelte, Angular, or Astro wrapper package; React is the
+only shipped convenience wrapper surface.
+
+| Integration     | Automated evidence                        | Covered boundary                                                                                  | Wrapper package        |
+| --------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------- |
+| Plain HTML      | Declarative fixture                       | Structured property assignment, composed events, FACE `FormData`                                  | Not needed             |
+| React 18 and 19 | Runtime, SSR/hydration, and type fixtures | Generated wrapper properties/events, false boolean SSR, FACE `FormData`, client-only registration | `@rowan-ui/core/react` |
+| Vue 3           | Runtime fixture                           | Structured property binding, native `rowan-*` events, FACE `FormData`                             | Not shipped            |
+| Svelte 5        | Compiled component fixture                | Structured property binding, native `on:rowan-*` events, FACE `FormData`                          | Not shipped            |
+| Angular 20      | JIT template fixture                      | `[property]` binding, `(rowan-*)` events, FACE `FormData`                                         | Not shipped            |
+| Astro 5         | Static-build and browser fixture          | Client-only registration, structured property assignment, native event handling, FACE `FormData`  | Not shipped            |
+
+These fixtures run with `npm test`; the same set runs across Chromium, Firefox, and
+WebKit through `npm run test:browser`. They validate the documented integration boundary,
+not framework-specific routing, server-data, or deployment behavior. Use native element
+properties for structured values and `addEventListener` or each framework's native custom
+event binding for `rowan-*` events. A separate wrapper package requires a concrete demand
+and its own maintained compatibility proof.
+
+Accessibility evidence combines public keyboard, form, ARIA, and host-level axe tests with
+Storybook's a11y addon. The addon deliberately skips its shadow-input `label` false positive:
+FACE controls place their accessible name on the host through ElementInternals, and adding a
+second inner-input label would create duplicate naming semantics.
 
 Tooling (`analyze`, `types`, `css:check`, tests) requires Node 20 or later. Published packages declare `"engines": { "node": ">=20" }`.
 

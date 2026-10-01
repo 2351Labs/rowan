@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   isRowanTable,
   observeTableAvailability,
@@ -13,6 +14,19 @@ function arraysEqual(left, right) {
   return left.every((value, index) => value === right[index]);
 }
 
+const DEFAULT_MESSAGES = Object.freeze({
+  columnPickerLabel: "Columns",
+  selectionStatus: "{count} {selectionLabel}",
+  visibleColumnsLabel: "Visible columns",
+});
+
+/**
+ * @typedef {object} RowanTableToolbarMessages
+ * @property {string} [columnPickerLabel]
+ * @property {string | ((context: { count: number, selectionLabel: string }) => string)} [selectionStatus]
+ * @property {string} [visibleColumnsLabel]
+ */
+
 /**
  * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
  * @tag rowan-table-toolbar
@@ -20,6 +34,7 @@ function arraysEqual(left, right) {
  * @attr {string} label
  * @attr {string} selection-label
  * @attr {boolean} column-picker
+ * @property {RowanTableToolbarMessages} messages - Property-only built-in message overrides.
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
  * @slot - Primary table controls
@@ -40,7 +55,14 @@ export class RowanTableToolbar extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./table-toolbar.css", import.meta.url).href;
   static observedAttributes = ["for-table", "label", "selection-label", "column-picker"];
-  static upgradeProperties = ["table", "forTable", "label", "selectionLabel", "columnPicker"];
+  static upgradeProperties = [
+    "table",
+    "forTable",
+    "label",
+    "selectionLabel",
+    "columnPicker",
+    "messages",
+  ];
 
   #tableOverride = null;
   #boundTable = null;
@@ -52,7 +74,9 @@ export class RowanTableToolbar extends BaseElement {
   #selection = null;
   #selectionText = null;
   #columnPicker = null;
+  #columnPickerSummary = null;
   #columnPickerMenu = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -117,6 +141,17 @@ export class RowanTableToolbar extends BaseElement {
     this.reflectBoolean("column-picker", Boolean(value));
   }
 
+  /** @returns {RowanTableToolbarMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanTableToolbarMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   get selected() {
     return [...this.#selected];
   }
@@ -147,8 +182,8 @@ export class RowanTableToolbar extends BaseElement {
           <div class="content" part="content"><slot></slot></div>
           <div class="end" part="end">
             <details class="column-picker" part="column-picker" hidden>
-              <summary>Columns</summary>
-              <div class="column-picker-menu" part="column-picker-menu" role="group" aria-label="Visible columns"></div>
+              <summary class="column-picker-summary"></summary>
+              <div class="column-picker-menu" part="column-picker-menu" role="group"></div>
             </details>
             <slot name="end"></slot>
           </div>
@@ -159,6 +194,7 @@ export class RowanTableToolbar extends BaseElement {
       this.#selection = this.renderRoot.querySelector(".selection");
       this.#selectionText = this.renderRoot.querySelector(".selection-text");
       this.#columnPicker = this.renderRoot.querySelector(".column-picker");
+      this.#columnPickerSummary = this.renderRoot.querySelector(".column-picker-summary");
       this.#columnPickerMenu = this.renderRoot.querySelector(".column-picker-menu");
     }
 
@@ -167,13 +203,28 @@ export class RowanTableToolbar extends BaseElement {
     const count = this.selectedCount;
     const bulkOwnsSelection = Boolean(this.#boundTable?.querySelector("rowan-bulk-actions-bar"));
     this.#selection.hidden = count === 0 || bulkOwnsSelection;
-    this.#selectionText.textContent = `${count} ${this.selectionLabel}`;
+    this.#selectionText.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "selectionStatus",
+      { count, selectionLabel: this.selectionLabel },
+    );
     this.#syncColumnPicker();
     this.#applyDefaultA11y();
   }
 
   #syncColumnPicker() {
-    if (!this.#columnPicker || !this.#columnPickerMenu) return;
+    if (!this.#columnPicker || !this.#columnPickerMenu || !this.#columnPickerSummary) return;
+
+    this.#columnPickerSummary.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "columnPickerLabel",
+    );
+    this.#columnPickerMenu.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "visibleColumnsLabel"),
+    );
 
     const table = this.#boundTable;
     const columns = Array.isArray(table?.columns)

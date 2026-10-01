@@ -82,4 +82,46 @@ describe("rowan-file-item", () => {
     await nextMicrotask();
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("uses inherited locale and property-only messages for file metadata and actions", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const element = document.createElement("rowan-file-item");
+    element.filename = "report.csv";
+    element.filesize = 1536;
+    element.status = "uploading";
+    element.progress = 42;
+    wrapper.append(element);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    const events = [];
+    ["rowan-remove", "rowan-retry", "rowan-cancel"].forEach((type) => {
+      element.addEventListener(type, () => events.push(type));
+    });
+    element.messages = {
+      cancel: "Abbrechen",
+      remove: "Entfernen",
+      retry: "Erneut versuchen",
+      statusUploading: "Wird hochgeladen",
+      uploadProgress: "Fortschritt {progress}%",
+    };
+    await nextMicrotask();
+
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.locale).to.equal("de-DE");
+    expect(element.shadowRoot.querySelector('[part="details"]').textContent).to.equal(
+      `${new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(1.5)} KB`,
+    );
+    expect(element.shadowRoot.querySelector('[part="status"]').textContent).to.equal(
+      "Wird hochgeladen",
+    );
+    expect(element.shadowRoot.querySelector('[data-action="cancel"]').textContent).to.equal(
+      "Abbrechen",
+    );
+    expect(
+      element.shadowRoot.querySelector('[part="progress"]').getAttribute("aria-label"),
+    ).to.equal("Fortschritt 42%");
+    expect(events).to.deep.equal([]);
+  });
 });

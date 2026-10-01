@@ -109,6 +109,10 @@
   opacity: var(--rowan-disabled-opacity, 0.48);
 }
 
+:host(:dir(rtl)) .control-icon {
+  transform: scaleX(-1);
+}
+
 .status {
   color: var(--rowan-color-muted, #5f6d62);
   font-size: var(--rowan-font-size-sm, 0.875rem);
@@ -126,6 +130,22 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes rowan-carousel-panel-enter-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(-0.4rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+:host(:dir(rtl)) ::slotted([data-rowan-carousel-active]) {
+  animation-name: rowan-carousel-panel-enter-rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {

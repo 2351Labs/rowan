@@ -1,24 +1,36 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 let generatedTargetId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  empty: "No validation issues.",
+  errorItem: "{index}. {message}",
+  fieldInvalid: "{label} is invalid",
+  heading: "Please fix the following fields",
+  unnamedField: "Field {index}",
+});
 
 function toArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-function normalizeError(error, index) {
+function normalizeError(error, index, messages) {
   const source = error && typeof error === "object" ? error : {};
 
   const fieldId = String(source.fieldId ?? source.id ?? "").trim();
   const label = String(source.label ?? "").trim();
   const message = String(source.message ?? "").trim();
-  const fallbackMessage = label
-    ? `${label} is invalid`
-    : fieldId
-      ? `${fieldId} is invalid`
-      : `Field ${index + 1} is invalid`;
+  const fieldLabel =
+    label ||
+    fieldId ||
+    resolveMessage(messages, DEFAULT_MESSAGES, "unnamedField", { index: index + 1 });
+  const fallbackMessage = resolveMessage(messages, DEFAULT_MESSAGES, "fieldInvalid", {
+    fieldId,
+    index: index + 1,
+    label: fieldLabel,
+  });
 
   return {
     fieldId,
@@ -26,6 +38,19 @@ function normalizeError(error, index) {
     message: message || fallbackMessage,
   };
 }
+
+function cloneErrorSource(error) {
+  return error && typeof error === "object" ? { ...error } : error;
+}
+
+/**
+ * @typedef {object} RowanValidationSummaryMessages
+ * @property {string} [empty]
+ * @property {string | ((context: { index: number, message: string }) => string)} [errorItem]
+ * @property {string | ((context: { fieldId: string, index: number, label: string }) => string)} [fieldInvalid]
+ * @property {string} [heading]
+ * @property {string | ((context: { index: number }) => string)} [unnamedField]
+ */
 
 function queryLabelForElement(element) {
   if (!element) return "";
@@ -55,6 +80,7 @@ function queryLabelForElement(element) {
  * @attr {string} heading
  * @attr {string} for-form
  * @attr {boolean} disabled
+ * @property {RowanValidationSummaryMessages} messages - Property-only built-in message overrides.
  * @slot heading
  * @slot empty
  * @csspart summary
@@ -69,18 +95,23 @@ export class RowanValidationSummary extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./validation-summary.css", import.meta.url).href;
   static observedAttributes = ["heading", "for-form", "disabled"];
-  static upgradeProperties = ["heading", "forForm", "errors", "disabled"];
+  static upgradeProperties = ["heading", "forForm", "errors", "disabled", "messages"];
 
   #errors = [];
+  #errorSources = [];
   #root = null;
   #list = null;
   #empty = null;
+  #emptyText = null;
   #heading = null;
   #generatedTargetIds = new WeakMap();
   #fieldTargets = new Map();
+  #messages = {};
 
   get heading() {
-    return this.readString("heading", "Please fix the following fields");
+    return this.hasAttribute("heading")
+      ? this.readString("heading", DEFAULT_MESSAGES.heading)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "heading");
   }
 
   set heading(value) {
@@ -105,12 +136,25 @@ export class RowanValidationSummary extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  /** @returns {RowanValidationSummaryMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanValidationSummaryMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.#normalizeErrors();
+    this.requestRender();
+  }
+
   get errors() {
     return this.#errors.map((error) => ({ ...error }));
   }
 
   set errors(value) {
-    this.#errors = toArray(value).map((error, index) => normalizeError(error, index));
+    this.#errorSources = toArray(value).map(cloneErrorSource);
+    this.#normalizeErrors();
     this.requestRender();
   }
 
@@ -139,7 +183,7 @@ export class RowanValidationSummary extends BaseElement {
         nextErrors.push({
           fieldId,
           label,
-          message: control.validationMessage || `${label || fieldId} is invalid`,
+          message: control.validationMessage,
         });
       }
     });
@@ -158,7 +202,7 @@ export class RowanValidationSummary extends BaseElement {
           </div>
           <ul class="list" part="list"></ul>
           <div class="empty" data-part="empty" part="empty">
-            <slot name="empty">No validation issues.</slot>
+            <slot name="empty"><span data-part="empty-text"></span></slot>
           </div>
         </section>
       `;
@@ -167,6 +211,7 @@ export class RowanValidationSummary extends BaseElement {
       this.#heading = this.renderRoot.querySelector('[data-part="heading-text"]');
       this.#list = this.renderRoot.querySelector(".list");
       this.#empty = this.renderRoot.querySelector(".empty");
+      this.#emptyText = this.renderRoot.querySelector('[data-part="empty-text"]');
 
       this.listen(this.#list, "click", (event) => {
         const button = event
@@ -195,6 +240,7 @@ export class RowanValidationSummary extends BaseElement {
     }
 
     this.#heading.textContent = this.heading;
+    this.#emptyText.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
 
     const errors = this.#errors;
     this.#list.textContent = "";
@@ -213,7 +259,10 @@ export class RowanValidationSummary extends BaseElement {
       button.part = "error-button";
       button.setAttribute("data-field-id", error.fieldId);
       button.disabled = this.disabled;
-      button.textContent = `${index + 1}. ${error.message}`;
+      button.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "errorItem", {
+        index: index + 1,
+        message: error.message,
+      });
 
       item.append(button);
       fragment.append(item);
@@ -264,6 +313,12 @@ export class RowanValidationSummary extends BaseElement {
     }
 
     return targetId;
+  }
+
+  #normalizeErrors() {
+    this.#errors = this.#errorSources.map((error, index) =>
+      normalizeError(error, index, this.#messages),
+    );
   }
 
   #applyDefaultA11y() {

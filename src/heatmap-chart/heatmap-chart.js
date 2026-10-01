@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -10,7 +13,13 @@ import {
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
 import { formatChartValue } from "../chart/model.js";
-import { cloneHeatmap, cloneHeatmapInput, heatmapValueDomain, normalizeHeatmap } from "./model.js";
+import {
+  cloneHeatmap,
+  cloneHeatmapInput,
+  heatmapValueDomain,
+  normalizeHeatmap,
+  resolveHeatmapLabels,
+} from "./model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
 const SVG_NAMESPACE_HEIGHT = 400;
@@ -19,6 +28,14 @@ const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
 const CELL_GAP = 2;
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: "Heatmap chart",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  column: "Column {index}",
+  noData: "No data",
+  row: "Row {index}",
+});
 
 let heatmapChartId = 0;
 
@@ -29,6 +46,16 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanHeatmapChartMessages
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string | ((context: { index: string }) => string)} [column]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [row]
+ */
 
 function cellOpacity(value, domain) {
   const range = domain.max - domain.min;
@@ -43,12 +70,14 @@ function cellOpacity(value, domain) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {string[]} rows - Row labels. Arrays are property-only.
  * @property {string[]} columns - Column labels. Arrays are property-only.
  * @property {Array<Array<number | null>>} values - Matrix of cell values. Arrays are property-only.
  * @property {Array<object>} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanHeatmapChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -64,7 +93,7 @@ export class RowanHeatmapChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./heatmap-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-heatmap-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -75,6 +104,8 @@ export class RowanHeatmapChart extends BaseElement {
     "points",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -90,12 +121,14 @@ export class RowanHeatmapChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #input = cloneHeatmapInput();
   #heatmap = normalizeHeatmap();
   #valueFormatter = null;
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -120,6 +153,25 @@ export class RowanHeatmapChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanHeatmapChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanHeatmapChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -218,7 +270,7 @@ export class RowanHeatmapChart extends BaseElement {
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -235,6 +287,7 @@ export class RowanHeatmapChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -250,6 +303,7 @@ export class RowanHeatmapChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -282,7 +336,7 @@ export class RowanHeatmapChart extends BaseElement {
     this.#descriptionFallback.hidden = hasDescriptionSlot || !this.description;
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Heatmap chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
   }
 
   #plotBox() {
@@ -295,31 +349,40 @@ export class RowanHeatmapChart extends BaseElement {
   }
 
   #renderChart() {
+    const labels = resolveHeatmapLabels(
+      this.#heatmap,
+      (index) => this.#rowLabel(index),
+      (index) => this.#columnLabel(index),
+    );
+    const heatmap = { ...this.#heatmap, ...labels };
     const plot = this.#plotBox();
-    const domain = heatmapValueDomain(this.#heatmap.values);
-    this.#entries = this.#createEntries(plot, domain);
+    const domain = heatmapValueDomain(heatmap.values);
+    this.#entries = this.#createEntries(heatmap, plot, domain);
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
       this.#activePointKey = "";
     }
     this.#renderPlot(plot);
-    this.#renderAxes();
+    this.#renderAxes(heatmap);
     this.#renderPointControls();
     renderMatrixChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Heatmap chart"} data table`,
-      rows: this.#heatmap.rows,
-      columns: this.#heatmap.columns,
-      values: this.#heatmap.values,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#chartName(),
+      }),
+      rows: heatmap.rows,
+      columns: heatmap.columns,
+      values: heatmap.values,
       formatValue: (value, rowIndex, columnIndex) =>
-        formatChartValue(this.#valueFormatter, value, {
-          label: this.#heatmap.columns[columnIndex],
+        this.#formatValue(value, {
+          label: heatmap.columns[columnIndex],
           index: rowIndex,
         }),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
 
-  #createEntries(plot, domain) {
-    const { rows, columns, values } = this.#heatmap;
+  #createEntries(heatmap, plot, domain) {
+    const { rows, columns, values } = heatmap;
     const columnCount = Math.max(columns.length, 1);
     const rowCount = Math.max(rows.length, 1);
     const cellWidth = plot.width / columnCount;
@@ -332,7 +395,7 @@ export class RowanHeatmapChart extends BaseElement {
         if (value === null || value === undefined) return;
         const x = plot.left + columnIndex * cellWidth + CELL_GAP / 2;
         const y = plot.top + rowIndex * cellHeight + CELL_GAP / 2;
-        const formattedValue = formatChartValue(this.#valueFormatter, value, {
+        const formattedValue = this.#formatValue(value, {
           label: column,
           index: rowIndex,
         });
@@ -362,7 +425,7 @@ export class RowanHeatmapChart extends BaseElement {
   #renderPlot(plot) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Heatmap chart";
+    title.textContent = this.#chartName();
     fragment.append(title);
 
     const axis = createSvgElement("rect");
@@ -388,21 +451,18 @@ export class RowanHeatmapChart extends BaseElement {
     this.#plot.replaceChildren(fragment);
   }
 
-  #renderAxes() {
+  #renderAxes(heatmap) {
     this.#yAxis.replaceChildren();
-    this.#yAxis.style.setProperty("--row-count", String(Math.max(this.#heatmap.rows.length, 1)));
-    for (const row of this.#heatmap.rows) {
+    this.#yAxis.style.setProperty("--row-count", String(Math.max(heatmap.rows.length, 1)));
+    for (const row of heatmap.rows) {
       const item = document.createElement("span");
       item.textContent = row;
       item.title = row;
       this.#yAxis.append(item);
     }
     this.#xAxis.replaceChildren();
-    this.#xAxis.style.setProperty(
-      "--column-count",
-      String(Math.max(this.#heatmap.columns.length, 1)),
-    );
-    for (const column of this.#heatmap.columns) {
+    this.#xAxis.style.setProperty("--column-count", String(Math.max(heatmap.columns.length, 1)));
+    for (const column of heatmap.columns) {
       const item = document.createElement("span");
       item.textContent = column;
       item.title = column;
@@ -492,6 +552,28 @@ export class RowanHeatmapChart extends BaseElement {
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 
+  #chartName() {
+    return this.#displayLabel() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #rowLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "row", {
+      index: String(index + 1),
+    });
+  }
+
+  #columnLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "column", {
+      index: String(index + 1),
+    });
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
     if (!this.hasAttribute("role") && "role" in this.internals) {
@@ -502,7 +584,7 @@ export class RowanHeatmapChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Heatmap chart";
+      this.internals.ariaLabel = this.#chartName();
     }
   }
 }

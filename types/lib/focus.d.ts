@@ -15,6 +15,11 @@ export function isFocusable(element: unknown): boolean;
  *   children are navigated with arrow keys rather than Tab, as in a listbox.
  * @returns {HTMLElement[]}
  */
-export function collectFocusableElements(root: Element | ShadowRoot, options?: {
-    includeSlotted?: boolean | undefined;
-} | undefined): HTMLElement[];
+export function collectFocusableElements(
+  root: Element | ShadowRoot,
+  options?:
+    | {
+        includeSlotted?: boolean | undefined;
+      }
+    | undefined,
+): HTMLElement[];

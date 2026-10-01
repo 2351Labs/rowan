@@ -232,4 +232,57 @@ describe("rowan-multi-select-combobox", () => {
     expect(input.selectionStart).to.equal(6);
     expect(input.getAttribute("aria-activedescendant")).to.equal(activeId);
   });
+
+  it("uses inherited locale and property-only messages for generated search copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "tr-TR";
+    const combobox = document.createElement("rowan-multi-select-combobox");
+    combobox.label = "Teams";
+    combobox.options = [{ value: "istanbul", label: "Istanbul" }];
+    combobox.selected = ["istanbul"];
+    wrapper.append(combobox);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    combobox.addEventListener("rowan-change", () => changes.push(true));
+    combobox.messages = {
+      noMatchingOptions: "Sin coincidencias.",
+      optionsForLabel: "{label} opciones",
+      optionsLabel: "Opciones",
+      placeholder: "Buscar opciones",
+      removeOption: "Quitar {label}",
+    };
+    await nextMicrotask();
+
+    const input = combobox.shadowRoot.querySelector("input");
+    expect(combobox.getAttribute("messages")).to.equal(null);
+    expect(combobox.locale).to.equal("tr-TR");
+    expect(input.placeholder).to.equal("Buscar opciones");
+    expect(combobox.shadowRoot.querySelector(".listbox").getAttribute("aria-label")).to.equal(
+      "Teams opciones",
+    );
+    expect(combobox.shadowRoot.querySelector(".remove").getAttribute("aria-label")).to.equal(
+      "Quitar Istanbul",
+    );
+
+    input.value = "\u0131st";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(combobox.shadowRoot.querySelectorAll("rowan-option")).to.have.length(1);
+    expect(changes).to.deep.equal([]);
+
+    input.value = "zzz";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(combobox.shadowRoot.querySelector('[part="empty"]').textContent).to.equal(
+      "Sin coincidencias.",
+    );
+    expect(changes).to.deep.equal([]);
+  });
 });

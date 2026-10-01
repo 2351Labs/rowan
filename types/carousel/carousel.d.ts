@@ -3,6 +3,7 @@
  * @tag rowan-carousel
  * @attr {number} active-index
  * @attr {string} label
+ * @property {RowanCarouselMessages} messages - Property-only built-in message overrides.
  * @slot - Carousel panels
  * @csspart carousel
  * @csspart viewport
@@ -17,21 +18,32 @@
  * @event rowan-change - Fired when a user changes the active panel
  */
 export class RowanCarousel extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    set activeIndex(value: number);
-    get activeIndex(): number;
-    set label(value: string);
-    get label(): string;
-    previous(): void;
-    next(): void;
-    /**
-     * Activates a panel without emitting `rowan-change`.
-     * @param {number} index
-     */
-    goTo(index: number): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  set activeIndex(value: number);
+  get activeIndex(): number;
+  set label(value: string);
+  get label(): string;
+  /** @param {RowanCarouselMessages | null | undefined} value */
+  set messages(value: RowanCarouselMessages | null | undefined);
+  /** @returns {RowanCarouselMessages} */
+  get messages(): RowanCarouselMessages;
+  previous(): void;
+  next(): void;
+  /**
+   * Activates a panel without emitting `rowan-change`.
+   * @param {number} index
+   */
+  goTo(index: number): void;
+  #private;
 }
+export type RowanCarouselMessages = {
+  previousPanel?: string | ((context: { index: number; total: number }) => string) | undefined;
+  nextPanel?: string | ((context: { index: number; total: number }) => string) | undefined;
+  panelStatus?: string | ((context: { index: number; total: number }) => string) | undefined;
+  emptyStatus?: string | undefined;
+  roleDescription?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

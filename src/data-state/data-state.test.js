@@ -91,4 +91,28 @@ describe("rowan-data-state", () => {
       "Couldn't load this data",
     );
   });
+
+  it("uses property-only messages for vacant-state fallbacks", async () => {
+    const el = document.createElement("rowan-data-state");
+    document.body.append(el);
+    await nextMicrotask();
+
+    el.messages = {
+      empty: "Aucune donnée",
+      error: "Impossible de charger les données",
+      loading: "Chargement",
+    };
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.shadowRoot.querySelector('[data-state="loading"] .fallback').textContent).to.equal(
+      "Chargement",
+    );
+    expect(el.shadowRoot.querySelector('[data-state="empty"] .fallback').textContent).to.equal(
+      "Aucune donnée",
+    );
+    expect(el.shadowRoot.querySelector('[data-state="error"] .fallback').textContent).to.equal(
+      "Impossible de charger les données",
+    );
+  });
 });

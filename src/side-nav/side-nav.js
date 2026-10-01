@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
@@ -226,7 +227,8 @@ export class RowanSideNav extends BaseElement {
       return;
     }
 
-    if (event.key === keys.ARROW_LEFT) {
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset < 0) {
       const section = item.closest("rowan-side-nav-section");
       if (
         section?.collapsible &&
@@ -239,7 +241,7 @@ export class RowanSideNav extends BaseElement {
       return;
     }
 
-    if (event.key === keys.ARROW_RIGHT) {
+    if (horizontalOffset > 0) {
       const section = item.closest("rowan-side-nav-section");
       if (
         section?.collapsible &&

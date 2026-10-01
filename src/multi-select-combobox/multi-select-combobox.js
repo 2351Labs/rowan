@@ -2,10 +2,19 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { lowerCaseForLocale, resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 import "../option/option.js";
 
 let multiSelectComboboxId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  noMatchingOptions: "No matching options.",
+  optionsForLabel: "{label} options",
+  optionsLabel: "Options",
+  placeholder: "Search options",
+  removeOption: "Remove {label}",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -40,17 +49,28 @@ function parseRestoredSelection(state) {
  */
 
 /**
+ * @typedef {object} RowanMultiSelectComboboxMessages
+ * @property {string} [noMatchingOptions]
+ * @property {string | ((context: { label: string }) => string)} [optionsForLabel]
+ * @property {string} [optionsLabel]
+ * @property {string} [placeholder]
+ * @property {string | ((context: { label: string }) => string)} [removeOption]
+ */
+
+/**
  * Filterable multi-select control with removable selected values.
  * @tag rowan-multi-select-combobox
  * @attr {string} name
  * @attr {string} label
  * @attr {string} placeholder
  * @attr {string} query
+ * @attr {string} locale
  * @attr {boolean} open
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options - Available options. Arrays are property-only.
  * @property {string[]} selected - Selected option values. Arrays are property-only.
+ * @property {RowanMultiSelectComboboxMessages} messages - Property-only built-in message overrides.
  * @csspart control
  * @csspart chips
  * @csspart chip
@@ -71,6 +91,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
     "label",
     "placeholder",
     "query",
+    "locale",
     "open",
     "disabled",
     "required",
@@ -80,11 +101,13 @@ export class RowanMultiSelectCombobox extends BaseElement {
     "label",
     "placeholder",
     "query",
+    "locale",
     "open",
     "disabled",
     "required",
     "options",
     "selected",
+    "messages",
   ];
 
   #control = null;
@@ -101,6 +124,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
   #defaultSelected = null;
   #activeValue = "";
   #hasDocumentPointerListener = false;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -172,12 +196,14 @@ export class RowanMultiSelectCombobox extends BaseElement {
   }
 
   get placeholder() {
-    return this.readString("placeholder", "Search options");
+    return this.hasAttribute("placeholder")
+      ? this.readString("placeholder", DEFAULT_MESSAGES.placeholder)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "placeholder");
   }
 
   set placeholder(value) {
     const next = normalizeText(value);
-    this.reflectString("placeholder", next && next !== "Search options" ? next : null);
+    this.reflectString("placeholder", next && next !== DEFAULT_MESSAGES.placeholder ? next : null);
   }
 
   get query() {
@@ -186,6 +212,25 @@ export class RowanMultiSelectCombobox extends BaseElement {
 
   set query(value) {
     this.reflectString("query", value);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanMultiSelectComboboxMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanMultiSelectComboboxMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get open() {
@@ -267,7 +312,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
         </div>
         <div class="panel" part="panel" hidden>
           <div class="listbox" part="listbox" role="listbox" aria-multiselectable="true"></div>
-          <div class="empty" part="empty" role="status" hidden>No matching options.</div>
+          <div class="empty" part="empty" role="status" hidden></div>
         </div>
       `;
       this.#control = this.renderRoot.querySelector(".control");
@@ -294,6 +339,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
 
     this.#renderChips();
     this.#renderOptions();
+    this.#empty.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "noMatchingOptions");
 
     this.#input.id = this.#inputId;
     this.#input.value = this.query;
@@ -344,11 +390,13 @@ export class RowanMultiSelectCombobox extends BaseElement {
   }
 
   #filteredOptions() {
-    const terms = normalizeText(this.query).toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const terms = lowerCaseForLocale(normalizeText(this.query), this.locale)
+      .split(/\s+/)
+      .filter(Boolean);
     if (terms.length === 0) return this.#resolvedOptions();
 
     return this.#resolvedOptions().filter((option) => {
-      const searchText = `${option.label} ${option.value}`.toLocaleLowerCase();
+      const searchText = lowerCaseForLocale(`${option.label} ${option.value}`, this.locale);
       return terms.every((term) => searchText.includes(term));
     });
   }
@@ -369,7 +417,12 @@ export class RowanMultiSelectCombobox extends BaseElement {
       remove.className = "remove";
       remove.type = "button";
       remove.dataset.removeValue = value;
-      remove.setAttribute("aria-label", `Remove ${label.textContent}`);
+      remove.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "removeOption", {
+          label: label.textContent ?? value,
+        }),
+      );
       remove.textContent = "×";
 
       chip.append(label, remove);
@@ -381,7 +434,13 @@ export class RowanMultiSelectCombobox extends BaseElement {
     const options = this.#filteredOptions();
     this.#listbox.textContent = "";
     this.#listbox.id = this.#listboxId;
-    this.#listbox.setAttribute("aria-label", this.label ? `${this.label} options` : "Options");
+    const label = this.label.trim();
+    this.#listbox.setAttribute(
+      "aria-label",
+      label
+        ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "optionsForLabel", { label })
+        : resolveMessage(this.#messages, DEFAULT_MESSAGES, "optionsLabel"),
+    );
 
     const available = options.filter((item) => !item.disabled);
     if (!available.some((item) => item.value === this.#activeValue)) {

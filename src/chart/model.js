@@ -1,5 +1,6 @@
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
+const GENERATED_POINT_LABEL = Symbol("rowan.generated-point-label");
 
 /**
  * Shared series/point model for Rowan charts. `rowan-trend-chart` keeps its
@@ -83,12 +84,28 @@ export function finiteOrNull(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
-function normalizePoint(value, label) {
+function fallbackPointLabel(index, resolveFallback) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `Point ${index + 1}`;
+}
+
+function normalizePoint(value, configuredLabel, fallbackLabel) {
   const source = isObject(value) ? value : { value };
-  return {
+  const authoredLabel = normalizeText(source.label);
+  const label = authoredLabel || configuredLabel || fallbackLabel;
+  const point = {
     value: finiteOrNull(source.value),
-    label: normalizeText(source.label) || label,
+    label,
   };
+  if (!authoredLabel && !configuredLabel) {
+    Object.defineProperty(point, GENERATED_POINT_LABEL, { value: true });
+  }
+
+  return point;
 }
 
 function normalizeColor(value) {
@@ -107,9 +124,10 @@ export function normalizeChartLabels(value) {
 /**
  * @param {unknown} value
  * @param {string[]} labels
+ * @param {(index: number) => string} [resolveFallbackLabel]
  * @returns {RowanNormalizedChartSeries[]}
  */
-export function normalizeChartSeries(value, labels = []) {
+export function normalizeChartSeries(value, labels = [], resolveFallbackLabel) {
   const source = Array.isArray(value) ? value : [];
   const ids = new Set();
 
@@ -131,9 +149,14 @@ export function normalizeChartSeries(value, labels = []) {
         id,
         label: normalizeText(item.label) || id,
         color: normalizeColor(item.color),
-        values: inputValues.map((point, pointIndex) =>
-          normalizePoint(point, labels[pointIndex] || `Point ${pointIndex + 1}`),
-        ),
+        values: inputValues.map((point, pointIndex) => {
+          const configuredLabel = normalizeText(labels[pointIndex]);
+          return normalizePoint(
+            point,
+            configuredLabel,
+            fallbackPointLabel(pointIndex, resolveFallbackLabel),
+          );
+        }),
       },
     ];
   });
@@ -175,17 +198,22 @@ export function cloneChartSeries(value) {
 /**
  * @param {RowanNormalizedChartSeries[]} series
  * @param {string[]} labels
+ * @param {(index: number) => string} [resolveFallbackLabel]
  * @returns {string[]}
  */
-export function resolveChartLabels(series, labels) {
+export function resolveChartLabels(series, labels, resolveFallbackLabel) {
   const length = Math.max(labels.length, ...series.map((item) => item.values.length), 0);
 
   return Array.from({ length }, (_value, index) => {
-    const configured = labels[index];
+    const configured = normalizeText(labels[index]);
     if (configured) return configured;
 
     const point = series.map((item) => item.values[index]).find(Boolean);
-    return point?.label || `Point ${index + 1}`;
+    if (point?.[GENERATED_POINT_LABEL]) {
+      return fallbackPointLabel(index, resolveFallbackLabel);
+    }
+
+    return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
   });
 }
 

@@ -1,8 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const TONES = new Set(["info", "success", "warning", "danger"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  dismissLabel: "Dismiss alert",
+});
+
+/** @typedef {{ dismissLabel?: string }} RowanAlertMessages */
 
 function normalizeTone(value) {
   const tone = String(value ?? "")
@@ -16,6 +22,7 @@ function normalizeTone(value) {
  * @tag rowan-alert
  * @attr {"info"|"success"|"warning"|"danger"} tone
  * @attr {boolean} dismissible
+ * @property {RowanAlertMessages} messages - Property-only built-in message overrides.
  * @slot - Alert message
  * @csspart alert
  * @csspart dismiss
@@ -25,10 +32,11 @@ export class RowanAlert extends BaseElement {
   static styleUrl = new URL("./alert.css", import.meta.url).href;
   static useElementInternals = true;
   static observedAttributes = ["tone", "dismissible"];
-  static upgradeProperties = ["tone", "dismissible"];
+  static upgradeProperties = ["tone", "dismissible", "messages"];
 
   #container = null;
   #dismissButton = null;
+  #messages = {};
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
@@ -47,6 +55,17 @@ export class RowanAlert extends BaseElement {
 
   set dismissible(value) {
     this.reflectBoolean("dismissible", Boolean(value));
+  }
+
+  /** @returns {RowanAlertMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanAlertMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -69,7 +88,7 @@ export class RowanAlert extends BaseElement {
       this.renderRoot.innerHTML = `
         <div class="alert" part="alert">
           <div class="message"><slot></slot></div>
-          <button class="dismiss" part="dismiss" type="button" aria-label="Dismiss alert">×</button>
+          <button class="dismiss" part="dismiss" type="button">×</button>
         </div>
       `;
 
@@ -86,6 +105,10 @@ export class RowanAlert extends BaseElement {
     }
 
     this.#dismissButton.hidden = !this.dismissible;
+    this.#dismissButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "dismissLabel"),
+    );
 
     if (this.internals && !this.hasAttribute("role") && "role" in this.internals) {
       this.internals.role = this.tone === "danger" ? "alert" : "status";

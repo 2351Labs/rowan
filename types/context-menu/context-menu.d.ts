@@ -1,9 +1,14 @@
 /**
+ * @typedef {object} RowanContextMenuMessages
+ * @property {string} [label]
+ */
+/**
  * Contextual action menu bound to an element by property or identifier.
  * @tag rowan-context-menu
  * @attr {boolean} open
  * @attr {string} for
  * @attr {string} label
+ * @property {RowanContextMenuMessages} messages - Property-only built-in message overrides.
  * @slot - rowan-menu-item actions
  * @csspart overlay
  * @csspart backdrop
@@ -15,20 +20,27 @@
  * @event rowan-close - Fired when the user dismisses the menu
  */
 export class RowanContextMenu extends BaseElement {
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set open(value: boolean);
-    get open(): boolean;
-    set forTarget(value: string);
-    get forTarget(): string;
-    /** @param {HTMLElement | null} value */
-    set target(value: HTMLElement | null);
-    /** @returns {HTMLElement | null} */
-    get target(): HTMLElement | null;
-    set label(value: string);
-    get label(): string;
-    showAt(x: any, y: any): void;
-    hide(): void;
-    refresh(): void;
-    #private;
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set open(value: boolean);
+  get open(): boolean;
+  set forTarget(value: string);
+  get forTarget(): string;
+  /** @param {HTMLElement | null} value */
+  set target(value: HTMLElement | null);
+  /** @returns {HTMLElement | null} */
+  get target(): HTMLElement | null;
+  set label(value: string);
+  get label(): string;
+  /** @param {RowanContextMenuMessages | null | undefined} value */
+  set messages(value: RowanContextMenuMessages | null | undefined);
+  /** @returns {RowanContextMenuMessages} */
+  get messages(): RowanContextMenuMessages;
+  showAt(x: any, y: any): void;
+  hide(): void;
+  refresh(): void;
+  #private;
 }
+export type RowanContextMenuMessages = {
+  label?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

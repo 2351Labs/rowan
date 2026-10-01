@@ -49,6 +49,21 @@ describe("rowan-breadcrumb", () => {
     expect(current.getAttribute("aria-current")).to.equal("page");
   });
 
+  it("uses a property-only navigation label override", async () => {
+    const breadcrumb = document.createElement("rowan-breadcrumb");
+    document.body.append(breadcrumb);
+    await nextMicrotask();
+
+    breadcrumb.messages = { navigationLabel: "Ruta de navegacion" };
+    await nextMicrotask();
+
+    expect(breadcrumb.getAttribute("messages")).to.equal(null);
+    expect(breadcrumb.messages).to.deep.equal({ navigationLabel: "Ruta de navegacion" });
+    expect(breadcrumb.shadowRoot.querySelector("nav").getAttribute("aria-label")).to.equal(
+      "Ruta de navegacion",
+    );
+  });
+
   it("does not render while its host is hidden", async () => {
     const breadcrumb = document.createElement("rowan-breadcrumb");
     document.body.append(breadcrumb);

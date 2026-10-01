@@ -8,3 +8,4 @@ export type {
   RowanBoxPlotChartSeries,
   RowanBoxPlotChartValueFormatter,
 } from "../../types/box-plot-chart/model.js";
+export type { RowanBoxPlotChartMessages } from "../../types/box-plot-chart/box-plot-chart.js";

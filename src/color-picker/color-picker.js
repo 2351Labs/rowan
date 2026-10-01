@@ -1,11 +1,22 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 const COLOR_PATTERN = /^#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i;
 const DEFAULT_INPUT_COLOR = "#1d432f";
+const DEFAULT_MESSAGES = Object.freeze({
+  customColor: "Custom color",
+  customColorLabel: ({ label }) => (label ? `${label} custom color` : "Custom color"),
+  opacity: "Opacity",
+  opacityLabel: ({ label }) => (label ? `${label} opacity` : "Opacity"),
+  paletteLabel: ({ label }) => (label ? `${label} palette` : "Color palette"),
+  pickerLabel: "Color picker",
+  swatchLabel: "{label}, {value}",
+});
 
 const DEFAULT_COLORS = Object.freeze([
   Object.freeze({ value: "#10261c", label: "Forest 900" }),
@@ -28,6 +39,17 @@ let colorPickerId = 0;
  * @property {string} value
  * @property {string} [label]
  * @property {boolean} [disabled]
+ */
+
+/**
+ * @typedef {object} RowanColorPickerMessages
+ * @property {string} [customColor]
+ * @property {string | ((context: { label: string }) => string)} [customColorLabel]
+ * @property {string} [opacity]
+ * @property {string | ((context: { label: string }) => string)} [opacityLabel]
+ * @property {string | ((context: { label: string }) => string)} [paletteLabel]
+ * @property {string} [pickerLabel]
+ * @property {string | ((context: { label: string, value: string }) => string)} [swatchLabel]
  */
 
 function normalizeText(value) {
@@ -87,6 +109,7 @@ function colorWithAlpha(rgb, alpha) {
  * @attr {boolean} required
  * @attr {boolean} invalid
  * @property {Array<string | RowanColorPickerPaletteEntry>} palette - Approved palette entries. Arrays are property-only.
+ * @property {RowanColorPickerMessages} messages - Property-only built-in message overrides.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -128,6 +151,7 @@ export class RowanColorPicker extends BaseElement {
     "required",
     "invalid",
     "palette",
+    "messages",
   ];
 
   #control = null;
@@ -137,10 +161,13 @@ export class RowanColorPicker extends BaseElement {
   #colorInput = null;
   #alphaInput = null;
   #alphaValue = null;
+  #customColorLabel = null;
+  #opacityLabel = null;
   /** @type {Array<string | RowanColorPickerPaletteEntry> | null} */
   #palette = null;
   #defaultValue = null;
   #pendingFocusValue = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -167,6 +194,17 @@ export class RowanColorPicker extends BaseElement {
   /** @param {Array<string | RowanColorPickerPaletteEntry>} value */
   set palette(value) {
     this.#palette = Array.isArray(value) ? value : [];
+    this.requestRender();
+  }
+
+  /** @returns {RowanColorPickerMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanColorPickerMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
     this.requestRender();
   }
 
@@ -289,11 +327,11 @@ export class RowanColorPicker extends BaseElement {
           <div class="swatches" part="swatches" role="radiogroup"></div>
           <div class="custom-entry">
             <label class="color-entry" part="custom-color">
-              <span class="entry-label">Custom color</span>
+              <span class="entry-label custom-color-label"></span>
               <input class="color-input" part="color-input" type="color" />
             </label>
             <label class="alpha-entry">
-              <span class="entry-label">Opacity</span>
+              <span class="entry-label opacity-label"></span>
               <input class="alpha-input" part="alpha-input" type="range" min="0" max="100" step="1" />
               <output class="alpha-value" part="alpha-value"></output>
             </label>
@@ -308,6 +346,8 @@ export class RowanColorPicker extends BaseElement {
       this.#colorInput = this.renderRoot.querySelector(".color-input");
       this.#alphaInput = this.renderRoot.querySelector(".alpha-input");
       this.#alphaValue = this.renderRoot.querySelector(".alpha-value");
+      this.#customColorLabel = this.renderRoot.querySelector(".custom-color-label");
+      this.#opacityLabel = this.renderRoot.querySelector(".opacity-label");
 
       this.listen(this.#swatches, "click", (event) => this.#handleSwatchClick(event));
       this.listen(this.#swatches, "keydown", (event) => this.#handleSwatchKeydown(event));
@@ -327,10 +367,22 @@ export class RowanColorPicker extends BaseElement {
     this.#descriptionFallback.hidden = description.length === 0;
     this.#colorInput.value = rgb;
     this.#colorInput.disabled = this.disabled;
-    this.#colorInput.setAttribute("aria-label", label ? `${label} custom color` : "Custom color");
+    this.#customColorLabel.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "customColor",
+    );
+    this.#colorInput.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "customColorLabel", { label }),
+    );
     this.#alphaInput.value = String(alpha);
     this.#alphaInput.disabled = this.disabled;
-    this.#alphaInput.setAttribute("aria-label", label ? `${label} opacity` : "Opacity");
+    this.#opacityLabel.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "opacity");
+    this.#alphaInput.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "opacityLabel", { label }),
+    );
     this.#alphaValue.textContent = `${alpha}%`;
 
     this.#renderSwatches();
@@ -380,7 +432,7 @@ export class RowanColorPicker extends BaseElement {
     this.#swatches.textContent = "";
     this.#swatches.setAttribute(
       "aria-label",
-      this.label ? `${this.label} palette` : "Color palette",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "paletteLabel", { label: this.label }),
     );
 
     const fragment = document.createDocumentFragment();
@@ -396,7 +448,10 @@ export class RowanColorPicker extends BaseElement {
       button.tabIndex = !button.disabled && color.value === focusValue ? 0 : -1;
       button.setAttribute("role", "radio");
       button.setAttribute("aria-checked", color.value === selectedValue ? "true" : "false");
-      button.setAttribute("aria-label", `${color.label}, ${color.value}`);
+      button.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "swatchLabel", color),
+      );
 
       swatch.className = "swatch-color";
       swatch.part.add("swatch-color");
@@ -433,7 +488,8 @@ export class RowanColorPicker extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = this.label || "Color picker";
+      this.internals.ariaLabel =
+        this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "pickerLabel");
     }
 
     if (!this.hasAttribute("aria-description") && "ariaDescription" in this.internals) {
@@ -470,9 +526,10 @@ export class RowanColorPicker extends BaseElement {
     if (index === -1) return;
 
     let target = null;
-    if (event.key === keys.ARROW_RIGHT || event.key === keys.ARROW_DOWN) {
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset > 0 || event.key === keys.ARROW_DOWN) {
       target = buttons[index + 1] ?? buttons.at(0);
-    } else if (event.key === keys.ARROW_LEFT || event.key === keys.ARROW_UP) {
+    } else if (horizontalOffset < 0 || event.key === keys.ARROW_UP) {
       target = buttons[index - 1] ?? buttons.at(-1);
     } else if (event.key === keys.HOME) {
       target = buttons.at(0);

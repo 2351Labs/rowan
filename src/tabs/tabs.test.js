@@ -110,6 +110,41 @@ describe("rowan-tabs", () => {
     expect(tabs.value).to.equal("overview");
   });
 
+  it("follows visual horizontal arrow direction in RTL", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.dir = "rtl";
+    const tabs = document.createElement("rowan-tabs");
+    const overviewTab = createTab("overview", "Overview");
+    const settingsTab = createTab("settings", "Settings");
+    const activityTab = createTab("activity", "Activity");
+    tabs.append(
+      overviewTab,
+      settingsTab,
+      activityTab,
+      createPanel("overview", "Overview content"),
+      createPanel("settings", "Settings content"),
+      createPanel("activity", "Activity content"),
+    );
+    wrapper.append(tabs);
+    document.body.append(wrapper);
+    await settle();
+
+    const settingsButton = settingsTab.shadowRoot.querySelector("button");
+    const overviewButton = overviewTab.shadowRoot.querySelector("button");
+    const activityButton = activityTab.shadowRoot.querySelector("button");
+    settingsButton.focus();
+    keydown(settingsButton, "ArrowRight");
+    await settle();
+
+    expect(overviewTab.shadowRoot.activeElement === overviewButton).to.equal(true);
+
+    settingsButton.focus();
+    keydown(settingsButton, "ArrowLeft");
+    await settle();
+
+    expect(activityTab.shadowRoot.activeElement === activityButton).to.equal(true);
+  });
+
   it("reconciles selected tabs and relationships as slotted children change", async () => {
     const tabs = document.createElement("rowan-tabs");
     const overviewTab = createTab("overview", "Overview");

@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -22,6 +25,7 @@ import {
   cloneBoxPlotSeries,
   cloneBoxPlotSeriesInput,
   normalizeBoxPlotSeries,
+  resolveBoxPlotLabels,
 } from "./model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
@@ -31,6 +35,26 @@ const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
 const OUTLIER_RADIUS = 3.5;
+const DEFAULT_MESSAGES = Object.freeze({
+  category: "Category",
+  chart: "Box plot",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  max: "Max",
+  maxValue: "max",
+  median: "Median",
+  medianValue: "median",
+  min: "Min",
+  minValue: "min",
+  noData: "No data",
+  outliers: "Outliers",
+  q1: "Q1",
+  q1Value: "q1",
+  q3: "Q3",
+  q3Value: "q3",
+  point: "Point {index}",
+  series: "Series",
+});
 
 let boxPlotChartId = 0;
 
@@ -41,6 +65,28 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanBoxPlotChartMessages
+ * @property {string} [category]
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [max]
+ * @property {string} [maxValue]
+ * @property {string} [median]
+ * @property {string} [medianValue]
+ * @property {string} [min]
+ * @property {string} [minValue]
+ * @property {string} [noData]
+ * @property {string} [outliers]
+ * @property {string} [q1]
+ * @property {string} [q1Value]
+ * @property {string} [q3]
+ * @property {string} [q3Value]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [series]
+ */
 
 /**
  * @typedef {{
@@ -59,10 +105,12 @@ function normalizeText(value) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ min, q1, median, q3, max, outliers? }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanBoxPlotChartConfig} config - Replaces the complete chart configuration.
  * @property {import("./model.js").RowanBoxPlotChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanBoxPlotChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -81,7 +129,7 @@ export class RowanBoxPlotChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./box-plot-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-box-plot-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -90,6 +138,8 @@ export class RowanBoxPlotChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -106,6 +156,7 @@ export class RowanBoxPlotChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -113,6 +164,7 @@ export class RowanBoxPlotChart extends BaseElement {
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -137,6 +189,25 @@ export class RowanBoxPlotChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanBoxPlotChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanBoxPlotChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -224,11 +295,11 @@ export class RowanBoxPlotChart extends BaseElement {
               </div>
               <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -246,6 +317,7 @@ export class RowanBoxPlotChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -261,6 +333,7 @@ export class RowanBoxPlotChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -276,20 +349,11 @@ export class RowanBoxPlotChart extends BaseElement {
   }
 
   #chartName() {
-    return "Box plot";
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
   }
 
   #categoryLabels() {
-    const length = Math.max(
-      this.#labels.length,
-      ...this.#series.map((series) => series.values.length),
-      1,
-    );
-    return Array.from(
-      { length },
-      (_, index) =>
-        this.#labels[index] || this.#series[0]?.values[index]?.label || `Point ${index + 1}`,
-    );
+    return resolveBoxPlotLabels(this.#series, this.#labels, (index) => this.#pointLabel(index));
   }
 
   #syncLabels() {
@@ -317,12 +381,18 @@ export class RowanBoxPlotChart extends BaseElement {
 
   #formatPoint(point, series, index, label) {
     const context = { series, index, label };
-    const min = formatChartValue(this.#valueFormatter, point.min, context);
-    const q1 = formatChartValue(this.#valueFormatter, point.q1, context);
-    const median = formatChartValue(this.#valueFormatter, point.median, context);
-    const q3 = formatChartValue(this.#valueFormatter, point.q3, context);
-    const max = formatChartValue(this.#valueFormatter, point.max, context);
-    return `min=${min}, q1=${q1}, median=${median}, q3=${q3}, max=${max}`;
+    const min = this.#formatValue(point.min, context);
+    const q1 = this.#formatValue(point.q1, context);
+    const median = this.#formatValue(point.median, context);
+    const q3 = this.#formatValue(point.q3, context);
+    const max = this.#formatValue(point.max, context);
+    return [
+      `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "minValue")}=${min}`,
+      `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "q1Value")}=${q1}`,
+      `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "medianValue")}=${median}`,
+      `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "q3Value")}=${q3}`,
+      `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "maxValue")}=${max}`,
+    ].join(", ");
   }
 
   #renderChart() {
@@ -341,16 +411,25 @@ export class RowanBoxPlotChart extends BaseElement {
       series.values.some((point) => point.outliers.length > 0),
     );
     renderKeyedChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || this.#chartName()} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#displayLabel() || this.#chartName(),
+      }),
       columns: [
-        { key: "series", header: "Series" },
-        { key: "label", header: "Category" },
-        { key: "min", header: "Min" },
-        { key: "q1", header: "Q1" },
-        { key: "median", header: "Median" },
-        { key: "q3", header: "Q3" },
-        { key: "max", header: "Max" },
-        ...(hasOutliers ? [{ key: "outliers", header: "Outliers" }] : []),
+        { key: "series", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "series") },
+        { key: "label", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "category") },
+        { key: "min", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "min") },
+        { key: "q1", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "q1") },
+        { key: "median", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "median") },
+        { key: "q3", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "q3") },
+        { key: "max", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "max") },
+        ...(hasOutliers
+          ? [
+              {
+                key: "outliers",
+                header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "outliers"),
+              },
+            ]
+          : []),
       ],
       rows: this.#series.flatMap((series) =>
         labels.map((label, index) => {
@@ -360,20 +439,19 @@ export class RowanBoxPlotChart extends BaseElement {
           return {
             series: series.label,
             label,
-            min: included ? formatChartValue(this.#valueFormatter, point.min, context) : null,
-            q1: included ? formatChartValue(this.#valueFormatter, point.q1, context) : null,
-            median: included ? formatChartValue(this.#valueFormatter, point.median, context) : null,
-            q3: included ? formatChartValue(this.#valueFormatter, point.q3, context) : null,
-            max: included ? formatChartValue(this.#valueFormatter, point.max, context) : null,
+            min: included ? this.#formatValue(point.min, context) : null,
+            q1: included ? this.#formatValue(point.q1, context) : null,
+            median: included ? this.#formatValue(point.median, context) : null,
+            q3: included ? this.#formatValue(point.q3, context) : null,
+            max: included ? this.#formatValue(point.max, context) : null,
             outliers:
               included && point.outliers.length
-                ? point.outliers
-                    .map((value) => formatChartValue(this.#valueFormatter, value, context))
-                    .join(", ")
+                ? point.outliers.map((value) => this.#formatValue(value, context)).join(", ")
                 : null,
           };
         }),
       ),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
@@ -515,7 +593,7 @@ export class RowanBoxPlotChart extends BaseElement {
     this.#yAxis.replaceChildren();
     for (const tick of ticks) {
       const item = document.createElement("span");
-      item.textContent = formatChartValue(this.#valueFormatter, tick, { tick: true });
+      item.textContent = this.#formatValue(tick, { tick: true });
       this.#yAxis.append(item);
     }
     this.#xAxis.replaceChildren();
@@ -532,6 +610,10 @@ export class RowanBoxPlotChart extends BaseElement {
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "series"),
+    );
     const fragment = document.createDocumentFragment();
     for (const [seriesIndex, series] of this.#series.entries()) {
       const item = document.createElement("li");
@@ -629,6 +711,18 @@ export class RowanBoxPlotChart extends BaseElement {
       .find((node) => node instanceof HTMLButtonElement && node.dataset.pointKey);
     if (!button) return null;
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
   }
 
   #applyDefaultA11y() {

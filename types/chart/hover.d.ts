@@ -14,14 +14,21 @@ export function showChartHover(bubble: any, text: any, clientX: any, clientY: an
  *   textForEvent: (event: PointerEvent) => string,
  * }} options
  */
-export function bindChartHover(element: import("../lib/base-element.js").BaseElement, { target, bubble, textForEvent }: {
+export function bindChartHover(
+  element: import("../lib/base-element.js").BaseElement,
+  {
+    target,
+    bubble,
+    textForEvent,
+  }: {
     target: EventTarget;
     bubble: HTMLElement;
     textForEvent: (event: PointerEvent) => string;
-}): void;
+  },
+): void;
 export function hoverKeyFromEvent(event: any): string;
 export function seriesHoverText(entries: any, event: any): string;
-export function referenceLineHoverText(event: any): string;
+export function referenceLineHoverText(event: any, fallbackLabel?: string): string;
 /**
  * @template {{ x: number }} T
  * @param {SVGSVGElement} svg
@@ -29,6 +36,8 @@ export function referenceLineHoverText(event: any): string;
  * @param {number} clientX
  * @returns {T | null}
  */
-export function nearestPointByClientX<T extends {
+export function nearestPointByClientX<
+  T extends {
     x: number;
-}>(svg: SVGSVGElement, points: T[], clientX: number): T | null;
+  },
+>(svg: SVGSVGElement, points: T[], clientX: number): T | null;

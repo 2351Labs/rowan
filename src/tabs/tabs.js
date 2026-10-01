@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { RowanTab } from "../tab/tab.js";
@@ -78,8 +79,7 @@ export class RowanTabs extends BaseElement {
 
   render() {
     if (!this.#slot) {
-      this.renderRoot.innerHTML =
-        '<div class="tabs" part="tabs"><slot></slot></div>';
+      this.renderRoot.innerHTML = '<div class="tabs" part="tabs"><slot></slot></div>';
       this.#slot = this.renderRoot.querySelector("slot");
       this.listen(this.#slot, "slotchange", () => this.requestRender());
     }
@@ -206,15 +206,10 @@ export class RowanTabs extends BaseElement {
     const index = tabs.indexOf(tab);
     if (index === -1) return;
 
-    if (event.key === keys.ARROW_RIGHT) {
+    const arrowOffset = horizontalArrowKeyOffset(this, event.key);
+    if (arrowOffset !== 0) {
       event.preventDefault();
-      this.#setFocusTab(tabs[(index + 1) % tabs.length]);
-      return;
-    }
-
-    if (event.key === keys.ARROW_LEFT) {
-      event.preventDefault();
-      this.#setFocusTab(tabs[(index - 1 + tabs.length) % tabs.length]);
+      this.#setFocusTab(tabs[(index + arrowOffset + tabs.length) % tabs.length]);
       return;
     }
 

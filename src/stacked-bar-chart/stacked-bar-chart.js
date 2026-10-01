@@ -2,6 +2,9 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createReferenceLine,
   createSvgElement,
@@ -40,6 +43,16 @@ const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
 const ORIENTATIONS = new Set(["vertical", "horizontal"]);
 const STACK_MODES = new Set(["absolute", "normalized"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: "Stacked bar chart",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  metric: "Metric",
+  noData: "No data",
+  point: "Point {index}",
+  reference: "Reference",
+  series: "Series",
+});
 
 let stackedBarChartId = 0;
 
@@ -50,6 +63,18 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanStackedBarChartMessages
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [reference]
+ * @property {string} [series]
+ */
 
 /**
  * @typedef {import("../chart/model.js").RowanChartConfig & {
@@ -68,11 +93,13 @@ function normalizeText(value) {
  * @attr {boolean} interactive
  * @attr {"vertical"|"horizontal"} orientation - Category axis. Default `vertical`.
  * @attr {"absolute"|"normalized"} stack-mode - `normalized` scales each category to 100. Default `absolute`.
+ * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - Chart series. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanStackedBarChartConfig} config - Replaces the complete chart configuration. Omitted `orientation` / `stackMode` reset to vertical / absolute.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
  * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Overlays on the value axis. Arrays are property-only. Normalized mode uses a 0–100 scale.
+ * @property {RowanStackedBarChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -95,7 +122,14 @@ export class RowanStackedBarChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./stacked-bar-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-stacked-bar-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "orientation", "stack-mode"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "orientation",
+    "stack-mode",
+    "locale",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -107,6 +141,8 @@ export class RowanStackedBarChart extends BaseElement {
     "config",
     "valueFormatter",
     "referenceLines",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -122,6 +158,7 @@ export class RowanStackedBarChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -131,6 +168,7 @@ export class RowanStackedBarChart extends BaseElement {
   #activePointKey = "";
   #labelId = "";
   #descriptionId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -156,6 +194,25 @@ export class RowanStackedBarChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanStackedBarChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanStackedBarChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -295,11 +352,11 @@ export class RowanStackedBarChart extends BaseElement {
               </div>
               <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -317,13 +374,17 @@ export class RowanStackedBarChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
         target: this.renderRoot.querySelector(".chart"),
         bubble: this.#hover,
         textForEvent: (event) =>
-          referenceLineHoverText(event) || seriesHoverText(this.#entries, event),
+          referenceLineHoverText(
+            event,
+            resolveMessage(this.#messages, DEFAULT_MESSAGES, "reference"),
+          ) || seriesHoverText(this.#entries, event),
       });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
@@ -334,6 +395,7 @@ export class RowanStackedBarChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -370,7 +432,7 @@ export class RowanStackedBarChart extends BaseElement {
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.renderRoot.querySelector(".description").id = this.#descriptionId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Stacked bar chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
     if (description) {
       this.#plot.setAttribute("aria-describedby", this.#descriptionId);
     } else {
@@ -394,7 +456,9 @@ export class RowanStackedBarChart extends BaseElement {
   }
 
   #renderChart() {
-    const labels = resolveChartLabels(this.#series, this.#labels);
+    const labels = resolveChartLabels(this.#series, this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const domain = this.#valueDomain();
     this.#entries = this.#createEntries(labels, domain);
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
@@ -405,7 +469,9 @@ export class RowanStackedBarChart extends BaseElement {
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Stacked bar chart"} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#chartName(),
+      }),
       labels,
       series: this.#series.map((item) => ({
         ...item,
@@ -414,7 +480,8 @@ export class RowanStackedBarChart extends BaseElement {
         ),
       })),
       formatValue: (value, series, index, label) =>
-        formatChartValue(this.#valueFormatter, value, { series, index, label }),
+        this.#formatValue(value, { series, index, label }),
+      messages: this.#messages,
       referenceLines: this.#referenceLines,
     });
     this.#syncActivePoint();
@@ -452,7 +519,7 @@ export class RowanStackedBarChart extends BaseElement {
           thickness: barThickness,
           plot,
         });
-        const formattedValue = formatChartValue(this.#valueFormatter, value, {
+        const formattedValue = this.#formatValue(value, {
           series,
           index,
           label: labels[index],
@@ -482,7 +549,7 @@ export class RowanStackedBarChart extends BaseElement {
   #renderPlot(domain) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Stacked bar chart";
+    title.textContent = this.#chartName();
     fragment.append(title);
 
     const plot = this.#plotBox();
@@ -510,9 +577,9 @@ export class RowanStackedBarChart extends BaseElement {
 
     const range = domain.max - domain.min || 1;
     for (const line of this.#referenceLines) {
-      const formattedValue = formatChartValue(this.#valueFormatter, line.value, {
-        label: line.label || "Reference",
-      });
+      const referenceLabel =
+        line.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "reference");
+      const formattedValue = this.#formatValue(line.value, { label: referenceLabel });
       if (this.orientation === "horizontal") {
         const x = plot.left + ((line.value - domain.min) / range) * plot.width;
         fragment.append(
@@ -521,7 +588,7 @@ export class RowanStackedBarChart extends BaseElement {
             y1: plot.top,
             y2: plot.top + plot.height,
             tone: line.tone,
-            label: line.label,
+            label: referenceLabel,
             formattedValue,
           }),
         );
@@ -535,7 +602,7 @@ export class RowanStackedBarChart extends BaseElement {
           x2: plot.left + plot.width,
           y,
           tone: line.tone,
-          label: line.label,
+          label: referenceLabel,
           formattedValue,
         }),
       );
@@ -559,6 +626,10 @@ export class RowanStackedBarChart extends BaseElement {
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "series"),
+    );
     const fragment = document.createDocumentFragment();
     for (const [seriesIndex, series] of this.#series.entries()) {
       const item = document.createElement("li");
@@ -659,6 +730,22 @@ export class RowanStackedBarChart extends BaseElement {
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 
+  #chartName() {
+    return this.#displayLabel() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
     if (!this.hasAttribute("role") && "role" in this.internals) {
@@ -669,7 +756,7 @@ export class RowanStackedBarChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Stacked bar chart";
+      this.internals.ariaLabel = this.#chartName();
     }
   }
 }

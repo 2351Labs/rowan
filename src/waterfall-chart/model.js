@@ -2,6 +2,7 @@ import { finiteOrNull } from "../chart/model.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
+const GENERATED_POINT_LABEL = Symbol("rowan.waterfall-generated-point-label");
 
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -14,6 +15,15 @@ function normalizeText(value) {
 function normalizeColor(value) {
   const color = normalizeText(value);
   return HEX_COLOR_PATTERN.test(color) || TOKEN_COLOR_PATTERN.test(color) ? color : "";
+}
+
+function fallbackPointLabel(index, resolveFallback) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `Point ${index + 1}`;
 }
 
 /**
@@ -54,11 +64,17 @@ export function normalizeWaterfallSeries(value, labels = []) {
       color: normalizeColor(source.color),
       values: inputValues.map((point, index) => {
         const item = isObject(point) ? point : { value: point };
-        return {
+        const authoredLabel = normalizeText(item.label);
+        const configuredLabel = normalizeText(labels[index]);
+        const normalized = {
           value: finiteOrNull(item.value),
-          label: normalizeText(item.label) || labels[index] || `Point ${index + 1}`,
+          label: authoredLabel || configuredLabel || fallbackPointLabel(index),
           type: item.type === "total" ? "total" : "delta",
         };
+        if (!authoredLabel && !configuredLabel) {
+          Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+        }
+        return normalized;
       }),
     },
   ];
@@ -69,6 +85,29 @@ export function cloneWaterfallSeries(value) {
     ...series,
     values: series.values.map((point) => ({ ...point })),
   }));
+}
+
+/**
+ * @param {{ values?: Array<{ label?: string }> } | undefined} series
+ * @param {string[]} labels
+ * @param {(index: number) => string} [resolveFallbackLabel]
+ * @returns {string[]}
+ */
+export function resolveWaterfallLabels(series, labels, resolveFallbackLabel) {
+  const values = series?.values ?? [];
+  const length = Math.max(values.length, labels.length);
+
+  return Array.from({ length }, (_value, index) => {
+    const configured = normalizeText(labels[index]);
+    if (configured) return configured;
+
+    const point = values[index];
+    if (point?.[GENERATED_POINT_LABEL]) {
+      return fallbackPointLabel(index, resolveFallbackLabel);
+    }
+
+    return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
+  });
 }
 
 /**

@@ -21,41 +21,64 @@
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
  * @property {RowanFilter[]} filters - Flat AND list of predicates. Arrays are property-only.
+ * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
 export class RowanFilterBuilder extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set table(value: null);
-    get table(): null;
-    set forTable(value: string);
-    get forTable(): string;
-    /** @param {RowanFilterField[]} value */
-    set fields(value: RowanFilterField[]);
-    /** @returns {RowanFilterField[]} */
-    get fields(): RowanFilterField[];
-    /** @param {RowanFilter[]} value */
-    set filters(value: RowanFilter[]);
-    /** @returns {RowanFilter[]} */
-    get filters(): RowanFilter[];
-    set label(value: string);
-    get label(): string;
-    set addLabel(value: string);
-    get addLabel(): string;
-    set clearLabel(value: string);
-    get clearLabel(): string;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    addFilter(value?: {}): any;
-    removeFilter(id: any): boolean;
-    clearFilters(): boolean;
-    refresh(): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set table(value: null);
+  get table(): null;
+  set forTable(value: string);
+  get forTable(): string;
+  /** @param {RowanFilterField[]} value */
+  set fields(value: RowanFilterField[]);
+  /** @returns {RowanFilterField[]} */
+  get fields(): RowanFilterField[];
+  /** @param {RowanFilter[]} value */
+  set filters(value: RowanFilter[]);
+  /** @returns {RowanFilter[]} */
+  get filters(): RowanFilter[];
+  set label(value: string);
+  get label(): string;
+  set addLabel(value: string);
+  get addLabel(): string;
+  set clearLabel(value: string);
+  get clearLabel(): string;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  /** @param {RowanFilterBuilderMessages | null | undefined} value */
+  set messages(value: RowanFilterBuilderMessages | null | undefined);
+  /** @returns {RowanFilterBuilderMessages} */
+  get messages(): RowanFilterBuilderMessages;
+  addFilter(value?: {}): any;
+  removeFilter(id: any): boolean;
+  clearFilters(): boolean;
+  refresh(): void;
+  #private;
 }
 export { applyFilters } from "./apply-filters.js";
+export type RowanFilterBuilderMessages = {
+  addLabel?: string | undefined;
+  booleanFalse?: string | undefined;
+  booleanTrue?: string | undefined;
+  chooseValue?: string | undefined;
+  clearLabel?: string | undefined;
+  empty?: string | undefined;
+  fieldLabel?: string | undefined;
+  label?: string | undefined;
+  noValue?: string | undefined;
+  operatorLabel?: string | ((context: { label: string; operator: string }) => string) | undefined;
+  operatorSelectLabel?: string | undefined;
+  remove?: string | undefined;
+  removeFilter?: string | ((context: { field: string }) => string) | undefined;
+  unknownField?: string | ((context: { field: string }) => string) | undefined;
+  value?: string | undefined;
+  valueFor?: string | ((context: { label: string }) => string) | undefined;
+};
 export type RowanFilterFieldType = "text" | "number" | "date" | "boolean" | "select";
 /**
  * Operator id. Defaults are contains, equals, not-equals, starts-with,
@@ -68,24 +91,31 @@ export type RowanFilterOperator = string;
  * Frozen field. Conjunction across `filters` is implicit AND. There are no groups.
  */
 export type RowanFilterField = {
-    id: string;
-    label?: string | undefined;
-    type?: RowanFilterFieldType | undefined;
-    operators?: string[] | undefined;
-    options?: (string | number | boolean | {
-        value: string;
-        label?: string | undefined;
-        disabled?: boolean | undefined;
-    })[] | undefined;
-    placeholder?: string | undefined;
+  id: string;
+  label?: string | undefined;
+  type?: RowanFilterFieldType | undefined;
+  operators?: string[] | undefined;
+  options?:
+    | (
+        | string
+        | number
+        | boolean
+        | {
+            value: string;
+            label?: string | undefined;
+            disabled?: boolean | undefined;
+          }
+      )[]
+    | undefined;
+  placeholder?: string | undefined;
 };
 /**
  * Frozen predicate row. Nested combinator objects are not a public shape.
  */
 export type RowanFilter = {
-    id: string;
-    field: string;
-    operator: RowanFilterOperator;
-    value: string;
+  id: string;
+  field: string;
+  operator: RowanFilterOperator;
+  value: string;
 };
 import { BaseElement } from "../lib/base-element.js";

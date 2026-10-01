@@ -96,4 +96,28 @@ describe("rowan-side-nav-section", () => {
     expect(section.collapsed).to.equal(false);
     expect(jobs.active).to.equal(true);
   });
+
+  it("uses logical horizontal keys from an RTL disclosure trigger", async () => {
+    const section = document.createElement("rowan-side-nav-section");
+    section.dir = "rtl";
+    section.label = "Customers";
+    section.collapsible = true;
+    section.collapsed = true;
+    const overview = document.createElement("rowan-side-nav-item");
+    overview.value = "overview";
+    overview.textContent = "Overview";
+    section.append(overview);
+    document.body.append(section);
+    await nextMicrotask();
+
+    const trigger = section.shadowRoot.querySelector(".trigger");
+    trigger.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowLeft" }));
+    await nextMicrotask();
+    expect(section.collapsed).to.equal(false);
+
+    trigger.focus();
+    trigger.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }));
+    await nextMicrotask();
+    expect(section.collapsed).to.equal(true);
+  });
 });

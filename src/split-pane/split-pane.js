@@ -1,10 +1,17 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const DEFAULT_POSITION = 50;
 const DEFAULT_STEP = 5;
 const DEFAULT_SNAP_THRESHOLD = 2;
+const DEFAULT_MESSAGES = Object.freeze({
+  resizePanes: "Resize panes",
+  valueText: "{value}%",
+});
 
 function clamp(value, minimum, maximum, fallback) {
   const numeric = Number(value);
@@ -29,6 +36,12 @@ function normalizeSnapPoints(value) {
 }
 
 /**
+ * @typedef {object} RowanSplitPaneMessages
+ * @property {string} [resizePanes]
+ * @property {string | ((context: { value: string }) => string)} [valueText]
+ */
+
+/**
  * Resizable two-pane workspace layout.
  * @tag rowan-split-pane
  * @attr {"horizontal"|"vertical"} orientation
@@ -38,7 +51,9 @@ function normalizeSnapPoints(value) {
  * @attr {number} step
  * @attr {number} snap-threshold
  * @attr {boolean} disabled
+ * @attr {string} locale
  * @property {number[]} snapPoints - Property-only percentage positions that attract nearby resize values.
+ * @property {RowanSplitPaneMessages} messages - Property-only built-in message overrides.
  * @slot start - Start pane content.
  * @slot end - End pane content.
  * @csspart layout
@@ -63,6 +78,7 @@ export class RowanSplitPane extends BaseElement {
     "step",
     "snap-threshold",
     "disabled",
+    "locale",
   ];
   static upgradeProperties = [
     "orientation",
@@ -73,12 +89,15 @@ export class RowanSplitPane extends BaseElement {
     "snapThreshold",
     "snapPoints",
     "disabled",
+    "locale",
+    "messages",
   ];
 
   #layout = null;
   #separator = null;
   #snapPoints = [];
   #activePointerId = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -185,6 +204,25 @@ export class RowanSplitPane extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanSplitPaneMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanSplitPaneMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   render() {
     if (!this.#layout) {
       this.renderRoot.innerHTML = `
@@ -263,7 +301,20 @@ export class RowanSplitPane extends BaseElement {
     this.#separator.setAttribute("aria-valuemin", String(this.min));
     this.#separator.setAttribute("aria-valuemax", String(this.max));
     this.#separator.setAttribute("aria-valuenow", String(position));
-    this.#separator.setAttribute("aria-valuetext", `${position}%`);
+    this.#separator.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizePanes"),
+    );
+    this.#separator.setAttribute(
+      "aria-valuetext",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "valueText", {
+        value: formatNumber(position, {
+          fallback: String(position),
+          locale: this.locale,
+          options: { maximumFractionDigits: 4 },
+        }),
+      }),
+    );
     this.#separator.setAttribute("aria-disabled", String(this.disabled));
     this.#separator.tabIndex = this.disabled ? -1 : 0;
   }
@@ -284,7 +335,12 @@ export class RowanSplitPane extends BaseElement {
     const size = isVertical ? bounds.height : bounds.width;
     if (size <= 0) return;
 
-    const coordinate = isVertical ? event.clientY - bounds.top : event.clientX - bounds.left;
+    const isRtl = getComputedStyle(this).direction === "rtl";
+    const coordinate = isVertical
+      ? event.clientY - bounds.top
+      : isRtl
+        ? bounds.right - event.clientX
+        : event.clientX - bounds.left;
     this.#setPosition((coordinate / size) * 100, { emitEvent: true });
   }
 

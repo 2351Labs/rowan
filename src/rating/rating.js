@@ -1,10 +1,21 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
 import { keys } from "../lib/keys.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 let ratingId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  clearRating: "Clear rating",
+  noRatingSelected: "No rating selected",
+  rating: "Rating",
+  ratingValue: "{value} of {max}",
+  starValue: "{value} of {max} stars",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -32,6 +43,15 @@ function normalizeValue(value, min, max, step) {
 }
 
 /**
+ * @typedef {object} RowanRatingMessages
+ * @property {string} [clearRating]
+ * @property {string} [noRatingSelected]
+ * @property {string} [rating]
+ * @property {string | ((context: { max: string, value: string }) => string)} [ratingValue]
+ * @property {string | ((context: { max: string, value: string }) => string)} [starValue]
+ */
+
+/**
  * Bounded form-associated rating input.
  * @tag rowan-rating
  * @attr {string} name
@@ -44,6 +64,8 @@ function normalizeValue(value, min, max, step) {
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @attr {string} locale
+ * @property {RowanRatingMessages} messages - Property-only built-in message overrides.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -75,6 +97,7 @@ export class RowanRating extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "locale",
   ];
   static upgradeProperties = [
     "name",
@@ -87,6 +110,8 @@ export class RowanRating extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -97,6 +122,7 @@ export class RowanRating extends BaseElement {
   #valueOutput = null;
   #defaultValue = undefined;
   #pendingFocusValue = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -239,6 +265,25 @@ export class RowanRating extends BaseElement {
     this.reflectBoolean("invalid", Boolean(value));
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanRatingMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanRatingMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   clear() {
     this.value = "";
   }
@@ -296,7 +341,7 @@ export class RowanRating extends BaseElement {
           </div>
           <div class="actions">
             <div class="rating" part="rating" role="radiogroup"></div>
-            <button class="clear" part="clear" type="button" aria-label="Clear rating" title="Clear rating"><span aria-hidden="true">x</span></button>
+            <button class="clear" part="clear" type="button"><span aria-hidden="true">x</span></button>
           </div>
           <output class="value" part="value"></output>
         </div>
@@ -320,9 +365,17 @@ export class RowanRating extends BaseElement {
     this.#labelFallback.hidden = label.length === 0;
     this.#descriptionFallback.textContent = description;
     this.#descriptionFallback.hidden = description.length === 0;
-    this.#rating.setAttribute("aria-label", label || "Rating");
+    this.#rating.setAttribute(
+      "aria-label",
+      label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "rating"),
+    );
     this.#clearButton.disabled = this.disabled;
     this.#clearButton.hidden = this.value === "";
+    this.#clearButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "clearRating"),
+    );
+    this.#clearButton.title = resolveMessage(this.#messages, DEFAULT_MESSAGES, "clearRating");
     this.#valueOutput.textContent = this.#valueText();
 
     this.#renderRatingButtons();
@@ -423,7 +476,8 @@ export class RowanRating extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = this.label || "Rating";
+      this.internals.ariaLabel =
+        this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "rating");
     }
 
     if (!this.hasAttribute("aria-description") && "ariaDescription" in this.internals) {
@@ -459,9 +513,10 @@ export class RowanRating extends BaseElement {
     if (index === -1) return;
 
     let target = null;
-    if (event.key === keys.ARROW_RIGHT || event.key === keys.ARROW_UP) {
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset > 0 || event.key === keys.ARROW_UP) {
       target = buttons[index + 1] ?? buttons.at(0);
-    } else if (event.key === keys.ARROW_LEFT || event.key === keys.ARROW_DOWN) {
+    } else if (horizontalOffset < 0 || event.key === keys.ARROW_DOWN) {
       target = buttons[index - 1] ?? buttons.at(-1);
     } else if (event.key === keys.HOME) {
       target = buttons.at(0);
@@ -498,13 +553,25 @@ export class RowanRating extends BaseElement {
 
   #valueText() {
     const value = this.value;
-    if (value === "") return "No rating selected";
+    if (value === "") {
+      return resolveMessage(this.#messages, DEFAULT_MESSAGES, "noRatingSelected");
+    }
 
-    return `${value} of ${this.max}`;
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "ratingValue", {
+      max: this.#formatRatingNumber(this.max),
+      value: this.#formatRatingNumber(value),
+    });
   }
 
   #ratingButtonLabel(value) {
-    return `${value} of ${this.max} stars`;
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "starValue", {
+      max: this.#formatRatingNumber(this.max),
+      value: this.#formatRatingNumber(value),
+    });
+  }
+
+  #formatRatingNumber(value) {
+    return formatNumber(value, { locale: this.locale, fallback: String(value) });
   }
 
   #buttonFromEvent(event) {

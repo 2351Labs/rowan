@@ -2,13 +2,23 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { lowerCaseForLocale, resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 import "../option/option.js";
 
 let comboboxId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  noMatchingOptions: "No matching options.",
+});
 
 /** @typedef {string | { value: string, label?: string, disabled?: boolean }} RowanComboboxOption */
+
+/**
+ * @typedef {object} RowanComboboxMessages
+ * @property {string} [noMatchingOptions]
+ */
 
 /**
  * Filterable text entry with a listbox of suggestions.
@@ -19,10 +29,12 @@ let comboboxId = 0;
  * @attr {string} value
  * @attr {string} label
  * @attr {string} placeholder
+ * @attr {string} locale
  * @attr {boolean} open
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @property {RowanComboboxOption[]} options - Available suggestions. Arrays are property-only.
+ * @property {RowanComboboxMessages} messages - Property-only built-in message overrides.
  * @csspart control
  * @csspart label
  * @csspart input
@@ -41,6 +53,7 @@ export class RowanCombobox extends BaseElement {
     "value",
     "label",
     "placeholder",
+    "locale",
     "open",
     "disabled",
     "required",
@@ -50,10 +63,12 @@ export class RowanCombobox extends BaseElement {
     "value",
     "label",
     "placeholder",
+    "locale",
     "open",
     "disabled",
     "required",
     "options",
+    "messages",
   ];
 
   #input = null;
@@ -70,6 +85,7 @@ export class RowanCombobox extends BaseElement {
   #filtering = false;
   #lastEmittedValue = null;
   #hasDocumentPointerListener = false;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -153,6 +169,25 @@ export class RowanCombobox extends BaseElement {
     this.reflectString("placeholder", value);
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanComboboxMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanComboboxMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   get disabled() {
     return this.readBoolean("disabled");
   }
@@ -216,7 +251,7 @@ export class RowanCombobox extends BaseElement {
           <input class="input" part="input" type="text" autocomplete="off" role="combobox" />
           <div class="panel" part="panel" hidden>
             <div class="list" part="list" role="listbox"></div>
-            <div class="empty" part="empty" role="status" hidden>No matching options.</div>
+            <div class="empty" part="empty" role="status" hidden></div>
           </div>
         </div>
       `;
@@ -243,6 +278,7 @@ export class RowanCombobox extends BaseElement {
     }
 
     this.#renderOptions();
+    this.#empty.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "noMatchingOptions");
 
     this.#input.id = this.#inputId;
     this.#input.name = this.name;
@@ -309,11 +345,11 @@ export class RowanCombobox extends BaseElement {
 
   #visibleOptions() {
     const options = this.#resolvedOptions();
-    const query = this.#filtering ? this.#input.value.trim().toLocaleLowerCase() : "";
+    const query = this.#filtering ? lowerCaseForLocale(this.#input.value.trim(), this.locale) : "";
     if (query.length === 0) return options;
 
     return options.filter((item) =>
-      `${item.label} ${item.value}`.toLocaleLowerCase().includes(query),
+      lowerCaseForLocale(`${item.label} ${item.value}`, this.locale).includes(query),
     );
   }
 

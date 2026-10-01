@@ -178,4 +178,33 @@ describe("rowan-table-toolbar", () => {
     const name = toolbar.shadowRoot.querySelector('input[data-column-id="name"]');
     expect(name.disabled).to.equal(true);
   });
+
+  it("uses property-only messages for generated selection and column-picker copy", async () => {
+    const table = createTable();
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.columnPicker = true;
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+
+    toolbar.messages = {
+      columnPickerLabel: "Spalten",
+      selectionStatus: "{count} ausgewahlt",
+      visibleColumnsLabel: "Sichtbare Spalten",
+    };
+    table.selected = ["order-1"];
+    await settle();
+
+    expect(toolbar.getAttribute("messages")).to.equal(null);
+    expect(toolbar.shadowRoot.querySelector('[part="selection-text"]').textContent).to.equal(
+      "1 ausgewahlt",
+    );
+    expect(toolbar.shadowRoot.querySelector(".column-picker-summary").textContent).to.equal(
+      "Spalten",
+    );
+    expect(
+      toolbar.shadowRoot.querySelector(".column-picker-menu").getAttribute("aria-label"),
+    ).to.equal("Sichtbare Spalten");
+  });
 });

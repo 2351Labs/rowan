@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
 
 const nullableSetters = [
   {
@@ -62,4 +62,32 @@ for (const { file, setter, valueType } of nullableSetters) {
   }
 
   await writeFile(file, declaration.replace(setterPattern, `$1${valueType}$2`));
+}
+
+async function declarationFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const file = new URL(entry.name, directory);
+    if (entry.isDirectory()) {
+      files.push(...(await declarationFiles(new URL(`${entry.name}/`, directory))));
+      continue;
+    }
+
+    if (entry.isFile() && entry.name.endsWith(".d.ts")) files.push(file);
+  }
+
+  return files;
+}
+
+const messageSetterPattern =
+  /(\/\*\* @param \{(Rowan[A-Za-z0-9]+Messages) \| null \| undefined\} value \*\/\s+set messages\(value: )\2(\);)/g;
+const generatedTypesDirectory = new URL("../types/", import.meta.url);
+
+for (const file of await declarationFiles(generatedTypesDirectory)) {
+  const declaration = await readFile(file, "utf8");
+  const refined = declaration.replace(messageSetterPattern, "$1$2 | null | undefined$3");
+
+  if (refined !== declaration) await writeFile(file, refined);
 }

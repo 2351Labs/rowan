@@ -5,9 +5,11 @@
  * @attr {string} label
  * @attr {number} min
  * @attr {number} max
+ * @attr {string} locale
  * @property {number | null} value - Actual measure. Property-only. Null is no-data.
  * @property {number | null} target - Target tick. Property-only. Null hides the tick.
  * @property {RowanGaugeChartRange[]} ranges - Qualitative bands. Arrays are property-only.
+ * @property {RowanGaugeChartMessages} messages - Property-only built-in message overrides.
  * @csspart chart
  * @csspart plot
  * @csspart track
@@ -25,30 +27,45 @@
  * @cssprop --rowan-gauge-chart-target
  */
 export class RowanGaugeChart extends BaseElement {
-    set label(value: string);
-    get label(): string;
-    set min(value: number);
-    get min(): number;
-    set max(value: number);
-    get max(): number;
-    /** @param {number | null} value */
-    set value(value: number | null);
-    /** @returns {number | null} */
-    get value(): number | null;
-    /** @param {number | null} value */
-    set target(value: number | null);
-    /** @returns {number | null} */
-    get target(): number | null;
-    /** @param {RowanGaugeChartRange[]} value */
-    set ranges(value: RowanGaugeChartRange[]);
-    /** @returns {RowanGaugeChartRange[]} */
-    get ranges(): RowanGaugeChartRange[];
-    #private;
+  set label(value: string);
+  get label(): string;
+  set locale(value: string);
+  get locale(): string;
+  /** @param {RowanGaugeChartMessages | null | undefined} value */
+  set messages(value: RowanGaugeChartMessages | null | undefined);
+  /** @returns {RowanGaugeChartMessages} */
+  get messages(): RowanGaugeChartMessages;
+  set min(value: number);
+  get min(): number;
+  set max(value: number);
+  get max(): number;
+  /** @param {number | null} value */
+  set value(value: number | null);
+  /** @returns {number | null} */
+  get value(): number | null;
+  /** @param {number | null} value */
+  set target(value: number | null);
+  /** @returns {number | null} */
+  get target(): number | null;
+  /** @param {RowanGaugeChartRange[]} value */
+  set ranges(value: RowanGaugeChartRange[]);
+  /** @returns {RowanGaugeChartRange[]} */
+  get ranges(): RowanGaugeChartRange[];
+  #private;
 }
 export type RowanGaugeChartRange = {
-    from: number;
-    to: number;
-    label?: string | undefined;
-    tone?: "info" | "success" | "warning" | "danger" | "neutral" | undefined;
+  from: number;
+  to: number;
+  label?: string | undefined;
+  tone?: "info" | "success" | "warning" | "danger" | "neutral" | undefined;
+};
+export type RowanGaugeChartMessages = {
+  actual?: string | undefined;
+  chart?: string | undefined;
+  maximum?: string | undefined;
+  minimum?: string | undefined;
+  noData?: string | undefined;
+  range?: string | ((context: { index: string }) => string) | undefined;
+  target?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

@@ -39,6 +39,11 @@ import {
   getComponentCategoryLabel,
   matchesDocumentationNavigationItem,
 } from "./taxonomy.js";
+import { createDashboardDrillDown } from "./workflows/dashboard-drill-down.js";
+import { createInvestigationQueue } from "./workflows/investigation-queue.js";
+import { createRecordEditor } from "./workflows/record-editor.js";
+import { createResourceList } from "./workflows/resource-list.js";
+import { createSavedTableView } from "./workflows/saved-table-view.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -112,6 +117,28 @@ const deploymentDate = formatDate("2026-09-13T14:30:00Z", {
 
 const change = formatRelativeTime(-1, { locale: "en-US", unit: "day" });
 const fallback = formatNumber("unavailable", { fallback: "Not available" });`;
+
+const LOCALIZATION_SNIPPET = `const workspace = document.querySelector("#team-workspace");
+workspace.lang = "ar-EG";
+workspace.dir = "rtl";
+
+const calendar = document.querySelector("rowan-calendar");
+calendar.messages = {
+  previousMonth: "السابق",
+  nextMonth: "التالي",
+  dayLabel: "اختيار {date}",
+};
+
+const table = document.querySelector("rowan-table");
+table.messages = {
+  selectAllRows: "تحديد كل الصفوف",
+  selectRow: "تحديد الصف {rowId}",
+};
+
+const chart = document.querySelector("rowan-bar-chart");
+chart.labels = ["إيرادات الربع الأول"];
+chart.messages = { point: "نقطة {index}" };
+// The authored label above remains unchanged; point only names generated labels.`;
 
 const REACT_TABLE_SNIPPET = `import { useState } from "react";
 import { RowanButton } from "@rowan-ui/core/react/button";
@@ -361,6 +388,38 @@ const ROW_DETAILS_PANEL_SNIPPET = `<rowan-table id="members-table"></rowan-table
     panel.rowIds = selected.length ? selected : [rowId];
     panel.show(row, rowId);
   });
+</script>`;
+
+const ROW_DETAILS_EDITING_SNIPPET = `<rowan-row-details-panel id="member-editor" size="md">
+  <rowan-text-field id="member-name" label="Name"></rowan-text-field>
+  <div slot="actions">
+    <rowan-button id="cancel-edit" variant="secondary">Cancel</rowan-button>
+    <rowan-button id="save-edit">Save</rowan-button>
+  </div>
+</rowan-row-details-panel>
+
+<script type="module">
+  let draft = null;
+  const panel = document.querySelector("#member-editor");
+  const name = document.querySelector("#member-name");
+
+  function beginEdit(row) {
+    draft = { ...row };
+    name.value = draft.name;
+    panel.show(row, row.id);
+  }
+
+  name.addEventListener("rowan-change", (event) => {
+    draft = { ...draft, name: event.detail.value };
+  });
+
+  document.querySelector("#save-edit").addEventListener("rowan-click", async () => {
+    await saveMember(draft);
+    table.rows = table.rows.map((row) => (row.id === draft.id ? draft : row));
+    panel.hide();
+  });
+
+  document.querySelector("#cancel-edit").addEventListener("rowan-click", () => panel.hide());
 </script>`;
 
 const ALERT_SNIPPET = `<rowan-alert tone="info">Heads up: deployment starts at 4pm.</rowan-alert>
@@ -1313,6 +1372,37 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         </ul>
       </section>
 
+      <section class="doc-section" data-doc-section id="tokens-design-tool-handoff">
+        <h2>Design-tool handoff</h2>
+        <p><code>@rowan-ui/core/tokens.json</code> is generated from the CSS source alongside Rowan&rsquo;s constructable stylesheet. It uses DTCG-shaped <code>$value</code> and <code>$type</code> records, turns direct CSS aliases into references such as <code>{semantic.color.accent}</code>, and retains the original CSS name, value, and layer in <code>$extensions[&quot;org.rowan&quot;]</code>.</p>
+        <p>Point a design-token importer at <code>node_modules/@rowan-ui/core/tokens.json</code>, or load the explicit package export in modern ESM tooling. The JSON is a handoff artifact; CSS remains the runtime source of truth and Rowan does not require a JavaScript theme provider.</p>
+        ${codeBlock(
+          `import rowanTokens from "@rowan-ui/core/tokens.json" with { type: "json" };`,
+          "js",
+        )}
+      </section>
+
+      <section class="doc-section" data-doc-section id="tokens-semantic-customization">
+        <h2>Customize semantic tokens</h2>
+        <p>Start product themes at the semantic layer after importing the base tokens. Rowan&rsquo;s shipped-theme validation requires these values and checks readable foreground, surface, and accent-contrast pairs.</p>
+        ${codeBlock(
+          `:root[data-theme="workbench"] {
+  --rowan-color-bg: #f4f7f2;
+  --rowan-color-fg: #17231b;
+  --rowan-color-muted: #4c5b50;
+  --rowan-color-accent: #2b6847;
+  --rowan-color-border: #c8d2c9;
+  --rowan-color-danger: #b83b31;
+  --rowan-color-success: #287249;
+  --rowan-color-warning: #916a15;
+  --rowan-color-surface: #ffffff;
+  --rowan-color-accent-contrast: #ffffff;
+}`,
+          "css",
+        )}
+        <p>For a nested theme wrapper, copy the component aliases from a shipped theme file too. Custom properties resolve at their declaration scope, so aliases such as <code>--rowan-button-bg: var(--rowan-color-accent)</code> must be present inside the nested scope.</p>
+      </section>
+
       <section class="doc-section" data-doc-section id="tokens-primitives-color">
         <h2>Primitive color tokens</h2>
         <p>Color primitives define Rowan ramps and semantic foundations.</p>
@@ -1383,6 +1473,64 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       </section>
     `,
     afterRender: setupFormattingDemo,
+  },
+  {
+    id: "localization",
+    group: "Foundations",
+    title: "Localization and RTL",
+    summary:
+      "Host-owned locale, translated generated copy, and logical right-to-left keyboard behavior without a global provider.",
+    tags: ["locale", "messages", "rtl", "accessibility"],
+    keywords: [
+      "localization",
+      "translations",
+      "messages",
+      "locale inheritance",
+      "lang",
+      "rtl",
+      "direction",
+      "arabic",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="localization-boundary">
+        <h2>Set locale and direction at the host boundary</h2>
+        <p>Set <code>lang</code> and <code>dir</code> on an application or regional wrapper so nested Rowan elements inherit the same context. A component&rsquo;s explicit <code>locale</code> property takes precedence, followed by the nearest inherited <code>lang</code>, the browser locale, and <code>en-US</code>. Direction remains ordinary document semantics: horizontal keyboard controls follow logical inline start and end.</p>
+      </section>
+
+      <section class="doc-section" data-doc-section id="localization-messages">
+        <h2>Translate generated copy with properties</h2>
+        <p>Components that expose <code>messages</code> accept a property-only map of their documented generated strings. Do not serialize it to an attribute. Assigning messages refreshes copy without emitting a user-interaction event, so applications can replace translations as their locale state changes.</p>
+        ${codeBlock(LOCALIZATION_SNIPPET, "js")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="localization-rtl-fixture">
+        <h2>Arabic right-to-left fixture</h2>
+        <p>This composition inherits Arabic formatting from its wrapper while Calendar and Table receive only the generated labels they own. The segmented control, calendar grid, and table all use the wrapper&rsquo;s right-to-left direction.</p>
+        <div class="docs-localization-demo" id="docs-localization-demo" lang="ar-EG" dir="rtl">
+          <h3>تنسيق الفريق</h3>
+          <div class="docs-localization-control">
+            <p>طريقة العرض</p>
+            <rowan-segmented-control id="docs-localization-view" label="طريقة العرض"></rowan-segmented-control>
+          </div>
+          <div class="docs-localization-grid">
+            <div class="docs-localization-calendar">
+              <p>نافذة الخدمة</p>
+              <rowan-calendar id="docs-localization-calendar" label="نافذة الخدمة"></rowan-calendar>
+            </div>
+            <div class="docs-localization-table">
+              <p>طلبات الفريق</p>
+              <rowan-table id="docs-localization-table"></rowan-table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="localization-ownership">
+        <h2>Author content remains authoritative</h2>
+        <p>Messages fill only Rowan-generated copy. Explicit attributes, slots, configured labels, and point labels always win, even when an authored label happens to equal an English fallback such as <code>Point 1</code>. Explicit formatting callbacks also take precedence over automatic locale formatting. This keeps application data and translation policy separate.</p>
+      </section>
+    `,
+    afterRender: setupLocalizationDemo,
   },
   {
     id: "icons",
@@ -3502,8 +3650,183 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The supported open API is <code>show(row, rowId)</code>. Do not pass React <code>open={false}</code> unless you fully own open state. Bound tables still open from rowan-row-activate. size is sm, md, or lg. It emits rowan-close for user dismissal and rowan-navigate when the user moves in a queue.</p>
         ${codeBlock(ROW_DETAILS_PANEL_SNIPPET, "html")}
       </section>
+
+      <section class="doc-section" data-doc-section id="row-details-panel-editing">
+        <h2>Host-owned edits</h2>
+        <p>Rowan does not provide inline table drafts, commit, cancel, validation, or persistence behavior. For an edit workflow, project application-owned fields into the panel and actions slots, clone the selected row into a local draft, then validate and persist that draft before replacing <code>table.rows</code>. The panel owns the overlay and focus scope; the application owns the draft and source records.</p>
+        ${codeBlock(ROW_DETAILS_EDITING_SNIPPET, "html")}
+      </section>
     `,
     afterRender: setupRowDetailsPanelDemo,
+  },
+  {
+    id: "investigation-queue",
+    group: "Workflows",
+    title: "Investigation Queue",
+    summary:
+      "A runnable operations recipe for filtering, selecting, and inspecting active investigations.",
+    tags: ["workflow", "table", "filters", "operations"],
+    keywords: [
+      "investigation queue",
+      "operations workflow",
+      "filter builder",
+      "bulk actions",
+      "row details",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="investigation-queue-demo">
+        <h2>Active investigation queue</h2>
+        <p>Filter the local queue, select records for a bulk handoff, then activate a row to inspect it. The composition uses the same public table, filter, action, and detail-panel contracts available to an application host.</p>
+        <div id="docs-investigation-queue" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="investigation-queue-ownership">
+        <h2>Ownership boundaries</h2>
+        <ul>
+          <li>The application owns source records and derives visible rows from <code>rowan-filter-change</code>; the filter builder never mutates the table data.</li>
+          <li><code>rowan-bulk-action</code> is the persistence handoff. Replace the demo's local update with an application request, then assign the returned rows back to the table.</li>
+          <li><code>rowan-row-activate</code> is the routing handoff. The detail panel presents the selected record, while the application decides whether inspection changes a URL, pane, or route.</li>
+          <li>Fetching, authorization, persistence, and route state remain outside the recipe. The custom elements own presentation and user events only.</li>
+        </ul>
+      </section>
+    `,
+    afterRender: setupInvestigationQueueDemo,
+  },
+  {
+    id: "resource-list",
+    group: "Workflows",
+    title: "Resource List",
+    summary:
+      "A runnable inventory recipe with application-owned response state, paging, column preferences, and routing.",
+    tags: ["workflow", "data state", "table", "pagination"],
+    keywords: [
+      "resource list",
+      "inventory",
+      "data state",
+      "column picker",
+      "pagination",
+      "operations workflow",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="resource-list-demo">
+        <h2>Resource inventory</h2>
+        <p>Browse a small local inventory, change temporary visible columns, and activate a row to inspect it. The demo keeps its response state and page selection in application code while Rowan renders the operational surface.</p>
+        <div id="docs-resource-list" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="resource-list-ownership">
+        <h2>Ownership boundaries</h2>
+        <ul>
+          <li>The application owns resource records and assigns <code>ready</code>, <code>loading</code>, <code>empty</code>, or <code>error</code> to <code>rowan-data-state</code>. The component does not request data.</li>
+          <li><code>rowan-page-change</code> is the paging handoff. The host updates its page index and assigns the corresponding local or server response rows to the table.</li>
+          <li>The column picker changes the in-memory table view. An application decides whether, when, and where a copy of <code>table.columns</code> is persisted.</li>
+          <li><code>rowan-row-activate</code> and the Retry action are application event boundaries for routing and a new request. Authentication, retries, and query transport stay outside Rowan.</li>
+        </ul>
+      </section>
+    `,
+    afterRender: setupResourceListDemo,
+  },
+  {
+    id: "record-editor",
+    group: "Workflows",
+    title: "Record Editor",
+    summary:
+      "A runnable editing recipe with FACE validation, an application-owned draft, dirty-exit confirmation, and save feedback.",
+    tags: ["workflow", "forms", "validation", "confirmation"],
+    keywords: [
+      "record editor",
+      "form layout",
+      "validation summary",
+      "dirty state",
+      "save state",
+      "operations workflow",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="record-editor-demo">
+        <h2>Edit a resource record</h2>
+        <p>Change a local resource draft, save it, then make another change and leave the editor. The composition presents form state while application code decides what persistence and navigation mean.</p>
+        <div id="docs-record-editor" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="record-editor-ownership">
+        <h2>Ownership boundaries</h2>
+        <ul>
+          <li>The application owns the persisted record and draft. User <code>rowan-change</code> events update that draft; no field writes to an external data source.</li>
+          <li>The host collects form-associated control validity with <code>rowan-validation-summary</code> before saving. The summary presents errors and gives users focus recovery through <code>rowan-jump</code>.</li>
+          <li>The Save action is the persistence handoff. The demo shows loading while an application-owned save callback resolves, then treats its submitted local draft as the saved baseline.</li>
+          <li>A dirty route request opens <code>rowan-confirm-dialog</code>. Only user confirmation hands navigation back to the application; cancellation and passive dismissal retain the draft.</li>
+        </ul>
+      </section>
+    `,
+    afterRender: setupRecordEditorDemo,
+  },
+  {
+    id: "dashboard-drill-down",
+    group: "Workflows",
+    title: "Dashboard Drill-down",
+    summary:
+      "A runnable operational dashboard recipe with KPI provenance, interactive chart drill-down, and an application-owned filter session.",
+    tags: ["workflow", "dashboard", "charts", "filters"],
+    keywords: [
+      "dashboard drill-down",
+      "kpi",
+      "source metadata",
+      "chart interaction",
+      "filter session",
+      "operations workflow",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="dashboard-drill-down-demo">
+        <h2>Investigate shipment capacity</h2>
+        <p>Activate a daily bar, select a shipment row, and clear the local session. The host derives the KPI cards, chart series, and drill-down rows from the same filter snapshot.</p>
+        <div id="docs-dashboard-drill-down" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="dashboard-drill-down-ownership">
+        <h2>Ownership boundaries</h2>
+        <ul>
+          <li>The application creates and owns <code>createDashboardFilters()</code>. The helper holds an in-memory snapshot; serializing it into a URL, storage, or request remains host code.</li>
+          <li><code>rowan-point-activate</code> and <code>rowan-select</code> are filter inputs. The host applies their values to immutable source rows, then assigns new values to the KPI cards, chart, and table.</li>
+          <li><code>rowan-source-meta</code> presents provenance only. Freshness, authorization, query transport, and aggregation policy remain outside the components.</li>
+          <li><code>rowan-row-activate</code> is the routing handoff for a selected shipment. Rowan presents the data; the application decides whether that opens a route, drawer, or investigation.</li>
+        </ul>
+      </section>
+    `,
+    afterRender: setupDashboardDrillDownDemo,
+  },
+  {
+    id: "saved-table-view",
+    group: "Workflows",
+    title: "Saved Table View",
+    summary:
+      "A runnable table-state recipe with deterministic snapshots and application-owned persistence, URL, and restore behavior.",
+    tags: ["workflow", "table", "saved views", "filters"],
+    keywords: [
+      "saved table view",
+      "table view state",
+      "table toolbar",
+      "column picker",
+      "filters",
+      "operations workflow",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="saved-table-view-demo">
+        <h2>Capture an operations view</h2>
+        <p>Filter work, adjust density or visible columns, then save the local view. Change it again and restore the saved snapshot to see the host apply the same public table and filter properties without replaying user events.</p>
+        <div id="docs-saved-table-view" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="saved-table-view-ownership">
+        <h2>Ownership boundaries</h2>
+        <ul>
+          <li><code>normalizeTableViewState()</code>, <code>serializeTableViewState()</code>, and <code>restoreTableViewState()</code> are pure data helpers. They do not touch a table, URL, storage, network, or router.</li>
+          <li>The Save action is the persistence handoff. The recipe passes a deterministic URI-safe snapshot to application code; production code chooses whether it belongs in a URL, local storage, or a saved-view service.</li>
+          <li>Restore is host-controlled property assignment to <code>rowan-table</code> and <code>rowan-filter-builder</code>. Parent-driven restoration stays silent; only new user interaction emits the established table or filter events.</li>
+          <li>Source rows, query transport, authorization, server page totals, and saved-view naming remain application responsibilities.</li>
+        </ul>
+      </section>
+    `,
+    afterRender: setupSavedTableViewDemo,
   },
   {
     id: "quality",
@@ -3511,8 +3834,21 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     title: "Accessibility and Verification",
     summary:
       "Rowan components are verified through public API contract tests and host-level accessibility semantics.",
-    tags: ["a11y", "testing", "verification"],
-    keywords: ["aria", "internals", "test", "lint", "cem"],
+    tags: ["a11y", "testing", "verification", "compatibility"],
+    keywords: [
+      "aria",
+      "internals",
+      "test",
+      "lint",
+      "cem",
+      "browser",
+      "compatibility",
+      "react",
+      "vue",
+      "svelte",
+      "angular",
+      "astro",
+    ],
     content: () => `
       <section class="doc-section" data-doc-section id="quality-a11y">
         <h2>Accessibility defaults</h2>
@@ -3527,6 +3863,37 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Verification checklist</h2>
         <p>Run these commands before release to keep tests, docs metadata, and Storybook output healthy.</p>
         ${codeBlock(`npm run test\nnpm run lint\nnpm run analyze\nnpm run build-storybook`, "bash")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="quality-compatibility">
+        <h2>Compatibility evidence</h2>
+        <p>Rowan&rsquo;s browser-native core is verified through maintained fixtures. Framework fixtures prove native custom-element integration; only React has a shipped convenience-wrapper package.</p>
+        <div class="docs-compatibility-table-wrap">
+          <table class="docs-compatibility-table">
+            <thead>
+              <tr>
+                <th>Integration</th>
+                <th>Evidence</th>
+                <th>Verified boundary</th>
+                <th>Wrapper</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Plain HTML</td><td>Declarative fixture</td><td>Structured properties, composed events, FACE form values</td><td>Not needed</td></tr>
+              <tr><td>React 18 and 19</td><td>Runtime, SSR/hydration, and type fixtures</td><td>Generated-wrapper properties/events, false SSR booleans, FACE, client-only registration</td><td><code>@rowan-ui/core/react</code></td></tr>
+              <tr><td>Vue 3</td><td>Runtime fixture</td><td>Structured property binding, native events, FACE form values</td><td>Not shipped</td></tr>
+              <tr><td>Svelte 5</td><td>Compiled-component fixture</td><td>Structured property binding, native <code>on:rowan-*</code> events, FACE form values</td><td>Not shipped</td></tr>
+              <tr><td>Angular 20</td><td>JIT-template fixture</td><td><code>[property]</code> binding, <code>(rowan-*)</code> events, FACE form values</td><td>Not shipped</td></tr>
+              <tr><td>Astro 5</td><td>Static build and browser fixture</td><td>Client-only registration, structured properties, native events, FACE form values</td><td>Not shipped</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>These fixtures run with <code>npm test</code> and across Chromium, Firefox, and WebKit with <code>npm run test:browser</code>. They verify Rowan&rsquo;s documented property, event, form, and client-boundary contracts, not framework routing, server-data, or deployment behavior.</p>
+      </section>
+
+      <section class="doc-section" data-doc-section id="quality-accessibility-status">
+        <h2>Accessibility status</h2>
+        <p>Public keyboard, form, ARIA, and host-level axe tests run in the main suite; Storybook also runs its a11y addon. The addon deliberately skips the shadow-input <code>label</code> false positive for FACE controls: Rowan names the host through ElementInternals, and adding a second internal label would duplicate the accessible name.</p>
       </section>
     `,
   },
@@ -3547,6 +3914,7 @@ const NAV_SECTIONS = [
       { pageId: "theming", label: "Theming" },
       { pageId: "tokens", label: "Tokens" },
       { pageId: "formatting", label: "Locale Formatting" },
+      { pageId: "localization", label: "Localization and RTL" },
     ],
   },
   {
@@ -3572,6 +3940,18 @@ const NAV_SECTIONS = [
     getComponentNavigationLabel,
     SUPPORTED_COMPONENT_TAG_NAMES,
   ),
+  {
+    id: "operations-recipes",
+    label: "Operations Recipes",
+    defaultOpen: false,
+    items: [
+      { pageId: "investigation-queue", label: "Investigation Queue" },
+      { pageId: "resource-list", label: "Resource List" },
+      { pageId: "record-editor", label: "Record Editor" },
+      { pageId: "dashboard-drill-down", label: "Dashboard Drill-down" },
+      { pageId: "saved-table-view", label: "Saved Table View" },
+    ],
+  },
   {
     id: "quality",
     label: "Quality",
@@ -4184,6 +4564,71 @@ function setupFormattingDemo() {
   preview.replaceChildren(fragment);
 }
 
+function setupLocalizationDemo() {
+  const calendar = mainEl.querySelector("#docs-localization-calendar");
+  const table = mainEl.querySelector("#docs-localization-table");
+  const view = mainEl.querySelector("#docs-localization-view");
+
+  if (calendar instanceof HTMLElement) {
+    calendar.selectionMode = "range";
+    calendar.start = "2026-10-12";
+    calendar.end = "2026-10-17";
+    calendar.month = "2026-10";
+    calendar.messages = {
+      previousMonth: "السابق",
+      previousMonthLabel: "الشهر السابق",
+      nextMonth: "التالي",
+      nextMonthLabel: "الشهر التالي",
+      dayLabel: "اختيار {date}",
+    };
+  }
+
+  if (view instanceof HTMLElement) {
+    view.value = "agenda";
+    view.options = [
+      { value: "agenda", label: "جدول الأعمال" },
+      { value: "board", label: "لوحة" },
+      { value: "calendar", label: "تقويم" },
+    ];
+  }
+
+  if (table instanceof HTMLElement) {
+    table.config = {
+      caption: "طلبات الفريق",
+      rowId: "id",
+      selectable: "multiple",
+      density: "sm",
+      columns: [
+        { id: "request", header: "الطلب", sortable: true, sticky: "start", minWidth: "11rem" },
+        { id: "owner", header: "المسؤول", sortable: true, minWidth: "8rem" },
+        {
+          id: "status",
+          header: "الحالة",
+          type: "badge",
+          cell: { tone: (value) => (value === "مؤكد" ? "success" : "warning") },
+        },
+        { id: "capacity", header: "المقاعد", type: "number", align: "end", sortable: true },
+      ],
+      rows: [
+        { id: "REQ-104", request: "تجهيز القاعة", owner: "ليلى", status: "مؤكد", capacity: 24 },
+        {
+          id: "REQ-105",
+          request: "دعوة الضيوف",
+          owner: "عمر",
+          status: "قيد المراجعة",
+          capacity: 9,
+        },
+        { id: "REQ-106", request: "اختبار العرض", owner: "سارة", status: "مؤكد", capacity: 18 },
+      ],
+    };
+    table.messages = {
+      checkbox: "مربع اختيار",
+      selectAllRows: "تحديد كل الصفوف",
+      selectRow: "تحديد الصف {rowId}",
+    };
+  }
+}
+
 function setupIconDemo() {
   const gallery = mainEl.querySelector("#docs-icons-gallery");
   const meaningful = mainEl.querySelector("#docs-meaningful-icon");
@@ -4684,6 +5129,45 @@ function setupRowDetailsPanelDemo() {
   panel.addEventListener("rowan-close", (event) => {
     pushLog("rowan-close", event.detail);
   });
+}
+
+function setupInvestigationQueueDemo() {
+  const host = mainEl.querySelector("#docs-investigation-queue");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(createInvestigationQueue());
+}
+
+function setupResourceListDemo() {
+  const host = mainEl.querySelector("#docs-resource-list");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(createResourceList());
+}
+
+function setupRecordEditorDemo() {
+  const host = mainEl.querySelector("#docs-record-editor");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(
+    createRecordEditor({
+      onSave: () => new Promise((resolve) => globalThis.setTimeout(resolve, 650)),
+    }),
+  );
+}
+
+function setupDashboardDrillDownDemo() {
+  const host = mainEl.querySelector("#docs-dashboard-drill-down");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(createDashboardDrillDown());
+}
+
+function setupSavedTableViewDemo() {
+  const host = mainEl.querySelector("#docs-saved-table-view");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(createSavedTableView());
 }
 
 function setupValidationSummaryDemo() {

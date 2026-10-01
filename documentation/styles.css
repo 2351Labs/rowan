@@ -511,6 +511,54 @@ html[data-theme="midnight"] body {
   line-height: 1.45;
 }
 
+.docs-localization-demo {
+  background: color-mix(in srgb, var(--docs-panel-bg) 90%, var(--rowan-color-accent) 10%);
+  border: 1px solid var(--docs-border);
+  display: grid;
+  gap: 1rem;
+  inline-size: min(100%, 72rem);
+  margin-top: 0.8rem;
+  padding: 1rem;
+}
+
+.docs-localization-demo h3,
+.docs-localization-demo p {
+  margin: 0;
+}
+
+.docs-localization-demo h3 {
+  font-family: "Fraunces", "Iowan Old Style", serif;
+  font-size: 1.2rem;
+}
+
+.docs-localization-control,
+.docs-localization-calendar,
+.docs-localization-table {
+  display: grid;
+  gap: 0.55rem;
+  min-inline-size: 0;
+}
+
+.docs-localization-control > p,
+.docs-localization-calendar > p,
+.docs-localization-table > p {
+  color: var(--docs-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.docs-localization-grid {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.docs-localization-table rowan-table {
+  display: block;
+  min-inline-size: 0;
+}
+
 .docs-carousel-demo {
   inline-size: min(100%, 48rem);
   margin-top: 0.7rem;
@@ -640,6 +688,51 @@ html[data-theme="midnight"] body {
   border-radius: 0.85rem;
   margin-top: 0.65rem;
   overflow: hidden;
+}
+
+.docs-workflow-canvas {
+  margin-top: 0.75rem;
+  min-inline-size: 0;
+}
+
+.workflow-recipe {
+  display: grid;
+  gap: 0.75rem;
+  min-inline-size: 0;
+}
+
+.workflow-recipe rowan-table {
+  min-inline-size: 0;
+}
+
+.workflow-recipe-summary {
+  color: var(--docs-muted);
+  font-size: 0.84rem;
+  margin: 0;
+}
+
+.workflow-recipe-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-2);
+}
+
+.dashboard-drill-down-kpis {
+  display: grid;
+  gap: var(--rowan-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.dashboard-drill-down rowan-bar-chart {
+  min-inline-size: 0;
+}
+
+.workflow-recipe-session {
+  color: var(--docs-muted);
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
 }
 
 .docs-virtual-list {
@@ -924,6 +1017,42 @@ html[data-theme="midnight"] body {
   color: var(--rowan-color-fg);
   font-family: var(--rowan-font-family);
   font-weight: 600;
+}
+
+.docs-compatibility-table-wrap {
+  border: 1px solid var(--docs-border);
+  border-radius: 0.78rem;
+  margin-top: 0.7rem;
+  overflow: auto;
+}
+
+.docs-compatibility-table {
+  border-collapse: collapse;
+  font-size: 0.87rem;
+  min-width: 48rem;
+  width: 100%;
+}
+
+.docs-compatibility-table th {
+  background: color-mix(in srgb, var(--rowan-color-bg) 86%, var(--rowan-color-accent) 14%);
+  border-bottom: 1px solid var(--docs-border);
+  color: var(--docs-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.56rem 0.62rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.docs-compatibility-table td {
+  border-bottom: 1px solid var(--docs-border);
+  padding: 0.56rem 0.62rem;
+  vertical-align: top;
+}
+
+.docs-compatibility-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .docs-component-chip-row {

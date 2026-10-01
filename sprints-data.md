@@ -725,3 +725,298 @@ Position: ops dashboard design system (vanilla WC). Not a CRUD scaffold (Ant Pro
 - Filled Lucide catalog.
 - Cross-filter as a custom-element provider.
 - Excel, pivot, tree table, ProTable `request`, hover-link bus.
+
+---
+
+## Post-0.16 product roadmap
+
+**Direction.** Rowan should deepen its position as a dependable, browser-native
+system for operations software. The next work favors public-contract reliability,
+documented workflows, and portable state over a grid or chart feature-count race.
+Hosts remain local and data-owned by the application: no fetch runtime, spreadsheet,
+BI layer, or framework-specific core.
+
+### Sprint 30 - Reliability and contract baseline
+
+**Status:** done
+
+Complete the chart-catalog fixes on `feat/chart-catalog-fixes` before adding new
+surface area. Turn the review findings into repeatable contract checks.
+
+#### In
+
+- RTL-safe chart point overlays, focus retention after rerender, and reconnect-safe hover cleanup.
+- Blank numeric strings as no-data; ordered range and five-number-summary validation.
+- Nested theme and vibrant-palette regression coverage, including status-indicator contrast.
+- Public declaration checks for runtime-supported property setters, starting with chart `valueFormatter`.
+- A documented Stable graduation matrix for keyboard, RTL, theme, lifecycle, contrast, and type-contract coverage.
+
+#### Done when
+
+- [x] PR #94 and its focused follow-up PR #95 are merged with browser, type, token, and generated-artifact checks green.
+- [x] Every affected chart has regression tests for the reviewed behavior.
+- [x] The release checklist names the cross-cutting checks required to promote an experimental host.
+
+#### Out of scope
+
+New chart geometries, changes to frozen chart APIs, a charting runtime.
+
+---
+
+### Sprint 31 - Chart contract consolidation
+
+**Status:** done
+
+Consolidate the shared mechanics behind interactive SVG charts before expanding the
+catalog again.
+
+#### In
+
+- One internal contract for numeric normalization, no-data, ordered statistical values, tooltip lifecycle, point controls, and focus restoration.
+- Shared keyboard and accessibility fixtures across chart hosts.
+- Consistent table, formatter, legend, loading, and activation behavior for experimental charts.
+
+#### Progress
+
+- [x] Shared named-control, keyboard-navigation, LTR/RTL overlay-alignment, focus-restoration, and reconnect-cleanup browser fixture covers bar, range, box plot, radar, scatter, heatmap, combo, and waterfall.
+
+#### Done when
+
+- [x] Chart hosts exercise a common interaction fixture in LTR and RTL.
+- [x] New chart work reuses the shared normalization and point-control utilities.
+- [x] No new chart type is added solely to broaden the catalog.
+
+#### Out of scope
+
+Canvas rendering, streaming, brushes, hover-link buses, a charting dependency.
+
+---
+
+### Sprint 32 - Operations workflow recipes
+
+**Status:** done
+
+Ship tested, documented compositions of existing Rowan elements rather than a CRUD
+scaffold.
+
+#### In
+
+- Investigation queue: filter builder, table toolbar, bulk actions, and row details.
+- Resource list: data state, table, column picker, empty/error states, and pagination.
+- Record editor: form layout, validation summary, dirty-state confirmation, and submit states.
+- Dashboard drill-down: KPI, source metadata, chart, and application-owned filter session.
+
+#### Progress
+
+- [x] Investigation queue recipe composes filter builder, table toolbar, bulk actions, and row details with application-owned filtering, persistence, and routing handoffs; focused desktop/mobile browser smoke coverage is included.
+- [x] Resource list recipe composes data state, table column visibility, empty/error presentation, and external pagination with application-owned response, paging, routing, and retry handoffs; focused desktop/mobile browser smoke coverage is included.
+- [x] Record editor recipe composes form layout, FACE validation, validation summary, dirty-exit confirmation, and an application-owned async save state; persistence and routing callbacks stay outside the elements, with focused desktop/mobile browser smoke coverage.
+- [x] Dashboard drill-down recipe composes KPI cards, source metadata, an interactive bar chart, and a transport-neutral filter session with application-owned derivation and routing handoffs; focused desktop/mobile browser smoke coverage is included.
+
+#### Done when
+
+- [x] Documentation has a runnable recipe for each workflow.
+- [x] Recipes specify application-owned data, routing, persistence, and event handling boundaries.
+- [x] Browser smoke tests cover each workflow at desktop and mobile sizes.
+
+#### Out of scope
+
+Authentication, generated CRUD pages, data fetching, a global dashboard provider.
+
+---
+
+### Sprint 33 - Table view state and saved views
+
+**Status:** done
+
+Add a pure, transport-neutral module for portable operational-table state without
+changing `rowan-table` into a data source.
+
+#### In
+
+- Normalize, merge, serialize, and restore sort, page, filters, visible columns, density, and group state.
+- URL-safe snapshots and application-controlled saved-view persistence.
+- Examples that wire the module to `rowan-table`, `rowan-filter-builder`, and `rowan-table-toolbar`.
+
+#### Progress
+
+- [x] Table view state utility normalizes, merges, serializes, and restores sort, page, filters, visible columns, density, and group state as deterministic property-only data with public runtime and type exports.
+- [x] Saved table view recipe captures public table/filter state for an application persistence callback and restores it through silent host-owned property assignments, with focused desktop/mobile browser coverage.
+
+#### Done when
+
+- [x] State is a property-only plain object with deterministic serialization.
+- [x] Restore is silent and preserves existing user-only event semantics.
+- [x] The module has no network, storage, router, or component-provider dependency.
+
+#### Out of scope
+
+Server query protocols, automatic URL mutation, saved-view storage, nested filters.
+
+---
+
+### Sprint 34 - Locale and bidirectional UI
+
+**Status:** done
+
+Make inherited `lang` and `dir` behavior a documented public-quality guarantee while
+keeping locale policy owned by the host application.
+
+#### In
+
+- A complete catalog of built-in labels and assistive strings with locale-message hooks.
+- RTL browser coverage for navigation, overlays, forms, tables, and interactive charts.
+- Locale-aware calendar, date/time, number, chart, and pagination examples.
+
+#### Progress
+
+- [x] Property-only `messages` maps and locale resolution let hosts override generated copy without introducing a global i18n provider. Explicit `locale`, inherited `lang`, browser locale, and `en-US` fallback have documented precedence.
+- [x] Generated chart labels resolve at render time with internal provenance, so translated fallback labels never replace authored `labels` or point labels, including an authored literal such as `Point 1`.
+- [x] RTL keyboard navigation is covered for tree, side navigation, disclosure, rating, tabs, steppers, calendars, sliders, carousels, and segmented controls. Split-pane pointer geometry measures from logical inline start; SVG chart overlays intentionally retain physical LTR coordinates and have RTL alignment coverage.
+- [x] Storybook and static documentation include an Arabic RTL Calendar, Table, and Segmented Control composition. README guidance documents property-only messages, locale inheritance, RTL direction, and author-content precedence.
+
+#### Done when
+
+- [x] Every built-in string has an override path and a documented fallback.
+- [x] LTR and RTL tests cover keyboard direction and physical pointer geometry separately.
+- [x] Locale fixtures demonstrate a non-English, RTL configuration.
+
+#### Verification
+
+- [x] `npm run analyze` passed twice; generated CEM, wrappers, and declarations were refreshed and declarations formatted.
+- [x] `npm run typecheck`, `npm run test:package`, `npm run lint`, `npm test` (132 files, 939 tests), `npm run documentation:build`, and `npm run build-storybook` passed.
+- [x] `git diff --check` passed.
+- [x] `npm run format:check` passed after formatting the repository worktree.
+
+#### Out of scope
+
+A global i18n provider, automatic translation, application locale state management.
+
+---
+
+### Sprint 35 - Token distribution and theme validation
+
+**Status:** done
+
+Make Rowan's token system easier to consume across implementation and design tools,
+and catch incomplete themes before publish.
+
+#### In
+
+- Generate a standards-oriented token JSON artifact from the CSS source tokens.
+- Validate required semantic/component aliases and contrast-sensitive combinations for each shipped theme.
+- Document design-tool import and semantic-token customization workflows.
+
+#### Progress
+
+- [x] `tokens.json` is generated from `src/tokens/tokens.css` by the same sync script that generates the constructable token sheet. It provides DTCG-shaped values, types, aliases, and Rowan CSS metadata through an explicit package export.
+- [x] `themes:check` verifies required semantic definitions, nested-scope component aliases, and foreground/surface/accent contrast contracts for Light, Dark, Lagoon, Ember, Slate, and Midnight. The check runs through `npm run lint`.
+- [x] README, static documentation, and Storybook Foundations document design-tool import, CSS ownership, semantic customization, and nested-theme alias behavior.
+
+#### Done when
+
+- [x] CSS and JSON token artifacts are generated from one source of truth.
+- [x] CI rejects a theme that omits a required component alias or fails its contrast contract.
+- [x] Documentation explains token handoff without requiring a JavaScript theme runtime.
+
+#### Verification
+
+- [x] `npm run tokens:sync`, `npm run tokens:check`, and `npm run themes:check` passed.
+- [x] `npm run lint`, `npm run documentation:build`, and `npm run build-storybook` passed.
+- [x] `npm pack --dry-run --json` includes `package/tokens.json`.
+
+#### Out of scope
+
+A token editor, runtime theme manager, new visual themes for their own sake.
+
+---
+
+### Sprint 36 - Compatibility evidence and integration fixtures
+
+**Status:** done
+
+Prove framework and browser interoperability with maintained fixtures before
+committing to additional generated wrappers.
+
+#### In
+
+- Compatibility fixtures for plain HTML, React, Vue, Svelte, Angular, and Astro.
+- Property assignment, event binding, FACE submission, and client-boundary checks.
+- A public browser-support and accessibility-status matrix tied to automated coverage.
+
+#### Progress
+
+- [x] Plain HTML, React 18/19, Vue 3, Svelte 5, Angular 20, and Astro 5 fixtures exercise the same native Rowan boundary: structured property assignment, `rowan-*` event binding, and form-associated `FormData` values. Astro also builds a static page and proves client-only registration in-browser.
+- [x] Root `test` and `test:browser` build the Astro fixture and run all fixture tests; the CI Chromium, Firefox, and WebKit commands therefore execute the same compatibility coverage as the default suite.
+- [x] README and static documentation publish a framework/browser/accessibility evidence matrix. They distinguish browser-native support from the generated `@rowan-ui/core/react` wrapper and document why no Vue, Svelte, Angular, or Astro wrapper package ships.
+- [x] Framework runtimes and compilers remain root dev-only test tooling. The package dry run excludes fixture sources and build output, preserving the framework-free core publish surface.
+
+#### Done when
+
+- [x] Fixtures run in CI and exercise the documented integration boundaries.
+- [x] Documentation clearly distinguishes supported integration from generated wrapper support.
+- [x] No framework adapter changes the browser-native core contract.
+
+#### Verification
+
+- [x] `npm test` passed: 137 files, 945 tests.
+- [x] `ROWAN_BROWSER=chromium|firefox|webkit npm run test:browser` passed for every engine: 137 files, 945 tests each.
+- [x] `npm run lint`, `npm run typecheck`, `npm run analyze` twice, `npm run types`, `npm run test:package`, `npm run documentation:build`, and `npm run build-storybook` passed.
+- [x] `npm pack --dry-run --json` excludes `test-fixtures/`, Astro build output, and `node_modules/` while retaining publishable artifacts.
+
+#### Out of scope
+
+Vue or Svelte wrapper packages until fixture demand and maintenance cost justify them.
+
+---
+
+### Sprint 37 - Controlled table editing discovery
+
+**Status:** done, decision: do not graduate inline editing
+
+Explore inline editing only if application demand remains concrete after the workflow
+and view-state work. The aim is a controlled draft interaction, not a second grid.
+
+#### In
+
+- An experimental draft/commit/cancel cell-editing prototype with keyboard and validation contracts.
+- Consumer-owned rows and explicit user actions; no silent mutation of application data.
+- A decision record comparing the prototype with row-details editing workflows.
+
+#### Progress
+
+- [x] A dev-only `ControlledTableDraftEditor` fixture composes `type: "custom"`
+      cells with `rowan-text-field`; it is not exported from the package or added to
+      the `rowan-table` API.
+- [x] The prototype stores drafts outside consumer row objects, sends explicit
+      `rowId`, `columnId`, value, previous value, and source row payloads to the host,
+      and supports Escape cancellation, Enter commit requests, validation errors, and
+      retry after a rejected save.
+- [x] In a virtualized table, a draft remains outside the mounted row window and
+      remounts when the same row returns. A replaced source row becomes non-committable
+      until the user cancels and restarts, avoiding a stale write.
+
+#### Decision
+
+Do not add an inline editing mode, draft properties, or edit events to stable
+`rowan-table`. The experiment proves that a host controller can provide the
+behavior, but it also shows that virtual recycling unmounts the active editor and
+ends its focus context. A host-owned composition in `rowan-row-details-panel` has
+a stable focus scope, better narrow-screen fit, and room for multi-field validation
+without expanding the table contract. Applications that still need inline editing
+can use a local custom-cell controller and retain ownership of drafts and saves.
+
+#### Done when
+
+- [x] The prototype has keyboard, virtualized-table, stale-row, and error-recovery tests.
+- [x] A rejection decision is recorded before changing the Stable table API.
+
+#### Verification
+
+- [x] `npx web-test-runner test-fixtures/table-editing/controlled-draft-editor.test.js --node-resolve --config web-test-runner.config.js --concurrency=1` passed: 3 tests.
+- [x] Focused Chromium, Firefox, and WebKit checks passed: 3 tests in each browser.
+- [x] The README and static Row Details Panel documentation describe the supported host-owned editing composition.
+
+#### Out of scope
+
+Built-in CRUD, fetch APIs, spreadsheet editing, Excel, pivoting, tree-grid behavior.

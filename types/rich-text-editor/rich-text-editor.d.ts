@@ -1,4 +1,22 @@
 /**
+ * @typedef {object} RowanRichTextEditorMessages
+ * @property {string} [apply]
+ * @property {string} [bold]
+ * @property {string} [bulletedList]
+ * @property {string} [heading]
+ * @property {string} [italic]
+ * @property {string} [link]
+ * @property {string} [linkUrl]
+ * @property {string} [numberedList]
+ * @property {string} [remove]
+ * @property {string} [richTextEditor]
+ * @property {string} [textFormatting]
+ * @property {string | ((context: { label: string }) => string)} [toolbarLabel]
+ * @property {string} [underline]
+ * @property {string} [url]
+ * @property {string} [urlPlaceholder]
+ */
+/**
  * Constrained form-associated authoring control with a property-only document value.
  *
  * The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered
@@ -17,6 +35,7 @@
  * @attr {boolean} invalid
  * @property {import("./document.js").RowanRichTextDocument} value - Rich document state. Objects are property-only.
  * @property {string} text - Plain-text convenience value. Property-only.
+ * @property {RowanRichTextEditorMessages} messages - Property-only built-in message overrides.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -32,41 +51,62 @@
  * @event rowan-change - Fired when a user changes the normalized document.
  */
 export class RowanRichTextEditor extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set name(value: string);
-    get name(): string;
-    set label(value: string);
-    get label(): string;
-    set description(value: string);
-    get description(): string;
-    set placeholder(value: string);
-    get placeholder(): string;
-    set mode(value: "plain" | "rich");
-    get mode(): "plain" | "rich";
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    set required(value: boolean);
-    get required(): boolean;
-    set invalid(value: boolean);
-    get invalid(): boolean;
-    /** @param {import("./document.js").RowanRichTextDocument} value */
-    set value(value: import("./document.js").RowanRichTextDocument);
-    /** @returns {import("./document.js").RowanRichTextDocument} */
-    get value(): import("./document.js").RowanRichTextDocument;
-    set text(value: string);
-    get text(): string;
-    clear(): void;
-    focus(options: any): void;
-    setFormValue(value?: string | null, state?: string): void;
-    setValidity(flags?: {}, message?: string, anchor?: null): void;
-    formResetCallback(): void;
-    formStateRestoreCallback(state: any): void;
-    checkValidity(): boolean;
-    reportValidity(): boolean;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set name(value: string);
+  get name(): string;
+  set label(value: string);
+  get label(): string;
+  set description(value: string);
+  get description(): string;
+  set placeholder(value: string);
+  get placeholder(): string;
+  set mode(value: "plain" | "rich");
+  get mode(): "plain" | "rich";
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  set required(value: boolean);
+  get required(): boolean;
+  set invalid(value: boolean);
+  get invalid(): boolean;
+  /** @param {RowanRichTextEditorMessages | null | undefined} value */
+  set messages(value: RowanRichTextEditorMessages | null | undefined);
+  /** @returns {RowanRichTextEditorMessages} */
+  get messages(): RowanRichTextEditorMessages;
+  /** @param {import("./document.js").RowanRichTextDocument} value */
+  set value(value: import("./document.js").RowanRichTextDocument);
+  /** @returns {import("./document.js").RowanRichTextDocument} */
+  get value(): import("./document.js").RowanRichTextDocument;
+  set text(value: string);
+  get text(): string;
+  clear(): void;
+  focus(options: any): void;
+  setFormValue(value?: string | null, state?: string): void;
+  setValidity(flags?: {}, message?: string, anchor?: null): void;
+  formResetCallback(): void;
+  formStateRestoreCallback(state: any): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  #private;
 }
+export type RowanRichTextEditorMessages = {
+  apply?: string | undefined;
+  bold?: string | undefined;
+  bulletedList?: string | undefined;
+  heading?: string | undefined;
+  italic?: string | undefined;
+  link?: string | undefined;
+  linkUrl?: string | undefined;
+  numberedList?: string | undefined;
+  remove?: string | undefined;
+  richTextEditor?: string | undefined;
+  textFormatting?: string | undefined;
+  toolbarLabel?: string | ((context: { label: string }) => string) | undefined;
+  underline?: string | undefined;
+  url?: string | undefined;
+  urlPlaceholder?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

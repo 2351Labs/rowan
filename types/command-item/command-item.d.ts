@@ -22,33 +22,41 @@
  * @cssprop --rowan-command-item-shortcut-bg
  */
 export class RowanCommandItem extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    set value(value: string);
-    get value(): string;
-    set label(value: string);
-    get label(): string;
-    set description(value: string);
-    get description(): string;
-    set keywords(value: string);
-    get keywords(): string;
-    set group(value: string);
-    get group(): string;
-    set shortcut(value: string);
-    get shortcut(): string;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    get searchText(): string;
-    focus(options: any): void;
-    /** @internal */
-    setCommandPaletteState({ active, visible }: {
-        active?: boolean | undefined;
-        visible?: boolean | undefined;
-    } | undefined, owner: any): string;
-    /** @internal */
-    clearCommandPaletteState(owner: any): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  set value(value: string);
+  get value(): string;
+  set label(value: string);
+  get label(): string;
+  set description(value: string);
+  get description(): string;
+  set keywords(value: string);
+  get keywords(): string;
+  set group(value: string);
+  get group(): string;
+  set shortcut(value: string);
+  get shortcut(): string;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  get searchText(): string;
+  focus(options: any): void;
+  /** @internal */
+  setCommandPaletteState(
+    {
+      active,
+      visible,
+    }:
+      | {
+          active?: boolean | undefined;
+          visible?: boolean | undefined;
+        }
+      | undefined,
+    owner: any,
+  ): string;
+  /** @internal */
+  clearCommandPaletteState(owner: any): void;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

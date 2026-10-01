@@ -6,11 +6,13 @@ const nextMicrotask = () => Promise.resolve();
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-gauge-chart");
   if (options.label !== undefined) chart.label = options.label;
+  if (options.locale !== undefined) chart.locale = options.locale;
   if (options.min !== undefined) chart.min = options.min;
   if (options.max !== undefined) chart.max = options.max;
   if (options.value !== undefined) chart.value = options.value;
   if (options.target !== undefined) chart.target = options.target;
   if (options.ranges !== undefined) chart.ranges = options.ranges;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -121,5 +123,36 @@ describe("rowan-gauge-chart", () => {
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
+  });
+
+  it("localizes fallback chart copy, scale labels, and number values through properties", async () => {
+    const chart = await renderChart({
+      locale: "de-DE",
+      min: 0,
+      max: 1234.5,
+      value: null,
+      target: 1000.5,
+      ranges: [{ from: 0, to: 1000 }],
+      messages: {
+        actual: "Ist",
+        chart: "Messgerät",
+        maximum: "Maximum",
+        minimum: "Minimum",
+        noData: "Keine Daten",
+        range: "Bereich {index}",
+        target: "Ziel",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.ranges[0].label).to.equal("Bereich 1");
+    expect(chart.internals.ariaLabel).to.equal("Messgerät");
+    expect(table.querySelector("caption").textContent).to.equal("Messgerät");
+    expect(table.textContent).to.include(`Maximum${formatted}`);
+    expect(table.textContent).to.include("IstKeine Daten");
+    expect(table.textContent).to.include("Ziel1.000,5");
   });
 });

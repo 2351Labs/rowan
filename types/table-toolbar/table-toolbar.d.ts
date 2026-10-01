@@ -1,10 +1,17 @@
 /**
+ * @typedef {object} RowanTableToolbarMessages
+ * @property {string} [columnPickerLabel]
+ * @property {string | ((context: { count: number, selectionLabel: string }) => string)} [selectionStatus]
+ * @property {string} [visibleColumnsLabel]
+ */
+/**
  * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
  * @attr {string} selection-label
  * @attr {boolean} column-picker
+ * @property {RowanTableToolbarMessages} messages - Property-only built-in message overrides.
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
  * @slot - Primary table controls
@@ -22,21 +29,31 @@
  * @cssprop --rowan-table-toolbar-selection-bg
  */
 export class RowanTableToolbar extends BaseElement {
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set table(value: null);
-    get table(): null;
-    set forTable(value: string);
-    get forTable(): string;
-    set label(value: string);
-    get label(): string;
-    set selectionLabel(value: string);
-    get selectionLabel(): string;
-    set columnPicker(value: boolean);
-    get columnPicker(): boolean;
-    get selected(): any[];
-    get selectedRows(): any[];
-    get selectedCount(): number;
-    refresh(): void;
-    #private;
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set table(value: null);
+  get table(): null;
+  set forTable(value: string);
+  get forTable(): string;
+  set label(value: string);
+  get label(): string;
+  set selectionLabel(value: string);
+  get selectionLabel(): string;
+  set columnPicker(value: boolean);
+  get columnPicker(): boolean;
+  /** @param {RowanTableToolbarMessages | null | undefined} value */
+  set messages(value: RowanTableToolbarMessages | null | undefined);
+  /** @returns {RowanTableToolbarMessages} */
+  get messages(): RowanTableToolbarMessages;
+  get selected(): any[];
+  get selectedRows(): any[];
+  get selectedCount(): number;
+  refresh(): void;
+  #private;
 }
+export type RowanTableToolbarMessages = {
+  columnPickerLabel?: string | undefined;
+  selectionStatus?:
+    string | ((context: { count: number; selectionLabel: string }) => string) | undefined;
+  visibleColumnsLabel?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

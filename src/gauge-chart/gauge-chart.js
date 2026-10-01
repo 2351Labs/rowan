@@ -1,5 +1,8 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { createSvgElement } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
@@ -15,6 +18,15 @@ const MID = (OUTER + INNER) / 2;
 const BAND = OUTER - INNER;
 const NEEDLE = 76;
 const TICKS = [0, 0.25, 0.5, 0.75, 1];
+const DEFAULT_MESSAGES = Object.freeze({
+  actual: "Actual",
+  chart: "Gauge chart",
+  maximum: "Maximum",
+  minimum: "Minimum",
+  noData: "No data",
+  range: "Range {index}",
+  target: "Target",
+});
 
 /**
  * @typedef {object} RowanGaugeChartRange
@@ -50,18 +62,25 @@ function normalizeGaugeRanges(value) {
     if (from === null || to === null || from === to) return [];
     if (from > to) [from, to] = [to, from];
     const tone = TONES.has(item.tone) ? item.tone : "neutral";
-    return [{ from, to, label: normalizeText(item.label) || `Range ${index + 1}`, tone }];
+    return [{ from, to, label: normalizeText(item.label), fallbackIndex: index + 1, tone }];
   });
-}
-
-function cloneRanges(ranges) {
-  return ranges.map((item) => ({ ...item }));
 }
 
 function point(radius, t) {
   const theta = Math.PI * (1 - t);
   return [CX + radius * Math.cos(theta), CY - radius * Math.sin(theta)];
 }
+
+/**
+ * @typedef {object} RowanGaugeChartMessages
+ * @property {string} [actual]
+ * @property {string} [chart]
+ * @property {string} [maximum]
+ * @property {string} [minimum]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [range]
+ * @property {string} [target]
+ */
 
 function bandPath(t0, t1) {
   const start = clamp01(t0);
@@ -83,9 +102,11 @@ function bandPath(t0, t1) {
  * @attr {string} label
  * @attr {number} min
  * @attr {number} max
+ * @attr {string} locale
  * @property {number | null} value - Actual measure. Property-only. Null is no-data.
  * @property {number | null} target - Target tick. Property-only. Null hides the tick.
  * @property {RowanGaugeChartRange[]} ranges - Qualitative bands. Arrays are property-only.
+ * @property {RowanGaugeChartMessages} messages - Property-only built-in message overrides.
  * @csspart chart
  * @csspart plot
  * @csspart track
@@ -105,8 +126,17 @@ function bandPath(t0, t1) {
 export class RowanGaugeChart extends BaseElement {
   static styleUrl = new URL("./gauge-chart.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "min", "max"];
-  static upgradeProperties = ["label", "min", "max", "value", "target", "ranges"];
+  static observedAttributes = ["label", "min", "max", "locale"];
+  static upgradeProperties = [
+    "label",
+    "min",
+    "max",
+    "locale",
+    "value",
+    "target",
+    "ranges",
+    "messages",
+  ];
   static componentTokenPrefixes = ["--rowan-gauge-chart-"];
 
   #chart = null;
@@ -116,6 +146,7 @@ export class RowanGaugeChart extends BaseElement {
   #value = null;
   #target = null;
   #ranges = [];
+  #messages = {};
 
   get label() {
     return this.readString("label", "");
@@ -123,6 +154,25 @@ export class RowanGaugeChart extends BaseElement {
 
   set label(value) {
     this.reflectString("label", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanGaugeChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanGaugeChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get min() {
@@ -167,7 +217,12 @@ export class RowanGaugeChart extends BaseElement {
 
   /** @returns {RowanGaugeChartRange[]} */
   get ranges() {
-    return cloneRanges(this.#ranges);
+    return this.#ranges.map((range) => ({
+      from: range.from,
+      to: range.to,
+      label: this.#rangeLabel(range),
+      tone: range.tone,
+    }));
   }
 
   /** @param {RowanGaugeChartRange[]} value */
@@ -256,7 +311,7 @@ export class RowanGaugeChart extends BaseElement {
     minLabel.setAttribute("x", String(CX - OUTER));
     minLabel.setAttribute("y", String(CY + 16));
     minLabel.setAttribute("text-anchor", "start");
-    minLabel.textContent = String(scale.min);
+    minLabel.textContent = this.#formatValue(scale.min);
     fragment.append(minLabel);
 
     const maxLabel = createSvgElement("text");
@@ -265,7 +320,7 @@ export class RowanGaugeChart extends BaseElement {
     maxLabel.setAttribute("x", String(CX + OUTER));
     maxLabel.setAttribute("y", String(CY + 16));
     maxLabel.setAttribute("text-anchor", "end");
-    maxLabel.textContent = String(scale.max);
+    maxLabel.textContent = this.#formatValue(scale.max);
     fragment.append(maxLabel);
 
     if (this.#target !== null) {
@@ -308,7 +363,7 @@ export class RowanGaugeChart extends BaseElement {
     readout.setAttribute("x", String(CX));
     readout.setAttribute("y", String(CY + 30));
     readout.setAttribute("text-anchor", "middle");
-    readout.textContent = this.#value === null ? "—" : String(this.#value);
+    readout.textContent = this.#value === null ? "—" : this.#formatValue(this.#value);
     fragment.append(readout);
 
     this.#plot.replaceChildren(fragment);
@@ -320,28 +375,32 @@ export class RowanGaugeChart extends BaseElement {
         ? null
         : this.#ranges.find((item) => this.#value >= item.from && this.#value <= item.to);
     return formatHoverLines([
-      this.#value === null ? "" : `Actual ${this.#value}`,
-      this.#target === null ? "" : `Target ${this.#target}`,
-      range ? `${range.label} ${range.from}–${range.to}` : "",
+      this.#value === null
+        ? ""
+        : `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "actual")} ${this.#formatValue(this.#value)}`,
+      this.#target === null
+        ? ""
+        : `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "target")} ${this.#formatValue(this.#target)}`,
+      range ? `${this.#rangeLabel(range)} ${this.#formatRange(range.from, range.to)}` : "",
     ]);
   }
 
   #renderTable() {
     const caption = document.createElement("caption");
-    caption.textContent = this.label || "Gauge chart";
+    caption.textContent = this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     const body = document.createElement("tbody");
     const scale = this.#scale();
 
     for (const [name, value] of [
-      ["Minimum", scale.min],
-      ["Maximum", scale.max],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "minimum"), scale.min],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "maximum"), scale.max],
     ]) {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
       heading.textContent = name;
       const cell = document.createElement("td");
-      cell.textContent = String(value);
+      cell.textContent = this.#formatValue(value);
       row.append(heading, cell);
       body.append(row);
     }
@@ -350,23 +409,26 @@ export class RowanGaugeChart extends BaseElement {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
-      heading.textContent = range.label;
+      heading.textContent = this.#rangeLabel(range);
       const cell = document.createElement("td");
-      cell.textContent = `${range.from}–${range.to}`;
+      cell.textContent = this.#formatRange(range.from, range.to);
       row.append(heading, cell);
       body.append(row);
     }
 
     for (const [name, value] of [
-      ["Actual", this.#value],
-      ["Target", this.#target],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "actual"), this.#value],
+      [resolveMessage(this.#messages, DEFAULT_MESSAGES, "target"), this.#target],
     ]) {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
       heading.textContent = name;
       const cell = document.createElement("td");
-      cell.textContent = value === null ? "No data" : String(value);
+      cell.textContent =
+        value === null
+          ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData")
+          : this.#formatValue(value);
       row.append(heading, cell);
       body.append(row);
     }
@@ -387,13 +449,31 @@ export class RowanGaugeChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.label || "Gauge chart";
+      this.internals.ariaLabel =
+        this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     }
     if ("ariaValueMin" in this.internals) this.internals.ariaValueMin = String(scale.min);
     if ("ariaValueMax" in this.internals) this.internals.ariaValueMax = String(scale.max);
     if ("ariaValueNow" in this.internals) {
       this.internals.ariaValueNow = this.#value === null ? null : String(this.#value);
     }
+  }
+
+  #formatRange(from, to) {
+    return `${this.#formatValue(from)}–${this.#formatValue(to)}`;
+  }
+
+  #formatValue(value) {
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #rangeLabel(range) {
+    return (
+      range.label ||
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "range", {
+        index: String(range.fallbackIndex),
+      })
+    );
   }
 }
 

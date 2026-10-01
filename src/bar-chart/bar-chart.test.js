@@ -1,11 +1,16 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./bar-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
 
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-bar-chart");
-  chart.label = options.label ?? "Incidents by day";
+  chart.label = options.label !== undefined ? options.label : "Incidents by day";
   chart.labels = options.labels ?? ["Mon", "Tue", "Wed"];
   chart.series = options.series ?? [
     { id: "incoming", label: "Incoming", values: [4, null, 8] },
@@ -13,6 +18,8 @@ async function renderChart(options = {}) {
   ];
   if (options.interactive) chart.interactive = true;
   if (options.orientation) chart.orientation = options.orientation;
+  if (options.locale !== undefined) chart.locale = options.locale;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -127,25 +134,13 @@ describe("rowan-bar-chart", () => {
     expect(hover.hidden).to.equal(true);
   });
 
-  it("keeps overlay hit targets on SVG bars in an RTL host", async () => {
+  it("keeps overlay hit targets on SVG bars in LTR and RTL hosts", async () => {
     const chart = await renderChart({ interactive: true });
-    chart.dir = "rtl";
-    chart.style.inlineSize = "400px";
-    await nextMicrotask();
-    await nextMicrotask();
-
-    const controls = chart.shadowRoot.querySelector(".point-controls");
-    expect(controls.getAttribute("dir")).to.equal("ltr");
-    expect(getComputedStyle(controls).direction).to.equal("ltr");
-
-    const key = "incoming::0";
-    const bar = chart.shadowRoot.querySelector(`rect.bar[data-point-key="${key}"]`);
-    const button = chart.shadowRoot.querySelector(`button[data-point-key="${key}"]`);
-    const barBox = bar.getBoundingClientRect();
-    const buttonBox = button.getBoundingClientRect();
-    expect(Math.abs(buttonBox.left - barBox.left)).to.be.below(2);
-    expect(Math.abs(buttonBox.top - barBox.top)).to.be.below(2);
-    expect(Math.abs(buttonBox.width - barBox.width)).to.be.below(2);
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "rect.bar",
+      pointKey: "incoming::0",
+    });
   });
 
   it("hides hover after a second disconnect", async () => {
@@ -181,31 +176,18 @@ describe("rowan-bar-chart", () => {
       labels: ["Mon", "Tue"],
       series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
     });
-    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
-    buttons[0].focus();
-    buttons[0].dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
-    );
-    await nextMicrotask();
-
-    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+    await assertPointControlKeyboardNavigation(chart);
   });
 
-  it("restores keyboard focus to the active point after a rerender", async () => {
+  it("restores point focus and cleans up interactive hover after reconnect", async () => {
     const chart = await renderChart({ interactive: true });
-    const first = chart.shadowRoot.querySelector("button[data-point-key]");
-    const key = first.dataset.pointKey;
-    first.focus();
-
-    chart.labels = ["Mon", "Tue", "Wed"];
-    await nextMicrotask();
-    await nextMicrotask();
-
-    const restored = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")].find(
-      (button) => button.dataset.pointKey === key,
-    );
-    expect(restored).to.be.ok;
-    expect(chart.shadowRoot.activeElement).to.equal(restored);
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["Mon", "Tue", "Wed"];
+      },
+      markSelector: "rect.bar",
+    });
   });
 
   it("does not move focus onto a point control during rerender", async () => {
@@ -235,5 +217,78 @@ describe("rowan-bar-chart", () => {
     const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
     expect(buttons.some((button) => button.dataset.pointKey === previousKey)).to.equal(false);
     expect(buttons.includes(chart.shadowRoot.activeElement)).to.equal(false);
+  });
+
+  it("uses locale and property-only messages for generated chart copy", async () => {
+    const chart = await renderChart({
+      label: "",
+      locale: "de-DE",
+      labels: ["Mo", "Di"],
+      series: [{ id: "incoming", label: "Eingehend", values: [1234.5, null] }],
+      messages: {
+        chart: "Balkendiagramm",
+        dataTable: "Datentabelle",
+        dataTableCaption: "Tabelle: {chart}",
+        metric: "Kennzahl",
+        noData: "Keine Daten",
+        series: "Reihen",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event));
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.internals.ariaLabel).to.equal("Balkendiagramm");
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("aria-label")).to.equal(
+      "Balkendiagramm",
+    );
+    expect(chart.shadowRoot.querySelector(".legend").getAttribute("aria-label")).to.equal("Reihen");
+    expect(chart.shadowRoot.querySelector("summary").textContent).to.equal("Datentabelle");
+    expect(table.querySelector("caption").textContent).to.equal("Tabelle: Balkendiagramm");
+    expect(table.textContent).to.include(`KennzahlMoDiEingehend${formatted}Keine Daten`);
+    expect(activations).to.deep.equal([]);
+  });
+
+  it("localizes generated point labels without replacing authored labels", async () => {
+    const chart = await renderChart({
+      label: "",
+      interactive: true,
+      labels: [],
+      series: [
+        {
+          id: "incoming",
+          label: "Eingehend",
+          values: [4, { label: "Autorisiert", value: 8 }],
+        },
+      ],
+      messages: {
+        point: "Punkt {index}",
+      },
+    });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Punkt 1Autorisiert");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include(
+      "MetricPunkt 1AutorisiertEingehend48",
+    );
+    expect(
+      chart.shadowRoot
+        .querySelector('button[data-point-key="incoming::0"]')
+        .getAttribute("aria-label"),
+    ).to.include("Punkt 1");
+
+    chart.messages = { point: "Kategorie {index}" };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal(
+      "Kategorie 1Autorisiert",
+    );
+    expect(activations).to.deep.equal([]);
   });
 });

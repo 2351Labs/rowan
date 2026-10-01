@@ -132,4 +132,33 @@ describe("rowan-stepper", () => {
 
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("uses property-only fallback labels and visual horizontal arrows in RTL", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.dir = "rtl";
+    const element = document.createElement("rowan-stepper");
+    element.steps = [{ id: "draft" }, { id: "review" }, { id: "publish" }];
+    element.messages = { stepLabel: "Paso {step}" };
+    wrapper.append(element);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    const buttons = element.shadowRoot.querySelectorAll('[data-part="step-button"]');
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(buttons[0].textContent).to.include("Paso 1");
+
+    buttons[1].focus();
+    buttons[1].dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+    expect(element.shadowRoot.activeElement).to.equal(buttons[0]);
+
+    buttons[1].focus();
+    buttons[1].dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowLeft" }),
+    );
+    await nextMicrotask();
+    expect(element.shadowRoot.activeElement).to.equal(buttons[2]);
+  });
 });

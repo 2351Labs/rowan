@@ -2,6 +2,9 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { formatDate, formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
 import { VirtualCollection } from "../lib/virtual-collection.js";
 
@@ -48,6 +51,23 @@ const INTERACTIVE_CELL_TYPES = new Set(["link", "checkbox", "switch", "button", 
 const INTERACTIVE_CONTROL_TAGS = new Set(["a", "button", "input", "select", "textarea"]);
 const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
 const DEFAULT_VIRTUAL_OVERSCAN = 3;
+const DEFAULT_MESSAGES = Object.freeze({
+  action: "Action",
+  checkbox: "checkbox",
+  empty: "No data available.",
+  emptyGroup: "—",
+  groupLabel: "{label} ({count})",
+  loading: "Loading...",
+  nextPage: "Next",
+  paginationEmpty: "No rows",
+  paginationLabel: "Pagination",
+  paginationStatus: "Showing {from}-{to} of {total}",
+  previousPage: "Previous",
+  selectAllRows: "Select all rows",
+  selectRow: "Select row {rowId}",
+  subtotal: "Subtotal",
+  switch: "switch",
+});
 
 function positiveNumber(value, fallback) {
   const numeric = Number(value);
@@ -148,6 +168,25 @@ function nonNegativeInteger(value, fallback) {
 
 /** @typedef {"none" | "single" | "multiple"} RowanTableSelectable */
 
+/**
+ * @typedef {object} RowanTableMessages
+ * @property {string} [action]
+ * @property {string} [checkbox]
+ * @property {string} [empty]
+ * @property {string} [emptyGroup]
+ * @property {string | ((context: { label: string, count: number }) => string)} [groupLabel]
+ * @property {string} [loading]
+ * @property {string} [nextPage]
+ * @property {string} [paginationEmpty]
+ * @property {string} [paginationLabel]
+ * @property {string | ((context: { from: number, to: number, total: number }) => string)} [paginationStatus]
+ * @property {string} [previousPage]
+ * @property {string} [selectAllRows]
+ * @property {string | ((context: { rowId: string }) => string)} [selectRow]
+ * @property {string} [subtotal]
+ * @property {string} [switch]
+ */
+
 function isDevelopmentEnvironment() {
   const nodeEnvironment = globalThis.process?.env?.NODE_ENV;
   if (nodeEnvironment) return nodeEnvironment !== "production";
@@ -168,6 +207,7 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
+ * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
  * @property {Array<object>} rows - Updates rows without replacing other configuration.
@@ -175,6 +215,7 @@ function isDevelopmentEnvironment() {
  * @property {boolean} virtualized - Renders a measured, bounded row window inside the table viewport.
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
+ * @property {RowanTableMessages} messages - Property-only built-in message overrides.
  * @slot toolbar
  * @slot caption
  * @slot empty
@@ -212,6 +253,7 @@ export class RowanTable extends BaseElement {
     "virtualized",
     "virtual-item-size",
     "virtual-overscan",
+    "locale",
   ];
   static upgradeProperties = [
     "config",
@@ -231,6 +273,8 @@ export class RowanTable extends BaseElement {
     "virtualOverscan",
     "groupBy",
     "rowActivate",
+    "locale",
+    "messages",
   ];
 
   #state = {
@@ -272,6 +316,7 @@ export class RowanTable extends BaseElement {
   #virtualObservingViewport = false;
   #virtualObservedRows = new Set();
   #virtualResizeRenderQueued = false;
+  #messages = {};
 
   constructor() {
     super();
@@ -296,7 +341,8 @@ export class RowanTable extends BaseElement {
       name === "selectable" ||
       name === "loading" ||
       name === "virtualized" ||
-      name === "virtual-item-size"
+      name === "virtual-item-size" ||
+      name === "locale"
     ) {
       this.#bodyNeedsRender = true;
     }
@@ -523,6 +569,26 @@ export class RowanTable extends BaseElement {
     this.reflectNumber("virtual-overscan", next === DEFAULT_VIRTUAL_OVERSCAN ? null : next);
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanTableMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanTableMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.#bodyNeedsRender = true;
+    this.requestRender();
+  }
+
   /** @returns {RowanTableGroupBy | null} */
   get groupBy() {
     return this.#state.groupBy;
@@ -600,11 +666,11 @@ export class RowanTable extends BaseElement {
           </div>
           <div class="footer" part="footer">
             <slot name="footer"></slot>
-            <div class="pagination" part="pagination" hidden>
-              <button class="page-button" type="button" data-action="prev-page">Previous</button>
-              <span class="page-status"></span>
-              <button class="page-button" type="button" data-action="next-page">Next</button>
-            </div>
+            <nav class="pagination" part="pagination" hidden>
+              <button class="page-button" type="button" data-action="prev-page"></button>
+              <span class="page-status" aria-live="polite"></span>
+              <button class="page-button" type="button" data-action="next-page"></button>
+            </nav>
           </div>
         </div>
       `;
@@ -808,7 +874,10 @@ export class RowanTable extends BaseElement {
     if (this.selectable !== "multiple") return th;
 
     const checkbox = document.createElement("rowan-checkbox");
-    checkbox.setAttribute("aria-label", "Select all rows");
+    checkbox.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "selectAllRows"),
+    );
     checkbox.dataset.tableAction = "select-all";
 
     const selected = new Set(this.#state.selected);
@@ -1211,7 +1280,10 @@ export class RowanTable extends BaseElement {
     button.dataset.tableAction = "toggle-group";
     button.dataset.groupKey = entry.groupKey;
     button.setAttribute("aria-expanded", entry.expanded ? "true" : "false");
-    button.textContent = `${entry.label} (${entry.count})`;
+    button.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "groupLabel", {
+      label: entry.label,
+      count: entry.count,
+    });
     cell.append(button);
     tr.append(cell);
     return tr;
@@ -1244,7 +1316,7 @@ export class RowanTable extends BaseElement {
       if (total != null) {
         cell.textContent = this.#formatValue(column, total, {}, -1);
       } else if (index === 0) {
-        cell.textContent = "Subtotal";
+        cell.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "subtotal");
       }
 
       tr.append(cell);
@@ -1322,7 +1394,10 @@ export class RowanTable extends BaseElement {
     td.dataset.columnId = SELECT_COLUMN_ID;
 
     const selector = document.createElement("rowan-checkbox");
-    selector.setAttribute("aria-label", `Select row ${entry.rowId}`);
+    selector.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "selectRow", { rowId: entry.rowId }),
+    );
     selector.dataset.tableAction = "select-row";
     selector.checked = this.#state.selected.includes(entry.rowId);
 
@@ -1709,7 +1784,7 @@ export class RowanTable extends BaseElement {
     td.className = "td";
     td.part = "td";
     td.colSpan = this.#visibleColumnCount();
-    td.textContent = "Loading...";
+    td.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "loading");
 
     tr.append(td);
     this.#tbody.append(tr);
@@ -1731,7 +1806,7 @@ export class RowanTable extends BaseElement {
       td.append(slot);
     } else {
       const empty = document.createElement("rowan-empty-state");
-      empty.textContent = "No data available.";
+      empty.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
       td.append(empty);
     }
 
@@ -1809,7 +1884,10 @@ export class RowanTable extends BaseElement {
     const raw = context.value;
 
     if (typeof raw === "number" && Number.isFinite(raw)) {
-      cell.textContent = new Intl.NumberFormat().format(raw);
+      cell.textContent = formatNumber(raw, {
+        locale: this.locale,
+        fallback: this.#formatValue(context.column, raw, context.row, context.rowIndex),
+      });
       return;
     }
 
@@ -1818,11 +1896,13 @@ export class RowanTable extends BaseElement {
 
   #renderDateCell(cell, context) {
     cell.dataset.cellType = "date";
-    const value = context.value;
-    const date = value instanceof Date ? value : new Date(value);
+    const formatted = formatDate(context.value, {
+      locale: this.locale,
+      fallback: "",
+    });
 
-    if (!Number.isNaN(date.getTime())) {
-      cell.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+    if (formatted) {
+      cell.textContent = formatted;
       return;
     }
 
@@ -1872,7 +1952,15 @@ export class RowanTable extends BaseElement {
     const checkbox = document.createElement("rowan-checkbox");
     checkbox.dataset.cellType = "checkbox";
     checkbox.dataset.tableAction = "cell-change";
-    checkbox.setAttribute("aria-label", context.column.header || context.column.id || "checkbox");
+    const label = this.#normalizeText(
+      this.#resolveCellOption(context.column, "label", context.value, context.row),
+    );
+    checkbox.setAttribute(
+      "aria-label",
+      label ||
+        context.column.header ||
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "checkbox"),
+    );
 
     const checked = this.#resolveCellOption(context.column, "checked", context.value, context.row);
     checkbox.checked = Boolean(checked ?? context.value);
@@ -1902,9 +1990,12 @@ export class RowanTable extends BaseElement {
       : document.createElement("rowan-checkbox");
     switchControl.dataset.cellType = "switch";
     switchControl.dataset.tableAction = "cell-change";
+    const label = this.#normalizeText(
+      this.#resolveCellOption(context.column, "label", context.value, context.row),
+    );
     switchControl.setAttribute(
       "aria-label",
-      context.column.header || context.column.id || "switch",
+      label || context.column.header || resolveMessage(this.#messages, DEFAULT_MESSAGES, "switch"),
     );
 
     const checked = this.#resolveCellOption(context.column, "checked", context.value, context.row);
@@ -1932,7 +2023,9 @@ export class RowanTable extends BaseElement {
     }
 
     const label = this.#resolveCellOption(context.column, "label", context.value, context.row);
-    button.textContent = this.#normalizeText(label ?? context.value ?? "Action");
+    button.textContent = this.#normalizeText(
+      label ?? context.value ?? resolveMessage(this.#messages, DEFAULT_MESSAGES, "action"),
+    );
 
     const disabled = this.#resolveCellOption(
       context.column,
@@ -2380,7 +2473,9 @@ export class RowanTable extends BaseElement {
       const key = this.#groupKey(value);
       let group = indexByKey.get(key);
       if (!group) {
-        const label = this.#formatValue(column, value, entry.row, entry.rowIndex) || "—";
+        const label =
+          this.#formatValue(column, value, entry.row, entry.rowIndex) ||
+          resolveMessage(this.#messages, DEFAULT_MESSAGES, "emptyGroup");
         group = { key, label, members: [] };
         indexByKey.set(key, group);
         groups.push(group);
@@ -2519,10 +2614,15 @@ export class RowanTable extends BaseElement {
       return left - right;
     }
 
-    return this.#normalizeText(left).localeCompare(this.#normalizeText(right), undefined, {
-      numeric: true,
-      sensitivity: "base",
-    });
+    const leftText = this.#normalizeText(left);
+    const rightText = this.#normalizeText(right);
+    const options = { numeric: true, sensitivity: "base" };
+
+    try {
+      return leftText.localeCompare(rightText, this.locale, options);
+    } catch {
+      return leftText.localeCompare(rightText, undefined, options);
+    }
   }
 
   #normalizeSort(value) {
@@ -2592,6 +2692,30 @@ export class RowanTable extends BaseElement {
   }
 
   #renderPagination(pageInfo) {
+    const context = pageInfo
+      ? {
+          from: pageInfo.start + 1,
+          to: Math.min(pageInfo.start + pageInfo.size, pageInfo.total),
+          total: pageInfo.total,
+        }
+      : { from: 0, to: 0, total: 0 };
+    this.#paginationEl.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "paginationLabel"),
+    );
+    this.#paginationPrevButton.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "previousPage",
+      context,
+    );
+    this.#paginationNextButton.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "nextPage",
+      context,
+    );
+
     if (!this.#state.page || !pageInfo) {
       this.#paginationEl.hidden = true;
       this.#paginationStatusEl.textContent = "";
@@ -2601,11 +2725,18 @@ export class RowanTable extends BaseElement {
     this.#paginationEl.hidden = false;
 
     if (pageInfo.total === 0) {
-      this.#paginationStatusEl.textContent = "No rows";
+      this.#paginationStatusEl.textContent = resolveMessage(
+        this.#messages,
+        DEFAULT_MESSAGES,
+        "paginationEmpty",
+      );
     } else {
-      const from = pageInfo.start + 1;
-      const to = Math.min(pageInfo.start + pageInfo.size, pageInfo.total);
-      this.#paginationStatusEl.textContent = `Showing ${from}-${to} of ${pageInfo.total}`;
+      this.#paginationStatusEl.textContent = resolveMessage(
+        this.#messages,
+        DEFAULT_MESSAGES,
+        "paginationStatus",
+        context,
+      );
     }
 
     this.#paginationPrevButton.disabled = pageInfo.index <= 0;
@@ -2727,8 +2858,8 @@ export class RowanTable extends BaseElement {
 
   #alignToCss(align) {
     if (align === "center") return "center";
-    if (align === "end") return "right";
-    return "left";
+    if (align === "end") return "end";
+    return "start";
   }
 
   #verticalAlignToCss(align) {

@@ -78,6 +78,22 @@ describe("rowan-source-meta", () => {
     ).to.equal("Slotted time");
   });
 
+  it("uses property-only messages for the generated as-of term", async () => {
+    const el = await renderMeta({ asOf: "2026-09-23 14:02 UTC" });
+    el.messages = { asOf: "Au" };
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.shadowRoot.querySelector(".term").textContent).to.equal("Au");
+
+    const slotted = await renderMeta({ asOf: "Ignored", asOfSlot: "Contenu de l'auteur" });
+    slotted.messages = { asOf: "Au" };
+    await nextMicrotask();
+
+    expect(slotted.shadowRoot.querySelector(".term").textContent).to.equal("Au");
+    expect(slotted.shadowRoot.querySelector(".as-of-fallback").hidden).to.equal(true);
+  });
+
   it("drops into KPI description, chart description, and table caption", async () => {
     const meta = () => {
       const el = document.createElement("rowan-source-meta");

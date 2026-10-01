@@ -17,35 +17,43 @@
  * @cssprop --rowan-virtual-list-fg
  */
 export class RowanVirtualList extends BaseElement {
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    /** @param {unknown[]} value */
-    set items(value: unknown[]);
-    /** @returns {unknown[]} */
-    get items(): unknown[];
-    /** @param {string | ((item: unknown, index: number) => string | number) | null} value */
-    set itemKey(value: string | ((item: unknown, index: number) => string | number) | null);
-    /** @returns {string | ((item: unknown, index: number) => string | number) | null} */
-    get itemKey(): string | ((item: unknown, index: number) => string | number) | null;
-    /** @param {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} value */
-    set renderItem(value: ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null);
-    /** @returns {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} */
-    get renderItem(): ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null;
-    /** @param {number} value */
-    set itemSize(value: number);
-    /** @returns {number} */
-    get itemSize(): number;
-    /** @param {number} value */
-    set overscan(value: number);
-    /** @returns {number} */
-    get overscan(): number;
-    /**
-     * Scrolls an item into the list's rendered window.
-     * @param {number} index
-     * @param {{ align?: "auto" | "start" | "center" | "end" }} [options]
-     */
-    scrollToIndex(index: number, options?: {
-        align?: "center" | "start" | "end" | "auto" | undefined;
-    } | undefined): void;
-    #private;
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  /** @param {unknown[]} value */
+  set items(value: unknown[]);
+  /** @returns {unknown[]} */
+  get items(): unknown[];
+  /** @param {string | ((item: unknown, index: number) => string | number) | null} value */
+  set itemKey(value: string | ((item: unknown, index: number) => string | number) | null);
+  /** @returns {string | ((item: unknown, index: number) => string | number) | null} */
+  get itemKey(): string | ((item: unknown, index: number) => string | number) | null;
+  /** @param {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} value */
+  set renderItem(
+    value: ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null,
+  );
+  /** @returns {((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null} */
+  get renderItem():
+    ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null;
+  /** @param {number} value */
+  set itemSize(value: number);
+  /** @returns {number} */
+  get itemSize(): number;
+  /** @param {number} value */
+  set overscan(value: number);
+  /** @returns {number} */
+  get overscan(): number;
+  /**
+   * Scrolls an item into the list's rendered window.
+   * @param {number} index
+   * @param {{ align?: "auto" | "start" | "center" | "end" }} [options]
+   */
+  scrollToIndex(
+    index: number,
+    options?:
+      | {
+          align?: "center" | "start" | "end" | "auto" | undefined;
+        }
+      | undefined,
+  ): void;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

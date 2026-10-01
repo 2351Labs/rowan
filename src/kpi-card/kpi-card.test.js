@@ -95,4 +95,41 @@ describe("rowan-kpi-card", () => {
       expect(String(card.internals.ariaBusy)).to.equal("true");
     }
   });
+
+  it("uses inherited locale and property-only messages for generated KPI copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const card = document.createElement("rowan-kpi-card");
+    card.value = 1234.5;
+    card.delta = 3.5;
+    card.deltaLabel = "gegenueber Plan";
+    wrapper.append(card);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    card.messages = {
+      deltaWithLabel: "{label}: {value}",
+      kpi: "Kennzahl",
+      noData: "Keine Daten",
+    };
+    await nextMicrotask();
+
+    const number = new Intl.NumberFormat("de-DE");
+    const signedNumber = new Intl.NumberFormat("de-DE", { signDisplay: "exceptZero" });
+    expect(card.getAttribute("messages")).to.equal(null);
+    expect(card.locale).to.equal("de-DE");
+    expect(card.shadowRoot.querySelector('[part="value"]').textContent).to.equal(
+      number.format(1234.5),
+    );
+    expect(card.shadowRoot.querySelector('[part="delta"]').textContent).to.equal(
+      `gegenueber Plan: ${signedNumber.format(3.5)}`,
+    );
+    expect(card.internals.ariaLabel).to.equal("Kennzahl");
+
+    card.value = null;
+    await nextMicrotask();
+
+    expect(card.shadowRoot.querySelector('[part="value"]').textContent).to.equal("Keine Daten");
+  });
 });

@@ -1,13 +1,20 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { format, resolveConfig } from "prettier";
 
 const sourceFile = new URL("../src/tokens/tokens.css", import.meta.url);
 const sheetFile = new URL("../src/tokens/sheet.js", import.meta.url);
+const tokenJsonFile = new URL("../tokens.json", import.meta.url);
 const sheetPath = fileURLToPath(sheetFile);
+const tokenJsonPath = fileURLToPath(tokenJsonFile);
 const shouldCheck = process.argv.includes("--check");
 const TOKEN_DECLARATION = /(--rowan-[\w-]+)\s*:\s*([^;]+);/g;
 const COMPONENT_LAYER_MARKER = "/* Component layer */";
+const TOKEN_LAYERS = [
+  { id: "primitive", marker: "/* Primitive layer */" },
+  { id: "semantic", marker: "/* Semantic layer */" },
+  { id: "component", marker: COMPONENT_LAYER_MARKER },
+];
 
 function parseTokenDeclarations(source) {
   const declarations = new Map();
@@ -65,6 +72,173 @@ function createComponentTokenDeclarations(source) {
   }
 
   return [...parseTokenDeclarations(source.slice(componentLayerIndex)).entries()];
+}
+
+function tokenSegments(name) {
+  return name.slice("--rowan-".length).split("-");
+}
+
+function isStrictPathPrefix(prefix, path) {
+  return prefix.length < path.length && prefix.every((segment, index) => path[index] === segment);
+}
+
+function camelCaseSegments(segments) {
+  return segments
+    .map((segment, index) => {
+      if (index === 0) return segment;
+      return `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`;
+    })
+    .join("");
+}
+
+function createTokenPaths(declarationsByLayer) {
+  const rawPaths = new Map();
+
+  for (const { layer, declarations } of declarationsByLayer) {
+    for (const name of declarations.keys()) {
+      rawPaths.set(name, [layer.id, ...tokenSegments(name)]);
+    }
+  }
+
+  const paths = new Map();
+  for (const [name, path] of rawPaths) {
+    const prefix = [...rawPaths.entries()]
+      .filter(([candidateName, candidatePath]) => {
+        return candidateName !== name && isStrictPathPrefix(candidatePath, path);
+      })
+      .sort(([, leftPath], [, rightPath]) => leftPath.length - rightPath.length)[0]?.[1];
+
+    if (!prefix) {
+      paths.set(name, path);
+      continue;
+    }
+
+    const leafIndex = prefix.length - 1;
+    paths.set(name, [...path.slice(0, leafIndex), camelCaseSegments(path.slice(leafIndex))]);
+  }
+
+  for (const [name, path] of paths) {
+    for (const [candidateName, candidatePath] of paths) {
+      if (candidateName === name) continue;
+
+      if (path.join(".") === candidatePath.join(".")) {
+        throw new Error(`Token path collision: ${name} and ${candidateName}.`);
+      }
+
+      if (isStrictPathPrefix(path, candidatePath)) {
+        throw new Error(`Token path is both a group and token: ${name} and ${candidateName}.`);
+      }
+    }
+  }
+
+  return paths;
+}
+
+function tokenReference(value, tokenPaths) {
+  const reference = value.match(/^var\(\s*(--rowan-[\w-]+)\s*\)$/);
+  if (!reference) return value;
+
+  const path = tokenPaths.get(reference[1]);
+  if (!path) throw new Error(`Unknown token reference: ${reference[1]}`);
+
+  return `{${path.join(".")}}`;
+}
+
+function tokenType(name) {
+  if (name.startsWith("--rowan-color-") || /-(?:bg|fg|border)$/.test(name)) {
+    return "color";
+  }
+
+  if (name.includes("font-family")) {
+    return "fontFamily";
+  }
+
+  if (name.includes("font-weight")) {
+    return "fontWeight";
+  }
+
+  if (
+    name.includes("font-size") ||
+    name.startsWith("--rowan-space-") ||
+    name.startsWith("--rowan-radius-") ||
+    /-(?:gap|padding|margin|radius|size|width|height|offset)$/.test(name)
+  ) {
+    return "dimension";
+  }
+
+  if (name.includes("duration")) {
+    return "duration";
+  }
+
+  if (name.includes("opacity") || name.includes("z-index") || name.includes("line-height")) {
+    return "number";
+  }
+
+  return "custom";
+}
+
+function setTokenAtPath(target, path, token) {
+  let group = target;
+
+  for (const segment of path.slice(0, -1)) {
+    if ("$value" in group) {
+      throw new Error(`Cannot add token group ${path.join(".")} beneath a token.`);
+    }
+    group[segment] ||= {};
+    group = group[segment];
+  }
+
+  if (group[path.at(-1)] !== undefined) {
+    throw new Error(`Token path collision at ${path.join(".")}.`);
+  }
+  group[path.at(-1)] = token;
+}
+
+function createTokenJson(source) {
+  const tokens = {
+    $schema: "https://design-tokens.github.io/community-group/format/",
+    $extensions: {
+      "org.rowan": {
+        source: "src/tokens/tokens.css",
+      },
+    },
+  };
+  const declarationsByLayer = [];
+
+  for (const [index, layer] of TOKEN_LAYERS.entries()) {
+    const nextLayer = TOKEN_LAYERS[index + 1];
+    const start = source.indexOf(layer.marker);
+    const end = nextLayer ? source.indexOf(nextLayer.marker) : source.length;
+
+    if (start === -1 || end === -1) {
+      throw new Error(`The ${layer.id} token layer is missing from src/tokens/tokens.css.`);
+    }
+
+    const declarations = parseTokenDeclarations(source.slice(start, end));
+    declarationsByLayer.push({ layer, declarations });
+    tokens[layer.id] = {};
+  }
+
+  const tokenPaths = createTokenPaths(declarationsByLayer);
+
+  for (const { layer, declarations } of declarationsByLayer) {
+    for (const [name, value] of declarations) {
+      setTokenAtPath(tokens, tokenPaths.get(name), {
+        $value: tokenReference(value, tokenPaths),
+        $type: tokenType(name),
+        $description: `CSS custom property ${name} from Rowan's ${layer.id} layer.`,
+        $extensions: {
+          "org.rowan": {
+            cssName: name,
+            cssValue: value,
+            layer: layer.id,
+          },
+        },
+      });
+    }
+  }
+
+  return `${JSON.stringify(tokens, null, 2)}\n`;
 }
 
 function formatStringLiteral(value) {
@@ -191,12 +365,31 @@ const expected = await format(renderSheet(readFileSync(sourceFile, "utf8")), {
   parser: "babel",
 });
 const current = readFileSync(sheetFile, "utf8");
+const expectedTokenJson = createTokenJson(readFileSync(sourceFile, "utf8"));
+const currentTokenJson = existsSync(tokenJsonPath) ? readFileSync(tokenJsonFile, "utf8") : null;
 
 if (shouldCheck) {
+  let isOutOfSync = false;
+
   if (current !== expected) {
     console.error("src/tokens/sheet.js is out of sync with src/tokens/tokens.css.");
+    isOutOfSync = true;
+  }
+
+  if (currentTokenJson !== expectedTokenJson) {
+    console.error("tokens.json is out of sync with src/tokens/tokens.css.");
+    isOutOfSync = true;
+  }
+
+  if (isOutOfSync) {
     process.exitCode = 1;
   }
-} else if (current !== expected) {
-  writeFileSync(sheetFile, expected);
+} else {
+  if (current !== expected) {
+    writeFileSync(sheetFile, expected);
+  }
+
+  if (currentTokenJson !== expectedTokenJson) {
+    writeFileSync(tokenJsonFile, expectedTokenJson);
+  }
 }

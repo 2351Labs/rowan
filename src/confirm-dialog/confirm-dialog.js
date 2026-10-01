@@ -1,15 +1,28 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 import "../button/button.js";
 import "../dialog/dialog.js";
 
 const CONFIRM_VARIANTS = new Set(["primary", "danger"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  cancelLabel: "Cancel",
+  confirmLabel: "Confirm",
+  label: "Confirm action",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanConfirmDialogMessages
+ * @property {string} [cancelLabel]
+ * @property {string} [confirmLabel]
+ * @property {string} [label]
+ */
 
 /**
  * Focused dialog for confirming consequential actions.
@@ -20,6 +33,7 @@ function normalizeText(value) {
  * @attr {string} cancel-label
  * @attr {"primary"|"danger"} confirm-variant
  * @attr {boolean} confirm-disabled
+ * @property {RowanConfirmDialogMessages} messages - Property-only built-in message overrides.
  * @slot title
  * @slot - Supporting content
  * @slot actions - Additional actions placed before the default controls
@@ -49,6 +63,7 @@ export class RowanConfirmDialog extends BaseElement {
     "cancelLabel",
     "confirmVariant",
     "confirmDisabled",
+    "messages",
   ];
   static componentTokenPrefixes = ["--rowan-confirm-dialog-"];
 
@@ -56,6 +71,7 @@ export class RowanConfirmDialog extends BaseElement {
   #titleFallback = null;
   #cancelButton = null;
   #confirmButton = null;
+  #messages = {};
 
   get open() {
     return this.readBoolean("open");
@@ -66,30 +82,45 @@ export class RowanConfirmDialog extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Confirm action");
+    return this.readString("label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "label"));
   }
 
   set label(value) {
     const nextLabel = normalizeText(value);
-    this.reflectString("label", nextLabel && nextLabel !== "Confirm action" ? nextLabel : null);
+    this.reflectString(
+      "label",
+      nextLabel && nextLabel !== DEFAULT_MESSAGES.label ? nextLabel : null,
+    );
   }
 
   get confirmLabel() {
-    return this.readString("confirm-label", "Confirm");
+    return this.readString(
+      "confirm-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "confirmLabel"),
+    );
   }
 
   set confirmLabel(value) {
     const nextLabel = normalizeText(value);
-    this.reflectString("confirm-label", nextLabel && nextLabel !== "Confirm" ? nextLabel : null);
+    this.reflectString(
+      "confirm-label",
+      nextLabel && nextLabel !== DEFAULT_MESSAGES.confirmLabel ? nextLabel : null,
+    );
   }
 
   get cancelLabel() {
-    return this.readString("cancel-label", "Cancel");
+    return this.readString(
+      "cancel-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "cancelLabel"),
+    );
   }
 
   set cancelLabel(value) {
     const nextLabel = normalizeText(value);
-    this.reflectString("cancel-label", nextLabel && nextLabel !== "Cancel" ? nextLabel : null);
+    this.reflectString(
+      "cancel-label",
+      nextLabel && nextLabel !== DEFAULT_MESSAGES.cancelLabel ? nextLabel : null,
+    );
   }
 
   /** @returns {"primary" | "danger"} */
@@ -110,6 +141,17 @@ export class RowanConfirmDialog extends BaseElement {
 
   set confirmDisabled(value) {
     this.reflectBoolean("confirm-disabled", Boolean(value));
+  }
+
+  /** @returns {RowanConfirmDialogMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanConfirmDialogMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   show() {

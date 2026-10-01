@@ -6,6 +6,6 @@
  * @event rowan-change - Fired when a menu item is selected
  */
 export class RowanMenu extends BaseElement {
-    #private;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   dismissConsumedThisTurn,
   isTopmostOverlay,
@@ -9,11 +10,19 @@ import {
   removeOverlay,
 } from "../lib/overlay-stack.js";
 
+const DEFAULT_MESSAGES = Object.freeze({
+  closeLabel: "Close dialog",
+  title: "Dialog",
+});
+
+/** @typedef {{ closeLabel?: string, title?: string }} RowanDialogMessages */
+
 /**
  * Modal dialog surface.
  * @tag rowan-dialog
  * @attr {boolean} open
  * @attr {boolean} alert
+ * @property {RowanDialogMessages} messages - Property-only built-in message overrides.
  * @slot title
  * @slot - Content
  * @slot actions
@@ -29,7 +38,7 @@ export class RowanDialog extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["open", "alert"];
-  static upgradeProperties = ["open", "alert"];
+  static upgradeProperties = ["open", "alert", "messages"];
 
   #overlay = null;
   #panel = null;
@@ -38,6 +47,7 @@ export class RowanDialog extends BaseElement {
   #actionsSlot = null;
   #lastFocused = null;
   #isOpen = false;
+  #messages = {};
 
   disconnectedCallback() {
     if (this.#isOpen) {
@@ -69,6 +79,17 @@ export class RowanDialog extends BaseElement {
     this.reflectBoolean("alert", Boolean(value));
   }
 
+  /** @returns {RowanDialogMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanDialogMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   show() {
     this.open = true;
   }
@@ -84,7 +105,7 @@ export class RowanDialog extends BaseElement {
           <section class="panel" part="panel" tabindex="-1">
             <div class="header" part="header">
               <div class="title" part="title"><slot name="title"></slot></div>
-              <button class="close" part="close" type="button" aria-label="Close dialog">×</button>
+              <button class="close" part="close" type="button">×</button>
             </div>
             <div class="body" part="body"><slot></slot></div>
             <div class="actions" part="actions"><slot name="actions"></slot></div>
@@ -118,6 +139,10 @@ export class RowanDialog extends BaseElement {
     }
 
     this.#closeButton.hidden = this.alert;
+    this.#closeButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "closeLabel"),
+    );
     this.#applyDefaultA11y();
     this.#syncOpenState();
   }
@@ -127,7 +152,7 @@ export class RowanDialog extends BaseElement {
     this.#panel.removeAttribute("aria-modal");
     this.#panel.removeAttribute("aria-label");
 
-    const title = this.#titleText() || "Dialog";
+    const title = this.#titleText() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "title");
     if (this.open) {
       this.#overlay.setAttribute("aria-label", title);
       if (this.alert) this.#overlay.setAttribute("role", "alertdialog");

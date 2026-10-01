@@ -5,11 +5,13 @@ const nextMicrotask = () => Promise.resolve();
 
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-donut-chart");
-  chart.label = options.label ?? "Incident sources";
+  chart.label = options.label !== undefined ? options.label : "Incident sources";
   chart.labels = options.labels ?? ["App", "Email", "Phone"];
   chart.series = options.series ?? [{ id: "sources", label: "Sources", values: [12, -3, 8] }];
   if (options.interactive) chart.interactive = true;
   if (options.variant) chart.variant = options.variant;
+  if (options.locale !== undefined) chart.locale = options.locale;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -95,5 +97,75 @@ describe("rowan-donut-chart", () => {
     await nextMicrotask();
 
     expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+  });
+
+  it("uses locale and property-only messages for generated chart copy", async () => {
+    const chart = await renderChart({
+      label: "",
+      locale: "de-DE",
+      labels: ["App", "E-Mail"],
+      series: [{ id: "sources", label: "Quellen", values: [1234.5, null] }],
+      messages: {
+        chart: ({ variant }) => (variant === "pie" ? "Kreisdiagramm" : "Ringdiagramm"),
+        dataTable: "Datentabelle",
+        dataTableCaption: "Tabelle: {chart}",
+        metric: "Kennzahl",
+        noData: "Keine Daten",
+        slices: "Segmente",
+        total: "Gesamt",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.internals.ariaLabel).to.equal("Ringdiagramm");
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("aria-label")).to.equal(
+      "Ringdiagramm",
+    );
+    expect(chart.shadowRoot.querySelector(".legend").getAttribute("aria-label")).to.equal(
+      "Segmente",
+    );
+    expect(chart.shadowRoot.querySelector("summary").textContent).to.equal("Datentabelle");
+    expect(chart.shadowRoot.querySelector("[part='total']").textContent).to.equal(formatted);
+    expect(table.querySelector("caption").textContent).to.equal("Tabelle: Ringdiagramm");
+    expect(table.textContent).to.include(`KennzahlAppE-MailQuellen${formatted}Keine Daten`);
+  });
+
+  it("localizes generated slice labels without replacing authored labels", async () => {
+    const chart = await renderChart({
+      label: "",
+      interactive: true,
+      labels: [],
+      series: [
+        {
+          id: "sources",
+          label: "Quellen",
+          values: [12, { label: "Autorisiert", value: 8 }],
+        },
+      ],
+      messages: { point: "Punkt {index}" },
+    });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Punkt 1 12");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert 8");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include(
+      "MetricPunkt 1AutorisiertQuellen128",
+    );
+    expect(
+      chart.shadowRoot.querySelector('button[data-point-key="sources::0"]').textContent,
+    ).to.equal("Punkt 1, 12");
+
+    chart.messages = { point: "Kategorie {index}" };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Kategorie 1 12");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert 8");
+    expect(activations).to.deep.equal([]);
   });
 });

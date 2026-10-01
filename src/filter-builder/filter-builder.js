@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   isRowanTable,
   observeTableAvailability,
@@ -57,6 +58,25 @@ const OPERATOR_LABELS = {
   "is-empty": "is empty",
   "is-not-empty": "is not empty",
 };
+
+const DEFAULT_MESSAGES = Object.freeze({
+  addLabel: "Add filter",
+  booleanFalse: "False",
+  booleanTrue: "True",
+  chooseValue: "Choose value",
+  clearLabel: "Clear filters",
+  empty: "No filters applied.",
+  fieldLabel: "Filter field",
+  label: "Filters",
+  noValue: "No value",
+  operatorLabel: ({ operator }) => OPERATOR_LABELS[operator] ?? operator,
+  operatorSelectLabel: "Filter operator",
+  remove: "Remove",
+  removeFilter: "Remove {field} filter",
+  unknownField: "Unknown field: {field}",
+  value: "Value",
+  valueFor: "Value for {label}",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -133,6 +153,26 @@ function cloneFilter(filter) {
 }
 
 /**
+ * @typedef {object} RowanFilterBuilderMessages
+ * @property {string} [addLabel]
+ * @property {string} [booleanFalse]
+ * @property {string} [booleanTrue]
+ * @property {string} [chooseValue]
+ * @property {string} [clearLabel]
+ * @property {string} [empty]
+ * @property {string} [fieldLabel]
+ * @property {string} [label]
+ * @property {string} [noValue]
+ * @property {string | ((context: { label: string, operator: string }) => string)} [operatorLabel]
+ * @property {string} [operatorSelectLabel]
+ * @property {string} [remove]
+ * @property {string | ((context: { field: string }) => string)} [removeFilter]
+ * @property {string | ((context: { field: string }) => string)} [unknownField]
+ * @property {string} [value]
+ * @property {string | ((context: { label: string }) => string)} [valueFor]
+ */
+
+/**
  * @typedef {"text" | "number" | "date" | "boolean" | "select"} RowanFilterFieldType
  */
 
@@ -200,6 +240,7 @@ function isFilterableColumn(column) {
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
  * @property {RowanFilter[]} filters - Flat AND list of predicates. Arrays are property-only.
+ * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
 export class RowanFilterBuilder extends BaseElement {
@@ -216,6 +257,7 @@ export class RowanFilterBuilder extends BaseElement {
     "addLabel",
     "clearLabel",
     "disabled",
+    "messages",
   ];
 
   #tableOverride = null;
@@ -232,6 +274,7 @@ export class RowanFilterBuilder extends BaseElement {
   #emptyState = null;
   #addButton = null;
   #clearButton = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -294,30 +337,36 @@ export class RowanFilterBuilder extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Filters");
+    return this.hasAttribute("label")
+      ? this.readString("label", DEFAULT_MESSAGES.label)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "label");
   }
 
   set label(value) {
     const next = normalizeText(value);
-    this.reflectString("label", next && next !== "Filters" ? next : null);
+    this.reflectString("label", next && next !== DEFAULT_MESSAGES.label ? next : null);
   }
 
   get addLabel() {
-    return this.readString("add-label", "Add filter");
+    return this.hasAttribute("add-label")
+      ? this.readString("add-label", DEFAULT_MESSAGES.addLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "addLabel");
   }
 
   set addLabel(value) {
     const next = normalizeText(value);
-    this.reflectString("add-label", next && next !== "Add filter" ? next : null);
+    this.reflectString("add-label", next && next !== DEFAULT_MESSAGES.addLabel ? next : null);
   }
 
   get clearLabel() {
-    return this.readString("clear-label", "Clear filters");
+    return this.hasAttribute("clear-label")
+      ? this.readString("clear-label", DEFAULT_MESSAGES.clearLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "clearLabel");
   }
 
   set clearLabel(value) {
     const next = normalizeText(value);
-    this.reflectString("clear-label", next && next !== "Clear filters" ? next : null);
+    this.reflectString("clear-label", next && next !== DEFAULT_MESSAGES.clearLabel ? next : null);
   }
 
   get disabled() {
@@ -326,6 +375,17 @@ export class RowanFilterBuilder extends BaseElement {
 
   set disabled(value) {
     this.reflectBoolean("disabled", Boolean(value));
+  }
+
+  /** @returns {RowanFilterBuilderMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFilterBuilderMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   addFilter(value = {}) {
@@ -381,7 +441,7 @@ export class RowanFilterBuilder extends BaseElement {
             </div>
           </div>
           <div class="filters" part="filters" role="list"></div>
-          <p class="empty-state" part="empty">No filters applied.</p>
+          <p class="empty-state" part="empty"></p>
           <button class="add-button" part="add-button" type="button" data-action="add"></button>
         </section>
       `;
@@ -407,6 +467,7 @@ export class RowanFilterBuilder extends BaseElement {
     this.#title.textContent = this.label;
     this.#addButton.textContent = this.addLabel;
     this.#clearButton.textContent = this.clearLabel;
+    this.#emptyState.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
     this.#addButton.disabled = this.disabled || fields.length === 0;
     this.#clearButton.disabled = this.disabled || this.#filters.length === 0;
     this.#clearButton.hidden = this.#filters.length === 0;
@@ -574,10 +635,17 @@ export class RowanFilterBuilder extends BaseElement {
     fieldSelect.dataset.filterId = filter.id;
     fieldSelect.dataset.filterPart = "field";
     fieldSelect.disabled = this.disabled || fields.length === 0;
-    fieldSelect.setAttribute("aria-label", "Filter field");
+    fieldSelect.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "fieldLabel"),
+    );
 
     if (!field && filter.field) {
-      this.#appendOption(fieldSelect, filter.field, `Unknown field: ${filter.field}`);
+      this.#appendOption(
+        fieldSelect,
+        filter.field,
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "unknownField", { field: filter.field }),
+      );
     }
     fields.forEach((item) => {
       this.#appendOption(fieldSelect, item.id, item.label);
@@ -590,18 +658,17 @@ export class RowanFilterBuilder extends BaseElement {
     operatorSelect.dataset.filterId = filter.id;
     operatorSelect.dataset.filterPart = "operator";
     operatorSelect.disabled = this.disabled;
-    operatorSelect.setAttribute("aria-label", "Filter operator");
+    operatorSelect.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "operatorSelectLabel"),
+    );
 
     const operators = this.#operatorsForField(field);
     if (!operators.includes(filter.operator)) {
-      this.#appendOption(
-        operatorSelect,
-        filter.operator,
-        OPERATOR_LABELS[filter.operator] ?? filter.operator,
-      );
+      this.#appendOption(operatorSelect, filter.operator, this.#operatorLabel(filter.operator));
     }
     operators.forEach((operator) => {
-      this.#appendOption(operatorSelect, operator, OPERATOR_LABELS[operator] ?? operator);
+      this.#appendOption(operatorSelect, operator, this.#operatorLabel(operator));
     });
     operatorSelect.value = filter.operator;
 
@@ -613,8 +680,13 @@ export class RowanFilterBuilder extends BaseElement {
     removeButton.dataset.action = "remove";
     removeButton.dataset.filterId = filter.id;
     removeButton.disabled = this.disabled;
-    removeButton.textContent = "Remove";
-    removeButton.setAttribute("aria-label", `Remove ${field?.label ?? filter.field} filter`);
+    removeButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "remove");
+    removeButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "removeFilter", {
+        field: field?.label ?? filter.field,
+      }),
+    );
 
     row.append(fieldSelect, operatorSelect, valueControl, removeButton);
     return row;
@@ -625,7 +697,7 @@ export class RowanFilterBuilder extends BaseElement {
       const status = document.createElement("span");
       status.className = "value-status";
       status.part = "value-control";
-      status.textContent = "No value";
+      status.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "noValue");
       return status;
     }
 
@@ -636,9 +708,20 @@ export class RowanFilterBuilder extends BaseElement {
       select.dataset.filterId = filter.id;
       select.dataset.filterPart = "value";
       select.disabled = this.disabled;
-      select.setAttribute("aria-label", `Value for ${field.label}`);
-      this.#appendOption(select, "true", "True");
-      this.#appendOption(select, "false", "False");
+      select.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "valueFor", { label: field.label }),
+      );
+      this.#appendOption(
+        select,
+        "true",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "booleanTrue"),
+      );
+      this.#appendOption(
+        select,
+        "false",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "booleanFalse"),
+      );
       select.value = filter.value === "false" ? "false" : "true";
       return select;
     }
@@ -650,8 +733,15 @@ export class RowanFilterBuilder extends BaseElement {
       select.dataset.filterId = filter.id;
       select.dataset.filterPart = "value";
       select.disabled = this.disabled;
-      select.setAttribute("aria-label", `Value for ${field.label}`);
-      this.#appendOption(select, "", "Choose value");
+      select.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "valueFor", { label: field.label }),
+      );
+      this.#appendOption(
+        select,
+        "",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "chooseValue"),
+      );
       field.options.forEach((option) => {
         this.#appendOption(select, option.value, option.label, option.disabled);
       });
@@ -667,8 +757,14 @@ export class RowanFilterBuilder extends BaseElement {
     input.disabled = this.disabled;
     input.type = field?.type === "number" || field?.type === "date" ? field.type : "text";
     input.value = filter.value;
-    input.placeholder = field?.placeholder || "Value";
-    input.setAttribute("aria-label", `Value for ${field?.label ?? filter.field}`);
+    input.placeholder =
+      field?.placeholder || resolveMessage(this.#messages, DEFAULT_MESSAGES, "value");
+    input.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "valueFor", {
+        label: field?.label ?? filter.field,
+      }),
+    );
     return input;
   }
 
@@ -678,6 +774,13 @@ export class RowanFilterBuilder extends BaseElement {
     option.textContent = label;
     option.disabled = disabled;
     select.append(option);
+  }
+
+  #operatorLabel(operator) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "operatorLabel", {
+      label: OPERATOR_LABELS[operator] ?? operator,
+      operator,
+    });
   }
 
   #handleClick(event) {

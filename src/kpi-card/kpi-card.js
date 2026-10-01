@@ -1,8 +1,16 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  deltaWithLabel: "{value} {label}",
+  kpi: "KPI",
+  noData: "No data",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -15,17 +23,29 @@ function hasAssignedContent(slot) {
   });
 }
 
-function formatMetric(value) {
+function formatMetric(value, locale) {
   if (typeof value === "string") return value.trim();
-  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return formatNumber(value, { fallback: String(value), locale });
+  }
   return "";
 }
 
-function formatDelta(value) {
+function formatDelta(value, locale) {
   if (typeof value !== "number" || !Number.isFinite(value)) return "";
-  if (value === 0) return "0";
-  return value > 0 ? `+${value}` : String(value);
+  return formatNumber(value, {
+    fallback: value === 0 ? "0" : value > 0 ? `+${value}` : String(value),
+    locale,
+    options: { signDisplay: "exceptZero" },
+  });
 }
+
+/**
+ * @typedef {object} RowanKpiCardMessages
+ * @property {string | ((context: { label: string, value: string }) => string)} [deltaWithLabel]
+ * @property {string} [kpi]
+ * @property {string} [noData]
+ */
 
 /**
  * Frozen dashboard stat tile. Value and delta stay property-only.
@@ -34,8 +54,10 @@ function formatDelta(value) {
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
  * @attr {string} delta-label
  * @attr {boolean} loading
+ * @attr {string} locale
  * @property {number | string | null} value - Displayed metric. Property-only.
  * @property {number | null} delta - Signed change. Property-only. Null hides the delta.
+ * @property {RowanKpiCardMessages} messages - Property-only built-in message overrides.
  * @slot icon - Optional leading icon
  * @slot - Description or extra copy
  * @slot chart - Optional compact chart
@@ -54,8 +76,17 @@ function formatDelta(value) {
 export class RowanKpiCard extends BaseElement {
   static styleUrl = new URL("./kpi-card.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone", "delta-label", "loading"];
-  static upgradeProperties = ["label", "tone", "deltaLabel", "loading", "value", "delta"];
+  static observedAttributes = ["label", "tone", "delta-label", "loading", "locale"];
+  static upgradeProperties = [
+    "label",
+    "tone",
+    "deltaLabel",
+    "loading",
+    "locale",
+    "value",
+    "delta",
+    "messages",
+  ];
   static componentTokenPrefixes = ["--rowan-kpi-card-"];
 
   #card = null;
@@ -70,6 +101,7 @@ export class RowanKpiCard extends BaseElement {
   #chart = null;
   #value = null;
   #delta = null;
+  #messages = {};
 
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
   get tone() {
@@ -103,6 +135,25 @@ export class RowanKpiCard extends BaseElement {
 
   set loading(value) {
     this.reflectBoolean("loading", Boolean(value));
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanKpiCardMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanKpiCardMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   /** @returns {number | string | null} */
@@ -188,12 +239,15 @@ export class RowanKpiCard extends BaseElement {
     this.#description.hidden = !hasAssignedContent(this.#descriptionSlot);
     this.#chart.hidden = !hasAssignedContent(this.#chartSlot);
 
-    const deltaText = formatDelta(this.#delta);
+    const deltaText = formatDelta(this.#delta, this.locale);
     const deltaLabel = this.deltaLabel;
     this.#deltaElement.hidden = !deltaText;
     this.#deltaElement.textContent = deltaText
       ? deltaLabel
-        ? `${deltaText} ${deltaLabel}`
+        ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "deltaWithLabel", {
+            label: deltaLabel,
+            value: deltaText,
+          })
         : deltaText
       : "";
 
@@ -204,7 +258,9 @@ export class RowanKpiCard extends BaseElement {
       skeleton.setAttribute("aria-hidden", "true");
       this.#valueElement.append(skeleton);
     } else {
-      this.#valueElement.textContent = formatMetric(this.#value) || "No data";
+      this.#valueElement.textContent =
+        formatMetric(this.#value, this.locale) ||
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData");
     }
 
     this.#applyDefaultA11y(label);
@@ -218,7 +274,7 @@ export class RowanKpiCard extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = label || "KPI";
+      this.internals.ariaLabel = label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "kpi");
     }
 
     if ("ariaBusy" in this.internals) {

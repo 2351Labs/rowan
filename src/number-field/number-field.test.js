@@ -1,7 +1,8 @@
 import { expect } from "@esm-bundle/chai";
-import "./number-field.js";
+import { RowanNumberField } from "./number-field.js";
 
 const nextMicrotask = () => Promise.resolve();
+let preUpgradeTagId = 0;
 
 describe("rowan-number-field", () => {
   afterEach(() => {
@@ -192,6 +193,51 @@ describe("rowan-number-field", () => {
 
     decrement.click();
     expect(element.value).to.equal("2");
+  });
+
+  it("uses property-only messages for increment and decrement labels without an event", async () => {
+    const element = document.createElement("rowan-number-field");
+    document.body.append(element);
+    await nextMicrotask();
+
+    const changes = [];
+    element.addEventListener("rowan-change", () => changes.push(true));
+    element.messages = {
+      decreaseValue: "Disminuir valor",
+      increaseValue: "Aumentar valor",
+    };
+    await nextMicrotask();
+
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(
+      element.shadowRoot.querySelector('[data-action="decrement"]').getAttribute("aria-label"),
+    ).to.equal("Disminuir valor");
+    expect(
+      element.shadowRoot.querySelector('[data-action="increment"]').getAttribute("aria-label"),
+    ).to.equal("Aumentar valor");
+    expect(changes).to.deep.equal([]);
+  });
+
+  it("upgrades messages assigned before custom element definition", async () => {
+    preUpgradeTagId += 1;
+    const tag = `rowan-number-field-upgrade-${preUpgradeTagId}`;
+    const element = document.createElement(tag);
+    element.messages = {
+      decreaseValue: "Disminuir valor",
+      increaseValue: "Aumentar valor",
+    };
+
+    customElements.define(tag, class extends RowanNumberField {});
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(Object.hasOwn(element, "messages")).to.equal(false);
+    expect(
+      element.shadowRoot.querySelector('[data-action="decrement"]').getAttribute("aria-label"),
+    ).to.equal("Disminuir valor");
+    expect(
+      element.shadowRoot.querySelector('[data-action="increment"]').getAttribute("aria-label"),
+    ).to.equal("Aumentar valor");
   });
 
   it("syncs host a11y states for required, disabled, invalid, and label", async () => {

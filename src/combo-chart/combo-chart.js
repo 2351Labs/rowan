@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createReferenceLine,
   createSvgElement,
@@ -35,6 +38,16 @@ const PLOT_LEFT = 18;
 const PLOT_RIGHT = 48;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: "Combo chart",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  metric: "Metric",
+  noData: "No data",
+  point: "Point {index}",
+  reference: "Reference",
+  series: "Series",
+});
 
 let comboChartId = 0;
 
@@ -45,6 +58,18 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanComboChartMessages
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [reference]
+ * @property {string} [series]
+ */
 
 function yForValue(value, domain, plotHeight) {
   const range = domain.max - domain.min || 1;
@@ -58,11 +83,13 @@ function yForValue(value, domain, plotHeight) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {Array<object>} series - Chart series with optional geometry (bar|line|area) and axis (primary|secondary). Arrays are property-only. Invalid geometry falls back to bar.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats chart and table values. Functions are property-only.
  * @property {import("../chart/model.js").RowanChartReferenceLine[]} referenceLines - Horizontal overlays. Optional axis primary|secondary. Arrays are property-only.
+ * @property {RowanComboChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -80,7 +107,7 @@ export class RowanComboChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./combo-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-combo-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -90,6 +117,8 @@ export class RowanComboChart extends BaseElement {
     "config",
     "valueFormatter",
     "referenceLines",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -106,6 +135,7 @@ export class RowanComboChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -116,6 +146,7 @@ export class RowanComboChart extends BaseElement {
   #activePointKey = "";
   #labelId = "";
   #descriptionId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -141,6 +172,25 @@ export class RowanComboChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanComboChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanComboChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -233,11 +283,11 @@ export class RowanComboChart extends BaseElement {
               <div class="point-controls" dir="ltr"></div>
             </div>
             <div class="x-axis" aria-hidden="true"></div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -256,13 +306,17 @@ export class RowanComboChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
         target: this.renderRoot.querySelector(".chart"),
         bubble: this.#hover,
         textForEvent: (event) =>
-          referenceLineHoverText(event) || seriesHoverText(this.#entries, event),
+          referenceLineHoverText(
+            event,
+            resolveMessage(this.#messages, DEFAULT_MESSAGES, "reference"),
+          ) || seriesHoverText(this.#entries, event),
       });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
@@ -273,6 +327,7 @@ export class RowanComboChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -309,11 +364,13 @@ export class RowanComboChart extends BaseElement {
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.renderRoot.querySelector(".description").id = this.#descriptionId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Combo chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
   }
 
   #renderChart() {
-    const labels = resolveChartLabels(this.#series, this.#labels);
+    const labels = resolveChartLabels(this.#series, this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const primary = expandDomainWithReferenceLines(
       comboAxisDomain(this.#series, "primary"),
       this.#referenceLines.filter((line) => line.axis !== "secondary"),
@@ -332,11 +389,14 @@ export class RowanComboChart extends BaseElement {
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Combo chart"} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#chartName(),
+      }),
       labels,
       series: this.#series,
       formatValue: (value, series, index, label) =>
-        formatChartValue(this.#valueFormatter, value, { series, index, label }),
+        this.#formatValue(value, { series, index, label }),
+      messages: this.#messages,
       referenceLines: this.#referenceLines,
     });
     this.#syncActivePoint();
@@ -368,7 +428,7 @@ export class RowanComboChart extends BaseElement {
         const isBar = series.geometry === "bar";
         const x = isBar ? groupX + barWidth / 2 + Math.max(barIndex, 0) * barWidth : centerX;
         const y = yForValue(point.value, domain, plotHeight);
-        const formattedValue = formatChartValue(this.#valueFormatter, point.value, {
+        const formattedValue = this.#formatValue(point.value, {
           series,
           index,
           label: labels[index],
@@ -397,7 +457,7 @@ export class RowanComboChart extends BaseElement {
   #renderPlot(primary, secondary) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Combo chart";
+    title.textContent = this.#chartName();
     fragment.append(title);
 
     const plotWidth = SVG_NAMESPACE_WIDTH - PLOT_LEFT - PLOT_RIGHT;
@@ -416,16 +476,16 @@ export class RowanComboChart extends BaseElement {
       const domain = line.axis === "secondary" ? secondary : primary;
       const range = domain.max - domain.min || 1;
       const y = PLOT_TOP + ((domain.max - line.value) / range) * plotHeight;
+      const referenceLabel =
+        line.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "reference");
       fragment.append(
         createReferenceLine({
           x1: PLOT_LEFT,
           x2: PLOT_LEFT + plotWidth,
           y,
           tone: line.tone,
-          label: line.label,
-          formattedValue: formatChartValue(this.#valueFormatter, line.value, {
-            label: line.label || "Reference",
-          }),
+          label: referenceLabel,
+          formattedValue: this.#formatValue(line.value, { label: referenceLabel }),
         }),
       );
     }
@@ -525,7 +585,7 @@ export class RowanComboChart extends BaseElement {
     const fragment = document.createDocumentFragment();
     for (const tick of ticks) {
       const item = document.createElement("span");
-      item.textContent = formatChartValue(this.#valueFormatter, tick, { tick: true });
+      item.textContent = this.#formatValue(tick, { tick: true });
       fragment.append(item);
     }
     this.#yAxisSecondary.append(fragment);
@@ -533,6 +593,10 @@ export class RowanComboChart extends BaseElement {
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "series"),
+    );
     const fragment = document.createDocumentFragment();
     for (const [seriesIndex, series] of this.#series.entries()) {
       const item = document.createElement("li");
@@ -636,6 +700,22 @@ export class RowanComboChart extends BaseElement {
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 
+  #chartName() {
+    return this.#displayLabel() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
     if (!this.hasAttribute("role") && "role" in this.internals) {
@@ -646,7 +726,7 @@ export class RowanComboChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Combo chart";
+      this.internals.ariaLabel = this.#chartName();
     }
   }
 }

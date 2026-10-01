@@ -107,6 +107,30 @@ describe("rowan-tree", () => {
     expect(toggles[1].detail.expanded).to.equal(false);
   });
 
+  it("reverses branch navigation for RTL", async () => {
+    const { tree, guides, gettingStarted } = await renderTree();
+    tree.dir = "rtl";
+
+    guides.focus();
+    keydown(guides, "ArrowLeft");
+    await nextMicrotask();
+    expect(guides.expanded).to.equal(true);
+
+    keydown(guides, "ArrowLeft");
+    expect(
+      gettingStarted.shadowRoot.activeElement === gettingStarted.shadowRoot.querySelector("button"),
+    ).to.equal(true);
+
+    keydown(gettingStarted, "ArrowRight");
+    expect(guides.shadowRoot.activeElement === guides.shadowRoot.querySelector("button")).to.equal(
+      true,
+    );
+
+    keydown(guides, "ArrowRight");
+    await nextMicrotask();
+    expect(guides.expanded).to.equal(false);
+  });
+
   it("moves roving focus through visible items and skips disabled nodes", async () => {
     const { guides, gettingStarted, reference } = await renderTree({ expanded: true });
 

@@ -1,13 +1,23 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { normalizeCalendarDate } from "../lib/calendar-date.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 let calendarId = 0;
 
 const MONTH_VALUE_PATTERN = /^\d{4}-\d{2}$/;
 const SELECTION_MODES = new Set(["single", "range"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  previousMonth: "Previous",
+  previousMonthLabel: "Previous month",
+  nextMonth: "Next",
+  nextMonthLabel: "Next month",
+  dayLabel: "{date}",
+});
 
 function pad(number) {
   return String(number).padStart(2, "0");
@@ -66,6 +76,14 @@ function toDateValue(date) {
 
 function toMonthValue(date) {
   return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
+}
+
+function calendarFormatter(locale, options) {
+  try {
+    return new Intl.DateTimeFormat(locale, options);
+  } catch {
+    return new Intl.DateTimeFormat(undefined, options);
+  }
 }
 
 function addDays(dateValue, amount) {
@@ -132,6 +150,23 @@ function buildCalendarCells(monthValue) {
   return cells;
 }
 
+function dateFormatter(locale, options) {
+  try {
+    return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" });
+  } catch {
+    return new Intl.DateTimeFormat(undefined, { ...options, timeZone: "UTC" });
+  }
+}
+
+/**
+ * @typedef {object} RowanCalendarMessages
+ * @property {string} [previousMonth]
+ * @property {string} [previousMonthLabel]
+ * @property {string} [nextMonth]
+ * @property {string} [nextMonthLabel]
+ * @property {string | ((context: { date: string }) => string)} [dayLabel]
+ */
+
 /**
  * Calendar grid for date selection with keyboard navigation.
  * @tag rowan-calendar
@@ -142,6 +177,7 @@ function buildCalendarCells(monthValue) {
  * @attr {string} month
  * @attr {string} label
  * @attr {string} locale
+ * @property {RowanCalendarMessages} messages - Property-only built-in message overrides.
  * @attr {string} min
  * @attr {string} max
  * @attr {"single"|"range"} selection-mode
@@ -186,6 +222,7 @@ export class RowanCalendar extends BaseElement {
     "month",
     "label",
     "locale",
+    "messages",
     "min",
     "max",
     "selectionMode",
@@ -208,6 +245,7 @@ export class RowanCalendar extends BaseElement {
   #calendarId = "";
   #autoInvalid = false;
   #focusedDate = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -331,17 +369,22 @@ export class RowanCalendar extends BaseElement {
 
   get locale() {
     const configured = this.readString("locale", "").trim();
-    if (configured.length > 0) return configured;
-
-    if (typeof navigator !== "undefined" && typeof navigator.language === "string") {
-      return navigator.language;
-    }
-
-    return "en-US";
+    return resolveLocale(this, configured);
   }
 
   set locale(value) {
     this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanCalendarMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanCalendarMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get min() {
@@ -501,9 +544,9 @@ export class RowanCalendar extends BaseElement {
         <section class="calendar" part="calendar">
           <label class="sr-only" part="label"></label>
           <header class="header" part="header">
-            <button class="nav-button" type="button" data-action="prev-month" aria-label="Previous month">Previous</button>
+            <button class="nav-button" type="button" data-action="prev-month"></button>
             <p class="month-label" part="month-label" aria-live="polite"></p>
-            <button class="nav-button" type="button" data-action="next-month" aria-label="Next month">Next</button>
+            <button class="nav-button" type="button" data-action="next-month"></button>
           </header>
           <div class="grid" part="grid" role="grid">
             <div class="weekday-row" part="weekday-row" role="row"></div>
@@ -553,8 +596,8 @@ export class RowanCalendar extends BaseElement {
 
         let nextDate = "";
 
-        if (event.key === "ArrowRight") nextDate = addDays(currentDate, 1);
-        if (event.key === "ArrowLeft") nextDate = addDays(currentDate, -1);
+        const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+        if (horizontalOffset !== 0) nextDate = addDays(currentDate, horizontalOffset);
         if (event.key === "ArrowDown") nextDate = addDays(currentDate, 7);
         if (event.key === "ArrowUp") nextDate = addDays(currentDate, -7);
         if (event.key === "Home") {
@@ -579,10 +622,9 @@ export class RowanCalendar extends BaseElement {
     this.#renderWeekdays();
     this.#renderGrid();
 
-    const monthLabelFormatter = new Intl.DateTimeFormat(this.locale, {
+    const monthLabelFormatter = calendarFormatter(this.locale, {
       month: "long",
       year: "numeric",
-      timeZone: "UTC",
     });
     const [yearText, monthText] = this.month.split("-");
     const monthDate = new Date(Date.UTC(Number(yearText), Number(monthText) - 1, 1));
@@ -596,6 +638,24 @@ export class RowanCalendar extends BaseElement {
     this.#grid.id = this.#calendarId;
     this.#grid.setAttribute("aria-colcount", "7");
     this.#grid.setAttribute("aria-label", fallbackLabelText || this.#monthLabel.textContent);
+    this.#previousMonthButton.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "previousMonth",
+    );
+    this.#previousMonthButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "previousMonthLabel"),
+    );
+    this.#nextMonthButton.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "nextMonth",
+    );
+    this.#nextMonthButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "nextMonthLabel"),
+    );
     this.#previousMonthButton.disabled = !this.#canNavigateMonth(-1);
     this.#nextMonthButton.disabled = !this.#canNavigateMonth(1);
 
@@ -628,7 +688,7 @@ export class RowanCalendar extends BaseElement {
   #renderWeekdays() {
     this.#weekdayRow.textContent = "";
 
-    const formatter = new Intl.DateTimeFormat(this.locale, {
+    const formatter = calendarFormatter(this.locale, {
       weekday: "short",
       timeZone: "UTC",
     });
@@ -654,6 +714,7 @@ export class RowanCalendar extends BaseElement {
     const fragment = document.createDocumentFragment();
     const cells = buildCalendarCells(this.month);
     const focusDate = this.#resolveFocusableDate(cells);
+    const formatter = dateFormatter(this.locale, { dateStyle: "full" });
 
     for (let startIndex = 0; startIndex < cells.length; startIndex += 7) {
       const row = document.createElement("div");
@@ -667,7 +728,12 @@ export class RowanCalendar extends BaseElement {
         button.part = "day";
         button.textContent = String(cell.day);
         button.setAttribute("data-date", cell.dateValue);
-        button.setAttribute("aria-label", cell.dateValue);
+        button.setAttribute(
+          "aria-label",
+          resolveMessage(this.#messages, DEFAULT_MESSAGES, "dayLabel", {
+            date: formatter.format(toDateFromValue(cell.dateValue)),
+          }),
+        );
 
         const disabled = this.disabled || !this.#isWithinRange(cell.dateValue);
         button.disabled = disabled;

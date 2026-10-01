@@ -253,4 +253,67 @@ describe("rowan-file-upload", () => {
     expect(removals).to.equal(0);
     expect(new FormData(form).getAll("docs")).to.deep.equal([]);
   });
+
+  it("uses inherited locale and property-only messages across the upload composition", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const element = document.createElement("rowan-file-upload");
+    element.files = [
+      {
+        id: "upload-1",
+        name: "",
+        size: 1536,
+        status: "uploading",
+        progress: 42,
+      },
+    ];
+    wrapper.append(element);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const events = [];
+    ["rowan-files-add", "rowan-file-remove", "rowan-file-retry", "rowan-file-cancel"].forEach(
+      (type) => {
+        element.addEventListener(type, () => events.push(type));
+      },
+    );
+    element.messages = {
+      ariaLabel: "Carga de archivos",
+      dropzoneDescription: "Arrastra archivos o abre el selector.",
+      dropzoneLabel: "Suelta archivos aqui",
+      empty: "No hay archivos.",
+      itemCancel: "Cancelar",
+      itemStatusUploading: "Cargando",
+      itemUntitledFile: "Sin nombre",
+      itemUploadProgress: "Progreso {progress}%",
+    };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const dropzone = element.shadowRoot.querySelector("rowan-dropzone");
+    const item = element.shadowRoot.querySelector("rowan-file-item");
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.locale).to.equal("de-DE");
+    expect(element.internals.ariaLabel).to.equal("Carga de archivos");
+    expect(dropzone.label).to.equal("Suelta archivos aqui");
+    expect(dropzone.description).to.equal("Arrastra archivos o abre el selector.");
+    expect(item.shadowRoot.querySelector('[part="name"]').textContent).to.equal("Sin nombre");
+    expect(item.shadowRoot.querySelector('[part="status"]').textContent).to.equal("Cargando");
+    expect(item.shadowRoot.querySelector('[data-action="cancel"]').textContent).to.equal(
+      "Cancelar",
+    );
+    expect(item.shadowRoot.querySelector('[part="progress"]').getAttribute("aria-label")).to.equal(
+      "Progreso 42%",
+    );
+    expect(events).to.deep.equal([]);
+
+    element.files = [];
+    await nextMicrotask();
+
+    expect(element.shadowRoot.querySelector('[part="empty"]').textContent).to.equal(
+      "No hay archivos.",
+    );
+    expect(events).to.deep.equal([]);
+  });
 });

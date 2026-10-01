@@ -1,9 +1,14 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 let numberFieldId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  decreaseValue: "Decrease value",
+  increaseValue: "Increase value",
+});
 
 function normalizeNumberString(value) {
   const next = String(value ?? "").trim();
@@ -40,6 +45,12 @@ function normalizeStep(value, fallback = 1) {
 }
 
 /**
+ * @typedef {object} RowanNumberFieldMessages
+ * @property {string} [decreaseValue]
+ * @property {string} [increaseValue]
+ */
+
+/**
  * Numeric input with form association, range validation, and step controls.
  * @tag rowan-number-field
  * @attr {string} name
@@ -52,6 +63,7 @@ function normalizeStep(value, fallback = 1) {
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @property {RowanNumberFieldMessages} messages - Property-only built-in message overrides.
  * @csspart control
  * @csspart input
  * @csspart decrement-button
@@ -74,6 +86,7 @@ export class RowanNumberField extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "messages",
   ];
   static upgradeProperties = [
     "name",
@@ -86,6 +99,7 @@ export class RowanNumberField extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "messages",
   ];
 
   #input = null;
@@ -97,6 +111,7 @@ export class RowanNumberField extends BaseElement {
   #autoInvalid = false;
   #paintInvalid = false;
   #ignoreInvalidEvent = false;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -208,6 +223,17 @@ export class RowanNumberField extends BaseElement {
     this.reflectBoolean("invalid", Boolean(value));
   }
 
+  /** @returns {RowanNumberFieldMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanNumberFieldMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   setFormValue(value = this.value) {
     if (this.internals && typeof this.internals.setFormValue === "function") {
       this.internals.setFormValue(value);
@@ -267,7 +293,6 @@ export class RowanNumberField extends BaseElement {
             part="decrement-button"
             type="button"
             data-action="decrement"
-            aria-label="Decrease value"
           >
             -
           </button>
@@ -277,7 +302,6 @@ export class RowanNumberField extends BaseElement {
             part="increment-button"
             type="button"
             data-action="increment"
-            aria-label="Increase value"
           >
             +
           </button>
@@ -335,6 +359,14 @@ export class RowanNumberField extends BaseElement {
 
     this.#decrementButton.disabled = this.disabled;
     this.#incrementButton.disabled = this.disabled;
+    this.#decrementButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "decreaseValue"),
+    );
+    this.#incrementButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "increaseValue"),
+    );
 
     const fallbackLabelText = this.label || this.externalLabelText;
     this.#fallbackLabel.textContent = fallbackLabelText;

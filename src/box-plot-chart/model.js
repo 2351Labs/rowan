@@ -2,6 +2,7 @@ import { finiteOrNull } from "../chart/model.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
+const GENERATED_POINT_LABEL = Symbol("rowan.box-plot-generated-point-label");
 
 /**
  * Normalized five-number summary passed to a value formatter.
@@ -63,6 +64,15 @@ function normalizeOutliers(value) {
   return value.map(finiteOrNull).filter((item) => item !== null);
 }
 
+function fallbackPointLabel(index, resolveFallback) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `Point ${index + 1}`;
+}
+
 /**
  * @param {unknown} value
  */
@@ -120,15 +130,21 @@ export function normalizeBoxPlotSeries(value, labels = []) {
         color: normalizeColor(item.color),
         values: inputValues.map((point, index) => {
           const itemPoint = isObject(point) ? point : {};
-          return {
+          const authoredLabel = normalizeText(itemPoint.label);
+          const configuredLabel = normalizeText(labels[index]);
+          const normalized = {
             min: finiteOrNull(itemPoint.min),
             q1: finiteOrNull(itemPoint.q1),
             median: finiteOrNull(itemPoint.median),
             q3: finiteOrNull(itemPoint.q3),
             max: finiteOrNull(itemPoint.max),
             outliers: normalizeOutliers(itemPoint.outliers),
-            label: normalizeText(itemPoint.label) || labels[index] || `Point ${index + 1}`,
+            label: authoredLabel || configuredLabel || fallbackPointLabel(index),
           };
+          if (!authoredLabel && !configuredLabel) {
+            Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+          }
+          return normalized;
         }),
       },
     ];
@@ -143,6 +159,28 @@ export function cloneBoxPlotSeries(value) {
       outliers: [...point.outliers],
     })),
   }));
+}
+
+/**
+ * @param {RowanBoxPlotChartSeries[]} series
+ * @param {string[]} labels
+ * @param {(index: number) => string} [resolveFallbackLabel]
+ * @returns {string[]}
+ */
+export function resolveBoxPlotLabels(series, labels, resolveFallbackLabel) {
+  const length = Math.max(labels.length, ...series.map((item) => item.values.length), 0);
+
+  return Array.from({ length }, (_value, index) => {
+    const configured = normalizeText(labels[index]);
+    if (configured) return configured;
+
+    const point = series[0]?.values[index];
+    if (point?.[GENERATED_POINT_LABEL]) {
+      return fallbackPointLabel(index, resolveFallbackLabel);
+    }
+
+    return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
+  });
 }
 
 export function boxPlotIncluded(point) {

@@ -18,6 +18,13 @@ export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
 export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
+export {
+  TABLE_VIEW_STATE_VERSION,
+  mergeTableViewState,
+  normalizeTableViewState,
+  restoreTableViewState,
+  serializeTableViewState,
+} from "./table-view-state/table-view-state.js";
 export { RowanButton } from "./button/button.js";
 export { RowanCard } from "./card/card.js";
 export { RowanCheckbox } from "./checkbox/checkbox.js";
