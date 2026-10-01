@@ -211,7 +211,7 @@ export class RowanHeatmapChart extends BaseElement {
               <div class="y-axis" aria-hidden="true"></div>
               <div class="plot-wrap">
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-                <div class="point-controls"></div>
+                <div class="point-controls" dir="ltr"></div>
               </div>
             </div>
             <div class="x-axis" aria-hidden="true"></div>

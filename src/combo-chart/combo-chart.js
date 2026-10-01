@@ -230,7 +230,7 @@ export class RowanComboChart extends BaseElement {
             <div class="plot-wrap">
               <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
               <div class="y-axis-secondary" aria-hidden="true"></div>
-              <div class="point-controls"></div>
+              <div class="point-controls" dir="ltr"></div>
             </div>
             <div class="x-axis" aria-hidden="true"></div>
             <ul class="legend" part="legend" aria-label="Series"></ul>

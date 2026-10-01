@@ -119,6 +119,7 @@
 }
 
 .point-controls {
+  direction: ltr;
   inset: 0;
   position: absolute;
 }

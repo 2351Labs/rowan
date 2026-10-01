@@ -303,10 +303,20 @@ describe("Rowan themes", () => {
         const layoutSurface = layout.shadowRoot.querySelector(".layout");
         const headerSurface = layout.shadowRoot.querySelector(".header");
         const navigationSurface = layout.shadowRoot.querySelector(".navigation");
+        const ghostButton = ghost.shadowRoot.querySelector(".button");
+        await paintedBackground(layout, ".layout");
+        for (let attempt = 0; attempt < 120; attempt += 1) {
+          const ghostContrast = contrastRatio(
+            getComputedStyle(ghostButton).color,
+            getComputedStyle(headerSurface).backgroundColor,
+          );
+          if (ghostContrast >= 3) break;
+          await nextFrame();
+        }
         const layoutStyles = getComputedStyle(layoutSurface);
         const headingStyles = getComputedStyle(heading);
         const itemStyles = getComputedStyle(item.shadowRoot.querySelector(".item"));
-        const ghostStyles = getComputedStyle(ghost.shadowRoot.querySelector(".button"));
+        const ghostStyles = getComputedStyle(ghostButton);
         const secondaryStyles = getComputedStyle(secondary.shadowRoot.querySelector(".button"));
 
         expect(relativeLuminance(layoutStyles.backgroundColor), themeName).to.be.below(0.2);

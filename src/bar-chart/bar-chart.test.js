@@ -135,6 +135,7 @@ describe("rowan-bar-chart", () => {
     await nextMicrotask();
 
     const controls = chart.shadowRoot.querySelector(".point-controls");
+    expect(controls.getAttribute("dir")).to.equal("ltr");
     expect(getComputedStyle(controls).direction).to.equal("ltr");
 
     const key = "incoming::0";

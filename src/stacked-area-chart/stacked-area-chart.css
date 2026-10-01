@@ -169,6 +169,7 @@
 }
 
 .point-controls {
+  direction: ltr;
   inset: 0;
   pointer-events: none;
   position: absolute;

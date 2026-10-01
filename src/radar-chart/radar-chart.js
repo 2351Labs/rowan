@@ -238,7 +238,7 @@ export class RowanRadarChart extends BaseElement {
           <figure class="chart" part="chart">
             <div class="plot-wrap">
               <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-              <div class="point-controls"></div>
+              <div class="point-controls" dir="ltr"></div>
             </div>
             <ul class="legend" part="legend" aria-label="Series"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>

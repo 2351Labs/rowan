@@ -250,7 +250,7 @@ export class RowanTrendChart extends BaseElement {
               <div class="y-axis" aria-hidden="true"></div>
               <div class="plot-wrap">
                 <svg class="plot" part="plot" viewBox="0 0 1000 400"></svg>
-                <div class="point-controls"></div>
+                <div class="point-controls" dir="ltr"></div>
               </div>
             </div>
             <div class="axis-footer" aria-hidden="true">
