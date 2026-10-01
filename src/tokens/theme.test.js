@@ -304,20 +304,31 @@ describe("Rowan themes", () => {
         const headerSurface = layout.shadowRoot.querySelector(".header");
         const navigationSurface = layout.shadowRoot.querySelector(".navigation");
         const ghostButton = ghost.shadowRoot.querySelector(".button");
+        const itemSurface = item.shadowRoot.querySelector(".item");
+        const secondaryButton = secondary.shadowRoot.querySelector(".button");
         await paintedBackground(layout, ".layout");
         for (let attempt = 0; attempt < 120; attempt += 1) {
-          const ghostContrast = contrastRatio(
-            getComputedStyle(ghostButton).color,
-            getComputedStyle(headerSurface).backgroundColor,
-          );
-          if (ghostContrast >= 3) break;
+          const layoutStyles = getComputedStyle(layoutSurface);
+          const headingStyles = getComputedStyle(heading);
+          const itemStyles = getComputedStyle(itemSurface);
+          const ghostStyles = getComputedStyle(ghostButton);
+          const secondaryStyles = getComputedStyle(secondaryButton);
+          const nestedShellReady =
+            relativeLuminance(layoutStyles.backgroundColor) < 0.2 &&
+            contrastRatio(headingStyles.color, layoutStyles.backgroundColor) >= 4.5 &&
+            contrastRatio(itemStyles.color, getComputedStyle(navigationSurface).backgroundColor) >=
+              4.5 &&
+            contrastRatio(ghostStyles.color, getComputedStyle(headerSurface).backgroundColor) >=
+              3 &&
+            contrastRatio(secondaryStyles.color, secondaryStyles.backgroundColor) >= 4.5;
+          if (nestedShellReady) break;
           await nextFrame();
         }
         const layoutStyles = getComputedStyle(layoutSurface);
         const headingStyles = getComputedStyle(heading);
-        const itemStyles = getComputedStyle(item.shadowRoot.querySelector(".item"));
+        const itemStyles = getComputedStyle(itemSurface);
         const ghostStyles = getComputedStyle(ghostButton);
-        const secondaryStyles = getComputedStyle(secondary.shadowRoot.querySelector(".button"));
+        const secondaryStyles = getComputedStyle(secondaryButton);
 
         expect(relativeLuminance(layoutStyles.backgroundColor), themeName).to.be.below(0.2);
         expect(
