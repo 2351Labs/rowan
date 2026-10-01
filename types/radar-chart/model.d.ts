@@ -12,10 +12,14 @@ export function radarAngle(index: number, count: number): number;
  * @param {{ min: number, max: number }} domain
  * @param {number} maxRadius
  */
-export function radarRadius(value: number | null, domain: {
+export function radarRadius(
+  value: number | null,
+  domain: {
     min: number;
     max: number;
-}, maxRadius: number): number;
+  },
+  maxRadius: number,
+): number;
 /**
  * @param {number} index
  * @param {number} count
@@ -25,14 +29,22 @@ export function radarRadius(value: number | null, domain: {
  * @param {number} cy
  * @param {number} maxRadius
  */
-export function radarPoint(index: number, count: number, value: number | null, domain: {
+export function radarPoint(
+  index: number,
+  count: number,
+  value: number | null,
+  domain: {
     min: number;
     max: number;
-}, cx: number, cy: number, maxRadius: number): {
-    x: number;
-    y: number;
-    angle: number;
-    r: number;
+  },
+  cx: number,
+  cy: number,
+  maxRadius: number,
+): {
+  x: number;
+  y: number;
+  angle: number;
+  r: number;
 };
 /**
  * @param {number} index
@@ -41,10 +53,16 @@ export function radarPoint(index: number, count: number, value: number | null, d
  * @param {number} cy
  * @param {number} radius
  */
-export function radarRingPoint(index: number, count: number, cx: number, cy: number, radius: number): {
-    x: number;
-    y: number;
-    angle: number;
+export function radarRingPoint(
+  index: number,
+  count: number,
+  cx: number,
+  cy: number,
+  radius: number,
+): {
+  x: number;
+  y: number;
+  angle: number;
 };
 /**
  * @param {number} count
@@ -57,28 +75,34 @@ export function radarPolygonPath(count: number, cx: number, cy: number, radius: 
  * @param {Array<{ index: number, x: number, y: number }>} points
  * @param {number} categoryCount
  */
-export function radarLinePath(points: Array<{
+export function radarLinePath(
+  points: Array<{
     index: number;
     x: number;
     y: number;
-}>, categoryCount: number): string;
+  }>,
+  categoryCount: number,
+): string;
 /**
  * Fill only a complete ring. A null axis breaks the fill so the gap is not
  * read as zero.
  * @param {Array<{ index: number, x: number, y: number }>} points
  * @param {number} categoryCount
  */
-export function radarAreaPath(points: Array<{
+export function radarAreaPath(
+  points: Array<{
     index: number;
     x: number;
     y: number;
-}>, categoryCount: number): string;
+  }>,
+  categoryCount: number,
+): string;
 /**
  * @param {import("../chart/model.js").RowanNormalizedChartSeries[]} series
  */
 export function radarDomain(series: import("../chart/model.js").RowanNormalizedChartSeries[]): {
-    min: number;
-    max: number;
+  min: number;
+  max: number;
 };
 /**
  * @param {number} angle

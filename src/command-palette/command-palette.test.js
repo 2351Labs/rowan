@@ -292,4 +292,63 @@ describe("rowan-command-palette", () => {
     expect(palette.getAttribute("role")).to.equal("region");
     expect(palette.getAttribute("aria-label")).to.equal("Workspace command center");
   });
+
+  it("uses inherited locale and property-only messages for generated copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "tr-TR";
+    const palette = document.createElement("rowan-command-palette");
+    palette.append(createCommand({ value: "izmir", label: "İzmir" }));
+    wrapper.append(palette);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const commands = [];
+    const closes = [];
+    palette.addEventListener("rowan-command", (event) => commands.push(event));
+    palette.addEventListener("rowan-close", (event) => closes.push(event));
+    palette.messages = {
+      close: "Komut paletini kapat",
+      emptyLabel: "Komut bulunamadı.",
+      label: "Komut paleti",
+      placeholder: "Komut ara",
+    };
+    palette.query = "izmir";
+    await nextMicrotask();
+
+    expect(palette.getAttribute("messages")).to.equal(null);
+    expect(palette.locale).to.equal("tr-TR");
+    expect(palette.shadowRoot.querySelector(".title").textContent).to.equal("Komut paleti");
+    expect(palette.shadowRoot.querySelector("input").placeholder).to.equal("Komut ara");
+    expect(palette.shadowRoot.querySelector(".empty-fallback").textContent).to.equal(
+      "Komut bulunamadı.",
+    );
+    expect(palette.shadowRoot.querySelector("button.close").getAttribute("aria-label")).to.equal(
+      "Komut paletini kapat",
+    );
+    expect(
+      palette.querySelector("rowan-command-item").hasAttribute("data-rowan-command-hidden"),
+    ).to.equal(false);
+    expect(commands).to.deep.equal([]);
+    expect(closes).to.deep.equal([]);
+  });
+
+  it("keeps explicit generated-copy attributes ahead of messages", async () => {
+    const palette = await renderPalette();
+    palette.label = "Workspace commands";
+    palette.placeholder = "Find a workflow";
+    palette.emptyLabel = "No matching workflows.";
+    palette.messages = {
+      emptyLabel: "Ignored empty state",
+      label: "Ignored title",
+      placeholder: "Ignored placeholder",
+    };
+    await nextMicrotask();
+
+    expect(palette.shadowRoot.querySelector(".title").textContent).to.equal("Workspace commands");
+    expect(palette.shadowRoot.querySelector("input").placeholder).to.equal("Find a workflow");
+    expect(palette.shadowRoot.querySelector(".empty-fallback").textContent).to.equal(
+      "No matching workflows.",
+    );
+  });
 });

@@ -132,4 +132,34 @@ describe("rowan-confirm-dialog", () => {
     expect(overlay.getAttribute("role")).to.equal("alertdialog");
     expect(dialog.shadowRoot.activeElement).to.equal(cancel);
   });
+
+  it("uses property-only messages for default dialog copy without emitting an event", async () => {
+    const dialog = document.createElement("rowan-confirm-dialog");
+    document.body.append(dialog);
+    await waitForNestedRender();
+
+    const events = [];
+    ["rowan-confirm", "rowan-cancel", "rowan-close"].forEach((type) => {
+      dialog.addEventListener(type, (event) => events.push(event));
+    });
+    dialog.messages = {
+      cancelLabel: "Annuler",
+      confirmLabel: "Confirmer",
+      label: "Confirmer la suppression",
+    };
+    await wait();
+
+    expect(dialog.getAttribute("messages")).to.equal(null);
+    expect(dialog.shadowRoot.querySelector(".title-fallback").textContent).to.equal(
+      "Confirmer la suppression",
+    );
+    expect(dialog.shadowRoot.querySelector(".cancel").textContent).to.equal("Annuler");
+    expect(dialog.shadowRoot.querySelector(".confirm").textContent).to.equal("Confirmer");
+    expect(events).to.deep.equal([]);
+
+    dialog.confirmLabel = "Delete";
+    await wait();
+
+    expect(dialog.shadowRoot.querySelector(".confirm").textContent).to.equal("Delete");
+  });
 });

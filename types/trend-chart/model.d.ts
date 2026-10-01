@@ -9,4 +9,10 @@ export type RowanTrendChartValueFormatter = import("../chart/model.js").RowanCha
 export type RowanTrendChartConfig = import("../chart/model.js").RowanChartConfig;
 export type RowanNormalizedTrendPoint = import("../chart/model.js").RowanNormalizedChartPoint;
 export type RowanNormalizedTrendSeries = import("../chart/model.js").RowanNormalizedChartSeries;
-export { chartValueDomain as trendValueDomain, cloneChartSeries as cloneTrendSeries, normalizeChartLabels as normalizeTrendLabels, normalizeChartSeries as normalizeTrendSeries, resolveChartLabels as resolveTrendLabels } from "../chart/model.js";
+export {
+  chartValueDomain as trendValueDomain,
+  cloneChartSeries as cloneTrendSeries,
+  normalizeChartLabels as normalizeTrendLabels,
+  normalizeChartSeries as normalizeTrendSeries,
+  resolveChartLabels as resolveTrendLabels,
+} from "../chart/model.js";

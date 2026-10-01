@@ -52,7 +52,7 @@ describe("rowan-button", () => {
     expect(element.size).to.equal("sm");
   });
 
-  it("treats disabled=\"false\" as unset", async () => {
+  it('treats disabled="false" as unset', async () => {
     const element = document.createElement("rowan-button");
     document.body.append(element);
     await nextMicrotask();

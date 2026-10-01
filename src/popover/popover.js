@@ -4,6 +4,7 @@ import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { keys } from "../lib/keys.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   isTopmostOverlay,
   noteDismissibleClose,
@@ -14,6 +15,7 @@ import {
 let popoverId = 0;
 
 const TRIGGER_MODES = new Set(["click", "manual"]);
+const DEFAULT_MESSAGES = Object.freeze({ label: "Popover" });
 
 function isHTMLElement(value) {
   return value instanceof HTMLElement;
@@ -46,11 +48,17 @@ function setElementReferences(element, property, elements) {
 }
 
 /**
+ * @typedef {object} RowanPopoverMessages
+ * @property {string} [label]
+ */
+
+/**
  * Inline popover surface.
  * @tag rowan-popover
  * @attr {boolean} open
  * @attr {string} label
  * @attr {"click"|"manual"} trigger
+ * @property {RowanPopoverMessages} messages - Property-only built-in message overrides.
  * @slot trigger
  * @slot - Content
  * @csspart trigger
@@ -60,7 +68,7 @@ function setElementReferences(element, property, elements) {
 export class RowanPopover extends BaseElement {
   static styleUrl = new URL("./popover.css", import.meta.url).href;
   static observedAttributes = ["open", "label", "trigger"];
-  static upgradeProperties = ["open", "label", "trigger"];
+  static upgradeProperties = ["open", "label", "trigger", "messages"];
 
   #triggerContainer = null;
   #triggerSlot = null;
@@ -72,6 +80,7 @@ export class RowanPopover extends BaseElement {
   #removeDocumentPointerListener = null;
   #removeDocumentKeydownListener = null;
   #managedControlsElement = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -99,12 +108,23 @@ export class RowanPopover extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Popover");
+    return this.readString("label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "label"));
   }
 
   set label(value) {
     const next = String(value ?? "").trim();
-    this.reflectString("label", next && next !== "Popover" ? next : null);
+    this.reflectString("label", next && next !== DEFAULT_MESSAGES.label ? next : null);
+  }
+
+  /** @returns {RowanPopoverMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanPopoverMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   /** @returns {"click" | "manual"} */

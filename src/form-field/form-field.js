@@ -1,7 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 let formFieldId = 0;
+const DEFAULT_MESSAGES = Object.freeze({ required: "Required" });
 
 function assignedContent(slot) {
   return slot.assignedNodes().some((node) => {
@@ -20,6 +22,11 @@ function contentText(slot, fallback) {
 }
 
 /**
+ * @typedef {object} RowanFormFieldMessages
+ * @property {string} [required]
+ */
+
+/**
  * Accessible label, support text, and error composition for a form control.
  * @tag rowan-form-field
  * @attr {string} label
@@ -30,6 +37,7 @@ function contentText(slot, fallback) {
  * @attr {"top"|"start"} label-position
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @property {RowanFormFieldMessages} messages - Property-only built-in message overrides.
  * @slot - A direct form control or grouped control
  * @slot label - Replaces the label attribute
  * @slot hint - Replaces the hint attribute
@@ -73,6 +81,7 @@ export class RowanFormField extends BaseElement {
     "labelPosition",
     "required",
     "invalid",
+    "messages",
   ];
 
   #field = null;
@@ -102,6 +111,7 @@ export class RowanFormField extends BaseElement {
   #managedText = new WeakMap();
   #managedReferences = new WeakMap();
   #controlObserver = null;
+  #messages = {};
 
   constructor() {
     super();
@@ -193,13 +203,24 @@ export class RowanFormField extends BaseElement {
     this.reflectBoolean("invalid", Boolean(value));
   }
 
+  /** @returns {RowanFormFieldMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFormFieldMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   render() {
     if (!this.#field) {
       this.renderRoot.innerHTML = `
         <div class="field" part="field">
           <div class="label-row" part="label-row">
             <span class="label" part="label"></span>
-            <span class="required-indicator" part="required-indicator" aria-hidden="true">Required</span>
+            <span class="required-indicator" part="required-indicator" aria-hidden="true"></span>
             <span class="actions" part="actions"><slot name="actions"></slot></span>
           </div>
           <div class="control" part="control"><slot></slot></div>
@@ -259,6 +280,11 @@ export class RowanFormField extends BaseElement {
     this.#hintFallback.textContent = this.hint;
     this.#descriptionFallback.textContent = this.description;
     this.#errorFallback.textContent = this.error;
+    this.#requiredIndicator.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "required",
+    );
 
     const hasLabel = assignedContent(this.#labelSlot) || this.label.trim().length > 0;
     const hasHint = assignedContent(this.#hintSlot) || this.hint.trim().length > 0;

@@ -6,6 +6,7 @@
  * @attr {string} selection-label
  * @attr {string} clear-label
  * @attr {boolean} disabled
+ * @property {RowanBulkActionsBarMessages} messages - Property-only built-in message overrides.
  * @slot label - Content before the selected-row status
  * @slot - Additional bulk action controls with data-bulk-action
  * @slot end - Trailing controls after the default clear action
@@ -23,29 +24,40 @@
  * @event rowan-clear-selection - Fired when a user clears the current selection
  */
 export class RowanBulkActionsBar extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set table(value: null);
-    get table(): null;
-    set forTable(value: string);
-    get forTable(): string;
-    set label(value: string);
-    get label(): string;
-    set selectionLabel(value: string);
-    get selectionLabel(): string;
-    set clearLabel(value: string);
-    get clearLabel(): string;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    set actions(value: any[]);
-    get actions(): any[];
-    get selected(): any[];
-    get selectedRows(): any[];
-    get selectedCount(): number;
-    refresh(): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set table(value: null);
+  get table(): null;
+  set forTable(value: string);
+  get forTable(): string;
+  set label(value: string);
+  get label(): string;
+  set selectionLabel(value: string);
+  get selectionLabel(): string;
+  set clearLabel(value: string);
+  get clearLabel(): string;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  /** @param {RowanBulkActionsBarMessages | null | undefined} value */
+  set messages(value: RowanBulkActionsBarMessages | null | undefined);
+  /** @returns {RowanBulkActionsBarMessages} */
+  get messages(): RowanBulkActionsBarMessages;
+  set actions(value: any[]);
+  get actions(): any[];
+  get selected(): any[];
+  get selectedRows(): any[];
+  get selectedCount(): number;
+  refresh(): void;
+  #private;
 }
+export type RowanBulkActionsBarMessages = {
+  clearLabel?: string | undefined;
+  label?: string | undefined;
+  selectionLabel?: string | undefined;
+  selectionStatus?:
+    string | ((context: { count: number; selectionLabel: string }) => string) | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

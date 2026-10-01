@@ -52,4 +52,21 @@ describe("rowan-spinner", () => {
     expect(el.size).to.equal("md");
     expect(el.hasAttribute("size")).to.equal(false);
   });
+
+  it("uses property-only messages for its fallback loading label", async () => {
+    const el = document.createElement("rowan-spinner");
+    document.body.append(el);
+    await nextMicrotask();
+
+    el.messages = { loading: "Chargement" };
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.shadowRoot.querySelector(".sr-only").textContent).to.equal("Chargement");
+
+    el.label = "Loading records";
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector(".sr-only").textContent).to.equal("Loading records");
+  });
 });

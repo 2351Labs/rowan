@@ -8,7 +8,9 @@ export function setValidityMessages(messages: Record<string, string> | null | un
  * Return a non-empty string to use it; any other value falls through.
  * @param {null | undefined | ((key: string, fallback: string) => unknown)} resolver
  */
-export function setValidityMessageResolver(resolver: null | undefined | ((key: string, fallback: string) => unknown)): void;
+export function setValidityMessageResolver(
+  resolver: null | undefined | ((key: string, fallback: string) => unknown),
+): void;
 export function resetValidityMessages(): void;
 /**
  * @param {string} key

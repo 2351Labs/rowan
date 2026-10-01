@@ -100,4 +100,25 @@ describe("rowan-toast", () => {
     expect(titleRegion.hidden).to.equal(true);
     expect(actionsRegion.hidden).to.equal(true);
   });
+
+  it("uses property-only dismiss messages without emitting rowan-dismiss", async () => {
+    const toast = document.createElement("rowan-toast");
+    document.body.append(toast);
+    await nextMicrotask();
+
+    const dismissals = [];
+    toast.addEventListener("rowan-dismiss", (event) => dismissals.push(event.detail));
+    toast.messages = {
+      dismiss: "Descartar",
+      dismissLabel: "Descartar notificacion",
+    };
+    await nextMicrotask();
+
+    expect(toast.getAttribute("messages")).to.equal(null);
+    expect(toast.shadowRoot.querySelector('[part="close"]').textContent).to.equal("Descartar");
+    expect(toast.shadowRoot.querySelector('[part="close"]').getAttribute("aria-label")).to.equal(
+      "Descartar notificacion",
+    );
+    expect(dismissals).to.deep.equal([]);
+  });
 });

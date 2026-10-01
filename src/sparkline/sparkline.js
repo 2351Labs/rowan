@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   bindChartHover,
   createChartHoverBubble,
@@ -14,6 +17,11 @@ const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 100;
 const VIEWBOX_HEIGHT = 24;
 const PLOT_PAD = 1.5;
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: "Sparkline",
+  noData: "No data",
+  point: "Point {index}",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -58,13 +66,22 @@ function pathData(points) {
 }
 
 /**
+ * @typedef {object} RowanSparklineMessages
+ * @property {string} [chart]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ */
+
+/**
  * Frozen compact one-series line for KPI tiles. Not a density of
  * `rowan-trend-chart`.
  * @tag rowan-sparkline
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
+ * @attr {string} locale
  * @property {Array<number | null>} values - One series. Arrays are property-only. Null is a gap.
  * @property {string[]} labels - Optional point labels for the accessible table. Arrays are property-only.
+ * @property {RowanSparklineMessages} messages - Property-only built-in message overrides.
  * @csspart chart
  * @csspart plot
  * @csspart line
@@ -77,8 +94,8 @@ function pathData(points) {
 export class RowanSparkline extends BaseElement {
   static styleUrl = new URL("./sparkline.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone"];
-  static upgradeProperties = ["label", "tone", "values", "labels"];
+  static observedAttributes = ["label", "tone", "locale"];
+  static upgradeProperties = ["label", "tone", "locale", "values", "labels", "messages"];
   static componentTokenPrefixes = ["--rowan-sparkline-"];
 
   #chart = null;
@@ -89,6 +106,7 @@ export class RowanSparkline extends BaseElement {
   #values = [];
   #labels = [];
   #toneExplicit = false;
+  #messages = {};
 
   get label() {
     return this.readString("label", "");
@@ -96,6 +114,25 @@ export class RowanSparkline extends BaseElement {
 
   set label(value) {
     this.reflectString("label", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanSparklineMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanSparklineMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
@@ -217,8 +254,7 @@ export class RowanSparkline extends BaseElement {
     const point = nearestPointByClientX(this.#plot, this.#plotPoints(), event.clientX);
     this.#syncHoverPoint(point);
     if (!point) return "";
-    const name = this.#labels[point.index];
-    return formatHoverLines([name, String(point.value)]);
+    return formatHoverLines([this.#pointLabel(point.index), this.#formatValue(point.value)]);
   }
 
   #syncHoverPoint(point) {
@@ -241,16 +277,19 @@ export class RowanSparkline extends BaseElement {
 
   #renderTable() {
     const caption = document.createElement("caption");
-    caption.textContent = this.label || "Sparkline";
+    caption.textContent = this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     const body = document.createElement("tbody");
 
     this.#values.forEach((value, index) => {
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
-      heading.textContent = this.#labels[index] || `Point ${index + 1}`;
+      heading.textContent = this.#pointLabel(index);
       const cell = document.createElement("td");
-      cell.textContent = value === null ? "No data" : String(value);
+      cell.textContent =
+        value === null
+          ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData")
+          : this.#formatValue(value);
       row.append(heading, cell);
       body.append(row);
     });
@@ -270,8 +309,20 @@ export class RowanSparkline extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.label || "Sparkline";
+      this.internals.ariaLabel =
+        this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
     }
+  }
+
+  #formatValue(value) {
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return (
+      this.#labels[index] ||
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", { index: String(index + 1) })
+    );
   }
 }
 

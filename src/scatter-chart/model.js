@@ -2,6 +2,7 @@ import { finiteOrNull } from "../chart/model.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
+const GENERATED_POINT_LABEL = Symbol("rowan.scatter-generated-point-label");
 
 /**
  * Normalized scatter point passed to a value formatter.
@@ -55,6 +56,15 @@ function padDomain(values) {
   return { min: min - padding, max: max + padding };
 }
 
+function fallbackPointLabel(index, resolveFallback) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `Point ${index + 1}`;
+}
+
 /**
  * @param {unknown} value
  */
@@ -103,12 +113,17 @@ export function normalizeScatterSeries(value) {
         color: normalizeColor(item.color),
         points: points.map((point, pointIndex) => {
           const sourcePoint = isObject(point) ? point : {};
-          return {
+          const authoredLabel = normalizeText(sourcePoint.label);
+          const normalized = {
             x: finiteOrNull(sourcePoint.x),
             y: finiteOrNull(sourcePoint.y),
             size: finiteOrNull(sourcePoint.size),
-            label: normalizeText(sourcePoint.label) || `Point ${pointIndex + 1}`,
+            label: authoredLabel || fallbackPointLabel(pointIndex),
           };
+          if (!authoredLabel) {
+            Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+          }
+          return normalized;
         }),
       },
     ];
@@ -120,6 +135,19 @@ export function cloneScatterSeries(value) {
     ...series,
     points: series.points.map((point) => ({ ...point })),
   }));
+}
+
+/**
+ * @param {RowanScatterChartPoint} point
+ * @param {number} index
+ * @param {(index: number) => string} [resolveFallbackLabel]
+ */
+export function resolveScatterPointLabel(point, index, resolveFallbackLabel) {
+  if (point?.[GENERATED_POINT_LABEL]) {
+    return fallbackPointLabel(index, resolveFallbackLabel);
+  }
+
+  return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
 }
 
 export function scatterDomains(series) {

@@ -20,13 +20,19 @@ async function renderChart({
   series = INCIDENT_SERIES,
   labels = ["Mon", "Tue", "Wed"],
   interactive = false,
+  label = "On-call workload",
+  description = "Daily incident and resolution counts.",
+  locale,
+  messages,
 } = {}) {
   const chart = document.createElement("rowan-trend-chart");
-  chart.label = "On-call workload";
-  chart.description = "Daily incident and resolution counts.";
+  chart.label = label;
+  chart.description = description;
   chart.series = series;
   chart.labels = labels;
   chart.interactive = interactive;
+  if (locale !== undefined) chart.locale = locale;
+  if (messages !== undefined) chart.messages = messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -211,5 +217,82 @@ describe("rowan-trend-chart", () => {
     expect(chart.internals.role).to.equal("group");
     expect(chart.getAttribute("aria-label")).to.equal("Custom workload chart");
     expect(chart.internals.ariaLabel).to.equal("Workload trend");
+  });
+
+  it("uses locale and property-only messages for generated chart copy", async () => {
+    const chart = await renderChart({
+      label: "",
+      description: "",
+      locale: "de-DE",
+      labels: ["Mo", "Di"],
+      series: [{ id: "incidents", label: "Vorfälle", values: [1234.5, null] }],
+      messages: {
+        chart: "Liniendiagramm",
+        dataTable: "Datentabelle",
+        dataTableCaption: "Tabelle: {chart}",
+        metric: "Kennzahl",
+        noData: "Keine Daten",
+        noMetricData: "Keine Messdaten",
+        series: "Reihen",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event));
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.internals.ariaLabel).to.equal("Liniendiagramm");
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("aria-label")).to.equal(
+      "Liniendiagramm",
+    );
+    expect(chart.shadowRoot.querySelector(".legend").getAttribute("aria-label")).to.equal("Reihen");
+    expect(chart.shadowRoot.querySelector("summary").textContent).to.equal("Datentabelle");
+    expect(table.querySelector("caption").textContent).to.equal("Tabelle: Liniendiagramm");
+    expect(table.textContent).to.include(`KennzahlMoDiVorfälle${formatted}Keine Daten`);
+    expect(activations).to.deep.equal([]);
+
+    chart.series = [];
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelector(".empty-label").textContent).to.equal("Keine Messdaten");
+  });
+
+  it("localizes generated point labels without replacing authored labels", async () => {
+    const chart = await renderChart({
+      label: "",
+      description: "",
+      interactive: true,
+      labels: [],
+      series: [
+        {
+          id: "incidents",
+          label: "Vorfälle",
+          values: [4, { label: "Point 1", value: 8 }],
+        },
+      ],
+      messages: { point: "Punkt {index}" },
+    });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Punkt 1Point 1");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include(
+      "MetricPunkt 1Point 1Vorfälle48",
+    );
+    expect(
+      chart.shadowRoot
+        .querySelector('button[data-point-key="incidents::0"]')
+        .getAttribute("aria-label"),
+    ).to.include("Punkt 1");
+
+    chart.messages = { point: "Kategorie {index}" };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Kategorie 1Point 1");
+    expect(activations).to.deep.equal([]);
   });
 });

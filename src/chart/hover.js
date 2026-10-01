@@ -89,13 +89,13 @@ export function seriesHoverText(entries, event) {
   return `${entry.series.label}, ${entry.label}: ${entry.formattedValue}`;
 }
 
-export function referenceLineHoverText(event) {
+export function referenceLineHoverText(event, fallbackLabel = "Reference") {
   const node = event.target;
   if (!(node instanceof Element)) return "";
   const hit = node.closest("[data-ref-line]");
   if (!hit) return "";
   return formatHoverLines([
-    hit.getAttribute("data-ref-label") || "Reference",
+    hit.getAttribute("data-ref-label") || fallbackLabel,
     hit.getAttribute("data-ref-value"),
   ]);
 }

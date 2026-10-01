@@ -2,14 +2,27 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { partitionAcceptedFiles } from "../lib/file-accept.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 let dropzoneId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  ariaLabel: "File upload dropzone",
+  description: "Supports drag and drop or standard file picker.",
+  label: "Drop files here or click to browse",
+});
 
 function normalizeFileArray(files) {
   if (!files) return [];
   const list = Array.from(files);
   return list.filter((file) => file instanceof File);
 }
+
+/**
+ * @typedef {object} RowanDropzoneMessages
+ * @property {string} [ariaLabel]
+ * @property {string} [description]
+ * @property {string} [label]
+ */
 
 /**
  * Drag-and-drop file selection surface with picker fallback.
@@ -20,6 +33,7 @@ function normalizeFileArray(files) {
  * @attr {boolean} multiple
  * @attr {boolean} disabled
  * @attr {boolean} drag-active
+ * @property {RowanDropzoneMessages} messages - Property-only built-in message overrides.
  * @csspart surface
  * @csspart label
  * @csspart description
@@ -45,6 +59,7 @@ export class RowanDropzone extends BaseElement {
     "multiple",
     "disabled",
     "dragActive",
+    "messages",
   ];
 
   #surface = null;
@@ -52,6 +67,7 @@ export class RowanDropzone extends BaseElement {
   #descriptionEl = null;
   #input = null;
   #inputId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -114,6 +130,17 @@ export class RowanDropzone extends BaseElement {
 
   set dragActive(value) {
     this.reflectBoolean("drag-active", Boolean(value));
+  }
+
+  /** @returns {RowanDropzoneMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanDropzoneMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   openPicker() {
@@ -192,8 +219,9 @@ export class RowanDropzone extends BaseElement {
     this.#input.multiple = this.multiple;
     this.#input.disabled = this.disabled;
 
-    const labelText = this.label || "Drop files here or click to browse";
-    const descriptionText = this.description || "Supports drag and drop or standard file picker.";
+    const labelText = this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "label");
+    const descriptionText =
+      this.description || resolveMessage(this.#messages, DEFAULT_MESSAGES, "description");
 
     this.#labelEl.textContent = labelText;
     this.#descriptionEl.textContent = descriptionText;
@@ -227,7 +255,8 @@ export class RowanDropzone extends BaseElement {
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
       const label = this.label.trim();
-      this.internals.ariaLabel = label || "File upload dropzone";
+      this.internals.ariaLabel =
+        label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "ariaLabel");
     }
 
     if (!this.hasAttribute("aria-disabled") && "ariaDisabled" in this.internals) {

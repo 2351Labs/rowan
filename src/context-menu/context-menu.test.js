@@ -209,4 +209,30 @@ describe("rowan-context-menu", () => {
     expect(menu.open).to.equal(false);
     expect(dialog.open).to.equal(true);
   });
+
+  it("uses property-only messages for its fallback menu label without an event", async () => {
+    const target = document.createElement("button");
+    const { menu } = createMenu(target);
+    document.body.append(target, menu);
+    await settle();
+
+    const events = [];
+    menu.addEventListener("rowan-change", (event) => events.push(event));
+    menu.addEventListener("rowan-close", (event) => events.push(event));
+    menu.messages = { label: "Actions du projet" };
+    await settle();
+
+    expect(menu.getAttribute("messages")).to.equal(null);
+    expect(menu.shadowRoot.querySelector("rowan-menu").getAttribute("aria-label")).to.equal(
+      "Actions du projet",
+    );
+    expect(events).to.deep.equal([]);
+
+    menu.label = "Project actions";
+    await settle();
+
+    expect(menu.shadowRoot.querySelector("rowan-menu").getAttribute("aria-label")).to.equal(
+      "Project actions",
+    );
+  });
 });

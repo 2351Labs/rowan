@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { RowanMenuItem } from "../menu-item/menu-item.js";
 import {
   isTopmostOverlay,
@@ -12,6 +13,7 @@ import {
 import "../menu/menu.js";
 
 let contextMenuId = 0;
+const DEFAULT_MESSAGES = Object.freeze({ label: "Context menu" });
 
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -29,11 +31,17 @@ function isKeyboardInvocation(event) {
 }
 
 /**
+ * @typedef {object} RowanContextMenuMessages
+ * @property {string} [label]
+ */
+
+/**
  * Contextual action menu bound to an element by property or identifier.
  * @tag rowan-context-menu
  * @attr {boolean} open
  * @attr {string} for
  * @attr {string} label
+ * @property {RowanContextMenuMessages} messages - Property-only built-in message overrides.
  * @slot - rowan-menu-item actions
  * @csspart overlay
  * @csspart backdrop
@@ -47,7 +55,7 @@ function isKeyboardInvocation(event) {
 export class RowanContextMenu extends BaseElement {
   static styleUrl = new URL("./context-menu.css", import.meta.url).href;
   static observedAttributes = ["open", "for", "label"];
-  static upgradeProperties = ["open", "forTarget", "target", "label"];
+  static upgradeProperties = ["open", "forTarget", "target", "label", "messages"];
   static componentTokenPrefixes = ["--rowan-context-menu-"];
 
   #targetOverride = null;
@@ -64,6 +72,7 @@ export class RowanContextMenu extends BaseElement {
   #isOpen = false;
   #position = null;
   #menuId = "";
+  #messages = {};
 
   #handleTargetContextMenu = (event) => {
     event.preventDefault();
@@ -136,12 +145,26 @@ export class RowanContextMenu extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Context menu");
+    return this.readString("label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "label"));
   }
 
   set label(value) {
     const nextLabel = normalizeText(value);
-    this.reflectString("label", nextLabel && nextLabel !== "Context menu" ? nextLabel : null);
+    this.reflectString(
+      "label",
+      nextLabel && nextLabel !== DEFAULT_MESSAGES.label ? nextLabel : null,
+    );
+  }
+
+  /** @returns {RowanContextMenuMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanContextMenuMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   showAt(x, y) {

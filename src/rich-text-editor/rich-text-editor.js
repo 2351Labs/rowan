@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 import {
   cloneDocument,
@@ -16,6 +17,33 @@ import {
 } from "./document.js";
 
 let richTextEditorId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  apply: "Apply",
+  bold: "Bold",
+  bulletedList: "Bulleted list",
+  heading: "Heading",
+  italic: "Italic",
+  link: "Link",
+  linkUrl: "Link URL",
+  numberedList: "Numbered list",
+  remove: "Remove",
+  richTextEditor: "Rich text editor",
+  textFormatting: "Text formatting",
+  toolbarLabel: "{label} formatting",
+  underline: "Underline",
+  url: "URL",
+  urlPlaceholder: "https:// or /path",
+});
+const COMMAND_MESSAGE_KEYS = Object.freeze({
+  bold: "bold",
+  heading: "heading",
+  insertOrderedList: "numberedList",
+  insertUnorderedList: "bulletedList",
+  italic: "italic",
+  link: "link",
+  underline: "underline",
+});
+const LINK_ACTION_MESSAGE_KEYS = Object.freeze({ apply: "apply", remove: "remove" });
 
 const MARK_COMMANDS = new Set([
   "bold",
@@ -41,6 +69,25 @@ function normalizeMode(value) {
 }
 
 /**
+ * @typedef {object} RowanRichTextEditorMessages
+ * @property {string} [apply]
+ * @property {string} [bold]
+ * @property {string} [bulletedList]
+ * @property {string} [heading]
+ * @property {string} [italic]
+ * @property {string} [link]
+ * @property {string} [linkUrl]
+ * @property {string} [numberedList]
+ * @property {string} [remove]
+ * @property {string} [richTextEditor]
+ * @property {string} [textFormatting]
+ * @property {string | ((context: { label: string }) => string)} [toolbarLabel]
+ * @property {string} [underline]
+ * @property {string} [url]
+ * @property {string} [urlPlaceholder]
+ */
+
+/**
  * Constrained form-associated authoring control with a property-only document value.
  *
  * The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered
@@ -59,6 +106,7 @@ function normalizeMode(value) {
  * @attr {boolean} invalid
  * @property {import("./document.js").RowanRichTextDocument} value - Rich document state. Objects are property-only.
  * @property {string} text - Plain-text convenience value. Property-only.
+ * @property {RowanRichTextEditorMessages} messages - Property-only built-in message overrides.
  * @slot label - Replaces the label attribute.
  * @slot description - Replaces the description attribute.
  * @csspart control
@@ -100,6 +148,7 @@ export class RowanRichTextEditor extends BaseElement {
     "invalid",
     "value",
     "text",
+    "messages",
   ];
 
   #control = null;
@@ -120,9 +169,11 @@ export class RowanRichTextEditor extends BaseElement {
   #renderedMode = "";
   #savedRange = null;
   #linkPopover = null;
+  #linkLabel = null;
   #linkHrefInput = null;
   #labelId = "";
   #descriptionId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -224,6 +275,17 @@ export class RowanRichTextEditor extends BaseElement {
     this.reflectBoolean("invalid", Boolean(value));
   }
 
+  /** @returns {RowanRichTextEditorMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanRichTextEditorMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   /** @returns {import("./document.js").RowanRichTextDocument} */
   get value() {
     return cloneDocument(this.#value);
@@ -303,23 +365,23 @@ export class RowanRichTextEditor extends BaseElement {
             <div class="description" part="description"><slot name="description"><span class="description-fallback"></span></slot></div>
           </div>
           <div class="toolbar" part="toolbar" role="toolbar">
-            <button class="format-button bold" part="format-button" type="button" data-command="bold" aria-label="Bold" title="Bold"><strong aria-hidden="true">B</strong></button>
-            <button class="format-button italic" part="format-button" type="button" data-command="italic" aria-label="Italic" title="Italic"><em aria-hidden="true">I</em></button>
-            <button class="format-button underline" part="format-button" type="button" data-command="underline" aria-label="Underline" title="Underline"><u aria-hidden="true">U</u></button>
+            <button class="format-button bold" part="format-button" type="button" data-command="bold"><strong aria-hidden="true">B</strong></button>
+            <button class="format-button italic" part="format-button" type="button" data-command="italic"><em aria-hidden="true">I</em></button>
+            <button class="format-button underline" part="format-button" type="button" data-command="underline"><u aria-hidden="true">U</u></button>
             <span class="toolbar-divider" aria-hidden="true"></span>
-            <button class="format-button list" part="format-button" type="button" data-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list"><span aria-hidden="true">•</span></button>
-            <button class="format-button list" part="format-button" type="button" data-command="insertOrderedList" aria-label="Numbered list" title="Numbered list"><span aria-hidden="true">1.</span></button>
+            <button class="format-button list" part="format-button" type="button" data-command="insertUnorderedList"><span aria-hidden="true">•</span></button>
+            <button class="format-button list" part="format-button" type="button" data-command="insertOrderedList"><span aria-hidden="true">1.</span></button>
             <span class="toolbar-divider" aria-hidden="true"></span>
-            <button class="format-button heading" part="format-button" type="button" data-command="heading" aria-label="Heading" title="Heading"><span aria-hidden="true">H</span></button>
-            <button class="format-button link" part="format-button" type="button" data-command="link" aria-haspopup="dialog" aria-expanded="false" aria-label="Link" title="Link"><span aria-hidden="true">↗</span></button>
-            <div class="link-popover" popover role="dialog" aria-label="Link URL">
+            <button class="format-button heading" part="format-button" type="button" data-command="heading"><span aria-hidden="true">H</span></button>
+            <button class="format-button link" part="format-button" type="button" data-command="link" aria-haspopup="dialog" aria-expanded="false"><span aria-hidden="true">↗</span></button>
+            <div class="link-popover" popover role="dialog">
               <label class="link-label">
-                URL
-                <input class="link-href" type="text" autocomplete="off" spellcheck="false" placeholder="https:// or /path" />
+                <span class="link-label-text"></span>
+                <input class="link-href" type="text" autocomplete="off" spellcheck="false" />
               </label>
               <div class="link-actions">
-                <button class="link-apply" type="button" data-link-action="apply">Apply</button>
-                <button class="link-remove" type="button" data-link-action="remove">Remove</button>
+                <button class="link-apply" type="button" data-link-action="apply"></button>
+                <button class="link-remove" type="button" data-link-action="remove"></button>
               </div>
             </div>
           </div>
@@ -339,6 +401,7 @@ export class RowanRichTextEditor extends BaseElement {
       this.#descriptionSlot = this.renderRoot.querySelector('slot[name="description"]');
       this.#toolbar = this.renderRoot.querySelector(".toolbar");
       this.#linkPopover = this.renderRoot.querySelector(".link-popover");
+      this.#linkLabel = this.renderRoot.querySelector(".link-label-text");
       this.#linkHrefInput = this.renderRoot.querySelector(".link-href");
       this.#editorSlot = this.renderRoot.querySelector(".editor-slot");
       this.#editorPlaceholder = this.renderRoot.querySelector(".editor-placeholder");
@@ -367,6 +430,7 @@ export class RowanRichTextEditor extends BaseElement {
     }
 
     this.#ensureEditor();
+    this.#syncGeneratedCopy();
     this.#syncLabels();
     this.#syncEditingSurface();
     this.#syncFormValue();
@@ -404,8 +468,9 @@ export class RowanRichTextEditor extends BaseElement {
     labelElement.id = this.#labelId;
     descriptionElement.id = this.#descriptionId;
 
-    this.#editor.setAttribute("aria-label", label ? "" : "Rich text editor");
-    this.#textarea.setAttribute("aria-label", label ? "" : "Rich text editor");
+    const editorName = resolveMessage(this.#messages, DEFAULT_MESSAGES, "richTextEditor");
+    this.#editor.setAttribute("aria-label", label ? "" : editorName);
+    this.#textarea.setAttribute("aria-label", label ? "" : editorName);
     if (label) {
       this.#editor.setAttribute("aria-labelledby", this.#labelId);
       this.#textarea.setAttribute("aria-labelledby", this.#labelId);
@@ -424,7 +489,39 @@ export class RowanRichTextEditor extends BaseElement {
       this.#textarea.removeAttribute("aria-describedby");
     }
 
-    this.#toolbar.setAttribute("aria-label", label ? `${label} formatting` : "Text formatting");
+    this.#toolbar.setAttribute(
+      "aria-label",
+      label
+        ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "toolbarLabel", { label })
+        : resolveMessage(this.#messages, DEFAULT_MESSAGES, "textFormatting"),
+    );
+  }
+
+  #syncGeneratedCopy() {
+    for (const button of this.#toolbar.querySelectorAll("button[data-command]")) {
+      const key = COMMAND_MESSAGE_KEYS[button.dataset.command];
+      if (!key) continue;
+
+      const label = resolveMessage(this.#messages, DEFAULT_MESSAGES, key);
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    }
+
+    this.#linkPopover.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "linkUrl"),
+    );
+    this.#linkLabel.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "url");
+    this.#linkHrefInput.placeholder = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "urlPlaceholder",
+    );
+
+    for (const button of this.#toolbar.querySelectorAll("button[data-link-action]")) {
+      const key = LINK_ACTION_MESSAGE_KEYS[button.dataset.linkAction];
+      if (key) button.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, key);
+    }
   }
 
   #ensureEditor() {
@@ -817,7 +914,8 @@ export class RowanRichTextEditor extends BaseElement {
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
-      this.internals.ariaLabel = label || "Rich text editor";
+      this.internals.ariaLabel =
+        label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "richTextEditor");
     }
 
     if (!this.hasAttribute("aria-description") && "ariaDescription" in this.internals) {

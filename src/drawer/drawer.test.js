@@ -188,4 +188,30 @@ describe("rowan-drawer", () => {
 
     expect(changeCount).to.equal(0);
   });
+
+  it("uses property-only close and fallback title messages without emitting a change", async () => {
+    const drawer = document.createElement("rowan-drawer");
+    document.body.append(drawer);
+    await nextMicrotask();
+
+    const changes = [];
+    drawer.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    drawer.messages = {
+      close: "Fermer",
+      closeLabel: "Fermer le panneau",
+      title: "Panneau",
+    };
+    drawer.open = true;
+    await nextMicrotask();
+
+    expect(drawer.getAttribute("messages")).to.equal(null);
+    expect(drawer.shadowRoot.querySelector(".close").textContent).to.equal("Fermer");
+    expect(drawer.shadowRoot.querySelector(".close").getAttribute("aria-label")).to.equal(
+      "Fermer le panneau",
+    );
+    expect(drawer.shadowRoot.querySelector("dialog").getAttribute("aria-label")).to.equal(
+      "Panneau",
+    );
+    expect(changes).to.deep.equal([]);
+  });
 });

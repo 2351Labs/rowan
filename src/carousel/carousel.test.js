@@ -89,6 +89,37 @@ describe("rowan-carousel", () => {
     expect(next.disabled).to.equal(false);
   });
 
+  it("uses property-only messages and visual arrow movement in RTL", async () => {
+    const carousel = createCarousel({ activeIndex: 1 });
+    carousel.dir = "rtl";
+    await nextMicrotask();
+
+    const changes = [];
+    carousel.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    carousel.messages = {
+      previousPanel: "Panel anterior",
+      nextPanel: "Panel siguiente",
+      panelStatus: "{index} de {total}",
+      roleDescription: "carrusel",
+    };
+    await nextMicrotask();
+
+    const viewport = carousel.shadowRoot.querySelector("[part='viewport']");
+    const previous = carousel.shadowRoot.querySelector('[data-action="previous"]');
+    const next = carousel.shadowRoot.querySelector('[data-action="next"]');
+    expect(carousel.getAttribute("messages")).to.equal(null);
+    expect(previous.getAttribute("aria-label")).to.equal("Panel anterior");
+    expect(next.getAttribute("aria-label")).to.equal("Panel siguiente");
+    expect(carousel.shadowRoot.querySelector("[part='status']").textContent).to.equal("2 de 3");
+    expect(carousel.internals.ariaRoleDescription).to.equal("carrusel");
+
+    viewport.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }));
+    await nextMicrotask();
+
+    expect(carousel.activeIndex).to.equal(0);
+    expect(changes).to.deep.equal([{ activeIndex: 0, previousIndex: 1 }]);
+  });
+
   it("ignores action-like controls supplied inside a slotted panel", async () => {
     const carousel = createCarousel({ activeIndex: 1 });
     const panelButton = document.createElement("button");

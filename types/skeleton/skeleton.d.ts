@@ -11,17 +11,17 @@
  * @cssprop --rowan-skeleton-shimmer-duration
  */
 export class RowanSkeleton extends BaseElement {
-    /** @param {"text" | "rect" | "circle"} value */
-    set shape(value: "circle" | "rect" | "text");
-    /** @returns {"text" | "rect" | "circle"} */
-    get shape(): "circle" | "rect" | "text";
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set width(value: string);
-    get width(): string;
-    set height(value: string);
-    get height(): string;
-    set animated(value: boolean);
-    get animated(): boolean;
-    #private;
+  /** @param {"text" | "rect" | "circle"} value */
+  set shape(value: "circle" | "rect" | "text");
+  /** @returns {"text" | "rect" | "circle"} */
+  get shape(): "circle" | "rect" | "text";
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set width(value: string);
+  get width(): string;
+  set height(value: string);
+  get height(): string;
+  set animated(value: boolean);
+  get animated(): boolean;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

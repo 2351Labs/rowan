@@ -1,4 +1,11 @@
+import { resolveMessage } from "../lib/messages.js";
+
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const DEFAULT_TABLE_MESSAGES = Object.freeze({
+  metric: "Metric",
+  noData: "No data",
+  reference: "Reference",
+});
 
 export function createSvgElement(name) {
   return document.createElementNS(SVG_NAMESPACE, name);
@@ -18,11 +25,12 @@ export function createCell(tagName, text, scope = "") {
  *   labels: string[],
  *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,
  *   formatValue: (value: number, series: unknown, index: number, label: string) => string,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
 export function renderChartTable(
   table,
-  { caption, labels, series, formatValue, referenceLines = [] },
+  { caption, labels, series, formatValue, messages = {}, referenceLines = [] },
 ) {
   const fragment = document.createDocumentFragment();
   const captionEl = document.createElement("caption");
@@ -32,7 +40,9 @@ export function renderChartTable(
 
   const head = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  headerRow.append(createCell("th", "Metric", "col"));
+  headerRow.append(
+    createCell("th", resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "metric"), "col"),
+  );
   for (const label of labels) {
     headerRow.append(createCell("th", label, "col"));
   }
@@ -47,7 +57,7 @@ export function renderChartTable(
       const point = item.values[index];
       const text =
         point?.value === null || !point
-          ? "No data"
+          ? resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "noData")
           : formatValue(point.value, item, index, labels[index]);
       row.append(createCell("td", text));
     }
@@ -61,15 +71,12 @@ export function renderChartTable(
     const span = Math.max(1, labels.length);
     for (const line of referenceLines) {
       const row = document.createElement("tr");
-      row.append(createCell("th", line.label || "Reference", "row"));
+      const referenceLabel =
+        line.label || resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "reference");
+      row.append(createCell("th", referenceLabel, "row"));
       const cell = document.createElement("td");
       cell.colSpan = span;
-      cell.textContent = formatValue(
-        line.value,
-        { label: line.label || "Reference" },
-        0,
-        line.label,
-      );
+      cell.textContent = formatValue(line.value, { label: referenceLabel }, 0, referenceLabel);
       row.append(cell);
       refs.append(row);
     }
@@ -85,9 +92,10 @@ export function renderChartTable(
  *   caption: string,
  *   columns: Array<{ key: string, header: string }>,
  *   rows: Array<Record<string, string | null | undefined>>,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
-export function renderKeyedChartTable(table, { caption, columns, rows }) {
+export function renderKeyedChartTable(table, { caption, columns, rows, messages = {} }) {
   const fragment = document.createDocumentFragment();
   const captionEl = document.createElement("caption");
   captionEl.className = "sr-only";
@@ -107,7 +115,14 @@ export function renderKeyedChartTable(table, { caption, columns, rows }) {
     const tr = document.createElement("tr");
     for (const column of columns) {
       const value = row[column.key];
-      tr.append(createCell("td", value == null || value === "" ? "No data" : String(value)));
+      tr.append(
+        createCell(
+          "td",
+          value == null || value === ""
+            ? resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "noData")
+            : String(value),
+        ),
+      );
     }
     body.append(tr);
   }
@@ -123,9 +138,13 @@ export function renderKeyedChartTable(table, { caption, columns, rows }) {
  *   columns: string[],
  *   values: Array<Array<number | null | undefined>>,
  *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
-export function renderMatrixChartTable(table, { caption, rows, columns, values, formatValue }) {
+export function renderMatrixChartTable(
+  table,
+  { caption, rows, columns, values, formatValue, messages = {} },
+) {
   const fragment = document.createDocumentFragment();
   const captionEl = document.createElement("caption");
   captionEl.className = "sr-only";
@@ -149,7 +168,7 @@ export function renderMatrixChartTable(table, { caption, rows, columns, values, 
       const value = values[rowIndex]?.[columnIndex];
       const text =
         value === null || value === undefined
-          ? "No data"
+          ? resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "noData")
           : formatValue(value, rowIndex, columnIndex);
       tr.append(createCell("td", text));
     });

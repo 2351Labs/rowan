@@ -387,4 +387,58 @@ describe("rowan-row-details-panel", () => {
 
     expect(panel.open).to.equal(false);
   });
+
+  it("uses inherited locale and property-only messages for generated details copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.rowId = "member-1";
+    panel.rowIds = ["member-1", "member-2"];
+    panel.fields = [
+      { id: "joined", label: "Joined" },
+      { id: "note", label: "Note" },
+    ];
+    panel.row = {
+      joined: new Date("2026-10-12T13:45:00Z"),
+      note: null,
+    };
+    wrapper.append(panel);
+    document.body.append(wrapper);
+    await settle();
+
+    const events = [];
+    ["rowan-close", "rowan-navigate"].forEach((type) => {
+      panel.addEventListener(type, () => events.push(type));
+    });
+    panel.messages = {
+      empty: "Keine Zeile ausgewahlt.",
+      nextRow: "Nachste Zeile",
+      notSet: "Nicht gesetzt",
+      pagerStatus: "{index} von {total}",
+      previousRow: "Vorherige Zeile",
+    };
+    await settle();
+
+    expect(panel.getAttribute("messages")).to.equal(null);
+    expect(panel.locale).to.equal("de-DE");
+    expect(panel.shadowRoot.querySelector(".prev").label).to.equal("Vorherige Zeile");
+    expect(panel.shadowRoot.querySelector(".next").label).to.equal("Nachste Zeile");
+    expect(panel.shadowRoot.querySelector(".pager-status").textContent).to.equal("1 von 2");
+    expect(panel.shadowRoot.querySelectorAll(".description")[0].textContent).to.equal(
+      new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(
+        new Date("2026-10-12T13:45:00Z"),
+      ),
+    );
+    expect(panel.shadowRoot.querySelectorAll(".description")[1].textContent).to.equal(
+      "Nicht gesetzt",
+    );
+
+    panel.row = null;
+    await settle();
+
+    expect(panel.shadowRoot.querySelector('[part="empty"]').textContent.trim()).to.equal(
+      "Keine Zeile ausgewahlt.",
+    );
+    expect(events).to.deep.equal([]);
+  });
 });

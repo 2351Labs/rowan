@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./combo-chart.js";
 import { createParetoData } from "./pareto.js";
 
@@ -6,11 +11,13 @@ const nextMicrotask = () => Promise.resolve();
 
 async function renderChart(options = {}) {
   const chart = document.createElement("rowan-combo-chart");
-  chart.label = options.label ?? "Defects";
+  chart.label = options.label !== undefined ? options.label : "Defects";
   if (options.labels) chart.labels = options.labels;
   if (options.series) chart.series = options.series;
   if (options.interactive) chart.interactive = true;
   if (options.referenceLines) chart.referenceLines = options.referenceLines;
+  if (options.locale !== undefined) chart.locale = options.locale;
+  if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
@@ -105,5 +112,114 @@ describe("rowan-combo-chart", () => {
     expect(activations).to.have.length(1);
     expect(activations[0].seriesId).to.equal("count");
     expect(activations[0].value).to.equal(10);
+  });
+
+  it("moves keyboard focus between named point controls", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["A", "B"],
+      series: [{ id: "count", label: "Count", values: [10, 4] }],
+    });
+    await assertPointControlKeyboardNavigation(chart);
+  });
+
+  it("keeps an overlay hit target on its SVG bar in LTR and RTL hosts", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["A", "B"],
+      series: [{ id: "count", label: "Count", values: [10, 4] }],
+    });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "rect.bar",
+      pointKey: "count::0",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["A", "B"],
+      series: [{ id: "count", label: "Count", values: [10, 4] }],
+    });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = [...chart.labels];
+      },
+      markSelector: "rect.bar",
+    });
+  });
+
+  it("uses locale and property-only messages for generated chart and reference copy", async () => {
+    const chart = await renderChart({
+      label: "",
+      locale: "de-DE",
+      labels: ["A", "B"],
+      series: [{ id: "count", label: "Anzahl", geometry: "bar", values: [1234.5, null] }],
+      referenceLines: [{ value: 2000 }],
+      messages: {
+        chart: "Kombinationsdiagramm",
+        dataTable: "Datentabelle",
+        dataTableCaption: "Tabelle: {chart}",
+        metric: "Kennzahl",
+        noData: "Keine Daten",
+        reference: "Bezugswert",
+        series: "Reihen",
+      },
+    });
+    const formatted = new Intl.NumberFormat("de-DE").format(1234.5);
+    const table = chart.shadowRoot.querySelector("table");
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.locale).to.equal("de-DE");
+    expect(chart.internals.ariaLabel).to.equal("Kombinationsdiagramm");
+    expect(chart.shadowRoot.querySelector(".legend").getAttribute("aria-label")).to.equal("Reihen");
+    expect(chart.shadowRoot.querySelector("summary").textContent).to.equal("Datentabelle");
+    expect(table.querySelector("caption").textContent).to.equal("Tabelle: Kombinationsdiagramm");
+    expect(table.textContent).to.include(`KennzahlABAnzahl${formatted}Keine DatenBezugswert2.000`);
+
+    const hover = chart.shadowRoot.querySelector(".hover");
+    chart.shadowRoot
+      .querySelector("g.reference-line-group")
+      .dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 24, clientY: 24 }));
+    expect(hover.textContent).to.include("Bezugswert");
+  });
+
+  it("localizes generated point labels without replacing authored labels", async () => {
+    const chart = await renderChart({
+      label: "",
+      interactive: true,
+      labels: [],
+      series: [
+        {
+          id: "count",
+          label: "Anzahl",
+          geometry: "bar",
+          values: [4, { label: "Point 1", value: 8 }],
+        },
+      ],
+      messages: { point: "Punkt {index}" },
+    });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    expect(chart.getAttribute("messages")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Punkt 1Point 1");
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include(
+      "MetricPunkt 1Point 1Anzahl48",
+    );
+    expect(
+      chart.shadowRoot
+        .querySelector('button[data-point-key="count::0"]')
+        .getAttribute("aria-label"),
+    ).to.include("Punkt 1");
+
+    chart.messages = { point: "Kategorie {index}" };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Kategorie 1Point 1");
+    expect(activations).to.deep.equal([]);
   });
 });

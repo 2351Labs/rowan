@@ -119,4 +119,71 @@ describe("rowan-form-wizard", () => {
       source: "next",
     });
   });
+
+  it("uses property-only messages for generated steps, actions, and validation copy", async () => {
+    const wizard = document.createElement("rowan-form-wizard");
+    wizard.steps = [{ id: "details" }, { id: "review" }];
+
+    const details = document.createElement("section");
+    details.slot = "step-details";
+    const invalidControl = document.createElement("div");
+    invalidControl.checkValidity = () => false;
+    invalidControl.reportValidity = () => false;
+    details.append(invalidControl);
+
+    const review = document.createElement("section");
+    review.slot = "step-review";
+    wizard.append(details, review);
+    document.body.append(wizard);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const events = [];
+    ["rowan-step-change", "rowan-invalid", "rowan-complete"].forEach((type) => {
+      wizard.addEventListener(type, () => events.push(type));
+    });
+    wizard.messages = {
+      completeLabel: "Finalizar",
+      label: "Asistente",
+      nextLabel: "Siguiente",
+      previousLabel: "Anterior",
+      stepLabel: "Paso {step}",
+      thisField: "Este campo",
+      validationErrorItem: "Problema {index}: {message}",
+      validationFieldInvalid: "{label} no es valido",
+      validationHeading: "Corrige los campos",
+    };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(wizard.getAttribute("messages")).to.equal(null);
+    expect(wizard.internals.ariaLabel).to.equal("Asistente");
+    expect(wizard.steps.map((step) => step.label)).to.deep.equal(["Paso 1", "Paso 2"]);
+    expect(wizard.shadowRoot.querySelector('[data-action="previous"]').textContent).to.equal(
+      "Anterior",
+    );
+    expect(wizard.shadowRoot.querySelector('[data-action="next"]').textContent).to.equal(
+      "Siguiente",
+    );
+    expect(events).to.deep.equal([]);
+
+    wizard.validateCurrentStep();
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const summary = wizard.shadowRoot.querySelector("rowan-validation-summary");
+    expect(summary.shadowRoot.querySelector('[data-part="heading-text"]').textContent).to.equal(
+      "Corrige los campos",
+    );
+    expect(summary.shadowRoot.querySelector('[data-part="error-button"]').textContent).to.equal(
+      "Problema 1: Este campo no es valido",
+    );
+    expect(events).to.deep.equal([]);
+
+    wizard.nextLabel = "Manual";
+    wizard.messages = { nextLabel: "Ignored" };
+    await nextMicrotask();
+
+    expect(wizard.shadowRoot.querySelector('[data-action="next"]').textContent).to.equal("Manual");
+  });
 });

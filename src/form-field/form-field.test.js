@@ -115,6 +115,22 @@ describe("rowan-form-field", () => {
       field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid"),
     ).to.equal(true);
   });
+
+  it("uses property-only messages for the generated required indicator", async () => {
+    const field = document.createElement("rowan-form-field");
+    field.label = "Workspace name";
+    field.required = true;
+    document.body.append(field);
+    await nextMicrotask();
+
+    field.messages = { required: "Obligatorio" };
+    await nextMicrotask();
+
+    expect(field.getAttribute("messages")).to.equal(null);
+    expect(field.shadowRoot.querySelector('[part="required-indicator"]').textContent).to.equal(
+      "Obligatorio",
+    );
+  });
 });
 
 function tokens(value) {

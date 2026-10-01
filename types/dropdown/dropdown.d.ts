@@ -10,10 +10,10 @@
  * @event rowan-change - Fired when a user toggles or dismisses the dropdown
  */
 export class RowanDropdown extends BaseElement {
-    set open(value: boolean);
-    get open(): boolean;
-    set label(value: string);
-    get label(): string;
-    #private;
+  set open(value: boolean);
+  get open(): boolean;
+  set label(value: string);
+  get label(): string;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

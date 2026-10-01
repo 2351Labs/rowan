@@ -19,26 +19,26 @@
  * @cssprop --rowan-tree-item-children-border
  */
 export class RowanTreeItem extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    set value(value: string);
-    get value(): string;
-    set expanded(value: boolean);
-    get expanded(): boolean;
-    set selected(value: boolean);
-    get selected(): boolean;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    set level(value: number);
-    get level(): number;
-    get hasChildren(): boolean;
-    focus(options: any): void;
-    /** @internal */
-    setRovingTabIndex(value: any, owner?: null): void;
-    /** @internal */
-    setTreePosition(position: any, setSize: any, owner?: null): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  set value(value: string);
+  get value(): string;
+  set expanded(value: boolean);
+  get expanded(): boolean;
+  set selected(value: boolean);
+  get selected(): boolean;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  set level(value: number);
+  get level(): number;
+  get hasChildren(): boolean;
+  focus(options: any): void;
+  /** @internal */
+  setRovingTabIndex(value: any, owner?: null): void;
+  /** @internal */
+  setTreePosition(position: any, setSize: any, owner?: null): void;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

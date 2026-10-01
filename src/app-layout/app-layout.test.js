@@ -164,4 +164,22 @@ describe("rowan-app-layout", () => {
     expect(navigation.getAttribute("aria-label")).to.equal("Project sections");
     expect(toggle.getAttribute("aria-label")).to.equal("Toggle Project sections");
   });
+
+  it("uses a property-only translated navigation toggle label without emitting a change", async () => {
+    const layout = document.createElement("rowan-app-layout");
+    layout.navigationLabel = "Project sections";
+    document.body.append(layout);
+    await nextMicrotask();
+
+    const changes = [];
+    layout.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    layout.messages = { navigationToggle: "Abrir o cerrar {label}" };
+    await nextMicrotask();
+
+    expect(layout.getAttribute("messages")).to.equal(null);
+    expect(
+      layout.shadowRoot.querySelector(".navigation-toggle").getAttribute("aria-label"),
+    ).to.equal("Abrir o cerrar Project sections");
+    expect(changes).to.deep.equal([]);
+  });
 });

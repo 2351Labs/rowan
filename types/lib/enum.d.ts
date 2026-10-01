@@ -4,7 +4,11 @@
  * @param {ReadonlySet<string>} allowed
  * @param {string} fallback
  */
-export function normalizeEnum(value: unknown, allowed: ReadonlySet<string>, fallback: string): string;
+export function normalizeEnum(
+  value: unknown,
+  allowed: ReadonlySet<string>,
+  fallback: string,
+): string;
 /**
  * Reflect a canonical enum, omitting the documented default.
  * @param {{ reflectString: (name: string, value: string | null) => void }} element
@@ -13,9 +17,15 @@ export function normalizeEnum(value: unknown, allowed: ReadonlySet<string>, fall
  * @param {ReadonlySet<string>} allowed
  * @param {string} fallback
  */
-export function reflectEnum(element: {
+export function reflectEnum(
+  element: {
     reflectString: (name: string, value: string | null) => void;
-}, attribute: string, value: unknown, allowed: ReadonlySet<string>, fallback: string): string;
+  },
+  attribute: string,
+  value: unknown,
+  allowed: ReadonlySet<string>,
+  fallback: string,
+): string;
 /**
  * Rewrite an observed enum attribute to its canonical form.
  * @param {{ reflectString: (name: string, value: string | null) => void }} element
@@ -25,6 +35,12 @@ export function reflectEnum(element: {
  * @param {string} fallback
  * @returns {boolean} whether the attribute was rewritten
  */
-export function rewriteEnumAttribute(element: {
+export function rewriteEnumAttribute(
+  element: {
     reflectString: (name: string, value: string | null) => void;
-}, name: string, newValue: string | null, allowed: ReadonlySet<string>, fallback: string): boolean;
+  },
+  name: string,
+  newValue: string | null,
+  allowed: ReadonlySet<string>,
+  fallback: string,
+): boolean;

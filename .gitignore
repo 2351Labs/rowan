@@ -1,4 +1,6 @@
 node_modules
 storybook-static/
 documentation/**/documentation-static-check/
+test-fixtures/astro/.astro/
+test-fixtures/astro/dist/
 tmp/

@@ -40,6 +40,39 @@ Rowan publishes its source ESM modules directly. A release must contain the `src
    npm pack --dry-run
    ```
 
+## Stable Component Graduation
+
+An experimental host can be promoted to **Stable** only when its public contract
+and cross-cutting behavior are covered by the release gate. The component author
+records the evidence in its sprint or release notes; the checks below remain part
+of the published contract after promotion.
+
+- **Public API:** attributes, properties, slots, events, CSS parts, and custom
+  properties are documented through JSDoc and present in the Custom Elements
+  Manifest. Property-only objects and arrays never reflect to attributes.
+- **Types and generated artifacts:** public TypeScript setters/getters accept the
+  runtime-supported values; `npm run types`, `npm run typecheck`, and
+  `npm run analyze` leave declarations, wrappers, and the manifest current.
+- **User interaction:** relevant pointer, keyboard, disabled, focus, and
+  user-only event paths have browser contract coverage. Parent property updates
+  remain silent unless the documented API says otherwise.
+- **Lifecycle:** reconnecting a host preserves its documented state and restores
+  listeners, observers, overlays, or cleanup behavior that it owns.
+- **Direction and layout:** logical layout works in LTR and RTL. Components that
+  map physical geometry, such as SVG overlays, have explicit RTL hit-target
+  coverage. Responsive and zoom-sensitive layouts do not clip controls or text.
+- **Themes and contrast:** every shipped theme and nested theme scope resolves
+  the component's required tokens. Text, state affordances, focus indicators,
+  and status colors meet their applicable contrast requirements.
+- **Accessibility:** semantic structure, accessible names, errors, loading and
+  empty states, and focus movement are tested against the component's intended
+  interaction pattern. Reduced-motion behavior is verified when the component
+  animates.
+
+Do not promote a host based solely on Storybook appearance or unit coverage. Run
+the full local quality gate above before the release cut; use focused browser,
+type, and token checks while developing the component.
+
 ## Optional Integration Packages
 
 Optional packages publish separately from `@rowan-ui/core`. Before releasing one,

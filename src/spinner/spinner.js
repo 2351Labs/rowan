@@ -1,7 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const SIZES = new Set(["sm", "md", "lg"]);
+const DEFAULT_MESSAGES = Object.freeze({ loading: "Loading" });
 
 function normalizeSize(value) {
   const size = String(value ?? "")
@@ -11,19 +13,26 @@ function normalizeSize(value) {
 }
 
 /**
+ * @typedef {object} RowanSpinnerMessages
+ * @property {string} [loading]
+ */
+
+/**
  * Inline loading indicator.
  * @tag rowan-spinner
  * @attr {"sm"|"md"|"lg"} size
  * @attr {string} label
+ * @property {RowanSpinnerMessages} messages - Property-only built-in message overrides.
  * @csspart spinner
  */
 export class RowanSpinner extends BaseElement {
   static styleUrl = new URL("./spinner.css", import.meta.url).href;
   static useElementInternals = true;
   static observedAttributes = ["size", "label"];
-  static upgradeProperties = ["size", "label"];
+  static upgradeProperties = ["size", "label", "messages"];
 
   #label = null;
+  #messages = {};
 
   /** @returns {"sm" | "md" | "lg"} */
   get size() {
@@ -37,11 +46,22 @@ export class RowanSpinner extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Loading");
+    return this.readString("label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "loading"));
   }
 
   set label(value) {
     this.reflectString("label", value);
+  }
+
+  /** @returns {RowanSpinnerMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanSpinnerMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -70,7 +90,8 @@ export class RowanSpinner extends BaseElement {
     }
 
     this.#applyDefaultA11y();
-    this.#label.textContent = this.label || "Loading";
+    this.#label.textContent =
+      this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "loading");
   }
 
   #applyDefaultA11y() {

@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -21,6 +24,7 @@ import {
   normalizeWaterfallSeries,
   waterfallDomain,
   waterfallEntries,
+  resolveWaterfallLabels,
 } from "./model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
@@ -29,6 +33,22 @@ const PLOT_LEFT = 18;
 const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
+const DEFAULT_MESSAGES = Object.freeze({
+  category: "Category",
+  chart: "Waterfall chart",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  decrease: "Decrease",
+  deltaValue: "delta",
+  encodings: "Encodings",
+  increase: "Increase",
+  noData: "No data",
+  point: "Point {index}",
+  total: "Total",
+  totalValue: "total",
+  type: "Type",
+  value: "Value",
+});
 
 let waterfallChartId = 0;
 
@@ -39,6 +59,24 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanWaterfallChartMessages
+ * @property {string} [category]
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [decrease]
+ * @property {string} [deltaValue]
+ * @property {string} [encodings]
+ * @property {string} [increase]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [total]
+ * @property {string} [totalValue]
+ * @property {string} [type]
+ * @property {string} [value]
+ */
 
 function waterfallTone(entry) {
   if (entry.value === null) return "";
@@ -53,10 +91,12 @@ function waterfallTone(entry) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {Array<object>} series - First series of `{ value, type?: "total" }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanWaterfallChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -72,7 +112,7 @@ export class RowanWaterfallChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./waterfall-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-waterfall-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -81,6 +121,8 @@ export class RowanWaterfallChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -96,6 +138,7 @@ export class RowanWaterfallChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -103,6 +146,7 @@ export class RowanWaterfallChart extends BaseElement {
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -127,6 +171,25 @@ export class RowanWaterfallChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanWaterfallChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanWaterfallChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -207,11 +270,11 @@ export class RowanWaterfallChart extends BaseElement {
               </div>
               <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Encodings"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -228,6 +291,7 @@ export class RowanWaterfallChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -243,6 +307,7 @@ export class RowanWaterfallChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -272,7 +337,7 @@ export class RowanWaterfallChart extends BaseElement {
     this.#descriptionFallback.hidden = hasDescriptionSlot || !this.description;
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Waterfall chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
   }
 
   #plotBox() {
@@ -286,9 +351,9 @@ export class RowanWaterfallChart extends BaseElement {
 
   #renderChart() {
     const series = this.#primarySeries();
-    const labels = this.#labels.length
-      ? this.#labels
-      : (series?.values ?? []).map((point) => point.label);
+    const labels = resolveWaterfallLabels(this.#primarySeries(), this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const steps = waterfallEntries(series, labels);
     const domain = waterfallDomain(steps);
     const plot = this.#plotBox();
@@ -297,28 +362,31 @@ export class RowanWaterfallChart extends BaseElement {
       this.#activePointKey = "";
     }
     this.#renderPlot(domain, plot);
-    this.#renderAxis(labels.length ? labels : steps.map((step) => step.label));
+    this.#renderAxis(labels);
     this.#renderLegend();
     this.#renderPointControls();
     renderKeyedChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Waterfall chart"} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#chartName(),
+      }),
       columns: [
-        { key: "label", header: "Category" },
-        { key: "type", header: "Type" },
-        { key: "value", header: "Value" },
+        { key: "label", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "category") },
+        { key: "type", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "type") },
+        { key: "value", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "value") },
       ],
       rows: steps.map((step) => ({
         label: step.label,
-        type: step.value === null ? null : step.type,
+        type: step.value === null ? null : this.#typeLabel(step.type),
         value:
           step.value === null
             ? null
-            : formatChartValue(this.#valueFormatter, step.value, {
+            : this.#formatValue(step.value, {
                 series,
                 index: step.index,
                 label: step.label,
               }),
       })),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
@@ -341,7 +409,7 @@ export class RowanWaterfallChart extends BaseElement {
         thickness: barThickness,
         plot,
       });
-      const formattedValue = formatChartValue(this.#valueFormatter, step.value, {
+      const formattedValue = this.#formatValue(step.value, {
         series,
         index: step.index,
         label: step.label,
@@ -373,7 +441,7 @@ export class RowanWaterfallChart extends BaseElement {
   #renderPlot(domain, plot) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Waterfall chart";
+    title.textContent = this.#chartName();
     fragment.append(title);
 
     const baseline = categoricalBaseline("vertical", domain, plot);
@@ -427,11 +495,15 @@ export class RowanWaterfallChart extends BaseElement {
 
   #renderLegend() {
     const items = [
-      { tone: "success", label: "Increase" },
-      { tone: "danger", label: "Decrease" },
-      { tone: "info", label: "Total" },
+      { tone: "success", label: resolveMessage(this.#messages, DEFAULT_MESSAGES, "increase") },
+      { tone: "danger", label: resolveMessage(this.#messages, DEFAULT_MESSAGES, "decrease") },
+      { tone: "info", label: resolveMessage(this.#messages, DEFAULT_MESSAGES, "total") },
     ].filter((item) => this.#entries.some((entry) => entry.tone === item.tone));
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "encodings"),
+    );
     const fragment = document.createDocumentFragment();
     for (const item of items) {
       const row = document.createElement("li");
@@ -464,7 +536,10 @@ export class RowanWaterfallChart extends BaseElement {
           "--point-height",
           `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
         );
-        button.setAttribute("aria-label", `${entry.label}, ${entry.type}, ${entry.formattedValue}`);
+        button.setAttribute(
+          "aria-label",
+          `${entry.label}, ${this.#typeLabel(entry.type)}, ${entry.formattedValue}`,
+        );
         fragment.append(button);
       }
       this.#pointControls.append(fragment);
@@ -526,6 +601,27 @@ export class RowanWaterfallChart extends BaseElement {
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 
+  #chartName() {
+    return this.#displayLabel() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+  }
+
+  #typeLabel(type) {
+    const key = type === "total" ? "totalValue" : "deltaValue";
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, key);
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
     if (!this.hasAttribute("role") && "role" in this.internals) {
@@ -536,7 +632,7 @@ export class RowanWaterfallChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Waterfall chart";
+      this.internals.ariaLabel = this.#chartName();
     }
   }
 }

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   isRowanTable,
   observeTableAvailability,
@@ -12,6 +13,20 @@ import {
 import "../button/button.js";
 
 const BUTTON_VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  clearLabel: "Clear selection",
+  label: "Bulk actions",
+  selectionLabel: "selected",
+  selectionStatus: "{count} {selectionLabel}",
+});
+
+/**
+ * @typedef {object} RowanBulkActionsBarMessages
+ * @property {string} [clearLabel]
+ * @property {string} [label]
+ * @property {string} [selectionLabel]
+ * @property {string | ((context: { count: number, selectionLabel: string }) => string)} [selectionStatus]
+ */
 
 function arraysEqual(left, right) {
   if (left.length !== right.length) return false;
@@ -55,6 +70,7 @@ function normalizeActions(value) {
  * @attr {string} selection-label
  * @attr {string} clear-label
  * @attr {boolean} disabled
+ * @property {RowanBulkActionsBarMessages} messages - Property-only built-in message overrides.
  * @slot label - Content before the selected-row status
  * @slot - Additional bulk action controls with data-bulk-action
  * @slot end - Trailing controls after the default clear action
@@ -84,6 +100,7 @@ export class RowanBulkActionsBar extends BaseElement {
     "clearLabel",
     "disabled",
     "actions",
+    "messages",
   ];
 
   #tableOverride = null;
@@ -97,6 +114,7 @@ export class RowanBulkActionsBar extends BaseElement {
   #selectionText = null;
   #actionsContainer = null;
   #clearButton = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -136,7 +154,9 @@ export class RowanBulkActionsBar extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Bulk actions");
+    return this.hasAttribute("label")
+      ? this.readString("label", DEFAULT_MESSAGES.label)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "label");
   }
 
   set label(value) {
@@ -145,7 +165,9 @@ export class RowanBulkActionsBar extends BaseElement {
   }
 
   get selectionLabel() {
-    return this.readString("selection-label", "selected");
+    return this.hasAttribute("selection-label")
+      ? this.readString("selection-label", DEFAULT_MESSAGES.selectionLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "selectionLabel");
   }
 
   set selectionLabel(value) {
@@ -154,7 +176,9 @@ export class RowanBulkActionsBar extends BaseElement {
   }
 
   get clearLabel() {
-    return this.readString("clear-label", "Clear selection");
+    return this.hasAttribute("clear-label")
+      ? this.readString("clear-label", DEFAULT_MESSAGES.clearLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "clearLabel");
   }
 
   set clearLabel(value) {
@@ -168,6 +192,17 @@ export class RowanBulkActionsBar extends BaseElement {
 
   set disabled(value) {
     this.reflectBoolean("disabled", Boolean(value));
+  }
+
+  /** @returns {RowanBulkActionsBarMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanBulkActionsBarMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get actions() {
@@ -255,7 +290,12 @@ export class RowanBulkActionsBar extends BaseElement {
 
     const count = this.selectedCount;
     this.#bar.hidden = count === 0;
-    this.#selectionText.textContent = `${count} ${this.selectionLabel}`;
+    this.#selectionText.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "selectionStatus",
+      { count, selectionLabel: this.selectionLabel },
+    );
     this.#clearButton.textContent = this.clearLabel;
     this.#clearButton.disabled = this.disabled || count === 0;
     this.#renderConfiguredActions();

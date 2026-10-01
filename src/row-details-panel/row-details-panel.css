@@ -91,6 +91,11 @@
   white-space: nowrap;
 }
 
+:host(:dir(rtl)) .prev,
+:host(:dir(rtl)) .next {
+  transform: scaleX(-1);
+}
+
 :host([size="sm"]) {
   --rowan-row-details-panel-width: 22rem;
 }

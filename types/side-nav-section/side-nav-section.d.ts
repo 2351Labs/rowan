@@ -18,16 +18,16 @@
  * @event rowan-toggle - Fired when a user expands or collapses a collapsible section
  */
 export class RowanSideNavSection extends BaseElement {
-    set label(value: string);
-    get label(): string;
-    set collapsible(value: boolean);
-    get collapsible(): boolean;
-    set collapsed(value: boolean);
-    get collapsed(): boolean;
-    /** @returns {boolean} */
-    get expanded(): boolean;
-    focusTrigger(): void;
-    toggleFromUser(collapsed?: boolean): void;
-    #private;
+  set label(value: string);
+  get label(): string;
+  set collapsible(value: boolean);
+  get collapsible(): boolean;
+  set collapsed(value: boolean);
+  get collapsed(): boolean;
+  /** @returns {boolean} */
+  get expanded(): boolean;
+  focusTrigger(): void;
+  toggleFromUser(collapsed?: boolean): void;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

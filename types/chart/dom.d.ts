@@ -7,35 +7,57 @@ export function createCell(tagName: any, text: any, scope?: string): any;
  *   labels: string[],
  *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,
  *   formatValue: (value: number, series: unknown, index: number, label: string) => string,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
-export function renderChartTable(table: HTMLTableElement, { caption, labels, series, formatValue, referenceLines }: {
+export function renderChartTable(
+  table: HTMLTableElement,
+  {
+    caption,
+    labels,
+    series,
+    formatValue,
+    messages,
+    referenceLines,
+  }: {
     caption: string;
     labels: string[];
     series: Array<{
-        label: string;
-        values: Array<{
-            value: number | null;
-        }>;
+      label: string;
+      values: Array<{
+        value: number | null;
+      }>;
     }>;
     formatValue: (value: number, series: unknown, index: number, label: string) => string;
-}): void;
+    messages?: Record<string, unknown>;
+  },
+): void;
 /**
  * @param {HTMLTableElement} table
  * @param {{
  *   caption: string,
  *   columns: Array<{ key: string, header: string }>,
  *   rows: Array<Record<string, string | null | undefined>>,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
-export function renderKeyedChartTable(table: HTMLTableElement, { caption, columns, rows }: {
+export function renderKeyedChartTable(
+  table: HTMLTableElement,
+  {
+    caption,
+    columns,
+    rows,
+    messages,
+  }: {
     caption: string;
     columns: Array<{
-        key: string;
-        header: string;
+      key: string;
+      header: string;
     }>;
     rows: Array<Record<string, string | null | undefined>>;
-}): void;
+    messages?: Record<string, unknown>;
+  },
+): void;
 /**
  * @param {HTMLTableElement} table
  * @param {{
@@ -44,15 +66,27 @@ export function renderKeyedChartTable(table: HTMLTableElement, { caption, column
  *   columns: string[],
  *   values: Array<Array<number | null | undefined>>,
  *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,
+ *   messages?: Record<string, unknown>,
  * }} options
  */
-export function renderMatrixChartTable(table: HTMLTableElement, { caption, rows, columns, values, formatValue }: {
+export function renderMatrixChartTable(
+  table: HTMLTableElement,
+  {
+    caption,
+    rows,
+    columns,
+    values,
+    formatValue,
+    messages,
+  }: {
     caption: string;
     rows: string[];
     columns: string[];
     values: Array<Array<number | null | undefined>>;
     formatValue: (value: number, rowIndex: number, columnIndex: number) => string;
-}): void;
+    messages?: Record<string, unknown>;
+  },
+): void;
 /**
  * Horizontal overlay: `x1`, `x2`, `y`. Vertical overlay: `x`, `y1`, `y2`.
  * @param {{
@@ -67,16 +101,26 @@ export function renderMatrixChartTable(table: HTMLTableElement, { caption, rows,
  *   formattedValue?: string,
  * }} options
  */
-export function createReferenceLine({ x1, x2, y, x, y1, y2, tone, label, formattedValue, }: {
-    x1?: number;
-    x2?: number;
-    y?: number;
-    x?: number;
-    y1?: number;
-    y2?: number;
-    tone?: string;
-    label?: string;
-    formattedValue?: string;
+export function createReferenceLine({
+  x1,
+  x2,
+  y,
+  x,
+  y1,
+  y2,
+  tone,
+  label,
+  formattedValue,
+}: {
+  x1?: number;
+  x2?: number;
+  y?: number;
+  x?: number;
+  y1?: number;
+  y2?: number;
+  tone?: string;
+  label?: string;
+  formattedValue?: string;
 }): any;
 /**
  * Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields
@@ -93,4 +137,8 @@ export function pointControlFor(container: any, key: any): any;
  * @param {string} restoreKey
  * @param {() => void} update
  */
-export function withRestoredPointFocus(container: HTMLElement | null, restoreKey: string, update: () => void): void;
+export function withRestoredPointFocus(
+  container: HTMLElement | null,
+  restoreKey: string,
+  update: () => void,
+): void;

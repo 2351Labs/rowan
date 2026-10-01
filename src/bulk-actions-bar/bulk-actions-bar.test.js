@@ -177,4 +177,42 @@ describe("rowan-bulk-actions-bar", () => {
     expect(bar.internals.ariaLabel).to.equal("Order actions");
     expect(bar.internals.ariaDisabled).to.equal("true");
   });
+
+  it("uses property-only messages for generated labels without a user event", async () => {
+    const table = createTable();
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    table.append(bar);
+    document.body.append(table);
+    await settle();
+
+    const events = [];
+    ["rowan-bulk-action", "rowan-clear-selection"].forEach((type) => {
+      bar.addEventListener(type, () => events.push(type));
+    });
+    bar.messages = {
+      clearLabel: "Auswahl loschen",
+      label: "Sammelaktionen",
+      selectionLabel: "ausgewahlt",
+      selectionStatus: "{count} ausgewahlt",
+    };
+    table.selected = ["order-1"];
+    await settle();
+
+    expect(bar.getAttribute("messages")).to.equal(null);
+    expect(bar.internals.ariaLabel).to.equal("Sammelaktionen");
+    expect(bar.shadowRoot.querySelector('[part="selection-text"]').textContent).to.equal(
+      "1 ausgewahlt",
+    );
+    expect(bar.shadowRoot.querySelector('[data-action="clear"]').textContent).to.equal(
+      "Auswahl loschen",
+    );
+    expect(events).to.deep.equal([]);
+
+    bar.clearLabel = "Remove";
+    bar.messages = { clearLabel: "Ignored" };
+    await settle();
+
+    expect(bar.shadowRoot.querySelector('[data-action="clear"]').textContent).to.equal("Remove");
+  });
 });

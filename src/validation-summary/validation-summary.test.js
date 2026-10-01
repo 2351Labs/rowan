@@ -147,4 +147,39 @@ describe("rowan-validation-summary", () => {
     await nextMicrotask();
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("uses property-only messages for generated fallback errors and empty copy", async () => {
+    const element = document.createElement("rowan-validation-summary");
+    element.errors = [{ fieldId: "email" }, {}];
+    document.body.append(element);
+    await nextMicrotask();
+
+    const events = [];
+    element.addEventListener("rowan-jump", () => events.push(true));
+    element.messages = {
+      empty: "No hay problemas de validacion.",
+      errorItem: "Error {index}: {message}",
+      fieldInvalid: "{label} no es valido",
+      heading: "Corrige los siguientes campos",
+      unnamedField: "Campo {index}",
+    };
+    await nextMicrotask();
+
+    const buttons = element.shadowRoot.querySelectorAll('[data-part="error-button"]');
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.shadowRoot.querySelector('[data-part="heading-text"]').textContent).to.equal(
+      "Corrige los siguientes campos",
+    );
+    expect(buttons[0].textContent).to.equal("Error 1: email no es valido");
+    expect(buttons[1].textContent).to.equal("Error 2: Campo 2 no es valido");
+    expect(events).to.deep.equal([]);
+
+    element.errors = [];
+    await nextMicrotask();
+
+    expect(element.shadowRoot.querySelector('[data-part="empty"]').textContent.trim()).to.equal(
+      "No hay problemas de validacion.",
+    );
+    expect(events).to.deep.equal([]);
+  });
 });

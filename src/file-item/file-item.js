@@ -1,8 +1,23 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  cancel: "Cancel",
+  fileSize: "{value} {unit}",
+  remove: "Remove",
+  retry: "Retry",
+  statusFailed: "Failed",
+  statusQueued: "Queued",
+  statusSuccess: "Success",
+  statusUploading: "Uploading",
+  untitledFile: "Untitled file",
+  uploadProgress: "Upload progress {progress}%",
+});
 
 function normalizeStatus(value) {
   const next = String(value ?? "")
@@ -17,13 +32,20 @@ function normalizeProgress(value) {
   return Math.min(100, Math.max(0, Math.round(numeric)));
 }
 
-function formatBytes(bytesValue) {
+function formatBytes(bytesValue, locale, messages) {
   const bytes = Number(bytesValue);
-  if (!Number.isFinite(bytes) || bytes < 0) return "0 B";
-  if (bytes < 1024) return `${Math.round(bytes)} B`;
+  const normalizedBytes = Number.isFinite(bytes) && bytes >= 0 ? bytes : 0;
+  if (normalizedBytes < 1024) {
+    const value = Math.round(normalizedBytes);
+    return resolveMessage(messages, DEFAULT_MESSAGES, "fileSize", {
+      bytes: normalizedBytes,
+      unit: "B",
+      value: formatNumber(value, { locale, fallback: String(value) }),
+    });
+  }
 
   const units = ["KB", "MB", "GB", "TB"];
-  let value = bytes / 1024;
+  let value = normalizedBytes / 1024;
   let index = 0;
 
   while (value >= 1024 && index < units.length - 1) {
@@ -32,8 +54,30 @@ function formatBytes(bytesValue) {
   }
 
   const rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
-  return `${rounded} ${units[index]}`;
+  return resolveMessage(messages, DEFAULT_MESSAGES, "fileSize", {
+    bytes: normalizedBytes,
+    unit: units[index],
+    value: formatNumber(rounded, {
+      locale,
+      options: { maximumFractionDigits: rounded >= 10 ? 0 : 1 },
+      fallback: String(rounded),
+    }),
+  });
 }
+
+/**
+ * @typedef {object} RowanFileItemMessages
+ * @property {string} [cancel]
+ * @property {string | ((context: { bytes: number, unit: string, value: string }) => string)} [fileSize]
+ * @property {string} [remove]
+ * @property {string} [retry]
+ * @property {string} [statusFailed]
+ * @property {string} [statusQueued]
+ * @property {string} [statusSuccess]
+ * @property {string} [statusUploading]
+ * @property {string} [untitledFile]
+ * @property {string | ((context: { progress: number }) => string)} [uploadProgress]
+ */
 
 /**
  * Upload queue item showing file metadata, state, and actions.
@@ -44,6 +88,8 @@ function formatBytes(bytesValue) {
  * @attr {"queued"|"uploading"|"success"|"failed"} status
  * @attr {number} progress
  * @attr {boolean} disabled
+ * @attr {string} locale
+ * @property {RowanFileItemMessages} messages - Property-only built-in message overrides.
  * @csspart item
  * @csspart name
  * @csspart details
@@ -57,8 +103,25 @@ function formatBytes(bytesValue) {
 export class RowanFileItem extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./file-item.css", import.meta.url).href;
-  static observedAttributes = ["file-id", "filename", "filesize", "status", "progress", "disabled"];
-  static upgradeProperties = ["fileId", "filename", "filesize", "status", "progress", "disabled"];
+  static observedAttributes = [
+    "file-id",
+    "filename",
+    "filesize",
+    "status",
+    "progress",
+    "disabled",
+    "locale",
+  ];
+  static upgradeProperties = [
+    "fileId",
+    "filename",
+    "filesize",
+    "status",
+    "progress",
+    "disabled",
+    "locale",
+    "messages",
+  ];
 
   #nameEl = null;
   #detailsEl = null;
@@ -67,6 +130,7 @@ export class RowanFileItem extends BaseElement {
   #retryButton = null;
   #cancelButton = null;
   #removeButton = null;
+  #messages = {};
 
   get fileId() {
     return this.readString("file-id", "").trim();
@@ -128,6 +192,25 @@ export class RowanFileItem extends BaseElement {
     this.reflectBoolean("disabled", Boolean(value));
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanFileItemMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFileItemMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   render() {
     if (!this.#nameEl) {
       this.renderRoot.innerHTML = `
@@ -141,9 +224,9 @@ export class RowanFileItem extends BaseElement {
             <progress class="progress" part="progress" max="100"></progress>
           </div>
           <div class="actions" part="actions">
-            <button type="button" class="action" data-action="retry">Retry</button>
-            <button type="button" class="action" data-action="cancel">Cancel</button>
-            <button type="button" class="action" data-action="remove">Remove</button>
+            <button type="button" class="action" data-action="retry"></button>
+            <button type="button" class="action" data-action="cancel"></button>
+            <button type="button" class="action" data-action="remove"></button>
           </div>
         </article>
       `;
@@ -169,20 +252,27 @@ export class RowanFileItem extends BaseElement {
       });
     }
 
-    const filename = this.filename || "Untitled file";
+    const filename =
+      this.filename || resolveMessage(this.#messages, DEFAULT_MESSAGES, "untitledFile");
     const status = this.status;
     const progress = this.progress;
 
     this.#nameEl.textContent = filename;
-    this.#detailsEl.textContent = formatBytes(this.filesize);
-    this.#statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    this.#detailsEl.textContent = formatBytes(this.filesize, this.locale, this.#messages);
+    this.#statusEl.textContent = this.#statusMessage(status);
+    this.#retryButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "retry");
+    this.#cancelButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "cancel");
+    this.#removeButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "remove");
 
     const showProgress = status === "uploading";
     this.#progressEl.hidden = !showProgress;
     this.#progressEl.value = progress;
 
     if (showProgress) {
-      this.#progressEl.setAttribute("aria-label", `Upload progress ${progress}%`);
+      this.#progressEl.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "uploadProgress", { progress }),
+      );
     } else {
       this.#progressEl.removeAttribute("aria-label");
     }
@@ -226,6 +316,11 @@ export class RowanFileItem extends BaseElement {
       status: this.status,
       progress: this.progress,
     };
+  }
+
+  #statusMessage(status) {
+    const key = `status${status.charAt(0).toUpperCase()}${status.slice(1)}`;
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, key);
   }
 
   #applyDefaultA11y() {

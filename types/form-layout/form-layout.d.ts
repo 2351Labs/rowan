@@ -13,16 +13,16 @@
  * @cssprop --rowan-form-layout-min-column-width
  */
 export class RowanFormLayout extends BaseElement {
-    set columns(value: number);
-    get columns(): number;
-    set gap(value: any);
-    get gap(): any;
-    set labelPosition(value: "start" | "top");
-    get labelPosition(): "start" | "top";
-    set labelAlign(value: "start" | "end");
-    get labelAlign(): "start" | "end";
-    set labelWidth(value: any);
-    get labelWidth(): any;
-    #private;
+  set columns(value: number);
+  get columns(): number;
+  set gap(value: any);
+  get gap(): any;
+  set labelPosition(value: "start" | "top");
+  get labelPosition(): "start" | "top";
+  set labelAlign(value: "start" | "end");
+  get labelAlign(): "start" | "end";
+  set labelWidth(value: any);
+  get labelWidth(): any;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

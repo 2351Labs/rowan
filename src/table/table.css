@@ -41,7 +41,7 @@
   font-size: var(--rowan-font-size-sm);
   font-weight: 600;
   padding: var(--rowan-space-3) var(--rowan-space-4);
-  text-align: left;
+  text-align: start;
 }
 
 .caption-text[hidden],
@@ -76,7 +76,7 @@
   font-size: var(--rowan-font-size-md);
   line-height: var(--rowan-line-height);
   padding: var(--rowan-space-3) var(--rowan-space-4);
-  text-align: left;
+  text-align: start;
   vertical-align: middle;
 }
 
@@ -223,6 +223,14 @@
 
 .sticky-end.is-edge-end {
   box-shadow: -8px 0 8px -8px rgb(16 38 28 / 28%);
+}
+
+:host(:dir(rtl)) .sticky-start.is-edge-start {
+  box-shadow: -8px 0 8px -8px rgb(16 38 28 / 28%);
+}
+
+:host(:dir(rtl)) .sticky-end.is-edge-end {
+  box-shadow: 8px 0 8px -8px rgb(16 38 28 / 28%);
 }
 
 .pagination {

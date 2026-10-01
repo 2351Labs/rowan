@@ -110,4 +110,61 @@ describe("rowan-slider", () => {
     expect(element.hasAttribute("format-value")).to.equal(false);
     expect(element.shadowRoot.querySelector("output").textContent).to.equal("40% capacity");
   });
+
+  it("localizes generated labels and display values through property-only messages", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const element = document.createElement("rowan-slider");
+    element.range = true;
+    element.min = 0;
+    element.max = 10000;
+    element.value = { start: 1234, end: 5678 };
+    wrapper.append(element);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    let events = 0;
+    element.addEventListener("rowan-change", () => {
+      events += 1;
+    });
+    element.messages = {
+      end: "Bis",
+      rangeEndpoint: "{endpoint}: {label}",
+      rangeValue: "{start} bis {end}",
+      start: "Von",
+      value: "Betrag",
+    };
+    await nextMicrotask();
+
+    const formatter = new Intl.NumberFormat("de-DE");
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.locale).to.equal("de-DE");
+    expect(element.shadowRoot.querySelector("output").textContent).to.equal(
+      `${formatter.format(1234)} bis ${formatter.format(5678)}`,
+    );
+    expect(
+      element.shadowRoot.querySelector('[data-endpoint="start"]').getAttribute("aria-label"),
+    ).to.equal("Von: Betrag");
+    expect(
+      element.shadowRoot.querySelector('[data-endpoint="end"]').getAttribute("aria-valuetext"),
+    ).to.equal(formatter.format(5678));
+    expect(events).to.equal(0);
+  });
+
+  it("uses physical horizontal arrow directions in RTL", async () => {
+    const element = document.createElement("rowan-slider");
+    element.dir = "rtl";
+    element.min = 0;
+    element.max = 10;
+    element.value = 5;
+    document.body.append(element);
+    await nextMicrotask();
+
+    const input = element.shadowRoot.querySelector('[data-endpoint="value"]');
+    input.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" }));
+    expect(element.value).to.equal(4);
+
+    input.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowLeft" }));
+    expect(element.value).to.equal(5);
+  });
 });

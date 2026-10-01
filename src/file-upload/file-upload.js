@@ -2,6 +2,8 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { partitionAcceptedFiles } from "../lib/file-accept.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 import "../dropzone/dropzone.js";
@@ -9,6 +11,22 @@ import "../file-item/file-item.js";
 
 const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
 let uploadRecordId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  ariaLabel: "File upload",
+  dropzoneDescription: "or click to browse from your device",
+  dropzoneLabel: "Drop files to upload",
+  empty: "No files selected.",
+  itemCancel: "Cancel",
+  itemFileSize: "{value} {unit}",
+  itemRemove: "Remove",
+  itemRetry: "Retry",
+  itemStatusFailed: "Failed",
+  itemStatusQueued: "Queued",
+  itemStatusSuccess: "Success",
+  itemStatusUploading: "Uploading",
+  itemUntitledFile: "Untitled file",
+  itemUploadProgress: "Upload progress {progress}%",
+});
 
 function normalizeStatus(value) {
   const next = String(value ?? "")
@@ -55,7 +73,7 @@ function normalizeRecord(record) {
   const idText = String(source.id ?? "").trim();
   const id = idText || `file-${++uploadRecordId}`;
 
-  const name = String(source.name ?? source.filename ?? "").trim() || "Untitled file";
+  const name = String(source.name ?? source.filename ?? "").trim();
 
   const sizeNumber = Number(source.size ?? source.filesize ?? 0);
   const size = Number.isFinite(sizeNumber) && sizeNumber >= 0 ? Math.round(sizeNumber) : 0;
@@ -72,6 +90,24 @@ function normalizeRecord(record) {
 }
 
 /**
+ * @typedef {object} RowanFileUploadMessages
+ * @property {string} [ariaLabel]
+ * @property {string} [dropzoneDescription]
+ * @property {string} [dropzoneLabel]
+ * @property {string} [empty]
+ * @property {string} [itemCancel]
+ * @property {string | ((context: { bytes: number, unit: string, value: string }) => string)} [itemFileSize]
+ * @property {string} [itemRemove]
+ * @property {string} [itemRetry]
+ * @property {string} [itemStatusFailed]
+ * @property {string} [itemStatusQueued]
+ * @property {string} [itemStatusSuccess]
+ * @property {string} [itemStatusUploading]
+ * @property {string} [itemUntitledFile]
+ * @property {string | ((context: { progress: number }) => string)} [itemUploadProgress]
+ */
+
+/**
  * File upload composer with dropzone and queue item rendering.
  * @tag rowan-file-upload
  * @attr {string} name
@@ -81,6 +117,8 @@ function normalizeRecord(record) {
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {number} max-files
+ * @attr {string} locale
+ * @property {RowanFileUploadMessages} messages - Property-only built-in message overrides.
  * @csspart upload
  * @csspart dropzone
  * @csspart file-list
@@ -102,6 +140,7 @@ export class RowanFileUpload extends BaseElement {
     "disabled",
     "required",
     "max-files",
+    "locale",
   ];
   static upgradeProperties = [
     "name",
@@ -112,12 +151,15 @@ export class RowanFileUpload extends BaseElement {
     "required",
     "maxFiles",
     "files",
+    "locale",
+    "messages",
   ];
 
   #dropzone = null;
   #list = null;
   #empty = null;
   #files = [];
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -141,6 +183,25 @@ export class RowanFileUpload extends BaseElement {
   set label(value) {
     const next = String(value ?? "").trim();
     this.reflectString("label", next || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanFileUploadMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFileUploadMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get accept() {
@@ -262,8 +323,13 @@ export class RowanFileUpload extends BaseElement {
       });
     }
 
-    this.#dropzone.label = this.label || "Drop files to upload";
-    this.#dropzone.description = "or click to browse from your device";
+    this.#dropzone.label =
+      this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "dropzoneLabel");
+    this.#dropzone.description = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "dropzoneDescription",
+    );
     this.#dropzone.accept = this.accept;
     this.#dropzone.multiple = this.multiple;
     this.#dropzone.disabled = this.disabled;
@@ -289,6 +355,8 @@ export class RowanFileUpload extends BaseElement {
       fileItem.status = record.status;
       fileItem.progress = record.progress;
       fileItem.disabled = this.disabled;
+      fileItem.locale = this.locale;
+      fileItem.messages = this.#fileItemMessages();
 
       listItem.append(fileItem);
       this.#list.append(listItem);
@@ -296,7 +364,9 @@ export class RowanFileUpload extends BaseElement {
 
     const hasFiles = this.#files.length > 0;
     this.#empty.hidden = hasFiles;
-    this.#empty.textContent = hasFiles ? "" : "No files selected.";
+    this.#empty.textContent = hasFiles
+      ? ""
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
   }
 
   #acceptFiles(files, source) {
@@ -407,6 +477,21 @@ export class RowanFileUpload extends BaseElement {
     });
   }
 
+  #fileItemMessages() {
+    return {
+      cancel: this.#messages.itemCancel ?? DEFAULT_MESSAGES.itemCancel,
+      fileSize: this.#messages.itemFileSize ?? DEFAULT_MESSAGES.itemFileSize,
+      remove: this.#messages.itemRemove ?? DEFAULT_MESSAGES.itemRemove,
+      retry: this.#messages.itemRetry ?? DEFAULT_MESSAGES.itemRetry,
+      statusFailed: this.#messages.itemStatusFailed ?? DEFAULT_MESSAGES.itemStatusFailed,
+      statusQueued: this.#messages.itemStatusQueued ?? DEFAULT_MESSAGES.itemStatusQueued,
+      statusSuccess: this.#messages.itemStatusSuccess ?? DEFAULT_MESSAGES.itemStatusSuccess,
+      statusUploading: this.#messages.itemStatusUploading ?? DEFAULT_MESSAGES.itemStatusUploading,
+      untitledFile: this.#messages.itemUntitledFile ?? DEFAULT_MESSAGES.itemUntitledFile,
+      uploadProgress: this.#messages.itemUploadProgress ?? DEFAULT_MESSAGES.itemUploadProgress,
+    };
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
 
@@ -416,7 +501,8 @@ export class RowanFileUpload extends BaseElement {
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {
       const label = this.label.trim();
-      this.internals.ariaLabel = label || "File upload";
+      this.internals.ariaLabel =
+        label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "ariaLabel");
     }
 
     if (!this.hasAttribute("aria-disabled") && "ariaDisabled" in this.internals) {

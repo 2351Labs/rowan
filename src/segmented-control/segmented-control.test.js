@@ -72,6 +72,36 @@ describe("rowan-segmented-control", () => {
     expect(timeline.tabIndex).to.equal(0);
   });
 
+  it("follows visual horizontal arrow direction in RTL", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.dir = "rtl";
+    const control = document.createElement("rowan-segmented-control");
+    control.label = "View mode";
+    control.options = [
+      { value: "board", label: "Board" },
+      { value: "list", label: "List" },
+      { value: "timeline", label: "Timeline" },
+    ];
+    control.value = "list";
+    wrapper.append(control);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const list = control.shadowRoot.querySelector("button[data-value='list']");
+    list.focus();
+    list.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(control.value).to.equal("board");
+    expect(control.shadowRoot.activeElement).to.equal(
+      control.shadowRoot.querySelector("button[data-value='board']"),
+    );
+  });
+
   it("submits with FACE, resets its default, and applies required validity", async () => {
     const form = document.createElement("form");
     const control = document.createElement("rowan-segmented-control");

@@ -75,4 +75,38 @@ describe("rowan-progress", () => {
     expect(el.getAttribute("aria-labelledby")).to.equal("upload-heading");
     expect(el.internals.ariaLabel).to.equal(null);
   });
+
+  it("uses inherited locale and property-only messages for generated progress copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "ar-EG";
+    const el = document.createElement("rowan-progress");
+    el.label = "Upload";
+    el.value = 50;
+    wrapper.append(el);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    el.messages = {
+      labeledValueText: "{label}: {value} percent",
+      progress: "Progression",
+      valueText: "{value} percent",
+    };
+    await nextMicrotask();
+
+    const formattedPercent = new Intl.NumberFormat("ar-EG").format(50);
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.locale).to.equal("ar-EG");
+    expect(el.shadowRoot.querySelector(".meta").textContent).to.equal(
+      `Upload: ${formattedPercent} percent`,
+    );
+    expect(el.internals.ariaLabel).to.equal("Upload");
+
+    el.label = "";
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector(".meta").textContent).to.equal(
+      `${formattedPercent} percent`,
+    );
+    expect(el.internals.ariaLabel).to.equal("Progression");
+  });
 });

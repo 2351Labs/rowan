@@ -2,6 +2,7 @@ import { finiteOrNull } from "../chart/model.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
+const GENERATED_POINT_LABEL = Symbol("rowan.range-generated-point-label");
 
 /**
  * Normalized range point passed to a value formatter.
@@ -54,20 +55,39 @@ function padDomain(values) {
   return { min: min - padding, max: max + padding };
 }
 
+function fallbackPointLabel(index, resolveFallback) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `Point ${index + 1}`;
+}
+
 function normalizePoint(point, index, labels) {
+  const configuredLabel = normalizeText(labels[index]);
   if (Array.isArray(point)) {
-    return {
+    const normalized = {
       low: finiteOrNull(point[0]),
       high: finiteOrNull(point[1]),
-      label: labels[index] || `Point ${index + 1}`,
+      label: configuredLabel || fallbackPointLabel(index),
     };
+    if (!configuredLabel) {
+      Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+    }
+    return normalized;
   }
   const item = isObject(point) ? point : {};
-  return {
+  const authoredLabel = normalizeText(item.label);
+  const normalized = {
     low: finiteOrNull(item.low),
     high: finiteOrNull(item.high),
-    label: normalizeText(item.label) || labels[index] || `Point ${index + 1}`,
+    label: authoredLabel || configuredLabel || fallbackPointLabel(index),
   };
+  if (!authoredLabel && !configuredLabel) {
+    Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+  }
+  return normalized;
 }
 
 /**
@@ -130,6 +150,28 @@ export function cloneRangeSeries(value) {
     ...series,
     values: series.values.map((point) => ({ ...point })),
   }));
+}
+
+/**
+ * @param {RowanRangeChartSeries[]} series
+ * @param {string[]} labels
+ * @param {(index: number) => string} [resolveFallbackLabel]
+ * @returns {string[]}
+ */
+export function resolveRangeLabels(series, labels, resolveFallbackLabel) {
+  const length = Math.max(labels.length, ...series.map((item) => item.values.length), 0);
+
+  return Array.from({ length }, (_value, index) => {
+    const configured = normalizeText(labels[index]);
+    if (configured) return configured;
+
+    const point = series[0]?.values[index];
+    if (point?.[GENERATED_POINT_LABEL]) {
+      return fallbackPointLabel(index, resolveFallbackLabel);
+    }
+
+    return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
+  });
 }
 
 export function rangePointIncluded(point) {

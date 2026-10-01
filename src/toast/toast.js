@@ -2,14 +2,22 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const TONE_VALUES = new Set(["info", "success", "warning", "danger"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  dismiss: "Dismiss",
+  dismissLabel: "Dismiss notification",
+});
+
+/** @typedef {{ dismiss?: string, dismissLabel?: string }} RowanToastMessages */
 
 /**
  * Compact status notification with optional dismiss control.
  * @tag rowan-toast
  * @attr {"info"|"success"|"warning"|"danger"} tone
  * @attr {boolean} dismissible
+ * @property {RowanToastMessages} messages - Property-only built-in message overrides.
  * @slot title
  * @slot - Notification message
  * @slot actions
@@ -21,13 +29,14 @@ export class RowanToast extends BaseElement {
   static styleUrl = new URL("./toast.css", import.meta.url).href;
   static useElementInternals = true;
   static observedAttributes = ["tone", "dismissible"];
-  static upgradeProperties = ["tone", "dismissible"];
+  static upgradeProperties = ["tone", "dismissible", "messages"];
 
   #title = null;
   #titleSlot = null;
   #actions = null;
   #actionsSlot = null;
   #closeButton = null;
+  #messages = {};
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {
@@ -57,6 +66,17 @@ export class RowanToast extends BaseElement {
     this.reflectBoolean("dismissible", Boolean(value));
   }
 
+  /** @returns {RowanToastMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanToastMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   render() {
     if (!this.#title) {
       this.renderRoot.innerHTML = `
@@ -66,7 +86,7 @@ export class RowanToast extends BaseElement {
             <div class="message" part="message"><slot></slot></div>
             <div class="actions" part="actions" hidden><slot name="actions"></slot></div>
           </div>
-          <button class="close" part="close" type="button" aria-label="Dismiss notification">Dismiss</button>
+          <button class="close" part="close" type="button"></button>
         </article>
       `;
 
@@ -91,6 +111,11 @@ export class RowanToast extends BaseElement {
 
     this.#syncSlotState();
     this.#closeButton.hidden = !this.dismissible;
+    this.#closeButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dismiss");
+    this.#closeButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "dismissLabel"),
+    );
     this.#applyDefaultA11y();
   }
 

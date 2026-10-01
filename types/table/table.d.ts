@@ -10,6 +10,7 @@
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
+ * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
  * @property {Array<object>} rows - Updates rows without replacing other configuration.
@@ -17,6 +18,7 @@
  * @property {boolean} virtualized - Renders a measured, bounded row window inside the table viewport.
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
+ * @property {RowanTableMessages} messages - Property-only built-in message overrides.
  * @slot toolbar
  * @slot caption
  * @slot empty
@@ -42,159 +44,206 @@
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  */
 export class RowanTable extends BaseElement {
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    /** @param {RowanTableConfig | null | undefined} value */
-    set config(value: RowanTableConfig | null | undefined);
-    /** @returns {RowanTableConfig} */
-    get config(): RowanTableConfig;
-    set caption(value: string);
-    get caption(): string;
-    set captionVisuallyHidden(value: boolean);
-    get captionVisuallyHidden(): boolean;
-    /** @param {RowanTableDensity} value */
-    set density(value: RowanTableDensity);
-    /** @returns {RowanTableDensity} */
-    get density(): RowanTableDensity;
-    /** @param {RowanTableSelectable} value */
-    set selectable(value: RowanTableSelectable);
-    /** @returns {RowanTableSelectable} */
-    get selectable(): RowanTableSelectable;
-    set stickyHeader(value: boolean);
-    get stickyHeader(): boolean;
-    set loading(value: boolean);
-    get loading(): boolean;
-    /** @param {boolean} value */
-    set virtualized(value: boolean);
-    /** @returns {boolean} */
-    get virtualized(): boolean;
-    /** @param {number} value */
-    set virtualItemSize(value: number);
-    /** @returns {number} */
-    get virtualItemSize(): number;
-    /** @param {number} value */
-    set virtualOverscan(value: number);
-    /** @returns {number} */
-    get virtualOverscan(): number;
-    /** @param {RowanTableColumn[]} value */
-    set columns(value: RowanTableColumn[]);
-    /** @returns {RowanTableColumn[]} */
-    get columns(): RowanTableColumn[];
-    /** @param {RowanTableRow[]} value */
-    set rows(value: Record<string, unknown>[]);
-    /** @returns {RowanTableRow[]} */
-    get rows(): Record<string, unknown>[];
-    /** @param {string[]} value */
-    set selected(value: string[]);
-    /** @returns {string[]} */
-    get selected(): string[];
-    /** @param {RowanTableSort | null} value */
-    set sort(value: RowanTableSort | null);
-    /** @returns {RowanTableSort | null} */
-    get sort(): RowanTableSort | null;
-    /** @param {RowanTablePage | null} value */
-    set page(value: RowanTablePage | null);
-    /** @returns {RowanTablePage | null} */
-    get page(): RowanTablePage | null;
-    /** @param {string | RowanTableGroupBy | null | undefined} value */
-    set groupBy(value: RowanTableGroupBy | null);
-    /** @returns {RowanTableGroupBy | null} */
-    get groupBy(): RowanTableGroupBy | null;
-    /** @param {"dblclick" | "none"} value */
-    set rowActivate(value: "none" | "dblclick");
-    /** @returns {"dblclick" | "none"} */
-    get rowActivate(): "none" | "dblclick";
-    /** @returns {RowanTableRow[]} */
-    get selectedRows(): Record<string, unknown>[];
-    selectAll(): void;
-    clearSelection(): void;
-    /**
-     * @param {string} id
-     * @param {"asc" | "desc"} dir
-     * @param {{ emitEvent?: boolean }} [options]
-     */
-    sortBy(id: string, dir: "asc" | "desc", options?: {
-        emitEvent?: boolean | undefined;
-    } | undefined): void;
-    #private;
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  /** @param {RowanTableConfig | null | undefined} value */
+  set config(value: RowanTableConfig | null | undefined);
+  /** @returns {RowanTableConfig} */
+  get config(): RowanTableConfig;
+  set caption(value: string);
+  get caption(): string;
+  set captionVisuallyHidden(value: boolean);
+  get captionVisuallyHidden(): boolean;
+  /** @param {RowanTableDensity} value */
+  set density(value: RowanTableDensity);
+  /** @returns {RowanTableDensity} */
+  get density(): RowanTableDensity;
+  /** @param {RowanTableSelectable} value */
+  set selectable(value: RowanTableSelectable);
+  /** @returns {RowanTableSelectable} */
+  get selectable(): RowanTableSelectable;
+  set stickyHeader(value: boolean);
+  get stickyHeader(): boolean;
+  set loading(value: boolean);
+  get loading(): boolean;
+  /** @param {boolean} value */
+  set virtualized(value: boolean);
+  /** @returns {boolean} */
+  get virtualized(): boolean;
+  /** @param {number} value */
+  set virtualItemSize(value: number);
+  /** @returns {number} */
+  get virtualItemSize(): number;
+  /** @param {number} value */
+  set virtualOverscan(value: number);
+  /** @returns {number} */
+  get virtualOverscan(): number;
+  /** @param {RowanTableColumn[]} value */
+  set columns(value: RowanTableColumn[]);
+  /** @returns {RowanTableColumn[]} */
+  get columns(): RowanTableColumn[];
+  /** @param {RowanTableRow[]} value */
+  set rows(value: Record<string, unknown>[]);
+  /** @returns {RowanTableRow[]} */
+  get rows(): Record<string, unknown>[];
+  /** @param {string[]} value */
+  set selected(value: string[]);
+  /** @returns {string[]} */
+  get selected(): string[];
+  /** @param {RowanTableSort | null} value */
+  set sort(value: RowanTableSort | null);
+  /** @returns {RowanTableSort | null} */
+  get sort(): RowanTableSort | null;
+  /** @param {RowanTablePage | null} value */
+  set page(value: RowanTablePage | null);
+  /** @returns {RowanTablePage | null} */
+  get page(): RowanTablePage | null;
+  set locale(value: string);
+  get locale(): string;
+  /** @param {RowanTableMessages | null | undefined} value */
+  set messages(value: RowanTableMessages | null | undefined);
+  /** @returns {RowanTableMessages} */
+  get messages(): RowanTableMessages;
+  /** @param {string | RowanTableGroupBy | null | undefined} value */
+  set groupBy(value: RowanTableGroupBy | null);
+  /** @returns {RowanTableGroupBy | null} */
+  get groupBy(): RowanTableGroupBy | null;
+  /** @param {"dblclick" | "none"} value */
+  set rowActivate(value: "none" | "dblclick");
+  /** @returns {"dblclick" | "none"} */
+  get rowActivate(): "none" | "dblclick";
+  /** @returns {RowanTableRow[]} */
+  get selectedRows(): Record<string, unknown>[];
+  selectAll(): void;
+  clearSelection(): void;
+  /**
+   * @param {string} id
+   * @param {"asc" | "desc"} dir
+   * @param {{ emitEvent?: boolean }} [options]
+   */
+  sortBy(
+    id: string,
+    dir: "asc" | "desc",
+    options?:
+      | {
+          emitEvent?: boolean | undefined;
+        }
+      | undefined,
+  ): void;
+  #private;
 }
-export type RowanTableCellType = "text" | "number" | "date" | "badge" | "link" | "checkbox" | "switch" | "button" | "icon-button" | "avatar" | "chip" | "progress" | "sparkline" | "bullet" | "custom";
+export type RowanTableCellType =
+  | "text"
+  | "number"
+  | "date"
+  | "badge"
+  | "link"
+  | "checkbox"
+  | "switch"
+  | "button"
+  | "icon-button"
+  | "avatar"
+  | "chip"
+  | "progress"
+  | "sparkline"
+  | "bullet"
+  | "custom";
 export type RowanTableRow = Record<string, unknown>;
 export type RowanTableCellContext = {
-    value: unknown;
-    row: RowanTableRow;
-    rowIndex: number;
-    column: RowanTableColumn;
-    cellEl: HTMLElement;
+  value: unknown;
+  row: RowanTableRow;
+  rowIndex: number;
+  column: RowanTableColumn;
+  cellEl: HTMLElement;
 };
 export type RowanTableCellConfig = {
-    type?: RowanTableCellType | undefined;
-    href?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
-    target?: string | undefined;
-    label?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
-    variant?: string | undefined;
-    tone?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
-    disabled?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
-    checked?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
-    indeterminate?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
-    title?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
-    icon?: string | undefined;
-    interactive?: boolean | undefined;
-    ranges?: unknown[] | ((value: unknown, row: RowanTableRow) => unknown[]) | undefined;
-    slot?: string | undefined;
-    render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
+  type?: RowanTableCellType | undefined;
+  href?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
+  target?: string | undefined;
+  label?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
+  variant?: string | undefined;
+  tone?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
+  disabled?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
+  checked?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
+  indeterminate?: boolean | ((value: unknown, row: RowanTableRow) => boolean) | undefined;
+  title?: string | ((value: unknown, row: RowanTableRow) => string) | undefined;
+  icon?: string | undefined;
+  interactive?: boolean | undefined;
+  ranges?: unknown[] | ((value: unknown, row: RowanTableRow) => unknown[]) | undefined;
+  slot?: string | undefined;
+  render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
 };
 export type RowanTableColumn = {
-    id: string;
-    header?: string | undefined;
-    type?: RowanTableCellType | undefined;
-    width?: string | undefined;
-    minWidth?: string | undefined;
-    align?: "center" | "start" | "end" | undefined;
-    verticalAlign?: "center" | "start" | "end" | undefined;
-    sortable?: boolean | undefined;
-    sortDir?: "desc" | "asc" | null | undefined;
-    sticky?: "start" | "end" | undefined;
-    hidden?: boolean | undefined;
-    accessor?: string | ((row: RowanTableRow, rowIndex: number) => unknown) | undefined;
-    format?: ((value: unknown, row: RowanTableRow, rowIndex: number) => string) | undefined;
-    cell?: RowanTableCellConfig | undefined;
-    headerCell?: {
+  id: string;
+  header?: string | undefined;
+  type?: RowanTableCellType | undefined;
+  width?: string | undefined;
+  minWidth?: string | undefined;
+  align?: "center" | "start" | "end" | undefined;
+  verticalAlign?: "center" | "start" | "end" | undefined;
+  sortable?: boolean | undefined;
+  sortDir?: "desc" | "asc" | null | undefined;
+  sticky?: "start" | "end" | undefined;
+  hidden?: boolean | undefined;
+  accessor?: string | ((row: RowanTableRow, rowIndex: number) => unknown) | undefined;
+  format?: ((value: unknown, row: RowanTableRow, rowIndex: number) => string) | undefined;
+  cell?: RowanTableCellConfig | undefined;
+  headerCell?:
+    | {
         tooltip?: string | undefined;
-    } | undefined;
+      }
+    | undefined;
 };
 export type RowanTableSort = {
-    id: string;
-    dir: "asc" | "desc";
+  id: string;
+  dir: "asc" | "desc";
 };
 export type RowanTablePage = {
-    index: number;
-    size: number;
-    total?: number;
+  index: number;
+  size: number;
+  total?: number;
 };
 export type RowanTableConfig = {
-    columns?: RowanTableColumn[] | undefined;
-    rows?: Record<string, unknown>[] | undefined;
-    rowId?: string | ((row: RowanTableRow, rowIndex: number) => string) | undefined;
-    selectable?: "none" | "single" | "multiple" | undefined;
-    selected?: string[] | undefined;
-    sort?: RowanTableSort | null | undefined;
-    caption?: string | undefined;
-    captionVisuallyHidden?: boolean | undefined;
-    density?: "sm" | "md" | "lg" | undefined;
-    stickyHeader?: boolean | undefined;
-    loading?: boolean | undefined;
-    page?: RowanTablePage | null | undefined;
-    virtualized?: boolean | undefined;
-    virtualItemSize?: number | undefined;
-    virtualOverscan?: number | undefined;
-    groupBy?: string | RowanTableGroupBy | null | undefined;
-    rowActivate?: "none" | "dblclick" | undefined;
+  columns?: RowanTableColumn[] | undefined;
+  rows?: Record<string, unknown>[] | undefined;
+  rowId?: string | ((row: RowanTableRow, rowIndex: number) => string) | undefined;
+  selectable?: "none" | "single" | "multiple" | undefined;
+  selected?: string[] | undefined;
+  sort?: RowanTableSort | null | undefined;
+  caption?: string | undefined;
+  captionVisuallyHidden?: boolean | undefined;
+  density?: "sm" | "md" | "lg" | undefined;
+  stickyHeader?: boolean | undefined;
+  loading?: boolean | undefined;
+  page?: RowanTablePage | null | undefined;
+  virtualized?: boolean | undefined;
+  virtualItemSize?: number | undefined;
+  virtualOverscan?: number | undefined;
+  groupBy?: string | RowanTableGroupBy | null | undefined;
+  rowActivate?: "none" | "dblclick" | undefined;
 };
 export type RowanTableGroupBy = {
-    id: string;
-    subtotals?: boolean | undefined;
-    collapsed?: boolean | undefined;
+  id: string;
+  subtotals?: boolean | undefined;
+  collapsed?: boolean | undefined;
 };
 export type RowanTableDensity = "sm" | "md" | "lg";
 export type RowanTableSelectable = "none" | "single" | "multiple";
+export type RowanTableMessages = {
+  action?: string | undefined;
+  checkbox?: string | undefined;
+  empty?: string | undefined;
+  emptyGroup?: string | undefined;
+  groupLabel?: string | ((context: { label: string; count: number }) => string) | undefined;
+  loading?: string | undefined;
+  nextPage?: string | undefined;
+  paginationEmpty?: string | undefined;
+  paginationLabel?: string | undefined;
+  paginationStatus?:
+    string | ((context: { from: number; to: number; total: number }) => string) | undefined;
+  previousPage?: string | undefined;
+  selectAllRows?: string | undefined;
+  selectRow?: string | ((context: { rowId: string }) => string) | undefined;
+  subtotal?: string | undefined;
+  switch?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

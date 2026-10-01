@@ -3,15 +3,24 @@ import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 
 const SIDES = new Set(["start", "end"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  close: "Close",
+  closeLabel: "Close drawer",
+  title: "Drawer",
+});
+
+/** @typedef {{ close?: string, closeLabel?: string, title?: string }} RowanDrawerMessages */
 
 /**
  * Side panel drawer.
  * @tag rowan-drawer
  * @attr {boolean} open
  * @attr {"start"|"end"} side
+ * @property {RowanDrawerMessages} messages - Property-only built-in message overrides.
  * @slot - Drawer content
  * @slot title
  * @csspart overlay
@@ -25,7 +34,7 @@ export class RowanDrawer extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["open", "side"];
-  static upgradeProperties = ["open", "side"];
+  static upgradeProperties = ["open", "side", "messages"];
 
   #overlay = null;
   #panel = null;
@@ -33,6 +42,7 @@ export class RowanDrawer extends BaseElement {
   #titleSlot = null;
   #lastFocused = null;
   #isOpen = false;
+  #messages = {};
 
   disconnectedCallback() {
     if (this.#isOpen) {
@@ -66,6 +76,17 @@ export class RowanDrawer extends BaseElement {
     reflectEnum(this, "side", value, SIDES, "start");
   }
 
+  /** @returns {RowanDrawerMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanDrawerMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
 
@@ -83,7 +104,7 @@ export class RowanDrawer extends BaseElement {
           <section class="panel" part="panel" tabindex="-1">
             <div class="header">
               <div class="title" part="title"><slot name="title"></slot></div>
-              <button type="button" class="close" part="close" aria-label="Close drawer">Close</button>
+              <button type="button" class="close" part="close"></button>
             </div>
             <div class="content"><slot></slot></div>
           </section>
@@ -106,6 +127,11 @@ export class RowanDrawer extends BaseElement {
       this.listen(this.#titleSlot, "slotchange", () => this.requestRender());
     }
 
+    this.#closeButton.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "close");
+    this.#closeButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "closeLabel"),
+    );
     this.#applyDefaultA11y();
     this.#syncOpenState();
   }
@@ -122,7 +148,7 @@ export class RowanDrawer extends BaseElement {
     this.#panel.removeAttribute("aria-modal");
     this.#panel.removeAttribute("aria-label");
 
-    const title = this.#titleText() || "Drawer";
+    const title = this.#titleText() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "title");
     if (this.open) {
       this.#overlay.setAttribute("aria-label", title);
     } else {

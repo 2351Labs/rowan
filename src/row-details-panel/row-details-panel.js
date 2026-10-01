@@ -3,6 +3,9 @@ import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
+import { formatDate } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import {
   isRowanTable,
@@ -31,6 +34,13 @@ function isRecord(value) {
 }
 
 const PANEL_SIZES = new Set(["sm", "md", "lg"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  empty: "No row selected.",
+  nextRow: "Next row",
+  notSet: "Not set",
+  pagerStatus: "{index} of {total}",
+  previousRow: "Previous row",
+});
 
 function normalizeFields(value) {
   const source = Array.isArray(value) ? value : [];
@@ -70,15 +80,19 @@ function isDetailColumn(column) {
   return !["button", "icon-button", "custom", "sparkline"].includes(column.type);
 }
 
-function formatDisplayValue(value) {
-  if (value == null || value === "") return "Not set";
+function formatDisplayValue(value, locale, notSet) {
+  if (value == null || value === "") return notSet;
 
   if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? "Not set" : value.toLocaleString();
+    return formatDate(value, {
+      locale,
+      options: { dateStyle: "medium", timeStyle: "short" },
+      fallback: notSet,
+    });
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) => formatDisplayValue(item)).join(", ");
+    return value.map((item) => formatDisplayValue(item, locale, notSet)).join(", ");
   }
 
   if (typeof value === "object") {
@@ -93,6 +107,15 @@ function formatDisplayValue(value) {
 }
 
 /**
+ * @typedef {object} RowanRowDetailsPanelMessages
+ * @property {string} [empty]
+ * @property {string} [nextRow]
+ * @property {string} [notSet]
+ * @property {string | ((context: { index: number, total: number }) => string)} [pagerStatus]
+ * @property {string} [previousRow]
+ */
+
+/**
  * Side-panel detail view for a selected Rowan data-table row.
  * @tag rowan-row-details-panel
  * @attr {boolean} open
@@ -102,7 +125,9 @@ function formatDisplayValue(value) {
  * @attr {string} row-id
  * @attr {string} label
  * @attr {string} close-label
+ * @attr {string} locale
  * @property {string[]} rowIds - Queue of row ids for previous/next. Arrays are property-only.
+ * @property {RowanRowDetailsPanelMessages} messages - Property-only built-in message overrides.
  * @slot title - Custom panel title
  * @slot empty - Content shown when no row is available
  * @slot pager - Replaces the default previous/next controls
@@ -137,6 +162,7 @@ export class RowanRowDetailsPanel extends BaseElement {
     "row-id",
     "label",
     "close-label",
+    "locale",
   ];
   static upgradeProperties = [
     "table",
@@ -150,6 +176,8 @@ export class RowanRowDetailsPanel extends BaseElement {
     "size",
     "label",
     "closeLabel",
+    "locale",
+    "messages",
   ];
 
   #tableOverride = null;
@@ -179,6 +207,8 @@ export class RowanRowDetailsPanel extends BaseElement {
   #prevButton = null;
   #nextButton = null;
   #pagerSlot = null;
+  #emptyText = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -330,6 +360,25 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.reflectString("close-label", next && next !== "Close details" ? next : null);
   }
 
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanRowDetailsPanelMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanRowDetailsPanelMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
+  }
+
   show(row = this.row, rowId = this.rowId) {
     if (isRecord(row)) this.row = row;
     if (rowId != null) this.rowId = rowId;
@@ -371,7 +420,7 @@ export class RowanRowDetailsPanel extends BaseElement {
             </header>
             <div class="body" part="body">
               <dl class="fields" part="fields"></dl>
-              <div class="empty" part="empty" hidden><slot name="empty">No row selected.</slot></div>
+              <div class="empty" part="empty" hidden><slot name="empty"><span class="empty-text"></span></slot></div>
               <slot></slot>
             </div>
             <footer class="actions" part="actions"><slot name="actions"></slot></footer>
@@ -391,6 +440,7 @@ export class RowanRowDetailsPanel extends BaseElement {
       this.#pagerSlot = this.renderRoot.querySelector('slot[name="pager"]');
       this.#fieldsContainer = this.renderRoot.querySelector(".fields");
       this.#emptyState = this.renderRoot.querySelector(".empty");
+      this.#emptyText = this.renderRoot.querySelector(".empty-text");
     }
 
     this.#bindControls();
@@ -400,8 +450,9 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#panel.setAttribute("aria-labelledby", this.#titleId);
     this.#titleText.textContent = this.label;
     this.#closeButton.label = this.closeLabel;
-    this.#prevButton.label = "Previous row";
-    this.#nextButton.label = "Next row";
+    this.#prevButton.label = resolveMessage(this.#messages, DEFAULT_MESSAGES, "previousRow");
+    this.#nextButton.label = resolveMessage(this.#messages, DEFAULT_MESSAGES, "nextRow");
+    this.#emptyText.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
     this.#renderPager();
     this.#renderDetails();
     this.#applyDefaultA11y();
@@ -593,7 +644,15 @@ export class RowanRowDetailsPanel extends BaseElement {
     this.#pager.inert = !showPager;
     if (!showPager) return;
 
-    this.#pagerStatus.textContent = `${this.#queueIndex + 1} of ${this.#queue.length}`;
+    this.#pagerStatus.textContent = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "pagerStatus",
+      {
+        index: this.#queueIndex + 1,
+        total: this.#queue.length,
+      },
+    );
     this.#prevButton.disabled = this.#queueIndex <= 0;
     this.#nextButton.disabled = this.#queueIndex >= this.#queue.length - 1;
   }
@@ -657,7 +716,11 @@ export class RowanRowDetailsPanel extends BaseElement {
 
         const description = document.createElement("dd");
         description.className = "description";
-        description.textContent = formatDisplayValue(this.#resolveFieldValue(field, row));
+        description.textContent = formatDisplayValue(
+          this.#resolveFieldValue(field, row),
+          this.locale,
+          resolveMessage(this.#messages, DEFAULT_MESSAGES, "notSet"),
+        );
 
         group.append(term, description);
         this.#fieldsContainer.append(group);
@@ -696,7 +759,7 @@ export class RowanRowDetailsPanel extends BaseElement {
 
       return typeof field.format === "function" ? field.format(value, row) : value;
     } catch {
-      return "Not set";
+      return undefined;
     }
   }
 

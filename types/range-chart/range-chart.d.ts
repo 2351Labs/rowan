@@ -1,4 +1,18 @@
 /**
+ * @typedef {object} RowanRangeChartMessages
+ * @property {string} [category]
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [high]
+ * @property {string} [highValue]
+ * @property {string} [low]
+ * @property {string} [lowValue]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [series]
+ */
+/**
  * @typedef {{
  *   labels?: string[],
  *   series?: Array<object>,
@@ -16,10 +30,12 @@
  * @attr {string} description
  * @attr {boolean} interactive
  * @attr {"bar"|"area"} variant - Default `bar`.
+ * @attr {string} locale
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ low, high }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanRangeChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to bar.
  * @property {import("./model.js").RowanRangeChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanRangeChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -32,44 +48,63 @@
  * @event rowan-point-activate - Fired when a user activates an interactive range. Detail includes `low` and `high`.
  */
 export class RowanRangeChart extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    set label(value: string);
-    get label(): string;
-    set description(value: string);
-    get description(): string;
-    set interactive(value: boolean);
-    get interactive(): boolean;
-    /** @param {"bar" | "area"} value */
-    set variant(value: "area" | "bar");
-    /** @returns {"bar" | "area"} */
-    get variant(): "area" | "bar";
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    /** @param {Array<object>} value */
-    set series(value: any[]);
-    /** @returns {Array<object>} */
-    get series(): any[];
-    /** @param {string[]} value */
-    set labels(value: string[]);
-    /** @returns {string[]} */
-    get labels(): string[];
-    /** @param {RowanRangeChartConfig | null | undefined} value */
-    set config(value: RowanRangeChartConfig | null | undefined);
-    /** @returns {RowanRangeChartConfig} */
-    get config(): RowanRangeChartConfig;
-    /** @param {import("./model.js").RowanRangeChartValueFormatter | null} value */
-    set valueFormatter(value: import("./model.js").RowanRangeChartValueFormatter | null);
-    /** @returns {import("./model.js").RowanRangeChartValueFormatter | null} */
-    get valueFormatter(): import("./model.js").RowanRangeChartValueFormatter | null;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  set label(value: string);
+  get label(): string;
+  set description(value: string);
+  get description(): string;
+  set locale(value: string);
+  get locale(): string;
+  /** @param {RowanRangeChartMessages | null | undefined} value */
+  set messages(value: RowanRangeChartMessages | null | undefined);
+  /** @returns {RowanRangeChartMessages} */
+  get messages(): RowanRangeChartMessages;
+  set interactive(value: boolean);
+  get interactive(): boolean;
+  /** @param {"bar" | "area"} value */
+  set variant(value: "area" | "bar");
+  /** @returns {"bar" | "area"} */
+  get variant(): "area" | "bar";
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  /** @param {Array<object>} value */
+  set series(value: any[]);
+  /** @returns {Array<object>} */
+  get series(): any[];
+  /** @param {string[]} value */
+  set labels(value: string[]);
+  /** @returns {string[]} */
+  get labels(): string[];
+  /** @param {RowanRangeChartConfig | null | undefined} value */
+  set config(value: RowanRangeChartConfig | null | undefined);
+  /** @returns {RowanRangeChartConfig} */
+  get config(): RowanRangeChartConfig;
+  /** @param {import("./model.js").RowanRangeChartValueFormatter | null} value */
+  set valueFormatter(value: import("./model.js").RowanRangeChartValueFormatter | null);
+  /** @returns {import("./model.js").RowanRangeChartValueFormatter | null} */
+  get valueFormatter(): import("./model.js").RowanRangeChartValueFormatter | null;
+  #private;
 }
+export type RowanRangeChartMessages = {
+  category?: string | undefined;
+  chart?: string | undefined;
+  dataTable?: string | undefined;
+  dataTableCaption?: string | ((context: { chart: string }) => string) | undefined;
+  high?: string | undefined;
+  highValue?: string | undefined;
+  low?: string | undefined;
+  lowValue?: string | undefined;
+  noData?: string | undefined;
+  point?: string | ((context: { index: string }) => string) | undefined;
+  series?: string | undefined;
+};
 export type RowanRangeChartConfig = {
-    labels?: string[];
-    series?: Array<object>;
-    interactive?: boolean;
-    variant?: "bar" | "area";
-    valueFormatter?: import("./model.js").RowanRangeChartValueFormatter | null;
+  labels?: string[];
+  series?: Array<object>;
+  interactive?: boolean;
+  variant?: "bar" | "area";
+  valueFormatter?: import("./model.js").RowanRangeChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

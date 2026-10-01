@@ -155,6 +155,56 @@ describe("rowan-calendar", () => {
     expect(element.value).to.equal("2026-10-13");
   });
 
+  it("uses inherited language, property-only messages, and visual RTL arrow navigation", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "ar-EG";
+    wrapper.dir = "rtl";
+    const element = document.createElement("rowan-calendar");
+    element.month = "2026-10";
+    element.value = "2026-10-12";
+    element.messages = {
+      previousMonth: "السابق",
+      previousMonthLabel: "الشهر السابق",
+      nextMonth: "التالي",
+      nextMonthLabel: "الشهر التالي",
+      dayLabel: "اختر {date}",
+    };
+    wrapper.append(element);
+    document.body.append(wrapper);
+    await settle();
+
+    const changes = [];
+    element.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    const previous = element.shadowRoot.querySelector('[data-action="prev-month"]');
+    const next = element.shadowRoot.querySelector('[data-action="next-month"]');
+    const active = element.shadowRoot.querySelector('[data-date="2026-10-12"]');
+    expect(element.locale).to.equal("ar-EG");
+    expect(previous.textContent).to.equal("السابق");
+    expect(previous.getAttribute("aria-label")).to.equal("الشهر السابق");
+    expect(next.textContent).to.equal("التالي");
+    expect(next.getAttribute("aria-label")).to.equal("الشهر التالي");
+    expect(active.getAttribute("aria-label")).to.include("اختر ");
+
+    active.focus();
+    keydown(active, "ArrowRight");
+    await settle();
+
+    expect(element.shadowRoot.activeElement.getAttribute("data-date")).to.equal("2026-10-11");
+    expect(changes).to.deep.equal([]);
+  });
+
+  it("falls back safely when an explicit locale is invalid", async () => {
+    const element = document.createElement("rowan-calendar");
+    element.locale = "invalid_locale";
+    element.month = "2026-10";
+    document.body.append(element);
+    await settle();
+
+    expect(element.locale).to.equal("invalid_locale");
+    expect(element.shadowRoot.querySelectorAll('[role="columnheader"]')).to.have.length(7);
+    expect(element.shadowRoot.querySelector(".month-label").textContent).to.not.equal("");
+  });
+
   it("renders explicit grid rows, headers, and date cells", async () => {
     const element = document.createElement("rowan-calendar");
     element.month = "2026-10";

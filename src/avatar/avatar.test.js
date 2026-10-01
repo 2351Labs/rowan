@@ -68,4 +68,24 @@ describe("rowan-avatar", () => {
     expect(el.size).to.equal("md");
     expect(el.hasAttribute("size")).to.equal(false);
   });
+
+  it("uses inherited locale for initials and property-only messages for its fallback name", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "tr-TR";
+    const el = document.createElement("rowan-avatar");
+    el.name = "ipek yilmaz";
+    el.messages = { avatar: "Profil resmi" };
+    wrapper.append(el);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    expect(el.getAttribute("messages")).to.equal(null);
+    expect(el.locale).to.equal("tr-TR");
+    expect(el.shadowRoot.querySelector(".initials").textContent).to.equal("\u0130Y");
+
+    el.name = "";
+    await nextMicrotask();
+
+    expect(el.shadowRoot.querySelector(".image").alt).to.equal("Profil resmi");
+  });
 });

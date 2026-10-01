@@ -73,4 +73,21 @@ describe("rowan-alert", () => {
     expect(alert.tone).to.equal("info");
     expect(alert.hasAttribute("tone")).to.equal(false);
   });
+
+  it("uses a property-only dismiss label without emitting rowan-dismiss", async () => {
+    const alert = document.createElement("rowan-alert");
+    document.body.append(alert);
+    await nextMicrotask();
+
+    const dismissals = [];
+    alert.addEventListener("rowan-dismiss", (event) => dismissals.push(event.detail));
+    alert.messages = { dismissLabel: "Descartar alerta" };
+    await nextMicrotask();
+
+    expect(alert.getAttribute("messages")).to.equal(null);
+    expect(alert.shadowRoot.querySelector('[part="dismiss"]').getAttribute("aria-label")).to.equal(
+      "Descartar alerta",
+    );
+    expect(dismissals).to.deep.equal([]);
+  });
 });

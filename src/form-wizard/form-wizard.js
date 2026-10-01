@@ -1,22 +1,36 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 import "../stepper/stepper.js";
 import "../validation-summary/validation-summary.js";
 
 let formWizardId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  completeLabel: "Complete",
+  label: "Form wizard",
+  nextLabel: "Continue",
+  previousLabel: "Back",
+  stepLabel: "Step {step}",
+  thisField: "This field",
+  validationEmpty: "No validation issues.",
+  validationErrorItem: "{index}. {message}",
+  validationFieldInvalid: "{label} is invalid",
+  validationHeading: "Please fix the following fields",
+  validationUnnamedField: "Field {index}",
+});
 
-function normalizeStepLabel(value, fallbackIndex) {
+function normalizeStepLabel(value) {
   const text = String(value ?? "").trim();
-  return text || `Step ${fallbackIndex + 1}`;
+  return text;
 }
 
 function normalizeStepObject(step, index) {
   if (typeof step === "string") {
     return {
       id: String(index + 1),
-      label: normalizeStepLabel(step, index),
+      label: normalizeStepLabel(step),
       slot: null,
     };
   }
@@ -27,7 +41,7 @@ function normalizeStepObject(step, index) {
 
   return {
     id,
-    label: normalizeStepLabel(source.label, index),
+    label: normalizeStepLabel(source.label),
     slot,
   };
 }
@@ -78,16 +92,14 @@ function inferStepsFromPanels(host) {
         const slot = panel.getAttribute("slot") || "";
         const id = slot.slice("step-".length) || String(index + 1);
         const label =
-          panel.getAttribute("data-step-label") ||
-          panel.getAttribute("aria-label") ||
-          `Step ${index + 1}`;
+          panel.getAttribute("data-step-label") || panel.getAttribute("aria-label") || "";
 
         return { id, label, slot };
       }),
     );
   }
 
-  return host.children.length > 0 ? [{ id: "1", label: "Step 1", slot: "" }] : [];
+  return host.children.length > 0 ? [{ id: "1", label: "", slot: "" }] : [];
 }
 
 function isValidatableControl(element) {
@@ -103,7 +115,7 @@ function isValidatableControl(element) {
   return !element.disabled;
 }
 
-function controlLabel(control) {
+function controlLabel(control, fallback) {
   const explicit = control.getAttribute("label") || control.getAttribute("aria-label");
   if (explicit) return explicit.trim();
 
@@ -117,8 +129,23 @@ function controlLabel(control) {
   const wrappingLabel = control.closest("label");
   if (wrappingLabel?.textContent) return wrappingLabel.textContent.trim();
 
-  return control.getAttribute("name") || "This field";
+  return control.getAttribute("name") || fallback;
 }
+
+/**
+ * @typedef {object} RowanFormWizardMessages
+ * @property {string} [completeLabel]
+ * @property {string} [label]
+ * @property {string} [nextLabel]
+ * @property {string} [previousLabel]
+ * @property {string | ((context: { step: number }) => string)} [stepLabel]
+ * @property {string} [thisField]
+ * @property {string} [validationEmpty]
+ * @property {string | ((context: { index: number, message: string }) => string)} [validationErrorItem]
+ * @property {string | ((context: { label: string }) => string)} [validationFieldInvalid]
+ * @property {string} [validationHeading]
+ * @property {string | ((context: { index: number }) => string)} [validationUnnamedField]
+ */
 
 /**
  * Guided multi-step form workflow with guarded validation and progress.
@@ -131,6 +158,7 @@ function controlLabel(control) {
  * @attr {string} next-label
  * @attr {string} complete-label
  * @attr {boolean} disabled
+ * @property {RowanFormWizardMessages} messages - Property-only built-in message overrides.
  * @slot - Single-step form content when no named step panels are used
  * @slot step-* - A named step panel matching a configured step id
  * @csspart wizard
@@ -171,6 +199,7 @@ export class RowanFormWizard extends BaseElement {
     "nextLabel",
     "completeLabel",
     "disabled",
+    "messages",
   ];
 
   #steps = null;
@@ -185,6 +214,7 @@ export class RowanFormWizard extends BaseElement {
   #errors = [];
   #listenerController = null;
   #panelObserver = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -253,39 +283,53 @@ export class RowanFormWizard extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Form wizard");
+    return this.hasAttribute("label")
+      ? this.readString("label", DEFAULT_MESSAGES.label)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "label");
   }
 
   set label(value) {
     const next = String(value ?? "").trim();
-    this.reflectString("label", next && next !== "Form wizard" ? next : null);
+    this.reflectString("label", next && next !== DEFAULT_MESSAGES.label ? next : null);
   }
 
   get previousLabel() {
-    return this.readString("previous-label", "Back");
+    return this.hasAttribute("previous-label")
+      ? this.readString("previous-label", DEFAULT_MESSAGES.previousLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "previousLabel");
   }
 
   set previousLabel(value) {
     const next = String(value ?? "").trim();
-    this.reflectString("previous-label", next && next !== "Back" ? next : null);
+    this.reflectString(
+      "previous-label",
+      next && next !== DEFAULT_MESSAGES.previousLabel ? next : null,
+    );
   }
 
   get nextLabel() {
-    return this.readString("next-label", "Continue");
+    return this.hasAttribute("next-label")
+      ? this.readString("next-label", DEFAULT_MESSAGES.nextLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "nextLabel");
   }
 
   set nextLabel(value) {
     const next = String(value ?? "").trim();
-    this.reflectString("next-label", next && next !== "Continue" ? next : null);
+    this.reflectString("next-label", next && next !== DEFAULT_MESSAGES.nextLabel ? next : null);
   }
 
   get completeLabel() {
-    return this.readString("complete-label", "Complete");
+    return this.hasAttribute("complete-label")
+      ? this.readString("complete-label", DEFAULT_MESSAGES.completeLabel)
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "completeLabel");
   }
 
   set completeLabel(value) {
     const next = String(value ?? "").trim();
-    this.reflectString("complete-label", next && next !== "Complete" ? next : null);
+    this.reflectString(
+      "complete-label",
+      next && next !== DEFAULT_MESSAGES.completeLabel ? next : null,
+    );
   }
 
   get disabled() {
@@ -294,6 +338,17 @@ export class RowanFormWizard extends BaseElement {
 
   set disabled(value) {
     this.reflectBoolean("disabled", Boolean(value));
+  }
+
+  /** @returns {RowanFormWizardMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFormWizardMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   next() {
@@ -350,6 +405,9 @@ export class RowanFormWizard extends BaseElement {
     }
 
     this.#stepper.steps = steps.map(({ id, label }) => ({ id, label }));
+    this.#stepper.messages = {
+      stepLabel: this.#messages.stepLabel ?? DEFAULT_MESSAGES.stepLabel,
+    };
     this.#stepper.currentStep = current;
     this.#stepper.orientation = this.orientation;
     this.#stepper.disabled = this.disabled;
@@ -365,6 +423,7 @@ export class RowanFormWizard extends BaseElement {
     this.#nextButton.disabled = this.disabled || steps.length === 0;
     this.#nextButton.hidden = steps.length === 0;
 
+    this.#validationSummary.messages = this.#validationMessages();
     this.#validationSummary.errors = this.#errors;
     this.#validationSummary.hidden = this.#errors.length === 0;
 
@@ -372,10 +431,17 @@ export class RowanFormWizard extends BaseElement {
   }
 
   #resolvedSteps() {
-    if (Array.isArray(this.#steps)) return this.#steps;
+    const configuredSteps = Array.isArray(this.#steps)
+      ? this.#steps
+      : parseStepsAttribute(this.readString("steps", ""));
+    const steps = configuredSteps.length > 0 ? configuredSteps : inferStepsFromPanels(this);
 
-    const fromAttribute = parseStepsAttribute(this.readString("steps", ""));
-    return fromAttribute.length > 0 ? fromAttribute : inferStepsFromPanels(this);
+    return steps.map((step, index) => ({
+      ...step,
+      label:
+        step.label ||
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "stepLabel", { step: index + 1 }),
+    }));
   }
 
   #normalizedCurrentStep(stepCount) {
@@ -522,7 +588,11 @@ export class RowanFormWizard extends BaseElement {
     this.#panelEntries.forEach((entry, index) => {
       const isCurrent = index + 1 === current;
       entry.panel.hidden = !isCurrent;
-      entry.panel.setAttribute("aria-label", steps[index]?.label || `Step ${index + 1}`);
+      entry.panel.setAttribute(
+        "aria-label",
+        steps[index]?.label ||
+          resolveMessage(this.#messages, DEFAULT_MESSAGES, "stepLabel", { step: index + 1 }),
+      );
     });
   }
 
@@ -580,11 +650,16 @@ export class RowanFormWizard extends BaseElement {
       if (control.checkValidity()) return;
 
       const fieldId = this.#ensureFieldId(control, index);
-      const label = controlLabel(control);
+      const label = controlLabel(
+        control,
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "thisField"),
+      );
       errors.push({
         fieldId,
         label,
-        message: control.validationMessage || `${label} is invalid`,
+        message:
+          control.validationMessage ||
+          resolveMessage(this.#messages, DEFAULT_MESSAGES, "validationFieldInvalid", { label }),
       });
     });
 
@@ -638,6 +713,18 @@ export class RowanFormWizard extends BaseElement {
     }
 
     this.requestRender();
+  }
+
+  #validationMessages() {
+    return {
+      empty: this.#messages.validationEmpty ?? DEFAULT_MESSAGES.validationEmpty,
+      errorItem: this.#messages.validationErrorItem ?? DEFAULT_MESSAGES.validationErrorItem,
+      fieldInvalid:
+        this.#messages.validationFieldInvalid ?? DEFAULT_MESSAGES.validationFieldInvalid,
+      heading: this.#messages.validationHeading ?? DEFAULT_MESSAGES.validationHeading,
+      unnamedField:
+        this.#messages.validationUnnamedField ?? DEFAULT_MESSAGES.validationUnnamedField,
+    };
   }
 
   #emitStepChange(currentStep, previousStep, source) {

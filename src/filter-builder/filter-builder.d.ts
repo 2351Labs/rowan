@@ -8,3 +8,4 @@ export type {
   RowanFilterFieldType,
   RowanFilterOperator,
 } from "../../types/filter-builder/filter-builder.js";
+export type { RowanFilterBuilderMessages } from "../../types/filter-builder/filter-builder.js";

@@ -1,4 +1,12 @@
 /**
+ * @typedef {object} RowanSliderMessages
+ * @property {string} [end]
+ * @property {string | ((context: { endpoint: string, label: string }) => string)} [rangeEndpoint]
+ * @property {string | ((context: { end: string, start: string }) => string)} [rangeValue]
+ * @property {string} [start]
+ * @property {string} [value]
+ */
+/**
  * Numeric slider with single-value and ordered range modes.
  * @tag rowan-slider
  * @attr {string} name
@@ -15,6 +23,8 @@
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @attr {string} locale
+ * @property {RowanSliderMessages} messages - Property-only built-in message overrides.
  * @csspart slider
  * @csspart track
  * @csspart range
@@ -28,53 +38,72 @@
  * @event rowan-change - Fired when a user changes a slider value
  */
 export class RowanSlider extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
-    set name(value: string);
-    get name(): string;
-    set nameStart(value: string);
-    get nameStart(): string;
-    set nameEnd(value: string);
-    get nameEnd(): string;
-    set min(value: any);
-    get min(): any;
-    set max(value: number);
-    get max(): number;
-    set step(value: any);
-    get step(): any;
-    set range(value: boolean);
-    get range(): boolean;
-    set value(value: number | {
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  set name(value: string);
+  get name(): string;
+  set nameStart(value: string);
+  get nameStart(): string;
+  set nameEnd(value: string);
+  get nameEnd(): string;
+  set min(value: any);
+  get min(): any;
+  set max(value: number);
+  get max(): number;
+  set step(value: any);
+  get step(): any;
+  set range(value: boolean);
+  get range(): boolean;
+  set value(
+    value:
+      | number
+      | {
+          start: number;
+          end: number;
+        },
+  );
+  get value():
+    | number
+    | {
         start: number;
         end: number;
-    });
-    get value(): number | {
-        start: number;
-        end: number;
-    };
-    set start(value: number);
-    get start(): number;
-    set end(value: number);
-    get end(): number;
-    set label(value: string);
-    get label(): string;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    set required(value: boolean);
-    get required(): boolean;
-    set invalid(value: boolean);
-    get invalid(): boolean;
-    set formatValue(value: null);
-    get formatValue(): null;
-    setFormValue(): void;
-    setValidity(flags?: {}, message?: string, anchor?: null): void;
-    formResetCallback(): void;
-    formStateRestoreCallback(state: any): void;
-    checkValidity(): boolean;
-    reportValidity(): boolean;
-    #private;
+      };
+  set start(value: number);
+  get start(): number;
+  set end(value: number);
+  get end(): number;
+  set label(value: string);
+  get label(): string;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  set required(value: boolean);
+  get required(): boolean;
+  set invalid(value: boolean);
+  get invalid(): boolean;
+  set locale(value: string);
+  get locale(): string;
+  /** @param {RowanSliderMessages | null | undefined} value */
+  set messages(value: RowanSliderMessages | null | undefined);
+  /** @returns {RowanSliderMessages} */
+  get messages(): RowanSliderMessages;
+  set formatValue(value: null);
+  get formatValue(): null;
+  setFormValue(): void;
+  setValidity(flags?: {}, message?: string, anchor?: null): void;
+  formResetCallback(): void;
+  formStateRestoreCallback(state: any): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  #private;
 }
+export type RowanSliderMessages = {
+  end?: string | undefined;
+  rangeEndpoint?: string | ((context: { endpoint: string; label: string }) => string) | undefined;
+  rangeValue?: string | ((context: { end: string; start: string }) => string) | undefined;
+  start?: string | undefined;
+  value?: string | undefined;
+};
 import { BaseElement } from "../lib/base-element.js";

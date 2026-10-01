@@ -1,6 +1,9 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -14,6 +17,7 @@ import {
   cloneScatterSeries,
   cloneScatterSeriesInput,
   normalizeScatterSeries,
+  resolveScatterPointLabel,
   scatterDomains,
 } from "./model.js";
 
@@ -25,6 +29,21 @@ const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
 const MIN_RADIUS = 4;
 const MAX_RADIUS = 18;
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: "Scatter chart",
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  noData: "No data",
+  point: "Point",
+  pointLabel: "Point {index}",
+  series: "Series",
+  size: "Size",
+  sizeValue: "size",
+  x: "X",
+  xValue: "x",
+  y: "Y",
+  yValue: "y",
+});
 
 let scatterChartId = 0;
 
@@ -42,12 +61,22 @@ function scatterRadius(size, sizeDomain, sizeRange) {
   return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, radius));
 }
 
-function formatScatterPoint(formatter, point, context) {
-  const x = formatChartValue(formatter, point.x, context);
-  const y = formatChartValue(formatter, point.y, context);
-  if (point.size === null) return `x=${x}, y=${y}`;
-  return `x=${x}, y=${y}, size=${formatChartValue(formatter, point.size, context)}`;
-}
+/**
+ * @typedef {object} RowanScatterChartMessages
+ * @property {string} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [noData]
+ * @property {string} [point]
+ * @property {string | ((context: { index: string }) => string)} [pointLabel]
+ * @property {string} [series]
+ * @property {string} [size]
+ * @property {string} [sizeValue]
+ * @property {string} [x]
+ * @property {string} [xValue]
+ * @property {string} [y]
+ * @property {string} [yValue]
+ */
 
 /**
  * @typedef {{
@@ -64,9 +93,11 @@ function formatScatterPoint(formatter, point, context) {
  * @attr {string} label
  * @attr {string} description
  * @attr {boolean} interactive
+ * @attr {string} locale
  * @property {Array<object>} series - Series of `{ id, label, color?, points: [{ x, y, size?, label? }] }`. Arrays are property-only.
  * @property {RowanScatterChartConfig} config - Replaces the complete chart configuration.
  * @property {import("./model.js").RowanScatterChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {RowanScatterChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -82,7 +113,7 @@ export class RowanScatterChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./scatter-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-scatter-chart-"];
-  static observedAttributes = ["label", "description", "interactive"];
+  static observedAttributes = ["label", "description", "interactive", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -90,6 +121,8 @@ export class RowanScatterChart extends BaseElement {
     "series",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -106,6 +139,7 @@ export class RowanScatterChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #valueFormatter = null;
@@ -113,6 +147,7 @@ export class RowanScatterChart extends BaseElement {
   #activePointKey = "";
   #labelId = "";
   #descriptionId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -138,6 +173,25 @@ export class RowanScatterChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanScatterChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanScatterChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -208,11 +262,11 @@ export class RowanScatterChart extends BaseElement {
               </div>
             </div>
             <div class="x-axis" aria-hidden="true"></div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -230,6 +284,7 @@ export class RowanScatterChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -245,6 +300,7 @@ export class RowanScatterChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -270,7 +326,7 @@ export class RowanScatterChart extends BaseElement {
     this.#descriptionFallback.hidden = hasDescriptionSlot || !this.description;
     this.renderRoot.querySelector(".chart-label").id = this.#labelId;
     this.#plot.setAttribute("role", "img");
-    this.#plot.setAttribute("aria-label", label || "Scatter chart");
+    this.#plot.setAttribute("aria-label", label || this.#chartName());
   }
 
   #plotBox() {
@@ -295,24 +351,26 @@ export class RowanScatterChart extends BaseElement {
     this.#renderPointControls();
     const hasSize = this.#entries.some((entry) => entry.size !== null);
     renderKeyedChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || "Scatter chart"} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#chartName(),
+      }),
       columns: [
-        { key: "series", header: "Series" },
-        { key: "label", header: "Point" },
-        { key: "x", header: "X" },
-        { key: "y", header: "Y" },
-        ...(hasSize ? [{ key: "size", header: "Size" }] : []),
+        { key: "series", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "series") },
+        { key: "label", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "point") },
+        { key: "x", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "x") },
+        { key: "y", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "y") },
+        ...(hasSize
+          ? [{ key: "size", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "size") }]
+          : []),
       ],
       rows: this.#entries.map((entry) => ({
         series: entry.series.label,
         label: entry.label,
-        x: formatChartValue(this.#valueFormatter, entry.x, { label: entry.label }),
-        y: formatChartValue(this.#valueFormatter, entry.y, { label: entry.label }),
-        size:
-          entry.size === null
-            ? null
-            : formatChartValue(this.#valueFormatter, entry.size, { label: entry.label }),
+        x: this.#formatValue(entry.x, { label: entry.label }),
+        y: this.#formatValue(entry.y, { label: entry.label }),
+        size: entry.size === null ? null : this.#formatValue(entry.size, { label: entry.label }),
       })),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
@@ -326,22 +384,25 @@ export class RowanScatterChart extends BaseElement {
     this.#series.forEach((series, seriesIndex) => {
       series.points.forEach((point, index) => {
         if (point.x === null || point.y === null) return;
+        const label = resolveScatterPointLabel(point, index, (pointIndex) =>
+          this.#pointLabel(pointIndex),
+        );
         const x = plot.left + ((point.x - domains.x.min) / xRange) * plot.width;
         const y = plot.top + ((domains.y.max - point.y) / yRange) * plot.height;
         const radius = scatterRadius(point.size, domains.size, sizeRange);
-        const formattedValue = formatScatterPoint(this.#valueFormatter, point, {
+        const context = {
           series,
           index,
-          label: point.label,
-        });
+          label,
+        };
         entries.push({
           key: `${series.id}::${index}`,
           series,
           seriesIndex,
           index,
-          label: point.label,
+          label,
           value: point.y,
-          formattedValue,
+          formattedValue: this.#formatPoint(point, context),
           x: point.x,
           y: point.y,
           size: point.size,
@@ -358,7 +419,7 @@ export class RowanScatterChart extends BaseElement {
   #renderPlot(plot) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
-    title.textContent = this.#displayLabel() || "Scatter chart";
+    title.textContent = this.#chartName();
     fragment.append(title);
 
     const axis = createSvgElement("rect");
@@ -388,19 +449,23 @@ export class RowanScatterChart extends BaseElement {
     this.#yAxis.replaceChildren();
     for (const tick of ticks(domains.y)) {
       const item = document.createElement("span");
-      item.textContent = formatChartValue(this.#valueFormatter, tick, { tick: true });
+      item.textContent = this.#formatValue(tick, { tick: true });
       this.#yAxis.append(item);
     }
     this.#xAxis.replaceChildren();
     for (const tick of [...ticks(domains.x)].reverse()) {
       const item = document.createElement("span");
-      item.textContent = formatChartValue(this.#valueFormatter, tick, { tick: true });
+      item.textContent = this.#formatValue(tick, { tick: true });
       this.#xAxis.append(item);
     }
   }
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "series"),
+    );
     const fragment = document.createDocumentFragment();
     for (const [seriesIndex, series] of this.#series.entries()) {
       const item = document.createElement("li");
@@ -495,6 +560,33 @@ export class RowanScatterChart extends BaseElement {
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 
+  #chartName() {
+    return this.#displayLabel() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #formatPoint(point, context) {
+    const x = this.#formatValue(point.x, context);
+    const y = this.#formatValue(point.y, context);
+    const xLabel = resolveMessage(this.#messages, DEFAULT_MESSAGES, "xValue");
+    const yLabel = resolveMessage(this.#messages, DEFAULT_MESSAGES, "yValue");
+    if (point.size === null) return `${xLabel}=${x}, ${yLabel}=${y}`;
+
+    const sizeLabel = resolveMessage(this.#messages, DEFAULT_MESSAGES, "sizeValue");
+    return `${xLabel}=${x}, ${yLabel}=${y}, ${sizeLabel}=${this.#formatValue(point.size, context)}`;
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "pointLabel", {
+      index: String(index + 1),
+    });
+  }
+
   #applyDefaultA11y() {
     if (!this.internals) return;
     if (!this.hasAttribute("role") && "role" in this.internals) {
@@ -505,7 +597,7 @@ export class RowanScatterChart extends BaseElement {
       !this.hasAttribute("aria-labelledby") &&
       "ariaLabel" in this.internals
     ) {
-      this.internals.ariaLabel = this.#displayLabel() || "Scatter chart";
+      this.internals.ariaLabel = this.#chartName();
     }
   }
 }

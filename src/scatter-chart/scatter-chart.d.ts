@@ -8,3 +8,4 @@ export type {
   RowanScatterChartSeries,
   RowanScatterChartValueFormatter,
 } from "../../types/scatter-chart/model.js";
+export type { RowanScatterChartMessages } from "../../types/scatter-chart/scatter-chart.js";

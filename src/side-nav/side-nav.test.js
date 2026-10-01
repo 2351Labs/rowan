@@ -205,6 +205,25 @@ describe("rowan-side-nav", () => {
     expect(routes.shadowRoot.activeElement).to.equal(routes.shadowRoot.querySelector("a"));
   });
 
+  it("uses the logical inline-start key to collapse an RTL section", async () => {
+    const nav = document.createElement("rowan-side-nav");
+    nav.dir = "rtl";
+    const section = document.createElement("rowan-side-nav-section");
+    section.collapsible = true;
+    const item = document.createElement("rowan-side-nav-item");
+    item.value = "reports";
+    item.textContent = "Reports";
+    section.append(item);
+    nav.append(section);
+    document.body.append(nav);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    keydown(item, "ArrowRight");
+    await nextMicrotask();
+    expect(section.collapsed).to.equal(true);
+  });
+
   it("blocks in-app href navigation when rowan-change is cancelled", async () => {
     const { nav, activity } = await renderSideNav();
     activity.href = "#activity";

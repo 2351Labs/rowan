@@ -1,15 +1,21 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
-function normalizeStepLabel(value, fallbackIndex) {
+const DEFAULT_MESSAGES = Object.freeze({
+  stepLabel: "Step {step}",
+});
+
+function normalizeStepLabel(value, fallback) {
   const text = String(value ?? "").trim();
-  return text || `Step ${fallbackIndex + 1}`;
+  return text || fallback;
 }
 
-function normalizeStepObject(step, index) {
+function normalizeStepObject(step, index, fallbackLabel) {
   if (typeof step === "string") {
-    const label = normalizeStepLabel(step, index);
+    const label = normalizeStepLabel(step, fallbackLabel(index));
     return {
       id: `step-${index + 1}`,
       label,
@@ -18,7 +24,7 @@ function normalizeStepObject(step, index) {
 
   if (step && typeof step === "object") {
     const idText = String(step.id ?? "").trim();
-    const label = normalizeStepLabel(step.label, index);
+    const label = normalizeStepLabel(step.label, fallbackLabel(index));
     return {
       id: idText || `step-${index + 1}`,
       label,
@@ -27,11 +33,11 @@ function normalizeStepObject(step, index) {
 
   return {
     id: `step-${index + 1}`,
-    label: `Step ${index + 1}`,
+    label: fallbackLabel(index),
   };
 }
 
-function parseStepsAttribute(value) {
+function parseStepsAttribute(value, fallbackLabel) {
   const raw = String(value ?? "").trim();
   if (!raw) return [];
 
@@ -46,9 +52,12 @@ function parseStepsAttribute(value) {
           label,
         },
         index,
+        fallbackLabel,
       ),
     );
 }
+
+/** @typedef {{ stepLabel?: string }} RowanStepperMessages */
 
 /**
  * Progress step tracker for multi-step workflows.
@@ -57,6 +66,7 @@ function parseStepsAttribute(value) {
  * @attr {"horizontal"|"vertical"} orientation
  * @attr {string} steps
  * @attr {boolean} disabled
+ * @property {RowanStepperMessages} messages - Property-only built-in message overrides.
  * @csspart stepper
  * @csspart list
  * @csspart step
@@ -69,10 +79,11 @@ export class RowanStepper extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./stepper.css", import.meta.url).href;
   static observedAttributes = ["current-step", "orientation", "steps", "disabled"];
-  static upgradeProperties = ["currentStep", "orientation", "steps", "disabled"];
+  static upgradeProperties = ["currentStep", "orientation", "steps", "disabled", "messages"];
 
   #steps = null;
   #list = null;
+  #messages = {};
 
   get currentStep() {
     const numeric = Number(this.readNumber("current-step", 1));
@@ -115,8 +126,19 @@ export class RowanStepper extends BaseElement {
     }
 
     const entries = Array.isArray(value) ? value : [];
-    this.#steps = entries.map((step, index) => normalizeStepObject(step, index));
+    this.#steps = entries.map((step) => (step && typeof step === "object" ? { ...step } : step));
     this.reflectString("steps", null);
+    this.requestRender();
+  }
+
+  /** @returns {RowanStepperMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanStepperMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
     this.requestRender();
   }
 
@@ -178,13 +200,21 @@ export class RowanStepper extends BaseElement {
         if (index === -1) return;
 
         const isVertical = this.orientation === "vertical";
-        const nextKey = isVertical ? "ArrowDown" : "ArrowRight";
-        const prevKey = isVertical ? "ArrowUp" : "ArrowLeft";
 
         let nextIndex = -1;
 
-        if (event.key === nextKey) nextIndex = Math.min(buttons.length - 1, index + 1);
-        if (event.key === prevKey) nextIndex = Math.max(0, index - 1);
+        if (isVertical && event.key === "ArrowDown") {
+          nextIndex = Math.min(buttons.length - 1, index + 1);
+        }
+        if (isVertical && event.key === "ArrowUp") {
+          nextIndex = Math.max(0, index - 1);
+        }
+        if (!isVertical) {
+          const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+          if (horizontalOffset !== 0) {
+            nextIndex = Math.min(buttons.length - 1, Math.max(0, index + horizontalOffset));
+          }
+        }
         if (event.key === "Home") nextIndex = 0;
         if (event.key === "End") nextIndex = buttons.length - 1;
 
@@ -260,11 +290,14 @@ export class RowanStepper extends BaseElement {
   }
 
   #resolvedSteps() {
+    const fallbackLabel = (index) =>
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "stepLabel", { step: index + 1 });
+
     if (Array.isArray(this.#steps)) {
-      return this.#steps;
+      return this.#steps.map((step, index) => normalizeStepObject(step, index, fallbackLabel));
     }
 
-    return parseStepsAttribute(this.readString("steps", ""));
+    return parseStepsAttribute(this.readString("steps", ""), fallbackLabel);
   }
 
   #normalizedCurrentStep(stepCount) {

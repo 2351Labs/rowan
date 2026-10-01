@@ -2,18 +2,26 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { lowerCaseForLocale, resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import { RowanCommandItem } from "../command-item/command-item.js";
 
 let commandPaletteId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  close: "Close command palette",
+  emptyLabel: "No commands found.",
+  label: "Command palette",
+  placeholder: "Search commands",
+});
 
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
 
-function queryTerms(value) {
-  return normalizeText(value).toLocaleLowerCase().split(/\s+/).filter(Boolean);
+function queryTerms(value, locale) {
+  return lowerCaseForLocale(normalizeText(value), locale).split(/\s+/).filter(Boolean);
 }
 
 function isMacPlatform() {
@@ -69,6 +77,14 @@ function isCommandItem(value) {
 }
 
 /**
+ * @typedef {object} RowanCommandPaletteMessages
+ * @property {string} [close]
+ * @property {string} [emptyLabel]
+ * @property {string} [label]
+ * @property {string} [placeholder]
+ */
+
+/**
  * Keyboard-first command surface for filtering and activating command items.
  * @tag rowan-command-palette
  * @attr {boolean} open
@@ -77,6 +93,8 @@ function isCommandItem(value) {
  * @attr {string} empty-label
  * @attr {string} hotkey
  * @attr {string} query
+ * @attr {string} locale
+ * @property {RowanCommandPaletteMessages} messages - Property-only built-in message overrides.
  * @slot - rowan-command-item nodes
  * @slot empty
  * @csspart overlay
@@ -94,8 +112,25 @@ export class RowanCommandPalette extends BaseElement {
   static styleUrl = new URL("./command-palette.css", import.meta.url).href;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static observedAttributes = ["open", "label", "placeholder", "empty-label", "hotkey", "query"];
-  static upgradeProperties = ["open", "label", "placeholder", "emptyLabel", "hotkey", "query"];
+  static observedAttributes = [
+    "open",
+    "label",
+    "placeholder",
+    "empty-label",
+    "hotkey",
+    "query",
+    "locale",
+  ];
+  static upgradeProperties = [
+    "open",
+    "label",
+    "placeholder",
+    "emptyLabel",
+    "hotkey",
+    "query",
+    "locale",
+    "messages",
+  ];
 
   #overlay = null;
   #panel = null;
@@ -114,6 +149,7 @@ export class RowanCommandPalette extends BaseElement {
   #titleId = "";
   #overlayPushed = false;
   #removeDocumentHotkeyListener = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -155,30 +191,36 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   get label() {
-    return this.readString("label", "Command palette");
+    return this.readString("label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "label"));
   }
 
   set label(value) {
     const next = normalizeText(value);
-    this.reflectString("label", next && next !== "Command palette" ? next : null);
+    this.reflectString("label", next && next !== DEFAULT_MESSAGES.label ? next : null);
   }
 
   get placeholder() {
-    return this.readString("placeholder", "Search commands");
+    return this.readString(
+      "placeholder",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "placeholder"),
+    );
   }
 
   set placeholder(value) {
     const next = normalizeText(value);
-    this.reflectString("placeholder", next && next !== "Search commands" ? next : null);
+    this.reflectString("placeholder", next && next !== DEFAULT_MESSAGES.placeholder ? next : null);
   }
 
   get emptyLabel() {
-    return this.readString("empty-label", "No commands found.");
+    return this.readString(
+      "empty-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "emptyLabel"),
+    );
   }
 
   set emptyLabel(value) {
     const next = normalizeText(value);
-    this.reflectString("empty-label", next && next !== "No commands found." ? next : null);
+    this.reflectString("empty-label", next && next !== DEFAULT_MESSAGES.emptyLabel ? next : null);
   }
 
   get hotkey() {
@@ -195,6 +237,25 @@ export class RowanCommandPalette extends BaseElement {
 
   set query(value) {
     this.reflectString("query", value);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanCommandPaletteMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanCommandPaletteMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   show() {
@@ -220,7 +281,7 @@ export class RowanCommandPalette extends BaseElement {
           <section class="panel" part="panel" tabindex="-1">
             <div class="header">
               <h2 class="title"></h2>
-              <button class="close" part="close" type="button" aria-label="Close command palette">×</button>
+              <button class="close" part="close" type="button">×</button>
             </div>
             <input class="input" part="input" type="search" autocomplete="off" role="combobox" />
             <div class="list" part="list" role="listbox"><slot></slot></div>
@@ -257,6 +318,10 @@ export class RowanCommandPalette extends BaseElement {
     this.#title.textContent = this.label;
     this.#input.value = this.query;
     this.#input.placeholder = this.placeholder;
+    this.#closeButton.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "close"),
+    );
     this.#input.setAttribute("aria-controls", this.#listId);
     this.#input.setAttribute("aria-expanded", this.open ? "true" : "false");
     this.#input.setAttribute("aria-labelledby", this.#titleId);
@@ -296,12 +361,13 @@ export class RowanCommandPalette extends BaseElement {
   }
 
   #matchingItems(items = this.#items()) {
-    const terms = queryTerms(this.query);
+    const locale = this.locale;
+    const terms = queryTerms(this.query, locale);
 
     return items.filter((item) => {
       if (item.hidden) return false;
 
-      const text = item.searchText.toLocaleLowerCase();
+      const text = lowerCaseForLocale(item.searchText, locale);
       return terms.every((term) => text.includes(term));
     });
   }

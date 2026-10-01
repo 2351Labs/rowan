@@ -7,19 +7,19 @@
  * @csspart item
  */
 export class RowanMenuItem extends BaseElement {
-    static shadowRootOptions: {
-        mode: string;
-        delegatesFocus: boolean;
-    };
-    set value(value: string);
-    get value(): string;
-    set disabled(value: boolean);
-    get disabled(): boolean;
-    focus(options: any): void;
-    /** @internal */
-    activate(): void;
-    /** @internal */
-    setRovingTabIndex(value: any, owner?: null): void;
-    #private;
+  static shadowRootOptions: {
+    mode: string;
+    delegatesFocus: boolean;
+  };
+  set value(value: string);
+  get value(): string;
+  set disabled(value: boolean);
+  get disabled(): boolean;
+  focus(options: any): void;
+  /** @internal */
+  activate(): void;
+  /** @internal */
+  setRovingTabIndex(value: any, owner?: null): void;
+  #private;
 }
 import { BaseElement } from "../lib/base-element.js";

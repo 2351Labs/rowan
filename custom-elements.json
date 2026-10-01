@@ -214,6 +214,27 @@
             },
             {
               "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanAlertMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanAlertMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanAlertMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -405,6 +426,27 @@
             {
               "kind": "field",
               "name": "navigationLabel"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanAppLayoutMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanAppLayoutMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanAppLayoutMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -622,6 +664,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanAreaChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanAreaChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanAreaChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -827,6 +894,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -911,6 +984,31 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanAvatarMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanAvatarMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanAvatarMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -1013,6 +1111,12 @@
               "name": "size",
               "type": {
                 "text": "\"sm\"|\"md\"|\"lg\""
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -1291,6 +1395,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanBarChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBarChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBarChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -1499,6 +1628,12 @@
                 "text": "\"vertical\"|\"horizontal\""
               },
               "description": "Category axis. Default `vertical`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -1590,6 +1725,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanBoxPlotChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBoxPlotChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBoxPlotChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -1777,6 +1937,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -1868,6 +2034,36 @@
         },
         {
           "kind": "function",
+          "name": "resolveBoxPlotLabels",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanBoxPlotChartSeries[]"
+              }
+            },
+            {
+              "name": "labels",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
           "name": "boxPlotIncluded",
           "parameters": [
             {
@@ -1912,6 +2108,14 @@
         },
         {
           "kind": "js",
+          "name": "resolveBoxPlotLabels",
+          "declaration": {
+            "name": "resolveBoxPlotLabels",
+            "module": "src/box-plot-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "boxPlotIncluded",
           "declaration": {
             "name": "boxPlotIncluded",
@@ -1948,6 +2152,27 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanBreadcrumbMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBreadcrumbMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBreadcrumbMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
             {
               "kind": "field",
               "name": "internals",
@@ -2140,6 +2365,27 @@
             {
               "kind": "field",
               "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanBulkActionsBarMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBulkActionsBarMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBulkActionsBarMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -2359,6 +2605,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanBulletChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanBulletChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanBulletChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "scale"
             },
             {
@@ -2552,6 +2823,12 @@
                 "text": "\"ink\"|\"accent\"|\"status\"|\"tone\""
               },
               "description": "Range fill. `ink` grayscale (default). `accent` one theme hue. `status` poor→good mix. `tone` per-range hues."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -2923,6 +3200,27 @@
             {
               "kind": "field",
               "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanCalendarMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanCalendarMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanCalendarMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -3446,6 +3744,27 @@
               "name": "label"
             },
             {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanCarouselMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanCarouselMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanCarouselMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "previous"
             },
@@ -3638,12 +3957,12 @@
               }
             },
             {
-              "name": "{ caption, labels, series, formatValue, referenceLines = [] }"
+              "name": "{ caption, labels, series, formatValue, messages = {}, referenceLines = [] }"
             },
             {
               "name": "options",
               "type": {
-                "text": "{\n *   caption: string,\n *   labels: string[],\n *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,\n *   formatValue: (value: number, series: unknown, index: number, label: string) => string,\n * }"
+                "text": "{\n *   caption: string,\n *   labels: string[],\n *   series: Array<{ label: string, values: Array<{ value: number | null }> }>,\n *   formatValue: (value: number, series: unknown, index: number, label: string) => string,\n *   messages?: Record<string, unknown>,\n * }"
               }
             }
           ]
@@ -3659,12 +3978,12 @@
               }
             },
             {
-              "name": "{ caption, columns, rows }"
+              "name": "{ caption, columns, rows, messages = {} }"
             },
             {
               "name": "options",
               "type": {
-                "text": "{\n *   caption: string,\n *   columns: Array<{ key: string, header: string }>,\n *   rows: Array<Record<string, string | null | undefined>>,\n * }"
+                "text": "{\n *   caption: string,\n *   columns: Array<{ key: string, header: string }>,\n *   rows: Array<Record<string, string | null | undefined>>,\n *   messages?: Record<string, unknown>,\n * }"
               }
             }
           ]
@@ -3680,12 +3999,12 @@
               }
             },
             {
-              "name": "{ caption, rows, columns, values, formatValue }"
+              "name": "{ caption, rows, columns, values, formatValue, messages = {} }"
             },
             {
               "name": "options",
               "type": {
-                "text": "{\n *   caption: string,\n *   rows: string[],\n *   columns: string[],\n *   values: Array<Array<number | null | undefined>>,\n *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,\n * }"
+                "text": "{\n *   caption: string,\n *   rows: string[],\n *   columns: string[],\n *   values: Array<Array<number | null | undefined>>,\n *   formatValue: (value: number, rowIndex: number, columnIndex: number) => string,\n *   messages?: Record<string, unknown>,\n * }"
               }
             }
           ]
@@ -3935,6 +4254,10 @@
           "parameters": [
             {
               "name": "event"
+            },
+            {
+              "name": "fallbackLabel",
+              "default": "\"Reference\""
             }
           ]
         },
@@ -4066,6 +4389,10 @@
           }
         },
         {
+          "kind": "variable",
+          "name": "label"
+        },
+        {
           "kind": "function",
           "name": "normalizeChartLabels",
           "parameters": [
@@ -4097,6 +4424,13 @@
               "default": "[]",
               "type": {
                 "text": "string[]"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
               }
             }
           ],
@@ -4149,6 +4483,13 @@
               "name": "labels",
               "type": {
                 "text": "string[]"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
               }
             }
           ],
@@ -5204,6 +5545,27 @@
             },
             {
               "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanColorPickerMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanColorPickerMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanColorPickerMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "name"
             },
             {
@@ -5488,6 +5850,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanComboChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanComboChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanComboChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -5640,6 +6027,12 @@
               "name": "interactive",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -5895,6 +6288,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanComboboxMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanComboboxMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanComboboxMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "disabled"
             },
             {
@@ -6042,6 +6460,12 @@
             },
             {
               "name": "placeholder",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "locale",
               "type": {
                 "text": "string"
               }
@@ -6423,6 +6847,31 @@
               "name": "query"
             },
             {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanCommandPaletteMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanCommandPaletteMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanCommandPaletteMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "show"
             },
@@ -6562,6 +7011,12 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -6675,6 +7130,27 @@
             {
               "kind": "field",
               "name": "confirmDisabled"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanConfirmDialogMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanConfirmDialogMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanConfirmDialogMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -6913,6 +7389,27 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanContextMenuMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanContextMenuMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanContextMenuMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -7188,6 +7685,27 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDataStateMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDataStateMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDataStateMessages"
+              },
+              "description": "Property-only fallback copy overrides."
             },
             {
               "kind": "field",
@@ -7647,6 +8165,27 @@
               "name": "invalid"
             },
             {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDateRangePickerMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDateRangePickerMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDateRangePickerMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "clear"
             },
@@ -7830,6 +8369,9 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "messages"
             }
           ],
           "superclass": {
@@ -7913,6 +8455,27 @@
             {
               "kind": "field",
               "name": "alert"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDialogMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDialogMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDialogMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -8263,6 +8826,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDonutChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDonutChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDonutChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -8470,6 +9058,12 @@
                 "text": "\"donut\"|\"pie\""
               },
               "description": "`pie` fills the hole. Default `donut`. Total stays in the matching table."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -8558,6 +9152,27 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDrawerMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDrawerMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDrawerMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -8904,6 +9519,27 @@
             {
               "kind": "field",
               "name": "dragActive"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanDropzoneMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanDropzoneMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanDropzoneMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -9286,6 +9922,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFileItemMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFileItemMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFileItemMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -9412,6 +10073,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -9478,6 +10145,31 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFileUploadMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFileUploadMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFileUploadMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -9648,6 +10340,12 @@
               "name": "max-files",
               "type": {
                 "text": "number"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -9853,6 +10551,27 @@
             {
               "kind": "field",
               "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFilterBuilderMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFilterBuilderMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFilterBuilderMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -10156,6 +10875,27 @@
             {
               "kind": "field",
               "name": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFormFieldMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFormFieldMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFormFieldMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -10610,6 +11350,27 @@
               "name": "disabled"
             },
             {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFormWizardMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFormWizardMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFormWizardMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "next"
             },
@@ -10859,6 +11620,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanFunnelChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanFunnelChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanFunnelChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -11066,6 +11852,12 @@
                 "text": "\"funnel\"|\"cone\"|\"pyramid\""
               },
               "description": "Default `funnel`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -11244,6 +12036,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanGaugeChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanGaugeChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanGaugeChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "min"
             },
             {
@@ -11409,6 +12226,12 @@
               "type": {
                 "text": "number"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -11491,6 +12314,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanHeatmapChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanHeatmapChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanHeatmapChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -11659,6 +12507,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -11715,6 +12569,32 @@
         },
         {
           "kind": "function",
+          "name": "resolveHeatmapLabels",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "{ rows: string[], columns: string[] }"
+              }
+            },
+            {
+              "name": "resolveRowFallback",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            },
+            {
+              "name": "resolveColumnFallback",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "heatmapValueDomain",
           "parameters": [
             {
@@ -11757,6 +12637,14 @@
           "name": "normalizeHeatmap",
           "declaration": {
             "name": "normalizeHeatmap",
+            "module": "src/heatmap-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveHeatmapLabels",
+          "declaration": {
+            "name": "resolveHeatmapLabels",
             "module": "src/heatmap-chart/model.js"
           }
         },
@@ -12551,6 +13439,46 @@
           "declaration": {
             "name": "visibleColumns",
             "module": "./table-csv/table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TABLE_VIEW_STATE_VERSION",
+          "declaration": {
+            "name": "TABLE_VIEW_STATE_VERSION",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mergeTableViewState",
+          "declaration": {
+            "name": "mergeTableViewState",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeTableViewState",
+          "declaration": {
+            "name": "normalizeTableViewState",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "restoreTableViewState",
+          "declaration": {
+            "name": "restoreTableViewState",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "serializeTableViewState",
+          "declaration": {
+            "name": "serializeTableViewState",
+            "module": "./table-view-state/table-view-state.js"
           }
         },
         {
@@ -13453,6 +14381,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanKpiCardMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanKpiCardMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanKpiCardMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "value",
               "return": {
                 "type": {
@@ -13594,6 +14547,12 @@
               "name": "loading",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -13808,6 +14767,46 @@
           "declaration": {
             "name": "Class",
             "module": "src/lib/define.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/direction.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "horizontalArrowKeyOffset",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "Element"
+              }
+            },
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Returns the source-order offset that follows the physical direction of a horizontal arrow key.",
+          "return": {
+            "type": {
+              "text": "-1 | 0 | 1"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "horizontalArrowKeyOffset",
+          "declaration": {
+            "name": "horizontalArrowKeyOffset",
+            "module": "src/lib/direction.js"
           }
         }
       ]
@@ -14304,6 +15303,207 @@
           "declaration": {
             "name": "keys",
             "module": "src/lib/keys.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/locale.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "lowerCaseForLocale",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "locale",
+              "optional": true,
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Lowercases text with a requested locale and safely falls back to the browser default.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "upperCaseForLocale",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "locale",
+              "optional": true,
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Uppercases text with a requested locale and safely falls back to the browser default.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "resolveLocale",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "Element"
+              }
+            },
+            {
+              "name": "locale",
+              "optional": true,
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "fallback",
+              "default": "\"en-US\"",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Resolves an explicit locale or the nearest inherited `lang` value.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "lowerCaseForLocale",
+          "declaration": {
+            "name": "lowerCaseForLocale",
+            "module": "src/lib/locale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "upperCaseForLocale",
+          "declaration": {
+            "name": "upperCaseForLocale",
+            "module": "src/lib/locale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveLocale",
+          "declaration": {
+            "name": "resolveLocale",
+            "module": "src/lib/locale.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/messages.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizeMessages",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "defaults",
+              "type": {
+                "text": "Record<string, string | ((context: Record<string, unknown>) => unknown)>"
+              }
+            }
+          ],
+          "description": "Retains supported property-only message overrides without mutating the source object.",
+          "return": {
+            "type": {
+              "text": "Record<string, string | ((context: Record<string, unknown>) => unknown)>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "resolveMessage",
+          "parameters": [
+            {
+              "name": "messages",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            },
+            {
+              "name": "defaults",
+              "type": {
+                "text": "Record<string, string | ((context: Record<string, unknown>) => unknown)>"
+              }
+            },
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "context",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Resolves a message override with a default and `{placeholder}` interpolation.\nInvalid or empty overrides fall back to the component's default string.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizeMessages",
+          "declaration": {
+            "name": "normalizeMessages",
+            "module": "src/lib/messages.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveMessage",
+          "declaration": {
+            "name": "resolveMessage",
+            "module": "src/lib/messages.js"
           }
         }
       ]
@@ -15879,6 +17079,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanMultiSelectComboboxMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanMultiSelectComboboxMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanMultiSelectComboboxMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "open"
             },
             {
@@ -16039,6 +17264,12 @@
               }
             },
             {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
               "name": "open",
               "type": {
                 "text": "boolean"
@@ -16158,6 +17389,27 @@
             {
               "kind": "field",
               "name": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanNumberFieldMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanNumberFieldMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanNumberFieldMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "method",
@@ -16339,6 +17591,9 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "messages"
             }
           ],
           "superclass": {
@@ -16599,6 +17854,27 @@
             },
             {
               "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanPaginationMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanPaginationMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanPaginationMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -16701,6 +17977,10 @@
           },
           "tagName": "rowan-pagination",
           "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "total"
         }
       ],
       "exports": [
@@ -16762,6 +18042,27 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanPopoverMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanPopoverMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanPopoverMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -16956,6 +18257,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanProgressMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanProgressMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanProgressMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -17055,6 +18381,12 @@
               "name": "hide-meta",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -17465,6 +18797,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanRadarChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRadarChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRadarChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -17672,6 +19029,12 @@
                 "text": "\"line\"|\"area\""
               },
               "description": "Default `line`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -18214,6 +19577,36 @@
         },
         {
           "kind": "function",
+          "name": "resolveRangeLabels",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "RowanRangeChartSeries[]"
+              }
+            },
+            {
+              "name": "labels",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
           "name": "rangePointIncluded",
           "parameters": [
             {
@@ -18253,6 +19646,14 @@
           "name": "cloneRangeSeries",
           "declaration": {
             "name": "cloneRangeSeries",
+            "module": "src/range-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveRangeLabels",
+          "declaration": {
+            "name": "resolveRangeLabels",
             "module": "src/range-chart/model.js"
           }
         },
@@ -18323,6 +19724,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanRangeChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRangeChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRangeChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -18534,6 +19960,12 @@
                 "text": "\"bar\"|\"area\""
               },
               "description": "Default `bar`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -18724,6 +20156,31 @@
               "name": "invalid"
             },
             {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanRatingMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRatingMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRatingMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "clear"
             },
@@ -18910,6 +20367,12 @@
               "name": "invalid",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -19323,6 +20786,27 @@
             },
             {
               "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanRichTextEditorMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRichTextEditorMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRichTextEditorMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "value",
               "return": {
                 "type": {
@@ -19723,6 +21207,31 @@
               "name": "closeLabel"
             },
             {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanRowDetailsPanelMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanRowDetailsPanelMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanRowDetailsPanelMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
               "kind": "method",
               "name": "show",
               "parameters": [
@@ -19874,6 +21383,12 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -19949,6 +21464,31 @@
         },
         {
           "kind": "function",
+          "name": "resolveScatterPointLabel",
+          "parameters": [
+            {
+              "name": "point",
+              "type": {
+                "text": "RowanScatterChartPoint"
+              }
+            },
+            {
+              "name": "index",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "scatterDomains",
           "parameters": [
             {
@@ -19979,6 +21519,14 @@
           "name": "cloneScatterSeries",
           "declaration": {
             "name": "cloneScatterSeries",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveScatterPointLabel",
+          "declaration": {
+            "name": "resolveScatterPointLabel",
             "module": "src/scatter-chart/model.js"
           }
         },
@@ -20038,6 +21586,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanScatterChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanScatterChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanScatterChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -20195,6 +21768,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -20203,6 +21782,14 @@
           },
           "tagName": "rowan-scatter-chart",
           "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "label"
+        },
+        {
+          "kind": "variable",
+          "name": "index"
         }
       ],
       "exports": [
@@ -21757,6 +23344,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSliderMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSliderMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSliderMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "formatValue"
             },
             {
@@ -21957,6 +23569,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -22030,6 +23648,27 @@
             {
               "kind": "field",
               "name": "asOf"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSourceMetaMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSourceMetaMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSourceMetaMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -22200,6 +23839,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSparklineMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSparklineMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSparklineMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "return": {
                 "type": {
@@ -22343,6 +24007,12 @@
               "type": {
                 "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -22413,6 +24083,27 @@
             {
               "kind": "field",
               "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSpinnerMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSpinnerMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSpinnerMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -22700,6 +24391,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSplitPaneMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSplitPaneMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSplitPaneMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -22824,6 +24540,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -22930,6 +24652,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanStackedAreaChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanStackedAreaChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanStackedAreaChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -23162,6 +24909,12 @@
                 "text": "\"absolute\"|\"normalized\""
               },
               "description": "`normalized` scales each category to 100. Default `absolute`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -23265,6 +25018,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanStackedBarChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanStackedBarChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanStackedBarChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -23521,6 +25299,12 @@
                 "text": "\"absolute\"|\"normalized\""
               },
               "description": "`normalized` scales each category to 100. Default `absolute`."
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -23811,6 +25595,27 @@
             {
               "kind": "field",
               "name": "steps"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanStepperMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanStepperMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanStepperMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -24815,6 +26620,27 @@
             },
             {
               "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanTableToolbarMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanTableToolbarMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanTableToolbarMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "selected",
               "readonly": true
             },
@@ -24951,6 +26777,200 @@
           "declaration": {
             "name": "RowanTableToolbar",
             "module": "src/table-toolbar/table-toolbar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table-view-state/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TABLE_VIEW_STATE_VERSION",
+          "declaration": {
+            "name": "TABLE_VIEW_STATE_VERSION",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mergeTableViewState",
+          "declaration": {
+            "name": "mergeTableViewState",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeTableViewState",
+          "declaration": {
+            "name": "normalizeTableViewState",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "restoreTableViewState",
+          "declaration": {
+            "name": "restoreTableViewState",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "serializeTableViewState",
+          "declaration": {
+            "name": "serializeTableViewState",
+            "module": "./table-view-state.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table-view-state/table-view-state.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "TABLE_VIEW_STATE_VERSION",
+          "type": {
+            "text": "number"
+          },
+          "default": "1",
+          "description": "Portable state for an operational table. All fields are property-only.\nA null `visibleColumns` value preserves the application's source column visibility."
+        },
+        {
+          "kind": "variable",
+          "name": "size"
+        },
+        {
+          "kind": "variable",
+          "name": "field"
+        },
+        {
+          "kind": "variable",
+          "name": "operator"
+        },
+        {
+          "kind": "function",
+          "name": "normalizeTableViewState",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "Partial<RowanTableViewState> | null | undefined"
+              }
+            }
+          ],
+          "description": "Normalizes a property-only table view state into a JSON-safe plain object.",
+          "return": {
+            "type": {
+              "text": "RowanTableViewState"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "mergeTableViewState",
+          "parameters": [
+            {
+              "name": "base",
+              "type": {
+                "text": "Partial<RowanTableViewState> | null | undefined"
+              }
+            },
+            {
+              "name": "patch",
+              "type": {
+                "text": "Partial<RowanTableViewState> | null | undefined"
+              }
+            }
+          ],
+          "description": "Merges a partial saved view into a base view without mutating either input.",
+          "return": {
+            "type": {
+              "text": "RowanTableViewState"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "serializeTableViewState",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "Partial<RowanTableViewState> | null | undefined"
+              }
+            }
+          ],
+          "description": "Creates a deterministic URI-component-safe representation of table view state.\nThe application owns writing it to a URL, storage, or a saved-view service.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "restoreTableViewState",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": {
+                "text": "string | Partial<RowanTableViewState> | null | undefined"
+              }
+            }
+          ],
+          "description": "Restores a normalized view state from a serialized snapshot or plain object.\nThis function is pure: assigning its result to a table or filter builder is host-owned.",
+          "return": {
+            "type": {
+              "text": "RowanTableViewState"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TABLE_VIEW_STATE_VERSION",
+          "declaration": {
+            "name": "TABLE_VIEW_STATE_VERSION",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "normalizeTableViewState",
+          "declaration": {
+            "name": "normalizeTableViewState",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mergeTableViewState",
+          "declaration": {
+            "name": "mergeTableViewState",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "serializeTableViewState",
+          "declaration": {
+            "name": "serializeTableViewState",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "restoreTableViewState",
+          "declaration": {
+            "name": "restoreTableViewState",
+            "module": "src/table-view-state/table-view-state.js"
           }
         }
       ]
@@ -25263,6 +27283,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanTableMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanTableMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanTableMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "groupBy",
               "return": {
                 "type": {
@@ -25512,6 +27557,12 @@
               "name": "virtual-overscan",
               "type": {
                 "text": "number"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],
@@ -26554,6 +28605,27 @@
             {
               "kind": "field",
               "name": "dismissible"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanToastMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanToastMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanToastMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -27917,6 +29989,31 @@
             },
             {
               "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanTrendChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanTrendChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanTrendChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
               "name": "interactive"
             },
             {
@@ -28101,6 +30198,12 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
             }
           ],
           "superclass": {
@@ -28185,6 +30288,27 @@
             {
               "kind": "field",
               "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanValidationSummaryMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanValidationSummaryMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanValidationSummaryMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -28663,6 +30787,36 @@
         },
         {
           "kind": "function",
+          "name": "resolveWaterfallLabels",
+          "parameters": [
+            {
+              "name": "series",
+              "type": {
+                "text": "{ values?: Array<{ label?: string }> } | undefined"
+              }
+            },
+            {
+              "name": "labels",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "resolveFallbackLabel",
+              "optional": true,
+              "type": {
+                "text": "(index: number) => string"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
           "name": "waterfallEntries",
           "parameters": [
             {
@@ -28712,6 +30866,14 @@
           "name": "cloneWaterfallSeries",
           "declaration": {
             "name": "cloneWaterfallSeries",
+            "module": "src/waterfall-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveWaterfallLabels",
+          "declaration": {
+            "name": "resolveWaterfallLabels",
             "module": "src/waterfall-chart/model.js"
           }
         },
@@ -28779,6 +30941,31 @@
             {
               "kind": "field",
               "name": "description"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanWaterfallChartMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanWaterfallChartMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanWaterfallChartMessages"
+              },
+              "description": "Property-only built-in message overrides."
             },
             {
               "kind": "field",
@@ -28926,6 +31113,12 @@
               "name": "interactive",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
               }
             }
           ],

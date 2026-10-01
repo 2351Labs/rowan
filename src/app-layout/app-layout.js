@@ -2,14 +2,21 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 let appLayoutNavigationId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  navigationToggle: "Toggle {label}",
+});
+
+/** @typedef {{ navigationToggle?: string }} RowanAppLayoutMessages */
 
 /**
  * Responsive application shell for header, navigation, and main content.
  * @tag rowan-app-layout
  * @attr {boolean} navigation-open
  * @attr {string} navigation-label
+ * @property {RowanAppLayoutMessages} messages - Property-only built-in message overrides.
  * @slot header - Application header content.
  * @slot navigation - Primary application navigation.
  * @slot - Main application content.
@@ -29,13 +36,14 @@ export class RowanAppLayout extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static componentTokenPrefixes = ["--rowan-app-layout-"];
   static observedAttributes = ["navigation-open", "navigation-label"];
-  static upgradeProperties = ["navigationOpen", "navigationLabel"];
+  static upgradeProperties = ["navigationOpen", "navigationLabel", "messages"];
 
   #layout = null;
   #navigation = null;
   #backdrop = null;
   #navigationToggle = null;
   #compactMedia = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -56,6 +64,17 @@ export class RowanAppLayout extends BaseElement {
 
   set navigationLabel(value) {
     this.reflectString("navigation-label", value || null);
+  }
+
+  /** @returns {RowanAppLayoutMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanAppLayoutMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   render() {
@@ -127,7 +146,12 @@ export class RowanAppLayout extends BaseElement {
     this.#navigationToggle.hidden = !compact;
     this.#navigationToggle.setAttribute("aria-controls", this.#navigation.id);
     this.#navigationToggle.setAttribute("aria-expanded", String(this.navigationOpen));
-    this.#navigationToggle.setAttribute("aria-label", `Toggle ${this.navigationLabel}`);
+    this.#navigationToggle.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "navigationToggle", {
+        label: this.navigationLabel,
+      }),
+    );
     this.#backdrop.hidden = !compact || !this.navigationOpen;
     this.#navigation.hidden = closedCompactNavigation;
     this.#navigation.toggleAttribute("inert", closedCompactNavigation);

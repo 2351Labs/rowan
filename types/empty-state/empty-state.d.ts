@@ -11,6 +11,5 @@
  * @csspart body
  * @csspart actions
  */
-export class RowanEmptyState extends BaseElement {
-}
+export class RowanEmptyState extends BaseElement {}
 import { BaseElement } from "../lib/base-element.js";

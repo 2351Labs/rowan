@@ -11,18 +11,26 @@
  * }} [input]
  * @returns {{ labels: string[], series: object[] }}
  */
-export function createParetoData(input?: {
-    values?: (number | null)[] | undefined;
-    labels?: string[] | undefined;
-    bar?: {
-        id?: string | undefined;
-        label?: string | undefined;
-    } | undefined;
-    line?: {
-        id?: string | undefined;
-        label?: string | undefined;
-    } | undefined;
-} | undefined): {
-    labels: string[];
-    series: object[];
+export function createParetoData(
+  input?:
+    | {
+        values?: (number | null)[] | undefined;
+        labels?: string[] | undefined;
+        bar?:
+          | {
+              id?: string | undefined;
+              label?: string | undefined;
+            }
+          | undefined;
+        line?:
+          | {
+              id?: string | undefined;
+              label?: string | undefined;
+            }
+          | undefined;
+      }
+    | undefined,
+): {
+  labels: string[];
+  series: object[];
 };

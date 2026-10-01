@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Rowan Astro fixture</title>
+  </head>
+  <body>
+    <rowan-table id="members"></rowan-table>
+
+    <form id="actions">
+      <rowan-checkbox id="consent" name="consent" value="yes">
+        Accept terms
+      </rowan-checkbox>
+      <rowan-button id="save" type="button">
+        Save
+      </rowan-button>
+    </form>
+
+    <script>
+      import "@rowan-ui/core/button";
+      import "@rowan-ui/core/checkbox";
+      import "@rowan-ui/core/table";
+
+      const table = document.querySelector("#members");
+      const checkbox = document.querySelector("#consent");
+      const button = document.querySelector("#save");
+      let clickCount = 0;
+
+      table.config = {
+        columns: [{ id: "name", header: "Name" }],
+        rows: [{ id: "1", name: "Ada" }],
+      };
+      checkbox.checked = true;
+      button.addEventListener("rowan-click", () => {
+        clickCount += 1;
+      });
+
+      window.rowanAstroFixture = {
+        getClickCount: () => clickCount,
+      };
+    </script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 import { RowanAccordion } from "@rowan-ui/core/accordion";
-import { RowanAlert } from "@rowan-ui/core/alert";
+import { RowanAlert, type RowanAlertMessages } from "@rowan-ui/core/alert";
 import { RowanAreaChart } from "@rowan-ui/core/area-chart";
 import { RowanAppLayout } from "@rowan-ui/core/app-layout";
 import { RowanAvatar } from "@rowan-ui/core/avatar";
@@ -109,9 +109,19 @@ import {
   RowanTable,
   type RowanTableConfig,
   type RowanTableDensity,
+  type RowanTableMessages,
   type RowanTableSelectable,
 } from "@rowan-ui/core/table";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
+import {
+  TABLE_VIEW_STATE_VERSION,
+  mergeTableViewState,
+  normalizeTableViewState,
+  restoreTableViewState,
+  serializeTableViewState,
+  type RowanTableViewFilter,
+  type RowanTableViewState,
+} from "@rowan-ui/core/table-view-state";
 import { RowanTabs } from "@rowan-ui/core/tabs";
 import {
   RowanTrendChart,
@@ -134,9 +144,17 @@ import { RowanTreeItem } from "@rowan-ui/core/tree-item";
 import { RowanValidationSummary } from "@rowan-ui/core/validation-summary";
 import { RowanVirtualList } from "@rowan-ui/core/virtual-list";
 import { RowanWaterfallChart } from "@rowan-ui/core/waterfall-chart";
+import type {
+  RowanAlertMessages as RootRowanAlertMessages,
+  RowanTableMessages as RootRowanTableMessages,
+} from "@rowan-ui/core";
 
 const accordion: RowanAccordion = document.createElement("rowan-accordion");
 const alert: RowanAlert = document.createElement("rowan-alert");
+const alertMessages: RowanAlertMessages = { dismissLabel: "Dismiss" };
+const rootAlertMessages: RootRowanAlertMessages = alertMessages;
+alert.messages = rootAlertMessages;
+alert.messages = null;
 const areaChart: RowanAreaChart = document.createElement("rowan-area-chart");
 const appLayout: RowanAppLayout = document.createElement("rowan-app-layout");
 const avatar: RowanAvatar = document.createElement("rowan-avatar");
@@ -298,6 +316,10 @@ const switchControl: RowanSwitch = document.createElement("rowan-switch");
 const tab: RowanTab = document.createElement("rowan-tab");
 const tabPanel: RowanTabPanel = document.createElement("rowan-tab-panel");
 const table: RowanTable = document.createElement("rowan-table");
+const tableMessages: RowanTableMessages = { empty: "No members" };
+const rootTableMessages: RootRowanTableMessages = tableMessages;
+table.messages = rootTableMessages;
+table.messages = null;
 const tableToolbar: RowanTableToolbar = document.createElement("rowan-table-toolbar");
 const tabs: RowanTabs = document.createElement("rowan-tabs");
 const trendChart: RowanTrendChart = document.createElement("rowan-trend-chart");
@@ -397,6 +419,27 @@ const tableConfig: RowanTableConfig = {
 };
 const tableDensity: RowanTableDensity = "sm";
 const tableSelectable: RowanTableSelectable = "none";
+const tableViewFilter: RowanTableViewFilter = {
+  id: "status-open",
+  field: "status",
+  operator: "equals",
+  value: "Open",
+};
+const tableViewState: RowanTableViewState = {
+  version: TABLE_VIEW_STATE_VERSION,
+  sort: { id: "updated", dir: "desc" },
+  page: { index: 0, size: 25, total: 100 },
+  filters: [tableViewFilter],
+  visibleColumns: ["title", "status", "updated"],
+  density: "md",
+  groupBy: null,
+};
+const normalizedTableViewState: RowanTableViewState = normalizeTableViewState(tableViewState);
+const mergedTableViewState: RowanTableViewState = mergeTableViewState(tableViewState, {
+  density: "sm",
+});
+const tableViewSnapshot: string = serializeTableViewState(tableViewState);
+const restoredTableViewState: RowanTableViewState = restoreTableViewState(tableViewSnapshot);
 const multiSelectOption: RowanMultiSelectComboboxOption = {
   value: "ada",
   label: "Ada",
@@ -583,6 +626,12 @@ void [
   tabPanel,
   table,
   tableToolbar,
+  tableViewFilter,
+  tableViewState,
+  normalizedTableViewState,
+  mergedTableViewState,
+  tableViewSnapshot,
+  restoredTableViewState,
   tabs,
   trendChart,
   textField,

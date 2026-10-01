@@ -1,8 +1,26 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 const panelStates = new WeakMap();
+const DEFAULT_MESSAGES = Object.freeze({
+  previousPanel: "Previous panel",
+  nextPanel: "Next panel",
+  panelStatus: "Panel {index} of {total}",
+  emptyStatus: "No panels",
+  roleDescription: "carousel",
+});
+
+/**
+ * @typedef {object} RowanCarouselMessages
+ * @property {string | ((context: { index: number, total: number }) => string)} [previousPanel]
+ * @property {string | ((context: { index: number, total: number }) => string)} [nextPanel]
+ * @property {string | ((context: { index: number, total: number }) => string)} [panelStatus]
+ * @property {string} [emptyStatus]
+ * @property {string} [roleDescription]
+ */
 
 function normalizeIndex(value) {
   const numeric = Number(value);
@@ -20,6 +38,7 @@ function clampIndex(index, panelCount) {
  * @tag rowan-carousel
  * @attr {number} active-index
  * @attr {string} label
+ * @property {RowanCarouselMessages} messages - Property-only built-in message overrides.
  * @slot - Carousel panels
  * @csspart carousel
  * @csspart viewport
@@ -38,7 +57,7 @@ export class RowanCarousel extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["active-index", "label"];
-  static upgradeProperties = ["activeIndex", "label"];
+  static upgradeProperties = ["activeIndex", "label", "messages"];
   static componentTokenPrefixes = ["--rowan-carousel-"];
 
   #carousel = null;
@@ -48,6 +67,7 @@ export class RowanCarousel extends BaseElement {
   #nextButton = null;
   #status = null;
   #controlledPanels = new Map();
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -73,6 +93,17 @@ export class RowanCarousel extends BaseElement {
 
   set label(value) {
     this.reflectString("label", value);
+  }
+
+  /** @returns {RowanCarouselMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanCarouselMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   previous() {
@@ -110,18 +141,14 @@ export class RowanCarousel extends BaseElement {
               part="previous-button"
               type="button"
               data-action="previous"
-              aria-label="Previous panel"
-              title="Previous panel"
-            ><span aria-hidden="true">&larr;</span></button>
+            ><span class="control-icon previous-icon" aria-hidden="true">&larr;</span></button>
             <p class="status" part="status" aria-live="polite" aria-atomic="true"></p>
             <button
               class="control-button"
               part="next-button"
               type="button"
               data-action="next"
-              aria-label="Next panel"
-              title="Next panel"
-            ><span aria-hidden="true">&rarr;</span></button>
+            ><span class="control-icon next-icon" aria-hidden="true">&rarr;</span></button>
           </div>
         </div>
       `;
@@ -191,15 +218,32 @@ export class RowanCarousel extends BaseElement {
 
   #syncControls(panelCount, activeIndex) {
     const hasPanels = panelCount > 0;
+    const context = { index: activeIndex + 1, total: panelCount };
     this.#previousButton.disabled = !hasPanels || activeIndex === 0;
     this.#nextButton.disabled = !hasPanels || activeIndex === panelCount - 1;
+    const previousPanel = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      "previousPanel",
+      context,
+    );
+    const nextPanel = resolveMessage(this.#messages, DEFAULT_MESSAGES, "nextPanel", context);
+    this.#previousButton.setAttribute("aria-label", previousPanel);
+    this.#previousButton.title = previousPanel;
+    this.#nextButton.setAttribute("aria-label", nextPanel);
+    this.#nextButton.title = nextPanel;
 
     if (hasPanels) {
-      this.#status.textContent = `Panel ${activeIndex + 1} of ${panelCount}`;
+      this.#status.textContent = resolveMessage(
+        this.#messages,
+        DEFAULT_MESSAGES,
+        "panelStatus",
+        context,
+      );
       return;
     }
 
-    this.#status.textContent = "No panels";
+    this.#status.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "emptyStatus");
   }
 
   #handleControlClick(event) {
@@ -227,8 +271,10 @@ export class RowanCarousel extends BaseElement {
     const current = this.#normalizeActiveIndex(panels.length);
     let next = null;
 
-    if (event.key === "ArrowLeft" || event.key === "PageUp") next = current - 1;
-    if (event.key === "ArrowRight" || event.key === "PageDown") next = current + 1;
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (horizontalOffset !== 0) next = current + horizontalOffset;
+    if (event.key === "PageUp") next = current - 1;
+    if (event.key === "PageDown") next = current + 1;
     if (event.key === "Home") next = 0;
     if (event.key === "End") next = panels.length - 1;
 
@@ -261,7 +307,11 @@ export class RowanCarousel extends BaseElement {
         this.internals.ariaLabel = this.label;
       }
       if (!this.hasAttribute("aria-roledescription") && "ariaRoleDescription" in this.internals) {
-        this.internals.ariaRoleDescription = "carousel";
+        this.internals.ariaRoleDescription = resolveMessage(
+          this.#messages,
+          DEFAULT_MESSAGES,
+          "roleDescription",
+        );
       }
       this.#carousel.removeAttribute("role");
       this.#carousel.removeAttribute("aria-label");
@@ -271,7 +321,10 @@ export class RowanCarousel extends BaseElement {
 
     this.#carousel.setAttribute("role", "region");
     this.#carousel.setAttribute("aria-label", this.label);
-    this.#carousel.setAttribute("aria-roledescription", "carousel");
+    this.#carousel.setAttribute(
+      "aria-roledescription",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "roleDescription"),
+    );
   }
 
   #releasePanels() {

@@ -1,8 +1,19 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
+import { formatNumber as formatLocalizedNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 let sliderId = 0;
+const DEFAULT_MESSAGES = Object.freeze({
+  end: "End",
+  rangeEndpoint: "{label} {endpoint}",
+  rangeValue: "{start} - {end}",
+  start: "Start",
+  value: "Value",
+});
 
 function finiteNumber(value, fallback) {
   const numeric = Number(value);
@@ -47,6 +58,15 @@ function parseRangeState(state) {
 }
 
 /**
+ * @typedef {object} RowanSliderMessages
+ * @property {string} [end]
+ * @property {string | ((context: { endpoint: string, label: string }) => string)} [rangeEndpoint]
+ * @property {string | ((context: { end: string, start: string }) => string)} [rangeValue]
+ * @property {string} [start]
+ * @property {string} [value]
+ */
+
+/**
  * Numeric slider with single-value and ordered range modes.
  * @tag rowan-slider
  * @attr {string} name
@@ -63,6 +83,8 @@ function parseRangeState(state) {
  * @attr {boolean} disabled
  * @attr {boolean} required
  * @attr {boolean} invalid
+ * @attr {string} locale
+ * @property {RowanSliderMessages} messages - Property-only built-in message overrides.
  * @csspart slider
  * @csspart track
  * @csspart range
@@ -95,6 +117,7 @@ export class RowanSlider extends BaseElement {
     "disabled",
     "required",
     "invalid",
+    "locale",
   ];
   static upgradeProperties = [
     "name",
@@ -112,6 +135,8 @@ export class RowanSlider extends BaseElement {
     "required",
     "invalid",
     "formatValue",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -124,6 +149,7 @@ export class RowanSlider extends BaseElement {
   #defaultStart = null;
   #defaultEnd = null;
   #formatValue = null;
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -297,6 +323,25 @@ export class RowanSlider extends BaseElement {
 
   set invalid(value) {
     this.reflectBoolean("invalid", Boolean(value));
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanSliderMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanSliderMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get formatValue() {
@@ -488,9 +533,8 @@ export class RowanSlider extends BaseElement {
     input.hidden = !visible;
     input.disabled = this.disabled;
 
-    const label = this.label.trim() || "Value";
-    input.setAttribute("aria-label", this.range ? `${label} ${endpoint}` : label);
-    input.setAttribute("aria-valuetext", formatNumber(value));
+    input.setAttribute("aria-label", this.#inputLabel(endpoint));
+    input.setAttribute("aria-valuetext", this.#formatDisplayNumber(value));
   }
 
   #commitUserInput(input) {
@@ -520,8 +564,9 @@ export class RowanSlider extends BaseElement {
     const pageStep = this.step * 10;
     let next = null;
 
-    if (["ArrowDown", "ArrowLeft"].includes(event.key)) next = current - this.step;
-    if (["ArrowUp", "ArrowRight"].includes(event.key)) next = current + this.step;
+    const horizontalOffset = horizontalArrowKeyOffset(this, event.key);
+    if (event.key === "ArrowDown" || horizontalOffset === -1) next = current - this.step;
+    if (event.key === "ArrowUp" || horizontalOffset === 1) next = current + this.step;
     if (event.key === "PageDown") next = current - pageStep;
     if (event.key === "PageUp") next = current + pageStep;
     if (event.key === "Home") next = this.min;
@@ -542,8 +587,11 @@ export class RowanSlider extends BaseElement {
   #formattedValue() {
     const value = this.value;
     const fallback = this.range
-      ? `${formatNumber(value.start)} - ${formatNumber(value.end)}`
-      : formatNumber(value);
+      ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "rangeValue", {
+          end: this.#formatDisplayNumber(value.end),
+          start: this.#formatDisplayNumber(value.start),
+        })
+      : this.#formatDisplayNumber(value);
 
     if (!this.#formatValue) return fallback;
 
@@ -558,6 +606,28 @@ export class RowanSlider extends BaseElement {
     } catch {
       return fallback;
     }
+  }
+
+  #inputLabel(endpoint) {
+    const label = this.label.trim() || resolveMessage(this.#messages, DEFAULT_MESSAGES, "value");
+    if (!this.range) return label;
+
+    const endpointMessage = resolveMessage(
+      this.#messages,
+      DEFAULT_MESSAGES,
+      endpoint === "start" ? "start" : "end",
+    );
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "rangeEndpoint", {
+      endpoint: endpointMessage,
+      label,
+    });
+  }
+
+  #formatDisplayNumber(value) {
+    return formatLocalizedNumber(value, {
+      fallback: formatNumber(value),
+      locale: this.locale,
+    });
   }
 
   #emitChange(source) {

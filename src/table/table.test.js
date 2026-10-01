@@ -329,10 +329,39 @@ describe("rowan-table", () => {
 
     const name = table.shadowRoot.querySelector('td[data-column-id="name"]');
     const score = table.shadowRoot.querySelector('td[data-column-id="score"]');
-    expect(name.style.textAlign).to.equal("right");
+    expect(name.style.textAlign).to.equal("end");
     expect(name.style.verticalAlign).to.equal("top");
     expect(score.style.textAlign).to.equal("");
     expect(score.style.verticalAlign).to.equal("");
+  });
+
+  it("keeps logical alignment and sticky edge effects in RTL", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.dir = "rtl";
+    const table = document.createElement("rowan-table");
+    table.style.maxInlineSize = "18rem";
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", align: "start", sticky: "start", minWidth: "8rem" },
+        { id: "team", header: "Team", minWidth: "8rem" },
+        { id: "status", header: "Status", align: "end", sticky: "end", minWidth: "8rem" },
+      ],
+      rows: [{ id: "1", name: "Ada", team: "Ops", status: "Watch" }],
+    };
+    wrapper.append(table);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextFrame();
+
+    const name = table.shadowRoot.querySelector('td[data-column-id="name"]');
+    const status = table.shadowRoot.querySelector('td[data-column-id="status"]');
+    expect(name.style.textAlign).to.equal("start");
+    expect(status.style.textAlign).to.equal("end");
+    expect(name.style.insetInlineStart).to.equal("0px");
+    expect(status.style.insetInlineEnd).to.equal("0px");
+    expect(getComputedStyle(name).boxShadow).to.contain("-8px 0px 8px -8px");
+    expect(getComputedStyle(status).boxShadow).to.contain("8px 0px 8px -8px");
   });
 
   it("does not emit table events when parent sets properties", async () => {
@@ -1920,5 +1949,176 @@ describe("rowan-table", () => {
       (button) => button.textContent,
     );
     expect(headers).to.deep.equal(["— (1)", "__empty (1)"]);
+  });
+
+  it("uses inherited locale and property-only messages for generated operational copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "de-DE";
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      selectable: "multiple",
+      groupBy: { id: "team", subtotals: true },
+      page: { index: 0, size: 2, total: 2 },
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team" },
+        { id: "amount", header: "Amount", type: "number" },
+        { id: "joined", header: "Joined", type: "date" },
+        { id: "active", header: "", type: "checkbox" },
+        { id: "enabled", header: "", type: "switch" },
+        { id: "action", header: "", type: "button" },
+      ],
+      rows: [
+        {
+          id: "order-1",
+          name: "Ada",
+          team: "Platform",
+          amount: 1234.5,
+          joined: "2026-10-12",
+          active: true,
+          enabled: true,
+        },
+        {
+          id: "order-2",
+          name: "Alan",
+          team: "Platform",
+          amount: 4,
+          joined: "2026-10-13",
+          active: false,
+          enabled: false,
+        },
+      ],
+    };
+    wrapper.append(table);
+    document.body.append(wrapper);
+    await nextMicrotask();
+
+    const events = [];
+    [
+      "rowan-sort",
+      "rowan-select",
+      "rowan-cell-change",
+      "rowan-cell-action",
+      "rowan-page-change",
+      "rowan-group-toggle",
+    ].forEach((type) => table.addEventListener(type, () => events.push(type)));
+    table.messages = {
+      action: "Aktion",
+      empty: "Keine Daten.",
+      groupLabel: "{label}: {count} Eintrage",
+      loading: "Laden...",
+      nextPage: "Weiter",
+      paginationLabel: "Seitennavigation",
+      paginationStatus: "Zeige {from}-{to} von {total}",
+      previousPage: "Zuruck",
+      selectAllRows: "Alle Zeilen auswahlen",
+      selectRow: "Zeile {rowId} auswahlen",
+      subtotal: "Zwischensumme",
+    };
+    await nextMicrotask();
+
+    expect(table.getAttribute("messages")).to.equal(null);
+    expect(table.locale).to.equal("de-DE");
+    expect(events).to.deep.equal([]);
+    expect(
+      table.shadowRoot
+        .querySelector('th[data-column-id="__select"] rowan-checkbox')
+        .getAttribute("aria-label"),
+    ).to.equal("Alle Zeilen auswahlen");
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="order-1"] rowan-checkbox')
+        .getAttribute("aria-label"),
+    ).to.equal("Zeile order-1 auswahlen");
+    expect(table.shadowRoot.querySelector(".group-toggle").textContent).to.equal(
+      "Platform: 2 Eintrage",
+    );
+    expect(
+      table.shadowRoot.querySelector('tr.subtotal-row td[data-column-id="name"]').textContent,
+    ).to.equal("Zwischensumme");
+    expect(table.shadowRoot.querySelector('td[data-column-id="amount"]').textContent).to.equal(
+      new Intl.NumberFormat("de-DE").format(1234.5),
+    );
+    expect(table.shadowRoot.querySelector("nav.pagination").getAttribute("aria-label")).to.equal(
+      "Seitennavigation",
+    );
+    expect(table.shadowRoot.querySelector('[data-action="prev-page"]').textContent).to.equal(
+      "Zuruck",
+    );
+    expect(table.shadowRoot.querySelector('[data-action="next-page"]').textContent).to.equal(
+      "Weiter",
+    );
+    expect(table.shadowRoot.querySelector(".page-status").textContent).to.equal("Zeige 1-2 von 2");
+    expect(
+      table.shadowRoot.querySelector('td[data-column-id="action"] rowan-button').textContent,
+    ).to.equal("Aktion");
+
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="order-1"] td[data-column-id="active"] rowan-checkbox')
+        .getAttribute("aria-label"),
+    ).to.equal("checkbox");
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="order-1"] td[data-column-id="enabled"] rowan-switch')
+        .getAttribute("aria-label"),
+    ).to.equal("switch");
+
+    table.loading = true;
+    await nextMicrotask();
+    expect(table.shadowRoot.querySelector(".loading-row").textContent).to.equal("Laden...");
+
+    table.loading = false;
+    table.rows = [];
+    await nextMicrotask();
+    expect(table.shadowRoot.querySelector("rowan-empty-state").textContent).to.equal(
+      "Keine Daten.",
+    );
+    expect(events).to.deep.equal([]);
+  });
+
+  it("uses explicit control labels before blank-header message fallbacks", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "checked", header: "", type: "checkbox" },
+        {
+          id: "enabled",
+          header: "",
+          type: "switch",
+          cell: {
+            label: (_value, row) => (row.id === "explicit" ? "Pin this row" : undefined),
+          },
+        },
+      ],
+      rows: [
+        { id: "fallback", checked: true, enabled: false },
+        { id: "explicit", checked: false, enabled: true },
+      ],
+    };
+    table.messages = {
+      checkbox: "Localized checkbox",
+      switch: "Localized switch",
+    };
+    document.body.append(table);
+    await nextMicrotask();
+
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="fallback"] td[data-column-id="checked"] rowan-checkbox')
+        .getAttribute("aria-label"),
+    ).to.equal("Localized checkbox");
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="fallback"] td[data-column-id="enabled"] rowan-switch')
+        .getAttribute("aria-label"),
+    ).to.equal("Localized switch");
+    expect(
+      table.shadowRoot
+        .querySelector('tr[data-row-id="explicit"] td[data-column-id="enabled"] rowan-switch')
+        .getAttribute("aria-label"),
+    ).to.equal("Pin this row");
   });
 });

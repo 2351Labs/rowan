@@ -2,6 +2,9 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
+import { formatNumber } from "../lib/format.js";
+import { resolveLocale } from "../lib/locale.js";
+import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -28,6 +31,19 @@ const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 18;
 const VARIANTS = new Set(["funnel", "cone", "pyramid"]);
+const DEFAULT_MESSAGES = Object.freeze({
+  chart: ({ variant }) => {
+    if (variant === "cone") return "Cone chart";
+    if (variant === "pyramid") return "Pyramid chart";
+    return "Funnel chart";
+  },
+  dataTable: "Data table",
+  dataTableCaption: "{chart} data table",
+  metric: "Metric",
+  noData: "No data",
+  point: "Point {index}",
+  stages: "Stages",
+});
 
 let funnelChartId = 0;
 
@@ -38,6 +54,17 @@ function isObject(value) {
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
+
+/**
+ * @typedef {object} RowanFunnelChartMessages
+ * @property {string | ((context: { variant: "funnel" | "cone" | "pyramid" }) => string)} [chart]
+ * @property {string} [dataTable]
+ * @property {string | ((context: { chart: string }) => string)} [dataTableCaption]
+ * @property {string} [metric]
+ * @property {string} [noData]
+ * @property {string | ((context: { index: string }) => string)} [point]
+ * @property {string} [stages]
+ */
 
 /**
  * @typedef {import("../chart/model.js").RowanChartConfig & {
@@ -54,10 +81,12 @@ function normalizeText(value) {
  * @attr {string} description
  * @attr {boolean} interactive
  * @attr {"funnel"|"cone"|"pyramid"} variant - Default `funnel`.
+ * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - First series is drawn. Arrays are property-only.
  * @property {string[]} labels - Stage labels. Arrays are property-only.
  * @property {RowanFunnelChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to funnel.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter
+ * @property {RowanFunnelChartMessages} messages - Property-only built-in message overrides.
  * @slot label
  * @slot description
  * @csspart control
@@ -73,7 +102,7 @@ export class RowanFunnelChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./funnel-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-funnel-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "variant"];
+  static observedAttributes = ["label", "description", "interactive", "variant", "locale"];
   static upgradeProperties = [
     "label",
     "description",
@@ -83,6 +112,8 @@ export class RowanFunnelChart extends BaseElement {
     "labels",
     "config",
     "valueFormatter",
+    "locale",
+    "messages",
   ];
 
   #control = null;
@@ -98,6 +129,7 @@ export class RowanFunnelChart extends BaseElement {
   #detail = null;
   #hover = null;
   #summaryTable = null;
+  #summary = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -105,6 +137,7 @@ export class RowanFunnelChart extends BaseElement {
   #entries = [];
   #activePointKey = "";
   #labelId = "";
+  #messages = {};
 
   connectedCallback() {
     super.connectedCallback();
@@ -129,6 +162,25 @@ export class RowanFunnelChart extends BaseElement {
 
   set description(value) {
     this.reflectString("description", normalizeText(value) || null);
+  }
+
+  get locale() {
+    return resolveLocale(this, this.readString("locale", "").trim());
+  }
+
+  set locale(value) {
+    this.reflectString("locale", value || null);
+  }
+
+  /** @returns {RowanFunnelChartMessages} */
+  get messages() {
+    return { ...this.#messages };
+  }
+
+  /** @param {RowanFunnelChartMessages | null | undefined} value */
+  set messages(value) {
+    this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
+    this.requestRender();
   }
 
   get interactive() {
@@ -234,11 +286,11 @@ export class RowanFunnelChart extends BaseElement {
                 <div class="point-controls" dir="ltr"></div>
               </div>
             </div>
-            <ul class="legend" part="legend" aria-label="Stages"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
-            <summary>Data table</summary>
+            <summary></summary>
             <div class="table-scroll"><table part="table"></table></div>
           </details>
         </div>
@@ -255,6 +307,7 @@ export class RowanFunnelChart extends BaseElement {
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
+      this.#summary = this.renderRoot.querySelector("summary");
       this.#hover = createChartHoverBubble();
       this.renderRoot.querySelector(".chart").append(this.#hover);
       bindChartHover(this, {
@@ -270,6 +323,7 @@ export class RowanFunnelChart extends BaseElement {
     }
 
     this.#syncLabels();
+    this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
   }
@@ -303,9 +357,7 @@ export class RowanFunnelChart extends BaseElement {
   }
 
   #chartName() {
-    if (this.variant === "cone") return "Cone chart";
-    if (this.variant === "pyramid") return "Pyramid chart";
-    return "Funnel chart";
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart", { variant: this.variant });
   }
 
   #plotBox() {
@@ -319,13 +371,15 @@ export class RowanFunnelChart extends BaseElement {
 
   #renderChart() {
     const series = this.#primarySeries();
-    const labels = resolveChartLabels(this.#series.slice(0, 1), this.#labels);
+    const labels = resolveChartLabels(this.#series.slice(0, 1), this.#labels, (index) =>
+      this.#pointLabel(index),
+    );
     const stages = funnelStages(series);
     const shapes = funnelTrapezoids(stages, this.variant, this.#plotBox());
     this.#entries = [];
 
     shapes.forEach((shape, colorIndex) => {
-      const formattedValue = formatChartValue(this.#valueFormatter, shape.value, {
+      const formattedValue = this.#formatValue(shape.value, {
         series,
         index: shape.index,
         label: labels[shape.index],
@@ -357,7 +411,9 @@ export class RowanFunnelChart extends BaseElement {
     this.#renderLegend();
     this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
-      caption: `${this.#displayLabel() || this.#chartName()} data table`,
+      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+        chart: this.#displayLabel() || this.#chartName(),
+      }),
       labels,
       series: series
         ? [
@@ -368,7 +424,8 @@ export class RowanFunnelChart extends BaseElement {
           ]
         : [],
       formatValue: (value, item, index, label) =>
-        formatChartValue(this.#valueFormatter, value, { series, index, label }),
+        this.#formatValue(value, { series, index, label }),
+      messages: this.#messages,
     });
     this.#syncActivePoint();
   }
@@ -405,6 +462,10 @@ export class RowanFunnelChart extends BaseElement {
 
   #renderLegend() {
     this.#legend.replaceChildren();
+    this.#legend.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "stages"),
+    );
     const fragment = document.createDocumentFragment();
     this.#entries.forEach((entry, index) => {
       const item = document.createElement("li");
@@ -500,6 +561,18 @@ export class RowanFunnelChart extends BaseElement {
       .find((node) => node instanceof HTMLButtonElement && node.dataset.pointKey);
     if (!button) return null;
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
+  }
+
+  #formatValue(value, context) {
+    if (this.#valueFormatter) return formatChartValue(this.#valueFormatter, value, context);
+
+    return formatNumber(value, { fallback: String(value), locale: this.locale });
+  }
+
+  #pointLabel(index) {
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "point", {
+      index: String(index + 1),
+    });
   }
 
   #applyDefaultA11y() {

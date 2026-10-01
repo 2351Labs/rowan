@@ -1,5 +1,8 @@
 import { finiteOrNull } from "../chart/model.js";
 
+const GENERATED_ROWS = Symbol("rowan.heatmap-generated-rows");
+const GENERATED_COLUMNS = Symbol("rowan.heatmap-generated-columns");
+
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -22,6 +25,23 @@ function uniqueLabels(values) {
 
 function isMatrix(value) {
   return Array.isArray(value) && value.some((row) => Array.isArray(row));
+}
+
+function fallbackLabel(index, resolveFallback, prefix) {
+  if (typeof resolveFallback === "function") {
+    const resolved = normalizeText(resolveFallback(index));
+    if (resolved) return resolved;
+  }
+
+  return `${prefix} ${index + 1}`;
+}
+
+function withGeneratedLabels(value, rows, columns) {
+  Object.defineProperties(value, {
+    [GENERATED_ROWS]: { value: rows },
+    [GENERATED_COLUMNS]: { value: columns },
+  });
+  return value;
 }
 
 /**
@@ -52,15 +72,15 @@ export function normalizeHeatmap(input = {}) {
         return finiteOrNull(isObject(match) ? match.value : null);
       }),
     );
-    return { rows, columns, values };
+    return withGeneratedLabels(
+      { rows, columns, values },
+      rows.map(() => false),
+      columns.map(() => false),
+    );
   }
 
-  const rows = Array.isArray(input.rows)
-    ? input.rows.map((label, index) => normalizeText(label) || `Row ${index + 1}`)
-    : [];
-  const columns = Array.isArray(input.columns)
-    ? input.columns.map((label, index) => normalizeText(label) || `Column ${index + 1}`)
-    : [];
+  const rows = Array.isArray(input.rows) ? input.rows : [];
+  const columns = Array.isArray(input.columns) ? input.columns : [];
   const source = isMatrix(input.values) ? input.values : [];
   const rowCount = Math.max(rows.length, source.length);
   const columnCount = Math.max(
@@ -68,21 +88,47 @@ export function normalizeHeatmap(input = {}) {
     ...source.map((row) => (Array.isArray(row) ? row.length : 0)),
     0,
   );
-  const rowLabels = Array.from(
-    { length: rowCount },
-    (_value, index) => rows[index] || `Row ${index + 1}`,
-  );
-  const columnLabels = Array.from(
-    { length: columnCount },
-    (_value, index) => columns[index] || `Column ${index + 1}`,
-  );
+  const generatedRows = [];
+  const rowLabels = Array.from({ length: rowCount }, (_value, index) => {
+    const label = normalizeText(rows[index]);
+    generatedRows[index] = !label;
+    return label || fallbackLabel(index, undefined, "Row");
+  });
+  const generatedColumns = [];
+  const columnLabels = Array.from({ length: columnCount }, (_value, index) => {
+    const label = normalizeText(columns[index]);
+    generatedColumns[index] = !label;
+    return label || fallbackLabel(index, undefined, "Column");
+  });
   const values = rowLabels.map((_row, rowIndex) =>
     columnLabels.map((_column, columnIndex) => {
       const row = Array.isArray(source[rowIndex]) ? source[rowIndex] : [];
       return finiteOrNull(row[columnIndex]);
     }),
   );
-  return { rows: rowLabels, columns: columnLabels, values };
+  return withGeneratedLabels(
+    { rows: rowLabels, columns: columnLabels, values },
+    generatedRows,
+    generatedColumns,
+  );
+}
+
+/**
+ * @param {{ rows: string[], columns: string[] }} value
+ * @param {(index: number) => string} [resolveRowFallback]
+ * @param {(index: number) => string} [resolveColumnFallback]
+ */
+export function resolveHeatmapLabels(value, resolveRowFallback, resolveColumnFallback) {
+  const generatedRows = value[GENERATED_ROWS] ?? [];
+  const generatedColumns = value[GENERATED_COLUMNS] ?? [];
+  return {
+    rows: value.rows.map((label, index) =>
+      generatedRows[index] ? fallbackLabel(index, resolveRowFallback, "Row") : label,
+    ),
+    columns: value.columns.map((label, index) =>
+      generatedColumns[index] ? fallbackLabel(index, resolveColumnFallback, "Column") : label,
+    ),
+  };
 }
 
 export function heatmapValueDomain(values) {

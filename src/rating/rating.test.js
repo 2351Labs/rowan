@@ -112,6 +112,37 @@ describe("rowan-rating", () => {
     expect(rating.value).to.equal(1);
   });
 
+  it("uses logical horizontal arrows for ratings in RTL", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.dir = "rtl";
+    const rating = document.createElement("rowan-rating");
+    rating.value = 3;
+    wrapper.append(rating);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const third = rating.shadowRoot.querySelector("button[data-value='3']");
+    third.focus();
+    third.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const second = rating.shadowRoot.querySelector("button[data-value='2']");
+    expect(rating.value).to.equal(2);
+    expect(rating.shadowRoot.activeElement === second).to.equal(true);
+
+    second.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowLeft" }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(rating.value).to.equal(3);
+  });
+
   it("submits through FACE, resets its default, and applies required validity", async () => {
     const form = document.createElement("form");
     const rating = document.createElement("rowan-rating");
@@ -151,5 +182,50 @@ describe("rowan-rating", () => {
     expect(rating.internals.role).to.equal("group");
     expect(rating.getAttribute("aria-label")).to.equal("Review quality");
     expect(rating.internals.ariaLabel).to.equal("Quality");
+  });
+
+  it("uses inherited locale and property-only messages for rating copy", async () => {
+    const wrapper = document.createElement("div");
+    wrapper.lang = "ar-EG";
+    const rating = document.createElement("rowan-rating");
+    rating.value = 3;
+    wrapper.append(rating);
+    document.body.append(wrapper);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    rating.addEventListener("rowan-change", () => changes.push(true));
+    rating.messages = {
+      clearRating: "Clear selection",
+      noRatingSelected: "No selection",
+      rating: "Score",
+      ratingValue: "Value {value}/{max}",
+      starValue: "Set {value}/{max}",
+    };
+    await nextMicrotask();
+
+    const formatter = new Intl.NumberFormat("ar-EG");
+    expect(rating.getAttribute("messages")).to.equal(null);
+    expect(rating.locale).to.equal("ar-EG");
+    expect(rating.shadowRoot.querySelector('[part="rating"]').getAttribute("aria-label")).to.equal(
+      "Score",
+    );
+    expect(rating.shadowRoot.querySelector("output").textContent).to.equal(
+      `Value ${formatter.format(3)}/${formatter.format(5)}`,
+    );
+    expect(rating.shadowRoot.querySelector("button.clear").getAttribute("aria-label")).to.equal(
+      "Clear selection",
+    );
+    expect(
+      rating.shadowRoot.querySelector("button[data-value='3']").getAttribute("aria-label"),
+    ).to.equal(`Set ${formatter.format(3)}/${formatter.format(5)}`);
+    expect(changes).to.deep.equal([]);
+
+    rating.value = "";
+    await nextMicrotask();
+
+    expect(rating.shadowRoot.querySelector("output").textContent).to.equal("No selection");
+    expect(changes).to.deep.equal([]);
   });
 });

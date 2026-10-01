@@ -8,3 +8,4 @@ export type {
   RowanRichTextParagraph,
   RowanRichTextRun,
 } from "../../types/rich-text-editor/document.js";
+export type { RowanRichTextEditorMessages } from "../../types/rich-text-editor/rich-text-editor.js";
