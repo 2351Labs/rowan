@@ -98,6 +98,10 @@
   --rowan-chip-bg: color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg));
   --rowan-chip-border: color-mix(in srgb, var(--rowan-color-accent) 30%, var(--rowan-color-border));
   --rowan-chip-fg: var(--rowan-color-fg);
+  --rowan-status-indicator-fg: var(--rowan-color-fg);
+  --rowan-status-indicator-color: var(--rowan-color-muted);
+  --rowan-status-indicator-info-color: var(--rowan-color-accent);
+  --rowan-status-indicator-danger-color: var(--rowan-color-danger);
   --rowan-chip-success-bg: color-mix(
     in srgb,
     var(--rowan-color-success) 12%,
