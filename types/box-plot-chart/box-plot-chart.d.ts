@@ -3,7 +3,7 @@
  *   labels?: string[],
  *   series?: Array<object>,
  *   interactive?: boolean,
- *   valueFormatter?: Function | null,
+ *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
  * }} RowanBoxPlotChartConfig
  */
 /**
@@ -17,7 +17,7 @@
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ min, q1, median, q3, max, outliers? }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanBoxPlotChartConfig} config - Replaces the complete chart configuration.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -54,14 +54,16 @@ export class RowanBoxPlotChart extends BaseElement {
     set config(value: RowanBoxPlotChartConfig | null | undefined);
     /** @returns {RowanBoxPlotChartConfig} */
     get config(): RowanBoxPlotChartConfig;
-    set valueFormatter(value: null);
-    get valueFormatter(): null;
+    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
+    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
     #private;
 }
 export type RowanBoxPlotChartConfig = {
     labels?: string[];
     series?: Array<object>;
     interactive?: boolean;
-    valueFormatter?: Function | null;
+    valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

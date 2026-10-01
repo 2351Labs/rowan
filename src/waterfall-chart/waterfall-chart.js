@@ -55,7 +55,7 @@ function waterfallTone(entry) {
  * @property {Array<object>} series - First series of `{ value, type?: "total" }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -179,10 +179,12 @@ export class RowanWaterfallChart extends BaseElement {
     this.requestRender();
   }
 
+  /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
   get valueFormatter() {
     return this.#valueFormatter;
   }
 
+  /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
     this.requestRender();

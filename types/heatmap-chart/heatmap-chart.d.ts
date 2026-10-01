@@ -10,7 +10,7 @@
  * @property {Array<Array<number | null>>} values - Matrix of cell values. Arrays are property-only.
  * @property {Array<object>} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -58,7 +58,7 @@ export class RowanHeatmapChart extends BaseElement {
             value: number | null;
         }[];
         interactive: boolean;
-        valueFormatter: null;
+        valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
     });
     get config(): {
         rows: string[];
@@ -70,10 +70,12 @@ export class RowanHeatmapChart extends BaseElement {
             value: number | null;
         }[];
         interactive: boolean;
-        valueFormatter: null;
+        valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
     };
-    set valueFormatter(value: null);
-    get valueFormatter(): null;
+    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
+    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

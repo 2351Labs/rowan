@@ -10,6 +10,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Interactive chart overlays keep hit targets on the SVG marks when the host is RTL. `.point-controls` is `direction: ltr` so physical `--point-x` matches the viewBox. Donut's button list is not an overlay and is unchanged.
 - Nested `dark` / `ember` / `midnight` (and the other shipped themes) re-declare `rowan-status-indicator` color tokens so the label follows the nested foreground instead of light ink on a dark surface.
+- Experimental range, box-plot, scatter, heatmap, combo, and waterfall charts type `valueFormatter` as `RowanChartValueFormatter | null` on the public accessors, matching runtime.
 
 ## 0.16.0 - 2026-10-01
 
