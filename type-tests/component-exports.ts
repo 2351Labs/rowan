@@ -45,6 +45,8 @@ import { RowanFormLayout } from "@rowan-ui/core/form-layout";
 import { RowanFormWizard } from "@rowan-ui/core/form-wizard";
 import {
   RowanBoxPlotChart,
+  type RowanBoxPlotChartConfig,
+  type RowanBoxPlotChartFormatContext,
   type RowanBoxPlotChartValueFormatter,
 } from "@rowan-ui/core/box-plot-chart";
 import { RowanFunnelChart } from "@rowan-ui/core/funnel-chart";
@@ -70,7 +72,12 @@ import { RowanProgress } from "@rowan-ui/core/progress";
 import { RowanRadio } from "@rowan-ui/core/radio";
 import { RowanRadioGroup } from "@rowan-ui/core/radio-group";
 import { RowanRadarChart } from "@rowan-ui/core/radar-chart";
-import { RowanRangeChart, type RowanRangeChartValueFormatter } from "@rowan-ui/core/range-chart";
+import {
+  RowanRangeChart,
+  type RowanRangeChartConfig,
+  type RowanRangeChartFormatContext,
+  type RowanRangeChartValueFormatter,
+} from "@rowan-ui/core/range-chart";
 import { RowanRating } from "@rowan-ui/core/rating";
 import {
   RowanRichTextEditor,
@@ -83,6 +90,8 @@ import {
 import { RowanRowDetailsPanel } from "@rowan-ui/core/row-details-panel";
 import {
   RowanScatterChart,
+  type RowanScatterChartConfig,
+  type RowanScatterChartFormatContext,
   type RowanScatterChartValueFormatter,
 } from "@rowan-ui/core/scatter-chart";
 import { RowanSelect, type RowanSelectOption } from "@rowan-ui/core/select";
@@ -186,25 +195,72 @@ heatmapChart.values = [[4]];
 heatmapChart.valueFormatter = (value) => String(value);
 const scatterChart: RowanScatterChart = document.createElement("rowan-scatter-chart");
 scatterChart.series = [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }];
+const scatterFormatterContext: RowanScatterChartFormatContext = {
+  index: 0,
+  label: "P1",
+  series: {
+    id: "a",
+    label: "A",
+    color: "#166534",
+    points: [{ x: 1, y: 2, size: 3, label: "P1" }],
+  },
+};
 const scatterFormatter: RowanScatterChartValueFormatter = (value, context) =>
-  String(context.series?.points[0]?.x ?? value);
+  String(context.series?.points[0]?.x ?? scatterFormatterContext.series?.points[0]?.x ?? value);
 scatterChart.valueFormatter = scatterFormatter;
+const scatterConfig: RowanScatterChartConfig = {
+  series: [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }],
+  valueFormatter: scatterFormatter,
+};
+scatterChart.config = scatterConfig;
 const waterfallChart: RowanWaterfallChart = document.createElement("rowan-waterfall-chart");
 waterfallChart.series = [{ id: "cash", label: "Cash", values: [10, { value: 6, type: "total" }] }];
 waterfallChart.valueFormatter = (value) => String(value);
 const rangeChart: RowanRangeChart = document.createElement("rowan-range-chart");
 rangeChart.variant = "area";
 rangeChart.series = [{ id: "dwell", label: "Dwell", values: [{ low: 4, high: 12 }] }];
+const rangeFormatterContext: RowanRangeChartFormatContext = {
+  index: 0,
+  label: "North",
+  series: {
+    id: "dwell",
+    label: "Dwell",
+    color: "#166534",
+    values: [{ low: 4, high: 12, label: "North" }],
+  },
+};
 const rangeFormatter: RowanRangeChartValueFormatter = (value, context) =>
-  String(context.series?.values[0]?.low ?? value);
+  String(context.series?.values[0]?.low ?? rangeFormatterContext.series?.values[0]?.low ?? value);
 rangeChart.valueFormatter = rangeFormatter;
+const rangeConfig: RowanRangeChartConfig = {
+  labels: ["North"],
+  series: [{ id: "dwell", label: "Dwell", values: [{ low: 4, high: 12 }] }],
+  valueFormatter: rangeFormatter,
+};
+rangeChart.config = rangeConfig;
 const boxPlotChart: RowanBoxPlotChart = document.createElement("rowan-box-plot-chart");
 boxPlotChart.series = [
   { id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] },
 ];
+const boxPlotFormatterContext: RowanBoxPlotChartFormatContext = {
+  index: 0,
+  label: "North",
+  series: {
+    id: "dwell",
+    label: "Dwell",
+    color: "#166534",
+    values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5, outliers: [], label: "North" }],
+  },
+};
 const boxPlotFormatter: RowanBoxPlotChartValueFormatter = (value, context) =>
-  String(context.series?.values[0]?.q1 ?? value);
+  String(context.series?.values[0]?.q1 ?? boxPlotFormatterContext.series?.values[0]?.q1 ?? value);
 boxPlotChart.valueFormatter = boxPlotFormatter;
+const boxPlotConfig: RowanBoxPlotChartConfig = {
+  labels: ["North"],
+  series: [{ id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] }],
+  valueFormatter: boxPlotFormatter,
+};
+boxPlotChart.config = boxPlotConfig;
 const radarChart: RowanRadarChart = document.createElement("rowan-radar-chart");
 radarChart.geometry = "area";
 radarChart.series = [{ id: "north", label: "North", values: [80, 40, 20] }];
