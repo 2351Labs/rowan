@@ -19,3 +19,27 @@ export function rangeDomain(series: any): {
     min: number;
     max: number;
 };
+/**
+ * Normalized range point passed to a value formatter.
+ */
+export type RowanRangeChartPoint = {
+    low: number | null;
+    high: number | null;
+    label: string;
+};
+/**
+ * Normalized range series passed to a value formatter.
+ */
+export type RowanRangeChartSeries = {
+    id: string;
+    label: string;
+    color: string;
+    values: RowanRangeChartPoint[];
+};
+export type RowanRangeChartFormatContext = {
+    series?: RowanRangeChartSeries | undefined;
+    index?: number | undefined;
+    label?: string | undefined;
+    tick?: boolean | undefined;
+};
+export type RowanRangeChartValueFormatter = (value: number, context: RowanRangeChartFormatContext) => string;

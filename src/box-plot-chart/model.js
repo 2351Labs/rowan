@@ -3,6 +3,39 @@ import { finiteOrNull } from "../chart/model.js";
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
 
+/**
+ * Normalized five-number summary passed to a value formatter.
+ * @typedef {object} RowanBoxPlotChartPoint
+ * @property {number | null} min
+ * @property {number | null} q1
+ * @property {number | null} median
+ * @property {number | null} q3
+ * @property {number | null} max
+ * @property {number[]} outliers
+ * @property {string} label
+ */
+
+/**
+ * Normalized box-plot series passed to a value formatter.
+ * @typedef {object} RowanBoxPlotChartSeries
+ * @property {string} id
+ * @property {string} label
+ * @property {string} color
+ * @property {RowanBoxPlotChartPoint[]} values
+ */
+
+/**
+ * @typedef {object} RowanBoxPlotChartFormatContext
+ * @property {RowanBoxPlotChartSeries} [series]
+ * @property {number} [index]
+ * @property {string} [label]
+ * @property {boolean} [tick]
+ */
+
+/**
+ * @typedef {(value: number, context: RowanBoxPlotChartFormatContext) => string} RowanBoxPlotChartValueFormatter
+ */
+
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

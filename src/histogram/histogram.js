@@ -1,3 +1,5 @@
+import { finiteOrNull } from "../chart/model.js";
+
 function isFiniteNumber(value) {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -5,9 +7,8 @@ function isFiniteNumber(value) {
 function numericValues(value) {
   if (!Array.isArray(value)) return [];
   return value.flatMap((item) => {
-    if (item === null || item === undefined || item === "") return [];
-    const numeric = Number(item);
-    return isFiniteNumber(numeric) ? [numeric] : [];
+    const numeric = finiteOrNull(item);
+    return numeric === null ? [] : [numeric];
   });
 }
 
@@ -35,10 +36,10 @@ export function createHistogramData(input = {}) {
 
   let edges = [];
   if (Array.isArray(input.bins)) {
-    edges = input.bins.map(Number).filter((item) => isFiniteNumber(item));
+    edges = input.bins.map(finiteOrNull).filter(isFiniteNumber);
     edges.sort((left, right) => left - right);
   } else {
-    const count = Math.max(1, Math.floor(Number(input.bins)) || 5);
+    const count = Math.max(1, Math.floor(finiteOrNull(input.bins) || 5));
     if (!values.length) return empty;
     const min = Math.min(...values);
     const max = Math.max(...values);
