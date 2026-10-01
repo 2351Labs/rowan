@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderKeyedChartTable,
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
@@ -408,10 +409,11 @@ export class RowanRangeChart extends BaseElement {
           thickness: barThickness,
           plot,
         });
-        const plotX =
-          variant === "area" ? categoricalPointX(index, categoryCount, plot) : rect.x;
+        const plotX = variant === "area" ? categoricalPointX(index, categoryCount, plot) : rect.x;
         const plotY =
-          variant === "area" ? categoricalValueY(Math.max(point.low, point.high), domain, plot) : rect.y;
+          variant === "area"
+            ? categoricalValueY(Math.max(point.low, point.high), domain, plot)
+            : rect.y;
         entries.push({
           key: `${series.id}::${index}`,
           series,
@@ -538,33 +540,41 @@ export class RowanRangeChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
-    const fragment = document.createDocumentFragment();
-    const area = this.variant === "area";
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      if (area) {
-        button.classList.add("point-button-mark");
-        button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      } else {
-        button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-y", `${(entry.barY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-        button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-height", `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`);
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
+      const fragment = document.createDocumentFragment();
+      const area = this.variant === "area";
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        if (area) {
+          button.classList.add("point-button-mark");
+          button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
+          button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
+        } else {
+          button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
+          button.style.setProperty("--point-y", `${(entry.barY / SVG_NAMESPACE_HEIGHT) * 100}%`);
+          button.style.setProperty(
+            "--point-width",
+            `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`,
+          );
+          button.style.setProperty(
+            "--point-height",
+            `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
+          );
+        }
+        button.setAttribute(
+          "aria-label",
+          `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
+        );
+        fragment.append(button);
       }
-      button.setAttribute(
-        "aria-label",
-        `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
-      );
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+      this.#pointControls.append(fragment);
+    });
   }
 
   #syncActivePoint() {

@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
@@ -427,18 +428,20 @@ export class RowanDonutChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
-    const fragment = document.createDocumentFragment();
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      button.textContent = `${entry.label}, ${entry.formattedValue}`;
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
+      const fragment = document.createDocumentFragment();
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        button.textContent = `${entry.label}, ${entry.formattedValue}`;
+        fragment.append(button);
+      }
+      this.#pointControls.append(fragment);
+    });
   }
 
   #syncActivePoint() {

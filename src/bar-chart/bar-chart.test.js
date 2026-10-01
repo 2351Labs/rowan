@@ -189,4 +189,50 @@ describe("rowan-bar-chart", () => {
 
     expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
   });
+
+  it("restores keyboard focus to the active point after a rerender", async () => {
+    const chart = await renderChart({ interactive: true });
+    const first = chart.shadowRoot.querySelector("button[data-point-key]");
+    const key = first.dataset.pointKey;
+    first.focus();
+
+    chart.labels = ["Mon", "Tue", "Wed"];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const restored = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")].find(
+      (button) => button.dataset.pointKey === key,
+    );
+    expect(restored).to.be.ok;
+    expect(chart.shadowRoot.activeElement).to.equal(restored);
+  });
+
+  it("does not move focus onto a point control during rerender", async () => {
+    const chart = await renderChart({ interactive: true });
+    const outside = document.createElement("button");
+    outside.textContent = "Outside";
+    document.body.append(outside);
+    outside.focus();
+
+    chart.labels = ["Mon", "Tue", "Wed"];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(document.activeElement).to.equal(outside);
+  });
+
+  it("does not force focus onto another point when the active key is gone", async () => {
+    const chart = await renderChart({ interactive: true });
+    const first = chart.shadowRoot.querySelector("button[data-point-key]");
+    const previousKey = first.dataset.pointKey;
+    first.focus();
+
+    chart.series = [{ id: "other", label: "Other", values: [1, 2, 3] }];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
+    expect(buttons.some((button) => button.dataset.pointKey === previousKey)).to.equal(false);
+    expect(buttons.includes(chart.shadowRoot.activeElement)).to.equal(false);
+  });
 });

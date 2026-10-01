@@ -86,3 +86,11 @@ export function createReferenceLine({ x1, x2, y, x, y1, y2, tone, label, formatt
  */
 export function emitPointActivate(host: any, emit: any, entry: any): void;
 export function pointControlFor(container: any, key: any): any;
+/**
+ * Rebuild point buttons without dropping keyboard focus when the overlay
+ * currently contains the focused control.
+ * @param {HTMLElement | null} container
+ * @param {string} restoreKey
+ * @param {() => void} update
+ */
+export function withRestoredPointFocus(container: HTMLElement | null, restoreKey: string, update: () => void): void;

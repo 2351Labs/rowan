@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
 import {
@@ -547,30 +548,35 @@ export class RowanComboChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
 
-    const fragment = document.createDocumentFragment();
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      button.style.setProperty("--point-x", `${(entry.x / SVG_NAMESPACE_WIDTH) * 100}%`);
-      button.style.setProperty(
-        "--point-y",
-        `${((entry.geometry === "bar" ? entry.barY : entry.y - 8) / SVG_NAMESPACE_HEIGHT) * 100}%`,
-      );
-      button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
-      button.style.setProperty("--point-height", `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      button.setAttribute(
-        "aria-label",
-        `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
-      );
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+      const fragment = document.createDocumentFragment();
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        button.style.setProperty("--point-x", `${(entry.x / SVG_NAMESPACE_WIDTH) * 100}%`);
+        button.style.setProperty(
+          "--point-y",
+          `${((entry.geometry === "bar" ? entry.barY : entry.y - 8) / SVG_NAMESPACE_HEIGHT) * 100}%`,
+        );
+        button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
+        button.style.setProperty(
+          "--point-height",
+          `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
+        );
+        button.setAttribute(
+          "aria-label",
+          `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
+        );
+        fragment.append(button);
+      }
+      this.#pointControls.append(fragment);
+    });
   }
 
   #syncActivePoint() {

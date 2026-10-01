@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
@@ -458,6 +459,12 @@ export class RowanBarChart extends BaseElement {
   }
 
   #renderPointControls() {
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#rebuildPointControls();
+    });
+  }
+
+  #rebuildPointControls() {
     this.#pointControls.textContent = "";
     this.#pointControls.hidden = !this.interactive;
     if (!this.interactive) return;

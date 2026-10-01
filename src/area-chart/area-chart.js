@@ -1,7 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
-import { createReferenceLine } from "../chart/dom.js";
+import { createReferenceLine, withRestoredPointFocus } from "../chart/dom.js";
 import {
   bindChartHover,
   createChartHoverBubble,
@@ -569,29 +569,31 @@ export class RowanAreaChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
 
-    const fragment = document.createDocumentFragment();
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.setAttribute("part", "point");
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      button.style.setProperty("--point-x", `${(entry.x / VIEWBOX_WIDTH) * 100}%`);
-      button.style.setProperty("--point-y", `${(entry.y / VIEWBOX_HEIGHT) * 100}%`);
-      button.style.setProperty("--point-offset", `${(entry.seriesIndex % 3) * 0.2}rem`);
-      button.setAttribute(
-        "aria-label",
-        `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
-      );
-      button.setAttribute("aria-pressed", entry.key === this.#activePointKey ? "true" : "false");
-      fragment.append(button);
-    }
+      const fragment = document.createDocumentFragment();
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.setAttribute("part", "point");
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        button.style.setProperty("--point-x", `${(entry.x / VIEWBOX_WIDTH) * 100}%`);
+        button.style.setProperty("--point-y", `${(entry.y / VIEWBOX_HEIGHT) * 100}%`);
+        button.style.setProperty("--point-offset", `${(entry.seriesIndex % 3) * 0.2}rem`);
+        button.setAttribute(
+          "aria-label",
+          `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
+        );
+        button.setAttribute("aria-pressed", entry.key === this.#activePointKey ? "true" : "false");
+        fragment.append(button);
+      }
 
-    this.#pointControls.append(fragment);
+      this.#pointControls.append(fragment);
+    });
   }
 
   #renderSummary(labels) {
