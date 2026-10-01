@@ -8,6 +8,8 @@ import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 import "../src/tokens/themes/lagoon.css";
 import "../src/tokens/themes/ember.css";
+import "../src/tokens/themes/slate.css";
+import "../src/tokens/themes/midnight.css";
 import "../src/tokens/charts-vibrant.css";
 
 setCustomElementsManifest({
@@ -395,6 +397,8 @@ export const globalTypes = {
         { value: "dark", title: "Dark" },
         { value: "lagoon", title: "Lagoon" },
         { value: "ember", title: "Ember" },
+        { value: "slate", title: "Slate" },
+        { value: "midnight", title: "Midnight" },
       ],
       dynamicTitle: true,
     },
@@ -432,10 +436,13 @@ export const decorators = [
     }
 
     const wrap = document.createElement("div");
+    wrap.className = "rowan-story-wrap";
     wrap.dataset.theme = context.globals.theme || "light";
-    wrap.style.background = "var(--rowan-color-bg)";
-    wrap.style.color = "var(--rowan-color-fg)";
-    if (context.viewMode === "story") wrap.style.minHeight = "100%";
+    if (context.parameters?.layout === "fullscreen") {
+      wrap.classList.add("is-fullscreen");
+    } else if (context.viewMode === "story") {
+      wrap.style.minHeight = "100%";
+    }
     wrap.append(storyNode);
 
     return createEventTraceStory(wrap, context);
@@ -464,7 +471,7 @@ export const parameters = {
           "Other",
         ],
         "Workflows",
-        ["App shell", "Bulk confirm"],
+        ["Dashboard", "App shell", "Bulk confirm"],
       ],
     },
   },

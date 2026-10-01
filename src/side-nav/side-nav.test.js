@@ -171,24 +171,24 @@ describe("rowan-side-nav", () => {
     const nav = document.createElement("rowan-side-nav");
     nav.label = "Products";
 
-    const invexus = document.createElement("rowan-side-nav-section");
-    invexus.label = "Invexus";
+    const customers = document.createElement("rowan-side-nav-section");
+    customers.label = "Customers";
     const overview = document.createElement("rowan-side-nav-item");
     overview.value = "overview";
     overview.textContent = "Overview";
     const jobs = document.createElement("rowan-side-nav-item");
     jobs.value = "jobs";
     jobs.textContent = "Jobs";
-    invexus.append(overview, jobs);
+    customers.append(overview, jobs);
 
-    const ptms = document.createElement("rowan-side-nav-section");
-    ptms.label = "PTMS";
+    const orders = document.createElement("rowan-side-nav-section");
+    orders.label = "Orders";
     const routes = document.createElement("rowan-side-nav-item");
     routes.value = "routes";
     routes.textContent = "Routes";
-    ptms.append(routes);
+    orders.append(routes);
 
-    nav.append(invexus, ptms);
+    nav.append(customers, orders);
     document.body.append(nav);
     await nextMicrotask();
     await nextMicrotask();
@@ -198,7 +198,7 @@ describe("rowan-side-nav", () => {
     expect(nav.activeItem).to.equal(jobs);
     expect(overview.active).to.equal(false);
     expect(routes.active).to.equal(false);
-    expect(invexus.shadowRoot.querySelector(".label").textContent).to.equal("Invexus");
+    expect(customers.shadowRoot.querySelector(".label").textContent).to.equal("Customers");
 
     jobs.focus();
     keydown(jobs, "ArrowDown");

@@ -6,6 +6,22 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `slate` and `midnight` themes (`@rowan-ui/core/tokens/slate`, `@rowan-ui/core/tokens/midnight`): zinc palettes, teal accent, flatter buttons, Inter stack, 0.75rem large radius. Nested `[data-theme]` still re-declares component tokens.
+- Storybook Workflows/Dashboard composition: `rowan-app-layout`, sectioned `rowan-side-nav`, KPI row with sparklines, area + donut charts, and a recent-orders table. Follows the toolbar theme; the header control switches `slate` / `midnight`.
+
+### Changed
+
+- Benchmark results regenerated on 0.15.0 (was 0.5.0).
+
+### Fixed
+
+- `rowan-side-nav-section` hides the disclosure trigger when the group is not collapsible. `.trigger { display: flex }` was showing the control through `[hidden]`.
+- Nested `dark` and `midnight` (and the other shipped themes) re-declare `rowan-app-layout`, `rowan-side-nav-item`, button, form-wizard, table-toolbar, bulk-actions, and chart plot tokens. Storybook's inner theme wrap no longer keeps light sand chrome with washed-out nav, wizard copy, toolbars, or white area/donut plots.
+- Nested `slate` / `light` / `lagoon` restore the light vibrant chart palette when they sit inside a dark Storybook wrap.
+- Storybook docs canvases inset component examples. Fullscreen stories (Dashboard, Playground) stay edge-to-edge.
+
 ## 0.15.0 - 2026-09-30
 
 ### Added

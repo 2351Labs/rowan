@@ -177,7 +177,10 @@ fill; both default to `--rowan-color-bg` when a theme does not set them.
 Apply a theme at the same element that declares the tokens, normally `:root`. A custom
 property that references another custom property resolves where it is declared, so a
 theme scoped to a nested wrapper must also re-declare the component tokens it changes.
-The shipped `light.css`, `dark.css`, `lagoon.css`, and `ember.css` do this for you.
+The shipped `light.css`, `dark.css`, `lagoon.css`, `ember.css`, `slate.css`, and
+`midnight.css` do this for you. Slate and Midnight are a zinc pair with a teal
+accent. They set `--rowan-font-family` to Inter; load that face in the host if
+you want it.
 Add another theme by copying one of those files, changing the semantic colors, and
 importing it. Set `document.documentElement.dataset.theme` to the matching name.
 
@@ -189,8 +192,10 @@ import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";
 import "@rowan-ui/core/tokens/lagoon";
 import "@rowan-ui/core/tokens/ember";
+import "@rowan-ui/core/tokens/slate";
+import "@rowan-ui/core/tokens/midnight";
 
-document.documentElement.dataset.theme = "lagoon";
+document.documentElement.dataset.theme = "slate";
 ```
 
 Chart and KPI tones default to those same UI colors, so forest and sand can wash out in small plots. Import `@rowan-ui/core/tokens/charts-vibrant` and set `data-rowan-charts="vibrant"` on a dashboard region (or a single chart host) for a louder blue / green / amber / red palette. Buttons, navigation, and form chrome stay on the Rowan theme.

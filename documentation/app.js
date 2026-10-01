@@ -3,6 +3,8 @@ import "../src/tokens/themes/light.css";
 import "../src/tokens/themes/dark.css";
 import "../src/tokens/themes/lagoon.css";
 import "../src/tokens/themes/ember.css";
+import "../src/tokens/themes/slate.css";
+import "../src/tokens/themes/midnight.css";
 import "../src/tokens/charts-vibrant.css";
 
 import "../src/index.js";
@@ -82,7 +84,9 @@ import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";
 import "@rowan-ui/core/tokens/lagoon";
-import "@rowan-ui/core/tokens/ember";`;
+import "@rowan-ui/core/tokens/ember";
+import "@rowan-ui/core/tokens/slate";
+import "@rowan-ui/core/tokens/midnight";`;
 
 const ICON_INSTALL_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons`;
 
@@ -1195,6 +1199,8 @@ const DOC_PAGES = [
       "light",
       "lagoon",
       "ember",
+      "slate",
+      "midnight",
       "chart palette",
       "css variables",
     ],
@@ -1223,15 +1229,17 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="theme-overrides">
         <h2>Theme override example</h2>
-        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code> or <code>@rowan-ui/core/tokens/ember</code> and set <code>data-theme</code>.</p>
+        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code>, <code>@rowan-ui/core/tokens/ember</code>, <code>@rowan-ui/core/tokens/slate</code>, or <code>@rowan-ui/core/tokens/midnight</code> and set <code>data-theme</code>.</p>
         <div class="info-grid" id="docs-theme-gallery"></div>
         ${codeBlock(`import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/tokens/dark";
 import "@rowan-ui/core/tokens/lagoon";
 import "@rowan-ui/core/tokens/ember";
+import "@rowan-ui/core/tokens/slate";
+import "@rowan-ui/core/tokens/midnight";
 
-document.documentElement.dataset.theme = "lagoon";
+document.documentElement.dataset.theme = "slate";
 
 :root {
   --rowan-color-bg: #f7f6ef;
@@ -4786,7 +4794,7 @@ function setupCommandPaletteDemo() {
   }
 }
 
-const SHIPPED_THEMES = ["light", "dark", "lagoon", "ember"];
+const SHIPPED_THEMES = ["light", "dark", "lagoon", "ember", "slate", "midnight"];
 
 function setupThemeGallery(mainEl) {
   const gallery = mainEl.querySelector("#docs-theme-gallery");
@@ -4798,6 +4806,8 @@ function setupThemeGallery(mainEl) {
     { id: "dark", label: "Dark" },
     { id: "lagoon", label: "Lagoon" },
     { id: "ember", label: "Ember" },
+    { id: "slate", label: "Slate" },
+    { id: "midnight", label: "Midnight" },
   ]) {
     const card = document.createElement("div");
     card.dataset.theme = theme.id;
@@ -4870,6 +4880,8 @@ function wireThemeToggle() {
     { value: "dark", label: "Dark" },
     { value: "lagoon", label: "Lagoon" },
     { value: "ember", label: "Ember" },
+    { value: "slate", label: "Slate" },
+    { value: "midnight", label: "Midnight" },
   ];
 
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light";

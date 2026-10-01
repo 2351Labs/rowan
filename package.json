@@ -480,6 +480,14 @@
       "types": "./src/tokens/themes/ember.css.d.ts",
       "default": "./src/tokens/themes/ember.css"
     },
+    "./tokens/slate": {
+      "types": "./src/tokens/themes/slate.css.d.ts",
+      "default": "./src/tokens/themes/slate.css"
+    },
+    "./tokens/midnight": {
+      "types": "./src/tokens/themes/midnight.css.d.ts",
+      "default": "./src/tokens/themes/midnight.css"
+    },
     "./tokens/charts-vibrant": {
       "types": "./src/tokens/charts-vibrant.css.d.ts",
       "default": "./src/tokens/charts-vibrant.css"

@@ -24,17 +24,20 @@ export const GroupedRail = {
   render: () => {
     const nav = document.createElement("rowan-side-nav");
     nav.label = "Products";
-    nav.value = "invexus-overview";
+    nav.value = "customers-overview";
 
-    const invexus = document.createElement("rowan-side-nav-section");
-    invexus.label = "Invexus";
-    invexus.append(createItem("invexus-overview", "Overview"), createItem("invexus-jobs", "Jobs"));
+    const customers = document.createElement("rowan-side-nav-section");
+    customers.label = "Customers";
+    customers.append(
+      createItem("customers-overview", "Overview"),
+      createItem("customers-directory", "Directory"),
+    );
 
-    const ptms = document.createElement("rowan-side-nav-section");
-    ptms.label = "PTMS";
-    ptms.append(createItem("ptms-overview", "Overview"), createItem("ptms-routes", "Routes"));
+    const orders = document.createElement("rowan-side-nav-section");
+    orders.label = "Orders";
+    orders.append(createItem("orders-overview", "Overview"), createItem("orders-open", "Open"));
 
-    nav.append(invexus, ptms);
+    nav.append(customers, orders);
     return nav;
   },
 };
@@ -42,7 +45,7 @@ export const GroupedRail = {
 export const Collapsible = {
   parameters: createEventScriptParameters({
     steps: [
-      "Click Invexus to collapse it. Destinations hide; the nav value does not change.",
+      "Click Customers to collapse it. Destinations hide; the nav value does not change.",
       "Arrow Down from the section control focuses the first item when expanded.",
     ],
     events: ["rowan-toggle", "rowan-change"],
@@ -50,20 +53,23 @@ export const Collapsible = {
   render: () => {
     const nav = document.createElement("rowan-side-nav");
     nav.label = "Products";
-    nav.value = "invexus-overview";
+    nav.value = "customers-overview";
 
-    const invexus = document.createElement("rowan-side-nav-section");
-    invexus.label = "Invexus";
-    invexus.collapsible = true;
-    invexus.append(createItem("invexus-overview", "Overview"), createItem("invexus-jobs", "Jobs"));
+    const customers = document.createElement("rowan-side-nav-section");
+    customers.label = "Customers";
+    customers.collapsible = true;
+    customers.append(
+      createItem("customers-overview", "Overview"),
+      createItem("customers-directory", "Directory"),
+    );
 
-    const ptms = document.createElement("rowan-side-nav-section");
-    ptms.label = "PTMS";
-    ptms.collapsible = true;
-    ptms.collapsed = true;
-    ptms.append(createItem("ptms-overview", "Overview"), createItem("ptms-routes", "Routes"));
+    const orders = document.createElement("rowan-side-nav-section");
+    orders.label = "Orders";
+    orders.collapsible = true;
+    orders.collapsed = true;
+    orders.append(createItem("orders-overview", "Overview"), createItem("orders-open", "Open"));
 
-    nav.append(invexus, ptms);
+    nav.append(customers, orders);
     return nav;
   },
 };

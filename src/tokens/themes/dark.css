@@ -12,6 +12,75 @@
 
   /* Re-declared so a nested [data-theme] scope re-resolves these against this theme. */
   --rowan-button-fg: var(--rowan-color-accent-contrast);
+  --rowan-button-bg: var(--rowan-color-accent);
+  --rowan-button-border: var(--rowan-button-bg);
+  --rowan-button-secondary-bg: var(--rowan-color-bg);
+  --rowan-button-secondary-fg: var(--rowan-color-fg);
+  --rowan-button-secondary-border: var(--rowan-color-border);
+  --rowan-button-ghost-fg: var(--rowan-color-accent);
+  --rowan-trend-chart-bg: var(--rowan-card-bg);
+  --rowan-trend-chart-fg: var(--rowan-color-fg);
+  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
+  --rowan-trend-chart-border: var(--rowan-color-border);
+  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
+  --rowan-area-chart-bg: var(--rowan-card-bg);
+  --rowan-donut-chart-bg: var(--rowan-card-bg);
+  --rowan-app-layout-bg: var(--rowan-color-bg);
+  --rowan-app-layout-fg: var(--rowan-color-fg);
+  --rowan-app-layout-header-bg: var(--rowan-color-bg);
+  --rowan-app-layout-header-border: var(--rowan-color-border);
+  --rowan-app-layout-navigation-bg: var(--rowan-color-bg);
+  --rowan-app-layout-navigation-border: var(--rowan-color-border);
+  --rowan-app-layout-focus-ring: var(--rowan-focus-ring);
+  --rowan-side-nav-item-fg: var(--rowan-color-fg);
+  --rowan-side-nav-item-muted-fg: var(--rowan-color-muted);
+  --rowan-side-nav-item-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-side-nav-item-active-bg: color-mix(in srgb, var(--rowan-color-accent) 15%, transparent);
+  --rowan-side-nav-item-active-fg: var(--rowan-color-fg);
+  --rowan-side-nav-item-focus-ring: var(--rowan-focus-ring);
+  --rowan-side-nav-section-label-fg: var(--rowan-color-muted);
+  --rowan-form-wizard-fg: var(--rowan-color-fg);
+  --rowan-form-wizard-border: var(--rowan-color-border);
+  --rowan-form-wizard-next-bg: var(--rowan-color-accent);
+  --rowan-form-wizard-next-border: var(--rowan-color-accent);
+  --rowan-form-wizard-next-fg: var(--rowan-color-accent-contrast);
+  --rowan-form-wizard-previous-border: var(--rowan-color-border);
+  --rowan-form-wizard-previous-fg: var(--rowan-color-fg);
+  --rowan-form-wizard-focus-ring: var(--rowan-focus-ring);
+  --rowan-form-field-fg: var(--rowan-color-fg);
+  --rowan-form-field-label-fg: var(--rowan-color-fg);
+  --rowan-form-field-hint-fg: var(--rowan-color-muted);
+  --rowan-form-field-error-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-table-toolbar-bg: var(--rowan-color-bg);
+  --rowan-table-toolbar-fg: var(--rowan-color-fg);
+  --rowan-table-toolbar-border: var(--rowan-color-border);
+  --rowan-table-toolbar-selection-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 10%,
+    transparent
+  );
+  --rowan-table-toolbar-selection-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 42%,
+    var(--rowan-color-border)
+  );
+  --rowan-table-toolbar-selection-fg: var(--rowan-color-fg);
+  --rowan-bulk-actions-bar-bg: var(--rowan-color-bg);
+  --rowan-bulk-actions-bar-fg: var(--rowan-color-fg);
+  --rowan-bulk-actions-bar-border: var(--rowan-color-border);
+  --rowan-bulk-actions-bar-selection-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 10%,
+    transparent
+  );
+  --rowan-bulk-actions-bar-selection-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 42%,
+    var(--rowan-color-border)
+  );
+  --rowan-bulk-actions-bar-selection-fg: var(--rowan-color-fg);
+  --rowan-bulk-actions-bar-clear-fg: var(--rowan-color-accent);
   --rowan-field-bg: var(--rowan-color-surface);
   --rowan-field-fg: var(--rowan-color-fg);
   --rowan-field-border: var(--rowan-color-border);

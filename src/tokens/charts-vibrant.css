@@ -24,11 +24,27 @@
 [data-theme="dark"][data-rowan-charts="vibrant"],
 [data-theme="dark"] [data-rowan-charts="vibrant"],
 [data-theme="ember"][data-rowan-charts="vibrant"],
-[data-theme="ember"] [data-rowan-charts="vibrant"] {
+[data-theme="ember"] [data-rowan-charts="vibrant"],
+[data-theme="midnight"][data-rowan-charts="vibrant"],
+[data-theme="midnight"] [data-rowan-charts="vibrant"] {
   --rowan-chart-info: #93c5fd;
   --rowan-chart-success: #4ade80;
   --rowan-chart-warning: #fbbf24;
   --rowan-chart-danger: #f87171;
   --rowan-chart-neutral: #a8a29e;
   --rowan-trend-chart-series-4: #2dd4bf;
+}
+
+/* Same-element light themes win over an outer dark wrap. Do not use a
+   descendant combinator here: `[data-theme=light] [data-rowan-charts]`
+   would also restyle a nested midnight region. */
+[data-theme="light"][data-rowan-charts="vibrant"],
+[data-theme="slate"][data-rowan-charts="vibrant"],
+[data-theme="lagoon"][data-rowan-charts="vibrant"] {
+  --rowan-chart-info: #1d4ed8;
+  --rowan-chart-success: #15803d;
+  --rowan-chart-warning: #b45309;
+  --rowan-chart-danger: #dc2626;
+  --rowan-chart-neutral: #57534e;
+  --rowan-trend-chart-series-4: #0f766e;
 }

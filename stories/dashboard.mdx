@@ -1,0 +1,17 @@
+import { Meta, Canvas } from "@storybook/blocks";
+
+import * as Recipe from "./dashboard.stories.js";
+
+<Meta of={Recipe} />
+
+# Dashboard
+
+Compose `rowan-app-layout`, a sectioned `rowan-side-nav`, KPI cards with
+sparklines, two charts, and `rowan-table` into one admin overview. The canvas
+follows the toolbar theme. The header control switches the zinc pair (`slate` /
+`midnight`). Jump to / Mod+K still routes inside the shell.
+
+Auth, claims, and data fetching stay in the host. Destinations keep `href`;
+the story calls `preventDefault()` on `rowan-change` and routes locally.
+
+<Canvas of={Recipe.AdminOverview} />

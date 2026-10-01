@@ -1,16 +1,16 @@
 # Benchmark Results
 
-Generated: 2026-09-11T15:38:09.843Z
+Generated: 2026-10-01T04:51:17.511Z
 
 ## Environment
 
-- Node: v24.15.0
+- Node: v24.14.1
 - Platform: darwin (arm64)
 - Operating system: 25.6.0
 - CPU: Apple M4 Pro
 - Browser: chromium 153.0.8010.12
 - User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
-- Packages: Rowan 0.5.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
+- Packages: Rowan 0.15.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
 - Samples per adapter: 15
 - Table workload: 100 rows; 50 rows per page
 
@@ -20,10 +20,10 @@ Each adapter imports and defines one button, checkbox, and switch, mounts the th
 
 | Adapter      | Import and definition (ms) | Transfer (bytes) | First render (ms) | Reconnect (ms) | Reconnect shadow DOM reuse (%) | Import heap growth (bytes) | First render heap growth (bytes) | Reconnect heap growth (bytes) |
 | ------------ | -------------------------: | ---------------: | ----------------: | -------------: | -----------------------------: | -------------------------: | -------------------------------: | ----------------------------: |
-| Rowan        |                 7.3 / 8.86 |  154317 / 154317 |        0.7 / 1.46 |      0.1 / 0.2 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| Lit          |                 6.4 / 6.82 |    88536 / 88536 |        0.8 / 0.93 |      0.1 / 0.1 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| FAST Element |                  6.7 / 7.5 |  224363 / 224363 |        0.7 / 1.19 |        0 / 0.1 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| Web Awesome  |                 8.4 / 9.47 |  269387 / 269387 |        4.1 / 5.11 |     0.2 / 0.33 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Rowan        |               11.6 / 14.48 |  703182 / 703182 |         1.2 / 1.4 |      0.4 / 0.5 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Lit          |                 6.7 / 7.16 |    89179 / 89179 |         0.8 / 0.9 |       0 / 0.13 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| FAST Element |                 8.6 / 8.93 |  225007 / 225007 |         0.7 / 0.8 |        0 / 0.1 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Web Awesome  |                9.3 / 10.36 |  270158 / 270158 |        4.2 / 4.53 |      0.2 / 0.3 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
 
 ## Rowan Table Workload
 
@@ -31,11 +31,11 @@ The table uses its public configuration API with text/number columns, multiple s
 
 | Metric                      | Duration (ms) | Import transfer (bytes) | Row reuse (%) | Heap growth (bytes) |
 | --------------------------- | ------------: | ----------------------: | ------------: | ------------------: |
-| Table import and definition |  10.2 / 13.96 |         355941 / 355941 |           n/a |               0 / 0 |
-| First render                |    7.1 / 8.93 |                     n/a |           n/a |               0 / 0 |
-| Selection                   |     0.3 / 0.4 |                     n/a |     100 / 100 |               0 / 0 |
-| Sort                        |    1.4 / 1.83 |                     n/a |     100 / 100 |               0 / 0 |
-| Page transition             |    2.1 / 2.33 |                     n/a |         0 / 0 |               0 / 0 |
+| Table import and definition |    13 / 20.61 |         792363 / 792363 |           n/a |               0 / 0 |
+| First render                |  18.9 / 22.62 |                     n/a |           n/a |               0 / 0 |
+| Selection                   |     2.7 / 2.9 |                     n/a |     100 / 100 |               0 / 0 |
+| Sort                        |  10.5 / 11.33 |                     n/a |     100 / 100 |               0 / 0 |
+| Page transition             |    6.7 / 7.33 |                     n/a |         0 / 0 |               0 / 0 |
 
 ## Scope Notes
 
