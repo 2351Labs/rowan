@@ -1,4 +1,5 @@
 @import "../chart/hover.css";
+@import "../chart/point-controls.css";
 
 :host {
   display: block;
@@ -158,6 +159,7 @@
 }
 
 .point-controls {
+  direction: ltr;
   inset: 0;
   pointer-events: none;
   position: absolute;

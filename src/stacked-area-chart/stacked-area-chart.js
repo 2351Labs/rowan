@@ -7,6 +7,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
 import {
@@ -273,7 +274,7 @@ export class RowanStackedAreaChart extends BaseElement {
             <div class="plot-band">
               <div class="plot-wrap">
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-                <div class="point-controls"></div>
+                <div class="point-controls" dir="ltr"></div>
               </div>
               <div class="x-axis" aria-hidden="true"></div>
             </div>
@@ -541,25 +542,27 @@ export class RowanStackedAreaChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
 
-    const fragment = document.createDocumentFragment();
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      button.style.setProperty("--point-x", `${(entry.x / SVG_NAMESPACE_WIDTH) * 100}%`);
-      button.style.setProperty("--point-y", `${(entry.yTop / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      button.setAttribute(
-        "aria-label",
-        `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
-      );
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+      const fragment = document.createDocumentFragment();
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        button.style.setProperty("--point-x", `${(entry.x / SVG_NAMESPACE_WIDTH) * 100}%`);
+        button.style.setProperty("--point-y", `${(entry.yTop / SVG_NAMESPACE_HEIGHT) * 100}%`);
+        button.setAttribute(
+          "aria-label",
+          `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
+        );
+        fragment.append(button);
+      }
+      this.#pointControls.append(fragment);
+    });
   }
 
   #areaHoverText(event) {

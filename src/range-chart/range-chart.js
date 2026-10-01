@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderKeyedChartTable,
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
@@ -50,7 +51,7 @@ function normalizeText(value) {
  *   series?: Array<object>,
  *   interactive?: boolean,
  *   variant?: "bar" | "area",
- *   valueFormatter?: Function | null,
+ *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
  * }} RowanRangeChartConfig
  */
 
@@ -66,7 +67,7 @@ function normalizeText(value) {
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ low, high }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanRangeChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to bar.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -218,10 +219,12 @@ export class RowanRangeChart extends BaseElement {
     this.requestRender();
   }
 
+  /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
   get valueFormatter() {
     return this.#valueFormatter;
   }
 
+  /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
   set valueFormatter(value) {
     this.#valueFormatter = typeof value === "function" ? value : null;
     this.requestRender();
@@ -240,7 +243,7 @@ export class RowanRangeChart extends BaseElement {
               <div class="y-axis" aria-hidden="true"></div>
               <div class="plot-wrap">
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-                <div class="point-controls"></div>
+                <div class="point-controls" dir="ltr"></div>
               </div>
               <div class="x-axis" aria-hidden="true"></div>
             </div>
@@ -406,10 +409,11 @@ export class RowanRangeChart extends BaseElement {
           thickness: barThickness,
           plot,
         });
-        const plotX =
-          variant === "area" ? categoricalPointX(index, categoryCount, plot) : rect.x;
+        const plotX = variant === "area" ? categoricalPointX(index, categoryCount, plot) : rect.x;
         const plotY =
-          variant === "area" ? categoricalValueY(Math.max(point.low, point.high), domain, plot) : rect.y;
+          variant === "area"
+            ? categoricalValueY(Math.max(point.low, point.high), domain, plot)
+            : rect.y;
         entries.push({
           key: `${series.id}::${index}`,
           series,
@@ -536,33 +540,41 @@ export class RowanRangeChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
-    const fragment = document.createDocumentFragment();
-    const area = this.variant === "area";
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      if (area) {
-        button.classList.add("point-button-mark");
-        button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      } else {
-        button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-y", `${(entry.barY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-        button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-height", `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`);
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
+      const fragment = document.createDocumentFragment();
+      const area = this.variant === "area";
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        if (area) {
+          button.classList.add("point-button-mark");
+          button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
+          button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
+        } else {
+          button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
+          button.style.setProperty("--point-y", `${(entry.barY / SVG_NAMESPACE_HEIGHT) * 100}%`);
+          button.style.setProperty(
+            "--point-width",
+            `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`,
+          );
+          button.style.setProperty(
+            "--point-height",
+            `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
+          );
+        }
+        button.setAttribute(
+          "aria-label",
+          `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
+        );
+        fragment.append(button);
       }
-      button.setAttribute(
-        "aria-label",
-        `${entry.series.label}, ${entry.label}, ${entry.formattedValue}`,
-      );
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+      this.#pointControls.append(fragment);
+    });
   }
 
   #syncActivePoint() {

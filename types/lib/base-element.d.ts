@@ -29,7 +29,14 @@ export class BaseElement extends HTMLElement {
     requestRender(): void;
     render(): void;
     setComponentStyles(cssText: any): void;
-    addCleanup(cleanup: any): () => boolean;
+    /**
+     * @param {() => void} cleanup
+     * @param {{ persist?: boolean }} [options]
+     * @returns {() => void}
+     */
+    addCleanup(cleanup: () => void, options?: {
+        persist?: boolean | undefined;
+    } | undefined): () => void;
     listen(target: any, type: any, handler: any, options: any): () => void;
     observe(observer: any, restore: any): () => void;
     reflectBoolean(attributeName: any, value: any): void;

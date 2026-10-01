@@ -73,7 +73,7 @@ export function bindChartHover(element, { target, bubble, textForEvent }) {
   element.listen(target, "pointermove", show);
   element.listen(target, "pointerleave", hide);
   element.listen(target, "pointercancel", hide);
-  element.addCleanup(hide);
+  element.addCleanup(hide, { persist: true });
 }
 
 export function hoverKeyFromEvent(event) {

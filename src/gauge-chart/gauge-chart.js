@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { createSvgElement } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
+import { finiteOrNull } from "../chart/model.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 200;
@@ -28,9 +29,7 @@ function normalizeText(value) {
 }
 
 function normalizeNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const numeric = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
+  return finiteOrNull(value);
 }
 
 function clamp01(value) {

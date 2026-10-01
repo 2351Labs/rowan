@@ -262,3 +262,34 @@ export function pointControlFor(container, key) {
     ) ?? null
   );
 }
+
+/**
+ * Rebuild point buttons without dropping keyboard focus when the overlay
+ * currently contains the focused control.
+ * @param {HTMLElement | null} container
+ * @param {string} restoreKey
+ * @param {() => void} update
+ */
+export function withRestoredPointFocus(container, restoreKey, update) {
+  if (typeof update !== "function") return;
+
+  if (!container) {
+    update();
+    return;
+  }
+
+  const root = container.getRootNode();
+  const active = root instanceof ShadowRoot || root instanceof Document ? root.activeElement : null;
+  const focusedInOverlay = active instanceof HTMLElement && container.contains(active);
+  const key = focusedInOverlay ? active.dataset.pointKey || restoreKey : "";
+  update();
+  if (!focusedInOverlay) return;
+
+  const next = key ? pointControlFor(container, key) : null;
+  if (next) {
+    next.focus({ preventScroll: true });
+    return;
+  }
+
+  if (typeof active.blur === "function") active.blur();
+}

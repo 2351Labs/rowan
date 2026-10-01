@@ -4,7 +4,7 @@
  *   series?: Array<object>,
  *   interactive?: boolean,
  *   variant?: "bar" | "area",
- *   valueFormatter?: Function | null,
+ *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
  * }} RowanRangeChartConfig
  */
 /**
@@ -19,7 +19,7 @@
  * @property {Array<object>} series - Series of `{ id, label, color?, values: [{ low, high }] }`. Arrays are property-only.
  * @property {string[]} labels - Category labels. Arrays are property-only.
  * @property {RowanRangeChartConfig} config - Replaces the complete chart configuration. Omitted `variant` resets to bar.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -59,8 +59,10 @@ export class RowanRangeChart extends BaseElement {
     set config(value: RowanRangeChartConfig | null | undefined);
     /** @returns {RowanRangeChartConfig} */
     get config(): RowanRangeChartConfig;
-    set valueFormatter(value: null);
-    get valueFormatter(): null;
+    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
+    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
     #private;
 }
 export type RowanRangeChartConfig = {
@@ -68,6 +70,6 @@ export type RowanRangeChartConfig = {
     series?: Array<object>;
     interactive?: boolean;
     variant?: "bar" | "area";
-    valueFormatter?: Function | null;
+    valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

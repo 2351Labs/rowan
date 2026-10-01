@@ -7,7 +7,7 @@
  * @attr {boolean} interactive
  * @property {Array<object>} series - Series of `{ id, label, color?, points: [{ x, y, size?, label? }] }`. Arrays are property-only.
  * @property {object} config - Replaces the complete chart configuration.
- * @property {Function | null} valueFormatter - Formats table and hover values. Functions are property-only.
+ * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @slot label
  * @slot description
  * @csspart control
@@ -34,15 +34,17 @@ export class RowanScatterChart extends BaseElement {
     set config(value: {
         series: any;
         interactive: boolean;
-        valueFormatter: null;
+        valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
     });
     get config(): {
         series: any;
         interactive: boolean;
-        valueFormatter: null;
+        valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
     };
-    set valueFormatter(value: null);
-    get valueFormatter(): null;
+    /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
+    set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
+    /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
+    get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
     #private;
 }
 import { BaseElement } from "../lib/base-element.js";

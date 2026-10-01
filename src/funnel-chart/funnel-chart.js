@@ -6,6 +6,7 @@ import {
   createSvgElement,
   emitPointActivate,
   pointControlFor,
+  withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
 import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
@@ -230,7 +231,7 @@ export class RowanFunnelChart extends BaseElement {
               <div class="y-axis" aria-hidden="true"></div>
               <div class="plot-wrap">
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
-                <div class="point-controls"></div>
+                <div class="point-controls" dir="ltr"></div>
               </div>
             </div>
             <ul class="legend" part="legend" aria-label="Stages"></ul>
@@ -422,23 +423,28 @@ export class RowanFunnelChart extends BaseElement {
   }
 
   #renderPointControls() {
-    this.#pointControls.textContent = "";
-    this.#pointControls.hidden = !this.interactive;
-    if (!this.interactive) return;
-    const fragment = document.createDocumentFragment();
-    for (const entry of this.#entries) {
-      const button = document.createElement("button");
-      button.className = "point-button";
-      button.type = "button";
-      button.dataset.pointKey = entry.key;
-      button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
-      button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
-      button.style.setProperty("--point-height", `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`);
-      button.setAttribute("aria-label", `${entry.label}, ${entry.formattedValue}`);
-      fragment.append(button);
-    }
-    this.#pointControls.append(fragment);
+    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
+      this.#pointControls.textContent = "";
+      this.#pointControls.hidden = !this.interactive;
+      if (!this.interactive) return;
+      const fragment = document.createDocumentFragment();
+      for (const entry of this.#entries) {
+        const button = document.createElement("button");
+        button.className = "point-button";
+        button.type = "button";
+        button.dataset.pointKey = entry.key;
+        button.style.setProperty("--point-x", `${(entry.plotX / SVG_NAMESPACE_WIDTH) * 100}%`);
+        button.style.setProperty("--point-y", `${(entry.plotY / SVG_NAMESPACE_HEIGHT) * 100}%`);
+        button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
+        button.style.setProperty(
+          "--point-height",
+          `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
+        );
+        button.setAttribute("aria-label", `${entry.label}, ${entry.formattedValue}`);
+        fragment.append(button);
+      }
+      this.#pointControls.append(fragment);
+    });
   }
 
   #syncActivePoint() {

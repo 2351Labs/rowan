@@ -40,6 +40,26 @@ describe("rowan-box-plot-chart", () => {
     expect(chart.series[0].values[1].q1).to.equal(null);
   });
 
+  it("treats whitespace and unordered five-number summaries as no-data", async () => {
+    const chart = await renderChart({
+      series: [
+        {
+          id: "dwell",
+          label: "Dwell",
+          values: [
+            { min: " ", q1: 4, median: 6, q3: 9, max: 12 },
+            { min: 12, q1: 9, median: 6, q3: 4, max: 2 },
+            { min: 1, q1: 3, median: 5, q3: 8, max: 11, outliers: [16] },
+          ],
+        },
+      ],
+    });
+    expect(chart.shadowRoot.querySelectorAll("rect.box")).to.have.length(1);
+    expect(chart.series[0].values[0].min).to.equal(null);
+    expect(chart.shadowRoot.querySelectorAll("circle.outlier")).to.have.length(1);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("No data");
+  });
+
   it("does not emit when series is set, and config replaces data", async () => {
     const chart = await renderChart();
     const activations = [];
@@ -51,7 +71,9 @@ describe("rowan-box-plot-chart", () => {
 
     chart.config = {
       labels: ["A"],
-      series: [{ id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] }],
+      series: [
+        { id: "dwell", label: "Dwell", values: [{ min: 1, q1: 2, median: 3, q3: 4, max: 5 }] },
+      ],
     };
     await nextMicrotask();
     await nextMicrotask();

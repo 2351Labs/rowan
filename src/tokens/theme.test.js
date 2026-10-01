@@ -10,6 +10,7 @@ import "../dialog/dialog.js";
 import "../form-wizard/form-wizard.js";
 import "../icon-button/icon-button.js";
 import "../side-nav-item/side-nav-item.js";
+import "../status-indicator/status-indicator.js";
 import "../stepper/stepper.js";
 import "../switch/switch.js";
 import "../table-toolbar/table-toolbar.js";
@@ -302,11 +303,32 @@ describe("Rowan themes", () => {
         const layoutSurface = layout.shadowRoot.querySelector(".layout");
         const headerSurface = layout.shadowRoot.querySelector(".header");
         const navigationSurface = layout.shadowRoot.querySelector(".navigation");
+        const ghostButton = ghost.shadowRoot.querySelector(".button");
+        const itemSurface = item.shadowRoot.querySelector(".item");
+        const secondaryButton = secondary.shadowRoot.querySelector(".button");
+        await paintedBackground(layout, ".layout");
+        for (let attempt = 0; attempt < 120; attempt += 1) {
+          const layoutStyles = getComputedStyle(layoutSurface);
+          const headingStyles = getComputedStyle(heading);
+          const itemStyles = getComputedStyle(itemSurface);
+          const ghostStyles = getComputedStyle(ghostButton);
+          const secondaryStyles = getComputedStyle(secondaryButton);
+          const nestedShellReady =
+            relativeLuminance(layoutStyles.backgroundColor) < 0.2 &&
+            contrastRatio(headingStyles.color, layoutStyles.backgroundColor) >= 4.5 &&
+            contrastRatio(itemStyles.color, getComputedStyle(navigationSurface).backgroundColor) >=
+              4.5 &&
+            contrastRatio(ghostStyles.color, getComputedStyle(headerSurface).backgroundColor) >=
+              3 &&
+            contrastRatio(secondaryStyles.color, secondaryStyles.backgroundColor) >= 4.5;
+          if (nestedShellReady) break;
+          await nextFrame();
+        }
         const layoutStyles = getComputedStyle(layoutSurface);
         const headingStyles = getComputedStyle(heading);
-        const itemStyles = getComputedStyle(item.shadowRoot.querySelector(".item"));
-        const ghostStyles = getComputedStyle(ghost.shadowRoot.querySelector(".button"));
-        const secondaryStyles = getComputedStyle(secondary.shadowRoot.querySelector(".button"));
+        const itemStyles = getComputedStyle(itemSurface);
+        const ghostStyles = getComputedStyle(ghostButton);
+        const secondaryStyles = getComputedStyle(secondaryButton);
 
         expect(relativeLuminance(layoutStyles.backgroundColor), themeName).to.be.below(0.2);
         expect(
@@ -390,6 +412,43 @@ describe("Rowan themes", () => {
             getComputedStyle(density).color,
             getComputedStyle(toolbarSurface).backgroundColor,
           ),
+          themeName,
+        ).to.be.at.least(4.5);
+
+        theme.remove();
+      }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("keeps nested dark and midnight status-indicator labels readable against a light :root", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css", "./themes/midnight.css"].map(
+        loadStylesheet,
+      ),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      for (const themeName of ["dark", "midnight"]) {
+        const theme = document.createElement("div");
+        theme.setAttribute("data-theme", themeName);
+        theme.style.backgroundColor = "var(--rowan-color-bg)";
+
+        const indicator = document.createElement("rowan-status-indicator");
+        indicator.label = "Live";
+        theme.append(indicator);
+        document.body.append(theme);
+        await nextTask();
+        await waitForStyles(indicator);
+
+        const labelStyles = getComputedStyle(indicator.shadowRoot.querySelector(".status"));
+        const surfaceStyles = getComputedStyle(theme);
+        expect(relativeLuminance(surfaceStyles.backgroundColor), themeName).to.be.below(0.2);
+        expect(
+          contrastRatio(labelStyles.color, surfaceStyles.backgroundColor),
           themeName,
         ).to.be.at.least(4.5);
 

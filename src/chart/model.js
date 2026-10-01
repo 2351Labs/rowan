@@ -66,19 +66,27 @@ function normalizeText(value) {
   return String(value ?? "").trim();
 }
 
+/**
+ * Blank strings are no-data. `"0"` and `0` stay zero.
+ * @param {unknown} value
+ * @returns {number | null}
+ */
+export function finiteOrNull(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed === "") return null;
+    const numeric = Number(trimmed);
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
 function normalizePoint(value, label) {
   const source = isObject(value) ? value : { value };
-  if (source.value === null) {
-    return {
-      value: null,
-      label: normalizeText(source.label) || label,
-    };
-  }
-
-  const numeric = Number(source.value);
-
   return {
-    value: Number.isFinite(numeric) ? numeric : null,
+    value: finiteOrNull(source.value),
     label: normalizeText(source.label) || label,
   };
 }
@@ -501,8 +509,8 @@ export function normalizeReferenceLines(value) {
   const lines = [];
   for (const item of value) {
     if (!isObject(item)) continue;
-    const numeric = Number(item.value);
-    if (!Number.isFinite(numeric)) continue;
+    const numeric = finiteOrNull(item.value);
+    if (numeric === null) continue;
     const tone = normalizeText(item.tone).toLowerCase();
     lines.push({
       value: numeric,

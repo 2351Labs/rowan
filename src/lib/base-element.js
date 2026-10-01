@@ -138,11 +138,10 @@ export class BaseElement extends HTMLElement {
     this.#disconnectListeners();
     this.#disconnectObservations();
 
-    for (const cleanup of this.#cleanup) {
-      cleanup();
+    for (const entry of this.#cleanup) {
+      entry.cleanup();
+      if (!entry.persist) this.#cleanup.delete(entry);
     }
-
-    this.#cleanup.clear();
   }
 
   setAttribute(name, value) {
@@ -273,9 +272,15 @@ export class BaseElement extends HTMLElement {
     this.#componentStyleTag.textContent = normalizedCss;
   }
 
-  addCleanup(cleanup) {
-    this.#cleanup.add(cleanup);
-    return () => this.#cleanup.delete(cleanup);
+  /**
+   * @param {() => void} cleanup
+   * @param {{ persist?: boolean }} [options]
+   * @returns {() => void}
+   */
+  addCleanup(cleanup, options) {
+    const entry = { cleanup, persist: Boolean(options?.persist) };
+    this.#cleanup.add(entry);
+    return () => this.#cleanup.delete(entry);
   }
 
   listen(target, type, handler, options) {

@@ -6,6 +6,16 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- Interactive chart overlays keep hit targets on the SVG marks when the host is RTL. `.point-controls` is `direction: ltr` (and `dir="ltr"`) so physical `--point-x` matches the viewBox. Donut's button list is not an overlay and is unchanged.
+- Nested `dark` / `ember` / `midnight` (and the other shipped themes) re-declare `rowan-status-indicator` color tokens so the label follows the nested foreground instead of light ink on a dark surface.
+- Experimental range, box-plot, scatter, heatmap, combo, and waterfall charts type `valueFormatter` as `RowanChartValueFormatter | null` on the public accessors, matching runtime.
+- Chart hover hide stays registered across reconnects, so a second detach does not leave a stale tooltip. `addCleanup(fn, { persist: true })` keeps the callback after disconnect.
+- Interactive chart overlays restore keyboard focus to the active point after a rerender when that control still exists.
+- Chart numeric normalizers treat blank and whitespace-only strings as no-data. `"0"` stays zero.
+- Range points require `low <= high`. Box plots require `min <= q1 <= median <= q3 <= max`. Unordered summaries are no-data; bounds are not swapped.
+
 ## 0.16.0 - 2026-10-01
 
 ### Added

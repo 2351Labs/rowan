@@ -1,0 +1,5 @@
+/* SVG viewBox x is physical. Overlay hit targets must not follow host RTL.
+   Host stylesheets also set this: Firefox does not always apply @import from a shadow <link>. */
+.point-controls {
+  direction: ltr;
+}

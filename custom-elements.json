@@ -1666,8 +1666,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats table and hover values. Functions are property-only."
             },
@@ -3720,6 +3733,31 @@
               "name": "key"
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "withRestoredPointFocus",
+          "parameters": [
+            {
+              "name": "container",
+              "type": {
+                "text": "HTMLElement | null"
+              }
+            },
+            {
+              "name": "restoreKey",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "update",
+              "type": {
+                "text": "() => void"
+              }
+            }
+          ],
+          "description": "Rebuild point buttons without dropping keyboard focus when the overlay\ncurrently contains the focused control."
         }
       ],
       "exports": [
@@ -3784,6 +3822,14 @@
           "name": "pointControlFor",
           "declaration": {
             "name": "pointControlFor",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "withRestoredPointFocus",
+          "declaration": {
+            "name": "withRestoredPointFocus",
             "module": "src/chart/dom.js"
           }
         }
@@ -4001,6 +4047,24 @@
       "kind": "javascript-module",
       "path": "src/chart/model.js",
       "declarations": [
+        {
+          "kind": "function",
+          "name": "finiteOrNull",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            }
+          ],
+          "description": "Blank strings are no-data. `\"0\"` and `0` stay zero.",
+          "return": {
+            "type": {
+              "text": "number | null"
+            }
+          }
+        },
         {
           "kind": "function",
           "name": "normalizeChartLabels",
@@ -4406,6 +4470,14 @@
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "finiteOrNull",
+          "declaration": {
+            "name": "finiteOrNull",
+            "module": "src/chart/model.js"
+          }
+        },
         {
           "kind": "js",
           "name": "normalizeChartLabels",
@@ -5450,8 +5522,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats chart and table values. Functions are property-only."
             },
@@ -11454,8 +11539,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats table and hover values. Functions are property-only."
             },
@@ -18318,8 +18416,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats table and hover values. Functions are property-only."
             },
@@ -19951,8 +20062,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats table and hover values. Functions are property-only."
             },
@@ -28679,8 +28803,21 @@
             {
               "kind": "field",
               "name": "valueFormatter",
+              "return": {
+                "type": {
+                  "text": "RowanChartValueFormatter | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanChartValueFormatter | null"
+                  }
+                }
+              ],
               "type": {
-                "text": "Function | null"
+                "text": "RowanChartValueFormatter | null"
               },
               "description": "Formats table and hover values. Functions are property-only."
             },

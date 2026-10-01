@@ -26,7 +26,7 @@ export class BaseElement extends HTMLElement {
 	requestRender(): void;
 	render(): void;
 	setComponentStyles(cssText: string): void;
-	addCleanup(cleanup: () => void): () => void;
+	addCleanup(cleanup: () => void, options?: { persist?: boolean }): () => void;
 	listen(
 		target: EventTarget,
 		type: string,
