@@ -281,11 +281,31 @@ export class ControlledTableDraftEditor extends EventTarget {
     try {
       validationResult = await this.#validate?.(detail);
     } catch (error) {
+      if (this.#active !== active) return;
+
+      this.#markStaleIfSourceChanged(active);
+      if (active.stale) {
+        this.#setError(
+          active,
+          "The source row changed while this draft was open. Cancel and restart editing.",
+        );
+        return;
+      }
+
       this.#setError(active, errorText(error, "The value could not be validated."));
       return;
     }
 
     if (this.#active !== active) return;
+
+    this.#markStaleIfSourceChanged(active);
+    if (active.stale) {
+      this.#setError(
+        active,
+        "The source row changed while this draft was open. Cancel and restart editing.",
+      );
+      return;
+    }
 
     if (typeof validationResult === "string" && validationResult.trim()) {
       this.#setError(active, validationResult.trim());

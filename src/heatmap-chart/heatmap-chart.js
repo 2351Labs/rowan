@@ -57,6 +57,35 @@ function normalizeText(value) {
  * @property {string | ((context: { index: string }) => string)} [row]
  */
 
+/**
+ * @typedef {object} RowanHeatmapChartXYPoint
+ * @property {string} x
+ * @property {string} y
+ * @property {number | null} value
+ */
+
+/**
+ * @typedef {object} RowanHeatmapChartRowColumnPoint
+ * @property {string} row
+ * @property {string} column
+ * @property {number | null} value
+ */
+
+/**
+ * @typedef {RowanHeatmapChartXYPoint | RowanHeatmapChartRowColumnPoint} RowanHeatmapChartPoint
+ */
+
+/**
+ * @typedef {{
+ *   rows?: string[],
+ *   columns?: string[],
+ *   values?: Array<Array<number | null>>,
+ *   points?: RowanHeatmapChartPoint[],
+ *   interactive?: boolean,
+ *   valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null,
+ * }} RowanHeatmapChartConfig
+ */
+
 function cellOpacity(value, domain) {
   const range = domain.max - domain.min;
   if (range === 0) return 1;
@@ -65,7 +94,7 @@ function cellOpacity(value, domain) {
 
 /**
  * Experimental categorical heatmap. Single-hue intensity via fill-opacity.
- * Null is empty / no-data. Accepts a matrix or `{ x, y, value }` points.
+ * Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.
  * @tag rowan-heatmap-chart
  * @attr {string} label
  * @attr {string} description
@@ -74,8 +103,8 @@ function cellOpacity(value, domain) {
  * @property {string[]} rows - Row labels. Arrays are property-only.
  * @property {string[]} columns - Column labels. Arrays are property-only.
  * @property {Array<Array<number | null>>} values - Matrix of cell values. Arrays are property-only.
- * @property {Array<object>} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
- * @property {object} config - Replaces the complete chart configuration.
+ * @property {RowanHeatmapChartPoint[]} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
+ * @property {RowanHeatmapChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @property {RowanHeatmapChartMessages} messages - Property-only built-in message overrides.
  * @slot label
@@ -182,18 +211,22 @@ export class RowanHeatmapChart extends BaseElement {
     this.reflectBoolean("interactive", Boolean(value));
   }
 
+  /** @returns {string[]} */
   get rows() {
-    return [...this.#heatmap.rows];
+    return cloneHeatmap(this.#heatmap).rows;
   }
 
+  /** @param {string[]} value */
   set rows(value) {
     this.#applyHeatmap({ ...this.#input, rows: value, points: [] });
   }
 
+  /** @returns {string[]} */
   get columns() {
-    return [...this.#heatmap.columns];
+    return cloneHeatmap(this.#heatmap).columns;
   }
 
+  /** @param {string[]} value */
   set columns(value) {
     this.#applyHeatmap({ ...this.#input, columns: value, points: [] });
   }
@@ -206,6 +239,7 @@ export class RowanHeatmapChart extends BaseElement {
     this.#applyHeatmap({ ...this.#input, values: value, points: [] });
   }
 
+  /** @returns {RowanHeatmapChartPoint[]} */
   get points() {
     return this.#heatmap.rows.flatMap((row, rowIndex) =>
       this.#heatmap.columns.map((column, columnIndex) => ({
@@ -216,10 +250,12 @@ export class RowanHeatmapChart extends BaseElement {
     );
   }
 
+  /** @param {RowanHeatmapChartPoint[]} value */
   set points(value) {
     this.#applyHeatmap({ ...this.#input, points: value, values: [] });
   }
 
+  /** @returns {RowanHeatmapChartConfig} */
   get config() {
     return {
       rows: this.rows,
@@ -231,6 +267,7 @@ export class RowanHeatmapChart extends BaseElement {
     };
   }
 
+  /** @param {RowanHeatmapChartConfig | null | undefined} value */
   set config(value) {
     const source = isObject(value) ? value : {};
     this.#applyHeatmap(source);

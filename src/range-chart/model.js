@@ -64,6 +64,21 @@ function fallbackPointLabel(index, resolveFallback) {
   return `Point ${index + 1}`;
 }
 
+function generatedPointLabel(value) {
+  return typeof value?.[GENERATED_POINT_LABEL] === "string" ? value[GENERATED_POINT_LABEL] : "";
+}
+
+function markGeneratedPointLabel(point) {
+  Object.defineProperty(point, GENERATED_POINT_LABEL, { value: point.label });
+  return point;
+}
+
+function copyGeneratedPointLabel(source, target) {
+  const label = generatedPointLabel(source);
+  if (label) Object.defineProperty(target, GENERATED_POINT_LABEL, { value: label });
+  return target;
+}
+
 function normalizePoint(point, index, labels) {
   const configuredLabel = normalizeText(labels[index]);
   if (Array.isArray(point)) {
@@ -73,19 +88,20 @@ function normalizePoint(point, index, labels) {
       label: configuredLabel || fallbackPointLabel(index),
     };
     if (!configuredLabel) {
-      Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+      markGeneratedPointLabel(normalized);
     }
     return normalized;
   }
   const item = isObject(point) ? point : {};
-  const authoredLabel = normalizeText(item.label);
+  const sourceLabel = normalizeText(item.label);
+  const authoredLabel = generatedPointLabel(item) === sourceLabel ? "" : sourceLabel;
   const normalized = {
     low: finiteOrNull(item.low),
     high: finiteOrNull(item.high),
     label: authoredLabel || configuredLabel || fallbackPointLabel(index),
   };
   if (!authoredLabel && !configuredLabel) {
-    Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+    markGeneratedPointLabel(normalized);
   }
   return normalized;
 }
@@ -106,7 +122,11 @@ export function cloneRangeSeriesInput(value) {
             Array.isArray(point)
               ? [...point]
               : isObject(point)
-                ? { low: point.low, high: point.high, label: point.label }
+                ? copyGeneratedPointLabel(point, {
+                    low: point.low,
+                    high: point.high,
+                    label: point.label,
+                  })
                 : point,
           )
         : series.values,
@@ -148,7 +168,7 @@ export function normalizeRangeSeries(value, labels = []) {
 export function cloneRangeSeries(value) {
   return value.map((series) => ({
     ...series,
-    values: series.values.map((point) => ({ ...point })),
+    values: series.values.map((point) => copyGeneratedPointLabel(point, { ...point })),
   }));
 }
 

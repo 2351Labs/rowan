@@ -93,16 +93,32 @@ function fallbackPointLabel(index, resolveFallback) {
   return `Point ${index + 1}`;
 }
 
+function generatedPointLabel(value) {
+  return typeof value?.[GENERATED_POINT_LABEL] === "string" ? value[GENERATED_POINT_LABEL] : "";
+}
+
+function markGeneratedPointLabel(point) {
+  Object.defineProperty(point, GENERATED_POINT_LABEL, { value: point.label });
+  return point;
+}
+
+function copyGeneratedPointLabel(source, target) {
+  const label = generatedPointLabel(source);
+  if (label) Object.defineProperty(target, GENERATED_POINT_LABEL, { value: label });
+  return target;
+}
+
 function normalizePoint(value, configuredLabel, fallbackLabel) {
   const source = isObject(value) ? value : { value };
-  const authoredLabel = normalizeText(source.label);
+  const sourceLabel = normalizeText(source.label);
+  const authoredLabel = generatedPointLabel(source) === sourceLabel ? "" : sourceLabel;
   const label = authoredLabel || configuredLabel || fallbackLabel;
   const point = {
     value: finiteOrNull(source.value),
     label,
   };
   if (!authoredLabel && !configuredLabel) {
-    Object.defineProperty(point, GENERATED_POINT_LABEL, { value: true });
+    markGeneratedPointLabel(point);
   }
 
   return point;
@@ -176,9 +192,10 @@ export function cloneChartSeriesInput(value) {
       label: series.label,
       color: series.color,
       values: Array.isArray(series.values)
-        ? series.values.map((point) =>
-            isObject(point) ? { label: point.label, value: point.value } : point,
-          )
+        ? series.values.map((point) => {
+            if (!isObject(point)) return point;
+            return copyGeneratedPointLabel(point, { label: point.label, value: point.value });
+          })
         : series.values,
     };
   });
@@ -191,7 +208,7 @@ export function cloneChartSeriesInput(value) {
 export function cloneChartSeries(value) {
   return value.map((series) => ({
     ...series,
-    values: series.values.map((point) => ({ ...point })),
+    values: series.values.map((point) => copyGeneratedPointLabel(point, { ...point })),
   }));
 }
 
