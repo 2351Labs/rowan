@@ -1,6 +1,6 @@
 /**
  * Experimental categorical heatmap. Single-hue intensity via fill-opacity.
- * Null is empty / no-data. Accepts a matrix or `{ x, y, value }` points.
+ * Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.
  * @tag rowan-heatmap-chart
  * @attr {string} label
  * @attr {string} description
@@ -9,8 +9,8 @@
  * @property {string[]} rows - Row labels. Arrays are property-only.
  * @property {string[]} columns - Column labels. Arrays are property-only.
  * @property {Array<Array<number | null>>} values - Matrix of cell values. Arrays are property-only.
- * @property {Array<object>} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
- * @property {object} config - Replaces the complete chart configuration.
+ * @property {RowanHeatmapChartPoint[]} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
+ * @property {RowanHeatmapChartConfig} config - Replaces the complete chart configuration.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @property {RowanHeatmapChartMessages} messages - Property-only built-in message overrides.
  * @slot label
@@ -40,30 +40,24 @@ export class RowanHeatmapChart extends BaseElement {
   get messages(): RowanHeatmapChartMessages;
   set interactive(value: boolean);
   get interactive(): boolean;
-  set rows(value: any[]);
-  get rows(): any[];
-  set columns(value: any[]);
-  get columns(): any[];
-  set values(value: any);
-  get values(): any;
-  set points(value: any);
-  get points(): any;
-  set config(value: {
-    rows: any[];
-    columns: any[];
-    values: any;
-    points: any;
-    interactive: boolean;
-    valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
-  });
-  get config(): {
-    rows: any[];
-    columns: any[];
-    values: any;
-    points: any;
-    interactive: boolean;
-    valueFormatter: import("../chart/model.js").RowanChartValueFormatter | null;
-  };
+  /** @param {string[]} value */
+  set rows(value: string[]);
+  /** @returns {string[]} */
+  get rows(): string[];
+  /** @param {string[]} value */
+  set columns(value: string[]);
+  /** @returns {string[]} */
+  get columns(): string[];
+  set values(value: (number | null)[][]);
+  get values(): (number | null)[][];
+  /** @param {RowanHeatmapChartPoint[]} value */
+  set points(value: RowanHeatmapChartPoint[]);
+  /** @returns {RowanHeatmapChartPoint[]} */
+  get points(): RowanHeatmapChartPoint[];
+  /** @param {RowanHeatmapChartConfig | null | undefined} value */
+  set config(value: RowanHeatmapChartConfig | null | undefined);
+  /** @returns {RowanHeatmapChartConfig} */
+  get config(): RowanHeatmapChartConfig;
   /** @param {import("../chart/model.js").RowanChartValueFormatter | null} value */
   set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
   /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
@@ -77,5 +71,24 @@ export type RowanHeatmapChartMessages = {
   column?: string | ((context: { index: string }) => string) | undefined;
   noData?: string | undefined;
   row?: string | ((context: { index: string }) => string) | undefined;
+};
+export type RowanHeatmapChartXYPoint = {
+  x: string;
+  y: string;
+  value: number | null;
+};
+export type RowanHeatmapChartRowColumnPoint = {
+  row: string;
+  column: string;
+  value: number | null;
+};
+export type RowanHeatmapChartPoint = RowanHeatmapChartXYPoint | RowanHeatmapChartRowColumnPoint;
+export type RowanHeatmapChartConfig = {
+  rows?: string[];
+  columns?: string[];
+  values?: Array<Array<number | null>>;
+  points?: RowanHeatmapChartPoint[];
+  interactive?: boolean;
+  valueFormatter?: import("../chart/model.js").RowanChartValueFormatter | null;
 };
 import { BaseElement } from "../lib/base-element.js";

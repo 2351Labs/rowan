@@ -11,6 +11,16 @@ function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(resolve));
 }
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}
+
 async function settle() {
   await nextMicrotask();
   await nextMicrotask();
@@ -302,6 +312,133 @@ describe("ControlledTableDraftEditor prototype", () => {
     input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
 
     rows[0].name = "Persisted update";
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: "Enter",
+      }),
+    );
+    await settle();
+
+    expect(commits).to.deep.equal([]);
+    expect(rows[0].name).to.equal("Persisted update");
+    expect(table.shadowRoot.querySelector("[data-rowan-table-draft-error]").textContent).to.equal(
+      "The source row changed while this draft was open. Cancel and restart editing.",
+    );
+
+    editor.dispose();
+    table.remove();
+  });
+
+  it("blocks a commit when the host changes the source during async validation", async () => {
+    const rows = [{ id: "member-1", name: "Ada" }];
+    const commits = [];
+    const validation = deferred();
+    const table = document.createElement("rowan-table");
+    const editor = new ControlledTableDraftEditor(table, {
+      validate: () => validation.promise,
+      onCommit: (detail) => commits.push(detail),
+    });
+    configureTable(table, editor, rows);
+    document.body.append(table);
+    await settle();
+
+    table.shadowRoot.querySelector(".rowan-table-draft-trigger").click();
+    await settle();
+
+    const input = fieldInput(table);
+    input.value = "Local draft";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: "Enter",
+      }),
+    );
+    await settle();
+
+    rows[0].name = "Persisted update";
+    validation.resolve();
+    await settle();
+
+    expect(commits).to.deep.equal([]);
+    expect(rows[0].name).to.equal("Persisted update");
+    expect(table.shadowRoot.querySelector("[data-rowan-table-draft-error]").textContent).to.equal(
+      "The source row changed while this draft was open. Cancel and restart editing.",
+    );
+
+    editor.dispose();
+    table.remove();
+  });
+
+  it("reports a stale source when async validation rejects after a host update", async () => {
+    const rows = [{ id: "member-1", name: "Ada" }];
+    const commits = [];
+    const validation = deferred();
+    const table = document.createElement("rowan-table");
+    const editor = new ControlledTableDraftEditor(table, {
+      validate: () => validation.promise,
+      onCommit: (detail) => commits.push(detail),
+    });
+    configureTable(table, editor, rows);
+    document.body.append(table);
+    await settle();
+
+    table.shadowRoot.querySelector(".rowan-table-draft-trigger").click();
+    await settle();
+
+    const input = fieldInput(table);
+    input.value = "Local draft";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        key: "Enter",
+      }),
+    );
+    await settle();
+
+    rows[0].name = "Persisted update";
+    validation.reject(new Error("The value could not be validated."));
+    await settle();
+
+    expect(commits).to.deep.equal([]);
+    expect(rows[0].name).to.equal("Persisted update");
+    expect(table.shadowRoot.querySelector("[data-rowan-table-draft-error]").textContent).to.equal(
+      "The source row changed while this draft was open. Cancel and restart editing.",
+    );
+
+    editor.dispose();
+    table.remove();
+  });
+
+  it("reports a stale source when validation throws after a host update", async () => {
+    const rows = [{ id: "member-1", name: "Ada" }];
+    const commits = [];
+    const table = document.createElement("rowan-table");
+    const editor = new ControlledTableDraftEditor(table, {
+      validate: () => {
+        rows[0].name = "Persisted update";
+        throw new Error("The value could not be validated.");
+      },
+      onCommit: (detail) => commits.push(detail),
+    });
+    configureTable(table, editor, rows);
+    document.body.append(table);
+    await settle();
+
+    table.shadowRoot.querySelector(".rowan-table-draft-trigger").click();
+    await settle();
+
+    const input = fieldInput(table);
+    input.value = "Local draft";
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     input.dispatchEvent(
       new KeyboardEvent("keydown", {
         bubbles: true,

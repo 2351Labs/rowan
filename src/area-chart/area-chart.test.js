@@ -187,6 +187,12 @@ describe("rowan-area-chart", () => {
       chart.shadowRoot.querySelector('button[data-point-key="flow::0"]').getAttribute("aria-label"),
     ).to.include("Punkt 1");
 
+    chart.config = { ...chart.config, interactive: true };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Punkt 1Point 1");
+
     chart.messages = { point: "Kategorie {index}" };
     await nextMicrotask();
     await nextMicrotask();

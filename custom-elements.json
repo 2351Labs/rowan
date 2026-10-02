@@ -12274,7 +12274,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental categorical heatmap. Single-hue intensity via fill-opacity.\nNull is empty / no-data. Accepts a matrix or `{ x, y, value }` points.",
+          "description": "Experimental categorical heatmap. Single-hue intensity via fill-opacity.\nNull is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.",
           "name": "RowanHeatmapChart",
           "cssProperties": [
             {
@@ -12347,6 +12347,19 @@
             {
               "kind": "field",
               "name": "rows",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
               "type": {
                 "text": "string[]"
               },
@@ -12355,6 +12368,19 @@
             {
               "kind": "field",
               "name": "columns",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
               "type": {
                 "text": "string[]"
               },
@@ -12371,16 +12397,42 @@
             {
               "kind": "field",
               "name": "points",
+              "return": {
+                "type": {
+                  "text": "RowanHeatmapChartPoint[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanHeatmapChartPoint[]"
+                  }
+                }
+              ],
               "type": {
-                "text": "Array<object>"
+                "text": "RowanHeatmapChartPoint[]"
               },
               "description": "Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only."
             },
             {
               "kind": "field",
               "name": "config",
+              "return": {
+                "type": {
+                  "text": "RowanHeatmapChartConfig"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanHeatmapChartConfig | null | undefined"
+                  }
+                }
+              ],
               "type": {
-                "text": "object"
+                "text": "RowanHeatmapChartConfig"
               },
               "description": "Replaces the complete chart configuration."
             },
@@ -12565,7 +12617,12 @@
                 "text": "{\n *   rows?: unknown,\n *   columns?: unknown,\n *   values?: unknown,\n *   points?: unknown,\n * }"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": {
+              "text": "RowanHeatmap"
+            }
+          }
         },
         {
           "kind": "function",
@@ -12607,9 +12664,17 @@
           "name": "cloneHeatmapValues",
           "parameters": [
             {
-              "name": "values"
+              "name": "values",
+              "type": {
+                "text": "Array<Array<number | null>>"
+              }
             }
-          ]
+          ],
+          "return": {
+            "type": {
+              "text": "Array<Array<number | null>>"
+            }
+          }
         },
         {
           "kind": "function",
@@ -12626,9 +12691,17 @@
           "name": "cloneHeatmap",
           "parameters": [
             {
-              "name": "value"
+              "name": "value",
+              "type": {
+                "text": "RowanHeatmap"
+              }
             }
-          ]
+          ],
+          "return": {
+            "type": {
+              "text": "RowanHeatmap"
+            }
+          }
         }
       ],
       "exports": [

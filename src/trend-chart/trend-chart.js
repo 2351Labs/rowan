@@ -5,6 +5,7 @@ import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { renderChartTable, withRestoredPointFocus } from "../chart/dom.js";
+import { cloneChartSeriesInput as cloneTrendSeriesInput } from "../chart/model.js";
 import {
   cloneTrendSeries,
   normalizeTrendLabels,
@@ -46,25 +47,6 @@ function isObject(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function cloneTrendSeriesInput(value) {
-  if (!Array.isArray(value)) return [];
-
-  return value.map((series) => {
-    if (!isObject(series)) return series;
-
-    return {
-      id: series.id,
-      label: series.label,
-      color: series.color,
-      values: Array.isArray(series.values)
-        ? series.values.map((point) =>
-            isObject(point) ? { label: point.label, value: point.value } : point,
-          )
-        : series.values,
-    };
-  });
 }
 
 function createSvgElement(name) {

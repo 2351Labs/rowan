@@ -188,12 +188,29 @@ describe("rowan-heatmap-chart", () => {
       chart.shadowRoot.querySelector('button[data-point-key="0::0"]').getAttribute("aria-label"),
     ).to.equal("Zeile 1, Spalte 1, 4");
 
+    chart.config = { ...chart.config, interactive: true };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.equal("Zeile 1Row 1");
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Spalte 1Column 1");
+
+    const config = chart.config;
+    config.rows[0] = "Eigene Zeile";
+    config.columns[0] = "Eigene Spalte";
+    chart.config = config;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.equal("Eigene ZeileRow 1");
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Eigene SpalteColumn 1");
+
     chart.messages = { row: "Reihe {index}", column: "Kategorie {index}" };
     await nextMicrotask();
     await nextMicrotask();
 
-    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.equal("Reihe 1Row 1");
-    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Kategorie 1Column 1");
+    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.equal("Eigene ZeileRow 1");
+    expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Eigene SpalteColumn 1");
     expect(activations).to.deep.equal([]);
   });
 });

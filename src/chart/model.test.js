@@ -6,6 +6,8 @@ import {
   categoricalBaseline,
   categoricalPointX,
   categoricalValueY,
+  cloneChartSeries,
+  cloneChartSeriesInput,
   finiteOrNull,
   normalizeChartSeries,
   resolveChartLabels,
@@ -45,6 +47,23 @@ describe("chart model cartesian helpers", () => {
     expect(
       resolveChartLabels(series, ["Configured label"], (index) => `Punkt ${index + 1}`),
     ).to.deep.equal(["Configured label", "Point 1", "Punkt 3"]);
+  });
+
+  it("preserves generated labels through public config clones without hiding later author edits", () => {
+    const series = normalizeChartSeries([{ id: "queue", values: [4] }]);
+    const roundTrip = normalizeChartSeries(cloneChartSeriesInput(cloneChartSeries(series)));
+
+    expect(resolveChartLabels(roundTrip, [], (index) => `Punkt ${index + 1}`)).to.deep.equal([
+      "Punkt 1",
+    ]);
+
+    const edited = cloneChartSeries(series);
+    edited[0].values[0].label = "Authored label";
+    const editedRoundTrip = normalizeChartSeries(cloneChartSeriesInput(edited));
+
+    expect(resolveChartLabels(editedRoundTrip, [], (index) => `Punkt ${index + 1}`)).to.deep.equal([
+      "Authored label",
+    ]);
   });
 
   const plot = { left: 18, top: 18, width: 964, height: 354 };

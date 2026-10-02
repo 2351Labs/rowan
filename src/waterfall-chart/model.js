@@ -26,6 +26,21 @@ function fallbackPointLabel(index, resolveFallback) {
   return `Point ${index + 1}`;
 }
 
+function generatedPointLabel(value) {
+  return typeof value?.[GENERATED_POINT_LABEL] === "string" ? value[GENERATED_POINT_LABEL] : "";
+}
+
+function markGeneratedPointLabel(point) {
+  Object.defineProperty(point, GENERATED_POINT_LABEL, { value: point.label });
+  return point;
+}
+
+function copyGeneratedPointLabel(source, target) {
+  const label = generatedPointLabel(source);
+  if (label) Object.defineProperty(target, GENERATED_POINT_LABEL, { value: label });
+  return target;
+}
+
 /**
  * @param {unknown} value
  */
@@ -38,9 +53,14 @@ export function cloneWaterfallSeriesInput(value) {
       label: series.label,
       color: series.color,
       values: Array.isArray(series.values)
-        ? series.values.map((point) =>
-            isObject(point) ? { label: point.label, value: point.value, type: point.type } : point,
-          )
+        ? series.values.map((point) => {
+            if (!isObject(point)) return point;
+            return copyGeneratedPointLabel(point, {
+              label: point.label,
+              value: point.value,
+              type: point.type,
+            });
+          })
         : series.values,
     };
   });
@@ -64,7 +84,8 @@ export function normalizeWaterfallSeries(value, labels = []) {
       color: normalizeColor(source.color),
       values: inputValues.map((point, index) => {
         const item = isObject(point) ? point : { value: point };
-        const authoredLabel = normalizeText(item.label);
+        const sourceLabel = normalizeText(item.label);
+        const authoredLabel = generatedPointLabel(item) === sourceLabel ? "" : sourceLabel;
         const configuredLabel = normalizeText(labels[index]);
         const normalized = {
           value: finiteOrNull(item.value),
@@ -72,7 +93,7 @@ export function normalizeWaterfallSeries(value, labels = []) {
           type: item.type === "total" ? "total" : "delta",
         };
         if (!authoredLabel && !configuredLabel) {
-          Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+          markGeneratedPointLabel(normalized);
         }
         return normalized;
       }),
@@ -83,7 +104,7 @@ export function normalizeWaterfallSeries(value, labels = []) {
 export function cloneWaterfallSeries(value) {
   return value.map((series) => ({
     ...series,
-    values: series.values.map((point) => ({ ...point })),
+    values: series.values.map((point) => copyGeneratedPointLabel(point, { ...point })),
   }));
 }
 
