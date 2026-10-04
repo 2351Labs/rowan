@@ -65,6 +65,28 @@ describe("rowan-heatmap-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("No data");
   });
 
+  it("round trips point config without a competing values matrix", async () => {
+    const chart = await renderChart({
+      points: [
+        { x: "Tue", y: "South", value: 8 },
+        { x: "Mon", y: "North", value: 2 },
+      ],
+    });
+    const config = chart.config;
+
+    expect(config).to.have.property("points");
+    expect(config).to.not.have.property("rows");
+    expect(config).to.not.have.property("columns");
+    expect(config).to.not.have.property("values");
+
+    config.points[0].value = 9;
+    chart.config = config;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.points[0].value).to.equal(9);
+  });
+
   it("emits rowan-point-activate from an interactive cell only", async () => {
     const chart = await renderChart({
       interactive: true,

@@ -10,7 +10,7 @@
  * @property {string[]} columns - Column labels. Arrays are property-only.
  * @property {Array<Array<number | null>>} values - Matrix of cell values. Arrays are property-only.
  * @property {RowanHeatmapChartPoint[]} points - Optional `{ x, y, value }` or `{ column, row, value }` triples. Arrays are property-only.
- * @property {RowanHeatmapChartConfig} config - Replaces the complete chart configuration.
+ * @property {RowanHeatmapChartConfig} config - Replaces the complete chart configuration. Reads return the active matrix or points data form.
  * @property {import("../chart/model.js").RowanChartValueFormatter | null} valueFormatter - Formats table and hover values. Functions are property-only.
  * @property {RowanHeatmapChartMessages} messages - Property-only built-in message overrides.
  * @slot label
@@ -83,6 +83,9 @@ export type RowanHeatmapChartRowColumnPoint = {
   value: number | null;
 };
 export type RowanHeatmapChartPoint = RowanHeatmapChartXYPoint | RowanHeatmapChartRowColumnPoint;
+/**
+ * Uses either matrix data (`rows`, `columns`, and `values`) or `points`.
+ */
 export type RowanHeatmapChartConfig = {
   rows?: string[];
   columns?: string[];

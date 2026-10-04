@@ -12434,7 +12434,7 @@
               "type": {
                 "text": "RowanHeatmapChartConfig"
               },
-              "description": "Replaces the complete chart configuration."
+              "description": "Replaces the complete chart configuration. Reads return the active matrix or points data form."
             },
             {
               "kind": "field",
