@@ -51,7 +51,13 @@ import {
 } from "@rowan-ui/core/box-plot-chart";
 import { RowanFunnelChart } from "@rowan-ui/core/funnel-chart";
 import { RowanGaugeChart, type RowanGaugeChartRange } from "@rowan-ui/core/gauge-chart";
-import { RowanHeatmapChart } from "@rowan-ui/core/heatmap-chart";
+import {
+  RowanHeatmapChart,
+  type RowanHeatmapChartConfig,
+  type RowanHeatmapChartPoint,
+  type RowanHeatmapChartRowColumnPoint,
+  type RowanHeatmapChartXYPoint,
+} from "@rowan-ui/core/heatmap-chart";
 import { createHistogramData } from "@rowan-ui/core/histogram";
 import { RowanIconButton } from "@rowan-ui/core/icon-button";
 import { RowanImage } from "@rowan-ui/core/image";
@@ -210,6 +216,18 @@ const heatmapChart: RowanHeatmapChart = document.createElement("rowan-heatmap-ch
 heatmapChart.rows = ["North"];
 heatmapChart.columns = ["Mon"];
 heatmapChart.values = [[4]];
+const heatmapXYPoint: RowanHeatmapChartXYPoint = { x: "Mon", y: "North", value: 4 };
+const heatmapRowColumnPoint: RowanHeatmapChartRowColumnPoint = {
+  row: "South",
+  column: "Tue",
+  value: 8,
+};
+const heatmapPoints: RowanHeatmapChartPoint[] = [heatmapXYPoint, heatmapRowColumnPoint];
+const heatmapConfig: RowanHeatmapChartConfig = { points: heatmapPoints };
+heatmapChart.points = heatmapPoints;
+heatmapChart.config = heatmapConfig;
+heatmapChart.config = null;
+heatmapChart.config = undefined;
 heatmapChart.valueFormatter = (value) => String(value);
 const scatterChart: RowanScatterChart = document.createElement("rowan-scatter-chart");
 scatterChart.series = [{ id: "a", label: "A", points: [{ x: 1, y: 2, size: 3 }] }];

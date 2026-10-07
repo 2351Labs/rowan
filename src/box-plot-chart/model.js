@@ -73,6 +73,21 @@ function fallbackPointLabel(index, resolveFallback) {
   return `Point ${index + 1}`;
 }
 
+function generatedPointLabel(value) {
+  return typeof value?.[GENERATED_POINT_LABEL] === "string" ? value[GENERATED_POINT_LABEL] : "";
+}
+
+function markGeneratedPointLabel(point) {
+  Object.defineProperty(point, GENERATED_POINT_LABEL, { value: point.label });
+  return point;
+}
+
+function copyGeneratedPointLabel(source, target) {
+  const label = generatedPointLabel(source);
+  if (label) Object.defineProperty(target, GENERATED_POINT_LABEL, { value: label });
+  return target;
+}
+
 /**
  * @param {unknown} value
  */
@@ -87,7 +102,7 @@ export function cloneBoxPlotSeriesInput(value) {
       values: Array.isArray(series.values)
         ? series.values.map((point) =>
             isObject(point)
-              ? {
+              ? copyGeneratedPointLabel(point, {
                   min: point.min,
                   q1: point.q1,
                   median: point.median,
@@ -95,7 +110,7 @@ export function cloneBoxPlotSeriesInput(value) {
                   max: point.max,
                   outliers: Array.isArray(point.outliers) ? [...point.outliers] : point.outliers,
                   label: point.label,
-                }
+                })
               : point,
           )
         : series.values,
@@ -130,7 +145,8 @@ export function normalizeBoxPlotSeries(value, labels = []) {
         color: normalizeColor(item.color),
         values: inputValues.map((point, index) => {
           const itemPoint = isObject(point) ? point : {};
-          const authoredLabel = normalizeText(itemPoint.label);
+          const sourceLabel = normalizeText(itemPoint.label);
+          const authoredLabel = generatedPointLabel(itemPoint) === sourceLabel ? "" : sourceLabel;
           const configuredLabel = normalizeText(labels[index]);
           const normalized = {
             min: finiteOrNull(itemPoint.min),
@@ -142,7 +158,7 @@ export function normalizeBoxPlotSeries(value, labels = []) {
             label: authoredLabel || configuredLabel || fallbackPointLabel(index),
           };
           if (!authoredLabel && !configuredLabel) {
-            Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+            markGeneratedPointLabel(normalized);
           }
           return normalized;
         }),
@@ -154,10 +170,12 @@ export function normalizeBoxPlotSeries(value, labels = []) {
 export function cloneBoxPlotSeries(value) {
   return value.map((series) => ({
     ...series,
-    values: series.values.map((point) => ({
-      ...point,
-      outliers: [...point.outliers],
-    })),
+    values: series.values.map((point) =>
+      copyGeneratedPointLabel(point, {
+        ...point,
+        outliers: [...point.outliers],
+      }),
+    ),
   }));
 }
 

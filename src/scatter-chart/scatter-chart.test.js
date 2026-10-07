@@ -232,6 +232,12 @@ describe("rowan-scatter-chart", () => {
         .getAttribute("aria-label"),
     ).to.include("Punkt 1");
 
+    chart.config = { ...chart.config, interactive: true };
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("NordPunkt 1");
+
     chart.messages = { point: "Punkt", pointLabel: "Kategorie {index}" };
     await nextMicrotask();
     await nextMicrotask();

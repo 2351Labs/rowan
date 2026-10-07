@@ -142,12 +142,17 @@
 }
 
 .point-button {
+  appearance: none;
   background: transparent;
   border: 0;
   block-size: var(--point-height);
+  box-sizing: border-box;
   inline-size: var(--point-width);
   inset-block-start: var(--point-y);
   inset-inline-start: var(--point-x);
+  min-block-size: 0;
+  min-inline-size: 0;
+  padding: 0;
   pointer-events: auto;
   position: absolute;
 }

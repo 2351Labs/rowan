@@ -3,6 +3,13 @@ import { finiteOrNull } from "../chart/model.js";
 const GENERATED_ROWS = Symbol("rowan.heatmap-generated-rows");
 const GENERATED_COLUMNS = Symbol("rowan.heatmap-generated-columns");
 
+/**
+ * @typedef {object} RowanHeatmap
+ * @property {string[]} rows
+ * @property {string[]} columns
+ * @property {Array<Array<number | null>>} values
+ */
+
 function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -36,11 +43,36 @@ function fallbackLabel(index, resolveFallback, prefix) {
   return `${prefix} ${index + 1}`;
 }
 
+function generatedLabels(value, marker) {
+  return Array.isArray(value?.[marker]) ? value[marker] : [];
+}
+
+function cloneLabels(value, marker) {
+  const labels = Array.isArray(value) ? [...value] : [];
+  const generated = generatedLabels(value, marker);
+  if (generated.length > 0) Object.defineProperty(labels, marker, { value: [...generated] });
+  return labels;
+}
+
+/**
+ * @param {RowanHeatmap} value
+ * @param {boolean[]} rows
+ * @param {boolean[]} columns
+ * @returns {RowanHeatmap}
+ */
 function withGeneratedLabels(value, rows, columns) {
+  const generatedRows = [...rows];
+  const generatedColumns = [...columns];
   Object.defineProperties(value, {
-    [GENERATED_ROWS]: { value: rows },
-    [GENERATED_COLUMNS]: { value: columns },
+    [GENERATED_ROWS]: { value: generatedRows },
+    [GENERATED_COLUMNS]: { value: generatedColumns },
   });
+  if (!Object.hasOwn(value.rows, GENERATED_ROWS)) {
+    Object.defineProperty(value.rows, GENERATED_ROWS, { value: generatedRows });
+  }
+  if (!Object.hasOwn(value.columns, GENERATED_COLUMNS)) {
+    Object.defineProperty(value.columns, GENERATED_COLUMNS, { value: generatedColumns });
+  }
   return value;
 }
 
@@ -51,6 +83,7 @@ function withGeneratedLabels(value, rows, columns) {
  *   values?: unknown,
  *   points?: unknown,
  * }} [input]
+ * @returns {RowanHeatmap}
  */
 export function normalizeHeatmap(input = {}) {
   const points = Array.isArray(input.points) ? input.points : [];
@@ -81,6 +114,8 @@ export function normalizeHeatmap(input = {}) {
 
   const rows = Array.isArray(input.rows) ? input.rows : [];
   const columns = Array.isArray(input.columns) ? input.columns : [];
+  const previousGeneratedRows = generatedLabels(rows, GENERATED_ROWS);
+  const previousGeneratedColumns = generatedLabels(columns, GENERATED_COLUMNS);
   const source = isMatrix(input.values) ? input.values : [];
   const rowCount = Math.max(rows.length, source.length);
   const columnCount = Math.max(
@@ -91,14 +126,16 @@ export function normalizeHeatmap(input = {}) {
   const generatedRows = [];
   const rowLabels = Array.from({ length: rowCount }, (_value, index) => {
     const label = normalizeText(rows[index]);
-    generatedRows[index] = !label;
-    return label || fallbackLabel(index, undefined, "Row");
+    const fallback = fallbackLabel(index, undefined, "Row");
+    generatedRows[index] = !label || (previousGeneratedRows[index] && label === fallback);
+    return label || fallback;
   });
   const generatedColumns = [];
   const columnLabels = Array.from({ length: columnCount }, (_value, index) => {
     const label = normalizeText(columns[index]);
-    generatedColumns[index] = !label;
-    return label || fallbackLabel(index, undefined, "Column");
+    const fallback = fallbackLabel(index, undefined, "Column");
+    generatedColumns[index] = !label || (previousGeneratedColumns[index] && label === fallback);
+    return label || fallback;
   });
   const values = rowLabels.map((_row, rowIndex) =>
     columnLabels.map((_column, columnIndex) => {
@@ -137,6 +174,10 @@ export function heatmapValueDomain(values) {
   return { min: Math.min(...numbers), max: Math.max(...numbers) };
 }
 
+/**
+ * @param {Array<Array<number | null>>} values
+ * @returns {Array<Array<number | null>>}
+ */
 export function cloneHeatmapValues(values) {
   return values.map((row) => [...row]);
 }
@@ -144,8 +185,8 @@ export function cloneHeatmapValues(values) {
 export function cloneHeatmapInput(value = {}) {
   const source = isObject(value) ? value : {};
   return {
-    rows: Array.isArray(source.rows) ? [...source.rows] : [],
-    columns: Array.isArray(source.columns) ? [...source.columns] : [],
+    rows: cloneLabels(source.rows, GENERATED_ROWS),
+    columns: cloneLabels(source.columns, GENERATED_COLUMNS),
     values: isMatrix(source.values) ? cloneHeatmapValues(source.values) : [],
     points: Array.isArray(source.points)
       ? source.points.map((point) =>
@@ -163,10 +204,18 @@ export function cloneHeatmapInput(value = {}) {
   };
 }
 
+/**
+ * @param {RowanHeatmap} value
+ * @returns {RowanHeatmap}
+ */
 export function cloneHeatmap(value) {
-  return {
-    rows: [...value.rows],
-    columns: [...value.columns],
-    values: cloneHeatmapValues(value.values),
-  };
+  return withGeneratedLabels(
+    {
+      rows: cloneLabels(value.rows, GENERATED_ROWS),
+      columns: cloneLabels(value.columns, GENERATED_COLUMNS),
+      values: cloneHeatmapValues(value.values),
+    },
+    generatedLabels(value, GENERATED_ROWS),
+    generatedLabels(value, GENERATED_COLUMNS),
+  );
 }

@@ -65,6 +65,21 @@ function fallbackPointLabel(index, resolveFallback) {
   return `Point ${index + 1}`;
 }
 
+function generatedPointLabel(value) {
+  return typeof value?.[GENERATED_POINT_LABEL] === "string" ? value[GENERATED_POINT_LABEL] : "";
+}
+
+function markGeneratedPointLabel(point) {
+  Object.defineProperty(point, GENERATED_POINT_LABEL, { value: point.label });
+  return point;
+}
+
+function copyGeneratedPointLabel(source, target) {
+  const label = generatedPointLabel(source);
+  if (label) Object.defineProperty(target, GENERATED_POINT_LABEL, { value: label });
+  return target;
+}
+
 /**
  * @param {unknown} value
  */
@@ -77,11 +92,15 @@ export function cloneScatterSeriesInput(value) {
       label: series.label,
       color: series.color,
       points: Array.isArray(series.points)
-        ? series.points.map((point) =>
-            isObject(point)
-              ? { x: point.x, y: point.y, size: point.size, label: point.label }
-              : point,
-          )
+        ? series.points.map((point) => {
+            if (!isObject(point)) return point;
+            return copyGeneratedPointLabel(point, {
+              x: point.x,
+              y: point.y,
+              size: point.size,
+              label: point.label,
+            });
+          })
         : series.points,
     };
   });
@@ -113,7 +132,8 @@ export function normalizeScatterSeries(value) {
         color: normalizeColor(item.color),
         points: points.map((point, pointIndex) => {
           const sourcePoint = isObject(point) ? point : {};
-          const authoredLabel = normalizeText(sourcePoint.label);
+          const sourceLabel = normalizeText(sourcePoint.label);
+          const authoredLabel = generatedPointLabel(sourcePoint) === sourceLabel ? "" : sourceLabel;
           const normalized = {
             x: finiteOrNull(sourcePoint.x),
             y: finiteOrNull(sourcePoint.y),
@@ -121,7 +141,7 @@ export function normalizeScatterSeries(value) {
             label: authoredLabel || fallbackPointLabel(pointIndex),
           };
           if (!authoredLabel) {
-            Object.defineProperty(normalized, GENERATED_POINT_LABEL, { value: true });
+            markGeneratedPointLabel(normalized);
           }
           return normalized;
         }),
@@ -133,7 +153,7 @@ export function normalizeScatterSeries(value) {
 export function cloneScatterSeries(value) {
   return value.map((series) => ({
     ...series,
-    points: series.points.map((point) => ({ ...point })),
+    points: series.points.map((point) => copyGeneratedPointLabel(point, { ...point })),
   }));
 }
 

@@ -2,9 +2,21 @@ import { expect } from "@esm-bundle/chai";
 
 const nextMicrotask = () => Promise.resolve();
 
-async function settleChartRender() {
+async function waitForComponentStyles(chart) {
+  const styleLink = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
+  if (!(styleLink instanceof HTMLLinkElement) || styleLink.sheet) return;
+
+  await new Promise((resolve) => {
+    styleLink.addEventListener("error", resolve, { once: true });
+    styleLink.addEventListener("load", resolve, { once: true });
+    if (styleLink.sheet) resolve();
+  });
+}
+
+async function settleChartRender(chart) {
   await nextMicrotask();
   await nextMicrotask();
+  await waitForComponentStyles(chart);
 }
 
 export async function assertPointControlAlignment({
@@ -16,7 +28,7 @@ export async function assertPointControlAlignment({
   for (const direction of ["ltr", "rtl"]) {
     chart.dir = direction;
     chart.style.inlineSize = "400px";
-    await settleChartRender();
+    await settleChartRender(chart);
 
     const controls = chart.shadowRoot.querySelector(".point-controls");
     expect(controls.getAttribute("dir")).to.equal("ltr");
@@ -56,7 +68,7 @@ export async function assertPointControlLifecycle({ chart, rerender, markSelecto
   first.focus();
 
   rerender();
-  await settleChartRender();
+  await settleChartRender(chart);
 
   const restored = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")].find(
     (button) => button.dataset.pointKey === key,
@@ -79,7 +91,7 @@ export async function assertPointControlLifecycle({ chart, rerender, markSelecto
   expect(hover.hidden).to.equal(true);
 
   document.body.append(chart);
-  await settleChartRender();
+  await settleChartRender(chart);
   showHover();
   expect(hover.hidden).to.equal(false);
   chart.remove();

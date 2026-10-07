@@ -51,6 +51,11 @@ const nullableSetters = [
     setter: "config",
     valueType: "RowanBoxPlotChartConfig | null | undefined",
   },
+  {
+    file: new URL("../types/heatmap-chart/heatmap-chart.d.ts", import.meta.url),
+    setter: "config",
+    valueType: "RowanHeatmapChartConfig | null | undefined",
+  },
 ];
 
 for (const { file, setter, valueType } of nullableSetters) {
