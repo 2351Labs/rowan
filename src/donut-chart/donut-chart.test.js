@@ -1,4 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./donut-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -89,14 +93,22 @@ describe("rowan-donut-chart", () => {
       labels: ["App", "Phone"],
       series: [{ id: 'sales"q', label: "Sales", values: [12, 8] }],
     });
-    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
-    buttons[0].focus();
-    buttons[0].dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
-    );
-    await nextMicrotask();
+    await assertPointControlKeyboardNavigation(chart);
+  });
 
-    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      series: [{ id: "sources", label: "Sources", values: [12, 8] }],
+      labels: ["App", "Phone"],
+    });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["App", "Phone"];
+      },
+      markSelector: "path.slice",
+    });
   });
 
   it("uses locale and property-only messages for generated chart copy", async () => {

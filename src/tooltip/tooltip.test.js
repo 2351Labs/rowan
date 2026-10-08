@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./tooltip.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -101,6 +102,35 @@ describe("rowan-tooltip", () => {
 
     expect(tooltip.open).to.equal(false);
     expect(bubble.hidden).to.equal(true);
+  });
+
+  it("keeps hover and focus handling after reconnecting", async () => {
+    const tooltip = document.createElement("rowan-tooltip");
+    tooltip.text = "Save the current draft";
+    const trigger = document.createElement("button");
+    trigger.textContent = "Save";
+    tooltip.append(trigger);
+    document.body.append(tooltip);
+    await settle();
+
+    await reconnectHost(tooltip);
+    await settle();
+
+    trigger.dispatchEvent(new FocusEvent("focusin", { bubbles: true, composed: true }));
+    await settle();
+    expect(tooltip.open).to.equal(true);
+
+    keydown(trigger, "Escape");
+    await settle();
+    expect(tooltip.open).to.equal(false);
+
+    tooltip.dispatchEvent(new MouseEvent("mouseenter"));
+    await settle();
+    expect(tooltip.open).to.equal(true);
+
+    await reconnectHost(tooltip);
+    await settle();
+    expect(tooltip.open).to.equal(true);
   });
 
   it("is not clipped by an overflow-hidden ancestor", async () => {

@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./stacked-area-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -159,14 +164,35 @@ describe("rowan-stacked-area-chart", () => {
       labels: ["Mon", "Tue"],
       series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
     });
-    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
-    buttons[0].focus();
-    buttons[0].dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
-    );
-    await nextMicrotask();
+    await assertPointControlKeyboardNavigation(chart);
+  });
 
-    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+  it("keeps an overlay hit target on its SVG point in LTR and RTL hosts", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [
+        { id: "incoming", label: "Incoming", values: [4, 2] },
+        { id: "resolved", label: "Resolved", values: [1, 2] },
+      ],
+    });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "circle.point-marker",
+      pointKey: "incoming::0",
+      alignment: "center",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({ interactive: true });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["Mon", "Tue"];
+      },
+      markSelector: "circle.point-marker",
+    });
   });
 
   it("draws reference lines and lists them in the matching table", async () => {

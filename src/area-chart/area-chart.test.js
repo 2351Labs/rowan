@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./area-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -56,6 +61,44 @@ describe("rowan-area-chart", () => {
     expect(activations[0].seriesId).to.equal("flow");
     expect(activations[0].index).to.equal(0);
     expect(activations[0].value).to.equal(4);
+  });
+
+  it("moves keyboard focus when a series id would break a CSS selector", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
+    });
+    await assertPointControlKeyboardNavigation(chart);
+  });
+
+  it("keeps an overlay hit target on its SVG point in LTR and RTL hosts", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      series: [{ id: "flow", label: "Flow", values: [4, 8] }],
+      labels: ["Mon", "Tue"],
+    });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "circle.point-marker",
+      pointKey: "flow::0",
+      alignment: "center",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      series: [{ id: "flow", label: "Flow", values: [4, 8] }],
+      labels: ["Mon", "Tue"],
+    });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["Mon", "Tue"];
+      },
+      markSelector: "circle.point-marker",
+    });
   });
 
   it("does not supply a competing label when the author provides aria-labelledby", async () => {

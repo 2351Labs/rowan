@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./select.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -79,6 +80,29 @@ describe("rowan-select", () => {
     select.value = "b";
     select.dispatchEvent(new Event("change", { bubbles: true }));
 
+    expect(eventCount).to.equal(1);
+  });
+
+  it("keeps user input handling after reconnecting", async () => {
+    const el = document.createElement("rowan-select");
+    el.options = [
+      { value: "a", label: "A" },
+      { value: "b", label: "B" },
+    ];
+    document.body.append(el);
+    await nextMicrotask();
+
+    let eventCount = 0;
+    el.addEventListener("rowan-change", () => {
+      eventCount += 1;
+    });
+
+    await reconnectHost(el);
+    const select = el.shadowRoot.querySelector("select");
+    select.value = "b";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(el.value).to.equal("b");
     expect(eventCount).to.equal(1);
   });
 
