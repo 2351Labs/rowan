@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./popover.js";
 import "../button/button.js";
 import "../dialog/dialog.js";
@@ -275,6 +276,54 @@ describe("rowan-popover", () => {
     trigger.click();
     await settle();
     expect(popover.open).to.equal(true);
+  });
+
+  it("keeps trigger and document dismissal after reconnecting", async () => {
+    const outside = document.createElement("button");
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More options";
+    popover.append(trigger);
+    document.body.append(outside, popover);
+    await settle();
+
+    await reconnectHost(popover);
+    await settle();
+
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+
+    const changes = [];
+    popover.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    await reconnectHost(popover);
+    await settle();
+    expect(popover.open).to.equal(true);
+    expect(changes).to.deep.equal([]);
+
+    outside.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    await settle();
+    expect(popover.open).to.equal(false);
+  });
+
+  it("still dismisses when focus leaves while connected", async () => {
+    const outside = document.createElement("button");
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "More options";
+    popover.append(trigger);
+    document.body.append(outside, popover);
+    await settle();
+
+    trigger.click();
+    await settle();
+    expect(popover.open).to.equal(true);
+
+    outside.focus();
+    await settle();
+    expect(popover.open).to.equal(false);
   });
 
   it("coerces unknown trigger values to click", async () => {

@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./combobox.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -157,6 +158,38 @@ describe("rowan-combobox", () => {
     input.dispatchEvent(new Event("change", { bubbles: true }));
 
     expect(eventCount).to.equal(1);
+  });
+
+  it("keeps input handling and document dismissal after reconnecting", async () => {
+    const outside = document.createElement("button");
+    const el = document.createElement("rowan-combobox");
+    el.options = ["Seattle", "Portland"];
+    document.body.append(outside, el);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-change", (event) => changes.push(event.detail.value));
+
+    await reconnectHost(el);
+
+    const input = el.shadowRoot.querySelector("input");
+    input.focus();
+    keydown(input, "ArrowDown");
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(el.open).to.equal(true);
+
+    outside.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    expect(el.open).to.equal(false);
+
+    input.value = "Bend";
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    await nextMicrotask();
+
+    expect(el.value).to.equal("Bend");
+    expect(changes).to.deep.equal(["Bend"]);
   });
 
   it("does not emit rowan-change when parent sets value", async () => {

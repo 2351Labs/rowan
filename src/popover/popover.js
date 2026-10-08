@@ -81,6 +81,7 @@ export class RowanPopover extends BaseElement {
   #removeDocumentKeydownListener = null;
   #managedControlsElement = null;
   #messages = {};
+  #dismissGeneration = 0;
 
   connectedCallback() {
     super.connectedCallback();
@@ -92,6 +93,7 @@ export class RowanPopover extends BaseElement {
   }
 
   disconnectedCallback() {
+    this.#dismissGeneration += 1;
     this.#teardownDocumentDismissal();
     this.#hidePanelPopover();
     this.#releaseTrigger();
@@ -412,8 +414,20 @@ export class RowanPopover extends BaseElement {
     if (!this.open) return;
     if (this.#containsNode(event.relatedTarget)) return;
 
-    noteDismissibleClose();
-    this.#setOpenFromUser(false);
+    const generation = this.#dismissGeneration;
+    queueMicrotask(() => {
+      if (generation !== this.#dismissGeneration) return;
+      if (!this.isConnected || !this.open) return;
+      if (
+        this.#containsNode(document.activeElement) ||
+        this.#containsNode(this.shadowRoot.activeElement)
+      ) {
+        return;
+      }
+
+      noteDismissibleClose();
+      this.#setOpenFromUser(false);
+    });
   }
 
   #containsNode(node) {

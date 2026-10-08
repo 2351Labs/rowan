@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./trend-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -166,6 +171,40 @@ describe("rowan-trend-chart", () => {
     });
     expect(activations[0].bubbles).to.equal(true);
     expect(activations[0].composed).to.equal(true);
+  });
+
+  it("moves keyboard focus when a series id would break a CSS selector", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
+    });
+    await assertPointControlKeyboardNavigation(chart);
+  });
+
+  it("keeps an overlay hit target on its SVG point in LTR and RTL hosts", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Mon", "Tue"],
+      series: [{ id: "incidents", label: "Incidents", values: [4, 8] }],
+    });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "circle.point-marker",
+      pointKey: "incidents::0",
+      alignment: "center",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({ interactive: true });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["Mon", "Tue", "Wed"];
+      },
+      markSelector: "circle.point-marker",
+    });
   });
 
   it("keeps noninteractive visual points out of the tab order while retaining the data table", async () => {
