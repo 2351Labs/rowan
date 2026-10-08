@@ -33,9 +33,31 @@
   font-weight: 600;
 }
 
-.filters {
+.filters,
+.group-filters {
   display: grid;
   gap: var(--rowan-filter-builder-control-gap);
+}
+
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-filter-builder-control-gap);
+}
+
+.group {
+  border: 1px solid var(--rowan-filter-builder-border);
+  border-radius: var(--rowan-filter-builder-radius-sm);
+  display: grid;
+  gap: var(--rowan-filter-builder-control-gap);
+  padding: var(--rowan-filter-builder-control-gap);
+}
+
+.group-header {
+  align-items: center;
+  display: grid;
+  gap: var(--rowan-filter-builder-control-gap);
+  grid-template-columns: minmax(8rem, 12rem) auto;
 }
 
 .filter {

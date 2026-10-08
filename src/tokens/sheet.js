@@ -568,6 +568,435 @@ export const tokenCssText = `
   --rowan-focus-ring: 0 0 0 2px rgb(47 106 77 / 32%);
 }
 
+/* Nested theme aliases */
+[data-theme] {
+  --rowan-button-bg: var(--rowan-color-accent);
+  --rowan-button-fg: var(--rowan-color-accent-contrast);
+  --rowan-button-border: var(--rowan-button-bg);
+  --rowan-button-border-width: var(--rowan-border-width);
+  --rowan-button-hover-bg: color-mix(in srgb, var(--rowan-button-bg) 88%, black);
+  --rowan-button-hover-fg: var(--rowan-button-fg);
+  --rowan-button-hover-border: var(--rowan-button-hover-bg);
+  --rowan-button-active-bg: color-mix(in srgb, var(--rowan-button-bg) 76%, black);
+  --rowan-button-active-fg: var(--rowan-button-fg);
+  --rowan-button-active-border: var(--rowan-button-active-bg);
+  --rowan-button-focus-ring: var(--rowan-focus-ring);
+  --rowan-button-radius: var(--rowan-radius-md);
+  --rowan-button-font-family: var(--rowan-font-family);
+  --rowan-button-gap: var(--rowan-space-2);
+  --rowan-button-secondary-bg: var(--rowan-color-bg);
+  --rowan-button-secondary-fg: var(--rowan-color-fg);
+  --rowan-button-secondary-border: var(--rowan-color-border);
+  --rowan-button-secondary-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 7%,
+    var(--rowan-color-bg)
+  );
+  --rowan-button-secondary-hover-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 36%,
+    var(--rowan-color-border)
+  );
+  --rowan-button-secondary-active-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 13%,
+    var(--rowan-color-bg)
+  );
+  --rowan-button-secondary-active-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 52%,
+    var(--rowan-color-border)
+  );
+  --rowan-button-ghost-fg: var(--rowan-color-accent);
+  --rowan-button-ghost-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 9%, transparent);
+  --rowan-button-ghost-active-bg: color-mix(in srgb, var(--rowan-color-accent) 16%, transparent);
+  --rowan-button-danger-bg: var(--rowan-color-danger);
+  --rowan-button-danger-fg: var(--rowan-button-fg);
+  --rowan-button-danger-border: var(--rowan-color-danger);
+  --rowan-button-danger-hover-bg: color-mix(in srgb, var(--rowan-color-danger) 88%, black);
+  --rowan-button-danger-hover-border: var(--rowan-button-danger-hover-bg);
+  --rowan-button-danger-active-bg: color-mix(in srgb, var(--rowan-color-danger) 76%, black);
+  --rowan-button-danger-active-border: var(--rowan-button-danger-active-bg);
+  --rowan-button-sm-padding-inline: var(--rowan-space-3);
+  --rowan-button-lg-font-size: var(--rowan-font-size-md);
+  --rowan-field-bg: var(--rowan-color-surface);
+  --rowan-field-fg: var(--rowan-color-fg);
+  --rowan-field-border: var(--rowan-color-border);
+  --rowan-card-bg: var(--rowan-color-surface);
+  --rowan-card-border: var(--rowan-color-border);
+  --rowan-chip-bg: color-mix(in srgb, var(--rowan-color-accent) 10%, var(--rowan-color-bg));
+  --rowan-chip-border: color-mix(in srgb, var(--rowan-color-accent) 30%, var(--rowan-color-border));
+  --rowan-chip-fg: var(--rowan-color-fg);
+  --rowan-chip-success-bg: color-mix(
+    in srgb,
+    var(--rowan-color-success) 12%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-success-border: color-mix(
+    in srgb,
+    var(--rowan-color-success) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-warning-bg: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 14%,
+    var(--rowan-color-bg)
+  );
+  --rowan-chip-warning-border: color-mix(
+    in srgb,
+    var(--rowan-color-warning) 34%,
+    var(--rowan-color-border)
+  );
+  --rowan-chip-danger-bg: color-mix(in srgb, var(--rowan-color-danger) 12%, var(--rowan-color-bg));
+  --rowan-chip-danger-border: color-mix(
+    in srgb,
+    var(--rowan-color-danger) 32%,
+    var(--rowan-color-border)
+  );
+  --rowan-skeleton-base: color-mix(in srgb, var(--rowan-color-fg) 10%, var(--rowan-color-bg));
+  --rowan-skeleton-highlight: color-mix(in srgb, var(--rowan-color-fg) 4%, var(--rowan-color-bg));
+  --rowan-carousel-border: var(--rowan-color-border);
+  --rowan-carousel-surface: var(--rowan-card-bg);
+  --rowan-carousel-control-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 8%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-control-fg: var(--rowan-color-accent);
+  --rowan-carousel-control-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 16%,
+    var(--rowan-carousel-surface)
+  );
+  --rowan-carousel-focus-ring: var(--rowan-focus-ring);
+  --rowan-carousel-radius: var(--rowan-radius-md);
+  --rowan-carousel-font-family: var(--rowan-font-family);
+  --rowan-dialog-bg: var(--rowan-color-surface);
+  --rowan-calendar-bg: var(--rowan-card-bg);
+  --rowan-calendar-fg: var(--rowan-color-fg);
+  --rowan-calendar-muted: var(--rowan-color-muted);
+  --rowan-calendar-border: var(--rowan-color-border);
+  --rowan-calendar-accent: var(--rowan-color-accent);
+  --rowan-calendar-accent-contrast: var(--rowan-color-accent-contrast);
+  --rowan-color-picker-bg: var(--rowan-field-bg);
+  --rowan-color-picker-fg: var(--rowan-color-fg);
+  --rowan-color-picker-muted-fg: var(--rowan-color-muted);
+  --rowan-color-picker-border: var(--rowan-color-border);
+  --rowan-color-picker-focus-ring: var(--rowan-focus-ring);
+  --rowan-color-picker-radius: var(--rowan-radius-md);
+  --rowan-color-picker-gap: var(--rowan-space-3);
+  --rowan-color-picker-swatch-radius: var(--rowan-radius-sm);
+  --rowan-color-picker-selected-ring: var(--rowan-color-accent);
+  --rowan-color-picker-invalid-border: var(--rowan-color-danger);
+  --rowan-toast-bg: var(--rowan-card-bg);
+  --rowan-toast-fg: var(--rowan-color-fg);
+  --rowan-toast-border: var(--rowan-color-border);
+  --rowan-form-wizard-fg: var(--rowan-color-fg);
+  --rowan-form-wizard-border: var(--rowan-color-border);
+  --rowan-form-wizard-gap: var(--rowan-space-5);
+  --rowan-form-wizard-progress-padding: var(--rowan-space-4);
+  --rowan-form-wizard-actions-gap: var(--rowan-space-3);
+  --rowan-form-wizard-actions-padding: var(--rowan-space-4);
+  --rowan-form-wizard-next-bg: var(--rowan-color-accent);
+  --rowan-form-wizard-next-border: var(--rowan-color-accent);
+  --rowan-form-wizard-previous-border: var(--rowan-color-border);
+  --rowan-form-wizard-previous-fg: var(--rowan-color-fg);
+  --rowan-form-wizard-button-radius: var(--rowan-radius-md);
+  --rowan-form-wizard-button-padding: var(--rowan-space-4);
+  --rowan-form-wizard-focus-ring: var(--rowan-focus-ring);
+  --rowan-slider-fg: var(--rowan-color-fg);
+  --rowan-slider-track-bg: var(--rowan-color-sand-100);
+  --rowan-slider-range-bg: var(--rowan-color-accent);
+  --rowan-slider-thumb-border: var(--rowan-color-border);
+  --rowan-slider-gap: var(--rowan-space-3);
+  --rowan-slider-value-fg: var(--rowan-color-muted);
+  --rowan-slider-value-font-size: var(--rowan-font-size-sm);
+  --rowan-slider-focus-ring: var(--rowan-focus-ring);
+  --rowan-form-field-fg: var(--rowan-color-fg);
+  --rowan-form-field-gap: var(--rowan-space-2);
+  --rowan-form-field-label-fg: var(--rowan-color-fg);
+  --rowan-form-field-label-font-size: var(--rowan-font-size-sm);
+  --rowan-form-field-label-gap: var(--rowan-space-2);
+  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-hint-fg: var(--rowan-color-muted);
+  --rowan-form-field-error-fg: var(--rowan-color-danger);
+  --rowan-form-field-support-gap: var(--rowan-space-1);
+  --rowan-form-layout-gap: var(--rowan-space-5);
+  --rowan-image-bg: var(--rowan-color-surface);
+  --rowan-image-fg: var(--rowan-color-fg);
+  --rowan-image-radius: var(--rowan-radius-md);
+  --rowan-listbox-bg: var(--rowan-field-bg);
+  --rowan-listbox-border: var(--rowan-color-border);
+  --rowan-listbox-radius: var(--rowan-radius-md);
+  --rowan-listbox-padding: var(--rowan-space-1);
+  --rowan-option-fg: var(--rowan-color-fg);
+  --rowan-option-muted-fg: var(--rowan-color-muted);
+  --rowan-option-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-option-selected-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
+  --rowan-option-selected-fg: var(--rowan-color-fg);
+  --rowan-option-active-bg: color-mix(in srgb, var(--rowan-color-accent) 22%, transparent);
+  --rowan-option-active-fg: var(--rowan-color-fg);
+  --rowan-option-focus-ring: var(--rowan-focus-ring);
+  --rowan-option-radius: var(--rowan-radius-sm);
+  --rowan-option-font-family: var(--rowan-font-family);
+  --rowan-option-font-size: var(--rowan-font-size-sm);
+  --rowan-option-gap: var(--rowan-space-2);
+  --rowan-option-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-focus-ring: var(--rowan-focus-ring);
+  --rowan-multi-select-combobox-radius: var(--rowan-radius-md);
+  --rowan-multi-select-combobox-font-family: var(--rowan-font-family);
+  --rowan-multi-select-combobox-font-size: var(--rowan-font-size-sm);
+  --rowan-multi-select-combobox-gap: var(--rowan-space-2);
+  --rowan-multi-select-combobox-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-multi-select-combobox-chip-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-multi-select-combobox-chip-fg: var(--rowan-color-fg);
+  --rowan-multi-select-combobox-panel-bg: var(--rowan-field-bg);
+  --rowan-multi-select-combobox-panel-border: var(--rowan-color-border);
+  --rowan-multi-select-combobox-empty-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-bg: var(--rowan-field-bg);
+  --rowan-segmented-control-border: var(--rowan-color-border);
+  --rowan-segmented-control-fg: var(--rowan-color-fg);
+  --rowan-segmented-control-muted-fg: var(--rowan-color-muted);
+  --rowan-segmented-control-active-bg: var(--rowan-color-accent);
+  --rowan-segmented-control-active-fg: var(--rowan-color-accent-contrast);
+  --rowan-segmented-control-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-segmented-control-focus-ring: var(--rowan-focus-ring);
+  --rowan-segmented-control-radius: var(--rowan-radius-md);
+  --rowan-segmented-control-font-family: var(--rowan-font-family);
+  --rowan-segmented-control-font-size: var(--rowan-font-size-sm);
+  --rowan-segmented-control-gap: var(--rowan-space-1);
+  --rowan-segmented-control-padding: var(--rowan-space-1);
+  --rowan-segmented-control-button-padding: 0.4rem var(--rowan-space-3);
+  --rowan-rating-bg: var(--rowan-field-bg);
+  --rowan-rating-fg: var(--rowan-color-fg);
+  --rowan-rating-muted-fg: var(--rowan-color-muted);
+  --rowan-rating-border: var(--rowan-color-border);
+  --rowan-rating-active: var(--rowan-color-accent);
+  --rowan-rating-inactive: var(--rowan-color-muted);
+  --rowan-rating-hover: color-mix(in srgb, var(--rowan-color-accent) 12%, transparent);
+  --rowan-rating-focus-ring: var(--rowan-focus-ring);
+  --rowan-rating-radius: var(--rowan-radius-md);
+  --rowan-rating-gap: var(--rowan-space-2);
+  --rowan-rating-font-family: var(--rowan-font-family);
+  --rowan-rating-value-font-size: var(--rowan-font-size-sm);
+  --rowan-rating-invalid-border: var(--rowan-color-danger);
+  --rowan-rich-text-editor-bg: var(--rowan-field-bg);
+  --rowan-rich-text-editor-fg: var(--rowan-color-fg);
+  --rowan-rich-text-editor-muted-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-border: var(--rowan-color-border);
+  --rowan-rich-text-editor-toolbar-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 5%,
+    var(--rowan-color-bg)
+  );
+  --rowan-rich-text-editor-focus-ring: var(--rowan-focus-ring);
+  --rowan-rich-text-editor-radius: var(--rowan-radius-md);
+  --rowan-rich-text-editor-font-family: var(--rowan-font-family);
+  --rowan-rich-text-editor-placeholder-fg: var(--rowan-color-muted);
+  --rowan-rich-text-editor-button-active-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 14%,
+    transparent
+  );
+  --rowan-rich-text-editor-button-active-fg: var(--rowan-color-accent);
+  --rowan-rich-text-editor-invalid-border: var(--rowan-color-danger);
+  --rowan-trend-chart-bg: var(--rowan-card-bg);
+  --rowan-trend-chart-fg: var(--rowan-color-fg);
+  --rowan-trend-chart-muted-fg: var(--rowan-color-muted);
+  --rowan-trend-chart-border: var(--rowan-color-border);
+  --rowan-trend-chart-grid: color-mix(in srgb, var(--rowan-color-border) 72%, transparent);
+  --rowan-trend-chart-focus-ring: var(--rowan-focus-ring);
+  --rowan-trend-chart-radius: var(--rowan-radius-md);
+  --rowan-trend-chart-font-family: var(--rowan-font-family);
+  --rowan-trend-chart-series-1: var(--rowan-color-accent);
+  --rowan-trend-chart-series-2: var(--rowan-color-danger);
+  --rowan-trend-chart-series-3: var(--rowan-color-ink-700);
+  --rowan-trend-chart-series-4: var(--rowan-color-forest-500);
+  --rowan-trend-chart-point-hover-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 12%,
+    transparent
+  );
+  --rowan-trend-chart-active-point-ring: var(--rowan-color-fg);
+  --rowan-virtual-list-bg: var(--rowan-color-bg);
+  --rowan-virtual-list-fg: var(--rowan-color-fg);
+  --rowan-virtual-list-border-color: var(--rowan-color-border);
+  --rowan-virtual-list-radius: var(--rowan-radius-md);
+  --rowan-split-pane-separator-color: var(--rowan-color-border);
+  --rowan-split-pane-separator-active-color: var(--rowan-color-accent);
+  --rowan-split-pane-focus-ring: var(--rowan-focus-ring);
+  --rowan-app-layout-bg: var(--rowan-color-bg);
+  --rowan-app-layout-fg: var(--rowan-color-fg);
+  --rowan-app-layout-header-bg: var(--rowan-color-bg);
+  --rowan-app-layout-header-border: var(--rowan-color-border);
+  --rowan-app-layout-navigation-bg: var(--rowan-color-bg);
+  --rowan-app-layout-navigation-border: var(--rowan-color-border);
+  --rowan-app-layout-content-padding: var(--rowan-space-5);
+  --rowan-app-layout-focus-ring: var(--rowan-focus-ring);
+  --rowan-app-layout-header-padding: var(--rowan-space-3) var(--rowan-space-5);
+  --rowan-app-layout-navigation-padding: var(--rowan-space-4);
+  --rowan-app-layout-mobile-content-padding: var(--rowan-space-4);
+  --rowan-side-nav-gap: var(--rowan-space-1);
+  --rowan-side-nav-item-fg: var(--rowan-color-fg);
+  --rowan-side-nav-item-muted-fg: var(--rowan-color-muted);
+  --rowan-side-nav-item-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-side-nav-item-active-bg: color-mix(in srgb, var(--rowan-color-accent) 15%, transparent);
+  --rowan-side-nav-item-active-fg: var(--rowan-color-fg);
+  --rowan-side-nav-item-focus-ring: var(--rowan-focus-ring);
+  --rowan-side-nav-item-radius: var(--rowan-radius-sm);
+  --rowan-side-nav-item-font-family: var(--rowan-font-family);
+  --rowan-side-nav-item-font-size: var(--rowan-font-size-sm);
+  --rowan-side-nav-item-gap: var(--rowan-space-2);
+  --rowan-side-nav-item-padding: 0.45rem var(--rowan-space-3);
+  --rowan-side-nav-section-gap: var(--rowan-space-1);
+  --rowan-side-nav-section-label-fg: var(--rowan-color-muted);
+  --rowan-side-nav-section-label-font-size: var(--rowan-font-size-sm);
+  --rowan-side-nav-section-label-padding: 0.35rem var(--rowan-space-3);
+  --rowan-confirm-dialog-action-gap: var(--rowan-space-2);
+  --rowan-context-menu-offset: var(--rowan-space-2);
+  --rowan-status-indicator-color: var(--rowan-color-muted);
+  --rowan-status-indicator-fg: var(--rowan-color-fg);
+  --rowan-status-indicator-font-size: var(--rowan-font-size-sm);
+  --rowan-status-indicator-gap: var(--rowan-space-2);
+  --rowan-status-indicator-info-color: var(--rowan-color-accent);
+  --rowan-status-indicator-danger-color: var(--rowan-color-danger);
+  --rowan-status-indicator-lg-font-size: var(--rowan-font-size-md);
+  --rowan-table-toolbar-bg: var(--rowan-color-bg);
+  --rowan-table-toolbar-fg: var(--rowan-color-fg);
+  --rowan-table-toolbar-border: var(--rowan-color-border);
+  --rowan-table-toolbar-radius: var(--rowan-radius-md);
+  --rowan-table-toolbar-gap: var(--rowan-space-3);
+  --rowan-table-toolbar-padding: var(--rowan-space-3) var(--rowan-space-4);
+  --rowan-table-toolbar-control-gap: var(--rowan-space-2);
+  --rowan-table-toolbar-selection-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 10%,
+    transparent
+  );
+  --rowan-table-toolbar-selection-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 42%,
+    var(--rowan-color-border)
+  );
+  --rowan-table-toolbar-selection-fg: var(--rowan-color-fg);
+  --rowan-table-toolbar-selection-radius: var(--rowan-radius-sm);
+  --rowan-table-toolbar-selection-font-size: var(--rowan-font-size-sm);
+  --rowan-table-toolbar-selection-padding: var(--rowan-space-1) var(--rowan-space-2);
+  --rowan-bulk-actions-bar-bg: var(--rowan-color-bg);
+  --rowan-bulk-actions-bar-fg: var(--rowan-color-fg);
+  --rowan-bulk-actions-bar-border: var(--rowan-color-border);
+  --rowan-bulk-actions-bar-radius: var(--rowan-radius-md);
+  --rowan-bulk-actions-bar-gap: var(--rowan-space-3);
+  --rowan-bulk-actions-bar-padding: var(--rowan-space-3) var(--rowan-space-4);
+  --rowan-bulk-actions-bar-control-gap: var(--rowan-space-2);
+  --rowan-bulk-actions-bar-selection-bg: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 10%,
+    transparent
+  );
+  --rowan-bulk-actions-bar-selection-border: color-mix(
+    in srgb,
+    var(--rowan-color-accent) 42%,
+    var(--rowan-color-border)
+  );
+  --rowan-bulk-actions-bar-selection-fg: var(--rowan-color-fg);
+  --rowan-bulk-actions-bar-selection-radius: var(--rowan-radius-sm);
+  --rowan-bulk-actions-bar-selection-font-size: var(--rowan-font-size-sm);
+  --rowan-bulk-actions-bar-selection-padding: var(--rowan-space-1) var(--rowan-space-2);
+  --rowan-bulk-actions-bar-clear-fg: var(--rowan-color-accent);
+  --rowan-filter-builder-bg: var(--rowan-color-bg);
+  --rowan-filter-builder-border: var(--rowan-color-border);
+  --rowan-filter-builder-fg: var(--rowan-color-fg);
+  --rowan-filter-builder-muted-fg: var(--rowan-color-muted);
+  --rowan-filter-builder-control-bg: var(--rowan-color-bg);
+  --rowan-filter-builder-control-border: var(--rowan-color-border);
+  --rowan-filter-builder-control-focus: var(--rowan-color-accent);
+  --rowan-filter-builder-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-filter-builder-action-fg: var(--rowan-color-accent);
+  --rowan-filter-builder-radius-sm: var(--rowan-radius-sm);
+  --rowan-filter-builder-radius: var(--rowan-radius-md);
+  --rowan-filter-builder-gap: var(--rowan-space-3);
+  --rowan-filter-builder-control-gap: var(--rowan-space-2);
+  --rowan-filter-builder-padding: var(--rowan-space-4);
+  --rowan-filter-builder-font-size: var(--rowan-font-size-sm);
+  --rowan-row-details-panel-bg: var(--rowan-color-bg);
+  --rowan-row-details-panel-fg: var(--rowan-color-fg);
+  --rowan-row-details-panel-muted-fg: var(--rowan-color-muted);
+  --rowan-row-details-panel-border: var(--rowan-color-border);
+  --rowan-row-details-panel-backdrop: var(--rowan-overlay-backdrop);
+  --rowan-row-details-panel-radius: var(--rowan-radius-lg);
+  --rowan-row-details-panel-padding: var(--rowan-space-5);
+  --rowan-row-details-panel-gap: var(--rowan-space-4);
+  --rowan-row-details-panel-field-gap: var(--rowan-space-1);
+  --rowan-row-details-panel-field-padding: var(--rowan-space-3) 0;
+  --rowan-row-details-panel-focus: var(--rowan-color-accent);
+  --rowan-tree-fg: var(--rowan-color-fg);
+  --rowan-tree-font-family: var(--rowan-font-family);
+  --rowan-tree-item-fg: var(--rowan-color-fg);
+  --rowan-tree-item-muted-fg: var(--rowan-color-muted);
+  --rowan-tree-item-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-tree-item-selected-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
+  --rowan-tree-item-selected-fg: var(--rowan-color-fg);
+  --rowan-tree-item-children-border: var(--rowan-color-border);
+  --rowan-tree-item-focus-ring: var(--rowan-focus-ring);
+  --rowan-tree-item-radius: var(--rowan-radius-sm);
+  --rowan-tree-item-font-family: var(--rowan-font-family);
+  --rowan-tree-item-font-size: var(--rowan-font-size-sm);
+  --rowan-tree-item-gap: var(--rowan-space-2);
+  --rowan-tree-item-padding: 0.35rem var(--rowan-space-2);
+  --rowan-tree-item-children-padding: var(--rowan-space-2);
+  --rowan-command-item-fg: var(--rowan-color-fg);
+  --rowan-command-item-muted-fg: var(--rowan-color-muted);
+  --rowan-command-item-hover-bg: color-mix(in srgb, var(--rowan-color-accent) 8%, transparent);
+  --rowan-command-item-active-bg: color-mix(in srgb, var(--rowan-color-accent) 14%, transparent);
+  --rowan-command-item-active-fg: var(--rowan-color-fg);
+  --rowan-command-item-shortcut-bg: var(--rowan-color-bg);
+  --rowan-command-item-shortcut-border: var(--rowan-color-border);
+  --rowan-command-item-shortcut-radius: var(--rowan-radius-sm);
+  --rowan-command-item-focus-ring: var(--rowan-focus-ring);
+  --rowan-command-item-radius: var(--rowan-radius-sm);
+  --rowan-command-item-font-family: var(--rowan-font-family);
+  --rowan-command-item-font-size: var(--rowan-font-size-sm);
+  --rowan-command-item-line-height: var(--rowan-line-height);
+  --rowan-command-item-border-width: var(--rowan-border-width);
+  --rowan-command-item-gap: var(--rowan-space-3);
+  --rowan-command-item-meta-gap: var(--rowan-space-2);
+  --rowan-command-item-padding: var(--rowan-space-2) var(--rowan-space-3);
+  --rowan-command-palette-bg: var(--rowan-color-bg);
+  --rowan-command-palette-fg: var(--rowan-color-fg);
+  --rowan-command-palette-border: var(--rowan-color-border);
+  --rowan-command-palette-backdrop: var(--rowan-overlay-backdrop);
+  --rowan-command-palette-radius: var(--rowan-radius-lg);
+  --rowan-command-palette-font-family: var(--rowan-font-family);
+  --rowan-command-palette-font-size: var(--rowan-font-size-md);
+  --rowan-command-palette-close-radius: var(--rowan-radius-sm);
+  --rowan-command-palette-line-height: var(--rowan-line-height);
+  --rowan-command-palette-border-width: var(--rowan-border-width);
+  --rowan-command-palette-gap: var(--rowan-space-3);
+  --rowan-command-palette-padding: var(--rowan-space-3);
+  --rowan-command-palette-overlay-padding-block: var(--rowan-space-6);
+  --rowan-command-palette-overlay-padding-inline: var(--rowan-space-4);
+  --rowan-command-palette-mobile-overlay-padding-inline: var(--rowan-space-3);
+  --rowan-command-palette-input-bg: var(--rowan-field-bg);
+  --rowan-command-palette-input-fg: var(--rowan-field-fg);
+  --rowan-command-palette-input-border: var(--rowan-field-border);
+  --rowan-command-palette-input-focus: var(--rowan-focus-ring);
+  --rowan-command-palette-input-placeholder: var(--rowan-color-muted);
+  --rowan-command-palette-input-radius: var(--rowan-radius-md);
+  --rowan-command-palette-input-padding-inline: var(--rowan-space-3);
+  --rowan-command-palette-list-gap: var(--rowan-space-1);
+  --rowan-command-palette-empty-fg: var(--rowan-color-muted);
+  --rowan-command-palette-empty-padding: var(--rowan-space-4) var(--rowan-space-3);
+}
+/* End nested theme aliases */
+
 `;
 
 export const tokenPropertyDefinitions = [

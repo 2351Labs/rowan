@@ -1,3 +1,5 @@
+import { isFilterGroup } from "../filter-builder/apply-filters.js";
+
 const DENSITIES = new Set(["sm", "md", "lg"]);
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 
@@ -10,13 +12,18 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 /** @typedef {{ id?: string, field: string, operator: string, value: string }} RowanTableViewFilter */
 
 /**
+ * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ * @typedef {{ id?: string, join: "and" | "or", filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup> }} RowanTableViewFilterGroup
+ */
+
+/**
  * Portable state for an operational table. All fields are property-only.
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
  * @property {number} version
  * @property {RowanTableViewSort | null} sort
  * @property {RowanTableViewPage | null} page
- * @property {RowanTableViewFilter[]} filters
+ * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
  * @property {"sm" | "md" | "lg"} density
  * @property {RowanTableViewGroupBy | null} groupBy
@@ -85,9 +92,28 @@ function normalizeFilter(value) {
   return filter;
 }
 
+function normalizeFilterNode(value) {
+  if (isFilterGroup(value)) {
+    const filters = value.filters.map(normalizeFilterNode).filter(Boolean);
+    const node = {
+      join: normalizeText(value.join) === "or" ? "or" : "and",
+      filters,
+    };
+    const id = normalizeText(value.id);
+    if (id) node.id = id;
+    return node;
+  }
+
+  return normalizeFilter(value);
+}
+
 function normalizeFilters(value) {
   if (!Array.isArray(value)) return [];
-  return value.map(normalizeFilter).filter(Boolean);
+  return value.map(normalizeFilterNode).filter(Boolean);
+}
+
+function filterListHasGroup(nodes) {
+  return nodes.some((node) => isFilterGroup(node));
 }
 
 function normalizeVisibleColumns(value) {
@@ -141,12 +167,13 @@ function stateKeys(value) {
  */
 export function normalizeTableViewState(value) {
   const source = isRecord(value) ? value : {};
+  const filters = normalizeFilters(source.filters);
 
   return {
-    version: TABLE_VIEW_STATE_VERSION,
+    version: filterListHasGroup(filters) ? 2 : TABLE_VIEW_STATE_VERSION,
     sort: normalizeSort(source.sort),
     page: normalizePage(source.page),
-    filters: normalizeFilters(source.filters),
+    filters,
     visibleColumns: normalizeVisibleColumns(source.visibleColumns),
     density: normalizeDensity(source.density),
     groupBy: normalizeGroupBy(source.groupBy),

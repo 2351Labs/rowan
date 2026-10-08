@@ -334,7 +334,8 @@ table.messages = {
 Messages only fill Rowan-generated copy. Explicit attributes, slots, configured
 labels, and point labels remain author-owned, even if an authored string matches a
 default such as `Point 1`. An explicit formatter remains ahead of automatic locale
-formatting. Consult each component's API for its supported message keys and callback
+formatting. Consult the [localization docs](https://2351labs.github.io/rowan/#localization)
+for the generated `messages` key inventory, or each component's API for callback
 contexts.
 
 ## Constraint Messages
@@ -385,7 +386,7 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                                                    |
 | Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                                                      |
 | `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.                            |
-| `rowan-filter-builder`          | Stable | Flat AND list of `{ id, field, operator, value }`. No nested groups. Unknown types and operators coerce.                                                                                                          |
+| `rowan-filter-builder`          | Stable | Frozen top-level AND list of `{ id, field, operator, value }`. Nested `{ join, filters }` groups are experimental. Unknown types and operators coerce.                                                            |
 | `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                |
 | `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                   |
 | `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                               |
@@ -467,8 +468,9 @@ and `restoreTableViewState()` in `@rowan-ui/core/table-view-state` are pure help
 for sort, page, filters, visible columns, density, and `groupBy`. They do not
 touch a table, URL, storage, network, or router. Assigning the restored object
 onto `rowan-table` and `rowan-filter-builder` is silent application control.
-Filters stay the frozen flat AND list. `visibleColumns: null` preserves the
-source column visibility.
+Filters stay the frozen flat AND list unless an experimental group is present;
+those snapshots use version `2`. `visibleColumns: null` preserves the source
+column visibility.
 
 ```js
 import {
@@ -1374,7 +1376,7 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 Use `rowan-table-toolbar` for filters and density. Set `column-picker` to show or
 hide columns (`column.hidden`). Use `createTableCsv(columns, rows)` from
 `@rowan-ui/core/table-csv` for CSV text; the app owns download. `visibleColumns()`
-filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
+filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list and experimental groups. Set `caption-visually-hidden` when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
 
 ```html
 <rowan-table id="members-table">
@@ -1420,12 +1422,13 @@ const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
 ### Filtering and row details
 
 Keep the source rows in application state. The filter builder reports a frozen
-flat AND list (`filters[]` of `{ id, field, operator, value }`) and does not
-mutate `table.rows`. Import `applyFilters` from `@rowan-ui/core/filter-builder`
-and assign the derived rows. There are no nested groups. Field `type` is `text`, `number`,
+top-level AND list (`filters[]` of `{ id, field, operator, value }`) and does not
+mutate `table.rows`. Nested `{ join: "and" | "or", filters }` groups are
+experimental. Import `applyFilters` from `@rowan-ui/core/filter-builder`
+and assign the derived rows. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
-operator. Import `RowanFilter` and `RowanFilterField` from
+operator. Import `RowanFilter`, `RowanFilterGroup`, and `RowanFilterField` from
 `@rowan-ui/core/filter-builder`. The details panel opens from
 `panel.show(row, rowId)` or from `rowan-row-activate` when `for-table` is set.
 Do not pass React `open={false}` unless you fully control `open`. Multi-select

@@ -10,6 +10,8 @@ const tokenJsonPath = fileURLToPath(tokenJsonFile);
 const shouldCheck = process.argv.includes("--check");
 const TOKEN_DECLARATION = /(--rowan-[\w-]+)\s*:\s*([^;]+);/g;
 const COMPONENT_LAYER_MARKER = "/* Component layer */";
+const NESTED_THEME_ALIAS_START = "/* Nested theme aliases */";
+const NESTED_THEME_ALIAS_END = "/* End nested theme aliases */";
 const TOKEN_LAYERS = [
   { id: "primitive", marker: "/* Primitive layer */" },
   { id: "semantic", marker: "/* Semantic layer */" },
@@ -64,6 +66,11 @@ function createUnregisteredTokenNames(source, propertyDefinitions) {
   return [...parseTokenDeclarations(source).keys()].filter((name) => !registeredNames.has(name));
 }
 
+function sourceWithoutNestedAliases(source) {
+  const index = source.indexOf(NESTED_THEME_ALIAS_START);
+  return (index === -1 ? source : source.slice(0, index)).trimEnd() + "\n";
+}
+
 function createComponentTokenDeclarations(source) {
   const componentLayerIndex = source.indexOf(COMPONENT_LAYER_MARKER);
 
@@ -71,7 +78,17 @@ function createComponentTokenDeclarations(source) {
     throw new Error("The component token layer is missing from src/tokens/tokens.css.");
   }
 
-  return [...parseTokenDeclarations(source.slice(componentLayerIndex)).entries()];
+  const nestedIndex = source.indexOf(NESTED_THEME_ALIAS_START);
+  const end = nestedIndex === -1 ? source.length : nestedIndex;
+  return [...parseTokenDeclarations(source.slice(componentLayerIndex, end)).entries()];
+}
+
+function createNestedThemeAliasBlock(source) {
+  const declarations = createComponentTokenDeclarations(source).filter(([, value]) =>
+    /var\(\s*--rowan-/.test(value),
+  );
+  const body = declarations.map(([name, value]) => `  ${name}: ${value};`).join("\n");
+  return `${NESTED_THEME_ALIAS_START}\n[data-theme] {\n${body}\n}\n${NESTED_THEME_ALIAS_END}\n`;
 }
 
 function tokenSegments(name) {
@@ -359,17 +376,35 @@ function renderSheet(css) {
 }
 
 const prettierConfig = (await resolveConfig(sheetPath)) ?? {};
-const expected = await format(renderSheet(readFileSync(sourceFile, "utf8")), {
+const cssPath = fileURLToPath(sourceFile);
+const cssPrettierConfig = (await resolveConfig(cssPath)) ?? {};
+const rawCss = readFileSync(sourceFile, "utf8");
+const baseCss = sourceWithoutNestedAliases(rawCss);
+const expectedCss = await format(
+  `${baseCss.trimEnd()}\n\n${createNestedThemeAliasBlock(baseCss)}`,
+  {
+    ...cssPrettierConfig,
+    filepath: cssPath,
+    parser: "css",
+  },
+);
+const expected = await format(renderSheet(expectedCss), {
   ...prettierConfig,
   filepath: sheetPath,
   parser: "babel",
 });
 const current = readFileSync(sheetFile, "utf8");
-const expectedTokenJson = createTokenJson(readFileSync(sourceFile, "utf8"));
+const expectedTokenJson = createTokenJson(baseCss);
 const currentTokenJson = existsSync(tokenJsonPath) ? readFileSync(tokenJsonFile, "utf8") : null;
+const currentCss = rawCss;
 
 if (shouldCheck) {
   let isOutOfSync = false;
+
+  if (currentCss !== expectedCss) {
+    console.error("src/tokens/tokens.css nested theme aliases are out of sync.");
+    isOutOfSync = true;
+  }
 
   if (current !== expected) {
     console.error("src/tokens/sheet.js is out of sync with src/tokens/tokens.css.");
@@ -385,6 +420,10 @@ if (shouldCheck) {
     process.exitCode = 1;
   }
 } else {
+  if (currentCss !== expectedCss) {
+    writeFileSync(sourceFile, expectedCss);
+  }
+
   if (current !== expected) {
     writeFileSync(sheetFile, expected);
   }

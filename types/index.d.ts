@@ -99,7 +99,12 @@ export { RowanToaster } from "./toaster/toaster.js";
 export { RowanTooltip } from "./tooltip/tooltip.js";
 export { RowanValidationSummary } from "./validation-summary/validation-summary.js";
 export { RowanVirtualList } from "./virtual-list/virtual-list.js";
-export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
+export {
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+  RowanFilterBuilder,
+} from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
 export {
   TABLE_VIEW_STATE_VERSION,

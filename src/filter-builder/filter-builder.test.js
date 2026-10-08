@@ -322,4 +322,52 @@ describe("rowan-filter-builder", () => {
     );
     expect(events).to.deep.equal([]);
   });
+
+  it("adds an experimental OR group without changing parent-assigned filters until the user acts", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [
+      { id: "role", label: "Role", options: ["Admin", "Editor"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [{ id: "role-filter", field: "role", operator: "equals", value: "Editor" }];
+    const events = [];
+    builder.addEventListener("rowan-filter-change", (event) => events.push(event.detail));
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.shadowRoot.querySelectorAll('[part="group"]')).to.have.length(0);
+    builder.shadowRoot.querySelector('[data-action="add-group"]').click();
+    await settle();
+
+    expect(events).to.have.length(1);
+    expect(events[0].action).to.equal("add");
+    expect(events[0].filters).to.have.length(2);
+    expect(events[0].filters[1].join).to.equal("or");
+    expect(events[0].filters[1].filters).to.have.length(2);
+    expect(builder.shadowRoot.querySelector('[part="group"]')).to.exist;
+
+    const joinSelect = builder.shadowRoot.querySelector('[data-filter-part="join"]');
+    changeValue(joinSelect, "and");
+    await settle();
+    expect(events[1].filters[1].join).to.equal("and");
+  });
+
+  it("keeps add and group listeners after reconnecting", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [{ id: "name", label: "Name" }];
+    document.body.append(builder);
+    await settle();
+
+    const events = [];
+    builder.addEventListener("rowan-filter-change", (event) => events.push(event.detail.action));
+    builder.remove();
+    document.body.append(builder);
+    await settle();
+
+    builder.shadowRoot.querySelector('[data-action="add"]').click();
+    await settle();
+    builder.shadowRoot.querySelector('[data-action="add-group"]').click();
+    await settle();
+    expect(events).to.deep.equal(["add", "add"]);
+  });
 });

@@ -14,6 +14,7 @@ import "../status-indicator/status-indicator.js";
 import "../stepper/stepper.js";
 import "../switch/switch.js";
 import "../table-toolbar/table-toolbar.js";
+import "../filter-builder/filter-builder.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
@@ -519,6 +520,37 @@ describe("Rowan themes", () => {
 
         theme.remove();
       }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("rebinds nested theme component aliases so filter-builder follows the nested surface", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css"].map(loadStylesheet),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      const theme = document.createElement("div");
+      theme.setAttribute("data-theme", "dark");
+      theme.style.backgroundColor = "var(--rowan-color-bg)";
+
+      const builder = document.createElement("rowan-filter-builder");
+      builder.fields = [{ id: "name", label: "Name" }];
+      theme.append(builder);
+      document.body.append(theme);
+      await nextTask();
+      await waitForStyles(builder);
+
+      const nestedSurface = getComputedStyle(theme);
+      const builderSurface = getComputedStyle(builder);
+      expect(relativeLuminance(nestedSurface.backgroundColor)).to.be.below(0.2);
+      expect(relativeLuminance(builderSurface.backgroundColor)).to.be.below(0.2);
+      expect(contrastRatio(builderSurface.color, builderSurface.backgroundColor)).to.be.at.least(
+        4.5,
+      );
     } finally {
       document.documentElement.removeAttribute("data-theme");
       themeStylesheets.forEach((stylesheet) => stylesheet.remove());
