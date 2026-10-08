@@ -44,6 +44,7 @@ import { createInvestigationQueue } from "./workflows/investigation-queue.js";
 import { createRecordEditor } from "./workflows/record-editor.js";
 import { createResourceList } from "./workflows/resource-list.js";
 import { createSavedTableView } from "./workflows/saved-table-view.js";
+import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -92,6 +93,54 @@ import "@rowan-ui/core/tokens/lagoon";
 import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/slate";
 import "@rowan-ui/core/tokens/midnight";`;
+
+const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.17.0
+
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/app-layout";
+import "@rowan-ui/core/data-state";
+import "@rowan-ui/core/table";
+import { applyFilters } from "@rowan-ui/core/filter-builder";
+
+const rows = [
+  { id: "1", name: "Ada", status: "Open" },
+  { id: "2", name: "Alan", status: "Closed" },
+];
+
+const table = document.querySelector("rowan-table");
+const filters = document.querySelector("rowan-filter-builder");
+const state = document.querySelector("rowan-data-state");
+
+table.config = {
+  rowId: "id",
+  columns: [
+    { id: "name", header: "Name" },
+    { id: "status", header: "Status" },
+  ],
+  rows,
+};
+
+filters.fields = [
+  { id: "name", label: "Name" },
+  { id: "status", label: "Status", options: ["Open", "Closed"] },
+];
+
+filters.addEventListener("rowan-filter-change", (event) => {
+  const next = applyFilters(rows, event.detail.filters, filters.fields);
+  table.rows = next;
+  state.state = next.length ? "ready" : "empty";
+});`;
+
+const FIRST_SCREEN_MARKUP_SNIPPET = `<rowan-app-layout>
+  <div slot="header">Orders</div>
+  <rowan-data-state state="ready">
+    <rowan-table>
+      <rowan-filter-builder slot="toolbar"></rowan-filter-builder>
+    </rowan-table>
+    <p slot="empty">No matching rows.</p>
+  </rowan-data-state>
+</rowan-app-layout>`;
 
 const ICON_INSTALL_SNIPPET = `npm install @rowan-ui/core @rowan-ui/icons`;
 
@@ -1188,11 +1237,18 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Install <code>@rowan-ui/core</code> 0.6. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. KPI, sparkline, bar, and donut charts are Stable.</p>
+        <p>Pin <code>@rowan-ui/core@0.17.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, bullet, gauge, image, data-state, and source-meta are Stable. Experimental charts stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
-          Rowan component modules are unbundled. Your app build pipeline handles optimization.
+          Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
         </rowan-alert>
+      </section>
+
+      <section class="doc-section" data-doc-section id="start-first-screen">
+        <h2>A first operational screen</h2>
+        <p>Start with an app shell, a client-owned table, a filter builder, and a data-state wrapper. The application holds the source rows, applies filters, and assigns the derived list. Nothing here talks to a network.</p>
+        ${codeBlock(FIRST_SCREEN_MARKUP_SNIPPET, "html")}
+        ${codeBlock(FIRST_SCREEN_SNIPPET)}
       </section>
 
       <section class="doc-section" data-doc-section id="start-structure">
@@ -1288,7 +1344,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="theme-overrides">
         <h2>Theme override example</h2>
-        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code>, <code>@rowan-ui/core/tokens/ember</code>, <code>@rowan-ui/core/tokens/slate</code>, or <code>@rowan-ui/core/tokens/midnight</code> and set <code>data-theme</code>.</p>
+        <p>Set semantic tokens at the document root. Component tokens derive from them, so a semantic-only theme stays readable. Nested <code>[data-theme]</code> scopes re-declare every component alias that points at another Rowan token, so a nested dark region does not keep the outer theme&rsquo;s computed values. Shipped extras: import <code>@rowan-ui/core/tokens/lagoon</code>, <code>@rowan-ui/core/tokens/ember</code>, <code>@rowan-ui/core/tokens/slate</code>, or <code>@rowan-ui/core/tokens/midnight</code> and set <code>data-theme</code>.</p>
         <div class="info-grid" id="docs-theme-gallery"></div>
         ${codeBlock(`import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1490,6 +1546,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       "rtl",
       "direction",
       "arabic",
+      "message keys",
     ],
     content: () => `
       <section class="doc-section" data-doc-section id="localization-boundary">
@@ -1499,8 +1556,14 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="localization-messages">
         <h2>Translate generated copy with properties</h2>
-        <p>Components that expose <code>messages</code> accept a property-only map of their documented generated strings. Do not serialize it to an attribute. Assigning messages refreshes copy without emitting a user-interaction event, so applications can replace translations as their locale state changes.</p>
+        <p>Components that expose <code>messages</code> accept a property-only map of their documented generated strings. Do not serialize it to an attribute. Assigning messages refreshes copy without emitting a user-interaction event, so applications can replace translations as their locale state changes. Constraint copy uses <code>@rowan-ui/core/validity-messages</code>, not this map.</p>
         ${codeBlock(LOCALIZATION_SNIPPET, "js")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="localization-message-keys">
+        <h2>Generated message keys</h2>
+        <p>Each host lists the keys it reads from <code>messages</code>. This inventory is generated from the component source. It is not a locale pack; the application owns translations.</p>
+        ${renderMessageCatalog()}
       </section>
 
       <section class="doc-section" data-doc-section id="localization-rtl-fixture">
@@ -3609,7 +3672,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and assign the derived rows.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
             <rowan-filter-builder id="docs-filter-builder" slot="toolbar"></rowan-filter-builder>
@@ -3620,7 +3683,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. filters is a flat AND list of id, field, operator, and value. There are no nested groups. applyFilters(rows, filters, fields) evaluates that list. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. The top-level list is frozen AND of id, field, operator, and value. Nested groups with join and filters are experimental. applyFilters(rows, filters, fields) evaluates the tree. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,
@@ -3991,6 +4054,33 @@ function escapeHtml(value) {
 
 function codeBlock(code, language = "js") {
   return `<pre class="code-block" data-language="${language}"><code>${escapeHtml(code)}</code></pre>`;
+}
+
+function renderMessageCatalog() {
+  const rows = ROWAN_MESSAGE_CATALOG.map(
+    (entry) => `
+      <tr>
+        <td><code>${escapeHtml(entry.tag)}</code></td>
+        <td>${entry.keys.map((key) => `<code>${escapeHtml(key)}</code>`).join(", ")}</td>
+      </tr>
+    `,
+  ).join("");
+
+  return `
+    <div class="docs-token-table-wrap">
+      <table class="docs-token-table">
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Keys</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function isColorLikeToken(token) {

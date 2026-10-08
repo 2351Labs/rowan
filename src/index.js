@@ -16,7 +16,12 @@ export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
 export { RowanBoxPlotChart } from "./box-plot-chart/box-plot-chart.js";
 export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
 export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
-export { applyFilters, RowanFilterBuilder } from "./filter-builder/filter-builder.js";
+export {
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+  RowanFilterBuilder,
+} from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
 export {
   TABLE_VIEW_STATE_VERSION,

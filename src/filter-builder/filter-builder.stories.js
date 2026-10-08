@@ -1,4 +1,5 @@
 import "./filter-builder.js";
+import { applyFilters } from "./apply-filters.js";
 import "../table/table.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
@@ -30,20 +31,7 @@ function createTable() {
 }
 
 function filterRows(filters) {
-  return ROWS.filter((row) =>
-    filters.every((filter) => {
-      const value = String(row[filter.field] ?? "").toLowerCase();
-      const expected = String(filter.value ?? "").toLowerCase();
-
-      if (filter.operator === "is-empty") return value.length === 0;
-      if (filter.operator === "is-not-empty") return value.length > 0;
-      if (filter.operator === "equals") return value === expected;
-      if (filter.operator === "not-equals") return value !== expected;
-      if (filter.operator === "starts-with") return value.startsWith(expected);
-      if (filter.operator === "ends-with") return value.endsWith(expected);
-      return value.includes(expected);
-    }),
-  );
+  return applyFilters(ROWS, filters, FIELDS);
 }
 
 export default {
@@ -94,6 +82,42 @@ export const InferredTableFields = {
     const table = createTable();
     const builder = document.createElement("rowan-filter-builder");
     builder.slot = "toolbar";
+    table.append(builder);
+    return table;
+  },
+};
+
+export const NestedGroups = {
+  parameters: createEventScriptParameters({
+    steps: [
+      "Change the group conjunction from Match any to Match all.",
+      "Add a filter inside the group.",
+      "Observe the table update through consumer-owned row state.",
+    ],
+    events: ["rowan-filter-change"],
+  }),
+  render: () => {
+    const table = createTable();
+    const builder = document.createElement("rowan-filter-builder");
+    builder.slot = "toolbar";
+    builder.fields = FIELDS;
+    builder.filters = [
+      {
+        id: "role-group",
+        join: "or",
+        filters: [
+          { id: "admin-filter", field: "role", operator: "equals", value: "Admin" },
+          { id: "editor-filter", field: "role", operator: "equals", value: "Editor" },
+        ],
+      },
+      { id: "active-filter", field: "active", operator: "equals", value: "true" },
+    ];
+
+    builder.addEventListener("rowan-filter-change", (event) => {
+      table.rows = filterRows(event.detail.filters).map((row) => ({ ...row }));
+    });
+
+    table.rows = filterRows(builder.filters).map((row) => ({ ...row }));
     table.append(builder);
     return table;
   },

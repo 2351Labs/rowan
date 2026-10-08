@@ -1,5 +1,4 @@
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
-
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -112,9 +111,58 @@ function matchesFilter(row, filter, field) {
 }
 
 /**
- * Applies a frozen flat AND filter list to rows. Unknown operators do not match.
+ * Experimental group node. Requires `join` of `and` or `or` and a `filters`
+ * array. A frozen leaf has `field` and is never a group, even if it also has
+ * a `filters` array. Unofficial combinator objects without `join` stay leaves.
+ * @param {unknown} value
+ * @returns {value is { join: "and" | "or", filters: object[], id?: string }}
+ */
+export function isFilterGroup(value) {
+  if (!isRecord(value) || !Array.isArray(value.filters) || normalizeText(value.field)) {
+    return false;
+  }
+
+  const join = normalizeText(value.join);
+  return join === "and" || join === "or";
+}
+
+/**
+ * Deep-clones a leaf or experimental group. Does not validate.
+ * @param {object} node
+ * @returns {object}
+ */
+export function cloneFilterNode(node) {
+  if (isFilterGroup(node)) {
+    const clone = {
+      join: node.join === "or" ? "or" : "and",
+      filters: node.filters.map(cloneFilterNode),
+    };
+    if (normalizeText(node.id)) clone.id = normalizeText(node.id);
+    return clone;
+  }
+
+  return { ...node };
+}
+
+function matchesNode(row, node, fields) {
+  if (isFilterGroup(node)) {
+    const children = node.filters;
+    if (children.length === 0) return node.join !== "or";
+
+    return node.join === "or"
+      ? children.some((child) => matchesNode(row, child, fields))
+      : children.every((child) => matchesNode(row, child, fields));
+  }
+
+  return matchesFilter(row, node, fieldFor(fields, node.field));
+}
+
+/**
+ * Applies filters to rows. Top-level conjunction is AND (frozen). Group nodes
+ * `{ join: "and" | "or", filters: [...] }` are experimental. Unknown operators
+ * do not match. An empty AND group matches; an empty OR group does not.
  * @param {object[]} rows
- * @param {Array<{ field: string, operator: string, value?: unknown }>} filters
+ * @param {Array<object>} filters
  * @param {Array<{ id: string, type?: string, accessor?: string | ((row: object) => unknown) }>} [fields]
  * @returns {object[]}
  */
@@ -125,7 +173,5 @@ export function applyFilters(rows, filters, fields = []) {
   if (list.length === 0) return [...rows];
 
   const fieldList = Array.isArray(fields) ? fields : [];
-  return rows.filter((row) =>
-    list.every((filter) => matchesFilter(row, filter, fieldFor(fieldList, filter.field))),
-  );
+  return rows.filter((row) => list.every((node) => matchesNode(row, node, fieldList)));
 }

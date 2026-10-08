@@ -84,4 +84,32 @@ describe("table view state", () => {
   it("returns the default state for malformed snapshots", () => {
     expect(restoreTableViewState("%not-json")).to.deep.equal(normalizeTableViewState());
   });
+
+  it("round-trips experimental filter groups as version 2", () => {
+    const input = {
+      filters: [
+        {
+          id: "status-group",
+          join: "or",
+          filters: [
+            { field: "status", operator: "equals", value: "open" },
+            { field: "status", operator: "equals", value: "pending" },
+          ],
+        },
+      ],
+    };
+    const state = normalizeTableViewState(input);
+    expect(state.version).to.equal(2);
+    expect(state.filters).to.deep.equal([
+      {
+        id: "status-group",
+        join: "or",
+        filters: [
+          { field: "status", operator: "equals", value: "open" },
+          { field: "status", operator: "equals", value: "pending" },
+        ],
+      },
+    ]);
+    expect(restoreTableViewState(serializeTableViewState(input))).to.deep.equal(state);
+  });
 });

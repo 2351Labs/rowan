@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
-import { applyFilters } from "./apply-filters.js";
+import { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
 
 const rows = [
   { id: "1", name: "Ada", age: 36, role: "Admin", joined: "2020-01-15", active: true },
@@ -58,5 +58,66 @@ describe("applyFilters", () => {
     expect(
       applyFilters(rows, [{ field: "name", operator: "matches", value: "Ada" }], fields),
     ).to.deep.equal([]);
+  });
+
+  it("applies experimental OR groups inside the frozen top-level AND list", () => {
+    expect(
+      applyFilters(
+        rows,
+        [
+          {
+            join: "or",
+            filters: [
+              { field: "role", operator: "equals", value: "Admin" },
+              { field: "role", operator: "equals", value: "Editor" },
+            ],
+          },
+          { field: "active", operator: "equals", value: "true" },
+        ],
+        fields,
+      ).map((row) => row.id),
+    ).to.deep.equal(["1"]);
+  });
+
+  it("treats empty AND groups as match-all and empty OR groups as match-none", () => {
+    expect(applyFilters(rows, [{ join: "and", filters: [] }], fields)).to.deep.equal(rows);
+    expect(applyFilters(rows, [{ join: "or", filters: [] }], fields)).to.deep.equal([]);
+  });
+
+  it("keeps a leaf with field even when it also has a filters array", () => {
+    expect(
+      applyFilters(
+        rows,
+        [{ field: "name", operator: "equals", value: "Ada", filters: [{ field: "role" }] }],
+        fields,
+      ).map((row) => row.id),
+    ).to.deep.equal(["1"]);
+  });
+
+  it("treats unofficial combinator objects without join as leaves, not groups", () => {
+    expect(
+      isFilterGroup({
+        combinator: "or",
+        filters: [{ field: "role", operator: "equals", value: "Admin" }],
+      }),
+    ).to.equal(false);
+    expect(
+      isFilterGroup({
+        join: "or",
+        filters: [{ field: "role", operator: "equals", value: "Admin" }],
+      }),
+    ).to.equal(true);
+  });
+
+  it("clones groups without sharing child arrays", () => {
+    const group = {
+      id: "status",
+      join: "or",
+      filters: [{ field: "role", operator: "equals", value: "Admin" }],
+    };
+    const clone = cloneFilterNode(group);
+    clone.filters.push({ field: "role", operator: "equals", value: "Editor" });
+    expect(group.filters).to.have.length(1);
+    expect(clone.filters).to.have.length(2);
   });
 });

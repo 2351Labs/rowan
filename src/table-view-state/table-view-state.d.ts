@@ -7,6 +7,7 @@ export {
 } from "../../types/table-view-state/table-view-state.js";
 export type {
   RowanTableViewFilter,
+  RowanTableViewFilterGroup,
   RowanTableViewGroupBy,
   RowanTableViewPage,
   RowanTableViewSort,

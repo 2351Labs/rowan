@@ -15,12 +15,14 @@
  * @csspart operator-select
  * @csspart value-control
  * @csspart add-button
+ * @csspart add-group-button
  * @csspart clear-button
+ * @csspart group
  * @cssprop --rowan-filter-builder-bg
  * @cssprop --rowan-filter-builder-border
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
- * @property {RowanFilter[]} filters - Flat AND list of predicates. Arrays are property-only.
+ * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list of frozen leaves. Group nodes are experimental. Arrays are property-only.
  * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
@@ -38,10 +40,10 @@ export class RowanFilterBuilder extends BaseElement {
   set fields(value: RowanFilterField[]);
   /** @returns {RowanFilterField[]} */
   get fields(): RowanFilterField[];
-  /** @param {RowanFilter[]} value */
-  set filters(value: RowanFilter[]);
-  /** @returns {RowanFilter[]} */
-  get filters(): RowanFilter[];
+  /** @param {Array<RowanFilter | RowanFilterGroup>} value */
+  set filters(value: (RowanFilter | RowanFilterGroup)[]);
+  /** @returns {Array<RowanFilter | RowanFilterGroup>} */
+  get filters(): (RowanFilter | RowanFilterGroup)[];
   set label(value: string);
   get label(): string;
   set addLabel(value: string);
@@ -60,8 +62,9 @@ export class RowanFilterBuilder extends BaseElement {
   refresh(): void;
   #private;
 }
-export { applyFilters } from "./apply-filters.js";
 export type RowanFilterBuilderMessages = {
+  addGroupLabel?: string | undefined;
+  addInGroupLabel?: string | undefined;
   addLabel?: string | undefined;
   booleanFalse?: string | undefined;
   booleanTrue?: string | undefined;
@@ -69,12 +72,16 @@ export type RowanFilterBuilderMessages = {
   clearLabel?: string | undefined;
   empty?: string | undefined;
   fieldLabel?: string | undefined;
+  groupJoinAnd?: string | undefined;
+  groupJoinOr?: string | undefined;
+  groupJoinLabel?: string | undefined;
   label?: string | undefined;
   noValue?: string | undefined;
   operatorLabel?: string | ((context: { label: string; operator: string }) => string) | undefined;
   operatorSelectLabel?: string | undefined;
   remove?: string | undefined;
   removeFilter?: string | ((context: { field: string }) => string) | undefined;
+  removeGroup?: string | undefined;
   unknownField?: string | ((context: { field: string }) => string) | undefined;
   value?: string | undefined;
   valueFor?: string | ((context: { label: string }) => string) | undefined;
@@ -88,7 +95,7 @@ export type RowanFilterFieldType = "text" | "number" | "date" | "boolean" | "sel
  */
 export type RowanFilterOperator = string;
 /**
- * Frozen field. Conjunction across `filters` is implicit AND. There are no groups.
+ * Frozen field. Top-level conjunction across `filters` is implicit AND.
  */
 export type RowanFilterField = {
   id: string;
@@ -118,4 +125,14 @@ export type RowanFilter = {
   operator: RowanFilterOperator;
   value: string;
 };
+/**
+ * Experimental group. `join` is `and` or `or`. Children may be frozen leaves
+ * or further groups. A node with `field` is always a leaf.
+ */
+export type RowanFilterGroup = {
+  id: string;
+  join: "and" | "or";
+  filters: Array<RowanFilter | RowanFilterGroup>;
+};
 import { BaseElement } from "../lib/base-element.js";
+export { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";

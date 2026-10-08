@@ -43,13 +43,17 @@ export function restoreTableViewState(
 /** @typedef {{ id: string, subtotals: boolean, collapsed: boolean }} RowanTableViewGroupBy */
 /** @typedef {{ id?: string, field: string, operator: string, value: string }} RowanTableViewFilter */
 /**
+ * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ * @typedef {{ id?: string, join: "and" | "or", filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup> }} RowanTableViewFilterGroup
+ */
+/**
  * Portable state for an operational table. All fields are property-only.
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
  * @property {number} version
  * @property {RowanTableViewSort | null} sort
  * @property {RowanTableViewPage | null} page
- * @property {RowanTableViewFilter[]} filters
+ * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
  * @property {"sm" | "md" | "lg"} density
  * @property {RowanTableViewGroupBy | null} groupBy
@@ -76,6 +80,14 @@ export type RowanTableViewFilter = {
   value: string;
 };
 /**
+ * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ */
+export type RowanTableViewFilterGroup = {
+  id?: string;
+  join: "and" | "or";
+  filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup>;
+};
+/**
  * Portable state for an operational table. All fields are property-only.
  * A null `visibleColumns` value preserves the application's source column visibility.
  */
@@ -83,7 +95,7 @@ export type RowanTableViewState = {
   version: number;
   sort: RowanTableViewSort | null;
   page: RowanTableViewPage | null;
-  filters: RowanTableViewFilter[];
+  filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup>;
   visibleColumns: string[] | null;
   density: "sm" | "md" | "lg";
   groupBy: RowanTableViewGroupBy | null;

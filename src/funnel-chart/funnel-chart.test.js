@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./funnel-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -99,6 +104,44 @@ describe("rowan-funnel-chart", () => {
     await nextMicrotask();
     expect(chart.variant).to.equal("funnel");
     expect(activations).to.have.length(0);
+  });
+
+  it("moves keyboard focus between named point controls", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Leads", "Won"],
+      series: [{ id: "flow", label: "Flow", values: [10, 4] }],
+    });
+    await assertPointControlKeyboardNavigation(chart);
+  });
+
+  it("keeps an overlay hit target on its SVG stage in LTR and RTL hosts", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Leads", "Won"],
+      series: [{ id: "flow", label: "Flow", values: [10, 4] }],
+    });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "path.stage",
+      pointKey: "flow::0",
+      alignment: "center",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["Leads", "Won"],
+      series: [{ id: "flow", label: "Flow", values: [10, 4] }],
+    });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.series = [...chart.series];
+      },
+      markSelector: "path.stage",
+    });
   });
 
   it("emits rowan-point-activate from an interactive stage", async () => {
