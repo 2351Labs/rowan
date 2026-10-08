@@ -197,6 +197,14 @@ call this `1.0`. Slate and midnight zinc themes ship here. Experimental scatter,
 heatmap, funnel, waterfall, range, box-plot, radar, and combo may still change.
 Publish after this catalog commit is on `main`: tag `v0.16.0`.
 
+## 0.17.0 cut
+
+Version in `package.json` is `0.17.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Messages, `tokens.json`, and `table-view-state` ship here.
+Experimental scatter, heatmap, funnel, waterfall, range, box-plot, radar, and
+combo stay experimental. Inline table editing is not a public API. Publish after
+this catalog commit is on `main`: tag `v0.17.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

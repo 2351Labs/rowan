@@ -28,17 +28,23 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.16.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.17.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.16` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.17` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
-Modals use native `<dialog>`. Dropdown, popover, tooltip, and context menus use
-the top layer. Table virtualization, `rowan-rich-text-editor`,
+Hosts that generate copy accept property-only `messages`; locale follows `locale`,
+inherited `lang`, the browser locale, then `en-US`. `@rowan-ui/core/tokens.json`
+is the design-token handoff; CSS stays the runtime source of truth.
+`@rowan-ui/core/table-view-state` normalizes portable table state; the app owns
+storage and routing. Modals use native `<dialog>`. Dropdown, popover, tooltip,
+and context menus use the top layer. Table virtualization, `rowan-rich-text-editor`,
 `rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
-`rowan-donut-chart`, and `rowan-bar-chart` are Stable. This is not `1.0`.
+`rowan-donut-chart`, and `rowan-bar-chart` are Stable. Experimental scatter,
+heatmap, funnel, waterfall, range, box-plot, radar, and combo stay experimental.
+This is not `1.0`.
 
 ## Install
 
@@ -452,6 +458,36 @@ session.subscribe((snapshot) => {
 chart.addEventListener("rowan-point-activate", (event) => {
   session.set("day", event.detail.label);
 });
+```
+
+## Table view state
+
+`normalizeTableViewState()`, `mergeTableViewState()`, `serializeTableViewState()`,
+and `restoreTableViewState()` in `@rowan-ui/core/table-view-state` are pure helpers
+for sort, page, filters, visible columns, density, and `groupBy`. They do not
+touch a table, URL, storage, network, or router. Assigning the restored object
+onto `rowan-table` and `rowan-filter-builder` is silent application control.
+Filters stay the frozen flat AND list. `visibleColumns: null` preserves the
+source column visibility.
+
+```js
+import {
+  normalizeTableViewState,
+  serializeTableViewState,
+  restoreTableViewState,
+} from "@rowan-ui/core/table-view-state";
+
+const snapshot = serializeTableViewState({
+  sort: { id: "opened", dir: "desc" },
+  page: { index: 0, size: 25 },
+  filters: [{ field: "status", operator: "equals", value: "open" }],
+  density: "sm",
+});
+
+const view = restoreTableViewState(snapshot);
+table.sort = view.sort;
+table.page = view.page;
+filterBuilder.filters = view.filters;
 ```
 
 ## Rowan Carousel
