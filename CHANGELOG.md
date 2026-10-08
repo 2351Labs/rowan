@@ -6,15 +6,27 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.17.0 - 2026-10-08
+
+### Added
+
+- Property-only `messages` maps on hosts that generate copy. Locale is `locale`, then inherited `lang`, then the browser locale, then `en-US`. The application owns translations. There is no global i18n provider.
+- `@rowan-ui/core/tokens.json`: DTCG-shaped token artifact generated from `src/tokens/tokens.css`. CSS remains the runtime source of truth.
+- `@rowan-ui/core/table-view-state`: `normalizeTableViewState`, `mergeTableViewState`, `serializeTableViewState`, and `restoreTableViewState` for sort, page, filters, visible columns, density, and groupBy. The application owns URL, storage, and fetch. Filters stay the frozen flat AND list.
+- Documented workflow recipes (investigation queue, resource list, record editor, dashboard drill-down, saved table view). Compositions of existing hosts; not new tags.
+
+### Changed
+
+- Horizontal keyboard follows logical inline direction under `dir="rtl"`. Interactive chart overlays stay physical LTR (`direction: ltr` and `dir="ltr"` on `.point-controls`) so `--point-x` matches the SVG viewBox. Donut's button list is not an overlay and is unchanged.
+- Experimental range, box-plot, and scatter `valueFormatter` callbacks receive host-specific series and point context instead of categorical `{ value, label }` points. Heatmap types accept `{ x, y, value }` and `{ row, column, value }`. Experimental scatter, heatmap, funnel, waterfall, range, box-plot, radar, and combo stay experimental.
+
 ### Fixed
 
-- Interactive chart overlays keep hit targets on the SVG marks when the host is RTL. `.point-controls` is `direction: ltr` (and `dir="ltr"`) so physical `--point-x` matches the viewBox. Donut's button list is not an overlay and is unchanged.
-- Nested `dark` / `ember` / `midnight` (and the other shipped themes) re-declare `rowan-status-indicator` color tokens so the label follows the nested foreground instead of light ink on a dark surface.
-- Experimental range, box-plot, scatter, heatmap, combo, and waterfall charts type `valueFormatter` as `RowanChartValueFormatter | null` on the public accessors, matching runtime.
-- Chart hover hide stays registered across reconnects, so a second detach does not leave a stale tooltip. `addCleanup(fn, { persist: true })` keeps the callback after disconnect.
-- Interactive chart overlays restore keyboard focus to the active point after a rerender when that control still exists.
-- Chart numeric normalizers treat blank and whitespace-only strings as no-data. `"0"` stays zero.
+- Nested shipped themes re-declare `rowan-status-indicator` color tokens so the label follows the nested foreground.
+- Chart hover hide stays registered across reconnects (`addCleanup(fn, { persist: true })`). Overlay keyboard focus restores to the active point after a rerender when that control still exists.
+- Chart numeric normalizers treat blank and whitespace-only strings as no-data. `"0"` stays zero. Histogram samples and explicit bin edges follow the same rule.
 - Range points require `low <= high`. Box plots require `min <= q1 <= median <= q3 <= max`. Unordered summaries are no-data; bounds are not swapped.
+- Generated chart labels keep provenance through `config` clones, so a translated fallback such as `Point 1` does not become authored copy. Later author edits stay authoritative.
 
 ## 0.16.0 - 2026-10-01
 

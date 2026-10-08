@@ -5801,7 +5801,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Categorical combo chart: bars, lines, and areas on a shared category axis.\nOptional `axis: \"secondary\"` for a second value scale (Pareto cumulative %).",
+          "description": "Experimental categorical combo chart: bars, lines, and areas on a shared\ncategory axis. Optional `axis: \"secondary\"` for a second value scale (Pareto\ncumulative %). Frozen bar, area, and trend charts are unchanged.",
           "name": "RowanComboChart",
           "cssProperties": [
             {
