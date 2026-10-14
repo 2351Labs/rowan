@@ -214,6 +214,16 @@ fixes ship here. Experimental scatter, heatmap, funnel, waterfall, range,
 box-plot, radar, and combo stay experimental. Inline table editing is not a
 public API. Publish after this catalog commit is on `main`: tag `v0.18.0`.
 
+## 0.19.0 cut
+
+Version in `package.json` is `0.19.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Toolbar filter chips, quiet table headers, column dropdown,
+and host-owned `applyQuickFind` ship here. Nested filter groups and
+table-view-state version `2` stay experimental. Experimental scatter, heatmap,
+funnel, waterfall, range, box-plot, radar, and combo stay experimental. Inline
+table editing is not a public API. Publish after this catalog commit is on
+`main`: tag `v0.19.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
