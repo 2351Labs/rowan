@@ -1,5 +1,16 @@
 :host {
+  box-sizing: border-box;
   display: block;
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  --rowan-filter-builder-bg: transparent;
+  --rowan-filter-builder-border-width: 0px;
+  --rowan-filter-builder-padding: 0px;
+  --rowan-filter-builder-radius: 0px;
+}
+
+:host([data-has-filter-builder]) {
+  flex: 1 1 100%;
 }
 
 :host([hidden]) {
@@ -9,8 +20,10 @@
 .toolbar {
   align-items: center;
   background: var(--rowan-table-toolbar-bg);
-  border: 1px solid var(--rowan-table-toolbar-border);
+  border-color: var(--rowan-table-toolbar-border);
   border-radius: var(--rowan-table-toolbar-radius);
+  border-style: solid;
+  border-width: var(--rowan-table-toolbar-border-width, 1px);
   color: var(--rowan-table-toolbar-fg);
   display: flex;
   flex-wrap: wrap;
@@ -32,6 +45,16 @@
 
 .content {
   flex: 1 1 auto;
+}
+
+:host([data-has-filter-builder]) .content {
+  flex: 1 1 100%;
+  order: 1;
+}
+
+:host([data-has-filter-builder]) .content ::slotted(rowan-filter-builder) {
+  flex: 1 1 100%;
+  min-inline-size: 0;
 }
 
 .end {

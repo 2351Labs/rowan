@@ -3,10 +3,32 @@ import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
 import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../checkbox/checkbox.js";
+import "../filter-builder/filter-builder.js";
 import "../table/table.js";
 import "./table-toolbar.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForStyles(element) {
+  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
+}
 
 async function settle() {
   await nextMicrotask();
@@ -87,6 +109,39 @@ describe("rowan-table-toolbar", () => {
     expect(bar.shadowRoot.querySelector('[part="selection-text"]').textContent).to.contain(
       "1 selected",
     );
+  });
+
+  it("keeps the view title and bulk actions on one toolbar band", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    toolbar.append(title);
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(toolbar, bar);
+    table.selected = ["order-1", "order-2"];
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(bar);
+
+    const selectionText = bar.shadowRoot.querySelector('[part="selection-text"]');
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const titleBox = title.getBoundingClientRect();
+
+    expect(bar.shadowRoot.querySelector('[part="bar"]').hidden).to.equal(false);
+    expect(toolbarBox.bottom).to.be.greaterThan(barBox.top);
+    expect(barBox.bottom).to.be.greaterThan(toolbarBox.top);
+    expect(titleBox.right).to.be.at.most(barBox.left + 1);
+    expect(getComputedStyle(selectionText).paddingTop).to.equal("0px");
+    expect(getComputedStyle(selectionText).backgroundColor).to.equal("rgba(0, 0, 0, 0)");
   });
 
   it("synchronizes parent-driven table selection without a table event", async () => {
@@ -234,5 +289,96 @@ describe("rowan-table-toolbar", () => {
     expect(
       toolbar.shadowRoot.querySelector(".column-picker-menu").getAttribute("aria-label"),
     ).to.equal("Sichtbare Spalten");
+  });
+
+  it("drops nested filter-builder card chrome", async () => {
+    const table = createTable();
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(builder);
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+
+    expect(getComputedStyle(builder).borderWidth).to.equal("0px");
+
+    const standalone = document.createElement("rowan-filter-builder");
+    document.body.append(standalone);
+    await settle();
+    await waitForStyles(standalone);
+
+    expect(getComputedStyle(standalone).borderWidth).to.not.equal("0px");
+  });
+
+  it("wraps a nested filter-builder onto a full second toolbar row", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(title, builder);
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+
+    const content = toolbar.shadowRoot.querySelector('[part="content"]');
+    const titleBox = title.getBoundingClientRect();
+    const builderBox = builder.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(true);
+    expect(getComputedStyle(content).flexBasis).to.equal("100%");
+    expect(getComputedStyle(content).order).to.equal("1");
+    expect(builderBox.top).to.be.greaterThan(titleBox.bottom - 1);
+    expect(builderBox.width).to.be.above(toolbarBox.width * 0.75);
+
+    builder.remove();
+    await settle();
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(false);
+    expect(getComputedStyle(content).order).to.equal("0");
+  });
+
+  it("keeps a nested filter-builder full-width when bulk actions share the slot", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(title, builder);
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(toolbar, bar);
+    table.selected = ["order-1", "order-2"];
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+    await waitForStyles(bar);
+
+    const tableBox = table.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const builderBox = builder.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const titleBox = title.getBoundingClientRect();
+
+    expect(toolbarBox.width).to.be.above(tableBox.width * 0.75);
+    expect(builderBox.top).to.be.greaterThan(titleBox.bottom - 1);
+    expect(barBox.top).to.be.greaterThan(builderBox.bottom - 1);
   });
 });

@@ -56,6 +56,7 @@ describe("saved table view documentation workflow", () => {
       });
 
       expect(table.rows).to.have.length(6);
+      expect(table.captionVisuallyHidden).to.equal(true);
       expect(table.sort).to.deep.equal({ id: "updated", dir: "desc" });
       expect(restore.disabled).to.equal(true);
 

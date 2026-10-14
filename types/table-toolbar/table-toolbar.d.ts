@@ -26,6 +26,7 @@
  * @csspart column-picker-menu
  * @cssprop --rowan-table-toolbar-bg
  * @cssprop --rowan-table-toolbar-border
+ * @cssprop --rowan-table-toolbar-border-width
  * @cssprop --rowan-table-toolbar-selection-bg
  */
 export class RowanTableToolbar extends BaseElement {

@@ -2301,6 +2301,9 @@
               "name": "--rowan-bulk-actions-bar-border"
             },
             {
+              "name": "--rowan-bulk-actions-bar-border-width"
+            },
+            {
               "name": "--rowan-bulk-actions-bar-selection-bg"
             }
           ],
@@ -10497,6 +10500,9 @@
             },
             {
               "name": "--rowan-filter-builder-border"
+            },
+            {
+              "name": "--rowan-filter-builder-border-width"
             },
             {
               "name": "--rowan-filter-builder-control-bg"
@@ -26735,6 +26741,9 @@
               "name": "--rowan-table-toolbar-border"
             },
             {
+              "name": "--rowan-table-toolbar-border-width"
+            },
+            {
               "name": "--rowan-table-toolbar-selection-bg"
             }
           ],
@@ -27226,6 +27235,7 @@
           ],
           "slots": [
             {
+              "description": "View controls. Shares the table's outer chrome; nested cards drop their own border.",
               "name": "toolbar"
             },
             {

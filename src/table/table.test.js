@@ -4,10 +4,32 @@ import { reconnectHost } from "../../test/host-lifecycle.js";
 import "../badge/badge.js";
 import "../button/button.js";
 import "../checkbox/checkbox.js";
+import "../filter-builder/filter-builder.js";
+import "../table-toolbar/table-toolbar.js";
 import "./table.js";
 
 const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForStyles(element) {
+  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
+}
 
 function createConfig() {
   return {
@@ -435,6 +457,86 @@ describe("rowan-table", () => {
     expect(caption.classList.contains("visually-hidden")).to.equal(true);
     expect(caption.textContent.trim()).to.equal("Work orders");
     expect(getComputedStyle(caption).position).to.equal("absolute");
+
+    table.remove();
+  });
+
+  it("shares one chrome when a toolbar is slotted", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Work orders",
+      captionVisuallyHidden: true,
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    toolbar.append(title);
+    table.append(toolbar);
+    document.body.append(table);
+    await nextMicrotask();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+
+    const wrapper = table.shadowRoot.querySelector(".wrapper");
+    const chrome = table.shadowRoot.querySelector(".chrome");
+    const tableEl = table.shadowRoot.querySelector("table");
+    const toolbarSurface = toolbar.shadowRoot.querySelector(".toolbar");
+    const caption = table.shadowRoot.querySelector("caption");
+
+    expect(wrapper.hasAttribute("data-has-toolbar")).to.equal(true);
+    expect(getComputedStyle(chrome).rowGap).to.equal("0px");
+    expect(getComputedStyle(chrome).borderStartStartRadius).to.not.equal("0px");
+    expect(getComputedStyle(tableEl).borderBlockStartWidth).to.equal("0px");
+    expect(getComputedStyle(tableEl).borderStartStartRadius).to.equal("0px");
+    expect(getComputedStyle(toolbarSurface).borderWidth).to.equal("0px");
+    expect(caption.classList.contains("visually-hidden")).to.equal(true);
+
+    table.remove();
+  });
+
+  it("keeps a standalone table card when the toolbar slot is empty", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      caption: "Work orders",
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    document.body.append(table);
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const wrapper = table.shadowRoot.querySelector(".wrapper");
+    const tableEl = table.shadowRoot.querySelector("table");
+
+    expect(wrapper.hasAttribute("data-has-toolbar")).to.equal(false);
+    expect(getComputedStyle(tableEl).borderBlockStartWidth).to.not.equal("0px");
+    expect(getComputedStyle(tableEl).borderStartStartRadius).to.not.equal("0px");
+
+    table.remove();
+  });
+
+  it("drops filter-builder card chrome in the toolbar slot", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+    const builder = document.createElement("rowan-filter-builder");
+    builder.slot = "toolbar";
+    table.append(builder);
+    document.body.append(table);
+    await nextMicrotask();
+    await waitForStyles(table);
+    await waitForStyles(builder);
+
+    expect(table.shadowRoot.querySelector(".wrapper").hasAttribute("data-has-toolbar")).to.equal(
+      true,
+    );
+    expect(getComputedStyle(builder).borderWidth).to.equal("0px");
 
     table.remove();
   });

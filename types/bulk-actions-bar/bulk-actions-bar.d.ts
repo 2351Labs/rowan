@@ -19,6 +19,7 @@
  * @csspart clear-button
  * @cssprop --rowan-bulk-actions-bar-bg
  * @cssprop --rowan-bulk-actions-bar-border
+ * @cssprop --rowan-bulk-actions-bar-border-width
  * @cssprop --rowan-bulk-actions-bar-selection-bg
  * @event rowan-bulk-action - Fired when a configured or marked bulk action activates
  * @event rowan-clear-selection - Fired when a user clears the current selection

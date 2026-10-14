@@ -46,6 +46,7 @@ describe("investigation queue documentation workflow", () => {
       expect(bulkActions).to.not.equal(null);
       expect(details).to.not.equal(null);
       expect(table.rows).to.have.length(5);
+      expect(table.captionVisuallyHidden).to.equal(true);
 
       builder.dispatchEvent(
         new CustomEvent("rowan-filter-change", {

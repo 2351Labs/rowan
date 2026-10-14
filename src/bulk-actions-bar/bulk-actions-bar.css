@@ -1,20 +1,28 @@
 :host {
+  box-sizing: border-box;
   display: block;
+  flex: 1 1 auto;
+  min-inline-size: 0;
 }
 
-:host([hidden]) {
+:host([hidden]),
+:host:has(.bar[hidden]) {
   display: none;
 }
 
 .bar {
   align-items: center;
   background: var(--rowan-bulk-actions-bar-bg);
-  border: 1px solid var(--rowan-bulk-actions-bar-border);
+  border-color: var(--rowan-bulk-actions-bar-border);
   border-radius: var(--rowan-bulk-actions-bar-radius);
+  border-style: solid;
+  border-width: var(--rowan-bulk-actions-bar-border-width, 1px);
+  box-sizing: border-box;
   color: var(--rowan-bulk-actions-bar-fg);
   display: flex;
   flex-wrap: wrap;
   gap: var(--rowan-bulk-actions-bar-gap);
+  inline-size: 100%;
   padding: var(--rowan-bulk-actions-bar-padding);
 }
 
