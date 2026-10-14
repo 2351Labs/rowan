@@ -9,7 +9,7 @@
   --rowan-filter-builder-radius: 0px;
 }
 
-:host:has(::slotted(rowan-filter-builder)) {
+:host([data-has-filter-builder]) {
   flex: 1 1 100%;
 }
 
@@ -47,9 +47,14 @@
   flex: 1 1 auto;
 }
 
-.content:has(::slotted(rowan-filter-builder)) {
+:host([data-has-filter-builder]) .content {
   flex: 1 1 100%;
   order: 1;
+}
+
+:host([data-has-filter-builder]) .content ::slotted(rowan-filter-builder) {
+  flex: 1 1 100%;
+  min-inline-size: 0;
 }
 
 .end {

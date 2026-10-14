@@ -72,6 +72,8 @@ export class RowanTableToolbar extends BaseElement {
   #selected = [];
   #selectedRows = [];
   #toolbar = null;
+  #content = null;
+  #contentSlotEl = null;
   #selection = null;
   #selectionText = null;
   #columnPicker = null;
@@ -192,11 +194,14 @@ export class RowanTableToolbar extends BaseElement {
       `;
 
       this.#toolbar = this.renderRoot.querySelector(".toolbar");
+      this.#content = this.renderRoot.querySelector(".content");
+      this.#contentSlotEl = this.#content.querySelector("slot");
       this.#selection = this.renderRoot.querySelector(".selection");
       this.#selectionText = this.renderRoot.querySelector(".selection-text");
       this.#columnPicker = this.renderRoot.querySelector(".column-picker");
       this.#columnPickerSummary = this.renderRoot.querySelector(".column-picker-summary");
       this.#columnPickerMenu = this.renderRoot.querySelector(".column-picker-menu");
+      this.listen(this.#contentSlotEl, "slotchange", () => this.#syncFilterBuilderSlot());
     }
 
     this.#syncTable();
@@ -211,7 +216,17 @@ export class RowanTableToolbar extends BaseElement {
       { count, selectionLabel: this.selectionLabel },
     );
     this.#syncColumnPicker();
+    this.#syncFilterBuilderSlot();
     this.#applyDefaultA11y();
+  }
+
+  #syncFilterBuilderSlot() {
+    if (!this.#contentSlotEl) return;
+
+    const hasFilterBuilder = this.#contentSlotEl
+      .assignedElements()
+      .some((node) => node.localName === "rowan-filter-builder");
+    this.toggleAttribute("data-has-filter-builder", hasFilterBuilder);
   }
 
   #syncColumnPicker() {

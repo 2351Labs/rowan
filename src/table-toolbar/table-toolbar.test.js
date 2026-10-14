@@ -313,4 +313,72 @@ describe("rowan-table-toolbar", () => {
 
     expect(getComputedStyle(standalone).borderWidth).to.not.equal("0px");
   });
+
+  it("wraps a nested filter-builder onto a full second toolbar row", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(title, builder);
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+
+    const content = toolbar.shadowRoot.querySelector('[part="content"]');
+    const titleBox = title.getBoundingClientRect();
+    const builderBox = builder.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(true);
+    expect(getComputedStyle(content).flexBasis).to.equal("100%");
+    expect(getComputedStyle(content).order).to.equal("1");
+    expect(builderBox.top).to.be.greaterThan(titleBox.bottom - 1);
+    expect(builderBox.width).to.be.above(toolbarBox.width * 0.75);
+
+    builder.remove();
+    await settle();
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(false);
+    expect(getComputedStyle(content).order).to.equal("0");
+  });
+
+  it("keeps a nested filter-builder full-width when bulk actions share the slot", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(title, builder);
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(toolbar, bar);
+    table.selected = ["order-1", "order-2"];
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+    await waitForStyles(bar);
+
+    const tableBox = table.getBoundingClientRect();
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const builderBox = builder.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const titleBox = title.getBoundingClientRect();
+
+    expect(toolbarBox.width).to.be.above(tableBox.width * 0.75);
+    expect(builderBox.top).to.be.greaterThan(titleBox.bottom - 1);
+    expect(barBox.top).to.be.greaterThan(builderBox.bottom - 1);
+  });
 });
