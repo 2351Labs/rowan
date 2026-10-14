@@ -205,6 +205,15 @@ Experimental scatter, heatmap, funnel, waterfall, range, box-plot, radar, and
 combo stay experimental. Inline table editing is not a public API. Publish after
 this catalog commit is on `main`: tag `v0.17.0`.
 
+## 0.18.0 cut
+
+Version in `package.json` is `0.18.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Nested filter groups and table-view-state version `2` stay
+experimental. Table shared chrome, sparkline non-scaling-stroke, and reconnect
+fixes ship here. Experimental scatter, heatmap, funnel, waterfall, range,
+box-plot, radar, and combo stay experimental. Inline table editing is not a
+public API. Publish after this catalog commit is on `main`: tag `v0.18.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
