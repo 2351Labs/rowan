@@ -908,7 +908,12 @@ readout is hidden; the matching table still lists the slice values).
 It is a separate host, not a density of `rowan-trend-chart`. `values` is
 property-only (`number | null`; null is a gap). There is no legend, no
 interactive points, and no animation. Hover shows the nearest labeled value.
-A visually hidden table exposes the same values to assistive technology. `rowan-progress` `hide-meta` hides the percent
+A visually hidden table exposes the same values to assistive technology.
+Stroke width is CSS pixels (`--rowan-sparkline-stroke-width`, default
+`1.75px`) and does not thicken when the plot scales. Size the plot with
+`--rowan-sparkline-height` (default `2.25rem`); width is `100%`. Hover dots
+still scale with the viewBox. Page-wide labeled trends belong on
+`rowan-trend-chart`. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
 
 ```html

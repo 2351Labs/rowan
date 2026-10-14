@@ -19,7 +19,9 @@
  * @csspart line
  * @csspart hover
  * @csspart table
+ * @cssprop --rowan-sparkline-height
  * @cssprop --rowan-sparkline-stroke
+ * @cssprop --rowan-sparkline-stroke-width
  * @cssprop --rowan-sparkline-success
  * @cssprop --rowan-sparkline-danger
  */

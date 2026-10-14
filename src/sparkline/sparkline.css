@@ -25,7 +25,9 @@
   stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--rowan-sparkline-stroke-width, 1.75);
+  stroke-width: var(--rowan-sparkline-stroke-width, 1.75px);
+  /* CSS pixels. Plot scale must not thicken the line. */
+  vector-effect: non-scaling-stroke;
 }
 
 .hover-point {

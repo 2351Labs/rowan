@@ -19,6 +19,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Experimental `rowan-funnel-chart` uses the shared overlay keyboard, alignment, and reconnect fixture.
 - Stable `rowan-trend-chart`, `rowan-area-chart`, `rowan-stacked-area-chart`, and `rowan-stacked-bar-chart` use the shared overlay keyboard, alignment, and reconnect fixture. `rowan-donut-chart` uses the shared keyboard and reconnect fixture; its button list is not a physical overlay.
 - Graduation-gate reconnect coverage for table, forms, overlays, app-layout, sparkline, and related first-screen hosts.
+- `rowan-sparkline` stroke uses `vector-effect: non-scaling-stroke`. `--rowan-sparkline-stroke-width` is CSS pixels at any plot size. `--rowan-sparkline-height` sizes the plot. Hover dots still scale with the viewBox.
 
 ### Fixed
 
