@@ -28,10 +28,10 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.18.0`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.19.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.18` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.19` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
@@ -42,13 +42,14 @@ is the design-token handoff; CSS stays the runtime source of truth.
 storage and routing. Nested filter groups and table-view-state version `2` are
 experimental; frozen filters stay the top-level AND list; the view-state schema
 is not frozen beyond `version`. The table toolbar slot shares one chrome with
-the table. `rowan-sparkline` stroke is CSS pixels. Modals use native `<dialog>`.
-Dropdown, popover, tooltip, and context menus use the top layer. Table
-virtualization, `rowan-rich-text-editor`, `rowan-filter-builder`,
-`rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`, `rowan-donut-chart`,
-and `rowan-bar-chart` are Stable. Experimental scatter, heatmap, funnel,
-waterfall, range, box-plot, radar, and combo stay experimental. This is not
-`1.0`.
+the table. `rowan-filter-builder` `appearance="toolbar"` is chips on the bar.
+`applyQuickFind` is host-owned and not a filter type. `rowan-sparkline` stroke
+is CSS pixels. Modals use native `<dialog>`. Dropdown, popover, tooltip, and
+context menus use the top layer. Table virtualization, `rowan-rich-text-editor`,
+`rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
+`rowan-donut-chart`, and `rowan-bar-chart` are Stable. Experimental scatter,
+heatmap, funnel, waterfall, range, box-plot, radar, and combo stay experimental.
+This is not `1.0`.
 
 ## Install
 
