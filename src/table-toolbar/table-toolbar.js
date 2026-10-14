@@ -9,6 +9,8 @@ import {
   resolveRowanTable,
 } from "../lib/table-selection.js";
 
+import "../dropdown/dropdown.js";
+
 function arraysEqual(left, right) {
   if (left.length !== right.length) return false;
   return left.every((value, index) => value === right[index]);
@@ -38,7 +40,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  */
 
 /**
- * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown`.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
@@ -87,7 +89,6 @@ export class RowanTableToolbar extends BaseElement {
   #selection = null;
   #selectionText = null;
   #columnPicker = null;
-  #columnPickerSummary = null;
   #columnPickerMenu = null;
   #messages = {};
   #filterBuilderAppearanceObserver = null;
@@ -197,10 +198,9 @@ export class RowanTableToolbar extends BaseElement {
           </div>
           <div class="content" part="content"><slot></slot></div>
           <div class="end" part="end">
-            <details class="column-picker" part="column-picker" hidden>
-              <summary class="column-picker-summary"></summary>
+            <rowan-dropdown class="column-picker" part="column-picker" hidden>
               <div class="column-picker-menu" part="column-picker-menu" role="group"></div>
-            </details>
+            </rowan-dropdown>
             <slot name="end"></slot>
           </div>
         </section>
@@ -212,7 +212,6 @@ export class RowanTableToolbar extends BaseElement {
       this.#selection = this.renderRoot.querySelector(".selection");
       this.#selectionText = this.renderRoot.querySelector(".selection-text");
       this.#columnPicker = this.renderRoot.querySelector(".column-picker");
-      this.#columnPickerSummary = this.renderRoot.querySelector(".column-picker-summary");
       this.#columnPickerMenu = this.renderRoot.querySelector(".column-picker-menu");
       this.listen(this.#contentSlotEl, "slotchange", () => this.#syncFilterBuilderSlot());
     }
@@ -262,9 +261,9 @@ export class RowanTableToolbar extends BaseElement {
   }
 
   #syncColumnPicker() {
-    if (!this.#columnPicker || !this.#columnPickerMenu || !this.#columnPickerSummary) return;
+    if (!this.#columnPicker || !this.#columnPickerMenu) return;
 
-    this.#columnPickerSummary.textContent = resolveMessage(
+    this.#columnPicker.label = resolveMessage(
       this.#messages,
       DEFAULT_MESSAGES,
       "columnPickerLabel",
@@ -280,21 +279,39 @@ export class RowanTableToolbar extends BaseElement {
       : [];
     const enabled = this.columnPicker && columns.length > 0;
     this.#columnPicker.hidden = !enabled;
-    if (!enabled) return;
+    if (!enabled) {
+      this.#columnPicker.open = false;
+      return;
+    }
 
     const visibleCount = columns.filter((column) => !column.hidden).length;
+    const existing = new Map();
+    for (const input of this.#columnPickerMenu.querySelectorAll("input[data-column-id]")) {
+      const row = input.closest("label");
+      if (row && input.dataset.columnId) existing.set(input.dataset.columnId, row);
+    }
+
     this.#columnPickerMenu.replaceChildren(
       ...columns.map((column) => {
-        const row = document.createElement("label");
-        row.className = "column-picker-option";
-        const input = document.createElement("input");
-        input.type = "checkbox";
+        let row = existing.get(column.id);
+        let input;
+        let text;
+        if (row) {
+          input = row.querySelector("input");
+          text = row.querySelector("span");
+        }
+        if (!row || !input || !text) {
+          row = document.createElement("label");
+          row.className = "column-picker-option";
+          input = document.createElement("input");
+          input.type = "checkbox";
+          input.dataset.columnId = column.id;
+          text = document.createElement("span");
+          row.append(input, text);
+        }
         input.checked = !column.hidden;
         input.disabled = input.checked && visibleCount <= 1;
-        input.dataset.columnId = column.id;
-        const text = document.createElement("span");
         text.textContent = column.header || column.id;
-        row.append(input, text);
         return row;
       }),
     );

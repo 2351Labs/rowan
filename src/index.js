@@ -23,6 +23,7 @@ export {
   RowanFilterBuilder,
 } from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
+export { applyQuickFind } from "./table-quick-find/table-quick-find.js";
 export {
   TABLE_VIEW_STATE_VERSION,
   mergeTableViewState,

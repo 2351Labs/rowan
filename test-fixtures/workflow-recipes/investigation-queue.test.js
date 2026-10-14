@@ -49,6 +49,29 @@ describe("investigation queue documentation workflow", () => {
       expect(table.rows).to.have.length(5);
       expect(table.captionVisuallyHidden).to.equal(true);
 
+      const find = queue.querySelector('rowan-text-field[type="search"]');
+      expect(find).to.not.equal(null);
+      expect(find.slot).to.equal("end");
+      find.dispatchEvent(
+        new CustomEvent("rowan-change", {
+          bubbles: true,
+          composed: true,
+          detail: { value: "webhook" },
+        }),
+      );
+      await settle();
+      expect(table.rows.map((row) => row.id)).to.deep.equal(["inc-1046"]);
+
+      find.dispatchEvent(
+        new CustomEvent("rowan-change", {
+          bubbles: true,
+          composed: true,
+          detail: { value: "" },
+        }),
+      );
+      await settle();
+      expect(table.rows).to.have.length(5);
+
       builder.dispatchEvent(
         new CustomEvent("rowan-filter-change", {
           bubbles: true,

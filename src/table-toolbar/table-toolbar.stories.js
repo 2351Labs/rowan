@@ -61,7 +61,7 @@ export default {
   args: {
     label: "Team table controls",
     selectionLabel: "selected",
-    columnPicker: false,
+    columnPicker: true,
   },
 };
 
@@ -70,6 +70,7 @@ export const Playground = {
     steps: [
       "Select one or more table rows.",
       "Observe the selected-row status in the toolbar.",
+      "Open the Columns dropdown to hide a column.",
       "Clear selection with the table header checkbox.",
     ],
     events: ["rowan-select"],
