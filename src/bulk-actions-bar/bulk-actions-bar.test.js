@@ -5,6 +5,27 @@ import "../table/table.js";
 import "./bulk-actions-bar.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForStyles(element) {
+  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
+}
 
 async function settle() {
   await nextMicrotask();
@@ -214,5 +235,33 @@ describe("rowan-bulk-actions-bar", () => {
     await settle();
 
     expect(bar.shadowRoot.querySelector('[data-action="clear"]').textContent).to.equal("Remove");
+  });
+
+  it("is a full-width band without nested selection chrome in the toolbar slot", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(bar);
+    table.selected = ["order-1", "order-2"];
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(bar);
+
+    const surface = bar.shadowRoot.querySelector('[part="bar"]');
+    const selectionText = bar.shadowRoot.querySelector('[part="selection-text"]');
+    const clear = bar.shadowRoot.querySelector('[data-action="clear"]');
+    const tableBox = table.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const clearBox = clear.getBoundingClientRect();
+
+    expect(surface.hidden).to.equal(false);
+    expect(barBox.width).to.be.above(tableBox.width * 0.75);
+    expect(clearBox.right).to.be.greaterThan(tableBox.right - 64);
+    expect(getComputedStyle(surface).borderWidth).to.equal("0px");
+    expect(getComputedStyle(selectionText).paddingTop).to.equal("0px");
+    expect(getComputedStyle(selectionText).backgroundColor).to.equal("rgba(0, 0, 0, 0)");
   });
 });

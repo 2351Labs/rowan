@@ -1,9 +1,16 @@
 :host {
+  box-sizing: border-box;
   display: block;
+  flex: 0 1 auto;
+  min-inline-size: 0;
   --rowan-filter-builder-bg: transparent;
   --rowan-filter-builder-border-width: 0px;
   --rowan-filter-builder-padding: 0px;
   --rowan-filter-builder-radius: 0px;
+}
+
+:host:has(::slotted(rowan-filter-builder)) {
+  flex: 1 1 100%;
 }
 
 :host([hidden]) {

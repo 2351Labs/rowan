@@ -17,7 +17,13 @@
   min-inline-size: 0;
 }
 
-.toolbar,
+.toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-space-3);
+}
+
 .footer {
   display: block;
 }
@@ -30,6 +36,7 @@
 
 .wrapper[data-has-toolbar] .toolbar {
   border-block-end: var(--rowan-border-width) solid var(--rowan-color-border);
+  padding: var(--rowan-space-3) var(--rowan-space-4);
 }
 
 .wrapper[data-has-toolbar] .table {
@@ -38,15 +45,31 @@
 }
 
 .wrapper[data-has-toolbar] .toolbar ::slotted(*) {
+  box-sizing: border-box;
+  min-inline-size: 0;
   --rowan-bulk-actions-bar-bg: transparent;
   --rowan-bulk-actions-bar-border-width: 0px;
+  --rowan-bulk-actions-bar-padding: 0px;
   --rowan-bulk-actions-bar-radius: 0px;
+  --rowan-bulk-actions-bar-selection-bg: transparent;
+  --rowan-bulk-actions-bar-selection-border: transparent;
+  --rowan-bulk-actions-bar-selection-padding: 0px;
   --rowan-filter-builder-bg: transparent;
   --rowan-filter-builder-border-width: 0px;
+  --rowan-filter-builder-padding: 0px;
   --rowan-filter-builder-radius: 0px;
   --rowan-table-toolbar-bg: transparent;
   --rowan-table-toolbar-border-width: 0px;
+  --rowan-table-toolbar-min-block-size: 0px;
+  --rowan-table-toolbar-padding: 0px;
   --rowan-table-toolbar-radius: 0px;
+  --rowan-table-toolbar-selection-bg: transparent;
+  --rowan-table-toolbar-selection-border: transparent;
+  --rowan-table-toolbar-selection-padding: 0px;
+}
+
+.wrapper[data-has-toolbar] .toolbar ::slotted(rowan-filter-builder) {
+  flex: 1 1 100%;
 }
 
 .table-scroll {

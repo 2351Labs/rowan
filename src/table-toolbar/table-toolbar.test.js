@@ -111,6 +111,39 @@ describe("rowan-table-toolbar", () => {
     );
   });
 
+  it("keeps the view title and bulk actions on one toolbar band", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    toolbar.append(title);
+    const bar = document.createElement("rowan-bulk-actions-bar");
+    bar.slot = "toolbar";
+    bar.actions = [{ id: "archive", label: "Archive", variant: "secondary" }];
+    table.append(toolbar, bar);
+    table.selected = ["order-1", "order-2"];
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(bar);
+
+    const selectionText = bar.shadowRoot.querySelector('[part="selection-text"]');
+    const toolbarBox = toolbar.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const titleBox = title.getBoundingClientRect();
+
+    expect(bar.shadowRoot.querySelector('[part="bar"]').hidden).to.equal(false);
+    expect(toolbarBox.bottom).to.be.greaterThan(barBox.top);
+    expect(barBox.bottom).to.be.greaterThan(toolbarBox.top);
+    expect(titleBox.right).to.be.at.most(barBox.left + 1);
+    expect(getComputedStyle(selectionText).paddingTop).to.equal("0px");
+    expect(getComputedStyle(selectionText).backgroundColor).to.equal("rgba(0, 0, 0, 0)");
+  });
+
   it("synchronizes parent-driven table selection without a table event", async () => {
     const table = createTable();
     const toolbar = document.createElement("rowan-table-toolbar");
