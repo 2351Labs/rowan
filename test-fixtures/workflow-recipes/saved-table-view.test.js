@@ -57,6 +57,27 @@ describe("saved table view documentation workflow", () => {
 
       expect(table.rows).to.have.length(6);
       expect(filterBuilder.appearance).to.equal("toolbar");
+      const find = workflow.querySelector('rowan-text-field[type="search"]');
+      expect(find).to.not.equal(null);
+      expect(find.slot).to.equal("end");
+      find.dispatchEvent(
+        new CustomEvent("rowan-change", {
+          bubbles: true,
+          composed: true,
+          detail: { value: "webhook" },
+        }),
+      );
+      await settle();
+      expect(table.rows.map((row) => row.id)).to.deep.equal(["work-103"]);
+      find.dispatchEvent(
+        new CustomEvent("rowan-change", {
+          bubbles: true,
+          composed: true,
+          detail: { value: "" },
+        }),
+      );
+      await settle();
+      expect(table.rows).to.have.length(6);
       expect(table.captionVisuallyHidden).to.equal(true);
       expect(table.sort).to.deep.equal({ id: "updated", dir: "desc" });
       expect(restore.disabled).to.equal(true);
@@ -97,6 +118,8 @@ describe("saved table view documentation workflow", () => {
         { id: "open-status", field: "status", operator: "equals", value: "Open" },
       ]);
       expect(persisted[0].view.visibleColumns).to.not.include("owner");
+      expect(persisted[0].view).to.not.have.property("query");
+      expect(JSON.stringify(persisted[0].snapshot)).to.not.include("webhook");
       expect(restore.disabled).to.equal(false);
 
       filterBuilder.filters = [];

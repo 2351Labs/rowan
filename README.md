@@ -1383,9 +1383,14 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 ## Table Operations
 
 Use `rowan-table-toolbar` for filters and density. Set `column-picker` to show or
-hide columns (`column.hidden`). Use `createTableCsv(columns, rows)` from
-`@rowan-ui/core/table-csv` for CSV text; the app owns download. `visibleColumns()`
-filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome, and title plus bulk actions share one row. The table toolbar slot is one chrome with the table: no nested card, no gap, toolbar as the top edge. `rowan-filter-builder` in that slot (or inside the toolbar) drops its own border. `appearance="toolbar"` shows applied filters as chips and edits a row in `rowan-popover`; default `panel` keeps always-open rows. A `panel` builder in the toolbar default slot wraps to a full second row; `toolbar` chips stay on the first row with the title. `rowan-bulk-actions-bar` in that slot is a band of toolbar controls; the selected-row count is status text, not a nested chip. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list and experimental groups. Set `caption-visually-hidden` when the toolbar already names the view, or when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
+hide columns (`column.hidden`); the picker is a `rowan-dropdown`. Use
+`createTableCsv(columns, rows)` from `@rowan-ui/core/table-csv` for CSV text; the
+app owns download. `visibleColumns()` filters hidden ids. Use
+`applyQuickFind(rows, query, keys?)` from `@rowan-ui/core/table-quick-find` for
+host-owned text search. It is not a filter-builder type and is not stored in
+table-view-state. Compose as `applyFilters(applyQuickFind(rows, query, keys),
+filters, fields)`. When a toolbar is present, table headers use the table
+background instead of the tinted header band. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome, and title plus bulk actions share one row. The table toolbar slot is one chrome with the table: no nested card, no gap, toolbar as the top edge. `rowan-filter-builder` in that slot (or inside the toolbar) drops its own border. `appearance="toolbar"` shows applied filters as chips and edits a row in `rowan-popover`; default `panel` keeps always-open rows. A `panel` builder in the toolbar default slot wraps to a full second row; `toolbar` chips stay on the first row with the title. `rowan-bulk-actions-bar` in that slot is a band of toolbar controls; the selected-row count is status text, not a nested chip. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list and experimental groups. Set `caption-visually-hidden` when the toolbar already names the view, or when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
 
 ```html
 <rowan-table id="members-table">
@@ -1419,9 +1424,12 @@ filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when ro
 
 ```js
 import { createTableCsv } from "@rowan-ui/core/table-csv";
+import { applyQuickFind } from "@rowan-ui/core/table-quick-find";
+import { applyFilters } from "@rowan-ui/core/filter-builder";
 
 const csv = createTableCsv(table.columns, table.rows);
 const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+table.rows = applyFilters(applyQuickFind(sourceRows, findQuery), filters, fields);
 ```
 
 ```html
@@ -1437,7 +1445,9 @@ experimental. Additive `appearance` is `panel` (default, always-open rows) or
 `toolbar` (chips on the bar; the field/operator/value editor is a `rowan-popover`).
 It does not change the filter model. Recipes set `appearance="toolbar"`; the
 default stays `panel`. Import `applyFilters` from `@rowan-ui/core/filter-builder`
-and assign the derived rows. Field `type` is `text`, `number`,
+and assign the derived rows. Quick find is a separate host-owned
+`rowan-text-field type="search"` plus `applyQuickFind`; do not fold it into
+the frozen filter list. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
 operator. Import `RowanFilter`, `RowanFilterGroup`, and `RowanFilterField` from

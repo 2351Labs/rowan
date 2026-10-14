@@ -124,6 +124,10 @@
   );
 }
 
+.wrapper[data-has-toolbar] .thead {
+  background: var(--rowan-table-cell-bg, var(--rowan-color-bg));
+}
+
 .th,
 .td {
   border-bottom: var(--rowan-border-width) solid var(--rowan-color-border);
@@ -266,6 +270,11 @@
     --rowan-table-head-bg,
     color-mix(in srgb, var(--rowan-color-fg) 5%, var(--rowan-color-bg))
   );
+}
+
+.wrapper[data-has-toolbar] .thead .sticky-start,
+.wrapper[data-has-toolbar] .thead .sticky-end {
+  background: var(--rowan-table-cell-bg, var(--rowan-color-bg));
 }
 
 :host([sticky-header]) .thead .sticky-start,

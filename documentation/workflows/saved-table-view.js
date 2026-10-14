@@ -1,4 +1,5 @@
 import { applyFilters } from "../../src/filter-builder/apply-filters.js";
+import { applyQuickFind } from "../../src/table-quick-find/table-quick-find.js";
 import {
   normalizeTableViewState,
   restoreTableViewState,
@@ -9,6 +10,7 @@ import "../../src/filter-builder/filter-builder.js";
 import "../../src/select/select.js";
 import "../../src/table-toolbar/table-toolbar.js";
 import "../../src/table/table.js";
+import "../../src/text-field/text-field.js";
 
 const WORK_ITEMS = [
   {
@@ -78,6 +80,8 @@ const FILTER_FIELDS = [
   },
 ];
 
+const FIND_KEYS = ["title", "status", "owner", "service"];
+
 const COLUMNS = [
   { id: "title", header: "Work item", minWidth: "16rem", sortable: true },
   {
@@ -139,6 +143,7 @@ export function createSavedTableView(options = {}) {
   const onPersist = typeof options.onPersist === "function" ? options.onPersist : null;
   const tableId = `docs-saved-table-view-${savedTableViewInstance}`;
   let filters = [];
+  let findQuery = "";
   let savedView = normalizeSavedView(options.savedView);
 
   const root = document.createElement("section");
@@ -177,6 +182,12 @@ export function createSavedTableView(options = {}) {
   filterBuilder.label = "Filter work items";
   filterBuilder.fields = FILTER_FIELDS;
 
+  const find = document.createElement("rowan-text-field");
+  find.slot = "end";
+  find.type = "search";
+  find.label = "Find";
+  find.placeholder = "Find";
+
   const density = document.createElement("rowan-select");
   density.slot = "end";
   density.label = "Density";
@@ -187,7 +198,7 @@ export function createSavedTableView(options = {}) {
   ];
   density.value = table.density;
 
-  toolbar.append(toolbarTitle, filterBuilder, density);
+  toolbar.append(toolbarTitle, filterBuilder, find, density);
   table.append(toolbar);
 
   const actions = document.createElement("div");
@@ -208,7 +219,11 @@ export function createSavedTableView(options = {}) {
   actions.append(save, restore, state);
 
   const renderRows = (page = table.page) => {
-    const visibleRows = applyFilters(WORK_ITEMS, filters, FILTER_FIELDS);
+    const visibleRows = applyFilters(
+      applyQuickFind(WORK_ITEMS, findQuery, FIND_KEYS),
+      filters,
+      FILTER_FIELDS,
+    );
     table.rows = cloneRows(visibleRows);
 
     if (page) {
@@ -255,6 +270,11 @@ export function createSavedTableView(options = {}) {
     filterBuilder.filters = filters;
     renderRows(view.page);
   };
+
+  find.addEventListener("rowan-change", (event) => {
+    findQuery = String(event.detail?.value ?? "");
+    renderRows();
+  });
 
   filterBuilder.addEventListener("rowan-filter-change", (event) => {
     filters = Array.isArray(event.detail?.filters) ? cloneFilters(event.detail.filters) : [];

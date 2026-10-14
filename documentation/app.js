@@ -345,7 +345,7 @@ table.config = {
 };`;
 
 const TABLE_TOOLBAR_SNIPPET = `<rowan-table id="members-table" caption="Active members" caption-visually-hidden>
-  <rowan-table-toolbar slot="toolbar" label="Member table controls">
+  <rowan-table-toolbar slot="toolbar" label="Member table controls" column-picker>
     <span slot="start">Active members</span>
   </rowan-table-toolbar>
 </rowan-table>
@@ -3614,10 +3614,10 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="table-toolbar-overview">
         <h2>Selection-aware table controls</h2>
-        <p>Place rowan-table-toolbar in the table toolbar slot to keep filters, view context, and the selected-row count in one operational surface. The slot shares the table's outer chrome. When the toolbar names the view, set caption-visually-hidden so the caption stays for assistive technology without a second title.</p>
+        <p>Place rowan-table-toolbar in the table toolbar slot to keep filters, view context, and the selected-row count in one operational surface. The slot shares the table's outer chrome. Headers drop the tinted band when a toolbar is present. Set column-picker for a rowan-dropdown of visible columns. When the toolbar names the view, set caption-visually-hidden so the caption stays for assistive technology without a second title.</p>
         <div class="table-shell">
           <rowan-table id="docs-table-toolbar-demo" caption="Active members" caption-visually-hidden>
-            <rowan-table-toolbar slot="toolbar" label="Member table controls">
+            <rowan-table-toolbar slot="toolbar" label="Member table controls" column-picker>
               <span slot="start">Active members</span>
             </rowan-table-toolbar>
           </rowan-table>
@@ -3672,7 +3672,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. appearance=toolbar shows chips and edits a row in a popover; the default panel keeps always-open rows. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. appearance=toolbar shows chips and edits a row in a popover; the default panel keeps always-open rows. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows. Quick find is a separate rowan-text-field type=search plus applyQuickFind from @rowan-ui/core/table-quick-find; it is not a filter type.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
             <rowan-filter-builder id="docs-filter-builder" slot="toolbar" appearance="toolbar"></rowan-filter-builder>
