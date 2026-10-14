@@ -23,6 +23,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Toolbar chip editor restores focus to the field, operator, or value that committed the change, instead of jumping back to the field selector.
 - Toolbar chip trigger accessible name uses the full chip label, including operator and value.
 - Internal `rowan-popover` `rowan-change` no longer leaks from `rowan-filter-builder`. Consumers still receive `rowan-filter-change`.
+- `rowan-dropdown` with non-menu panel content (column-picker checkboxes) moves focus into the panel and tabs through it; menu content still closes on Tab. The panel flips to the trigger end when it would overflow the viewport. Column picker reuses checkbox rows so toggling a column does not steal focus.
 
 ## 0.18.0 - 2026-10-13
 

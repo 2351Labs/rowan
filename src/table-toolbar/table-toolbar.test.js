@@ -228,6 +228,7 @@ describe("rowan-table-toolbar", () => {
     trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
     await settle();
     expect(picker.open).to.equal(true);
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("true");
     const team = toolbar.shadowRoot.querySelector('input[data-column-id="team"]');
     team.checked = false;
     team.dispatchEvent(new Event("change", { bubbles: true }));
@@ -235,9 +236,17 @@ describe("rowan-table-toolbar", () => {
 
     expect(table.columns.find((column) => column.id === "team").hidden).to.equal(true);
     expect(table.shadowRoot.querySelector('th[data-column-id="team"]')).to.equal(null);
+    expect(picker.open).to.equal(true);
+    expect(toolbar.shadowRoot.querySelector('input[data-column-id="team"]')).to.equal(team);
 
     const name = toolbar.shadowRoot.querySelector('input[data-column-id="name"]');
     expect(name.disabled).to.equal(true);
+
+    team.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", bubbles: true, composed: true, cancelable: true }),
+    );
+    await settle();
+    expect(picker.open).to.equal(false);
   });
 
   it("keeps column-picker changes after reconnecting", async () => {

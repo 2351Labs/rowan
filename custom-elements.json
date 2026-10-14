@@ -9315,7 +9315,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Triggered dropdown surface.",
+          "description": "Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab.\nOther focusable panel content is tabbed through; Tab at the edge closes.",
           "name": "RowanDropdown",
           "cssParts": [
             {
