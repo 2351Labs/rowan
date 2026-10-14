@@ -1,7 +1,9 @@
 :host {
   background: var(--rowan-filter-builder-bg);
-  border: 1px solid var(--rowan-filter-builder-border);
+  border-color: var(--rowan-filter-builder-border);
   border-radius: var(--rowan-filter-builder-radius);
+  border-style: solid;
+  border-width: var(--rowan-filter-builder-border-width, 1px);
   color: var(--rowan-filter-builder-fg);
   display: block;
 }

@@ -50,6 +50,7 @@ describe("resource list documentation workflow", () => {
       expect(pagination).to.not.equal(null);
       expect(retry).to.not.equal(null);
       expect(dataState.state).to.equal("ready");
+      expect(table.captionVisuallyHidden).to.equal(true);
       expect(table.rows.map((row) => row.id)).to.deep.equal([
         "resource-100",
         "resource-101",

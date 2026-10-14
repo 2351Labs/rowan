@@ -14,6 +14,7 @@ function createTable() {
   const table = document.createElement("rowan-table");
   table.config = {
     caption: "Team members",
+    captionVisuallyHidden: true,
     rowId: "id",
     selectable: "multiple",
     columns: [

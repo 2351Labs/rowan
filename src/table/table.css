@@ -11,9 +11,42 @@
   gap: var(--rowan-space-3);
 }
 
+.chrome {
+  display: grid;
+  gap: 0;
+  min-inline-size: 0;
+}
+
 .toolbar,
 .footer {
   display: block;
+}
+
+.wrapper[data-has-toolbar] .chrome {
+  background: var(--rowan-color-bg);
+  border: var(--rowan-border-width) solid var(--rowan-color-border);
+  border-radius: var(--rowan-radius-lg);
+}
+
+.wrapper[data-has-toolbar] .toolbar {
+  border-block-end: var(--rowan-border-width) solid var(--rowan-color-border);
+}
+
+.wrapper[data-has-toolbar] .table {
+  border: none;
+  border-radius: 0;
+}
+
+.wrapper[data-has-toolbar] .toolbar ::slotted(*) {
+  --rowan-bulk-actions-bar-bg: transparent;
+  --rowan-bulk-actions-bar-border-width: 0px;
+  --rowan-bulk-actions-bar-radius: 0px;
+  --rowan-filter-builder-bg: transparent;
+  --rowan-filter-builder-border-width: 0px;
+  --rowan-filter-builder-radius: 0px;
+  --rowan-table-toolbar-bg: transparent;
+  --rowan-table-toolbar-border-width: 0px;
+  --rowan-table-toolbar-radius: 0px;
 }
 
 .table-scroll {

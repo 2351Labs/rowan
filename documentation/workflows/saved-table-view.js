@@ -153,6 +153,7 @@ export function createSavedTableView(options = {}) {
   table.id = tableId;
   table.config = {
     caption: "Operations work items",
+    captionVisuallyHidden: true,
     columns: cloneColumns(),
     rows: [],
     rowId: "id",

@@ -177,6 +177,7 @@ export function createResourceList(options = {}) {
   table.id = tableId;
   table.config = {
     caption: "Resource inventory",
+    captionVisuallyHidden: true,
     columns: cloneColumns(),
     rowId: "id",
     rows: [],

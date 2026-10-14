@@ -151,6 +151,7 @@ export function createInvestigationQueue(options = {}) {
   table.id = tableId;
   table.config = {
     caption: "Open investigations",
+    captionVisuallyHidden: true,
     columns: cloneColumns(),
     rowId: "id",
     rows: [],

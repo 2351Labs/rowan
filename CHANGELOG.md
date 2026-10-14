@@ -20,6 +20,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Stable `rowan-trend-chart`, `rowan-area-chart`, `rowan-stacked-area-chart`, and `rowan-stacked-bar-chart` use the shared overlay keyboard, alignment, and reconnect fixture. `rowan-donut-chart` uses the shared keyboard and reconnect fixture; its button list is not a physical overlay.
 - Graduation-gate reconnect coverage for table, forms, overlays, app-layout, sparkline, and related first-screen hosts.
 - `rowan-sparkline` stroke uses `vector-effect: non-scaling-stroke`. `--rowan-sparkline-stroke-width` is CSS pixels at any plot size. `--rowan-sparkline-height` sizes the plot. Hover dots still scale with the viewBox.
+- Table toolbar slot shares one chrome with the table: no gap, no nested radius, toolbar as the top edge. `rowan-filter-builder` and `rowan-table-toolbar` in that slot drop their own card. When the toolbar names the view, set `caption-visually-hidden` so the caption stays for assistive technology without a second title.
 
 ### Fixed
 

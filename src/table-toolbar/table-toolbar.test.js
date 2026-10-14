@@ -3,10 +3,32 @@ import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
 import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../checkbox/checkbox.js";
+import "../filter-builder/filter-builder.js";
 import "../table/table.js";
 import "./table-toolbar.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForStyles(element) {
+  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
+}
 
 async function settle() {
   await nextMicrotask();
@@ -234,5 +256,28 @@ describe("rowan-table-toolbar", () => {
     expect(
       toolbar.shadowRoot.querySelector(".column-picker-menu").getAttribute("aria-label"),
     ).to.equal("Sichtbare Spalten");
+  });
+
+  it("drops nested filter-builder card chrome", async () => {
+    const table = createTable();
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const builder = document.createElement("rowan-filter-builder");
+    toolbar.append(builder);
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+
+    expect(getComputedStyle(builder).borderWidth).to.equal("0px");
+
+    const standalone = document.createElement("rowan-filter-builder");
+    document.body.append(standalone);
+    await settle();
+    await waitForStyles(standalone);
+
+    expect(getComputedStyle(standalone).borderWidth).to.not.equal("0px");
   });
 });

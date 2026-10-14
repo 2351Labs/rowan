@@ -261,6 +261,7 @@ function isFilterableColumn(column) {
  * @csspart group
  * @cssprop --rowan-filter-builder-bg
  * @cssprop --rowan-filter-builder-border
+ * @cssprop --rowan-filter-builder-border-width
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
  * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list of frozen leaves. Group nodes are experimental. Arrays are property-only.

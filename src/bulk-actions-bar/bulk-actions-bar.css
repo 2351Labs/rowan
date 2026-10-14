@@ -9,8 +9,10 @@
 .bar {
   align-items: center;
   background: var(--rowan-bulk-actions-bar-bg);
-  border: 1px solid var(--rowan-bulk-actions-bar-border);
+  border-color: var(--rowan-bulk-actions-bar-border);
   border-radius: var(--rowan-bulk-actions-bar-radius);
+  border-style: solid;
+  border-width: var(--rowan-bulk-actions-bar-border-width, 1px);
   color: var(--rowan-bulk-actions-bar-fg);
   display: flex;
   flex-wrap: wrap;

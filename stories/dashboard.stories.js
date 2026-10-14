@@ -431,6 +431,7 @@ function createOrdersTable() {
   const table = document.createElement("rowan-table");
   table.config = {
     caption: "Recent orders",
+    captionVisuallyHidden: true,
     rowId: "id",
     density: "sm",
     stickyHeader: true,

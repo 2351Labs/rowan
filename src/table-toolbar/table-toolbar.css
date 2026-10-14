@@ -1,5 +1,9 @@
 :host {
   display: block;
+  --rowan-filter-builder-bg: transparent;
+  --rowan-filter-builder-border-width: 0px;
+  --rowan-filter-builder-padding: 0px;
+  --rowan-filter-builder-radius: 0px;
 }
 
 :host([hidden]) {
@@ -9,8 +13,10 @@
 .toolbar {
   align-items: center;
   background: var(--rowan-table-toolbar-bg);
-  border: 1px solid var(--rowan-table-toolbar-border);
+  border-color: var(--rowan-table-toolbar-border);
   border-radius: var(--rowan-table-toolbar-radius);
+  border-style: solid;
+  border-width: var(--rowan-table-toolbar-border-width, 1px);
   color: var(--rowan-table-toolbar-fg);
   display: flex;
   flex-wrap: wrap;
@@ -32,6 +38,11 @@
 
 .content {
   flex: 1 1 auto;
+}
+
+.content:has(::slotted(rowan-filter-builder)) {
+  flex: 1 1 100%;
+  order: 1;
 }
 
 .end {

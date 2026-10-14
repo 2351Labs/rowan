@@ -19,7 +19,7 @@
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @slot toolbar
+ * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
  * @slot footer

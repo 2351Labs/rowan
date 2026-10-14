@@ -216,7 +216,7 @@ function isDevelopmentEnvironment() {
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @slot toolbar
+ * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
  * @slot footer
@@ -291,6 +291,7 @@ export class RowanTable extends BaseElement {
 
   #root = null;
   #tableViewport = null;
+  #toolbarSlotEl = null;
   #captionEl = null;
   #captionSlotEl = null;
   #captionTextEl = null;
@@ -651,18 +652,20 @@ export class RowanTable extends BaseElement {
     if (!this.#root) {
       this.renderRoot.innerHTML = `
         <div class="wrapper">
-          <div class="toolbar" part="toolbar"><slot name="toolbar"></slot></div>
-          <div class="table-scroll" part="viewport">
-            <table class="table" part="table" aria-busy="false">
-              <caption class="caption" part="caption">
-                <slot name="caption"></slot>
-                <span class="caption-text"></span>
-              </caption>
-              <thead class="thead" part="thead">
-                <tr part="tr"></tr>
-              </thead>
-              <tbody class="tbody" part="tbody"></tbody>
-            </table>
+          <div class="chrome">
+            <div class="toolbar" part="toolbar"><slot name="toolbar"></slot></div>
+            <div class="table-scroll" part="viewport">
+              <table class="table" part="table" aria-busy="false">
+                <caption class="caption" part="caption">
+                  <slot name="caption"></slot>
+                  <span class="caption-text"></span>
+                </caption>
+                <thead class="thead" part="thead">
+                  <tr part="tr"></tr>
+                </thead>
+                <tbody class="tbody" part="tbody"></tbody>
+              </table>
+            </div>
           </div>
           <div class="footer" part="footer">
             <slot name="footer"></slot>
@@ -676,6 +679,7 @@ export class RowanTable extends BaseElement {
       `;
 
       this.#root = this.renderRoot.firstElementChild;
+      this.#toolbarSlotEl = this.renderRoot.querySelector('slot[name="toolbar"]');
       this.#tableViewport = this.renderRoot.querySelector(".table-scroll");
       this.#captionEl = this.renderRoot.querySelector("caption");
       this.#captionSlotEl = this.renderRoot.querySelector('caption slot[name="caption"]');
@@ -733,6 +737,8 @@ export class RowanTable extends BaseElement {
       });
 
       this.listen(this.#captionSlotEl, "slotchange", () => this.requestRender());
+      this.listen(this.#toolbarSlotEl, "slotchange", () => this.#syncToolbarSlot());
+      this.#syncToolbarSlot();
     }
 
     this.#validateConfiguration();
@@ -779,6 +785,16 @@ export class RowanTable extends BaseElement {
       const position = positions.get(row.dataset.renderKey || row.dataset.rowId);
       if (position !== undefined) row.setAttribute("aria-rowindex", String(position));
     });
+  }
+
+  #syncToolbarSlot() {
+    if (!this.#root || !this.#toolbarSlotEl) return;
+
+    const hasToolbar = this.#toolbarSlotEl.assignedNodes({ flatten: true }).some((node) => {
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim().length > 0;
+      return node.nodeType === Node.ELEMENT_NODE;
+    });
+    this.#root.toggleAttribute("data-has-toolbar", hasToolbar);
   }
 
   #renderCaption() {
