@@ -71,6 +71,11 @@ export const frameworkTestPlugins = [
   ]),
 ];
 
+export const testTimeouts = {
+  browserStartTimeout: 60000,
+};
+
 export default {
+  ...testTimeouts,
   plugins: frameworkTestPlugins,
 };
