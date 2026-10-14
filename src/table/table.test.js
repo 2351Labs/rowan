@@ -498,6 +498,46 @@ describe("rowan-table", () => {
     table.remove();
   });
 
+  it("drops the tinted header band when a toolbar is present", async () => {
+    const paint = (table) => {
+      table.style.setProperty("--rowan-color-fg", "rgb(0, 0, 0)");
+      table.style.setProperty("--rowan-color-bg", "rgb(255, 255, 255)");
+    };
+    const config = {
+      columns: [{ id: "name", header: "Name" }],
+      rows: [{ id: "1", name: "Ada" }],
+    };
+
+    const standalone = document.createElement("rowan-table");
+    standalone.config = config;
+    paint(standalone);
+
+    const withToolbar = document.createElement("rowan-table");
+    withToolbar.config = config;
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    withToolbar.append(toolbar);
+    paint(withToolbar);
+
+    document.body.append(standalone, withToolbar);
+    await nextMicrotask();
+    await waitForStyles(standalone);
+    await waitForStyles(withToolbar);
+
+    const standaloneHead = getComputedStyle(standalone.shadowRoot.querySelector(".thead"));
+    const toolbarHead = getComputedStyle(withToolbar.shadowRoot.querySelector(".thead"));
+    const standaloneLabel = getComputedStyle(standalone.shadowRoot.querySelector(".th"));
+    const toolbarLabel = getComputedStyle(withToolbar.shadowRoot.querySelector(".th"));
+
+    expect(toolbarHead.backgroundColor).to.equal("rgb(255, 255, 255)");
+    expect(standaloneHead.backgroundColor).to.not.equal(toolbarHead.backgroundColor);
+    expect(toolbarLabel.color).to.equal(standaloneLabel.color);
+    expect(toolbarLabel.fontWeight).to.equal(standaloneLabel.fontWeight);
+
+    standalone.remove();
+    withToolbar.remove();
+  });
+
   it("keeps a standalone table card when the toolbar slot is empty", async () => {
     const table = document.createElement("rowan-table");
     table.config = {

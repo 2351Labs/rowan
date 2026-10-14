@@ -127,6 +127,7 @@ import {
   type RowanTableMessages,
   type RowanTableSelectable,
 } from "@rowan-ui/core/table";
+import { applyQuickFind } from "@rowan-ui/core/table-quick-find";
 import { RowanTableToolbar } from "@rowan-ui/core/table-toolbar";
 import {
   TABLE_VIEW_STATE_VERSION,
@@ -329,6 +330,8 @@ filterBuilder.fields = [filterField];
 filterBuilder.filters = [filterPredicate];
 const filteredRows = applyFilters([{ role: "Admin" }], [filterPredicate], [filterField]);
 void filteredRows;
+const foundRows = applyQuickFind([{ role: "Admin" }], "admin", ["role"]);
+void foundRows;
 const formField: RowanFormField = document.createElement("rowan-form-field");
 const formLayout: RowanFormLayout = document.createElement("rowan-form-layout");
 const formWizard: RowanFormWizard = document.createElement("rowan-form-wizard");

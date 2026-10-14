@@ -8,6 +8,7 @@ export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
 export { RowanBoxPlotChart } from "./box-plot-chart/box-plot-chart.js";
 export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
 export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
+export { applyQuickFind } from "./table-quick-find/table-quick-find.js";
 export { RowanButton } from "./button/button.js";
 export { RowanCard } from "./card/card.js";
 export { RowanCheckbox } from "./checkbox/checkbox.js";

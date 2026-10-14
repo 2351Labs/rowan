@@ -1,9 +1,11 @@
 import { applyFilters } from "../../src/filter-builder/apply-filters.js";
+import { applyQuickFind } from "../../src/table-quick-find/table-quick-find.js";
 import "../../src/bulk-actions-bar/bulk-actions-bar.js";
 import "../../src/filter-builder/filter-builder.js";
 import "../../src/row-details-panel/row-details-panel.js";
 import "../../src/table-toolbar/table-toolbar.js";
 import "../../src/table/table.js";
+import "../../src/text-field/text-field.js";
 
 const INVESTIGATIONS = [
   {
@@ -77,6 +79,8 @@ const FILTER_FIELDS = [
   },
 ];
 
+const FIND_KEYS = ["title", "status", "priority", "owner", "service"];
+
 const COLUMNS = [
   { id: "title", header: "Investigation", minWidth: "16rem" },
   {
@@ -137,6 +141,7 @@ export function createInvestigationQueue(options = {}) {
   const onRoute = typeof options.onRoute === "function" ? options.onRoute : null;
   const tableId = `docs-investigation-queue-${queueInstance}`;
   let filters = [];
+  let findQuery = "";
   let rows = cloneRows(INVESTIGATIONS);
 
   const root = document.createElement("section");
@@ -173,7 +178,14 @@ export function createInvestigationQueue(options = {}) {
   filterBuilder.appearance = "toolbar";
   filterBuilder.label = "Filter investigations";
   filterBuilder.fields = FILTER_FIELDS;
-  toolbar.append(toolbarTitle, filterBuilder);
+
+  const find = document.createElement("rowan-text-field");
+  find.slot = "end";
+  find.type = "search";
+  find.label = "Find";
+  find.placeholder = "Find";
+
+  toolbar.append(toolbarTitle, filterBuilder, find);
 
   const bulkActions = document.createElement("rowan-bulk-actions-bar");
   bulkActions.slot = "toolbar";
@@ -189,10 +201,19 @@ export function createInvestigationQueue(options = {}) {
   details.label = "Investigation details";
 
   const renderRows = (message = "") => {
-    const filteredRows = applyFilters(rows, filters, FILTER_FIELDS);
+    const filteredRows = applyFilters(
+      applyQuickFind(rows, findQuery, FIND_KEYS),
+      filters,
+      FILTER_FIELDS,
+    );
     table.rows = cloneRows(filteredRows);
     summary.textContent = message || `Showing ${rowLabel(filteredRows.length)}.`;
   };
+
+  find.addEventListener("rowan-change", (event) => {
+    findQuery = String(event.detail?.value ?? "");
+    renderRows();
+  });
 
   filterBuilder.addEventListener("rowan-filter-change", (event) => {
     filters = Array.isArray(event.detail?.filters)

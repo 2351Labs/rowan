@@ -9,10 +9,14 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - `rowan-filter-builder` additive `appearance`: `panel` (default, always-open rows) or `toolbar` (chips on the bar, field/operator/value in `rowan-popover`). Frozen filters stay the top-level AND list. Chip remove is a user action and emits `rowan-filter-change`. Nested groups stay experimental and render as one chip. Recipes opt in; the table toolbar wraps only `panel` builders.
+- `applyQuickFind(rows, query, keys?)` in `@rowan-ui/core/table-quick-find`. Host-owned text search; not a filter type and not table-view-state. Empty query returns a copy of rows. Case-insensitive contains on string, number, and boolean cells. Nested objects are skipped.
 
 ### Changed
 
 - Investigation queue and saved table view set `appearance="toolbar"` so filters sit as chips beside the view title. A `panel` builder in the toolbar default slot still wraps to a full second row.
+- Table headers drop the 5% tint when a toolbar is present so the toolbar is the loud chrome. Standalone tables keep the tinted header band. Sticky headers still cover scrolling rows with the opaque table background.
+- `rowan-table-toolbar` `column-picker` is a `rowan-dropdown` instead of native `details`.
+- Investigation queue and saved table view add a `rowan-text-field type="search"` on the toolbar and compose `applyFilters(applyQuickFind(...), filters, fields)` in the host.
 
 ### Fixed
 
