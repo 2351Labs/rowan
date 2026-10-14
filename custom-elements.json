@@ -9315,7 +9315,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Triggered dropdown surface.",
+          "description": "Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab.\nOther focusable panel content is tabbed through; Tab at the edge closes.",
           "name": "RowanDropdown",
           "cssParts": [
             {
@@ -13654,6 +13654,14 @@
           "declaration": {
             "name": "visibleColumns",
             "module": "./table-csv/table-csv.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyQuickFind",
+          "declaration": {
+            "name": "applyQuickFind",
+            "module": "./table-quick-find/table-quick-find.js"
           }
         },
         {
@@ -26742,6 +26750,68 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table-quick-find/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "applyQuickFind",
+          "declaration": {
+            "name": "applyQuickFind",
+            "module": "./table-quick-find.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table-quick-find/table-quick-find.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "applyQuickFind",
+          "parameters": [
+            {
+              "name": "rows",
+              "type": {
+                "text": "object[]"
+              }
+            },
+            {
+              "name": "query",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "keys",
+              "optional": true,
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "Filters rows by a host-owned quick-find query. Empty or whitespace query\nreturns a shallow copy of the list. Matching is case-insensitive contains\non string, number, and boolean cells. Nested objects and arrays are skipped.\nThis is not a filter-builder type and is not stored in table-view-state.",
+          "return": {
+            "type": {
+              "text": "object[]"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "applyQuickFind",
+          "declaration": {
+            "name": "applyQuickFind",
+            "module": "src/table-quick-find/table-quick-find.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table-toolbar/index.js",
       "declarations": [],
       "exports": [
@@ -26761,7 +26831,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance=\"toolbar\"` chips stay on the first row.",
+          "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance=\"toolbar\"` chips stay on the first row. `column-picker` is a `rowan-dropdown`.",
           "name": "RowanTableToolbar",
           "cssProperties": [
             {

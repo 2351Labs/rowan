@@ -385,6 +385,10 @@
       "types": "./src/table-csv/table-csv.d.ts",
       "default": "./src/table-csv/table-csv.js"
     },
+    "./table-quick-find": {
+      "types": "./src/table-quick-find/table-quick-find.d.ts",
+      "default": "./src/table-quick-find/table-quick-find.js"
+    },
     "./table-view-state": {
       "types": "./src/table-view-state/table-view-state.d.ts",
       "default": "./src/table-view-state/table-view-state.js"

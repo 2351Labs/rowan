@@ -223,6 +223,12 @@ describe("rowan-table-toolbar", () => {
 
     const picker = toolbar.shadowRoot.querySelector(".column-picker");
     expect(picker.hidden).to.equal(false);
+    expect(picker.localName).to.equal("rowan-dropdown");
+    const trigger = picker.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+    expect(picker.open).to.equal(true);
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("true");
     const team = toolbar.shadowRoot.querySelector('input[data-column-id="team"]');
     team.checked = false;
     team.dispatchEvent(new Event("change", { bubbles: true }));
@@ -230,9 +236,17 @@ describe("rowan-table-toolbar", () => {
 
     expect(table.columns.find((column) => column.id === "team").hidden).to.equal(true);
     expect(table.shadowRoot.querySelector('th[data-column-id="team"]')).to.equal(null);
+    expect(picker.open).to.equal(true);
+    expect(toolbar.shadowRoot.querySelector('input[data-column-id="team"]')).to.equal(team);
 
     const name = toolbar.shadowRoot.querySelector('input[data-column-id="name"]');
     expect(name.disabled).to.equal(true);
+
+    team.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", bubbles: true, composed: true, cancelable: true }),
+    );
+    await settle();
+    expect(picker.open).to.equal(false);
   });
 
   it("keeps column-picker changes after reconnecting", async () => {
@@ -283,9 +297,7 @@ describe("rowan-table-toolbar", () => {
     expect(toolbar.shadowRoot.querySelector('[part="selection-text"]').textContent).to.equal(
       "1 ausgewahlt",
     );
-    expect(toolbar.shadowRoot.querySelector(".column-picker-summary").textContent).to.equal(
-      "Spalten",
-    );
+    expect(toolbar.shadowRoot.querySelector(".column-picker").label).to.equal("Spalten");
     expect(
       toolbar.shadowRoot.querySelector(".column-picker-menu").getAttribute("aria-label"),
     ).to.equal("Sichtbare Spalten");

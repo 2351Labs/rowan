@@ -1,5 +1,6 @@
 /**
- * Triggered dropdown surface.
+ * Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab.
+ * Other focusable panel content is tabbed through; Tab at the edge closes.
  * @tag rowan-dropdown
  * @attr {boolean} open
  * @attr {string} label

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import { isFocusable } from "../lib/focus.js";
 import { keys } from "../lib/keys.js";
 import {
   isTopmostOverlay,
@@ -14,7 +15,8 @@ import "../button/button.js";
 let dropdownId = 0;
 
 /**
- * Triggered dropdown surface.
+ * Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab.
+ * Other focusable panel content is tabbed through; Tab at the edge closes.
  * @tag rowan-dropdown
  * @attr {boolean} open
  * @attr {string} label
@@ -126,7 +128,7 @@ export class RowanDropdown extends BaseElement {
     const next = {
       "aria-controls": this.#panelId,
       "aria-expanded": this.open ? "true" : "false",
-      "aria-haspopup": "menu",
+      "aria-haspopup": this.#hasPopupType(),
     };
 
     for (const [attribute, value] of Object.entries(next)) {
@@ -166,7 +168,7 @@ export class RowanDropdown extends BaseElement {
     if (this.#removeDocumentPointerListener) return;
     pushDismissible(this);
     this.#showPanelPopover();
-    this.#focusFirstMenuItem();
+    this.#focusPanelContents();
     this.#removeDocumentPointerListener = this.listen(document, "pointerdown", (event) => {
       if (!isTopmostOverlay(this)) return;
       const path = event.composedPath();
@@ -191,10 +193,57 @@ export class RowanDropdown extends BaseElement {
       return;
     }
 
-    if (event.key === keys.TAB) {
+    if (event.key !== keys.TAB) return;
+
+    if (this.#isMenuPopup() || this.#panelFocusables().length === 0) {
+      noteDismissibleClose();
+      this.#setOpenFromUser(false);
+      return;
+    }
+
+    if (this.#tabLeavesPanel(event)) {
       noteDismissibleClose();
       this.#setOpenFromUser(false);
     }
+  }
+
+  #isMenuPopup() {
+    return Boolean(this.querySelector("rowan-menu-item"));
+  }
+
+  #hasPopupType() {
+    if (this.#isMenuPopup()) return "menu";
+    return this.#panelFocusables().length > 0 ? "true" : "menu";
+  }
+
+  #panelFocusables() {
+    const nodes = [];
+    for (const child of this.children) {
+      if (!(child instanceof HTMLElement) || child.slot === "trigger") continue;
+      if (isFocusable(child)) nodes.push(child);
+      for (const nested of child.querySelectorAll(
+        "input, select, textarea, button, a[href], [tabindex]",
+      )) {
+        if (isFocusable(nested)) nodes.push(nested);
+      }
+    }
+    return nodes;
+  }
+
+  #tabLeavesPanel(event) {
+    const focusables = this.#panelFocusables();
+    const active =
+      focusables.find((node) => node === event.target || node.contains(event.target)) ?? null;
+    if (!active) {
+      if (!event.shiftKey && focusables.length > 0) {
+        event.preventDefault();
+        focusables[0].focus({ preventScroll: true });
+        return false;
+      }
+      return true;
+    }
+    if (event.shiftKey) return active === focusables[0];
+    return active === focusables[focusables.length - 1];
   }
 
   #handleMenuChange(event) {
@@ -240,15 +289,31 @@ export class RowanDropdown extends BaseElement {
     if (!this.#panel || !this.#trigger) return;
 
     const bounds = this.#trigger.getBoundingClientRect();
-    this.#panel.style.top = `${Math.round(bounds.bottom + 5)}px`;
-    this.#panel.style.left = `${Math.round(bounds.left)}px`;
+    const offset = 5;
+    this.#panel.style.top = `${Math.round(bounds.bottom + offset)}px`;
+
+    const width = this.#panel.getBoundingClientRect().width;
+    const margin = 8;
+    let left = bounds.left;
+    if (width && left + width > window.innerWidth - margin) {
+      left = bounds.right - width;
+    }
+    if (width) {
+      const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+      left = Math.min(Math.max(margin, left), maxLeft);
+    }
+    this.#panel.style.left = `${Math.round(left)}px`;
   }
 
-  #focusFirstMenuItem() {
+  #focusPanelContents() {
     const item = this.querySelector("rowan-menu-item");
     if (item && typeof item.focus === "function") {
       item.focus({ preventScroll: true });
+      return;
     }
+
+    const first = this.#panelFocusables()[0];
+    if (first) first.focus({ preventScroll: true });
   }
 
   #setOpenFromUser(open) {

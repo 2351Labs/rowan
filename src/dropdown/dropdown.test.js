@@ -97,6 +97,73 @@ describe("rowan-dropdown", () => {
     expect(dialog.open).to.equal(true);
   });
 
+  it("tabs through non-menu panel content and closes at the edge", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    const first = document.createElement("input");
+    first.type = "checkbox";
+    first.setAttribute("data-id", "first");
+    const last = document.createElement("input");
+    last.type = "checkbox";
+    last.setAttribute("data-id", "last");
+    dropdown.append(first, last);
+    document.body.append(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+
+    expect(dropdown.open).to.equal(true);
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("true");
+    expect(document.activeElement).to.equal(first);
+
+    const innerTab = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    first.dispatchEvent(innerTab);
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    const edgeTab = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    last.dispatchEvent(edgeTab);
+    await settle();
+    expect(dropdown.open).to.equal(false);
+    expect(edgeTab.defaultPrevented).to.equal(false);
+  });
+
+  it("flips the panel to the trigger end when it would overflow the viewport", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    dropdown.style.position = "fixed";
+    dropdown.style.top = "8px";
+    dropdown.style.right = "0";
+    dropdown.style.left = "auto";
+    const menu = document.createElement("div");
+    menu.style.width = "16rem";
+    menu.textContent = "Columns";
+    dropdown.append(menu);
+    document.body.append(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+
+    const panel = dropdown.shadowRoot.querySelector(".panel");
+    const panelRect = panel.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    expect(panelRect.right).to.be.at.most(window.innerWidth);
+    expect(panelRect.left).to.be.at.least(0);
+    expect(panelRect.left).to.be.below(triggerRect.left);
+  });
+
   it("closes on Tab so focus can leave", async () => {
     const dropdown = document.createElement("rowan-dropdown");
     const menu = document.createElement("rowan-menu");
