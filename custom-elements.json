@@ -10522,6 +10522,12 @@
               "name": "filter"
             },
             {
+              "name": "chip"
+            },
+            {
+              "name": "chip-remove"
+            },
+            {
               "name": "field-select"
             },
             {
@@ -10550,6 +10556,23 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "appearance",
+              "return": {
+                "type": {
+                  "text": "\"panel\" | \"toolbar\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"panel\" | \"toolbar\""
+                  }
+                }
+              ]
+            },
             {
               "kind": "field",
               "name": "table"
@@ -10778,6 +10801,13 @@
               "type": {
                 "text": "boolean"
               }
+            },
+            {
+              "name": "appearance",
+              "type": {
+                "text": "\"panel\"|\"toolbar\""
+              },
+              "description": "Layout. Default `panel` (always-open rows). `toolbar` shows chips and edits a row in `rowan-popover`."
             }
           ],
           "superclass": {
@@ -26731,7 +26761,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.",
+          "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance=\"toolbar\"` chips stay on the first row.",
           "name": "RowanTableToolbar",
           "cssProperties": [
             {

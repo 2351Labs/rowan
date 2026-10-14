@@ -43,6 +43,7 @@ describe("investigation queue documentation workflow", () => {
       const details = queue.querySelector("rowan-row-details-panel");
       expect(table).to.not.equal(null);
       expect(builder).to.not.equal(null);
+      expect(builder.appearance).to.equal("toolbar");
       expect(bulkActions).to.not.equal(null);
       expect(details).to.not.equal(null);
       expect(table.rows).to.have.length(5);

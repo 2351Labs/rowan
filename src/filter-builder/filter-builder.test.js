@@ -370,4 +370,185 @@ describe("rowan-filter-builder", () => {
     await settle();
     expect(events).to.deep.equal(["add", "add"]);
   });
+
+  it("keeps panel rows by default and coerces unknown appearance values", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [{ id: "name", label: "Name" }];
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.appearance).to.equal("panel");
+    expect(builder.hasAttribute("appearance")).to.equal(false);
+    expect(builder.shadowRoot.querySelector('[part="filter"]')).to.exist;
+    expect(builder.shadowRoot.querySelector("rowan-chip")).to.equal(null);
+
+    builder.appearance = "drawer";
+    await settle();
+    expect(builder.appearance).to.equal("panel");
+    expect(builder.hasAttribute("appearance")).to.equal(false);
+    expect(builder.shadowRoot.querySelector('[part="filter"]')).to.exist;
+  });
+
+  it("renders toolbar chips and emits remove from a chip without opening rows", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [
+      { id: "role", label: "Role", options: ["Admin", "Editor"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [{ id: "role-filter", field: "role", operator: "equals", value: "Editor" }];
+    const events = [];
+    builder.addEventListener("rowan-filter-change", (event) => events.push(event.detail));
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.getAttribute("appearance")).to.equal("toolbar");
+    expect(builder.shadowRoot.querySelector(".filters > [part='filter']")).to.equal(null);
+    expect(builder.shadowRoot.querySelector(".filters > .chip-item")).to.exist;
+    expect(builder.shadowRoot.querySelector('[data-action="add-group"]').hidden).to.equal(true);
+    expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Role is Editor");
+
+    builder.shadowRoot.querySelector('[data-action="remove"]').click();
+    await settle();
+
+    expect(builder.filters).to.deep.equal([]);
+    expect(events).to.deep.equal([
+      {
+        action: "remove",
+        filter: { id: "role-filter", field: "role", operator: "equals", value: "Editor" },
+        filters: [],
+      },
+    ]);
+    expect(builder.shadowRoot.querySelector("rowan-chip")).to.equal(null);
+  });
+
+  it("opens a popover editor from a toolbar chip and keeps parent updates silent", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [
+      { id: "role", label: "Role", options: ["Admin", "Editor"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [{ id: "role-filter", field: "role", operator: "equals", value: "Editor" }];
+    const events = [];
+    builder.addEventListener("rowan-filter-change", (event) => events.push(event.detail));
+    document.body.append(builder);
+    await settle();
+
+    const leaked = [];
+    builder.addEventListener("rowan-change", (event) => leaked.push(event.detail));
+
+    const trigger = builder.shadowRoot.querySelector(".chip-trigger");
+    expect(trigger.getAttribute("aria-label")).to.equal("Role is Editor");
+    trigger.click();
+    await settle();
+
+    const popover = builder.shadowRoot.querySelector("rowan-popover");
+    const fieldSelect = popover.querySelector('[data-filter-part="field"]');
+    const operatorSelect = popover.querySelector('[data-filter-part="operator"]');
+    const valueSelect = popover.querySelector('[data-filter-part="value"]');
+    expect(popover.open).to.equal(true);
+    expect(fieldSelect.value).to.equal("role");
+    expect(operatorSelect.value).to.equal("equals");
+    expect(valueSelect.value).to.equal("Editor");
+    expect(leaked).to.deep.equal([]);
+
+    valueSelect.focus();
+    changeValue(valueSelect, "Admin");
+    await settle();
+
+    expect(events).to.have.length(1);
+    expect(events[0].action).to.equal("update");
+    expect(builder.filters).to.deep.equal([
+      { id: "role-filter", field: "role", operator: "equals", value: "Admin" },
+    ]);
+    expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Role is Admin");
+    expect(builder.shadowRoot.querySelector(".chip-trigger").getAttribute("aria-label")).to.equal(
+      "Role is Admin",
+    );
+    expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(true);
+    expect(builder.shadowRoot.activeElement?.dataset.filterPart).to.equal("value");
+    expect(leaked).to.deep.equal([]);
+
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    await settle();
+    expect(events).to.have.length(1);
+    expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal(
+      "Name contains Ada",
+    );
+    expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(false);
+  });
+
+  it("opens the new chip editor when adding from the toolbar appearance", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [{ id: "name", label: "Name" }];
+    document.body.append(builder);
+    await settle();
+
+    builder.shadowRoot.querySelector('[data-action="add"]').click();
+    await settle();
+
+    expect(builder.filters).to.have.length(1);
+    expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Name contains");
+    expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(true);
+    expect(
+      builder.shadowRoot.querySelector("rowan-popover [data-filter-part='field']").value,
+    ).to.equal("name");
+  });
+
+  it("renders an experimental group as one toolbar chip", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [
+      { id: "role", label: "Role", options: ["Admin", "Editor"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [
+      {
+        id: "role-group",
+        join: "or",
+        filters: [
+          { id: "admin-filter", field: "role", operator: "equals", value: "Admin" },
+          { id: "editor-filter", field: "role", operator: "equals", value: "Editor" },
+        ],
+      },
+    ];
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.shadowRoot.querySelectorAll("rowan-chip")).to.have.length(1);
+    expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Match any (2)");
+
+    builder.shadowRoot.querySelector(".chip-trigger").click();
+    await settle();
+
+    const popover = builder.shadowRoot.querySelector("rowan-popover");
+    expect(popover.open).to.equal(true);
+    expect(popover.querySelector('[data-filter-part="join"]').value).to.equal("or");
+    expect(popover.querySelectorAll('[part="filter"]')).to.have.length(2);
+  });
+
+  it("keeps toolbar chip actions after reconnecting", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [{ id: "name", label: "Name" }];
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    document.body.append(builder);
+    await settle();
+
+    const events = [];
+    builder.addEventListener("rowan-filter-change", (event) => events.push(event.detail.action));
+    builder.remove();
+    document.body.append(builder);
+    await settle();
+
+    builder.shadowRoot.querySelector('[data-action="remove"]').click();
+    await settle();
+    builder.shadowRoot.querySelector('[data-action="add"]').click();
+    await settle();
+    expect(events).to.deep.equal(["remove", "add"]);
+    expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(true);
+  });
 });

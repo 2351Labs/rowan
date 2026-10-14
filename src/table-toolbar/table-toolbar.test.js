@@ -349,6 +349,46 @@ describe("rowan-table-toolbar", () => {
     expect(getComputedStyle(content).order).to.equal("0");
   });
 
+  it("keeps a toolbar-appearance filter-builder on the title row", async () => {
+    const table = createTable();
+    table.style.inlineSize = "40rem";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Open orders";
+    const builder = document.createElement("rowan-filter-builder");
+    builder.appearance = "toolbar";
+    builder.fields = [{ id: "name", label: "Name" }];
+    builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
+    toolbar.append(title, builder);
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+    await waitForStyles(table);
+    await waitForStyles(toolbar);
+    await waitForStyles(builder);
+
+    const content = toolbar.shadowRoot.querySelector('[part="content"]');
+    const titleBox = title.getBoundingClientRect();
+    const builderBox = builder.getBoundingClientRect();
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(false);
+    expect(getComputedStyle(content).flexBasis).to.not.equal("100%");
+    expect(builderBox.top).to.be.lessThan(titleBox.bottom + 1);
+    expect(builderBox.bottom).to.be.greaterThan(titleBox.top - 1);
+
+    builder.appearance = "panel";
+    await settle();
+    await waitForStyles(builder);
+
+    expect(toolbar.hasAttribute("data-has-filter-builder")).to.equal(true);
+    expect(getComputedStyle(content).flexBasis).to.equal("100%");
+    expect(builder.getBoundingClientRect().top).to.be.greaterThan(
+      title.getBoundingClientRect().bottom - 1,
+    );
+  });
+
   it("keeps a nested filter-builder full-width when bulk actions share the slot", async () => {
     const table = createTable();
     table.style.inlineSize = "40rem";

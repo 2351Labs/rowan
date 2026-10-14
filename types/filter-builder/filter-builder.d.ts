@@ -6,11 +6,14 @@
  * @attr {string} add-label
  * @attr {string} clear-label
  * @attr {boolean} disabled
+ * @attr {"panel"|"toolbar"} appearance - Layout. Default `panel` (always-open rows). `toolbar` shows chips and edits a row in `rowan-popover`.
  * @slot actions - Controls displayed beside the filter actions
  * @csspart builder
  * @csspart header
  * @csspart filters
  * @csspart filter
+ * @csspart chip
+ * @csspart chip-remove
  * @csspart field-select
  * @csspart operator-select
  * @csspart value-control
@@ -33,6 +36,10 @@ export class RowanFilterBuilder extends BaseElement {
     delegatesFocus: boolean;
   };
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  /** @param {"panel" | "toolbar"} value */
+  set appearance(value: "toolbar" | "panel");
+  /** @returns {"panel" | "toolbar"} */
+  get appearance(): "toolbar" | "panel";
   set table(value: null);
   get table(): null;
   set forTable(value: string);
@@ -69,10 +76,16 @@ export type RowanFilterBuilderMessages = {
   addLabel?: string | undefined;
   booleanFalse?: string | undefined;
   booleanTrue?: string | undefined;
+  chipLabel?:
+    string | ((context: { field: string; operator: string; value: string }) => string) | undefined;
   chooseValue?: string | undefined;
   clearLabel?: string | undefined;
+  editFilter?: string | ((context: { field: string }) => string) | undefined;
+  editGroup?: string | undefined;
   empty?: string | undefined;
   fieldLabel?: string | undefined;
+  groupChip?:
+    string | ((context: { join: string; joinLabel: string; count: string }) => string) | undefined;
   groupJoinAnd?: string | undefined;
   groupJoinOr?: string | undefined;
   groupJoinLabel?: string | undefined;

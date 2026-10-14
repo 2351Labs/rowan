@@ -6,6 +6,20 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-filter-builder` additive `appearance`: `panel` (default, always-open rows) or `toolbar` (chips on the bar, field/operator/value in `rowan-popover`). Frozen filters stay the top-level AND list. Chip remove is a user action and emits `rowan-filter-change`. Nested groups stay experimental and render as one chip. Recipes opt in; the table toolbar wraps only `panel` builders.
+
+### Changed
+
+- Investigation queue and saved table view set `appearance="toolbar"` so filters sit as chips beside the view title. A `panel` builder in the toolbar default slot still wraps to a full second row.
+
+### Fixed
+
+- Toolbar chip editor restores focus to the field, operator, or value that committed the change, instead of jumping back to the field selector.
+- Toolbar chip trigger accessible name uses the full chip label, including operator and value.
+- Internal `rowan-popover` `rowan-change` no longer leaks from `rowan-filter-builder`. Consumers still receive `rowan-filter-change`.
+
 ## 0.18.0 - 2026-10-13
 
 ### Added

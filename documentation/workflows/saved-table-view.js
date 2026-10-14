@@ -173,6 +173,7 @@ export function createSavedTableView(options = {}) {
 
   const filterBuilder = document.createElement("rowan-filter-builder");
   filterBuilder.forTable = tableId;
+  filterBuilder.appearance = "toolbar";
   filterBuilder.label = "Filter work items";
   filterBuilder.fields = FILTER_FIELDS;
 
