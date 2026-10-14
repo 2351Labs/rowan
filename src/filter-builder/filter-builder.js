@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
@@ -7,10 +8,13 @@ import {
   observeTableAvailability,
   resolveRowanTable,
 } from "../lib/table-selection.js";
+import "../chip/chip.js";
+import "../popover/popover.js";
 import { cloneFilterNode, isFilterGroup } from "./apply-filters.js";
 
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
 const VALUELESS_OPERATORS = new Set(["is-empty", "is-not-empty"]);
+const APPEARANCES = new Set(["panel", "toolbar"]);
 
 const DEFAULT_OPERATORS = {
   text: [
@@ -66,10 +70,15 @@ const DEFAULT_MESSAGES = Object.freeze({
   addLabel: "Add filter",
   booleanFalse: "False",
   booleanTrue: "True",
+  chipLabel: ({ field, operator, value }) =>
+    value ? `${field} ${operator} ${value}` : `${field} ${operator}`,
   chooseValue: "Choose value",
   clearLabel: "Clear filters",
+  editFilter: "Edit {field} filter",
+  editGroup: "Edit group",
   empty: "No filters applied.",
   fieldLabel: "Filter field",
+  groupChip: "{joinLabel} ({count})",
   groupJoinAnd: "Match all",
   groupJoinOr: "Match any",
   groupJoinLabel: "Group conjunction",
@@ -166,10 +175,14 @@ function cloneFilter(filter) {
  * @property {string} [addLabel]
  * @property {string} [booleanFalse]
  * @property {string} [booleanTrue]
+ * @property {string | ((context: { field: string, operator: string, value: string }) => string)} [chipLabel]
  * @property {string} [chooseValue]
  * @property {string} [clearLabel]
+ * @property {string | ((context: { field: string }) => string)} [editFilter]
+ * @property {string} [editGroup]
  * @property {string} [empty]
  * @property {string} [fieldLabel]
+ * @property {string | ((context: { join: string, joinLabel: string, count: string }) => string)} [groupChip]
  * @property {string} [groupJoinAnd]
  * @property {string} [groupJoinOr]
  * @property {string} [groupJoinLabel]
@@ -247,11 +260,14 @@ function isFilterableColumn(column) {
  * @attr {string} add-label
  * @attr {string} clear-label
  * @attr {boolean} disabled
+ * @attr {"panel"|"toolbar"} appearance - Layout. Default `panel` (always-open rows). `toolbar` shows chips and edits a row in `rowan-popover`.
  * @slot actions - Controls displayed beside the filter actions
  * @csspart builder
  * @csspart header
  * @csspart filters
  * @csspart filter
+ * @csspart chip
+ * @csspart chip-remove
  * @csspart field-select
  * @csspart operator-select
  * @csspart value-control
@@ -272,7 +288,14 @@ export class RowanFilterBuilder extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./filter-builder.css", import.meta.url).href;
-  static observedAttributes = ["for-table", "label", "add-label", "clear-label", "disabled"];
+  static observedAttributes = [
+    "for-table",
+    "label",
+    "add-label",
+    "clear-label",
+    "disabled",
+    "appearance",
+  ];
   static upgradeProperties = [
     "table",
     "forTable",
@@ -282,6 +305,7 @@ export class RowanFilterBuilder extends BaseElement {
     "addLabel",
     "clearLabel",
     "disabled",
+    "appearance",
     "messages",
   ];
 
@@ -301,6 +325,7 @@ export class RowanFilterBuilder extends BaseElement {
   #addGroupButton = null;
   #clearButton = null;
   #messages = {};
+  #editingFilterId = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -313,11 +338,25 @@ export class RowanFilterBuilder extends BaseElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "appearance" && rewriteEnumAttribute(this, name, newValue, APPEARANCES, "panel")) {
+      return;
+    }
+
     super.attributeChangedCallback(name, oldValue, newValue);
 
     if (name === "for-table" && oldValue !== newValue) {
       this.#syncTable();
     }
+  }
+
+  /** @returns {"panel" | "toolbar"} */
+  get appearance() {
+    return normalizeEnum(this.readString("appearance", "panel"), APPEARANCES, "panel");
+  }
+
+  /** @param {"panel" | "toolbar"} value */
+  set appearance(value) {
+    reflectEnum(this, "appearance", value, APPEARANCES, "panel");
   }
 
   get table() {
@@ -482,6 +521,9 @@ export class RowanFilterBuilder extends BaseElement {
       this.listen(this.#builder, "change", (event) => {
         this.#handleChange(event);
       });
+      this.listen(this.#builder, "rowan-change", (event) => {
+        this.#handlePopoverChange(event);
+      });
     }
 
     this.#syncTable();
@@ -498,9 +540,10 @@ export class RowanFilterBuilder extends BaseElement {
     this.#emptyState.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
     this.#addButton.disabled = this.disabled || fields.length === 0;
     this.#addGroupButton.disabled = this.disabled || fields.length === 0;
+    this.#addGroupButton.hidden = this.appearance === "toolbar";
     this.#clearButton.disabled = this.disabled || this.#filters.length === 0;
     this.#clearButton.hidden = this.#filters.length === 0;
-    this.#emptyState.hidden = this.#filters.length > 0;
+    this.#emptyState.hidden = this.appearance === "toolbar" || this.#filters.length > 0;
     this.#renderFilters(fields);
     this.#applyDefaultA11y();
   }
@@ -682,13 +725,113 @@ export class RowanFilterBuilder extends BaseElement {
   #renderFilters(fields) {
     this.#filtersContainer.textContent = "";
     this.#filters.forEach((node) => {
+      if (this.appearance === "toolbar") {
+        this.#filtersContainer.append(this.#createFilterChip(node, fields));
+        return;
+      }
+
       this.#filtersContainer.append(
         isFilterGroup(node) ? this.#createGroup(node, fields) : this.#createFilterRow(node, fields),
       );
     });
   }
 
-  #createGroup(group, fields) {
+  #createFilterChip(node, fields) {
+    const item = document.createElement("div");
+    item.className = "chip-item";
+    item.part = "chip";
+    item.dataset.filterId = node.id;
+    item.setAttribute("role", "listitem");
+
+    const isGroup = isFilterGroup(node);
+    const field = isGroup ? null : this.#fieldForId(node.field, fields);
+    const popover = document.createElement("rowan-popover");
+    popover.dataset.filterId = node.id;
+    popover.label = isGroup
+      ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "editGroup")
+      : resolveMessage(this.#messages, DEFAULT_MESSAGES, "editFilter", {
+          field: field?.label ?? node.field,
+        });
+
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.type = "button";
+    trigger.className = "chip-trigger";
+    trigger.disabled = this.disabled;
+    trigger.setAttribute("aria-label", popover.label);
+
+    const chip = document.createElement("rowan-chip");
+    chip.size = "sm";
+    chip.textContent = this.#chipLabel(node, fields);
+    trigger.append(chip);
+
+    const editor = isGroup
+      ? this.#createGroup(node, fields, { showRemove: false })
+      : this.#createFilterRow(node, fields, { showRemove: false });
+    editor.classList.add("editor");
+    popover.append(trigger, editor);
+    if (this.#editingFilterId === node.id) popover.open = true;
+
+    const removeButton = document.createElement("button");
+    removeButton.className = "chip-remove";
+    removeButton.part = "chip-remove";
+    removeButton.type = "button";
+    removeButton.dataset.action = "remove";
+    removeButton.dataset.filterId = node.id;
+    removeButton.disabled = this.disabled;
+    removeButton.textContent = "×";
+    removeButton.setAttribute(
+      "aria-label",
+      isGroup
+        ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "removeGroup")
+        : resolveMessage(this.#messages, DEFAULT_MESSAGES, "removeFilter", {
+            field: field?.label ?? node.field,
+          }),
+    );
+
+    item.append(popover, removeButton);
+    return item;
+  }
+
+  #chipLabel(node, fields) {
+    if (isFilterGroup(node)) {
+      const joinLabel = resolveMessage(
+        this.#messages,
+        DEFAULT_MESSAGES,
+        node.join === "or" ? "groupJoinOr" : "groupJoinAnd",
+      );
+      return resolveMessage(this.#messages, DEFAULT_MESSAGES, "groupChip", {
+        join: node.join,
+        joinLabel,
+        count: String(node.filters.length),
+      });
+    }
+
+    const field = this.#fieldForId(node.field, fields);
+    return resolveMessage(this.#messages, DEFAULT_MESSAGES, "chipLabel", {
+      field: field?.label ?? node.field,
+      operator: this.#operatorLabel(node.operator),
+      value: this.#displayValue(node, field),
+    });
+  }
+
+  #displayValue(filter, field) {
+    if (VALUELESS_OPERATORS.has(filter.operator)) return "";
+    if (!filter.value) return "";
+
+    if (field?.type === "boolean") {
+      return resolveMessage(
+        this.#messages,
+        DEFAULT_MESSAGES,
+        filter.value === "false" ? "booleanFalse" : "booleanTrue",
+      );
+    }
+
+    const option = field?.options?.find((item) => item.value === filter.value);
+    return option?.label ?? filter.value;
+  }
+
+  #createGroup(group, fields, options = {}) {
     const card = document.createElement("div");
     card.className = "group";
     card.part = "group";
@@ -731,7 +874,8 @@ export class RowanFilterBuilder extends BaseElement {
       resolveMessage(this.#messages, DEFAULT_MESSAGES, "removeGroup"),
     );
 
-    header.append(joinSelect, removeButton);
+    if (options.showRemove === false) header.append(joinSelect);
+    else header.append(joinSelect, removeButton);
 
     const children = document.createElement("div");
     children.className = "group-filters";
@@ -754,7 +898,7 @@ export class RowanFilterBuilder extends BaseElement {
     return card;
   }
 
-  #createFilterRow(filter, fields) {
+  #createFilterRow(filter, fields, options = {}) {
     const row = document.createElement("div");
     row.className = "filter";
     row.part = "filter";
@@ -821,7 +965,8 @@ export class RowanFilterBuilder extends BaseElement {
       }),
     );
 
-    row.append(fieldSelect, operatorSelect, valueControl, removeButton);
+    if (options.showRemove === false) row.append(fieldSelect, operatorSelect, valueControl);
+    else row.append(fieldSelect, operatorSelect, valueControl, removeButton);
     return row;
   }
 
@@ -916,6 +1061,19 @@ export class RowanFilterBuilder extends BaseElement {
     });
   }
 
+  #handlePopoverChange(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || target.localName !== "rowan-popover") return;
+
+    const filterId = target.dataset.filterId ?? "";
+    if (target.open) {
+      this.#editingFilterId = filterId;
+      return;
+    }
+
+    if (this.#editingFilterId === filterId) this.#editingFilterId = null;
+  }
+
   #handleClick(event) {
     const control = event
       .composedPath()
@@ -1002,6 +1160,7 @@ export class RowanFilterBuilder extends BaseElement {
       this.#usedIds(),
       field,
     );
+    if (this.appearance === "toolbar") this.#editingFilterId = filter.id;
     this.#commitUserFilters([...this.#filters, filter], "add", filter);
   }
 
@@ -1045,6 +1204,7 @@ export class RowanFilterBuilder extends BaseElement {
     const filter = this.#findNode(this.#filters, id);
     if (!filter) return;
 
+    if (this.#editingFilterId === id) this.#editingFilterId = null;
     this.#commitUserFilters(this.#removeNode(this.#filters, id), "remove", filter);
   }
 
@@ -1082,6 +1242,7 @@ export class RowanFilterBuilder extends BaseElement {
   #commitClearedFilters() {
     if (this.#filters.length === 0) return;
 
+    this.#editingFilterId = null;
     this.#commitUserFilters([], "clear", null);
   }
 

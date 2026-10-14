@@ -68,7 +68,7 @@
   --rowan-table-toolbar-selection-padding: 0px;
 }
 
-.wrapper[data-has-toolbar] .toolbar ::slotted(rowan-filter-builder) {
+.wrapper[data-has-toolbar] .toolbar ::slotted(rowan-filter-builder:not([appearance="toolbar"])) {
   flex: 1 1 100%;
 }
 

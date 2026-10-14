@@ -384,26 +384,26 @@ Implemented components currently include:
 Everything in the catalog above is usable. The listed dashboard hosts are
 frozen; pin the version if you depend on them. This is not `1.0`.
 
-| Surface                         | Status | Notes                                                                                                                                                                                                             |
-| ------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                                                                                                     |
-| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                                                    |
-| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                                                      |
-| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.                            |
-| `rowan-filter-builder`          | Stable | Frozen top-level AND list of `{ id, field, operator, value }`. Nested `{ join, filters }` groups are experimental. Unknown types and operators coerce.                                                            |
-| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                |
-| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                   |
-| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                               |
-| `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                   |
-| `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                        |
-| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                                    |
-| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data. Additive `orientation`: `vertical` (default) or `horizontal`.                                                         |
-| `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. Independent fills, not stacked. `referenceLines` are frozen on this host only. |
-| `rowan-stacked-area-chart`      | Stable | Positive values stack from zero as filled bands. Null and negatives are no-data. Additive `stack-mode` (`absolute` default, or `normalized` 0–100). Independent fills stay on `rowan-area-chart`.                 |
-| `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only. Additive `orientation` and `stack-mode` (`absolute` default, or `normalized` 0–100).              |
-| `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                                                |
-| `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                                                          |
-| `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                                                 |
+| Surface                         | Status | Notes                                                                                                                                                                                                                                                    |
+| ------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primitives, forms, overlays     | Stable | Attributes, properties, slots, events, and parts are settled.                                                                                                                                                                                            |
+| `rowan-table` config and events | Stable | `columns`, `rows`, selection, sorting, and paging are settled.                                                                                                                                                                                           |
+| Table virtualization            | Stable | `virtualized`, `virtualItemSize`, `virtualOverscan`, and `--rowan-table-virtual-height` will not be renamed.                                                                                                                                             |
+| `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.                                                                   |
+| `rowan-filter-builder`          | Stable | Frozen top-level AND list of `{ id, field, operator, value }`. Nested `{ join, filters }` groups are experimental. Unknown types and operators coerce. Additive `appearance`: `panel` (default, always-open rows) or `toolbar` (chips + popover editor). |
+| `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                                                       |
+| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                                                          |
+| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                                                                      |
+| `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                                                          |
+| `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                                                               |
+| `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                                                                           |
+| `rowan-bar-chart`               | Stable | Small categorical bars. `series` / `labels` / `config` / `valueFormatter`. Null is no-data. Additive `orientation`: `vertical` (default) or `horizontal`.                                                                                                |
+| `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. Independent fills, not stacked. `referenceLines` are frozen on this host only.                                        |
+| `rowan-stacked-area-chart`      | Stable | Positive values stack from zero as filled bands. Null and negatives are no-data. Additive `stack-mode` (`absolute` default, or `normalized` 0–100). Independent fills stay on `rowan-area-chart`.                                                        |
+| `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only. Additive `orientation` and `stack-mode` (`absolute` default, or `normalized` 0–100).                                                     |
+| `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                                                                                       |
+| `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                                                                                                 |
+| `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                                                                                        |
 
 ## Rowan Data State
 
@@ -1385,7 +1385,7 @@ For `type: "custom"`, `cell.render` can return text or a `Node` directly. A `cel
 Use `rowan-table-toolbar` for filters and density. Set `column-picker` to show or
 hide columns (`column.hidden`). Use `createTableCsv(columns, rows)` from
 `@rowan-ui/core/table-csv` for CSV text; the app owns download. `visibleColumns()`
-filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome, and title plus bulk actions share one row. The table toolbar slot is one chrome with the table: no nested card, no gap, toolbar as the top edge. `rowan-filter-builder` in that slot (or inside the toolbar) drops its own border. `rowan-bulk-actions-bar` in that slot is a band of toolbar controls; the selected-row count is status text, not a nested chip. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list and experimental groups. Set `caption-visually-hidden` when the toolbar already names the view, or when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
+filters hidden ids. Use `rowan-bulk-actions-bar` as the selection header when rows are selected. If both are slotted, the toolbar hides its “N selected” count so the bulk bar owns that chrome, and title plus bulk actions share one row. The table toolbar slot is one chrome with the table: no nested card, no gap, toolbar as the top edge. `rowan-filter-builder` in that slot (or inside the toolbar) drops its own border. `appearance="toolbar"` shows applied filters as chips and edits a row in `rowan-popover`; default `panel` keeps always-open rows. A `panel` builder in the toolbar default slot wraps to a full second row; `toolbar` chips stay on the first row with the title. `rowan-bulk-actions-bar` in that slot is a band of toolbar controls; the selected-row count is status text, not a nested chip. `applyFilters(rows, filters, fields)` from `@rowan-ui/core/filter-builder` applies the frozen operator list and experimental groups. Set `caption-visually-hidden` when the toolbar already names the view, or when the caption should name the table for assistive technology without repeating a page heading. `rowan-filter-builder` owns a property-only filter model and emits it for the application to apply to rows. `rowan-row-details-panel` opens from `rowan-row-activate` and renders a read-only row record. All table-operation components bind to a containing table through its `toolbar` slot, a property reference, or `for-table` where applicable. Storybook **Workflows / Bulk confirm** shows Flag and Assign driver with `rowan-dialog` `alert`.
 
 ```html
 <rowan-table id="members-table">
@@ -1433,7 +1433,10 @@ const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
 Keep the source rows in application state. The filter builder reports a frozen
 top-level AND list (`filters[]` of `{ id, field, operator, value }`) and does not
 mutate `table.rows`. Nested `{ join: "and" | "or", filters }` groups are
-experimental. Import `applyFilters` from `@rowan-ui/core/filter-builder`
+experimental. Additive `appearance` is `panel` (default, always-open rows) or
+`toolbar` (chips on the bar; the field/operator/value editor is a `rowan-popover`).
+It does not change the filter model. Recipes set `appearance="toolbar"`; the
+default stays `panel`. Import `applyFilters` from `@rowan-ui/core/filter-builder`
 and assign the derived rows. Field `type` is `text`, `number`,
 `date`, `boolean`, or `select`. Unknown types become `text`, or `select` when
 `options` are present. Unknown operators on a filter become that field's first
@@ -1456,7 +1459,11 @@ ownership. Table columns may use
 
 ```html
 <rowan-table id="members-table">
-  <rowan-filter-builder id="member-filters" slot="toolbar"></rowan-filter-builder>
+  <rowan-filter-builder
+    id="member-filters"
+    slot="toolbar"
+    appearance="toolbar"
+  ></rowan-filter-builder>
 </rowan-table>
 <rowan-row-details-panel for-table="members-table"></rowan-row-details-panel>
 

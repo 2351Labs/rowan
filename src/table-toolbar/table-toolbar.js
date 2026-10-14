@@ -14,6 +14,16 @@ function arraysEqual(left, right) {
   return left.every((value, index) => value === right[index]);
 }
 
+function isPanelFilterBuilder(node) {
+  if (!node || node.localName !== "rowan-filter-builder") return false;
+
+  const appearance =
+    typeof node.appearance === "string" && node.appearance
+      ? node.appearance
+      : (node.getAttribute("appearance") ?? "panel");
+  return appearance !== "toolbar";
+}
+
 const DEFAULT_MESSAGES = Object.freeze({
   columnPickerLabel: "Columns",
   selectionStatus: "{count} {selectionLabel}",
@@ -28,7 +38,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  */
 
 /**
- * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
@@ -80,6 +90,7 @@ export class RowanTableToolbar extends BaseElement {
   #columnPickerSummary = null;
   #columnPickerMenu = null;
   #messages = {};
+  #filterBuilderAppearanceObserver = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -87,6 +98,8 @@ export class RowanTableToolbar extends BaseElement {
   }
 
   disconnectedCallback() {
+    this.#filterBuilderAppearanceObserver?.disconnect();
+    this.#filterBuilderAppearanceObserver = null;
     this.#unbindTable();
     super.disconnectedCallback();
   }
@@ -223,10 +236,29 @@ export class RowanTableToolbar extends BaseElement {
   #syncFilterBuilderSlot() {
     if (!this.#contentSlotEl) return;
 
-    const hasFilterBuilder = this.#contentSlotEl
-      .assignedElements()
-      .some((node) => node.localName === "rowan-filter-builder");
-    this.toggleAttribute("data-has-filter-builder", hasFilterBuilder);
+    const assigned = this.#contentSlotEl.assignedElements();
+    const hasPanelFilterBuilder = assigned.some((node) => isPanelFilterBuilder(node));
+    this.toggleAttribute("data-has-filter-builder", hasPanelFilterBuilder);
+    this.#observeFilterBuilderAppearance(assigned);
+  }
+
+  #observeFilterBuilderAppearance(assigned) {
+    this.#filterBuilderAppearanceObserver?.disconnect();
+    const builders = assigned.filter((node) => node.localName === "rowan-filter-builder");
+    if (builders.length === 0 || typeof MutationObserver === "undefined") {
+      this.#filterBuilderAppearanceObserver = null;
+      return;
+    }
+
+    this.#filterBuilderAppearanceObserver = new MutationObserver(() => {
+      this.#syncFilterBuilderSlot();
+    });
+    for (const builder of builders) {
+      this.#filterBuilderAppearanceObserver.observe(builder, {
+        attributes: true,
+        attributeFilter: ["appearance"],
+      });
+    }
   }
 
   #syncColumnPicker() {

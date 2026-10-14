@@ -1,6 +1,7 @@
 import "./filter-builder.js";
 import { applyFilters } from "./apply-filters.js";
 import "../table/table.js";
+import "../table-toolbar/table-toolbar.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const ROWS = [
@@ -40,29 +41,38 @@ export default {
   tags: ["autodocs"],
   argTypes: {
     label: { control: "text" },
+    appearance: { control: "select", options: ["panel", "toolbar"] },
     fields: { control: "object" },
     filters: { control: "object" },
   },
   args: {
     label: "Filters",
+    appearance: "panel",
     fields: FIELDS,
     filters: [{ id: "role-filter", field: "role", operator: "equals", value: "Editor" }],
   },
 };
 
 export const ControlledTable = {
+  args: { appearance: "toolbar" },
   parameters: createEventScriptParameters({
     steps: [
-      "Change an existing filter value.",
-      "Add a filter and choose a field, operator, and value.",
+      "Click a chip to edit field, operator, and value in the popover.",
+      "Remove a chip or add a filter from the bar.",
       "Observe the table update through consumer-owned row state.",
     ],
     events: ["rowan-filter-change"],
   }),
-  render: ({ label, fields, filters }) => {
+  render: ({ label, appearance, fields, filters }) => {
     const table = createTable();
+    table.config = { ...table.config, captionVisuallyHidden: true };
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Workspace members";
     const builder = document.createElement("rowan-filter-builder");
-    builder.slot = "toolbar";
+    builder.appearance = appearance;
     builder.label = label;
     builder.fields = fields;
     builder.filters = filters;
@@ -72,7 +82,8 @@ export const ControlledTable = {
     });
 
     table.rows = filterRows(builder.filters).map((row) => ({ ...row }));
-    table.append(builder);
+    toolbar.append(title, builder);
+    table.append(toolbar);
     return table;
   },
 };
@@ -80,9 +91,16 @@ export const ControlledTable = {
 export const InferredTableFields = {
   render: () => {
     const table = createTable();
+    table.config = { ...table.config, captionVisuallyHidden: true };
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    const title = document.createElement("span");
+    title.slot = "start";
+    title.textContent = "Workspace members";
     const builder = document.createElement("rowan-filter-builder");
-    builder.slot = "toolbar";
-    table.append(builder);
+    builder.appearance = "toolbar";
+    toolbar.append(title, builder);
+    table.append(toolbar);
     return table;
   },
 };

@@ -170,6 +170,7 @@ export function createInvestigationQueue(options = {}) {
 
   const filterBuilder = document.createElement("rowan-filter-builder");
   filterBuilder.forTable = tableId;
+  filterBuilder.appearance = "toolbar";
   filterBuilder.label = "Filter investigations";
   filterBuilder.fields = FILTER_FIELDS;
   toolbar.append(toolbarTitle, filterBuilder);

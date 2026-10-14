@@ -136,7 +136,7 @@ const FIRST_SCREEN_MARKUP_SNIPPET = `<rowan-app-layout>
   <div slot="header">Orders</div>
   <rowan-data-state state="ready">
     <rowan-table>
-      <rowan-filter-builder slot="toolbar"></rowan-filter-builder>
+      <rowan-filter-builder slot="toolbar" appearance="toolbar"></rowan-filter-builder>
     </rowan-table>
     <p slot="empty">No matching rows.</p>
   </rowan-data-state>
@@ -377,7 +377,7 @@ const BULK_ACTIONS_BAR_SNIPPET = `<rowan-table id="members-table">
 </script>`;
 
 const FILTER_BUILDER_SNIPPET = `<rowan-table id="members-table">
-  <rowan-filter-builder id="member-filters" slot="toolbar"></rowan-filter-builder>
+  <rowan-filter-builder id="member-filters" slot="toolbar" appearance="toolbar"></rowan-filter-builder>
 </rowan-table>
 
 <script type="module">
@@ -3672,10 +3672,10 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. appearance=toolbar shows chips and edits a row in a popover; the default panel keeps always-open rows. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
-            <rowan-filter-builder id="docs-filter-builder" slot="toolbar"></rowan-filter-builder>
+            <rowan-filter-builder id="docs-filter-builder" slot="toolbar" appearance="toolbar"></rowan-filter-builder>
           </rowan-table>
         </div>
         <pre id="filter-builder-events" class="table-events"></pre>
@@ -3683,7 +3683,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. The top-level list is frozen AND of id, field, operator, and value. Nested groups with join and filters are experimental. applyFilters(rows, filters, fields) evaluates the tree. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. The top-level list is frozen AND of id, field, operator, and value. Nested groups with join and filters are experimental. appearance is panel or toolbar; it does not change the filter model. applyFilters(rows, filters, fields) evaluates the tree. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
     `,

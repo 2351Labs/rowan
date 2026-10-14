@@ -12,6 +12,43 @@
   display: none;
 }
 
+:host([appearance="toolbar"]) {
+  background: transparent;
+  border-width: 0;
+  display: inline-flex;
+  max-inline-size: 100%;
+  vertical-align: middle;
+}
+
+:host([appearance="toolbar"]) .builder {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rowan-filter-builder-control-gap);
+  padding: 0;
+}
+
+:host([appearance="toolbar"]) .header {
+  order: 2;
+}
+
+:host([appearance="toolbar"]) .title,
+:host([appearance="toolbar"]) .empty-state {
+  display: none;
+}
+
+:host([appearance="toolbar"]) .filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rowan-filter-builder-control-gap);
+}
+
+:host([appearance="toolbar"]) .filter,
+:host([appearance="toolbar"]) .editor {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .builder {
   display: grid;
   gap: var(--rowan-filter-builder-gap);
@@ -141,8 +178,63 @@
   opacity: 0.6;
 }
 
-.clear-button[hidden] {
+.clear-button[hidden],
+.add-button[hidden] {
   display: none;
+}
+
+.chip-item {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.1rem;
+  min-inline-size: 0;
+}
+
+.chip-trigger {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  padding: 0;
+}
+
+.chip-trigger:focus-visible,
+.chip-remove:focus-visible {
+  outline: 2px solid var(--rowan-filter-builder-control-focus);
+  outline-offset: 2px;
+}
+
+.chip-remove {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--rowan-filter-builder-muted-fg);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--rowan-filter-builder-font-size);
+  line-height: 1;
+  min-block-size: 1.5rem;
+  min-inline-size: 1.5rem;
+  padding: 0;
+}
+
+.chip-remove:hover:not(:disabled) {
+  background: var(--rowan-filter-builder-hover-bg);
+  border-color: var(--rowan-filter-builder-border);
+}
+
+.chip-trigger:disabled,
+.chip-remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.editor {
+  display: grid;
+  gap: var(--rowan-filter-builder-control-gap);
+  min-inline-size: 16rem;
 }
 
 @media (max-width: 42rem) {

@@ -5,7 +5,7 @@
  * @property {string} [visibleColumnsLabel]
  */
 /**
- * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
