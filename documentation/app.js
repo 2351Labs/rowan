@@ -2128,7 +2128,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="sparkline-contract">
         <h2>Contract</h2>
-        <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
+        <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. Stroke width is CSS pixels (<code>--rowan-sparkline-stroke-width</code>, default <code>1.75px</code>) and does not thicken when the plot scales. Size the plot with <code>--rowan-sparkline-height</code> (default <code>2.25rem</code>). Hover dots still scale with the viewBox. Page-wide labeled trends belong on rowan-trend-chart. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
         ${codeBlock(SPARKLINE_SNIPPET, "html")}
       </section>
     `,

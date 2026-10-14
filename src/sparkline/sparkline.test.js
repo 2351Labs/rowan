@@ -4,6 +4,29 @@ import "./sparkline.js";
 
 const nextMicrotask = () => Promise.resolve();
 
+async function waitForSparklineStyles(chart) {
+  const stylesheet = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
+  const line = chart.shadowRoot.querySelector("path.line");
+  if (!stylesheet || !line) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules() && getComputedStyle(line).vectorEffect === "non-scaling-stroke") {
+      return;
+    }
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+
+  throw new Error("Sparkline styles did not apply within 60 animation frames.");
+}
+
 async function renderSparkline(options = {}) {
   const chart = document.createElement("rowan-sparkline");
   if (options.label !== undefined) chart.label = options.label;
@@ -54,6 +77,23 @@ describe("rowan-sparkline", () => {
 
     expect(commands).to.deep.equal(["M", "M"]);
     expect(getComputedStyle(path).animationName).to.equal("none");
+  });
+
+  it("keeps stroke width in CSS pixels when the plot scales", async () => {
+    const chart = await renderSparkline({ values: [4, 8] });
+    const line = chart.shadowRoot.querySelector("path.line");
+    await waitForSparklineStyles(chart);
+
+    expect(getComputedStyle(line).vectorEffect).to.equal("non-scaling-stroke");
+    expect(getComputedStyle(line).strokeWidth).to.equal("1.75px");
+
+    chart.style.setProperty("--rowan-sparkline-height", "12rem");
+    await nextMicrotask();
+    expect(getComputedStyle(line).strokeWidth).to.equal("1.75px");
+
+    chart.style.setProperty("--rowan-sparkline-stroke-width", "3px");
+    await nextMicrotask();
+    expect(getComputedStyle(line).strokeWidth).to.equal("3px");
   });
 
   it("colors rising and falling series from the data when tone is unset", async () => {

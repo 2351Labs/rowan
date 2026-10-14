@@ -23985,7 +23985,13 @@
           "name": "RowanSparkline",
           "cssProperties": [
             {
+              "name": "--rowan-sparkline-height"
+            },
+            {
               "name": "--rowan-sparkline-stroke"
+            },
+            {
+              "name": "--rowan-sparkline-stroke-width"
             },
             {
               "name": "--rowan-sparkline-success"
