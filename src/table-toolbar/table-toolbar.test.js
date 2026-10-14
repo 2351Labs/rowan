@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../checkbox/checkbox.js";
 import "../table/table.js";
@@ -177,6 +178,33 @@ describe("rowan-table-toolbar", () => {
 
     const name = toolbar.shadowRoot.querySelector('input[data-column-id="name"]');
     expect(name.disabled).to.equal(true);
+  });
+
+  it("keeps column-picker changes after reconnecting", async () => {
+    const table = createTable();
+    table.config = {
+      ...table.config,
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team" },
+      ],
+    };
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.columnPicker = true;
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+
+    await reconnectHost(table);
+    await settle();
+
+    const team = toolbar.shadowRoot.querySelector('input[data-column-id="team"]');
+    team.checked = false;
+    team.dispatchEvent(new Event("change", { bubbles: true }));
+    await settle();
+
+    expect(table.columns.find((column) => column.id === "team").hidden).to.equal(true);
   });
 
   it("uses property-only messages for generated selection and column-picker copy", async () => {

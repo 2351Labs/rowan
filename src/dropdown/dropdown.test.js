@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./dropdown.js";
 import "../icon-button/icon-button.js";
 import "../dialog/dialog.js";
@@ -144,6 +145,29 @@ describe("rowan-dropdown", () => {
     item.shadowRoot.querySelector("button").click();
     await settle();
 
+    expect(dropdown.open).to.equal(false);
+  });
+
+  it("keeps trigger and document dismissal after reconnecting", async () => {
+    const outside = document.createElement("button");
+    const dropdown = document.createElement("rowan-dropdown");
+    document.body.append(outside, dropdown);
+    await settle();
+
+    await reconnectHost(dropdown);
+    await settle();
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    await reconnectHost(dropdown);
+    await settle();
+    expect(dropdown.open).to.equal(true);
+
+    outside.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    await settle();
     expect(dropdown.open).to.equal(false);
   });
 

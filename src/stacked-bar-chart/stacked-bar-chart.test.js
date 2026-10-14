@@ -1,4 +1,9 @@
 import { expect } from "@esm-bundle/chai";
+import {
+  assertPointControlAlignment,
+  assertPointControlKeyboardNavigation,
+  assertPointControlLifecycle,
+} from "../../test/chart-interactions.js";
 import "./stacked-bar-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -155,14 +160,27 @@ describe("rowan-stacked-bar-chart", () => {
       labels: ["Mon", "Tue"],
       series: [{ id: 'sales"q', label: "Sales", values: [4, 8] }],
     });
-    const buttons = [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
-    buttons[0].focus();
-    buttons[0].dispatchEvent(
-      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
-    );
-    await nextMicrotask();
+    await assertPointControlKeyboardNavigation(chart);
+  });
 
-    expect(chart.shadowRoot.activeElement).to.equal(buttons[1]);
+  it("keeps overlay hit targets on SVG bars in LTR and RTL hosts", async () => {
+    const chart = await renderChart({ interactive: true });
+    await assertPointControlAlignment({
+      chart,
+      pointSelector: "rect.bar",
+      pointKey: "incoming::0",
+    });
+  });
+
+  it("restores point focus after rerender and hides hover after reconnects", async () => {
+    const chart = await renderChart({ interactive: true });
+    await assertPointControlLifecycle({
+      chart,
+      rerender: () => {
+        chart.labels = ["Mon", "Tue"];
+      },
+      markSelector: "rect.bar",
+    });
   });
 
   it("draws reference lines and lists them in the matching table", async () => {

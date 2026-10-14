@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./app-layout.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -86,6 +87,22 @@ describe("rowan-app-layout", () => {
         composed: true,
       },
     ]);
+  });
+
+  it("keeps its navigation toggle after reconnecting", async () => {
+    const layout = document.createElement("rowan-app-layout");
+    document.body.append(layout);
+    await nextMicrotask();
+
+    const events = [];
+    layout.addEventListener("rowan-change", (event) => events.push(event.detail));
+
+    await reconnectHost(layout);
+    layout.shadowRoot.querySelector(".navigation-toggle").click();
+    await nextMicrotask();
+
+    expect(layout.navigationOpen).to.equal(true);
+    expect(events).to.deep.equal([{ navigationOpen: true, previousOpen: false }]);
   });
 
   it("makes compact navigation inert while closed and restores toggle focus after Escape", async () => {

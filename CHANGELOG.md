@@ -17,6 +17,12 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Getting-started docs pin `@rowan-ui/core@0.17.0` and show a first screen of `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
 - Experimental `rowan-funnel-chart` uses the shared overlay keyboard, alignment, and reconnect fixture.
+- Stable `rowan-trend-chart`, `rowan-area-chart`, `rowan-stacked-area-chart`, and `rowan-stacked-bar-chart` use the shared overlay keyboard, alignment, and reconnect fixture. `rowan-donut-chart` uses the shared keyboard and reconnect fixture; its button list is not a physical overlay.
+- Graduation-gate reconnect coverage for table, forms, overlays, app-layout, sparkline, and related first-screen hosts.
+
+### Fixed
+
+- `rowan-popover` and `rowan-tooltip` keep `open` when reconnected. Disconnect-driven `focusout` and `mouseleave` no longer count as user dismiss.
 
 ## 0.17.0 - 2026-10-08
 

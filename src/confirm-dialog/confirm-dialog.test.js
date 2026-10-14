@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./confirm-dialog.js";
 
 const wait = () => Promise.resolve();
@@ -131,6 +132,32 @@ describe("rowan-confirm-dialog", () => {
     expect(closeButton.hidden).to.equal(true);
     expect(overlay.getAttribute("role")).to.equal("alertdialog");
     expect(dialog.shadowRoot.activeElement).to.equal(cancel);
+  });
+
+  it("restores confirm and cancel controls after reconnecting while open", async () => {
+    const dialog = document.createElement("rowan-confirm-dialog");
+    dialog.open = true;
+    document.body.append(dialog);
+    await waitForNestedRender();
+
+    await reconnectHost(dialog);
+    await waitForNestedRender();
+
+    const innerDialog = dialog.shadowRoot.querySelector("rowan-dialog");
+    const native = innerDialog.shadowRoot.querySelector("dialog");
+    expect(dialog.open).to.equal(true);
+    expect(native.open).to.equal(true);
+    expect(native.matches(":modal")).to.equal(true);
+
+    const confirmed = [];
+    dialog.addEventListener("rowan-confirm", (event) => confirmed.push(event.detail));
+    dialog.shadowRoot
+      .querySelector(".confirm")
+      .dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await wait();
+
+    expect(dialog.open).to.equal(false);
+    expect(confirmed).to.deep.equal([{ reason: "confirm-button" }]);
   });
 
   it("uses property-only messages for default dialog copy without emitting an event", async () => {

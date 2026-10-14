@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./sparkline.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -90,6 +91,39 @@ describe("rowan-sparkline", () => {
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
     expect(chart.shadowRoot.querySelector("circle.hover-point")).to.equal(null);
+  });
+
+  it("hides hover after reconnects", async () => {
+    const chart = await renderSparkline({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "200px";
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    const showHover = () => {
+      const box = plot.getBoundingClientRect();
+      plot.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          clientX: box.left + box.width - 2,
+          clientY: box.top + 4,
+        }),
+      );
+    };
+
+    showHover();
+    expect(hover.hidden).to.equal(false);
+
+    chart.remove();
+    expect(hover.hidden).to.equal(true);
+
+    await reconnectHost(chart);
+    showHover();
+    expect(hover.hidden).to.equal(false);
+
+    chart.remove();
+    expect(hover.hidden).to.equal(true);
   });
 
   it("localizes generated chart copy and number values through properties", async () => {

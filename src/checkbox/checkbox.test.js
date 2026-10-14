@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./checkbox.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -33,6 +34,23 @@ describe("rowan-checkbox", () => {
     const input = element.shadowRoot.querySelector('input[type="checkbox"]');
     input.click();
 
+    expect(eventCount).to.equal(1);
+  });
+
+  it("keeps user input handling after reconnecting", async () => {
+    const element = document.createElement("rowan-checkbox");
+    document.body.append(element);
+    await nextMicrotask();
+
+    let eventCount = 0;
+    element.addEventListener("rowan-change", () => {
+      eventCount += 1;
+    });
+
+    await reconnectHost(element);
+    element.shadowRoot.querySelector('input[type="checkbox"]').click();
+
+    expect(element.checked).to.equal(true);
     expect(eventCount).to.equal(1);
   });
 

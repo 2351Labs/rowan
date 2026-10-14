@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "../badge/badge.js";
 import "../button/button.js";
 import "../checkbox/checkbox.js";
@@ -1038,6 +1039,28 @@ describe("rowan-table", () => {
     ]);
     expect(firstRowNameAsc).to.equal("Ada");
     expect(firstRowNameDesc).to.equal("Zara");
+  });
+
+  it("keeps sort and page listeners after reconnecting", async () => {
+    const table = document.createElement("rowan-table");
+    table.config = createStepFiveConfig();
+    document.body.append(table);
+    await nextMicrotask();
+
+    const sorts = [];
+    const pages = [];
+    table.addEventListener("rowan-sort", (event) => sorts.push(event.detail));
+    table.addEventListener("rowan-page-change", (event) => pages.push(event.detail));
+
+    await reconnectHost(table);
+
+    table.shadowRoot.querySelector('th[data-column-id="name"] .sort-button').click();
+    await nextMicrotask();
+    table.shadowRoot.querySelector('[data-action="next-page"]').click();
+    await nextMicrotask();
+
+    expect(sorts).to.deep.equal([{ id: "name", dir: "asc" }]);
+    expect(pages).to.deep.equal([{ index: 1, page: 2, size: 2 }]);
   });
 
   it("emits rowan-page-change and pages visible rows", async () => {

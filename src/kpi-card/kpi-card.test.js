@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./kpi-card.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -78,6 +79,25 @@ describe("rowan-kpi-card", () => {
     expect(parts.indexOf("label")).to.be.below(parts.indexOf("value"));
     expect(parts.indexOf("value")).to.be.below(parts.indexOf("chart"));
     expect(card.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);
+  });
+
+  it("keeps slotted chart updates after reconnecting", async () => {
+    const card = await renderCard({
+      label: "Open incidents",
+      value: 12,
+    });
+    expect(card.shadowRoot.querySelector("[part='chart']").hidden).to.equal(true);
+
+    await reconnectHost(card);
+    const chart = document.createElement("span");
+    chart.slot = "chart";
+    chart.textContent = "chart";
+    card.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(card.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);
+    expect(card.shadowRoot.querySelector("[part='value']").textContent).to.equal("12");
   });
 
   it("shows an accessible empty value and a loading skeleton", async () => {

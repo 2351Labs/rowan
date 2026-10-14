@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./listbox.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -77,6 +78,21 @@ describe("rowan-listbox", () => {
     expect(detail.selected).to.deep.equal(["design"]);
     expect(detail.option).to.equal(design);
     expect(eventMeta).to.deep.equal({ bubbles: true, composed: true });
+  });
+
+  it("keeps selection and keyboard handling after reconnecting", async () => {
+    const { listbox, design, engineering } = await renderListbox();
+    const changes = [];
+    listbox.addEventListener("rowan-change", (event) => changes.push(event.detail.value));
+
+    await reconnectHost(listbox);
+
+    design.click();
+    expect(changes).to.deep.equal(["design"]);
+
+    design.focus();
+    keydown(design, "ArrowDown");
+    expect(document.activeElement).to.equal(engineering);
   });
 
   it("moves roving focus with the Arrow keys and skips disabled options", async () => {

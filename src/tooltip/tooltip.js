@@ -23,8 +23,10 @@ export class RowanTooltip extends BaseElement {
   #trigger = null;
   #triggerSlot = null;
   #tooltip = null;
+  #dismissGeneration = 0;
 
   disconnectedCallback() {
+    this.#dismissGeneration += 1;
     this.#hideTooltipPopover();
     this.#releaseTrigger();
     super.disconnectedCallback();
@@ -60,14 +62,13 @@ export class RowanTooltip extends BaseElement {
       this.listen(this, "mouseenter", () => {
         this.open = true;
       });
-      this.listen(this, "mouseleave", () => {
-        this.open = false;
-      });
+      this.listen(this, "mouseleave", () => this.#scheduleDismiss());
       this.listen(this, "focusin", () => {
         this.open = true;
       });
       this.listen(this, "focusout", (event) => {
-        if (!this.#isNodeInTooltip(event.relatedTarget)) this.open = false;
+        if (this.#isNodeInTooltip(event.relatedTarget)) return;
+        this.#scheduleDismiss();
       });
       this.listen(this, "keydown", (event) => this.#handleKeydown(event));
     }
@@ -181,6 +182,21 @@ export class RowanTooltip extends BaseElement {
 
     event.preventDefault();
     this.open = false;
+  }
+
+  #scheduleDismiss() {
+    const generation = this.#dismissGeneration;
+    queueMicrotask(() => {
+      if (generation !== this.#dismissGeneration) return;
+      if (!this.isConnected || !this.open) return;
+      if (
+        this.#isNodeInTooltip(document.activeElement) ||
+        this.#isNodeInTooltip(this.shadowRoot.activeElement)
+      ) {
+        return;
+      }
+      this.open = false;
+    });
   }
 
   #isNodeInTooltip(node) {

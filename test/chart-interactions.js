@@ -76,7 +76,14 @@ export async function assertPointControlLifecycle({ chart, rerender, markSelecto
   expect(chart.shadowRoot.activeElement === restored).to.equal(true);
 
   const hover = chart.shadowRoot.querySelector(".hover");
-  expect(hover).to.exist;
+  if (!hover) {
+    chart.remove();
+    document.body.append(chart);
+    await settleChartRender(chart);
+    expect(chart.shadowRoot.querySelector(`button[data-point-key="${key}"]`)).to.exist;
+    return;
+  }
+
   const showHover = () => {
     const mark = chart.shadowRoot.querySelector(markSelector);
     expect(mark).to.exist;
@@ -103,8 +110,9 @@ export async function assertPointControlKeyboardNavigation(chart) {
   expect(buttons.length).to.be.at.least(2);
 
   const [first, second] = buttons;
-  expect(first.getAttribute("aria-label")).to.be.a("string").and.not.empty;
-  expect(second.getAttribute("aria-label")).to.be.a("string").and.not.empty;
+  const nameOf = (button) => (button.getAttribute("aria-label") || button.textContent || "").trim();
+  expect(nameOf(first)).to.not.equal("");
+  expect(nameOf(second)).to.not.equal("");
 
   first.focus();
   first.dispatchEvent(

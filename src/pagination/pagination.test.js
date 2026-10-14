@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./pagination.js";
 import "../table/table.js";
 
@@ -74,6 +75,24 @@ describe("rowan-pagination", () => {
     expect(changes[0].detail).to.deep.equal({ index: 1, page: 2, size: null });
     expect(changes[0].bubbles).to.equal(true);
     expect(changes[0].composed).to.equal(true);
+  });
+
+  it("keeps page controls after reconnecting", async () => {
+    const el = document.createElement("rowan-pagination");
+    el.page = 1;
+    el.totalPages = 3;
+    document.body.append(el);
+    await nextMicrotask();
+
+    const changes = [];
+    el.addEventListener("rowan-page-change", (event) => changes.push(event.detail));
+
+    await reconnectHost(el);
+    el.shadowRoot.querySelector('button[data-action="next"]').click();
+    await nextMicrotask();
+
+    expect(el.page).to.equal(2);
+    expect(changes).to.deep.equal([{ index: 1, page: 2, size: null }]);
   });
 
   it("normalizes invalid numeric properties to a single disabled page", async () => {

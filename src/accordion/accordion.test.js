@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./accordion.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -75,5 +76,21 @@ describe("rowan-accordion", () => {
     expect(el.shadowRoot.querySelector(".trigger").getAttribute("aria-expanded")).to.equal("true");
     expect(el.shadowRoot.querySelector(".panel").hidden).to.equal(false);
     expect(changeCount).to.equal(0);
+  });
+
+  it("keeps its disclosure trigger after reconnecting", async () => {
+    const el = document.createElement("rowan-accordion");
+    document.body.append(el);
+    await nextMicrotask();
+
+    const events = [];
+    el.addEventListener("rowan-change", (event) => events.push(event.detail));
+
+    await reconnectHost(el);
+    el.shadowRoot.querySelector(".trigger").click();
+    await nextMicrotask();
+
+    expect(el.open).to.equal(true);
+    expect(events).to.deep.equal([{ open: true }]);
   });
 });
