@@ -326,6 +326,7 @@ export class RowanFilterBuilder extends BaseElement {
   #clearButton = null;
   #messages = {};
   #editingFilterId = null;
+  #pendingEditorFocus = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -723,6 +724,14 @@ export class RowanFilterBuilder extends BaseElement {
   }
 
   #renderFilters(fields) {
+    const pending = this.#pendingEditorFocus;
+    this.#pendingEditorFocus = null;
+    const active = this.renderRoot.activeElement;
+    const restoreId =
+      pending?.filterId || (active instanceof HTMLElement ? (active.dataset.filterId ?? "") : "");
+    const restorePart =
+      pending?.part || (active instanceof HTMLElement ? (active.dataset.filterPart ?? "") : "");
+
     this.#filtersContainer.textContent = "";
     this.#filters.forEach((node) => {
       if (this.appearance === "toolbar") {
@@ -734,6 +743,19 @@ export class RowanFilterBuilder extends BaseElement {
         isFilterGroup(node) ? this.#createGroup(node, fields) : this.#createFilterRow(node, fields),
       );
     });
+
+    if (restoreId && restorePart) {
+      queueMicrotask(() => this.#restoreEditorFocus(restoreId, restorePart));
+    }
+  }
+
+  #restoreEditorFocus(filterId, part) {
+    if (!this.#filtersContainer) return;
+
+    const next = this.#filtersContainer.querySelector(
+      `[data-filter-id="${CSS.escape(filterId)}"][data-filter-part="${CSS.escape(part)}"]`,
+    );
+    if (next instanceof HTMLElement) next.focus({ preventScroll: true });
   }
 
   #createFilterChip(node, fields) {
@@ -758,11 +780,12 @@ export class RowanFilterBuilder extends BaseElement {
     trigger.type = "button";
     trigger.className = "chip-trigger";
     trigger.disabled = this.disabled;
-    trigger.setAttribute("aria-label", popover.label);
+    const chipLabel = this.#chipLabel(node, fields);
+    trigger.setAttribute("aria-label", chipLabel);
 
     const chip = document.createElement("rowan-chip");
     chip.size = "sm";
-    chip.textContent = this.#chipLabel(node, fields);
+    chip.textContent = chipLabel;
     trigger.append(chip);
 
     const editor = isGroup
@@ -1065,6 +1088,8 @@ export class RowanFilterBuilder extends BaseElement {
     const target = event.target;
     if (!(target instanceof HTMLElement) || target.localName !== "rowan-popover") return;
 
+    event.stopPropagation();
+
     const filterId = target.dataset.filterId ?? "";
     if (target.open) {
       this.#editingFilterId = filterId;
@@ -1146,6 +1171,7 @@ export class RowanFilterBuilder extends BaseElement {
       return;
     }
 
+    this.#pendingEditorFocus = { filterId, part };
     this.#commitUserFilters(this.#replaceNode(this.#filters, filterId, next), "update", next);
   }
 

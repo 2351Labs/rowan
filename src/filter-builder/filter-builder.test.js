@@ -436,7 +436,11 @@ describe("rowan-filter-builder", () => {
     document.body.append(builder);
     await settle();
 
+    const leaked = [];
+    builder.addEventListener("rowan-change", (event) => leaked.push(event.detail));
+
     const trigger = builder.shadowRoot.querySelector(".chip-trigger");
+    expect(trigger.getAttribute("aria-label")).to.equal("Role is Editor");
     trigger.click();
     await settle();
 
@@ -448,7 +452,9 @@ describe("rowan-filter-builder", () => {
     expect(fieldSelect.value).to.equal("role");
     expect(operatorSelect.value).to.equal("equals");
     expect(valueSelect.value).to.equal("Editor");
+    expect(leaked).to.deep.equal([]);
 
+    valueSelect.focus();
     changeValue(valueSelect, "Admin");
     await settle();
 
@@ -458,7 +464,12 @@ describe("rowan-filter-builder", () => {
       { id: "role-filter", field: "role", operator: "equals", value: "Admin" },
     ]);
     expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Role is Admin");
+    expect(builder.shadowRoot.querySelector(".chip-trigger").getAttribute("aria-label")).to.equal(
+      "Role is Admin",
+    );
     expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(true);
+    expect(builder.shadowRoot.activeElement?.dataset.filterPart).to.equal("value");
+    expect(leaked).to.deep.equal([]);
 
     builder.filters = [{ id: "name-filter", field: "name", operator: "contains", value: "Ada" }];
     await settle();

@@ -14,6 +14,12 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Investigation queue and saved table view set `appearance="toolbar"` so filters sit as chips beside the view title. A `panel` builder in the toolbar default slot still wraps to a full second row.
 
+### Fixed
+
+- Toolbar chip editor restores focus to the field, operator, or value that committed the change, instead of jumping back to the field selector.
+- Toolbar chip trigger accessible name uses the full chip label, including operator and value.
+- Internal `rowan-popover` `rowan-change` no longer leaks from `rowan-filter-builder`. Consumers still receive `rowan-filter-change`.
+
 ## 0.18.0 - 2026-10-13
 
 ### Added
