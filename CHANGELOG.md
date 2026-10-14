@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.18.0 - 2026-10-13
+
 ### Added
 
 - Experimental nested filter groups: `{ id, join: "and" | "or", filters }` inside the frozen top-level AND list. Frozen leaves stay `{ id, field, operator, value }`. `applyFilters`, `cloneFilterNode`, and `isFilterGroup` walk the tree. Empty AND groups match all rows; empty OR groups match none.
@@ -15,7 +17,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Changed
 
-- Getting-started docs pin `@rowan-ui/core@0.17.0` and show a first screen of `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
+- Getting-started docs pin `@rowan-ui/core@0.18.0` and show a first screen of `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
 - Experimental `rowan-funnel-chart` uses the shared overlay keyboard, alignment, and reconnect fixture.
 - Stable `rowan-trend-chart`, `rowan-area-chart`, `rowan-stacked-area-chart`, and `rowan-stacked-bar-chart` use the shared overlay keyboard, alignment, and reconnect fixture. `rowan-donut-chart` uses the shared keyboard and reconnect fixture; its button list is not a physical overlay.
 - Graduation-gate reconnect coverage for table, forms, overlays, app-layout, sparkline, and related first-screen hosts.
