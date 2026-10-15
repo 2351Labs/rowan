@@ -2118,28 +2118,40 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="sparkline-overview">
         <h2>Compact trend</h2>
-        <p>rowan-sparkline is a separate host, not a density of rowan-trend-chart. One series, no legend, no interactive points, no animation. Null values break the line and appear as No data in a visually hidden table.</p>
+        <p>rowan-sparkline is a separate host, not a density of rowan-trend-chart. One series, no legend, no interactive points, no animation. Null values break the line and appear as No data in a visually hidden table. Set target to split the stroke above and below that value.</p>
         <div class="demo-row">
           <rowan-kpi-card id="docs-sparkline-kpi" label="Open incidents" tone="warning" delta-label="vs last week">
             <rowan-sparkline id="docs-sparkline" slot="chart" label="Open incidents this week"></rowan-sparkline>
+          </rowan-kpi-card>
+          <rowan-kpi-card id="docs-sparkline-target-kpi" label="Net energy" delta-label="vs target">
+            <rowan-sparkline id="docs-sparkline-target" slot="chart" label="Energy versus target"></rowan-sparkline>
           </rowan-kpi-card>
         </div>
       </section>
 
       <section class="doc-section" data-doc-section id="sparkline-contract">
         <h2>Contract</h2>
-        <p>values and labels are property-only. The accessible name comes from label. Assistive technology can still read the table. Stroke width is CSS pixels (<code>--rowan-sparkline-stroke-width</code>, default <code>1.75px</code>) and does not thicken when the plot scales. Size the plot with <code>--rowan-sparkline-height</code> (default <code>2.25rem</code>). Hover dots still scale with the viewBox. Page-wide labeled trends belong on rowan-trend-chart. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
+        <p>values, labels, and target are property-only. The accessible name comes from label. Assistive technology can still read the table. When target is set, above-tone (default warning) and below-tone (default success) color the stroke on each side of a dashed target line. Stroke width is CSS pixels (<code>--rowan-sparkline-stroke-width</code>, default <code>1.75px</code>) and does not thicken when the plot scales. Size the plot with <code>--rowan-sparkline-height</code> (default <code>2.25rem</code>). Hover dots still scale with the viewBox. Page-wide labeled trends belong on rowan-trend-chart. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
         ${codeBlock(SPARKLINE_SNIPPET, "html")}
       </section>
     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-sparkline-kpi");
       const chart = mainEl.querySelector("#docs-sparkline");
+      const targetCard = mainEl.querySelector("#docs-sparkline-target-kpi");
+      const targetChart = mainEl.querySelector("#docs-sparkline-target");
       if (card) {
         card.value = 11;
         card.delta = -7;
       }
       if (chart) chart.values = [18, 24, 12, 15, 9, 11];
+      if (targetCard) {
+        targetCard.value = -2.4;
+      }
+      if (targetChart) {
+        targetChart.values = [2.1, 4.8, -1.2, 3.4, -3.8, 1.1, -2.4];
+        targetChart.target = 0;
+      }
     },
   },
   {

@@ -34,6 +34,9 @@ async function renderSparkline(options = {}) {
   if (options.locale !== undefined) chart.locale = options.locale;
   if (options.values !== undefined) chart.values = options.values;
   if (options.labels !== undefined) chart.labels = options.labels;
+  if (options.target !== undefined) chart.target = options.target;
+  if (options.aboveTone !== undefined) chart.aboveTone = options.aboveTone;
+  if (options.belowTone !== undefined) chart.belowTone = options.belowTone;
   if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
@@ -185,5 +188,130 @@ describe("rowan-sparkline", () => {
     expect(table.querySelector("caption").textContent).to.equal("Verlauf");
     expect(table.textContent).to.include(`Punkt 1${formatted}`);
     expect(table.textContent).to.include("Punkt 2Keine Daten");
+  });
+
+  it("splits the stroke above and below a property-only target", async () => {
+    const chart = await renderSparkline({
+      values: [0, 10],
+      target: 5,
+    });
+
+    const above = chart.shadowRoot.querySelector("path.line[data-band='above']");
+    const below = chart.shadowRoot.querySelector("path.line[data-band='below']");
+    const mark = chart.shadowRoot.querySelector("line.target");
+    const plot = chart.shadowRoot.querySelector(".plot");
+
+    expect(chart.hasAttribute("target")).to.equal(false);
+    expect(chart.hasAttribute("above-tone")).to.equal(false);
+    expect(chart.hasAttribute("below-tone")).to.equal(false);
+    expect(chart.target).to.equal(5);
+    expect(chart.aboveTone).to.equal("warning");
+    expect(chart.belowTone).to.equal("success");
+    expect(plot.dataset.split).to.equal("");
+    expect(plot.dataset.tone).to.equal(undefined);
+    expect(above).to.not.equal(null);
+    expect(below).to.not.equal(null);
+    expect(above.getAttribute("d")).to.equal(below.getAttribute("d"));
+    expect(above.dataset.tone).to.equal("warning");
+    expect(below.dataset.tone).to.equal("success");
+    expect(chart.shadowRoot.querySelectorAll("clipPath")).to.have.length(2);
+    expect(above.getAttribute("clip-path")).to.match(/^url\(#.+-above\)$/);
+    expect(below.getAttribute("clip-path")).to.match(/^url\(#.+-below\)$/);
+    expect(mark).to.not.equal(null);
+    expect(Number(mark.getAttribute("y1"))).to.be.closeTo(12, 0.01);
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("Target5");
+
+    chart.target = null;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(1);
+    expect(chart.shadowRoot.querySelector("line.target")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".plot").dataset.split).to.equal(undefined);
+  });
+
+  it("includes the target in the y domain so a dashed line stays in plot", async () => {
+    const chart = await renderSparkline({
+      values: [8, 10],
+      target: 0,
+    });
+
+    const mark = chart.shadowRoot.querySelector("line.target");
+    const lastY = Number(
+      chart.shadowRoot
+        .querySelector("path.line[data-band='above']")
+        .getAttribute("d")
+        .match(/,([\d.]+)$/)[1],
+    );
+    expect(Number(mark.getAttribute("y1"))).to.be.closeTo(22.5, 0.01);
+    expect(lastY).to.be.below(Number(mark.getAttribute("y1")));
+  });
+
+  it("colors the hover point from the value versus target", async () => {
+    const chart = await renderSparkline({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+      target: 5,
+      aboveTone: "danger",
+      belowTone: "info",
+    });
+    chart.style.inlineSize = "200px";
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    const box = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width - 2,
+        clientY: box.top + 4,
+      }),
+    );
+
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Wed");
+    expect(hover.textContent).to.include("Target");
+    expect(hover.textContent).to.include("5");
+    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("danger");
+
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + 2,
+        clientY: box.top + 4,
+      }),
+    );
+    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("info");
+  });
+
+  it("treats blank and non-finite target as no-data and rewrites invalid tones", async () => {
+    const chart = await renderSparkline({
+      values: [1, 4, 9],
+      target: "  ",
+      aboveTone: "hotpink",
+      belowTone: "NOPE",
+    });
+
+    expect(chart.target).to.equal(null);
+    expect(chart.aboveTone).to.equal("warning");
+    expect(chart.belowTone).to.equal("success");
+    expect(chart.hasAttribute("above-tone")).to.equal(false);
+    expect(chart.hasAttribute("below-tone")).to.equal(false);
+    expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(1);
+    expect(chart.tone).to.equal("success");
+    expect(chart.shadowRoot.querySelector(".plot").dataset.tone).to.equal("success");
+  });
+
+  it("keeps a target split after reconnect", async () => {
+    const chart = await renderSparkline({
+      values: [2, -1, 3],
+      target: 0,
+    });
+
+    expect(chart.shadowRoot.querySelector("line.target")).to.not.equal(null);
+    chart.remove();
+    await reconnectHost(chart);
+    expect(chart.target).to.equal(0);
+    expect(chart.shadowRoot.querySelector("line.target")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(2);
   });
 });

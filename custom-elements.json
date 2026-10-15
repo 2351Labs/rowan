@@ -24038,10 +24038,22 @@
               "name": "--rowan-sparkline-stroke-width"
             },
             {
+              "name": "--rowan-sparkline-info"
+            },
+            {
               "name": "--rowan-sparkline-success"
             },
             {
+              "name": "--rowan-sparkline-warning"
+            },
+            {
               "name": "--rowan-sparkline-danger"
+            },
+            {
+              "name": "--rowan-sparkline-target"
+            },
+            {
+              "name": "--rowan-sparkline-target-width"
             }
           ],
           "cssParts": [
@@ -24053,6 +24065,9 @@
             },
             {
               "name": "line"
+            },
+            {
+              "name": "target"
             },
             {
               "name": "hover"
@@ -24094,6 +24109,40 @@
             {
               "kind": "field",
               "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "aboveTone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "belowTone",
               "return": {
                 "type": {
                   "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
@@ -24154,6 +24203,27 @@
                 "name": "BaseElement",
                 "module": "src/lib/base-element.js"
               }
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Target value. Property-only. Null hides the split and the dashed line."
             },
             {
               "kind": "field",
@@ -24236,6 +24306,22 @@
               "type": {
                 "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
               }
+            },
+            {
+              "name": "above-tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              },
+              "description": "Stroke above target. Used when `target` is set.",
+              "default": "warning"
+            },
+            {
+              "name": "below-tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              },
+              "description": "Stroke at or below target. Used when `target` is set.",
+              "default": "success"
             },
             {
               "name": "locale",

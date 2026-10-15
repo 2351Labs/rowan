@@ -400,7 +400,7 @@ export const ROWAN_MESSAGE_CATALOG = [
   {
     tag: "rowan-sparkline",
     module: "sparkline",
-    keys: ["chart", "noData", "point"],
+    keys: ["chart", "noData", "point", "target"],
   },
   {
     tag: "rowan-spinner",
