@@ -394,7 +394,7 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-filter-builder`          | Stable | Frozen top-level AND list of `{ id, field, operator, value }`. Nested `{ join, filters }` groups are experimental. Unknown types and operators coerce. Additive `appearance`: `panel` (default, always-open rows) or `toolbar` (chips + popover editor). |
 | `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                                                       |
 | `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                                                          |
-| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Not a density of `rowan-trend-chart`.                                                                                                                                                      |
+| `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Additive property-only `target` splits the stroke with `above-tone` / `below-tone`. Not a density of `rowan-trend-chart`.                                                                  |
 | `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                                                          |
 | `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                                                               |
 | `rowan-donut-chart`             | Stable | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                                                                           |
@@ -914,7 +914,11 @@ It is a separate host, not a density of `rowan-trend-chart`. `values` is
 property-only (`number | null`; null is a gap). There is no legend, no
 interactive points, and no animation. Hover shows the nearest labeled value.
 A visually hidden table exposes the same values to assistive technology.
-Stroke width is CSS pixels (`--rowan-sparkline-stroke-width`, default
+Additive property-only `target` (`number | null`; null hides it) splits the
+stroke at that value: `above-tone` (default `warning`) above the target,
+`below-tone` (default `success`) at or below. The plot domain includes the
+target. A dashed target line is not a `referenceLines` overlay. Stroke width
+is CSS pixels (`--rowan-sparkline-stroke-width`, default
 `1.75px`) and does not thicken when the plot scales. Size the plot with
 `--rowan-sparkline-height` (default `2.25rem`); width is `100%`. Hover dots
 still scale with the viewBox. Page-wide labeled trends belong on

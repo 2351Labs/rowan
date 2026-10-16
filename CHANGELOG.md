@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-sparkline` property-only `target`. When set, the stroke uses `above-tone` / `below-tone` (default `warning` / `success`) on each side of a dashed target line. The domain includes the target. Hover and the matching table include the target value. Not an overlay and not a density of `rowan-trend-chart`.
+
 ## 0.19.0 - 2026-10-14
 
 ### Added
