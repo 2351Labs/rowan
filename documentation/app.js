@@ -2089,7 +2089,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="kpi-card-overview">
         <h2>Stat tile</h2>
-        <p>Use a KPI card for a single labeled metric. value and delta are property-only. Tone never replaces the label. Delta text includes a sign so change is not color-only.</p>
+        <p>Use a KPI card for a single labeled metric. value and delta are property-only. Tone never replaces the label. Delta text includes a sign so change is not color-only. The tile is an inline-size container: compact below 10rem, roomy from 22rem. It does not swap the slotted chart or reformat the value from width.</p>
         <div class="demo-row">
           <rowan-kpi-card id="docs-kpi-card" label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
         </div>
@@ -2097,7 +2097,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="kpi-card-contract">
         <h2>Contract</h2>
-        <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. value and delta stay property-only.</p>
+        <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. value and delta stay property-only. Padding, value type, and slotted chart height follow inline size. Pass a formatted value string when the number must go compact. --rowan-kpi-card-value-size and --rowan-kpi-card-chart-height pin a fixed scale.</p>
         ${codeBlock(KPI_CARD_SNIPPET, "html")}
       </section>
     `,
