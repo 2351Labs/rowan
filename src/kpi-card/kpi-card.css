@@ -91,7 +91,7 @@
   --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 5.5rem);
 }
 
-.chart ::slotted(*) {
+.chart ::slotted(:not([hidden])) {
   display: block;
   inline-size: 100%;
   min-inline-size: 0;

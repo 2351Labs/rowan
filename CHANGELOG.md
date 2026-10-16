@@ -15,6 +15,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-kpi-card` is an inline-size container. Compact below 10rem, roomy from 22rem: padding, value `clamp`, and slotted sparkline/bullet/gauge height. Default `min-inline-size` is `8rem`. Does not change chart kind or reformat the value. `--rowan-kpi-card-value-size` and `--rowan-kpi-card-chart-height` still pin a fixed scale. Without an icon, the body fills the tile so slotted charts stretch instead of sitting in the leftover auto column.
 - `rowan-sparkline` and `rowan-bullet-chart` plots fill their box (`preserveAspectRatio="none"`). Gauge keeps aspect ratio. Stroke width stays CSS pixels.
 
+### Fixed
+
+- `rowan-kpi-card` slotted `display: block` does not override a chart with `hidden`.
+
 ## 0.19.0 - 2026-10-14
 
 ### Added

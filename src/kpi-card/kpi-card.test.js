@@ -254,4 +254,19 @@ describe("rowan-kpi-card", () => {
     await nextMicrotask();
     expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(true);
   });
+
+  it("does not un-hide a slotted chart that has hidden", async () => {
+    const card = await renderCard({ label: "Open incidents", value: 12 });
+    const chart = document.createElement("span");
+    chart.slot = "chart";
+    chart.hidden = true;
+    chart.textContent = "chart";
+    card.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await waitForCardStyles(card);
+
+    expect(chart.hidden).to.equal(true);
+    expect(getComputedStyle(chart).display).to.equal("none");
+  });
 });
