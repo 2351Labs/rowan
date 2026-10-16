@@ -18,8 +18,12 @@
   display: grid;
   font-family: var(--rowan-font-family);
   gap: var(--rowan-kpi-card-gap, var(--rowan-space-3, 0.75rem));
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   padding: var(--rowan-kpi-card-padding, var(--rowan-space-4, 1rem));
+}
+
+.card[data-has-icon] {
+  grid-template-columns: auto minmax(0, 1fr);
 }
 
 .icon:not([hidden]) {
@@ -85,6 +89,12 @@
   --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 2.25rem);
   --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.75rem);
   --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 5.5rem);
+}
+
+.chart ::slotted(*) {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
 }
 
 .icon[hidden],

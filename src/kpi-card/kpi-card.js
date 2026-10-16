@@ -243,6 +243,7 @@ export class RowanKpiCard extends BaseElement {
     const label = this.label;
     this.#labelElement.textContent = label;
     this.#icon.hidden = !hasAssignedContent(this.#iconSlot);
+    this.#card.toggleAttribute("data-has-icon", !this.#icon.hidden);
     this.#description.hidden = !hasAssignedContent(this.#descriptionSlot);
     this.#chart.hidden = !hasAssignedContent(this.#chartSlot);
 

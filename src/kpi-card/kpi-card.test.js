@@ -223,4 +223,35 @@ describe("rowan-kpi-card", () => {
     expect(compact.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);
     expect(compact.shadowRoot.querySelector("[part='delta']").hidden).to.equal(false);
   });
+
+  it("lets the body fill the tile when no icon is slotted", async () => {
+    const card = await renderCard({
+      label: "Open incidents",
+      value: 12,
+      chart: true,
+    });
+    card.style.inlineSize = "24rem";
+    await waitForCardStyles(card);
+    await nextFrame();
+    await nextFrame();
+
+    const hostBox = card.getBoundingClientRect();
+    const bodyBox = card.shadowRoot.querySelector(".body").getBoundingClientRect();
+    const chartSlot = card.shadowRoot.querySelector("[part='chart']");
+    const slotted = card.querySelector("[slot='chart']");
+
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(false);
+    expect(bodyBox.width).to.be.above(hostBox.width * 0.8);
+    expect(slotted.getBoundingClientRect().width).to.be.above(
+      chartSlot.getBoundingClientRect().width * 0.9,
+    );
+
+    const icon = document.createElement("span");
+    icon.slot = "icon";
+    icon.textContent = "*";
+    card.append(icon);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(true);
+  });
 });
