@@ -924,7 +924,8 @@ stroke at that value: `above-tone` (default `warning`) above the target,
 target. A dashed target line is not a `referenceLines` overlay. Stroke width
 is CSS pixels (`--rowan-sparkline-stroke-width`, default
 `1.75px`) and does not thicken when the plot scales. Size the plot with
-`--rowan-sparkline-height` (default `2.25rem`); width is `100%`. Hover dots
+`--rowan-sparkline-height` (default `2.25rem`); width is `100%`. The plot fills
+its box (`preserveAspectRatio="none"`). Hover dots
 still scale with the viewBox. Page-wide labeled trends belong on
 `rowan-trend-chart`. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
@@ -956,7 +957,8 @@ named greens/reds). `encoding="tone"` uses each range's `tone`. An actual
 `value` bar at one-third of the track, and a `target` tick. `scale` (default
 true) draws quantitative ticks. Set `scale="false"` in tight table cells. All of `ranges` / `value` / `target` are property-only.
 Null actual or target is no-data. Hover shows actual, target, and the matching
-range. It is a separate host, not a density of `rowan-bar-chart`.
+range. The plot fills its box (`preserveAspectRatio="none"`). It is a separate
+host, not a density of `rowan-bar-chart`.
 
 ```html
 <rowan-kpi-card label="Fill rate" tone="success" delta-label="vs target">
