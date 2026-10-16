@@ -1,6 +1,8 @@
 :host {
+  container-name: kpi;
+  container-type: inline-size;
   display: block;
-  min-inline-size: 12rem;
+  min-inline-size: var(--rowan-kpi-card-min-inline-size, 8rem);
 }
 
 :host([hidden]) {
@@ -15,9 +17,13 @@
   color: var(--rowan-kpi-card-fg, var(--rowan-color-fg));
   display: grid;
   font-family: var(--rowan-font-family);
-  gap: var(--rowan-kpi-card-gap, var(--rowan-space-3));
+  gap: var(--rowan-kpi-card-gap, var(--rowan-space-3, 0.75rem));
+  grid-template-columns: minmax(0, 1fr);
+  padding: var(--rowan-kpi-card-padding, var(--rowan-space-4, 1rem));
+}
+
+.card[data-has-icon] {
   grid-template-columns: auto minmax(0, 1fr);
-  padding: var(--rowan-kpi-card-padding, var(--rowan-space-4));
 }
 
 .icon:not([hidden]) {
@@ -45,7 +51,8 @@
 }
 
 .value {
-  font-size: var(--rowan-kpi-card-value-size, var(--rowan-font-size-lg));
+  font-size: var(--rowan-kpi-card-value-size, var(--rowan-font-size-lg, 1.125rem));
+  font-size: var(--rowan-kpi-card-value-size, clamp(1rem, 0.55rem + 4cqi, 1.5rem));
   font-weight: 600;
   line-height: 1.2;
 }
@@ -79,6 +86,15 @@
 
 .chart {
   min-inline-size: 0;
+  --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 2.25rem);
+  --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.75rem);
+  --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 5.5rem);
+}
+
+.chart ::slotted(:not([hidden])) {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
 }
 
 .icon[hidden],
@@ -94,4 +110,38 @@
   display: block;
   block-size: 1.15rem;
   inline-size: 4.5rem;
+}
+
+@container kpi (max-width: 10rem) {
+  .card {
+    gap: var(--rowan-kpi-card-gap, var(--rowan-space-2, 0.5rem));
+    padding: var(--rowan-kpi-card-padding, var(--rowan-space-3, 0.75rem));
+  }
+
+  .description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .chart {
+    --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 1.5rem);
+    --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.25rem);
+    --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 4rem);
+  }
+}
+
+@container kpi (min-width: 22rem) {
+  .card {
+    gap: var(--rowan-kpi-card-gap, var(--rowan-space-4, 1rem));
+    padding: var(--rowan-kpi-card-padding, var(--rowan-space-5, 1.25rem));
+  }
+
+  .chart {
+    --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 2.75rem);
+    --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 3.25rem);
+    --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 7rem);
+  }
 }

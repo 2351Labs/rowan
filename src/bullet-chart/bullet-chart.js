@@ -276,7 +276,7 @@ export class RowanBulletChart extends BaseElement {
     if (!this.#chart) {
       this.renderRoot.innerHTML = `
         <div class="chart" part="chart">
-          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" role="presentation"></svg>
+          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none" role="presentation"></svg>
           <table class="table" part="table"></table>
         </div>
       `;

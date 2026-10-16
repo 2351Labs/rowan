@@ -49,6 +49,8 @@ function formatDelta(value, locale) {
 
 /**
  * Frozen dashboard stat tile. Value and delta stay property-only.
+ * Inline-size container: compact below 10rem, roomy from 22rem. Does not
+ * change chart kind or reformat the value.
  * @tag rowan-kpi-card
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
@@ -72,6 +74,11 @@ function formatDelta(value, locale) {
  * @cssprop --rowan-kpi-card-bg
  * @cssprop --rowan-kpi-card-border
  * @cssprop --rowan-kpi-card-fg
+ * @cssprop --rowan-kpi-card-min-inline-size
+ * @cssprop --rowan-kpi-card-padding
+ * @cssprop --rowan-kpi-card-gap
+ * @cssprop --rowan-kpi-card-value-size
+ * @cssprop --rowan-kpi-card-chart-height
  */
 export class RowanKpiCard extends BaseElement {
   static styleUrl = new URL("./kpi-card.css", import.meta.url).href;
@@ -236,6 +243,7 @@ export class RowanKpiCard extends BaseElement {
     const label = this.label;
     this.#labelElement.textContent = label;
     this.#icon.hidden = !hasAssignedContent(this.#iconSlot);
+    this.#card.toggleAttribute("data-has-icon", !this.#icon.hidden);
     this.#description.hidden = !hasAssignedContent(this.#descriptionSlot);
     this.#chart.hidden = !hasAssignedContent(this.#chartSlot);
 

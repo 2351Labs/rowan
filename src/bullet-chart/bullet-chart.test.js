@@ -42,6 +42,9 @@ describe("rowan-bullet-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Poor0–60");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Actual82");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Target90");
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("preserveAspectRatio")).to.equal(
+      "none",
+    );
     expect(chart.shadowRoot.querySelectorAll("button")).to.have.length(0);
 
     const range = chart.shadowRoot.querySelector("rect.range");

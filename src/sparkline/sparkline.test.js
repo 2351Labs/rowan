@@ -87,8 +87,18 @@ describe("rowan-sparkline", () => {
     const line = chart.shadowRoot.querySelector("path.line");
     await waitForSparklineStyles(chart);
 
+    expect(chart.shadowRoot.querySelector(".plot").getAttribute("preserveAspectRatio")).to.equal(
+      "none",
+    );
     expect(getComputedStyle(line).vectorEffect).to.equal("non-scaling-stroke");
     expect(getComputedStyle(line).strokeWidth).to.equal("1.75px");
+
+    chart.style.inlineSize = "20rem";
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    const plotBox = chart.shadowRoot.querySelector(".plot").getBoundingClientRect();
+    const lineBox = line.getBoundingClientRect();
+    expect(lineBox.width).to.be.above(plotBox.width * 0.85);
 
     chart.style.setProperty("--rowan-sparkline-height", "12rem");
     await nextMicrotask();

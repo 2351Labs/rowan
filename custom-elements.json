@@ -14519,7 +14519,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Frozen dashboard stat tile. Value and delta stay property-only.",
+          "description": "Frozen dashboard stat tile. Value and delta stay property-only.\nInline-size container: compact below 10rem, roomy from 22rem. Does not\nchange chart kind or reformat the value.",
           "name": "RowanKpiCard",
           "cssProperties": [
             {
@@ -14530,6 +14530,21 @@
             },
             {
               "name": "--rowan-kpi-card-fg"
+            },
+            {
+              "name": "--rowan-kpi-card-min-inline-size"
+            },
+            {
+              "name": "--rowan-kpi-card-padding"
+            },
+            {
+              "name": "--rowan-kpi-card-gap"
+            },
+            {
+              "name": "--rowan-kpi-card-value-size"
+            },
+            {
+              "name": "--rowan-kpi-card-chart-height"
             }
           ],
           "cssParts": [

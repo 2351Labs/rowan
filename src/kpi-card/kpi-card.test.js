@@ -3,6 +3,27 @@ import { reconnectHost } from "../../test/host-lifecycle.js";
 import "./kpi-card.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForCardStyles(card) {
+  const stylesheet = card.shadowRoot.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error("KPI card styles did not apply within 60 animation frames.");
+}
 
 async function renderCard(options = {}) {
   const card = document.createElement("rowan-kpi-card");
@@ -19,7 +40,9 @@ async function renderCard(options = {}) {
     card.append(chart);
   }
   if (options.description) {
-    card.append(options.description);
+    const copy = document.createElement("span");
+    copy.textContent = options.description;
+    card.append(copy);
   }
   document.body.append(card);
   await nextMicrotask();
@@ -151,5 +174,99 @@ describe("rowan-kpi-card", () => {
     await nextMicrotask();
 
     expect(card.shadowRoot.querySelector('[part="value"]').textContent).to.equal("Keine Daten");
+  });
+
+  it("scales padding and slotted chart height with inline size, without hiding the chart", async () => {
+    const compact = await renderCard({
+      label: "Open incidents",
+      value: 12,
+      delta: -4,
+      deltaLabel: "vs last week",
+      description: "Unacknowledged incidents in the current window.",
+      chart: true,
+    });
+    compact.style.inlineSize = "8rem";
+    const roomy = await renderCard({
+      label: "Open incidents",
+      value: 12,
+      delta: -4,
+      deltaLabel: "vs last week",
+      chart: true,
+    });
+    roomy.style.inlineSize = "24rem";
+    await waitForCardStyles(compact);
+    await waitForCardStyles(roomy);
+    await nextFrame();
+    await nextFrame();
+
+    const compactCard = compact.shadowRoot.querySelector(".card");
+    const roomyCard = roomy.shadowRoot.querySelector(".card");
+    const compactChart = compact.shadowRoot.querySelector(".chart");
+    const roomyChart = roomy.shadowRoot.querySelector(".chart");
+    const compactValue = Number.parseFloat(
+      getComputedStyle(compact.shadowRoot.querySelector(".value")).fontSize,
+    );
+    const roomyValue = Number.parseFloat(
+      getComputedStyle(roomy.shadowRoot.querySelector(".value")).fontSize,
+    );
+
+    expect(Number.parseFloat(getComputedStyle(compactCard).paddingTop)).to.be.below(
+      Number.parseFloat(getComputedStyle(roomyCard).paddingTop),
+    );
+    expect(
+      getComputedStyle(compactChart).getPropertyValue("--rowan-sparkline-height").trim(),
+    ).to.equal("1.5rem");
+    expect(
+      getComputedStyle(roomyChart).getPropertyValue("--rowan-sparkline-height").trim(),
+    ).to.equal("2.75rem");
+    expect(roomyValue).to.be.above(compactValue);
+    expect(compact.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);
+    expect(compact.shadowRoot.querySelector("[part='delta']").hidden).to.equal(false);
+  });
+
+  it("lets the body fill the tile when no icon is slotted", async () => {
+    const card = await renderCard({
+      label: "Open incidents",
+      value: 12,
+      chart: true,
+    });
+    card.style.inlineSize = "24rem";
+    await waitForCardStyles(card);
+    await nextFrame();
+    await nextFrame();
+
+    const hostBox = card.getBoundingClientRect();
+    const bodyBox = card.shadowRoot.querySelector(".body").getBoundingClientRect();
+    const chartSlot = card.shadowRoot.querySelector("[part='chart']");
+    const slotted = card.querySelector("[slot='chart']");
+
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(false);
+    expect(bodyBox.width).to.be.above(hostBox.width * 0.8);
+    expect(slotted.getBoundingClientRect().width).to.be.above(
+      chartSlot.getBoundingClientRect().width * 0.9,
+    );
+
+    const icon = document.createElement("span");
+    icon.slot = "icon";
+    icon.textContent = "*";
+    card.append(icon);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(true);
+  });
+
+  it("does not un-hide a slotted chart that has hidden", async () => {
+    const card = await renderCard({ label: "Open incidents", value: 12 });
+    const chart = document.createElement("span");
+    chart.slot = "chart";
+    chart.hidden = true;
+    chart.textContent = "chart";
+    card.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await waitForCardStyles(card);
+
+    expect(chart.hidden).to.equal(true);
+    expect(getComputedStyle(chart).display).to.equal("none");
   });
 });

@@ -1,6 +1,16 @@
 import "./kpi-card.js";
 import "../sparkline/sparkline.js";
+import "../bullet-chart/bullet-chart.js";
+import "../gauge-chart/gauge-chart.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+
+function sampleRanges() {
+  return [
+    { from: 0, to: 60, label: "Poor", tone: "danger" },
+    { from: 60, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
+}
 
 function createCard({ label, value, delta, deltaLabel, tone, loading, description } = {}) {
   const card = document.createElement("rowan-kpi-card");
@@ -15,6 +25,16 @@ function createCard({ label, value, delta, deltaLabel, tone, loading, descriptio
     copy.textContent = description;
     card.append(copy);
   }
+  return card;
+}
+
+function appendSparkline(card, { values, label, target } = {}) {
+  const chart = document.createElement("rowan-sparkline");
+  chart.slot = "chart";
+  chart.label = label ?? "Open incidents this week";
+  chart.values = values ?? [18, 24, 12, 15, 9, 11];
+  if (target !== undefined) chart.target = target;
+  card.append(chart);
   return card;
 }
 
@@ -79,8 +99,8 @@ export const Tones = {
 export const EmptyAndLoading = {
   render: () => {
     const row = document.createElement("div");
-    row.style.display = "grid";
     row.style.gap = "var(--rowan-space-4)";
+    row.style.display = "grid";
     row.style.gridTemplateColumns = "repeat(auto-fit, minmax(12rem, 1fr))";
     row.append(
       createCard({ label: "No data yet", value: null }),
@@ -99,12 +119,108 @@ export const WithChartSlot = {
       deltaLabel: "vs last week",
       tone: "warning",
     });
-    const chart = document.createElement("rowan-sparkline");
-    chart.slot = "chart";
-    chart.label = "Open incidents this week";
-    chart.values = [18, 24, 12, 15, 9, 11];
-    card.append(chart);
-    return card;
+    return appendSparkline(card);
+  },
+};
+
+export const WidthDensities = {
+  name: "Width densities",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.alignItems = "start";
+    row.style.display = "grid";
+    row.style.gap = "var(--rowan-space-4)";
+    row.style.gridTemplateColumns = "8rem 12rem 16rem 24rem";
+
+    for (const width of ["8rem", "12rem", "16rem", "24rem"]) {
+      const cell = document.createElement("div");
+      cell.style.display = "grid";
+      cell.style.gap = "var(--rowan-space-2)";
+      const caption = document.createElement("p");
+      caption.style.color = "var(--rowan-color-muted)";
+      caption.style.fontSize = "var(--rowan-font-size-sm)";
+      caption.style.margin = "0";
+      caption.textContent = width;
+      const card = createCard({
+        label: "Open incidents",
+        value: 19,
+        delta: -4,
+        deltaLabel: "vs last week",
+        tone: "warning",
+        description: "Unacknowledged incidents in the current window.",
+      });
+      appendSparkline(card);
+      cell.append(caption, card);
+      row.append(cell);
+    }
+
+    return row;
+  },
+};
+
+export const CompactCharts = {
+  name: "Compact charts",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.display = "grid";
+    row.style.gap = "var(--rowan-space-4)";
+    row.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 1fr))";
+
+    const spark = createCard({
+      label: "Open incidents",
+      value: 11,
+      delta: -7,
+      deltaLabel: "vs last week",
+      tone: "warning",
+    });
+    appendSparkline(spark);
+
+    const versus = createCard({
+      label: "Net energy",
+      value: -2.4,
+      delta: 1.1,
+      deltaLabel: "vs target",
+    });
+    appendSparkline(versus, {
+      label: "Energy versus target",
+      values: [2.1, 4.8, -1.2, 3.4, -3.8, 1.1, -2.4],
+      target: 0,
+    });
+
+    const fill = createCard({
+      label: "Fill rate",
+      value: 82,
+      delta: -8,
+      deltaLabel: "vs target",
+      tone: "success",
+    });
+    const bullet = document.createElement("rowan-bullet-chart");
+    bullet.slot = "chart";
+    bullet.label = "Fill rate versus target";
+    bullet.value = 82;
+    bullet.target = 90;
+    bullet.ranges = sampleRanges();
+    fill.append(bullet);
+
+    const util = createCard({
+      label: "Utilization",
+      value: 72,
+      delta: -8,
+      deltaLabel: "vs target",
+      tone: "warning",
+    });
+    const gauge = document.createElement("rowan-gauge-chart");
+    gauge.slot = "chart";
+    gauge.label = "Utilization versus target";
+    gauge.min = 0;
+    gauge.max = 100;
+    gauge.value = 72;
+    gauge.target = 80;
+    gauge.ranges = sampleRanges();
+    util.append(gauge);
+
+    row.append(spark, versus, fill, util);
+    return row;
   },
 };
 

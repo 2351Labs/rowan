@@ -393,7 +393,7 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-rich-text-editor`        | Stable | Blocks are paragraph, heading (1–3), unordered-list, and ordered-list. Runs are bold, italic, underline, and allowlisted `href`. HTML is never a value. Images are not document nodes.                                                                   |
 | `rowan-filter-builder`          | Stable | Frozen top-level AND list of `{ id, field, operator, value }`. Nested `{ join, filters }` groups are experimental. Unknown types and operators coerce. Additive `appearance`: `panel` (default, always-open rows) or `toolbar` (chips + popover editor). |
 | `rowan-trend-chart`             | Stable | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                                                       |
-| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts.                                                                                                                                          |
+| `rowan-kpi-card`                | Stable | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts. Inline-size container: compact below 10rem, roomy from 22rem. Does not change chart kind.                                                |
 | `rowan-sparkline`               | Stable | One series, property-only `values` / `labels`. Null is a gap. Additive property-only `target` splits the stroke with `above-tone` / `below-tone`. Not a density of `rowan-trend-chart`.                                                                  |
 | `rowan-bullet-chart`            | Stable | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                                                          |
 | `rowan-gauge-chart`             | Stable | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                                                               |
@@ -742,7 +742,11 @@ compose a dialog if you need one.
 replaces the label. Delta text includes a sign so change is not color-only. A
 null `value` shows `No data`; `loading` replaces the value with a skeleton.
 The `chart` slot is for compact charts (`rowan-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`) and follows the label and value in
-reading order.
+reading order. The card is an inline-size container: padding, value type, and
+slotted chart height tighten below 10rem and open from 22rem. It does not swap
+chart kind or reformat `value` from width. Pass a formatted string when the
+number must go compact. Override with `--rowan-kpi-card-value-size` or
+`--rowan-kpi-card-chart-height` if the recipe needs a fixed scale.
 
 ```html
 <rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week"></rowan-kpi-card>
@@ -920,7 +924,8 @@ stroke at that value: `above-tone` (default `warning`) above the target,
 target. A dashed target line is not a `referenceLines` overlay. Stroke width
 is CSS pixels (`--rowan-sparkline-stroke-width`, default
 `1.75px`) and does not thicken when the plot scales. Size the plot with
-`--rowan-sparkline-height` (default `2.25rem`); width is `100%`. Hover dots
+`--rowan-sparkline-height` (default `2.25rem`); width is `100%`. The plot fills
+its box (`preserveAspectRatio="none"`). Hover dots
 still scale with the viewBox. Page-wide labeled trends belong on
 `rowan-trend-chart`. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
@@ -952,7 +957,8 @@ named greens/reds). `encoding="tone"` uses each range's `tone`. An actual
 `value` bar at one-third of the track, and a `target` tick. `scale` (default
 true) draws quantitative ticks. Set `scale="false"` in tight table cells. All of `ranges` / `value` / `target` are property-only.
 Null actual or target is no-data. Hover shows actual, target, and the matching
-range. It is a separate host, not a density of `rowan-bar-chart`.
+range. The plot fills its box (`preserveAspectRatio="none"`). It is a separate
+host, not a density of `rowan-bar-chart`.
 
 ```html
 <rowan-kpi-card label="Fill rate" tone="success" delta-label="vs target">
