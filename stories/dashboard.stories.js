@@ -14,6 +14,8 @@ import "../src/avatar/avatar.js";
 import "../src/select/select.js";
 import "../src/kpi-card/kpi-card.js";
 import "../src/sparkline/sparkline.js";
+import "../src/bullet-chart/bullet-chart.js";
+import "../src/gauge-chart/gauge-chart.js";
 import "../src/area-chart/area-chart.js";
 import "../src/donut-chart/donut-chart.js";
 import "../src/table/table.js";
@@ -23,6 +25,8 @@ import "@rowan-ui/icons/elements/layout-dashboard";
 import "@rowan-ui/icons/elements/chart-line";
 import "@rowan-ui/icons/elements/shopping-cart";
 import "@rowan-ui/icons/elements/users";
+import "@rowan-ui/icons/elements/package-2";
+import "@rowan-ui/icons/elements/gauge";
 import "@rowan-ui/icons/elements/settings-2";
 import "@rowan-ui/icons/elements/search";
 import "@rowan-ui/icons/elements/sun";
@@ -331,7 +335,15 @@ function createBreadcrumb(path) {
   return breadcrumb;
 }
 
-function createKpi({ label, value, delta, deltaLabel, tone, icon, sparkline, chartLabel }) {
+function sampleRanges() {
+  return [
+    { from: 0, to: 60, label: "Poor", tone: "danger" },
+    { from: 60, to: 80, label: "Fair", tone: "warning" },
+    { from: 80, to: 100, label: "Good", tone: "success" },
+  ];
+}
+
+function createKpi({ label, value, delta, deltaLabel, tone, icon, chart }) {
   const card = document.createElement("rowan-kpi-card");
   card.label = label;
   card.value = value;
@@ -344,14 +356,42 @@ function createKpi({ label, value, delta, deltaLabel, tone, icon, sparkline, cha
   glyph.name = icon;
   glyph.setAttribute("aria-hidden", "true");
 
-  const chart = document.createElement("rowan-sparkline");
-  chart.slot = "chart";
-  chart.label = chartLabel;
-  chart.values = sparkline;
-  chart.tone = tone === "neutral" ? "info" : tone;
-
   card.append(glyph, chart);
   return card;
+}
+
+function createSparkline({ label, values, tone, target, aboveTone, belowTone }) {
+  const chart = document.createElement("rowan-sparkline");
+  chart.slot = "chart";
+  chart.label = label;
+  chart.values = values;
+  if (tone) chart.tone = tone;
+  if (target !== undefined) chart.target = target;
+  if (aboveTone) chart.aboveTone = aboveTone;
+  if (belowTone) chart.belowTone = belowTone;
+  return chart;
+}
+
+function createBullet({ label, value, target }) {
+  const chart = document.createElement("rowan-bullet-chart");
+  chart.slot = "chart";
+  chart.label = label;
+  chart.value = value;
+  chart.target = target;
+  chart.ranges = sampleRanges();
+  return chart;
+}
+
+function createGauge({ label, value, target }) {
+  const chart = document.createElement("rowan-gauge-chart");
+  chart.slot = "chart";
+  chart.label = label;
+  chart.min = 0;
+  chart.max = 100;
+  chart.value = value;
+  chart.target = target;
+  chart.ranges = sampleRanges();
+  return chart;
 }
 
 function createKpiRow() {
@@ -365,38 +405,52 @@ function createKpiRow() {
       deltaLabel: "vs last period",
       tone: "success",
       icon: "chart-line",
-      sparkline: [32, 36, 34, 41, 39, 48],
-      chartLabel: "Revenue this period",
+      chart: createSparkline({
+        label: "Revenue this period",
+        values: [32, 36, 34, 41, 39, 48],
+        tone: "success",
+      }),
     }),
     createKpi({
       label: "Orders",
       value: "1,284",
       delta: 8.1,
-      deltaLabel: "vs last period",
+      deltaLabel: "vs plan",
       tone: "info",
       icon: "shopping-cart",
-      sparkline: [18, 22, 21, 26, 24, 29],
-      chartLabel: "Orders this period",
+      chart: createSparkline({
+        label: "Orders versus plan",
+        values: [980, 1100, 1050, 1280, 1190, 1284],
+        target: 1200,
+        aboveTone: "success",
+        belowTone: "warning",
+      }),
     }),
     createKpi({
-      label: "Customers",
-      value: "3,912",
-      delta: 3.2,
-      deltaLabel: "vs last period",
+      label: "Fill rate",
+      value: 82,
+      delta: -8,
+      deltaLabel: "vs target",
       tone: "success",
-      icon: "users",
-      sparkline: [48, 50, 51, 53, 54, 56],
-      chartLabel: "Customers this period",
+      icon: "package-2",
+      chart: createBullet({
+        label: "Fill rate versus target",
+        value: 82,
+        target: 90,
+      }),
     }),
     createKpi({
-      label: "Refund rate",
-      value: "1.8%",
-      delta: -0.4,
-      deltaLabel: "vs last period",
-      tone: "success",
-      icon: "shopping-cart",
-      sparkline: [2.4, 2.2, 2.1, 1.9, 2.0, 1.8],
-      chartLabel: "Refund rate this period",
+      label: "Utilization",
+      value: 72,
+      delta: -8,
+      deltaLabel: "vs target",
+      tone: "warning",
+      icon: "gauge",
+      chart: createGauge({
+        label: "Utilization versus target",
+        value: 72,
+        target: 80,
+      }),
     }),
   );
   return row;
