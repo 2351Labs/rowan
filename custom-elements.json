@@ -24097,6 +24097,9 @@
               "name": "hover"
             },
             {
+              "name": "hover-point"
+            },
+            {
               "name": "table"
             }
           ],

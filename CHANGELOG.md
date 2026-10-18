@@ -12,7 +12,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
-- `rowan-sparkline` hover mark stays CSS pixels when the plot scales, matching the stroke. The dashed target dasharray is also in CSS pixels.
+- `rowan-sparkline` hover mark and target dashes stay CSS pixels when the plot scales, matching the stroke. The hover mark is not a viewBox circle.
 
 ## 0.20.0 - 2026-10-18
 

@@ -26,6 +26,7 @@
  * @csspart area
  * @csspart target
  * @csspart hover
+ * @csspart hover-point
  * @csspart table
  * @cssprop --rowan-sparkline-height
  * @cssprop --rowan-sparkline-stroke

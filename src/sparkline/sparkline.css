@@ -14,6 +14,12 @@
   min-inline-size: 0;
 }
 
+.plot-wrap {
+  min-inline-size: 0;
+  overflow: visible;
+  position: relative;
+}
+
 .plot {
   block-size: var(--rowan-sparkline-height, 2.25rem);
   display: block;
@@ -38,12 +44,16 @@
 }
 
 .hover-point {
-  fill: none;
+  background: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
+  block-size: var(--rowan-sparkline-hover-size, 4.5px);
+  border-radius: 50%;
+  inline-size: var(--rowan-sparkline-hover-size, 4.5px);
+  inset-block-start: var(--hover-y, 0);
+  inset-inline-start: var(--hover-x, 0);
   pointer-events: none;
-  stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
-  stroke-linecap: round;
-  stroke-width: var(--rowan-sparkline-hover-size, 4.5px);
-  vector-effect: non-scaling-stroke;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 :host([tone="info"]) .line,
@@ -53,9 +63,9 @@
 }
 
 :host([tone="info"]) .hover-point,
-.plot[data-tone="info"] .hover-point,
-.plot[data-split] .hover-point[data-tone="info"] {
-  stroke: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
+.plot[data-tone="info"] ~ .hover-point,
+:host .hover-point[data-tone="info"] {
+  background: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
 :host([tone="info"]) .area,
@@ -71,9 +81,12 @@
 }
 
 :host([tone="success"]) .hover-point,
-.plot[data-tone="success"] .hover-point,
-.plot[data-split] .hover-point[data-tone="success"] {
-  stroke: var(--rowan-sparkline-success, var(--rowan-chart-success, var(--rowan-color-success)));
+.plot[data-tone="success"] ~ .hover-point,
+:host .hover-point[data-tone="success"] {
+  background: var(
+    --rowan-sparkline-success,
+    var(--rowan-chart-success, var(--rowan-color-success))
+  );
 }
 
 :host([tone="success"]) .area,
@@ -89,9 +102,12 @@
 }
 
 :host([tone="warning"]) .hover-point,
-.plot[data-tone="warning"] .hover-point,
-.plot[data-split] .hover-point[data-tone="warning"] {
-  stroke: var(--rowan-sparkline-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
+.plot[data-tone="warning"] ~ .hover-point,
+:host .hover-point[data-tone="warning"] {
+  background: var(
+    --rowan-sparkline-warning,
+    var(--rowan-chart-warning, var(--rowan-color-warning))
+  );
 }
 
 :host([tone="warning"]) .area,
@@ -107,9 +123,9 @@
 }
 
 :host([tone="danger"]) .hover-point,
-.plot[data-tone="danger"] .hover-point,
-.plot[data-split] .hover-point[data-tone="danger"] {
-  stroke: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
+.plot[data-tone="danger"] ~ .hover-point,
+:host .hover-point[data-tone="danger"] {
+  background: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
 :host([tone="danger"]) .area,
@@ -122,8 +138,8 @@
   stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
 }
 
-.plot[data-split] .hover-point[data-tone="neutral"] {
-  stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
+:host .hover-point[data-tone="neutral"] {
+  background: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
 }
 
 .plot[data-split] .area[data-tone="neutral"] {
@@ -131,9 +147,9 @@
 }
 
 .target {
+  fill: none;
   pointer-events: none;
   stroke: var(--rowan-sparkline-target, var(--rowan-color-muted));
-  stroke-dasharray: 4px 3px;
   stroke-linecap: round;
   stroke-width: var(--rowan-sparkline-target-width, 1px);
   vector-effect: non-scaling-stroke;
