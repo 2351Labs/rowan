@@ -1,6 +1,6 @@
 /**
- * Experimental waterfall. Signed deltas from a running total. Totals are
- * `{ type: "total" }` from zero; the host does not invent them. Null is no-data.
+ * Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }`
+ * from zero; the host does not invent them. Null is no-data.
  * @tag rowan-waterfall-chart
  * @attr {string} label
  * @attr {string} description

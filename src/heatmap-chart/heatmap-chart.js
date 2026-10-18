@@ -94,8 +94,8 @@ function cellOpacity(value, domain) {
 }
 
 /**
- * Experimental categorical heatmap. Single-hue intensity via fill-opacity.
- * Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.
+ * Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty /
+ * no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.
  * @tag rowan-heatmap-chart
  * @attr {string} label
  * @attr {string} description

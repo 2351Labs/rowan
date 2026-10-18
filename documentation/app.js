@@ -1237,7 +1237,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.19.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, bullet, gauge, image, data-state, and source-meta are Stable. Experimental charts stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@0.19.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -2374,7 +2374,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="scatter-chart-overview">
         <h2>Points and bubbles</h2>
-        <p>rowan-scatter-chart is experimental. Each series has points with x, y, optional size, and optional label. Null x or y is no-data. When size is present, radius encodes it. Interactive points emit rowan-point-activate with x, y, and size. This is not frozen categorical series.values.</p>
+        <p>rowan-scatter-chart draws points with x, y, optional size, and optional label. Null x or y is no-data. When size is present, radius encodes it. Interactive points emit rowan-point-activate with x, y, and size. This is not categorical series.values.</p>
         <div class="demo-row">
           <rowan-scatter-chart id="docs-scatter-chart" label="Dwell vs fill" interactive></rowan-scatter-chart>
         </div>
@@ -2406,7 +2406,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="heatmap-chart-overview">
         <h2>Categorical matrix</h2>
-        <p>rowan-heatmap-chart is experimental. Set rows, columns, and values, or points as x/y/value triples. Intensity is one hue via fill-opacity. Null is empty and No data in the table. Interactive cells emit rowan-point-activate with row, column, and value.</p>
+        <p>rowan-heatmap-chart is a categorical matrix. Set rows, columns, and values, or points as x/y/value triples. Intensity is one hue via fill-opacity. Null is empty and No data in the table. Interactive cells emit rowan-point-activate with row, column, and value.</p>
         <div class="demo-row">
           <rowan-heatmap-chart id="docs-heatmap-chart" label="Lane dwell" interactive></rowan-heatmap-chart>
         </div>
@@ -2433,7 +2433,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="funnel-chart-overview">
         <h2>Stages</h2>
-        <p>rowan-funnel-chart is experimental. It draws the first series in input order. variant is funnel (default), cone, or pyramid. Null and negatives are no-data. Interactive stages emit rowan-point-activate.</p>
+        <p>rowan-funnel-chart draws the first series in input order. variant is funnel (default), cone, or pyramid. Null and negatives are no-data. Interactive stages emit rowan-point-activate.</p>
         <div class="demo-row">
           <rowan-funnel-chart id="docs-funnel-chart" label="Conversion" interactive></rowan-funnel-chart>
         </div>
@@ -2456,7 +2456,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="waterfall-chart-overview">
         <h2>Running total</h2>
-        <p>rowan-waterfall-chart is experimental. The first series is signed deltas. type total is an absolute bar from zero. The host does not invent totals. Null is no-data. Interactive bars emit rowan-point-activate with type.</p>
+        <p>rowan-waterfall-chart draws signed deltas. type total is an absolute bar from zero. The host does not invent totals. Null is no-data. Interactive bars emit rowan-point-activate with type.</p>
         <div class="demo-row">
           <rowan-waterfall-chart id="docs-waterfall-chart" label="Cash movement" interactive></rowan-waterfall-chart>
         </div>
@@ -2485,7 +2485,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="range-chart-overview">
         <h2>Low and high</h2>
-        <p>rowan-range-chart is experimental. Each series is category values with low and high. variant is bar (default) or area. Null low or high is no-data. This is not frozen categorical series.values. Interactive ranges emit rowan-point-activate with low and high.</p>
+        <p>rowan-range-chart draws category values with low and high. variant is bar (default) or area. Null low or high is no-data. This is not categorical series.values. Interactive ranges emit rowan-point-activate with low and high.</p>
         <div class="demo-row">
           <rowan-range-chart id="docs-range-chart" label="Dwell window" interactive></rowan-range-chart>
         </div>
@@ -2518,7 +2518,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="box-plot-chart-overview">
         <h2>Five-number summary</h2>
-        <p>rowan-box-plot-chart is experimental. Each point is min, q1, median, q3, max, and optional outliers. The host does not invent quartiles. Null in the five-number summary is no-data. Interactive boxes emit rowan-point-activate with those fields.</p>
+        <p>rowan-box-plot-chart draws min, q1, median, q3, max, and optional outliers. The host does not invent quartiles. Null in the five-number summary is no-data. Interactive boxes emit rowan-point-activate with those fields.</p>
         <div class="demo-row">
           <rowan-box-plot-chart id="docs-box-plot-chart" label="Lane dwell" interactive></rowan-box-plot-chart>
         </div>
@@ -2551,7 +2551,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="radar-chart-overview">
         <h2>Polar axes</h2>
-        <p>rowan-radar-chart is experimental. Categories are axes around the ring. geometry is line (default) or area. Null is no-data and breaks the ring. Interactive vertices emit rowan-point-activate. Nightingale and radial bars are not this host.</p>
+        <p>rowan-radar-chart is a polar comparison. Categories are axes around the ring. geometry is line (default) or area. Null is no-data and breaks the ring. Interactive vertices emit rowan-point-activate. Nightingale and radial bars are not this host.</p>
         <div class="demo-row">
           <rowan-radar-chart id="docs-radar-chart" label="Yard profile" interactive></rowan-radar-chart>
         </div>

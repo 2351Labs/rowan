@@ -47,8 +47,10 @@ the table. `rowan-filter-builder` `appearance="toolbar"` is chips on the bar.
 is CSS pixels. Modals use native `<dialog>`. Dropdown, popover, tooltip, and
 context menus use the top layer. Table virtualization, `rowan-rich-text-editor`,
 `rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
-`rowan-donut-chart`, and `rowan-bar-chart` are Stable. Experimental scatter,
-heatmap, funnel, waterfall, range, box-plot, radar, and combo stay experimental.
+`rowan-donut-chart`, `rowan-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`,
+`rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`,
+`rowan-range-chart`, `rowan-box-plot-chart`, and `rowan-radar-chart` are Stable.
+Nested filter groups and table-view-state version `2` stay experimental.
 This is not `1.0`.
 
 ## Install
@@ -402,6 +404,14 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-area-chart`              | Stable | Filled multi-series. Same property-only `series` / `labels` / `config` / `valueFormatter` as the line chart. Null breaks the fill. Independent fills, not stacked. `referenceLines` are frozen on this host only.                                        |
 | `rowan-stacked-area-chart`      | Stable | Positive values stack from zero as filled bands. Null and negatives are no-data. Additive `stack-mode` (`absolute` default, or `normalized` 0–100). Independent fills stay on `rowan-area-chart`.                                                        |
 | `rowan-stacked-bar-chart`       | Stable | Positive values stack from zero. Null and negatives are no-data. `referenceLines` are frozen on this host only. Additive `orientation` and `stack-mode` (`absolute` default, or `normalized` 0–100).                                                     |
+| `rowan-combo-chart`             | Stable | Bars, lines, and areas on one category axis. Per-series `geometry` (`bar` default) and optional `axis: "secondary"`. Series overlay; they do not stack. `createParetoData` is a helper; the host does not auto-sort.                                     |
+| `rowan-scatter-chart`           | Stable | Points `{ x, y, size?, label? }`. Null x or y is no-data. `size` encodes bubble radius. Not categorical `series.values`.                                                                                                                                 |
+| `rowan-heatmap-chart`           | Stable | Categorical matrix. `rows` / `columns` / `values[][]`, or `points`. Single-hue intensity via fill-opacity. Null is empty.                                                                                                                                |
+| `rowan-funnel-chart`            | Stable | First series, input order. `variant`: `funnel` (default), `cone`, or `pyramid`. Null and negatives are no-data. The host does not auto-sort.                                                                                                             |
+| `rowan-waterfall-chart`         | Stable | First series is signed deltas. `{ type: "total" }` is an absolute bar from zero. The host does not invent totals. Null is no-data.                                                                                                                       |
+| `rowan-range-chart`             | Stable | Per-category `{ low, high }`. `variant`: `bar` (default) or `area`. Null low or high is no-data. Not categorical `series.values`.                                                                                                                        |
+| `rowan-box-plot-chart`          | Stable | Per-category `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data.                                                                                                                 |
+| `rowan-radar-chart`             | Stable | Categories are axes around the ring. `geometry`: `line` (default) or `area`. Null is no-data and breaks the ring. Nightingale and radial bars are not this host.                                                                                         |
 | `rowan-image`                   | Stable | Display still with `src`, `alt`, optional `href`, overlay and caption slots. Not a rich-text node.                                                                                                                                                       |
 | `rowan-data-state`              | Stable | Region wrapper for `ready` / `loading` / `empty` / `error` only. Table and KPI keep their own `loading`.                                                                                                                                                 |
 | `rowan-source-meta`             | Stable | Provenance line (`source`, `as-of`). Drop into KPI description, chart description, or table caption. No new props on those hosts.                                                                                                                        |
@@ -805,7 +815,7 @@ draw overlays on the value axis. Native SVG, no animation. Grouped bars stay on
 
 ## Rowan Combo Chart
 
-`rowan-combo-chart` is an experimental categorical combo: bars, lines, and
+`rowan-combo-chart` is a frozen categorical combo: bars, lines, and
 areas share one category axis. Set `geometry: "bar"`, `"line"`, or `"area"` on
 each series (`bar` is the default; unknown values fall back to `bar`). Areas
 draw behind bars, then lines. Series overlay; they do not stack. Set
@@ -829,7 +839,7 @@ chart.referenceLines = [{ value: 80, label: "80%", axis: "secondary" }];
 
 ## Rowan Scatter Chart
 
-`rowan-scatter-chart` is an experimental x/y point chart. Each series is
+`rowan-scatter-chart` is a frozen x/y point chart. Each series is
 `{ id, label, color?, points: [{ x, y, size?, label? }] }`. Null x or y is
 no-data and is omitted from the plot and table. When any plotted point has
 `size`, radius encodes that value (bubble); omitted size is a scatter. This is
@@ -839,7 +849,7 @@ matching table.
 
 ## Rowan Heatmap Chart
 
-`rowan-heatmap-chart` is an experimental categorical matrix. Set `rows`,
+`rowan-heatmap-chart` is a frozen categorical matrix. Set `rows`,
 `columns`, and `values[][]`, or `points` as `{ x, y, value }` / `{ column, row, value }`
 triples (unique labels keep appearance order). Intensity is a single hue via
 fill-opacity, not a rainbow. Null is empty and `No data` in the table.
@@ -848,7 +858,7 @@ Interactive cells emit `rowan-point-activate` with `row`, `column`,
 
 ## Rowan Funnel Chart
 
-`rowan-funnel-chart` is an experimental one-series stage chart. It draws the
+`rowan-funnel-chart` is a frozen one-series stage chart. It draws the
 **first** series. `variant` is `funnel` (default, stage 0 at the top), `cone`
 (last stage tapers to a point), or `pyramid` (stage 0 at the bottom). The host
 does not auto-sort. Null and negatives are no-data. Interactive stages emit
@@ -856,7 +866,7 @@ does not auto-sort. Null and negatives are no-data. Interactive stages emit
 
 ## Rowan Waterfall Chart
 
-`rowan-waterfall-chart` is an experimental running-total chart. The first
+`rowan-waterfall-chart` is a frozen running-total chart. The first
 series is signed deltas. `{ type: "total" }` is an absolute bar from zero, then
 sets the running total. The host does not invent totals. Null is no-data.
 Positive bars use success, negatives danger, totals info. Interactive bars emit
@@ -864,7 +874,7 @@ Positive bars use success, negatives danger, totals info. Interactive bars emit
 
 ## Rowan Range Chart
 
-`rowan-range-chart` is an experimental categorical low–high chart. Each series
+`rowan-range-chart` is a frozen categorical low–high chart. Each series
 is `{ id, label, color?, values: [{ low, high }] }`. `variant` is `bar`
 (default) or `area`. Null low or high is no-data. This is not frozen
 categorical `series.values`. Interactive ranges emit `rowan-point-activate`
@@ -872,14 +882,14 @@ with `low` and `high`. Native SVG, matching table.
 
 ## Rowan Box Plot Chart
 
-`rowan-box-plot-chart` is an experimental five-number-summary chart. Each point
+`rowan-box-plot-chart` is a frozen five-number-summary chart. Each point
 is `{ min, q1, median, q3, max, outliers? }`. The host does not compute
 quartiles. Null in the five-number summary is no-data. Interactive boxes emit
 `rowan-point-activate` with those fields. Native SVG, matching table.
 
 ## Rowan Radar Chart
 
-`rowan-radar-chart` is an experimental polar comparison. Frozen categorical
+`rowan-radar-chart` is a frozen polar comparison. Categorical
 `series` and `labels` are the axes around the ring. `geometry` is `line`
 (default) or `area`. Null is no-data and breaks that series' ring; a gap is
 not drawn as zero. Interactive vertices emit `rowan-point-activate`. Native
