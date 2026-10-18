@@ -22,9 +22,9 @@
  * }} RowanRangeChartConfig
  */
 /**
- * Experimental categorical range. Per-category `{ low, high }`. `variant` is
- * `bar` (default) or `area`. Null low or high is no-data. Own series model —
- * not frozen categorical `series.values`.
+ * Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default)
+ * or `area`. Null low or high is no-data. Own series model — not categorical
+ * `series.values`.
  * @tag rowan-range-chart
  * @attr {string} label
  * @attr {string} description

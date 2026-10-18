@@ -77,9 +77,9 @@ function yForValue(value, domain, plotHeight) {
 }
 
 /**
- * Experimental categorical combo chart: bars, lines, and areas on a shared
- * category axis. Optional `axis: "secondary"` for a second value scale (Pareto
- * cumulative %). Frozen bar, area, and trend charts are unchanged.
+ * Categorical combo: bars, lines, and areas on a shared category axis.
+ * Optional `axis: "secondary"` for a second value scale (Pareto cumulative %).
+ * Bar, area, and trend charts stay separate hosts.
  * @tag rowan-combo-chart
  * @attr {string} label
  * @attr {string} description

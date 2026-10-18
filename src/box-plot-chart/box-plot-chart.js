@@ -98,9 +98,9 @@ function normalizeText(value) {
  */
 
 /**
- * Experimental box plot. Per-category `{ min, q1, median, q3, max, outliers? }`.
- * The host does not compute quartiles. Null in the five-number summary is
- * no-data. Own series model — not frozen categorical `series.values`.
+ * Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host
+ * does not compute quartiles. Null in the five-number summary is no-data. Own
+ * series model — not categorical `series.values`.
  * @tag rowan-box-plot-chart
  * @attr {string} label
  * @attr {string} description

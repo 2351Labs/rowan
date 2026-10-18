@@ -14,9 +14,8 @@
  * }} RowanFunnelChartConfig
  */
 /**
- * Experimental one-series stage chart. Does not auto-sort. Negatives and
- * null are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers
- * the last stage to a point.
+ * One-series stage chart. Does not auto-sort. Negatives and null are no-data.
+ * `pyramid` puts stage 0 at the bottom; `cone` tapers the last stage to a point.
  * @tag rowan-funnel-chart
  * @attr {string} label
  * @attr {string} description

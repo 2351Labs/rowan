@@ -76,10 +76,10 @@ function normalizeText(value) {
  */
 
 /**
- * Experimental polar comparison. Categories are axes around the ring.
- * `geometry` is `line` (default) or `area`. Null is no-data and breaks the
- * ring; the host does not treat a gap as zero. Frozen categorical `series`.
- * Nightingale and radial bars are not this host.
+ * Polar comparison. Categories are axes around the ring. `geometry` is `line`
+ * (default) or `area`. Null is no-data and breaks the ring; the host does not
+ * treat a gap as zero. Categorical `series`. Nightingale and radial bars are
+ * not this host.
  * @tag rowan-radar-chart
  * @attr {string} label
  * @attr {string} description

@@ -1676,7 +1676,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental box plot. Per-category `{ min, q1, median, q3, max, outliers? }`.\nThe host does not compute quartiles. Null in the five-number summary is\nno-data. Own series model — not frozen categorical `series.values`.",
+          "description": "Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host\ndoes not compute quartiles. Null in the five-number summary is no-data. Own\nseries model — not categorical `series.values`.",
           "name": "RowanBoxPlotChart",
           "cssProperties": [
             {
@@ -5804,7 +5804,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental categorical combo chart: bars, lines, and areas on a shared\ncategory axis. Optional `axis: \"secondary\"` for a second value scale (Pareto\ncumulative %). Frozen bar, area, and trend charts are unchanged.",
+          "description": "Categorical combo: bars, lines, and areas on a shared category axis.\nOptional `axis: \"secondary\"` for a second value scale (Pareto cumulative %).\nBar, area, and trend charts stay separate hosts.",
           "name": "RowanComboChart",
           "cssProperties": [
             {
@@ -11703,7 +11703,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental one-series stage chart. Does not auto-sort. Negatives and\nnull are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers\nthe last stage to a point.",
+          "description": "One-series stage chart. Does not auto-sort. Negatives and null are no-data.\n`pyramid` puts stage 0 at the bottom; `cone` tapers the last stage to a point.",
           "name": "RowanFunnelChart",
           "cssProperties": [
             {
@@ -12400,7 +12400,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental categorical heatmap. Single-hue intensity via fill-opacity.\nNull is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.",
+          "description": "Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty /\nno-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.",
           "name": "RowanHeatmapChart",
           "cssProperties": [
             {
@@ -18986,7 +18986,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental polar comparison. Categories are axes around the ring.\n`geometry` is `line` (default) or `area`. Null is no-data and breaks the\nring; the host does not treat a gap as zero. Frozen categorical `series`.\nNightingale and radial bars are not this host.",
+          "description": "Polar comparison. Categories are axes around the ring. `geometry` is `line`\n(default) or `area`. Null is no-data and breaks the ring; the host does not\ntreat a gap as zero. Categorical `series`. Nightingale and radial bars are\nnot this host.",
           "name": "RowanRadarChart",
           "cssProperties": [
             {
@@ -19919,7 +19919,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental categorical range. Per-category `{ low, high }`. `variant` is\n`bar` (default) or `area`. Null low or high is no-data. Own series model —\nnot frozen categorical `series.values`.",
+          "description": "Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default)\nor `area`. Null low or high is no-data. Own series model — not categorical\n`series.values`.",
           "name": "RowanRangeChart",
           "cssProperties": [
             {
@@ -21784,7 +21784,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental scatter / bubble chart. Bubble is a `size` encoding, not a\nsecond tag. Null x or y is no-data.",
+          "description": "Scatter / bubble chart. Bubble is a `size` encoding, not a second tag.\nNull x or y is no-data.",
           "name": "RowanScatterChart",
           "cssProperties": [
             {
@@ -31301,7 +31301,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental waterfall. Signed deltas from a running total. Totals are\n`{ type: \"total\" }` from zero; the host does not invent them. Null is no-data.",
+          "description": "Waterfall. Signed deltas from a running total. Totals are `{ type: \"total\" }`\nfrom zero; the host does not invent them. Null is no-data.",
           "name": "RowanWaterfallChart",
           "cssProperties": [
             {

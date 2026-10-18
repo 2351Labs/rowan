@@ -22,8 +22,8 @@
  * }} RowanScatterChartConfig
  */
 /**
- * Experimental scatter / bubble chart. Bubble is a `size` encoding, not a
- * second tag. Null x or y is no-data.
+ * Scatter / bubble chart. Bubble is a `size` encoding, not a second tag.
+ * Null x or y is no-data.
  * @tag rowan-scatter-chart
  * @attr {string} label
  * @attr {string} description
