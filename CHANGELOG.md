@@ -6,12 +6,15 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.20.0 - 2026-10-18
+
 ### Added
 
 - `rowan-sparkline` property-only `target`. When set, the stroke uses `above-tone` / `below-tone` (default `warning` / `success`) on each side of a dashed target line. The domain includes the target. Hover and the matching table include the target value. Not an overlay and not a density of `rowan-trend-chart`.
 
 ### Changed
 
+- Getting-started docs pin `@rowan-ui/core@0.20.0`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
 - Promote `rowan-combo-chart`, `rowan-scatter-chart`, `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`, `rowan-range-chart`, `rowan-box-plot-chart`, and `rowan-radar-chart` to Stable. Nested filter groups and table-view-state version `2` stay experimental. This is not `1.0`.
 - `rowan-kpi-card` is an inline-size container. Compact below 10rem, roomy from 22rem: padding, value `clamp`, and slotted sparkline/bullet/gauge height. Default `min-inline-size` is `8rem`. Does not change chart kind or reformat the value. `--rowan-kpi-card-value-size` and `--rowan-kpi-card-chart-height` still pin a fixed scale. Without an icon, the body fills the tile so slotted charts stretch instead of sitting in the leftover auto column.
 - `rowan-sparkline` and `rowan-bullet-chart` plots fill their box (`preserveAspectRatio="none"`). Gauge keeps aspect ratio. Stroke width stays CSS pixels.

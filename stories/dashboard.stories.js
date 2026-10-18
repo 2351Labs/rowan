@@ -414,7 +414,7 @@ function createKpiRow() {
     createKpi({
       label: "Orders",
       value: "1,284",
-      delta: 8.1,
+      delta: 84,
       deltaLabel: "vs plan",
       tone: "info",
       icon: "shopping-cart",

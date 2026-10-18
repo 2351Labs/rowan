@@ -224,6 +224,16 @@ funnel, waterfall, range, box-plot, radar, and combo stay experimental. Inline
 table editing is not a public API. Publish after this catalog commit is on
 `main`: tag `v0.19.0`.
 
+## 0.20.0 cut
+
+Version in `package.json` is `0.20.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Sparkline `target` split, KPI card density, dashboard compact
+chart recipe, and the eight former experimental charts (combo, scatter, heatmap,
+funnel, waterfall, range, box-plot, radar) ship here as Stable. Nested filter
+groups and table-view-state version `2` stay experimental. Inline table editing
+is not a public API. Publish after this catalog commit is on `main`: tag
+`v0.20.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

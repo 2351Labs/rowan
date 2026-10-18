@@ -94,7 +94,7 @@ import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/slate";
 import "@rowan-ui/core/tokens/midnight";`;
 
-const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.19.0
+const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.20.0
 
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1237,7 +1237,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.19.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@0.20.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -2368,7 +2368,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "scatter-chart",
     group: "Components",
     title: "Rowan Scatter Chart",
-    summary: "Experimental x/y points. Size encodes a bubble. Null x or y is no-data.",
+    summary: "x/y points. Size encodes a bubble. Null x or y is no-data.",
     tags: ["data display", "scatter", "chart"],
     keywords: ["scatter", "bubble"],
     content: () => `
@@ -2400,7 +2400,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "heatmap-chart",
     group: "Components",
     title: "Rowan Heatmap Chart",
-    summary: "Experimental matrix. Single-hue intensity. Null is no-data.",
+    summary: "Categorical matrix. Single-hue intensity. Null is no-data.",
     tags: ["data display", "heatmap", "chart"],
     keywords: ["heatmap", "matrix"],
     content: () => `
@@ -2427,7 +2427,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "funnel-chart",
     group: "Components",
     title: "Rowan Funnel Chart",
-    summary: "Experimental stages. Does not auto-sort. Null and negatives are no-data.",
+    summary: "Stage chart. Does not auto-sort. Null and negatives are no-data.",
     tags: ["data display", "funnel", "chart"],
     keywords: ["funnel", "cone", "pyramid"],
     content: () => `
@@ -2450,7 +2450,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "waterfall-chart",
     group: "Components",
     title: "Rowan Waterfall Chart",
-    summary: "Experimental signed deltas. Totals are authored; the host does not invent them.",
+    summary: "Signed deltas. Totals are authored; the host does not invent them.",
     tags: ["data display", "waterfall", "chart"],
     keywords: ["waterfall", "delta", "total"],
     content: () => `
@@ -2479,7 +2479,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "range-chart",
     group: "Components",
     title: "Rowan Range Chart",
-    summary: "Experimental low–high ranges. variant is bar or area. Null low or high is no-data.",
+    summary: "Low–high ranges. variant is bar or area. Null low or high is no-data.",
     tags: ["data display", "range", "chart"],
     keywords: ["range", "range bar", "range area", "sla"],
     content: () => `
@@ -2512,7 +2512,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "box-plot-chart",
     group: "Components",
     title: "Rowan Box Plot Chart",
-    summary: "Experimental five-number summaries. The host does not compute quartiles.",
+    summary: "Five-number summaries. The host does not compute quartiles.",
     tags: ["data display", "box plot", "chart"],
     keywords: ["box plot", "quartile", "outlier"],
     content: () => `
@@ -2545,7 +2545,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "radar-chart",
     group: "Components",
     title: "Rowan Radar Chart",
-    summary: "Experimental polar comparison. geometry is line or area. Null is no-data.",
+    summary: "Polar comparison. geometry is line or area. Null is no-data.",
     tags: ["data display", "radar", "chart"],
     keywords: ["radar", "spider", "polar"],
     content: () => `
