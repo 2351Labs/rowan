@@ -15,6 +15,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Promote `rowan-combo-chart`, `rowan-scatter-chart`, `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`, `rowan-range-chart`, `rowan-box-plot-chart`, and `rowan-radar-chart` to Stable. Nested filter groups and table-view-state version `2` stay experimental. This is not `1.0`.
 - `rowan-kpi-card` is an inline-size container. Compact below 10rem, roomy from 22rem: padding, value `clamp`, and slotted sparkline/bullet/gauge height. Default `min-inline-size` is `8rem`. Does not change chart kind or reformat the value. `--rowan-kpi-card-value-size` and `--rowan-kpi-card-chart-height` still pin a fixed scale. Without an icon, the body fills the tile so slotted charts stretch instead of sitting in the leftover auto column.
 - `rowan-sparkline` and `rowan-bullet-chart` plots fill their box (`preserveAspectRatio="none"`). Gauge keeps aspect ratio. Stroke width stays CSS pixels.
+- Workflows/Dashboard overview KPI row composes sparkline, sparkline versus target, bullet, and gauge. Not a KPI type menu.
 
 ### Fixed
 
