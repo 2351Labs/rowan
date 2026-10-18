@@ -110,6 +110,36 @@ describe("rowan-sparkline", () => {
     expect(getComputedStyle(line).strokeWidth).to.equal("3px");
   });
 
+  it("keeps the hover mark in CSS pixels when the plot scales", async () => {
+    const chart = await renderSparkline({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "20rem";
+    chart.style.setProperty("--rowan-sparkline-height", "12rem");
+    await waitForSparklineStyles(chart);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const box = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width - 2,
+        clientY: box.top + 4,
+      }),
+    );
+
+    const mark = chart.shadowRoot.querySelector(".hover-point");
+    expect(mark).to.not.equal(null);
+    expect(getComputedStyle(mark).vectorEffect).to.equal("non-scaling-stroke");
+    expect(getComputedStyle(mark).strokeWidth).to.equal("4.5px");
+    const markBox = mark.getBoundingClientRect();
+    expect(markBox.width).to.be.below(10);
+    expect(markBox.height).to.be.below(10);
+  });
+
   it("colors rising and falling series from the data when tone is unset", async () => {
     const rising = await renderSparkline({ values: [1, 4, 9] });
     expect(rising.tone).to.equal("success");
@@ -140,11 +170,11 @@ describe("rowan-sparkline", () => {
     expect(hover.hidden).to.equal(false);
     expect(hover.textContent).to.include("Wed");
     expect(hover.textContent).to.include("8");
-    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelector(".hover-point")).to.not.equal(null);
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
-    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".hover-point")).to.equal(null);
   });
 
   it("hides hover after reconnects", async () => {
@@ -284,7 +314,7 @@ describe("rowan-sparkline", () => {
     expect(hover.textContent).to.include("Wed");
     expect(hover.textContent).to.include("Target");
     expect(hover.textContent).to.include("5");
-    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("danger");
+    expect(chart.shadowRoot.querySelector(".hover-point").dataset.tone).to.equal("danger");
 
     plot.dispatchEvent(
       new PointerEvent("pointermove", {
@@ -293,7 +323,7 @@ describe("rowan-sparkline", () => {
         clientY: box.top + 4,
       }),
     );
-    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("info");
+    expect(chart.shadowRoot.querySelector(".hover-point").dataset.tone).to.equal("info");
   });
 
   it("treats blank and non-finite target as no-data and rewrites invalid tones", async () => {

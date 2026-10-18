@@ -154,6 +154,7 @@ function createClipRect(x, y, width, height) {
  * @cssprop --rowan-sparkline-height
  * @cssprop --rowan-sparkline-stroke
  * @cssprop --rowan-sparkline-stroke-width
+ * @cssprop --rowan-sparkline-hover-size
  * @cssprop --rowan-sparkline-info
  * @cssprop --rowan-sparkline-success
  * @cssprop --rowan-sparkline-warning
@@ -513,13 +514,11 @@ export class RowanSparkline extends BaseElement {
     }
 
     if (!this.#hoverPoint) {
-      this.#hoverPoint = createSvgElement("circle");
+      this.#hoverPoint = createSvgElement("path");
       this.#hoverPoint.setAttribute("class", "hover-point");
-      this.#hoverPoint.setAttribute("r", "2.25");
     }
 
-    this.#hoverPoint.setAttribute("cx", point.x.toFixed(2));
-    this.#hoverPoint.setAttribute("cy", point.y.toFixed(2));
+    this.#hoverPoint.setAttribute("d", `M${point.x.toFixed(2)},${point.y.toFixed(2)}`);
     const bandTone = this.#bandTone(point.value);
     if (bandTone) this.#hoverPoint.dataset.tone = bandTone;
     else delete this.#hoverPoint.dataset.tone;
