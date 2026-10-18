@@ -37,6 +37,7 @@ async function renderSparkline(options = {}) {
   if (options.target !== undefined) chart.target = options.target;
   if (options.aboveTone !== undefined) chart.aboveTone = options.aboveTone;
   if (options.belowTone !== undefined) chart.belowTone = options.belowTone;
+  if (options.variant !== undefined) chart.variant = options.variant;
   if (options.messages !== undefined) chart.messages = options.messages;
   document.body.append(chart);
   await nextMicrotask();
@@ -323,5 +324,47 @@ describe("rowan-sparkline", () => {
     expect(chart.target).to.equal(0);
     expect(chart.shadowRoot.querySelector("line.target")).to.not.equal(null);
     expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(2);
+  });
+
+  it("fills under the stroke when variant is area and omits the default", async () => {
+    const chart = await renderSparkline({
+      values: [4, null, 8],
+      variant: "area",
+    });
+
+    const area = chart.shadowRoot.querySelector("path.area");
+    expect(chart.variant).to.equal("area");
+    expect(chart.getAttribute("variant")).to.equal("area");
+    expect(area).to.not.equal(null);
+    expect(area.getAttribute("d")).to.include("Z");
+    expect(chart.shadowRoot.querySelectorAll("path.area")).to.have.length(1);
+
+    chart.variant = "line";
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.hasAttribute("variant")).to.equal(false);
+    expect(chart.shadowRoot.querySelector("path.area")).to.equal(null);
+  });
+
+  it("splits the area fill at a target and rewrites an invalid variant", async () => {
+    const chart = await renderSparkline({
+      values: [0, 10],
+      target: 5,
+      variant: "blob",
+    });
+
+    expect(chart.variant).to.equal("line");
+    expect(chart.hasAttribute("variant")).to.equal(false);
+    expect(chart.shadowRoot.querySelector("path.area")).to.equal(null);
+
+    chart.variant = "area";
+    await nextMicrotask();
+    await nextMicrotask();
+    const above = chart.shadowRoot.querySelector("path.area[data-band='above']");
+    const below = chart.shadowRoot.querySelector("path.area[data-band='below']");
+    expect(above).to.not.equal(null);
+    expect(below).to.not.equal(null);
+    expect(above.getAttribute("d")).to.equal(below.getAttribute("d"));
+    expect(above.getAttribute("d")).to.include("Z");
   });
 });

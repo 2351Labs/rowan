@@ -360,7 +360,7 @@ function createKpi({ label, value, delta, deltaLabel, tone, icon, chart }) {
   return card;
 }
 
-function createSparkline({ label, values, tone, target, aboveTone, belowTone }) {
+function createSparkline({ label, values, tone, target, aboveTone, belowTone, variant }) {
   const chart = document.createElement("rowan-sparkline");
   chart.slot = "chart";
   chart.label = label;
@@ -369,6 +369,7 @@ function createSparkline({ label, values, tone, target, aboveTone, belowTone }) 
   if (target !== undefined) chart.target = target;
   if (aboveTone) chart.aboveTone = aboveTone;
   if (belowTone) chart.belowTone = belowTone;
+  if (variant) chart.variant = variant;
   return chart;
 }
 
@@ -409,6 +410,7 @@ function createKpiRow() {
         label: "Revenue this period",
         values: [32, 36, 34, 41, 39, 48],
         tone: "success",
+        variant: "area",
       }),
     }),
     createKpi({

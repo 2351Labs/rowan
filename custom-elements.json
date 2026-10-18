@@ -24040,7 +24040,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Frozen compact one-series line for KPI tiles. Not a density of\n`rowan-trend-chart`.",
+          "description": "Frozen compact one-series line for KPI tiles. Not a density of\n`rowan-trend-chart`. Additive `variant=\"area\"` fills to the baseline (or to\n`target` when set).",
           "name": "RowanSparkline",
           "cssProperties": [
             {
@@ -24065,6 +24065,9 @@
               "name": "--rowan-sparkline-danger"
             },
             {
+              "name": "--rowan-sparkline-fill-opacity"
+            },
+            {
               "name": "--rowan-sparkline-target"
             },
             {
@@ -24080,6 +24083,9 @@
             },
             {
               "name": "line"
+            },
+            {
+              "name": "area"
             },
             {
               "name": "target"
@@ -24134,6 +24140,23 @@
                   "name": "value",
                   "type": {
                     "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "return": {
+                "type": {
+                  "text": "\"line\" | \"area\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"line\" | \"area\""
                   }
                 }
               ]
@@ -24321,6 +24344,14 @@
               "type": {
                 "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
               }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"line\"|\"area\""
+              },
+              "description": "`area` fills under the stroke. Default `line`.",
+              "default": "line"
             },
             {
               "name": "above-tone",
