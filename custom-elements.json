@@ -24053,6 +24053,9 @@
               "name": "--rowan-sparkline-stroke-width"
             },
             {
+              "name": "--rowan-sparkline-hover-size"
+            },
+            {
               "name": "--rowan-sparkline-info"
             },
             {
@@ -24092,6 +24095,9 @@
             },
             {
               "name": "hover"
+            },
+            {
+              "name": "hover-point"
             },
             {
               "name": "table"

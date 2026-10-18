@@ -18,6 +18,8 @@ const VARIANTS = new Set(["line", "area"]);
 const VIEWBOX_WIDTH = 100;
 const VIEWBOX_HEIGHT = 24;
 const PLOT_PAD = 1.5;
+const TARGET_DASH_PX = 4;
+const TARGET_GAP_PX = 3;
 const DEFAULT_ABOVE_TONE = "warning";
 const DEFAULT_BELOW_TONE = "success";
 const DEFAULT_VARIANT = "line";
@@ -121,6 +123,25 @@ function createClipRect(x, y, width, height) {
   return rect;
 }
 
+/** User-space dashes sized to CSS pixels. stroke-dasharray still scales with the viewBox. */
+function dashedTargetPath(y, plotWidthPx) {
+  const yValue = y.toFixed(2);
+  if (!(plotWidthPx > 0)) return `M0,${yValue}H${VIEWBOX_WIDTH}`;
+
+  const dash = (TARGET_DASH_PX * VIEWBOX_WIDTH) / plotWidthPx;
+  const gap = (TARGET_GAP_PX * VIEWBOX_WIDTH) / plotWidthPx;
+  const step = dash + gap;
+  if (!(step > 0)) return `M0,${yValue}H${VIEWBOX_WIDTH}`;
+
+  const parts = [];
+  for (let x = 0; x < VIEWBOX_WIDTH; x += step) {
+    const end = Math.min(x + dash, VIEWBOX_WIDTH);
+    if (end <= x) break;
+    parts.push(`M${x.toFixed(3)},${yValue}H${end.toFixed(3)}`);
+  }
+  return parts.join(" ");
+}
+
 /**
  * @typedef {object} RowanSparklineMessages
  * @property {string} [chart]
@@ -150,10 +171,12 @@ function createClipRect(x, y, width, height) {
  * @csspart area
  * @csspart target
  * @csspart hover
+ * @csspart hover-point
  * @csspart table
  * @cssprop --rowan-sparkline-height
  * @cssprop --rowan-sparkline-stroke
  * @cssprop --rowan-sparkline-stroke-width
+ * @cssprop --rowan-sparkline-hover-size
  * @cssprop --rowan-sparkline-info
  * @cssprop --rowan-sparkline-success
  * @cssprop --rowan-sparkline-warning
@@ -181,6 +204,7 @@ export class RowanSparkline extends BaseElement {
   static componentTokenPrefixes = ["--rowan-sparkline-"];
 
   #chart = null;
+  #plotWrap = null;
   #plot = null;
   #table = null;
   #hover = null;
@@ -188,9 +212,11 @@ export class RowanSparkline extends BaseElement {
   #values = [];
   #labels = [];
   #target = null;
+  #targetY = null;
   #toneExplicit = false;
   #messages = {};
   #clipId = `rowan-sparkline-${++clipSeq}`;
+  #resizeObserver = null;
 
   get label() {
     return this.readString("label", "");
@@ -332,11 +358,14 @@ export class RowanSparkline extends BaseElement {
     if (!this.#chart) {
       this.renderRoot.innerHTML = `
         <div class="chart" part="chart">
-          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none" role="presentation"></svg>
+          <div class="plot-wrap">
+            <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none" role="presentation"></svg>
+          </div>
           <table class="table" part="table"></table>
         </div>
       `;
       this.#chart = this.renderRoot.querySelector(".chart");
+      this.#plotWrap = this.renderRoot.querySelector(".plot-wrap");
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#table = this.renderRoot.querySelector(".table");
       this.#hover = createChartHoverBubble();
@@ -348,6 +377,7 @@ export class RowanSparkline extends BaseElement {
       });
       this.listen(this.#plot, "pointerleave", () => this.#syncHoverPoint(null));
       this.listen(this.#plot, "pointercancel", () => this.#syncHoverPoint(null));
+      this.#observePlotSize();
     }
 
     const points = this.#plotPoints();
@@ -395,9 +425,10 @@ export class RowanSparkline extends BaseElement {
 
   #renderPlot(points) {
     const fragment = document.createDocumentFragment();
+    this.#targetY = null;
     if (points.length === 0) {
       this.#plot.replaceChildren(fragment);
-      this.#hoverPoint = null;
+      this.#clearHoverPoint();
       return;
     }
 
@@ -442,13 +473,12 @@ export class RowanSparkline extends BaseElement {
         );
       }
 
-      const mark = createSvgElement("line");
+      this.#targetY = targetY;
+      const mark = createSvgElement("path");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
-      mark.setAttribute("x1", "0");
-      mark.setAttribute("x2", String(VIEWBOX_WIDTH));
-      mark.setAttribute("y1", targetY.toFixed(2));
-      mark.setAttribute("y2", targetY.toFixed(2));
+      mark.dataset.y = targetY.toFixed(2);
+      mark.setAttribute("d", dashedTargetPath(targetY, this.#plot.getBoundingClientRect().width));
       fragment.append(mark);
 
       fragment.append(
@@ -484,6 +514,34 @@ export class RowanSparkline extends BaseElement {
     }
 
     this.#plot.replaceChildren(fragment);
+    this.#clearHoverPoint();
+  }
+
+  #observePlotSize() {
+    if (typeof ResizeObserver === "undefined") return;
+
+    if (!this.#resizeObserver) {
+      this.#resizeObserver = new ResizeObserver(() => this.#syncTargetDash());
+      this.observe(this.#resizeObserver, () => {
+        if (this.#plot) this.#resizeObserver.observe(this.#plot);
+      });
+    }
+
+    this.#resizeObserver.disconnect();
+    this.#resizeObserver.observe(this.#plot);
+  }
+
+  #syncTargetDash() {
+    const mark = this.#plot?.querySelector(".target");
+    if (!mark || this.#targetY === null) return;
+    mark.setAttribute(
+      "d",
+      dashedTargetPath(this.#targetY, this.#plot.getBoundingClientRect().width),
+    );
+  }
+
+  #clearHoverPoint() {
+    this.#hoverPoint?.remove();
     this.#hoverPoint = null;
   }
 
@@ -507,23 +565,29 @@ export class RowanSparkline extends BaseElement {
 
   #syncHoverPoint(point) {
     if (!point) {
-      this.#hoverPoint?.remove();
-      this.#hoverPoint = null;
+      this.#clearHoverPoint();
       return;
     }
 
     if (!this.#hoverPoint) {
-      this.#hoverPoint = createSvgElement("circle");
+      this.#hoverPoint = document.createElement("span");
       this.#hoverPoint.setAttribute("class", "hover-point");
-      this.#hoverPoint.setAttribute("r", "2.25");
+      this.#hoverPoint.setAttribute("part", "hover-point");
+      this.#hoverPoint.setAttribute("aria-hidden", "true");
     }
 
-    this.#hoverPoint.setAttribute("cx", point.x.toFixed(2));
-    this.#hoverPoint.setAttribute("cy", point.y.toFixed(2));
+    this.#hoverPoint.style.setProperty(
+      "--hover-x",
+      `${((point.x / VIEWBOX_WIDTH) * 100).toFixed(3)}%`,
+    );
+    this.#hoverPoint.style.setProperty(
+      "--hover-y",
+      `${((point.y / VIEWBOX_HEIGHT) * 100).toFixed(3)}%`,
+    );
     const bandTone = this.#bandTone(point.value);
     if (bandTone) this.#hoverPoint.dataset.tone = bandTone;
     else delete this.#hoverPoint.dataset.tone;
-    this.#plot.append(this.#hoverPoint);
+    this.#plotWrap.append(this.#hoverPoint);
   }
 
   #renderTable() {
