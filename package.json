@@ -113,6 +113,10 @@
       "types": "./src/color-picker/color-picker.d.ts",
       "default": "./src/color-picker/color-picker.js"
     },
+    "./column-sparkline": {
+      "types": "./src/column-sparkline/column-sparkline.d.ts",
+      "default": "./src/column-sparkline/column-sparkline.js"
+    },
     "./card": {
       "types": "./src/card/card.d.ts",
       "default": "./src/card/card.js"
@@ -569,6 +573,7 @@
     "./src/calendar/calendar.js",
     "./src/carousel/carousel.js",
     "./src/color-picker/color-picker.js",
+    "./src/column-sparkline/column-sparkline.js",
     "./src/date-picker/date-picker.js",
     "./src/date-range-picker/date-range-picker.js",
     "./src/data-state/data-state.js",

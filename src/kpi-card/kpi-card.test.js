@@ -217,7 +217,13 @@ describe("rowan-kpi-card", () => {
       getComputedStyle(compactChart).getPropertyValue("--rowan-sparkline-height").trim(),
     ).to.equal("1.5rem");
     expect(
+      getComputedStyle(compactChart).getPropertyValue("--rowan-column-sparkline-height").trim(),
+    ).to.equal("1.5rem");
+    expect(
       getComputedStyle(roomyChart).getPropertyValue("--rowan-sparkline-height").trim(),
+    ).to.equal("2.75rem");
+    expect(
+      getComputedStyle(roomyChart).getPropertyValue("--rowan-column-sparkline-height").trim(),
     ).to.equal("2.75rem");
     expect(roomyValue).to.be.above(compactValue);
     expect(compact.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);

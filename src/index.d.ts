@@ -15,6 +15,7 @@ export type { RowanBulletChartMessages } from "../types/bullet-chart/bullet-char
 export type { RowanCalendarMessages } from "../types/calendar/calendar.js";
 export type { RowanCarouselMessages } from "../types/carousel/carousel.js";
 export type { RowanColorPickerMessages } from "../types/color-picker/color-picker.js";
+export type { RowanColumnSparklineMessages } from "../types/column-sparkline/column-sparkline.js";
 export type { RowanComboChartMessages } from "../types/combo-chart/combo-chart.js";
 export type { RowanComboboxMessages } from "../types/combobox/combobox.js";
 export type { RowanCommandPaletteMessages } from "../types/command-palette/command-palette.js";
