@@ -30,6 +30,13 @@
   vector-effect: non-scaling-stroke;
 }
 
+.area {
+  fill: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
+  fill-opacity: var(--rowan-sparkline-fill-opacity, 0.28);
+  pointer-events: none;
+  stroke: none;
+}
+
 .hover-point {
   fill: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
   pointer-events: none;
@@ -43,7 +50,10 @@
 
 :host([tone="info"]) .hover-point,
 .plot[data-tone="info"] .hover-point,
-.plot[data-split] .hover-point[data-tone="info"] {
+.plot[data-split] .hover-point[data-tone="info"],
+:host([tone="info"]) .area,
+.plot[data-tone="info"] .area,
+.plot[data-split] .area[data-tone="info"] {
   fill: var(--rowan-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
 }
 
@@ -55,7 +65,10 @@
 
 :host([tone="success"]) .hover-point,
 .plot[data-tone="success"] .hover-point,
-.plot[data-split] .hover-point[data-tone="success"] {
+.plot[data-split] .hover-point[data-tone="success"],
+:host([tone="success"]) .area,
+.plot[data-tone="success"] .area,
+.plot[data-split] .area[data-tone="success"] {
   fill: var(--rowan-sparkline-success, var(--rowan-chart-success, var(--rowan-color-success)));
 }
 
@@ -67,7 +80,10 @@
 
 :host([tone="warning"]) .hover-point,
 .plot[data-tone="warning"] .hover-point,
-.plot[data-split] .hover-point[data-tone="warning"] {
+.plot[data-split] .hover-point[data-tone="warning"],
+:host([tone="warning"]) .area,
+.plot[data-tone="warning"] .area,
+.plot[data-split] .area[data-tone="warning"] {
   fill: var(--rowan-sparkline-warning, var(--rowan-chart-warning, var(--rowan-color-warning)));
 }
 
@@ -79,7 +95,10 @@
 
 :host([tone="danger"]) .hover-point,
 .plot[data-tone="danger"] .hover-point,
-.plot[data-split] .hover-point[data-tone="danger"] {
+.plot[data-split] .hover-point[data-tone="danger"],
+:host([tone="danger"]) .area,
+.plot[data-tone="danger"] .area,
+.plot[data-split] .area[data-tone="danger"] {
   fill: var(--rowan-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
 }
 
@@ -87,7 +106,8 @@
   stroke: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
 }
 
-.plot[data-split] .hover-point[data-tone="neutral"] {
+.plot[data-split] .hover-point[data-tone="neutral"],
+.plot[data-split] .area[data-tone="neutral"] {
   fill: var(--rowan-sparkline-stroke, var(--rowan-color-muted));
 }
 

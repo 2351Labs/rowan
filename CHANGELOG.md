@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-sparkline` additive `variant="area"` fills under the stroke. With `target`, the fill splits at the target like the stroke. Default `line` is omitted. Not a density of `rowan-area-chart`.
+
 ## 0.20.0 - 2026-10-18
 
 ### Added

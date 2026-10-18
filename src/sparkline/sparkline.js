@@ -14,11 +14,13 @@ import { finiteOrNull } from "../chart/model.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
+const VARIANTS = new Set(["line", "area"]);
 const VIEWBOX_WIDTH = 100;
 const VIEWBOX_HEIGHT = 24;
 const PLOT_PAD = 1.5;
 const DEFAULT_ABOVE_TONE = "warning";
 const DEFAULT_BELOW_TONE = "success";
+const DEFAULT_VARIANT = "line";
 const DEFAULT_MESSAGES = Object.freeze({
   chart: "Sparkline",
   noData: "No data",
@@ -70,6 +72,46 @@ function pathData(points) {
     .join(" ");
 }
 
+function contiguousSegments(points) {
+  const segments = [];
+  let current = [];
+  let previousIndex = -2;
+
+  for (const point of points) {
+    if (current.length && point.index !== previousIndex + 1) {
+      segments.push(current);
+      current = [];
+    }
+    current.push(point);
+    previousIndex = point.index;
+  }
+
+  if (current.length) segments.push(current);
+  return segments;
+}
+
+function areaPathData(points, baselineY) {
+  return contiguousSegments(points)
+    .map((segment) => {
+      const first = segment[0];
+      const last = segment.at(-1);
+      return `${pathData(segment)} L${last.x.toFixed(2)},${baselineY.toFixed(2)} L${first.x.toFixed(2)},${baselineY.toFixed(2)} Z`;
+    })
+    .join(" ");
+}
+
+function createBandPath({ className, part, d, tone, band, clipId, filled }) {
+  const path = createSvgElement("path");
+  path.setAttribute("class", className);
+  path.setAttribute("part", part);
+  if (!filled) path.setAttribute("fill", "none");
+  path.setAttribute("d", d);
+  if (tone) path.dataset.tone = tone;
+  if (band) path.dataset.band = band;
+  if (clipId) path.setAttribute("clip-path", `url(#${clipId})`);
+  return path;
+}
+
 function createClipRect(x, y, width, height) {
   const rect = createSvgElement("rect");
   rect.setAttribute("x", x.toFixed(2));
@@ -89,10 +131,12 @@ function createClipRect(x, y, width, height) {
 
 /**
  * Frozen compact one-series line for KPI tiles. Not a density of
- * `rowan-trend-chart`.
+ * `rowan-trend-chart`. Additive `variant="area"` fills to the baseline (or to
+ * `target` when set).
  * @tag rowan-sparkline
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
+ * @attr {"line"|"area"} [variant=line] - `area` fills under the stroke. Default `line`.
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} [above-tone=warning] - Stroke above target. Used when `target` is set.
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} [below-tone=success] - Stroke at or below target. Used when `target` is set.
  * @attr {string} locale
@@ -103,6 +147,7 @@ function createClipRect(x, y, width, height) {
  * @csspart chart
  * @csspart plot
  * @csspart line
+ * @csspart area
  * @csspart target
  * @csspart hover
  * @csspart table
@@ -113,16 +158,18 @@ function createClipRect(x, y, width, height) {
  * @cssprop --rowan-sparkline-success
  * @cssprop --rowan-sparkline-warning
  * @cssprop --rowan-sparkline-danger
+ * @cssprop --rowan-sparkline-fill-opacity
  * @cssprop --rowan-sparkline-target
  * @cssprop --rowan-sparkline-target-width
  */
 export class RowanSparkline extends BaseElement {
   static styleUrl = new URL("./sparkline.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone", "above-tone", "below-tone", "locale"];
+  static observedAttributes = ["label", "tone", "variant", "above-tone", "below-tone", "locale"];
   static upgradeProperties = [
     "label",
     "tone",
+    "variant",
     "aboveTone",
     "belowTone",
     "locale",
@@ -185,6 +232,16 @@ export class RowanSparkline extends BaseElement {
   set tone(value) {
     this.#toneExplicit = true;
     reflectEnum(this, "tone", value, TONES, "neutral");
+  }
+
+  /** @returns {"line" | "area"} */
+  get variant() {
+    return normalizeEnum(this.readString("variant", DEFAULT_VARIANT), VARIANTS, DEFAULT_VARIANT);
+  }
+
+  /** @param {"line" | "area"} value */
+  set variant(value) {
+    reflectEnum(this, "variant", value, VARIANTS, DEFAULT_VARIANT);
   }
 
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
@@ -264,6 +321,10 @@ export class RowanSparkline extends BaseElement {
       if (rewriteEnumAttribute(this, name, newValue, TONES, DEFAULT_BELOW_TONE)) return;
     }
 
+    if (name === "variant") {
+      if (rewriteEnumAttribute(this, name, newValue, VARIANTS, DEFAULT_VARIANT)) return;
+    }
+
     super.attributeChangedCallback(name, oldValue, newValue);
   }
 
@@ -341,10 +402,12 @@ export class RowanSparkline extends BaseElement {
     }
 
     const d = pathData(points);
+    const filled = this.variant === "area";
     if (this.#target !== null) {
       const targetY = this.#yFor(this.#target, this.#domain());
       const aboveId = `${this.#clipId}-above`;
       const belowId = `${this.#clipId}-below`;
+      const fillD = filled ? areaPathData(points, targetY) : "";
 
       const defs = createSvgElement("defs");
       const aboveClip = createSvgElement("clipPath");
@@ -356,6 +419,29 @@ export class RowanSparkline extends BaseElement {
       defs.append(aboveClip, belowClip);
       fragment.append(defs);
 
+      if (fillD) {
+        fragment.append(
+          createBandPath({
+            className: "area",
+            part: "area",
+            d: fillD,
+            tone: this.aboveTone,
+            band: "above",
+            clipId: aboveId,
+            filled: true,
+          }),
+          createBandPath({
+            className: "area",
+            part: "area",
+            d: fillD,
+            tone: this.belowTone,
+            band: "below",
+            clipId: belowId,
+            filled: true,
+          }),
+        );
+      }
+
       const mark = createSvgElement("line");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
@@ -365,31 +451,36 @@ export class RowanSparkline extends BaseElement {
       mark.setAttribute("y2", targetY.toFixed(2));
       fragment.append(mark);
 
-      const above = createSvgElement("path");
-      above.setAttribute("class", "line");
-      above.setAttribute("part", "line");
-      above.setAttribute("fill", "none");
-      above.dataset.tone = this.aboveTone;
-      above.dataset.band = "above";
-      above.setAttribute("clip-path", `url(#${aboveId})`);
-      above.setAttribute("d", d);
-
-      const below = createSvgElement("path");
-      below.setAttribute("class", "line");
-      below.setAttribute("part", "line");
-      below.setAttribute("fill", "none");
-      below.dataset.tone = this.belowTone;
-      below.dataset.band = "below";
-      below.setAttribute("clip-path", `url(#${belowId})`);
-      below.setAttribute("d", d);
-      fragment.append(above, below);
+      fragment.append(
+        createBandPath({
+          className: "line",
+          part: "line",
+          d,
+          tone: this.aboveTone,
+          band: "above",
+          clipId: aboveId,
+        }),
+        createBandPath({
+          className: "line",
+          part: "line",
+          d,
+          tone: this.belowTone,
+          band: "below",
+          clipId: belowId,
+        }),
+      );
     } else {
-      const path = createSvgElement("path");
-      path.setAttribute("class", "line");
-      path.setAttribute("part", "line");
-      path.setAttribute("fill", "none");
-      path.setAttribute("d", d);
-      fragment.append(path);
+      if (filled) {
+        fragment.append(
+          createBandPath({
+            className: "area",
+            part: "area",
+            d: areaPathData(points, VIEWBOX_HEIGHT - PLOT_PAD),
+            filled: true,
+          }),
+        );
+      }
+      fragment.append(createBandPath({ className: "line", part: "line", d }));
     }
 
     this.#plot.replaceChildren(fragment);

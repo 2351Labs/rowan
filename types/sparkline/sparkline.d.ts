@@ -7,10 +7,12 @@
  */
 /**
  * Frozen compact one-series line for KPI tiles. Not a density of
- * `rowan-trend-chart`.
+ * `rowan-trend-chart`. Additive `variant="area"` fills to the baseline (or to
+ * `target` when set).
  * @tag rowan-sparkline
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
+ * @attr {"line"|"area"} [variant=line] - `area` fills under the stroke. Default `line`.
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} [above-tone=warning] - Stroke above target. Used when `target` is set.
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} [below-tone=success] - Stroke at or below target. Used when `target` is set.
  * @attr {string} locale
@@ -21,6 +23,7 @@
  * @csspart chart
  * @csspart plot
  * @csspart line
+ * @csspart area
  * @csspart target
  * @csspart hover
  * @csspart table
@@ -31,6 +34,7 @@
  * @cssprop --rowan-sparkline-success
  * @cssprop --rowan-sparkline-warning
  * @cssprop --rowan-sparkline-danger
+ * @cssprop --rowan-sparkline-fill-opacity
  * @cssprop --rowan-sparkline-target
  * @cssprop --rowan-sparkline-target-width
  */
@@ -47,6 +51,10 @@ export class RowanSparkline extends BaseElement {
   set tone(value: "info" | "success" | "warning" | "danger" | "neutral");
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
   get tone(): "info" | "success" | "warning" | "danger" | "neutral";
+  /** @param {"line" | "area"} value */
+  set variant(value: "area" | "line");
+  /** @returns {"line" | "area"} */
+  get variant(): "area" | "line";
   /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
   set aboveTone(value: "info" | "success" | "warning" | "danger" | "neutral");
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
