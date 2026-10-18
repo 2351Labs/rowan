@@ -937,8 +937,8 @@ when set). Stroke width
 is CSS pixels (`--rowan-sparkline-stroke-width`, default
 `1.75px`) and does not thicken when the plot scales. Size the plot with
 `--rowan-sparkline-height` (default `2.25rem`); width is `100%`. The plot fills
-its box (`preserveAspectRatio="none"`). Hover dots
-still scale with the viewBox. Page-wide labeled trends belong on
+its box (`preserveAspectRatio="none"`). Hover marks stay CSS pixels
+(`--rowan-sparkline-hover-size`, default `4.5px`). Page-wide labeled trends belong on
 `rowan-trend-chart`. `rowan-progress` `hide-meta` hides the percent
 caption without dropping the progressbar name.
 

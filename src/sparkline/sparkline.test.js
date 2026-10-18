@@ -110,6 +110,37 @@ describe("rowan-sparkline", () => {
     expect(getComputedStyle(line).strokeWidth).to.equal("3px");
   });
 
+  it("keeps the hover mark in CSS pixels when the plot scales", async () => {
+    const chart = await renderSparkline({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "20rem";
+    chart.style.setProperty("--rowan-sparkline-height", "12rem");
+    await waitForSparklineStyles(chart);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const box = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width - 2,
+        clientY: box.top + 4,
+      }),
+    );
+
+    const mark = chart.shadowRoot.querySelector(".hover-point");
+    expect(mark).to.not.equal(null);
+    expect(mark.localName).to.equal("span");
+    expect(plot.contains(mark)).to.equal(false);
+    const markBox = mark.getBoundingClientRect();
+    expect(markBox.width).to.be.within(3, 8);
+    expect(markBox.height).to.be.within(3, 8);
+    expect(Math.abs(markBox.width - markBox.height)).to.be.below(0.5);
+  });
+
   it("colors rising and falling series from the data when tone is unset", async () => {
     const rising = await renderSparkline({ values: [1, 4, 9] });
     expect(rising.tone).to.equal("success");
@@ -140,11 +171,11 @@ describe("rowan-sparkline", () => {
     expect(hover.hidden).to.equal(false);
     expect(hover.textContent).to.include("Wed");
     expect(hover.textContent).to.include("8");
-    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelector(".hover-point")).to.not.equal(null);
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
-    expect(chart.shadowRoot.querySelector("circle.hover-point")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".hover-point")).to.equal(null);
   });
 
   it("hides hover after reconnects", async () => {
@@ -209,7 +240,7 @@ describe("rowan-sparkline", () => {
 
     const above = chart.shadowRoot.querySelector("path.line[data-band='above']");
     const below = chart.shadowRoot.querySelector("path.line[data-band='below']");
-    const mark = chart.shadowRoot.querySelector("line.target");
+    const mark = chart.shadowRoot.querySelector(".target");
     const plot = chart.shadowRoot.querySelector(".plot");
 
     expect(chart.hasAttribute("target")).to.equal(false);
@@ -231,14 +262,14 @@ describe("rowan-sparkline", () => {
     expect(above.getAttribute("clip-path")).to.match(/^url\(#.+-above\)$/);
     expect(below.getAttribute("clip-path")).to.match(/^url\(#.+-below\)$/);
     expect(mark).to.not.equal(null);
-    expect(Number(mark.getAttribute("y1"))).to.be.closeTo(12, 0.01);
+    expect(Number(mark.dataset.y)).to.be.closeTo(12, 0.01);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Target5");
 
     chart.target = null;
     await nextMicrotask();
     await nextMicrotask();
     expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(1);
-    expect(chart.shadowRoot.querySelector("line.target")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".target")).to.equal(null);
     expect(chart.shadowRoot.querySelector(".plot").dataset.split).to.equal(undefined);
   });
 
@@ -248,15 +279,35 @@ describe("rowan-sparkline", () => {
       target: 0,
     });
 
-    const mark = chart.shadowRoot.querySelector("line.target");
+    const mark = chart.shadowRoot.querySelector(".target");
     const lastY = Number(
       chart.shadowRoot
         .querySelector("path.line[data-band='above']")
         .getAttribute("d")
         .match(/,([\d.]+)$/)[1],
     );
-    expect(Number(mark.getAttribute("y1"))).to.be.closeTo(22.5, 0.01);
-    expect(lastY).to.be.below(Number(mark.getAttribute("y1")));
+    expect(Number(mark.dataset.y)).to.be.closeTo(22.5, 0.01);
+    expect(lastY).to.be.below(Number(mark.dataset.y));
+  });
+
+  it("keeps target dashes in CSS pixels when the plot scales", async () => {
+    const chart = await renderSparkline({
+      values: [0, 10],
+      target: 5,
+    });
+    chart.style.inlineSize = "20rem";
+    chart.style.setProperty("--rowan-sparkline-height", "12rem");
+    await waitForSparklineStyles(chart);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const mark = chart.shadowRoot.querySelector(".target");
+    const width = plot.getBoundingClientRect().width;
+    const match = mark.getAttribute("d").match(/^M([\d.]+),[\d.]+H([\d.]+)/);
+    expect(match).to.not.equal(null);
+    const dashPx = ((Number(match[2]) - Number(match[1])) / 100) * width;
+    expect(dashPx).to.be.closeTo(4, 0.75);
   });
 
   it("colors the hover point from the value versus target", async () => {
@@ -284,7 +335,7 @@ describe("rowan-sparkline", () => {
     expect(hover.textContent).to.include("Wed");
     expect(hover.textContent).to.include("Target");
     expect(hover.textContent).to.include("5");
-    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("danger");
+    expect(chart.shadowRoot.querySelector(".hover-point").dataset.tone).to.equal("danger");
 
     plot.dispatchEvent(
       new PointerEvent("pointermove", {
@@ -293,7 +344,7 @@ describe("rowan-sparkline", () => {
         clientY: box.top + 4,
       }),
     );
-    expect(chart.shadowRoot.querySelector("circle.hover-point").dataset.tone).to.equal("info");
+    expect(chart.shadowRoot.querySelector(".hover-point").dataset.tone).to.equal("info");
   });
 
   it("treats blank and non-finite target as no-data and rewrites invalid tones", async () => {
@@ -320,11 +371,11 @@ describe("rowan-sparkline", () => {
       target: 0,
     });
 
-    expect(chart.shadowRoot.querySelector("line.target")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelector(".target")).to.not.equal(null);
     chart.remove();
     await reconnectHost(chart);
     expect(chart.target).to.equal(0);
-    expect(chart.shadowRoot.querySelector("line.target")).to.not.equal(null);
+    expect(chart.shadowRoot.querySelector(".target")).to.not.equal(null);
     expect(chart.shadowRoot.querySelectorAll("path.line")).to.have.length(2);
   });
 

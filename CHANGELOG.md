@@ -10,6 +10,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - `rowan-sparkline` additive `variant="area"` fills under the stroke. With `target`, the fill splits at the target like the stroke. Default `line` is omitted. Not a density of `rowan-area-chart`.
 
+### Fixed
+
+- `rowan-sparkline` hover mark and target dashes stay CSS pixels when the plot scales, matching the stroke. The hover mark is not a viewBox circle.
+
 ## 0.20.0 - 2026-10-18
 
 ### Added
