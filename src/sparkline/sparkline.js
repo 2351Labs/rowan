@@ -442,6 +442,15 @@ export class RowanSparkline extends BaseElement {
         );
       }
 
+      const mark = createSvgElement("line");
+      mark.setAttribute("class", "target");
+      mark.setAttribute("part", "target");
+      mark.setAttribute("x1", "0");
+      mark.setAttribute("x2", String(VIEWBOX_WIDTH));
+      mark.setAttribute("y1", targetY.toFixed(2));
+      mark.setAttribute("y2", targetY.toFixed(2));
+      fragment.append(mark);
+
       fragment.append(
         createBandPath({
           className: "line",
@@ -460,15 +469,6 @@ export class RowanSparkline extends BaseElement {
           clipId: belowId,
         }),
       );
-
-      const mark = createSvgElement("line");
-      mark.setAttribute("class", "target");
-      mark.setAttribute("part", "target");
-      mark.setAttribute("x1", "0");
-      mark.setAttribute("x2", String(VIEWBOX_WIDTH));
-      mark.setAttribute("y1", targetY.toFixed(2));
-      mark.setAttribute("y2", targetY.toFixed(2));
-      fragment.append(mark);
     } else {
       if (filled) {
         fragment.append(

@@ -225,6 +225,8 @@ describe("rowan-sparkline", () => {
     expect(above.getAttribute("d")).to.equal(below.getAttribute("d"));
     expect(above.dataset.tone).to.equal("warning");
     expect(below.dataset.tone).to.equal("success");
+    const painted = [...plot.children].map((node) => node.getAttribute("class") || node.localName);
+    expect(painted.indexOf("target")).to.be.below(painted.indexOf("line"));
     expect(chart.shadowRoot.querySelectorAll("clipPath")).to.have.length(2);
     expect(above.getAttribute("clip-path")).to.match(/^url\(#.+-above\)$/);
     expect(below.getAttribute("clip-path")).to.match(/^url\(#.+-below\)$/);
@@ -366,5 +368,10 @@ describe("rowan-sparkline", () => {
     expect(below).to.not.equal(null);
     expect(above.getAttribute("d")).to.equal(below.getAttribute("d"));
     expect(above.getAttribute("d")).to.include("Z");
+    const painted = [...chart.shadowRoot.querySelector(".plot").children].map(
+      (node) => node.getAttribute("class") || node.localName,
+    );
+    expect(painted.indexOf("area")).to.be.below(painted.indexOf("target"));
+    expect(painted.indexOf("target")).to.be.below(painted.indexOf("line"));
   });
 });
