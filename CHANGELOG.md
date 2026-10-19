@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - `rowan-sparkline` additive `variant="area"` fills under the stroke. With `target`, the fill splits at the target like the stroke. Default `line` is omitted. Not a density of `rowan-area-chart`.
+- Experimental `rowan-column-sparkline`: compact one-series columns for KPI tiles. Property-only `values` / `labels` / `target`. Null is a gap. Not a density of `rowan-bar-chart` and not a `variant` of `rowan-sparkline`. Not frozen.
 
 ### Fixed
 

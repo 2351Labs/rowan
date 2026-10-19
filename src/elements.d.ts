@@ -15,6 +15,7 @@ import type { RowanFunnelChart } from "../types/funnel-chart/funnel-chart.js";
 import type { RowanCalendar } from "../types/calendar/calendar.js";
 import type { RowanCarousel } from "../types/carousel/carousel.js";
 import type { RowanColorPicker } from "../types/color-picker/color-picker.js";
+import type { RowanColumnSparkline } from "../types/column-sparkline/column-sparkline.js";
 import type { RowanCard } from "../types/card/card.js";
 import type { RowanCheckbox } from "../types/checkbox/checkbox.js";
 import type { RowanChip } from "../types/chip/chip.js";
@@ -115,6 +116,7 @@ declare global {
     "rowan-calendar": RowanCalendar;
     "rowan-carousel": RowanCarousel;
     "rowan-color-picker": RowanColorPicker;
+    "rowan-column-sparkline": RowanColumnSparkline;
     "rowan-card": RowanCard;
     "rowan-checkbox": RowanCheckbox;
     "rowan-chip": RowanChip;

@@ -672,6 +672,21 @@ const SPARKLINE_SNIPPET = `<rowan-kpi-card label="Open incidents" tone="warning"
   chart.values = [18, 24, 12, 15, 9, 11];
 </script>`;
 
+const COLUMN_SPARKLINE_SNIPPET = `<rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">
+  <rowan-column-sparkline slot="chart" label="Open incidents this week"></rowan-column-sparkline>
+</rowan-kpi-card>
+
+<script type="module">
+  import "@rowan-ui/core/kpi-card";
+  import "@rowan-ui/core/column-sparkline";
+
+  const card = document.querySelector("rowan-kpi-card");
+  const chart = document.querySelector("rowan-column-sparkline");
+  card.value = 11;
+  card.delta = -7;
+  chart.values = [18, 24, 12, 15, 9, 11];
+</script>`;
+
 const KPI_CARD_SNIPPET = `<rowan-kpi-card
   label="Open incidents"
   tone="warning"
@@ -1237,7 +1252,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.20.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@0.20.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups, table-view-state version 2, and rowan-column-sparkline stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -2140,6 +2155,53 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       const chart = mainEl.querySelector("#docs-sparkline");
       const targetCard = mainEl.querySelector("#docs-sparkline-target-kpi");
       const targetChart = mainEl.querySelector("#docs-sparkline-target");
+      if (card) {
+        card.value = 11;
+        card.delta = -7;
+      }
+      if (chart) chart.values = [18, 24, 12, 15, 9, 11];
+      if (targetCard) {
+        targetCard.value = -2.4;
+      }
+      if (targetChart) {
+        targetChart.values = [2.1, 4.8, -1.2, 3.4, -3.8, 1.1, -2.4];
+        targetChart.target = 0;
+      }
+    },
+  },
+  {
+    id: "column-sparkline",
+    group: "Components",
+    title: "Rowan Column Sparkline",
+    summary:
+      "Experimental compact one-series columns for KPI tiles, with a visually hidden data table.",
+    tags: ["data display", "sparkline", "kpi"],
+    keywords: ["column sparkline", "compact chart", "kpi", "columns"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="column-sparkline-overview">
+        <h2>Compact columns</h2>
+        <p>rowan-column-sparkline is experimental. It is a separate host, not a density of rowan-bar-chart and not a variant of rowan-sparkline. One series, no legend, no interactive points, no animation. Null values leave a gap and appear as No data in a visually hidden table. Set target to split column fill above and below that value. This host is not frozen.</p>
+        <div class="demo-row">
+          <rowan-kpi-card id="docs-column-sparkline-kpi" label="Open incidents" tone="warning" delta-label="vs last week">
+            <rowan-column-sparkline id="docs-column-sparkline" slot="chart" label="Open incidents this week"></rowan-column-sparkline>
+          </rowan-kpi-card>
+          <rowan-kpi-card id="docs-column-sparkline-target-kpi" label="Net energy" delta-label="vs target">
+            <rowan-column-sparkline id="docs-column-sparkline-target" slot="chart" label="Energy versus target"></rowan-column-sparkline>
+          </rowan-kpi-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="column-sparkline-contract">
+        <h2>Contract</h2>
+        <p>values, labels, and target are property-only. The accessible name comes from label. Assistive technology can still read the table. When target is set, above-tone (default warning) and below-tone (default success) color each column on each side of a dashed target line. The domain includes zero so column height encodes magnitude. The plot fills its box. Size the plot with <code>--rowan-column-sparkline-height</code> (default <code>2.25rem</code>). Page-wide labeled bars belong on rowan-bar-chart.</p>
+        ${codeBlock(COLUMN_SPARKLINE_SNIPPET, "html")}
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const card = mainEl.querySelector("#docs-column-sparkline-kpi");
+      const chart = mainEl.querySelector("#docs-column-sparkline");
+      const targetCard = mainEl.querySelector("#docs-column-sparkline-target-kpi");
+      const targetChart = mainEl.querySelector("#docs-column-sparkline-target");
       if (card) {
         card.value = 11;
         card.delta = -7;

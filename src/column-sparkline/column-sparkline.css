@@ -1,0 +1,88 @@
+@import "../chart/hover.css";
+
+:host {
+  display: block;
+  min-inline-size: 6rem;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.chart {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.plot {
+  block-size: var(--rowan-column-sparkline-height, 2.25rem);
+  display: block;
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.column {
+  fill: var(--rowan-column-sparkline-fill, var(--rowan-color-muted));
+  fill-opacity: 0.82;
+  stroke: none;
+}
+
+.column.is-active {
+  fill-opacity: 1;
+}
+
+:host([tone="info"]) .column,
+.plot[data-tone="info"] .column,
+.plot[data-split] .column[data-tone="info"] {
+  fill: var(--rowan-column-sparkline-info, var(--rowan-chart-info, var(--rowan-color-accent)));
+}
+
+:host([tone="success"]) .column,
+.plot[data-tone="success"] .column,
+.plot[data-split] .column[data-tone="success"] {
+  fill: var(
+    --rowan-column-sparkline-success,
+    var(--rowan-chart-success, var(--rowan-color-success))
+  );
+}
+
+:host([tone="warning"]) .column,
+.plot[data-tone="warning"] .column,
+.plot[data-split] .column[data-tone="warning"] {
+  fill: var(
+    --rowan-column-sparkline-warning,
+    var(--rowan-chart-warning, var(--rowan-color-warning))
+  );
+}
+
+:host([tone="danger"]) .column,
+.plot[data-tone="danger"] .column,
+.plot[data-split] .column[data-tone="danger"] {
+  fill: var(--rowan-column-sparkline-danger, var(--rowan-chart-danger, var(--rowan-color-danger)));
+}
+
+.plot[data-split] .column[data-tone="neutral"] {
+  fill: var(--rowan-column-sparkline-fill, var(--rowan-color-muted));
+}
+
+.target {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--rowan-column-sparkline-target, var(--rowan-color-muted));
+  stroke-linecap: round;
+  stroke-width: var(--rowan-column-sparkline-target-width, 1px);
+  vector-effect: non-scaling-stroke;
+}
+
+.table {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

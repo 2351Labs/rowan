@@ -87,6 +87,7 @@
 .chart {
   min-inline-size: 0;
   --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 2.25rem);
+  --rowan-column-sparkline-height: var(--rowan-kpi-card-chart-height, 2.25rem);
   --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.75rem);
   --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 5.5rem);
 }
@@ -128,6 +129,7 @@
 
   .chart {
     --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 1.5rem);
+    --rowan-column-sparkline-height: var(--rowan-kpi-card-chart-height, 1.5rem);
     --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.25rem);
     --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 4rem);
   }
@@ -141,6 +143,7 @@
 
   .chart {
     --rowan-sparkline-height: var(--rowan-kpi-card-chart-height, 2.75rem);
+    --rowan-column-sparkline-height: var(--rowan-kpi-card-chart-height, 2.75rem);
     --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 3.25rem);
     --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 7rem);
   }

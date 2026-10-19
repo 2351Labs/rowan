@@ -5800,6 +5800,348 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/column-sparkline/column-sparkline.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Experimental compact one-series columns for KPI tiles. Not a density of\n`rowan-bar-chart`. Not a `variant` of `rowan-sparkline`.",
+          "name": "RowanColumnSparkline",
+          "cssProperties": [
+            {
+              "name": "--rowan-column-sparkline-height"
+            },
+            {
+              "name": "--rowan-column-sparkline-fill"
+            },
+            {
+              "name": "--rowan-column-sparkline-info"
+            },
+            {
+              "name": "--rowan-column-sparkline-success"
+            },
+            {
+              "name": "--rowan-column-sparkline-warning"
+            },
+            {
+              "name": "--rowan-column-sparkline-danger"
+            },
+            {
+              "name": "--rowan-column-sparkline-target"
+            },
+            {
+              "name": "--rowan-column-sparkline-target-width"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "chart"
+            },
+            {
+              "name": "plot"
+            },
+            {
+              "name": "column"
+            },
+            {
+              "name": "target"
+            },
+            {
+              "name": "hover"
+            },
+            {
+              "name": "table"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanColumnSparklineMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanColumnSparklineMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanColumnSparklineMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "aboveTone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "belowTone",
+              "return": {
+                "type": {
+                  "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "return": {
+                "type": {
+                  "text": "Array<number | null>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Array<number | null>"
+                  }
+                }
+              ],
+              "type": {
+                "text": "Array<number | null>"
+              },
+              "description": "One series. Arrays are property-only. Null is a gap."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Optional point labels for the accessible table. Arrays are property-only.",
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "return": {
+                "type": {
+                  "text": "number | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number | null"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number | null"
+              },
+              "description": "Target value. Property-only. Null hides the split and the dashed line."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              }
+            },
+            {
+              "name": "above-tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              },
+              "description": "Fill above target. Used when `target` is set.",
+              "default": "warning"
+            },
+            {
+              "name": "below-tone",
+              "type": {
+                "text": "\"neutral\"|\"info\"|\"success\"|\"warning\"|\"danger\""
+              },
+              "description": "Fill at or below target. Used when `target` is set.",
+              "default": "success"
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-column-sparkline",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanColumnSparkline",
+          "declaration": {
+            "name": "RowanColumnSparkline",
+            "module": "src/column-sparkline/column-sparkline.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/column-sparkline/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RowanColumnSparkline",
+          "declaration": {
+            "name": "RowanColumnSparkline",
+            "module": "./column-sparkline.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/combo-chart/combo-chart.js",
       "declarations": [
         {
@@ -14278,6 +14620,14 @@
           "declaration": {
             "name": "RowanSourceMeta",
             "module": "./source-meta/source-meta.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanColumnSparkline",
+          "declaration": {
+            "name": "RowanColumnSparkline",
+            "module": "./column-sparkline/column-sparkline.js"
           }
         },
         {

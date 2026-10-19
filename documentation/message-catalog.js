@@ -107,6 +107,11 @@ export const ROWAN_MESSAGE_CATALOG = [
     ],
   },
   {
+    tag: "rowan-column-sparkline",
+    module: "column-sparkline",
+    keys: ["chart", "noData", "point", "target"],
+  },
+  {
     tag: "rowan-combo-chart",
     module: "combo-chart",
     keys: [
