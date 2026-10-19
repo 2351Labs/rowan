@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- `rowan-popover` flips the panel to the trigger end when it would overflow the viewport, matching `rowan-dropdown`. No placement attribute.
+
 ## 0.21.0 - 2026-10-19
 
 ### Added
