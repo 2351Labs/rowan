@@ -63,6 +63,7 @@ export const InKpiCard = {
     chart.target = 80;
     chart.ranges = sampleRanges();
     card.append(chart);
+    card.style.maxInlineSize = "22rem";
     return card;
   },
 };

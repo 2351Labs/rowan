@@ -31,7 +31,8 @@
   color: var(--rowan-kpi-card-icon-fg, var(--rowan-color-muted));
 }
 
-.body {
+.body,
+.metrics {
   display: grid;
   gap: var(--rowan-space-1);
   min-inline-size: 0;
@@ -98,6 +99,33 @@
   min-inline-size: 0;
 }
 
+.card[data-has-gauge] .body {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--rowan-kpi-card-gap, var(--rowan-space-3, 0.75rem));
+  justify-content: flex-start;
+}
+
+.card[data-has-gauge] .metrics {
+  flex: 0 0 auto;
+}
+
+.card[data-has-gauge] .chart {
+  aspect-ratio: 200 / 136;
+  block-size: auto;
+  flex: 0 1 auto;
+  inline-size: auto;
+  max-block-size: var(--rowan-gauge-chart-height, 5.5rem);
+  min-inline-size: 0;
+}
+
+.card[data-has-gauge] .chart ::slotted(rowan-gauge-chart) {
+  block-size: 100%;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
 .icon[hidden],
 .delta[hidden],
 .description[hidden],
@@ -132,6 +160,32 @@
     --rowan-column-sparkline-height: var(--rowan-kpi-card-chart-height, 1.5rem);
     --rowan-bullet-chart-height: var(--rowan-kpi-card-chart-height, 2.25rem);
     --rowan-gauge-chart-height: var(--rowan-kpi-card-chart-height, 4rem);
+  }
+
+  .card[data-has-gauge] .body {
+    align-items: stretch;
+    display: grid;
+    flex-wrap: unset;
+    gap: var(--rowan-space-1);
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+  }
+
+  .card[data-has-gauge] .metrics {
+    flex: unset;
+  }
+
+  .card[data-has-gauge] .chart {
+    aspect-ratio: auto;
+    block-size: auto;
+    flex: unset;
+    inline-size: auto;
+    max-block-size: none;
+  }
+
+  .card[data-has-gauge] .chart ::slotted(rowan-gauge-chart) {
+    block-size: auto;
+    inline-size: 100%;
   }
 }
 

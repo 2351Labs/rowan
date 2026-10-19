@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import "../gauge-chart/gauge-chart.js";
 import "./kpi-card.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -33,7 +34,15 @@ async function renderCard(options = {}) {
   if (options.delta !== undefined) card.delta = options.delta;
   if (options.deltaLabel !== undefined) card.deltaLabel = options.deltaLabel;
   if (options.loading !== undefined) card.loading = options.loading;
-  if (options.chart) {
+  if (options.gauge) {
+    const gauge = document.createElement("rowan-gauge-chart");
+    gauge.slot = "chart";
+    gauge.label = "Utilization versus target";
+    gauge.min = 0;
+    gauge.max = 100;
+    gauge.value = 72;
+    card.append(gauge);
+  } else if (options.chart) {
     const chart = document.createElement("span");
     chart.slot = "chart";
     chart.textContent = "chart";
@@ -230,6 +239,52 @@ describe("rowan-kpi-card", () => {
     expect(compact.shadowRoot.querySelector("[part='delta']").hidden).to.equal(false);
   });
 
+  it("places a slotted gauge beside the metrics except at compact width", async () => {
+    const sizes = { mid: "16rem", roomy: "24rem", wide: "40rem" };
+    const cards = {};
+    for (const [name, inlineSize] of Object.entries(sizes)) {
+      const card = await renderCard({
+        label: "Utilization",
+        value: 72,
+        delta: -8,
+        deltaLabel: "vs target",
+        gauge: true,
+      });
+      card.style.inlineSize = inlineSize;
+      cards[name] = card;
+    }
+    const compact = await renderCard({
+      label: "Utilization",
+      value: 72,
+      delta: -8,
+      deltaLabel: "vs target",
+      gauge: true,
+    });
+    compact.style.inlineSize = "8rem";
+    await waitForCardStyles(compact);
+    for (const card of Object.values(cards)) {
+      await waitForCardStyles(card);
+    }
+    await nextFrame();
+    await nextFrame();
+
+    for (const card of Object.values(cards)) {
+      expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+      const metrics = card.shadowRoot.querySelector(".metrics").getBoundingClientRect();
+      const value = card.shadowRoot.querySelector(".value").getBoundingClientRect();
+      const gauge = card.querySelector("rowan-gauge-chart").getBoundingClientRect();
+      expect(gauge.left).to.be.above(metrics.right - 1);
+      expect(gauge.left - metrics.right).to.be.below(64);
+      expect(value.bottom).to.be.above(gauge.top);
+      expect(value.top).to.be.below(gauge.bottom);
+    }
+
+    expect(compact.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+    const compactValue = compact.shadowRoot.querySelector(".value").getBoundingClientRect();
+    const compactGauge = compact.querySelector("rowan-gauge-chart").getBoundingClientRect();
+    expect(compactGauge.top).to.be.above(compactValue.bottom - 1);
+  });
+
   it("lets the body fill the tile when no icon is slotted", async () => {
     const card = await renderCard({
       label: "Open incidents",
@@ -259,6 +314,35 @@ describe("rowan-kpi-card", () => {
     await nextMicrotask();
     await nextMicrotask();
     expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(true);
+  });
+
+  it("updates gauge layout when a slotted gauge is hidden or revealed", async () => {
+    const card = await renderCard({
+      label: "Utilization",
+      value: 72,
+      gauge: true,
+    });
+    card.style.inlineSize = "24rem";
+    await waitForCardStyles(card);
+    const gauge = card.querySelector("rowan-gauge-chart");
+
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+
+    gauge.hidden = true;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(false);
+
+    gauge.hidden = false;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+
+    await reconnectHost(card);
+    gauge.hidden = true;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(false);
   });
 
   it("does not un-hide a slotted chart that has hidden", async () => {

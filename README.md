@@ -754,7 +754,8 @@ compose a dialog if you need one.
 replaces the label. Delta text includes a sign so change is not color-only. A
 null `value` shows `No data`; `loading` replaces the value with a skeleton.
 The `chart` slot is for compact charts (`rowan-sparkline`, `rowan-column-sparkline`, `rowan-bullet-chart`, `rowan-gauge-chart`) and follows the label and value in
-reading order. The card is an inline-size container: padding, value type, and
+reading order. A slotted gauge sits immediately beside the metrics except below 10rem;
+sparkline, column sparkline, and bullet stay under the value. The card is an inline-size container: padding, value type, and
 slotted chart height tighten below 10rem and open from 22rem. It does not swap
 chart kind or reformat `value` from width. Pass a formatted string when the
 number must go compact. Override with `--rowan-kpi-card-value-size` or

@@ -1,5 +1,6 @@
 import "./kpi-card.js";
 import "../sparkline/sparkline.js";
+import "../column-sparkline/column-sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../gauge-chart/gauge-chart.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
@@ -34,6 +35,15 @@ function appendSparkline(card, { values, label, target } = {}) {
   chart.label = label ?? "Open incidents this week";
   chart.values = values ?? [18, 24, 12, 15, 9, 11];
   if (target !== undefined) chart.target = target;
+  card.append(chart);
+  return card;
+}
+
+function appendColumnSparkline(card, { values, label } = {}) {
+  const chart = document.createElement("rowan-column-sparkline");
+  chart.slot = "chart";
+  chart.label = label ?? "Tickets opened this week";
+  chart.values = values ?? [42, 38, 51, 47, 55, 49];
   card.append(chart);
   return card;
 }
@@ -164,7 +174,7 @@ export const CompactCharts = {
     const row = document.createElement("div");
     row.style.display = "grid";
     row.style.gap = "var(--rowan-space-4)";
-    row.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 1fr))";
+    row.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 22rem))";
 
     const spark = createCard({
       label: "Open incidents",
@@ -174,6 +184,15 @@ export const CompactCharts = {
       tone: "warning",
     });
     appendSparkline(spark);
+
+    const columns = createCard({
+      label: "Tickets opened",
+      value: 49,
+      delta: -6,
+      deltaLabel: "vs last week",
+      tone: "info",
+    });
+    appendColumnSparkline(columns);
 
     const versus = createCard({
       label: "Net energy",
@@ -219,7 +238,7 @@ export const CompactCharts = {
     gauge.ranges = sampleRanges();
     util.append(gauge);
 
-    row.append(spark, versus, fill, util);
+    row.append(spark, columns, versus, fill, util);
     return row;
   },
 };
