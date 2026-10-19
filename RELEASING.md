@@ -243,6 +243,14 @@ chart recipes ship here. Column sparkline is not frozen. Nested filter groups
 and table-view-state version `2` stay experimental. Inline table editing is not
 a public API. Publish after this catalog commit is on `main`: tag `v0.21.0`.
 
+## 0.21.1 cut
+
+Version in `package.json` is `0.21.1` for core, icons, and MapLibre. Do **not**
+call this `1.0`. `rowan-popover` viewport clamp ships here. Column sparkline is
+not frozen. Nested filter groups and table-view-state version `2` stay
+experimental. Inline table editing is not a public API. Publish after this
+catalog commit is on `main`: tag `v0.21.1`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

@@ -6,6 +6,12 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.21.1 - 2026-10-19
+
+### Changed
+
+- Getting-started docs pin `@rowan-ui/core@0.21.1`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
+
 ### Fixed
 
 - `rowan-popover` flips the panel to the trigger end when it would overflow the viewport, matching `rowan-dropdown`. No placement attribute.
