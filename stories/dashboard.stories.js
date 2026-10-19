@@ -14,6 +14,7 @@ import "../src/avatar/avatar.js";
 import "../src/select/select.js";
 import "../src/kpi-card/kpi-card.js";
 import "../src/sparkline/sparkline.js";
+import "../src/column-sparkline/column-sparkline.js";
 import "../src/bullet-chart/bullet-chart.js";
 import "../src/gauge-chart/gauge-chart.js";
 import "../src/area-chart/area-chart.js";
@@ -373,6 +374,14 @@ function createSparkline({ label, values, tone, target, aboveTone, belowTone, va
   return chart;
 }
 
+function createColumnSparkline({ label, values }) {
+  const chart = document.createElement("rowan-column-sparkline");
+  chart.slot = "chart";
+  chart.label = label;
+  chart.values = values;
+  return chart;
+}
+
 function createBullet({ label, value, target }) {
   const chart = document.createElement("rowan-bullet-chart");
   chart.slot = "chart";
@@ -417,15 +426,12 @@ function createKpiRow() {
       label: "Orders",
       value: "1,284",
       delta: 84,
-      deltaLabel: "vs plan",
+      deltaLabel: "vs last period",
       tone: "info",
       icon: "shopping-cart",
-      chart: createSparkline({
-        label: "Orders versus plan",
+      chart: createColumnSparkline({
+        label: "Orders this period",
         values: [980, 1100, 1050, 1280, 1190, 1284],
-        target: 1200,
-        aboveTone: "success",
-        belowTone: "warning",
       }),
     }),
     createKpi({

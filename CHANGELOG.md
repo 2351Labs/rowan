@@ -11,6 +11,11 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-sparkline` additive `variant="area"` fills under the stroke. With `target`, the fill splits at the target like the stroke. Default `line` is omitted. Not a density of `rowan-area-chart`.
 - Experimental `rowan-column-sparkline`: compact one-series columns for KPI tiles. Property-only `values` / `labels` / `target`. Null is a gap. Not a density of `rowan-bar-chart` and not a `variant` of `rowan-sparkline`. Not frozen.
 
+### Changed
+
+- KPI Card Compact charts story adds experimental `rowan-column-sparkline` next to sparkline, sparkline versus target, bullet, and gauge. Not a KPI type menu.
+- Workflows/Dashboard overview KPI row composes area sparkline, column sparkline, bullet, and gauge. Orders is counts by period, not sparkline versus plan.
+
 ### Fixed
 
 - `rowan-sparkline` hover mark and target dashes stay CSS pixels when the plot scales, matching the stroke. The hover mark is not a viewBox circle.
