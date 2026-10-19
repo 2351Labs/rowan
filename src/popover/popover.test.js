@@ -5,11 +5,32 @@ import "../button/button.js";
 import "../dialog/dialog.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 const settle = async () => {
   await nextMicrotask();
   await nextMicrotask();
 };
+
+async function waitForPopoverStyles(popover) {
+  const stylesheet = popover.shadowRoot.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error("Popover styles did not apply within 60 animation frames.");
+}
 
 function keydown(element, key) {
   element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
@@ -342,6 +363,7 @@ describe("rowan-popover", () => {
     popover.append(trigger, copy);
     document.body.append(popover);
     await settle();
+    await waitForPopoverStyles(popover);
 
     trigger.click();
     await settle();
