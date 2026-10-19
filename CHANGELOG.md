@@ -15,7 +15,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - KPI Card Compact charts story adds experimental `rowan-column-sparkline` next to sparkline, sparkline versus target, bullet, and gauge. Not a KPI type menu.
 - Workflows/Dashboard overview KPI row composes area sparkline, column sparkline, bullet, and gauge. Orders is counts by period, not sparkline versus plan.
-- `rowan-kpi-card` places a slotted `rowan-gauge-chart` beside the metrics except below 10rem. Sparkline, column sparkline, and bullet stay under the value. Does not change chart kind.
+- `rowan-kpi-card` places a slotted `rowan-gauge-chart` immediately beside the metrics except below 10rem. Sparkline, column sparkline, and bullet stay under the value. Does not change chart kind.
 
 ### Fixed
 

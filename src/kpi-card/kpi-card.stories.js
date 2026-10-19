@@ -174,7 +174,7 @@ export const CompactCharts = {
     const row = document.createElement("div");
     row.style.display = "grid";
     row.style.gap = "var(--rowan-space-4)";
-    row.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 1fr))";
+    row.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 22rem))";
 
     const spark = createCard({
       label: "Open incidents",

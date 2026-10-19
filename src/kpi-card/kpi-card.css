@@ -101,18 +101,28 @@
 
 .card[data-has-gauge] .body {
   align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
   gap: var(--rowan-kpi-card-gap, var(--rowan-space-3, 0.75rem));
-  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: flex-start;
+}
+
+.card[data-has-gauge] .metrics {
+  flex: 0 0 auto;
 }
 
 .card[data-has-gauge] .chart {
   aspect-ratio: 200 / 136;
-  block-size: var(--rowan-gauge-chart-height, 5.5rem);
+  block-size: auto;
+  flex: 0 1 auto;
   inline-size: auto;
-  justify-self: end;
+  max-block-size: var(--rowan-gauge-chart-height, 5.5rem);
+  min-inline-size: 0;
 }
 
 .card[data-has-gauge] .chart ::slotted(rowan-gauge-chart) {
+  block-size: 100%;
+  inline-size: 100%;
   min-inline-size: 0;
 }
 
@@ -154,15 +164,28 @@
 
   .card[data-has-gauge] .body {
     align-items: stretch;
+    display: grid;
+    flex-wrap: unset;
     gap: var(--rowan-space-1);
     grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+  }
+
+  .card[data-has-gauge] .metrics {
+    flex: unset;
   }
 
   .card[data-has-gauge] .chart {
     aspect-ratio: auto;
     block-size: auto;
+    flex: unset;
     inline-size: auto;
-    justify-self: stretch;
+    max-block-size: none;
+  }
+
+  .card[data-has-gauge] .chart ::slotted(rowan-gauge-chart) {
+    block-size: auto;
+    inline-size: 100%;
   }
 }
 

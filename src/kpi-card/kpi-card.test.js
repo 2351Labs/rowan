@@ -240,14 +240,19 @@ describe("rowan-kpi-card", () => {
   });
 
   it("places a slotted gauge beside the metrics except at compact width", async () => {
-    const roomy = await renderCard({
-      label: "Utilization",
-      value: 72,
-      delta: -8,
-      deltaLabel: "vs target",
-      gauge: true,
-    });
-    roomy.style.inlineSize = "24rem";
+    const sizes = { mid: "16rem", roomy: "24rem", wide: "40rem" };
+    const cards = {};
+    for (const [name, inlineSize] of Object.entries(sizes)) {
+      const card = await renderCard({
+        label: "Utilization",
+        value: 72,
+        delta: -8,
+        deltaLabel: "vs target",
+        gauge: true,
+      });
+      card.style.inlineSize = inlineSize;
+      cards[name] = card;
+    }
     const compact = await renderCard({
       label: "Utilization",
       value: 72,
@@ -256,17 +261,23 @@ describe("rowan-kpi-card", () => {
       gauge: true,
     });
     compact.style.inlineSize = "8rem";
-    await waitForCardStyles(roomy);
     await waitForCardStyles(compact);
+    for (const card of Object.values(cards)) {
+      await waitForCardStyles(card);
+    }
     await nextFrame();
     await nextFrame();
 
-    expect(roomy.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
-    const roomyValue = roomy.shadowRoot.querySelector(".value").getBoundingClientRect();
-    const roomyGauge = roomy.querySelector("rowan-gauge-chart").getBoundingClientRect();
-    expect(roomyGauge.left).to.be.above(roomyValue.right - 1);
-    expect(roomyValue.bottom).to.be.above(roomyGauge.top);
-    expect(roomyValue.top).to.be.below(roomyGauge.bottom);
+    for (const card of Object.values(cards)) {
+      expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+      const metrics = card.shadowRoot.querySelector(".metrics").getBoundingClientRect();
+      const value = card.shadowRoot.querySelector(".value").getBoundingClientRect();
+      const gauge = card.querySelector("rowan-gauge-chart").getBoundingClientRect();
+      expect(gauge.left).to.be.above(metrics.right - 1);
+      expect(gauge.left - metrics.right).to.be.below(64);
+      expect(value.bottom).to.be.above(gauge.top);
+      expect(value.top).to.be.below(gauge.bottom);
+    }
 
     expect(compact.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
     const compactValue = compact.shadowRoot.querySelector(".value").getBoundingClientRect();

@@ -2112,7 +2112,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="kpi-card-contract">
         <h2>Contract</h2>
-        <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. A slotted gauge sits beside the metrics except below 10rem. Sparkline, column sparkline, and bullet stay under the value. value and delta stay property-only. Padding, value type, and slotted chart height follow inline size. Pass a formatted value string when the number must go compact. --rowan-kpi-card-value-size and --rowan-kpi-card-chart-height pin a fixed scale.</p>
+        <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. A slotted gauge sits immediately beside the metrics except below 10rem. Sparkline, column sparkline, and bullet stay under the value. value and delta stay property-only. Padding, value type, and slotted chart height follow inline size. Pass a formatted value string when the number must go compact. --rowan-kpi-card-value-size and --rowan-kpi-card-chart-height pin a fixed scale.</p>
         ${codeBlock(KPI_CARD_SNIPPET, "html")}
       </section>
     `,
