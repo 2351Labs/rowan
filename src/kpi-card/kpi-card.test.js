@@ -316,6 +316,35 @@ describe("rowan-kpi-card", () => {
     expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-icon")).to.equal(true);
   });
 
+  it("updates gauge layout when a slotted gauge is hidden or revealed", async () => {
+    const card = await renderCard({
+      label: "Utilization",
+      value: 72,
+      gauge: true,
+    });
+    card.style.inlineSize = "24rem";
+    await waitForCardStyles(card);
+    const gauge = card.querySelector("rowan-gauge-chart");
+
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+
+    gauge.hidden = true;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(false);
+
+    gauge.hidden = false;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+
+    await reconnectHost(card);
+    gauge.hidden = true;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(card.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(false);
+  });
+
   it("does not un-hide a slotted chart that has hidden", async () => {
     const card = await renderCard({ label: "Open incidents", value: 12 });
     const chart = document.createElement("span");

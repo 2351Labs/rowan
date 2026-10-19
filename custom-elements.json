@@ -14869,7 +14869,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Frozen dashboard stat tile. Value and delta stay property-only.\nInline-size container: compact below 10rem, roomy from 22rem. Does not\nchange chart kind or reformat the value.",
+          "description": "Frozen dashboard stat tile. Value and delta stay property-only.\nInline-size container: compact below 10rem, roomy from 22rem. A slotted\ngauge sits immediately beside the metrics except below 10rem. Does not\nchange chart kind or reformat the value.",
           "name": "RowanKpiCard",
           "cssProperties": [
             {

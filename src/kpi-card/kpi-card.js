@@ -23,6 +23,10 @@ function hasAssignedContent(slot) {
   });
 }
 
+function isVisibleGauge(node) {
+  return node.localName === "rowan-gauge-chart" && !node.hidden;
+}
+
 function formatMetric(value, locale) {
   if (typeof value === "string") return value.trim();
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -107,6 +111,7 @@ export class RowanKpiCard extends BaseElement {
   #icon = null;
   #description = null;
   #chart = null;
+  #gaugeObserver = null;
   #value = null;
   #delta = null;
   #messages = {};
@@ -251,10 +256,9 @@ export class RowanKpiCard extends BaseElement {
     this.#chart.hidden = !hasAssignedContent(this.#chartSlot);
     this.#card.toggleAttribute(
       "data-has-gauge",
-      this.#chartSlot
-        .assignedElements()
-        .some((node) => node.localName === "rowan-gauge-chart" && !node.hidden),
+      this.#chartSlot.assignedElements().some(isVisibleGauge),
     );
+    this.#observeGauges();
 
     const deltaText = formatDelta(this.#delta, this.locale);
     const deltaLabel = this.deltaLabel;
@@ -281,6 +285,24 @@ export class RowanKpiCard extends BaseElement {
     }
 
     this.#applyDefaultA11y(label);
+  }
+
+  #observeGauges() {
+    if (!this.#gaugeObserver && typeof MutationObserver !== "undefined") {
+      this.#gaugeObserver = new MutationObserver(() => this.requestRender());
+      this.observe(this.#gaugeObserver, () => this.#observeGauges());
+    }
+
+    this.#gaugeObserver?.disconnect();
+    if (!this.#chartSlot) return;
+
+    for (const node of this.#chartSlot.assignedElements()) {
+      if (node.localName !== "rowan-gauge-chart") continue;
+      this.#gaugeObserver?.observe(node, {
+        attributes: true,
+        attributeFilter: ["hidden"],
+      });
+    }
   }
 
   #applyDefaultA11y(label) {
