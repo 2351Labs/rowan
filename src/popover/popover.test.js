@@ -326,6 +326,34 @@ describe("rowan-popover", () => {
     expect(popover.open).to.equal(false);
   });
 
+  it("flips the panel to the trigger end when it would overflow the viewport", async () => {
+    const popover = document.createElement("rowan-popover");
+    popover.style.position = "fixed";
+    popover.style.top = "8px";
+    popover.style.right = "0";
+    popover.style.left = "auto";
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "Info";
+    const copy = document.createElement("p");
+    copy.style.width = "16rem";
+    copy.style.margin = "0";
+    copy.textContent = "Definition that should not overflow the window.";
+    popover.append(trigger, copy);
+    document.body.append(popover);
+    await settle();
+
+    trigger.click();
+    await settle();
+
+    const panel = popover.shadowRoot.querySelector(".panel");
+    const panelRect = panel.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    expect(panelRect.right).to.be.at.most(window.innerWidth);
+    expect(panelRect.left).to.be.at.least(0);
+    expect(panelRect.left).to.be.below(triggerRect.left);
+  });
+
   it("coerces unknown trigger values to click", async () => {
     const popover = document.createElement("rowan-popover");
     document.body.append(popover);

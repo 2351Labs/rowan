@@ -83,3 +83,25 @@ export const Manual = {
     return root;
   },
 };
+
+export const TrailingEdge = {
+  name: "Trailing edge",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.justifyContent = "flex-end";
+    const popover = document.createElement("rowan-popover");
+    popover.setAttribute("open", "");
+    popover.label = "Definition";
+    const trigger = document.createElement("rowan-button");
+    trigger.slot = "trigger";
+    trigger.textContent = "Info";
+    const text = document.createElement("p");
+    text.style.margin = "0";
+    text.style.maxInlineSize = "18rem";
+    text.textContent = "A longer definition that must stay inside the viewport on the last tile.";
+    popover.append(trigger, text);
+    row.append(popover);
+    return row;
+  },
+};

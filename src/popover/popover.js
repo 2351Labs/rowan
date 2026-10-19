@@ -389,7 +389,18 @@ export class RowanPopover extends BaseElement {
     const bounds = anchor.getBoundingClientRect();
     const offset = 6;
     this.#panel.style.top = `${Math.round(bounds.bottom + offset)}px`;
-    this.#panel.style.left = `${Math.round(bounds.left)}px`;
+
+    const width = this.#panel.getBoundingClientRect().width;
+    const margin = 8;
+    let left = bounds.left;
+    if (width && left + width > window.innerWidth - margin) {
+      left = bounds.right - width;
+    }
+    if (width) {
+      const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+      left = Math.min(Math.max(margin, left), maxLeft);
+    }
+    this.#panel.style.left = `${Math.round(left)}px`;
   }
 
   #focusPanel() {
