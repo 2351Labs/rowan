@@ -106,6 +106,21 @@ describe("rowan-column-sparkline", () => {
     expect(falling.tone).to.equal("danger");
   });
 
+  it("repaints when an explicit neutral tone replaces a derived series tone", async () => {
+    const chart = await renderChart({ values: [1, 4, 9] });
+    expect(chart.tone).to.equal("success");
+    expect(chart.hasAttribute("tone")).to.equal(false);
+    expect(chart.shadowRoot.querySelector(".plot").dataset.tone).to.equal("success");
+
+    chart.tone = "neutral";
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(chart.tone).to.equal("neutral");
+    expect(chart.hasAttribute("tone")).to.equal(false);
+    expect(chart.shadowRoot.querySelector(".plot").dataset.tone).to.equal("neutral");
+  });
+
   it("shows the nearest labeled value on hover and highlights the column", async () => {
     const chart = await renderChart({
       values: [4, 8],
@@ -131,6 +146,37 @@ describe("rowan-column-sparkline", () => {
 
     plot.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
     expect(hover.hidden).to.equal(true);
+    expect(chart.shadowRoot.querySelector("rect.column.is-active")).to.equal(null);
+  });
+
+  it("hides the hover bubble when values update", async () => {
+    const chart = await renderChart({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "200px";
+
+    const plot = chart.shadowRoot.querySelector(".plot");
+    const hover = chart.shadowRoot.querySelector(".hover");
+    const box = plot.getBoundingClientRect();
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width - 2,
+        clientY: box.top + 4,
+      }),
+    );
+
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Wed");
+    expect(hover.textContent).to.include("8");
+
+    chart.values = [4, 12];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(hover.hidden).to.equal(true);
+    expect(hover.textContent).to.equal("");
     expect(chart.shadowRoot.querySelector("rect.column.is-active")).to.equal(null);
   });
 

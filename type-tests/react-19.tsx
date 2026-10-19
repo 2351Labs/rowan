@@ -2,6 +2,7 @@ import type * as React from "react";
 import { RowanButton } from "@rowan-ui/core/react/button";
 import { RowanCombobox } from "@rowan-ui/core/react/combobox";
 import { RowanTable as Table } from "@rowan-ui/core/react/table";
+import { RowanColumnSparkline } from "@rowan-ui/core/react/column-sparkline";
 import { RowanSparkline } from "@rowan-ui/core/react/sparkline";
 import { RowanDonutChart } from "@rowan-ui/core/react/donut-chart";
 import { RowanAreaChart } from "@rowan-ui/core/react/area-chart";
@@ -99,6 +100,9 @@ const wrapperStackedBar = (
 const wrapperSparkline = (
   <RowanSparkline values={[4, 8, 3]} labels={["Mon", "Tue", "Wed"]} tone="success" />
 );
+const wrapperColumnSparkline = (
+  <RowanColumnSparkline values={[4, 8, 3]} labels={["Mon", "Tue", "Wed"]} />
+);
 const wrapperDonut = (
   <RowanDonutChart
     series={[{ id: "sources", label: "Sources", values: [12, 8] }]}
@@ -123,5 +127,6 @@ void wrapperChart;
 void wrapperArea;
 void wrapperStackedBar;
 void wrapperSparkline;
+void wrapperColumnSparkline;
 void wrapperDonut;
 void wrapperCombobox;

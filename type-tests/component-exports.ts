@@ -110,6 +110,7 @@ import { RowanSideNavItem } from "@rowan-ui/core/side-nav-item";
 import { RowanSideNavSection } from "@rowan-ui/core/side-nav-section";
 import { RowanSkeleton } from "@rowan-ui/core/skeleton";
 import { RowanSlider } from "@rowan-ui/core/slider";
+import { RowanColumnSparkline } from "@rowan-ui/core/column-sparkline";
 import { RowanSparkline } from "@rowan-ui/core/sparkline";
 import { RowanStackedAreaChart } from "@rowan-ui/core/stacked-area-chart";
 import { RowanStackedBarChart } from "@rowan-ui/core/stacked-bar-chart";
@@ -379,6 +380,10 @@ const sideNavItem: RowanSideNavItem = document.createElement("rowan-side-nav-ite
 const sideNavSection: RowanSideNavSection = document.createElement("rowan-side-nav-section");
 const skeleton: RowanSkeleton = document.createElement("rowan-skeleton");
 const slider: RowanSlider = document.createElement("rowan-slider");
+const columnSparkline: RowanColumnSparkline = document.createElement("rowan-column-sparkline");
+columnSparkline.label = "Open incidents";
+columnSparkline.values = [4, null, 8];
+columnSparkline.labels = ["Mon", "Tue", "Wed"];
 const sparkline: RowanSparkline = document.createElement("rowan-sparkline");
 sparkline.label = "Open incidents";
 sparkline.values = [4, null, 8];

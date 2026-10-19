@@ -4,7 +4,12 @@ import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
-import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  formatHoverLines,
+  hideChartHover,
+} from "../chart/hover.js";
 import { createSvgElement } from "../chart/dom.js";
 import { finiteOrNull } from "../chart/model.js";
 
@@ -171,6 +176,7 @@ export class RowanColumnSparkline extends BaseElement {
   set tone(value) {
     this.#toneExplicit = true;
     reflectEnum(this, "tone", value, TONES, "neutral");
+    this.requestRender();
   }
 
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */
@@ -283,6 +289,7 @@ export class RowanColumnSparkline extends BaseElement {
       delete this.#plot.dataset.split;
       this.#plot.dataset.tone = this.tone;
     }
+    hideChartHover(this.#hover);
     this.#renderPlot();
     this.#renderTable();
     this.#applyDefaultA11y();
