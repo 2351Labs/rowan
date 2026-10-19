@@ -94,7 +94,7 @@ import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/slate";
 import "@rowan-ui/core/tokens/midnight";`;
 
-const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.21.0
+const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.21.1
 
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1252,7 +1252,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.21.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups, table-view-state version 2, and rowan-column-sparkline stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@0.21.1</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups, table-view-state version 2, and rowan-column-sparkline stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
