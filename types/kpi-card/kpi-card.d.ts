@@ -6,8 +6,9 @@
  */
 /**
  * Frozen dashboard stat tile. Value and delta stay property-only.
- * Inline-size container: compact below 10rem, roomy from 22rem. Does not
- * change chart kind or reformat the value.
+ * Inline-size container: compact below 10rem, roomy from 22rem. A slotted
+ * gauge sits beside the metrics except below 10rem. Does not change chart
+ * kind or reformat the value.
  * @tag rowan-kpi-card
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone

@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import "../gauge-chart/gauge-chart.js";
 import "./kpi-card.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -33,7 +34,15 @@ async function renderCard(options = {}) {
   if (options.delta !== undefined) card.delta = options.delta;
   if (options.deltaLabel !== undefined) card.deltaLabel = options.deltaLabel;
   if (options.loading !== undefined) card.loading = options.loading;
-  if (options.chart) {
+  if (options.gauge) {
+    const gauge = document.createElement("rowan-gauge-chart");
+    gauge.slot = "chart";
+    gauge.label = "Utilization versus target";
+    gauge.min = 0;
+    gauge.max = 100;
+    gauge.value = 72;
+    card.append(gauge);
+  } else if (options.chart) {
     const chart = document.createElement("span");
     chart.slot = "chart";
     chart.textContent = "chart";
@@ -228,6 +237,41 @@ describe("rowan-kpi-card", () => {
     expect(roomyValue).to.be.above(compactValue);
     expect(compact.shadowRoot.querySelector("[part='chart']").hidden).to.equal(false);
     expect(compact.shadowRoot.querySelector("[part='delta']").hidden).to.equal(false);
+  });
+
+  it("places a slotted gauge beside the metrics except at compact width", async () => {
+    const roomy = await renderCard({
+      label: "Utilization",
+      value: 72,
+      delta: -8,
+      deltaLabel: "vs target",
+      gauge: true,
+    });
+    roomy.style.inlineSize = "24rem";
+    const compact = await renderCard({
+      label: "Utilization",
+      value: 72,
+      delta: -8,
+      deltaLabel: "vs target",
+      gauge: true,
+    });
+    compact.style.inlineSize = "8rem";
+    await waitForCardStyles(roomy);
+    await waitForCardStyles(compact);
+    await nextFrame();
+    await nextFrame();
+
+    expect(roomy.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+    const roomyValue = roomy.shadowRoot.querySelector(".value").getBoundingClientRect();
+    const roomyGauge = roomy.querySelector("rowan-gauge-chart").getBoundingClientRect();
+    expect(roomyGauge.left).to.be.above(roomyValue.right - 1);
+    expect(roomyValue.bottom).to.be.above(roomyGauge.top);
+    expect(roomyValue.top).to.be.below(roomyGauge.bottom);
+
+    expect(compact.shadowRoot.querySelector(".card").hasAttribute("data-has-gauge")).to.equal(true);
+    const compactValue = compact.shadowRoot.querySelector(".value").getBoundingClientRect();
+    const compactGauge = compact.querySelector("rowan-gauge-chart").getBoundingClientRect();
+    expect(compactGauge.top).to.be.above(compactValue.bottom - 1);
   });
 
   it("lets the body fill the tile when no icon is slotted", async () => {

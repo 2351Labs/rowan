@@ -49,8 +49,9 @@ function formatDelta(value, locale) {
 
 /**
  * Frozen dashboard stat tile. Value and delta stay property-only.
- * Inline-size container: compact below 10rem, roomy from 22rem. Does not
- * change chart kind or reformat the value.
+ * Inline-size container: compact below 10rem, roomy from 22rem. A slotted
+ * gauge sits beside the metrics except below 10rem. Does not change chart
+ * kind or reformat the value.
  * @tag rowan-kpi-card
  * @attr {string} label
  * @attr {"neutral"|"info"|"success"|"warning"|"danger"} tone
@@ -215,10 +216,12 @@ export class RowanKpiCard extends BaseElement {
         <article class="card" part="card">
           <div class="icon" part="icon"><slot name="icon"></slot></div>
           <div class="body" part="body">
-            <p class="label" part="label"></p>
-            <p class="value" part="value"></p>
-            <p class="delta" part="delta"></p>
-            <div class="description" part="description"><slot></slot></div>
+            <div class="metrics">
+              <p class="label" part="label"></p>
+              <p class="value" part="value"></p>
+              <p class="delta" part="delta"></p>
+              <div class="description" part="description"><slot></slot></div>
+            </div>
             <div class="chart" part="chart"><slot name="chart"></slot></div>
           </div>
         </article>
@@ -246,6 +249,12 @@ export class RowanKpiCard extends BaseElement {
     this.#card.toggleAttribute("data-has-icon", !this.#icon.hidden);
     this.#description.hidden = !hasAssignedContent(this.#descriptionSlot);
     this.#chart.hidden = !hasAssignedContent(this.#chartSlot);
+    this.#card.toggleAttribute(
+      "data-has-gauge",
+      this.#chartSlot
+        .assignedElements()
+        .some((node) => node.localName === "rowan-gauge-chart" && !node.hidden),
+    );
 
     const deltaText = formatDelta(this.#delta, this.locale);
     const deltaLabel = this.deltaLabel;
