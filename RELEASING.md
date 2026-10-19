@@ -234,6 +234,15 @@ groups and table-view-state version `2` stay experimental. Inline table editing
 is not a public API. Publish after this catalog commit is on `main`: tag
 `v0.20.0`.
 
+## 0.21.0 cut
+
+Version in `package.json` is `0.21.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Sparkline `variant="area"`, hover/target CSS pixels,
+experimental `rowan-column-sparkline`, KPI gauge-beside, and dashboard compact
+chart recipes ship here. Column sparkline is not frozen. Nested filter groups
+and table-view-state version `2` stay experimental. Inline table editing is not
+a public API. Publish after this catalog commit is on `main`: tag `v0.21.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
