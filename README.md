@@ -53,7 +53,7 @@ context menus use the top layer. Table virtualization, `rowan-rich-text-editor`,
 `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`,
 `rowan-range-chart`, `rowan-box-plot-chart`, and `rowan-radar-chart` are Stable.
 Nested filter groups and table-view-state version `2` stay experimental.
-`rowan-column-sparkline` is experimental and not frozen.
+`rowan-column-sparkline` is Stable.
 This is not `1.0`.
 
 ## Install
@@ -400,7 +400,7 @@ frozen; pin the version if you depend on them. This is not `1.0`.
 | `rowan-trend-chart`             | Stable       | Small multi-series line chart. `series`, `labels`, `config`, and `valueFormatter` are frozen. Other geometries are separate hosts.                                                                                                                       |
 | `rowan-kpi-card`                | Stable       | `label`, `tone`, `delta-label`, `loading`; property-only `value` and `delta`. Chart slot is for compact charts. Inline-size container: compact below 10rem, roomy from 22rem. Does not change chart kind.                                                |
 | `rowan-sparkline`               | Stable       | One series, property-only `values` / `labels`. Null is a gap. Additive `variant="area"` fills under the stroke. Additive property-only `target` splits the stroke with `above-tone` / `below-tone`. Not a density of `rowan-trend-chart`.                |
-| `rowan-column-sparkline`        | Experimental | Compact one-series columns. Property-only `values` / `labels` / `target`. Null is a gap. Not a density of `rowan-bar-chart` and not a `variant` of `rowan-sparkline`. Not frozen.                                                                        |
+| `rowan-column-sparkline`        | Stable       | Compact one-series columns. Property-only `values` / `labels` / `target`. Null is a gap. Not a density of `rowan-bar-chart` and not a `variant` of `rowan-sparkline`. Columns stay time-LTR in RTL.                                                     |
 | `rowan-bullet-chart`            | Stable       | Few bullet graph. `encoding`: `ink` (default), `accent`, `status`, or `tone`. ⅓-height actual, target tick. `scale` ticks (default on), `intent` higher\|lower.                                                                                          |
 | `rowan-gauge-chart`             | Stable       | Speedometer gauge. `min` / `max` attributes, property-only `ranges` / `value` / `target`. Null is no-data.                                                                                                                                               |
 | `rowan-donut-chart`             | Stable       | First series only. Negative values are no-data and omitted from the total. Additive `variant`: `donut` (default) or `pie` (no hole; total stays in the table).                                                                                           |
@@ -966,8 +966,8 @@ caption without dropping the progressbar name.
 
 ## Rowan Column Sparkline
 
-`rowan-column-sparkline` is an experimental compact one-series column chart for
-KPI tiles. It is a separate host, not a density of `rowan-bar-chart` and not a
+`rowan-column-sparkline` is a frozen compact one-series column chart for KPI
+tiles. It is a separate host, not a density of `rowan-bar-chart` and not a
 `variant` of `rowan-sparkline`. `values` is property-only (`number | null`; null
 is a gap). There is no legend, no interactive points, and no animation. Hover
 highlights the nearest column. A visually hidden table exposes the same values
@@ -976,7 +976,7 @@ to assistive technology. Additive property-only `target` splits column fill with
 column height encodes magnitude. Size the plot with
 `--rowan-column-sparkline-height` (default `2.25rem`). Columns and nearest-column
 hover stay in time order (LTR) inside an RTL host. Nested theme and vibrant fills
-follow the nested surface. This host is not frozen.
+follow the nested surface.
 
 ```html
 <rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">

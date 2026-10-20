@@ -6,7 +6,7 @@
  * @property {string} [target]
  */
 /**
- * Experimental compact one-series columns for KPI tiles. Not a density of
+ * Frozen compact one-series columns for KPI tiles. Not a density of
  * `rowan-bar-chart`. Not a `variant` of `rowan-sparkline`.
  * @tag rowan-column-sparkline
  * @attr {string} label

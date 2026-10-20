@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Changed
+
+- Promote `rowan-column-sparkline` to Stable. Nested filter groups and table-view-state version `2` stay experimental. This is not `1.0`.
+
 ### Fixed
 
 - `rowan-dropdown` and `rowan-popover` re-clamp the panel when the stylesheet loads or the panel size changes while open. No placement attribute.

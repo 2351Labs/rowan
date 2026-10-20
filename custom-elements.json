@@ -5804,7 +5804,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Experimental compact one-series columns for KPI tiles. Not a density of\n`rowan-bar-chart`. Not a `variant` of `rowan-sparkline`.",
+          "description": "Frozen compact one-series columns for KPI tiles. Not a density of\n`rowan-bar-chart`. Not a `variant` of `rowan-sparkline`.",
           "name": "RowanColumnSparkline",
           "cssProperties": [
             {
