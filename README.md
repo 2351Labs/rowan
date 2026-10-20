@@ -1144,7 +1144,8 @@ keeps a default secondary trigger and accepts a `trigger` slot for an avatar or
 icon-only control. `rowan-popover` `trigger` is `click` (default) or `manual`.
 Manual disables click-to-toggle; set `open` from app code. Escape and outside
 pointer still dismiss and emit `rowan-change`. The panel flips to the trigger
-end when it would overflow the viewport. Hover and focus delays stay on
+end when it would overflow the viewport, and re-clamps if styles load or the
+panel grows while open. Hover and focus delays stay on
 `rowan-tooltip` — a popover is a dialog, not a hover surface.
 
 Required `rowan-text-field`, `rowan-textarea`, and `rowan-number-field` stay

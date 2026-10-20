@@ -39,6 +39,8 @@ export class RowanDropdown extends BaseElement {
   #panel = null;
   #panelId = "";
   #removeDocumentPointerListener = null;
+  #panelSizeObserver = null;
+  #watchingStylesheet = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -270,11 +272,13 @@ export class RowanDropdown extends BaseElement {
     }
 
     this.#positionPanel();
+    this.#watchPanelLayout();
   }
 
   #hidePanelPopover() {
     if (!this.#panel) return;
 
+    this.#unobservePanelSize();
     this.#panel.hidden = true;
     if (typeof this.#panel.hidePopover !== "function") return;
 
@@ -303,6 +307,45 @@ export class RowanDropdown extends BaseElement {
       left = Math.min(Math.max(margin, left), maxLeft);
     }
     this.#panel.style.left = `${Math.round(left)}px`;
+  }
+
+  #watchPanelLayout() {
+    this.#watchStylesheet();
+    this.#observePanelSize();
+  }
+
+  #watchStylesheet() {
+    if (this.#watchingStylesheet) return;
+
+    const stylesheet = this.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (!stylesheet) return;
+
+    this.#watchingStylesheet = true;
+    this.listen(stylesheet, "load", () => {
+      if (this.open) this.#positionPanel();
+    });
+  }
+
+  #observePanelSize() {
+    if (typeof ResizeObserver === "undefined" || !this.#panel) return;
+
+    if (!this.#panelSizeObserver) {
+      this.#panelSizeObserver = new ResizeObserver(() => {
+        if (!this.open) return;
+        this.#positionPanel();
+      });
+      this.observe(this.#panelSizeObserver, () => {
+        if (this.open && this.#panel) this.#panelSizeObserver.observe(this.#panel);
+      });
+    }
+
+    this.#panelSizeObserver.observe(this.#panel);
+  }
+
+  #unobservePanelSize() {
+    if (this.#panelSizeObserver && this.#panel) {
+      this.#panelSizeObserver.unobserve(this.#panel);
+    }
   }
 
   #focusPanelContents() {

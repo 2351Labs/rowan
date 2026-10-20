@@ -7,11 +7,50 @@ import "../menu/menu.js";
 import "../menu-item/menu-item.js";
 
 const nextMicrotask = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 const settle = async () => {
   await nextMicrotask();
   await nextMicrotask();
 };
+
+async function waitForDropdownStyles(dropdown) {
+  const stylesheet = dropdown.shadowRoot.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error("Dropdown styles did not apply within 60 animation frames.");
+}
+
+async function waitForClampedPanel(panel, trigger) {
+  for (let frame = 0; frame < 60; frame += 1) {
+    const panelRect = panel.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    if (
+      panelRect.width > 0 &&
+      panelRect.right <= window.innerWidth &&
+      panelRect.left >= 0 &&
+      panelRect.left < triggerRect.left
+    ) {
+      return panelRect;
+    }
+    await nextFrame();
+  }
+
+  throw new Error("Panel did not clamp inside the viewport within 60 animation frames.");
+}
 
 function keydown(element, key) {
   element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
@@ -162,6 +201,56 @@ describe("rowan-dropdown", () => {
     expect(panelRect.right).to.be.at.most(window.innerWidth);
     expect(panelRect.left).to.be.at.least(0);
     expect(panelRect.left).to.be.below(triggerRect.left);
+  });
+
+  it("re-clamps when the panel grows while open", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    dropdown.style.position = "fixed";
+    dropdown.style.top = "8px";
+    dropdown.style.left = `${Math.max(8, window.innerWidth - 240)}px`;
+    const menu = document.createElement("div");
+    menu.style.width = "6rem";
+    menu.textContent = "Cols";
+    dropdown.append(menu);
+    document.body.append(dropdown);
+    await settle();
+    await waitForDropdownStyles(dropdown);
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
+    await settle();
+
+    menu.style.width = "20rem";
+    menu.textContent = "Columns that should not overflow after the panel grows.";
+
+    const panel = dropdown.shadowRoot.querySelector(".panel");
+    const clamped = await waitForClampedPanel(panel, trigger);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
+    expect(clamped.left).to.be.below(trigger.getBoundingClientRect().left);
+  });
+
+  it("clamps an initially open panel after styles apply", async () => {
+    const dropdown = document.createElement("rowan-dropdown");
+    dropdown.setAttribute("open", "");
+    dropdown.style.position = "fixed";
+    dropdown.style.top = "8px";
+    dropdown.style.right = "0";
+    dropdown.style.left = "auto";
+    const menu = document.createElement("div");
+    menu.style.width = "16rem";
+    menu.textContent = "Columns";
+    dropdown.append(menu);
+    document.body.append(dropdown);
+    await settle();
+    await waitForDropdownStyles(dropdown);
+
+    const trigger = dropdown.shadowRoot.querySelector("rowan-button");
+    const panel = dropdown.shadowRoot.querySelector(".panel");
+    const clamped = await waitForClampedPanel(panel, trigger);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
+    expect(clamped.left).to.be.below(trigger.getBoundingClientRect().left);
   });
 
   it("closes on Tab so focus can leave", async () => {
