@@ -1252,7 +1252,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.21.1</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups, table-view-state version 2, and rowan-column-sparkline stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@0.21.1</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -2174,13 +2174,13 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     group: "Components",
     title: "Rowan Column Sparkline",
     summary:
-      "Experimental compact one-series columns for KPI tiles, with a visually hidden data table.",
+      "Frozen compact one-series columns for KPI tiles, with a visually hidden data table.",
     tags: ["data display", "sparkline", "kpi"],
     keywords: ["column sparkline", "compact chart", "kpi", "columns"],
     content: () => `
       <section class="doc-section" data-doc-section id="column-sparkline-overview">
         <h2>Compact columns</h2>
-        <p>rowan-column-sparkline is experimental. It is a separate host, not a density of rowan-bar-chart and not a variant of rowan-sparkline. One series, no legend, no interactive points, no animation. Null values leave a gap and appear as No data in a visually hidden table. Set target to split column fill above and below that value. This host is not frozen.</p>
+        <p>rowan-column-sparkline is a frozen compact host. It is a separate host, not a density of rowan-bar-chart and not a variant of rowan-sparkline. One series, no legend, no interactive points, no animation. Null values leave a gap and appear as No data in a visually hidden table. Set target to split column fill above and below that value. Columns stay in time order inside an RTL host.</p>
         <div class="demo-row">
           <rowan-kpi-card id="docs-column-sparkline-kpi" label="Open incidents" tone="warning" delta-label="vs last week">
             <rowan-column-sparkline id="docs-column-sparkline" slot="chart" label="Open incidents this week"></rowan-column-sparkline>
