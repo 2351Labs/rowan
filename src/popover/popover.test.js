@@ -32,6 +32,24 @@ async function waitForPopoverStyles(popover) {
   throw new Error("Popover styles did not apply within 60 animation frames.");
 }
 
+async function waitForClampedPanel(panel, trigger) {
+  for (let frame = 0; frame < 60; frame += 1) {
+    const panelRect = panel.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    if (
+      panelRect.width > 0 &&
+      panelRect.right <= window.innerWidth &&
+      panelRect.left >= 0 &&
+      panelRect.left < triggerRect.left
+    ) {
+      return panelRect;
+    }
+    await nextFrame();
+  }
+
+  throw new Error("Panel did not clamp inside the viewport within 60 animation frames.");
+}
+
 function keydown(element, key) {
   element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, composed: true, key }));
 }
@@ -374,6 +392,62 @@ describe("rowan-popover", () => {
     expect(panelRect.right).to.be.at.most(window.innerWidth);
     expect(panelRect.left).to.be.at.least(0);
     expect(panelRect.left).to.be.below(triggerRect.left);
+  });
+
+  it("re-clamps when the panel grows while open", async () => {
+    const popover = document.createElement("rowan-popover");
+    popover.style.position = "fixed";
+    popover.style.top = "8px";
+    popover.style.left = `${Math.max(8, window.innerWidth - 240)}px`;
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "Info";
+    const copy = document.createElement("p");
+    copy.style.width = "6rem";
+    copy.style.margin = "0";
+    copy.textContent = "Short";
+    popover.append(trigger, copy);
+    document.body.append(popover);
+    await settle();
+    await waitForPopoverStyles(popover);
+
+    trigger.click();
+    await settle();
+
+    copy.style.width = "20rem";
+    copy.textContent = "Definition that should not overflow after the panel grows.";
+
+    const panel = popover.shadowRoot.querySelector(".panel");
+    const clamped = await waitForClampedPanel(panel, trigger);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
+    expect(clamped.left).to.be.below(trigger.getBoundingClientRect().left);
+  });
+
+  it("clamps an initially open panel after styles apply", async () => {
+    const popover = document.createElement("rowan-popover");
+    popover.setAttribute("open", "");
+    popover.style.position = "fixed";
+    popover.style.top = "8px";
+    popover.style.right = "0";
+    popover.style.left = "auto";
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "Info";
+    const copy = document.createElement("p");
+    copy.style.width = "16rem";
+    copy.style.margin = "0";
+    copy.textContent = "Definition that should not overflow the window.";
+    popover.append(trigger, copy);
+    document.body.append(popover);
+    await settle();
+    await waitForPopoverStyles(popover);
+
+    const panel = popover.shadowRoot.querySelector(".panel");
+    const clamped = await waitForClampedPanel(panel, trigger);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
+    expect(clamped.left).to.be.below(trigger.getBoundingClientRect().left);
   });
 
   it("coerces unknown trigger values to click", async () => {
