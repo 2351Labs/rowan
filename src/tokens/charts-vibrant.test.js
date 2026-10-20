@@ -2,6 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import "../button/button.js";
 import "../kpi-card/kpi-card.js";
 import "../gauge-chart/gauge-chart.js";
+import "../column-sparkline/column-sparkline.js";
 
 const nextTask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
@@ -147,6 +148,23 @@ describe("vibrant chart palette", () => {
 
       const cardBg = getComputedStyle(vibrantParts.card.shadowRoot.querySelector(".card"));
       expect(contrastRatio(vibrantDelta.color, cardBg.backgroundColor)).to.be.at.least(4.5);
+
+      const rowanColumn = document.createElement("rowan-column-sparkline");
+      rowanColumn.tone = "success";
+      rowanColumn.values = [4, 8, 6];
+      const vibrantColumn = document.createElement("rowan-column-sparkline");
+      vibrantColumn.tone = "success";
+      vibrantColumn.values = [4, 8, 6];
+      rowan.append(rowanColumn);
+      vibrant.append(vibrantColumn);
+      await nextTask();
+      await Promise.all([rowanColumn, vibrantColumn].map(waitForStyles));
+      await nextFrame();
+
+      const rowanFill = getComputedStyle(rowanColumn.shadowRoot.querySelector("rect.column"));
+      const vibrantFill = getComputedStyle(vibrantColumn.shadowRoot.querySelector("rect.column"));
+      expect(rgb(vibrantFill.fill)).to.not.deep.equal(rgb(rowanFill.fill));
+      expect(rgb(vibrantFill.fill)).to.deep.equal([21, 128, 61]);
     } finally {
       sheets.forEach((sheet) => sheet.remove());
     }
@@ -210,6 +228,19 @@ describe("vibrant chart palette", () => {
       const surface = getComputedStyle(card.shadowRoot.querySelector(".card"));
       expect(rgb(delta.color)).to.deep.equal([74, 222, 128]);
       expect(contrastRatio(delta.color, surface.backgroundColor)).to.be.at.least(4.5);
+
+      const sparkline = document.createElement("rowan-column-sparkline");
+      sparkline.slot = "chart";
+      sparkline.tone = "success";
+      sparkline.values = [4, 8, 6];
+      card.append(sparkline);
+      await nextTask();
+      await waitForStyles(sparkline);
+      await nextFrame();
+
+      const column = getComputedStyle(sparkline.shadowRoot.querySelector("rect.column"));
+      expect(rgb(column.fill)).to.deep.equal([74, 222, 128]);
+      expect(contrastRatio(column.fill, surface.backgroundColor)).to.be.at.least(3);
     } finally {
       document.documentElement.removeAttribute("data-theme");
       sheets.forEach((sheet) => sheet.remove());
@@ -250,6 +281,19 @@ describe("vibrant chart palette", () => {
       const surface = getComputedStyle(card.shadowRoot.querySelector(".card"));
       expect(rgb(delta.color)).to.deep.equal([21, 128, 61]);
       expect(contrastRatio(delta.color, surface.backgroundColor)).to.be.at.least(4.5);
+
+      const sparkline = document.createElement("rowan-column-sparkline");
+      sparkline.slot = "chart";
+      sparkline.tone = "success";
+      sparkline.values = [4, 8, 6];
+      card.append(sparkline);
+      await nextTask();
+      await waitForStyles(sparkline);
+      await nextFrame();
+
+      const column = getComputedStyle(sparkline.shadowRoot.querySelector("rect.column"));
+      expect(rgb(column.fill)).to.deep.equal([21, 128, 61]);
+      expect(contrastRatio(column.fill, surface.backgroundColor)).to.be.at.least(3);
     } finally {
       document.documentElement.removeAttribute("data-theme");
       sheets.forEach((sheet) => sheet.remove());

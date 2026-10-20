@@ -974,7 +974,9 @@ highlights the nearest column. A visually hidden table exposes the same values
 to assistive technology. Additive property-only `target` splits column fill with
 `above-tone` / `below-tone` like the line sparkline. The domain includes zero so
 column height encodes magnitude. Size the plot with
-`--rowan-column-sparkline-height` (default `2.25rem`). This host is not frozen.
+`--rowan-column-sparkline-height` (default `2.25rem`). Columns and nearest-column
+hover stay in time order (LTR) inside an RTL host. Nested theme and vibrant fills
+follow the nested surface. This host is not frozen.
 
 ```html
 <rowan-kpi-card label="Open incidents" tone="warning" delta-label="vs last week">

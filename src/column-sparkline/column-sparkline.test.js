@@ -121,6 +121,48 @@ describe("rowan-column-sparkline", () => {
     expect(chart.shadowRoot.querySelector(".plot").dataset.tone).to.equal("neutral");
   });
 
+  it("highlights the column under the pointer in LTR and RTL", async () => {
+    const chart = await renderChart({
+      values: [4, 8],
+      labels: ["Mon", "Wed"],
+    });
+    chart.style.inlineSize = "200px";
+    await waitForColumnStyles(chart);
+
+    for (const direction of ["ltr", "rtl"]) {
+      chart.dir = direction;
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const plot = chart.shadowRoot.querySelector(".plot");
+      expect(getComputedStyle(plot).direction).to.equal("ltr");
+
+      const first = chart.shadowRoot.querySelector("rect.column[data-index='0']");
+      const last = chart.shadowRoot.querySelector("rect.column[data-index='1']");
+      const firstBox = first.getBoundingClientRect();
+      const lastBox = last.getBoundingClientRect();
+      expect(firstBox.left, direction).to.be.below(lastBox.left);
+
+      plot.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          clientX: firstBox.left + firstBox.width / 2,
+          clientY: firstBox.top + 2,
+        }),
+      );
+      expect(chart.shadowRoot.querySelector("rect.column.is-active").dataset.index).to.equal("0");
+
+      plot.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          clientX: lastBox.left + lastBox.width / 2,
+          clientY: lastBox.top + 2,
+        }),
+      );
+      expect(chart.shadowRoot.querySelector("rect.column.is-active").dataset.index).to.equal("1");
+    }
+  });
+
   it("shows the nearest labeled value on hover and highlights the column", async () => {
     const chart = await renderChart({
       values: [4, 8],

@@ -16,6 +16,7 @@
 
 .plot {
   block-size: var(--rowan-column-sparkline-height, 2.25rem);
+  direction: ltr;
   display: block;
   inline-size: 100%;
   overflow: visible;

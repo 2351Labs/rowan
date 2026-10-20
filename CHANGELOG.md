@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Fixed
 
 - `rowan-dropdown` and `rowan-popover` re-clamp the panel when the stylesheet loads or the panel size changes while open. No placement attribute.
+- `rowan-column-sparkline` keeps columns and nearest-column hover in time order (LTR) inside an RTL host. Nested theme and vibrant fills follow the nested surface.
 
 ## 0.21.1 - 2026-10-19
 

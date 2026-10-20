@@ -15,6 +15,7 @@ import "../stepper/stepper.js";
 import "../switch/switch.js";
 import "../table-toolbar/table-toolbar.js";
 import "../filter-builder/filter-builder.js";
+import "../column-sparkline/column-sparkline.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
@@ -46,6 +47,20 @@ async function waitForStyles(element) {
 }
 
 // Waits for the value the assertion reads, rather than for a proxy like the link's sheet.
+async function paintedFill(element, selector) {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    const { fill } = getComputedStyle(element.shadowRoot.querySelector(selector));
+
+    if (fill && fill !== "none" && fill !== "rgba(0, 0, 0, 0)" && fill !== "transparent") {
+      return fill;
+    }
+
+    await nextFrame();
+  }
+
+  throw new Error(`fill never painted for <${element.localName}> ${selector}`);
+}
+
 async function paintedBackground(element, selector) {
   for (let attempt = 0; attempt < 120; attempt += 1) {
     const { backgroundColor } = getComputedStyle(element.shadowRoot.querySelector(selector));
@@ -102,6 +117,12 @@ function contrastRatio(foreground, background) {
     (left, right) => right - left,
   );
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+function rgb(color) {
+  return parseColorChannels(color)
+    .slice(0, 3)
+    .map((channel) => Math.round(channel));
 }
 
 describe("Rowan themes", () => {
@@ -520,6 +541,43 @@ describe("Rowan themes", () => {
 
         theme.remove();
       }
+    } finally {
+      document.documentElement.removeAttribute("data-theme");
+      themeStylesheets.forEach((stylesheet) => stylesheet.remove());
+    }
+  });
+
+  it("paints nested-theme column sparkline fills from the nested surface", async () => {
+    const themeStylesheets = await Promise.all(
+      ["./tokens.css", "./themes/light.css", "./themes/dark.css"].map(loadStylesheet),
+    );
+    document.documentElement.setAttribute("data-theme", "light");
+
+    try {
+      const wrap = document.createElement("div");
+      wrap.setAttribute("data-theme", "light");
+      const nested = document.createElement("div");
+      nested.setAttribute("data-theme", "dark");
+
+      const chart = document.createElement("rowan-column-sparkline");
+      chart.label = "Open incidents";
+      chart.tone = "success";
+      chart.values = [4, 8, 6];
+      nested.append(chart);
+      wrap.append(nested);
+      document.body.append(wrap);
+      await nextTask();
+      await waitForStyles(chart);
+
+      const fill = await paintedFill(chart, "rect.column");
+      const nestedProbe = document.createElement("span");
+      nestedProbe.style.color = "var(--rowan-color-success)";
+      nested.append(nestedProbe);
+      const wrapProbe = document.createElement("span");
+      wrapProbe.style.color = "var(--rowan-color-success)";
+      wrap.append(wrapProbe);
+      expect(rgb(fill)).to.deep.equal(rgb(getComputedStyle(nestedProbe).color));
+      expect(rgb(fill)).to.not.deep.equal(rgb(getComputedStyle(wrapProbe).color));
     } finally {
       document.documentElement.removeAttribute("data-theme");
       themeStylesheets.forEach((stylesheet) => stylesheet.remove());
