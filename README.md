@@ -28,10 +28,10 @@ That is the brief for this library.
 The mark is an R with a single berry in the counter. The letter is the product.
 The berry is the reminder: keep the accent small.
 
-Package name: `@rowan-ui/core`. Version `0.21.1`. User-visible changes are in
+Package name: `@rowan-ui/core`. Version `0.22.0`. User-visible changes are in
 [`CHANGELOG.md`](CHANGELOG.md).
 
-**`0.21` surface.** Public API is attributes, properties, slots, events, tokens,
+**`0.22` surface.** Public API is attributes, properties, slots, events, tokens,
 and CSS parts. Events fire only from user action, never because a parent set a
 property. Form controls are form-associated. Constraint copy is English by
 default; override it with [`@rowan-ui/core/validity-messages`](#constraint-messages).
@@ -47,7 +47,7 @@ the table. `rowan-filter-builder` `appearance="toolbar"` is chips on the bar.
 is CSS pixels. Additive property-only `target` splits the stroke at a value.
 Additive `variant="area"` fills under the stroke. A slotted gauge sits beside
 KPI metrics except below 10rem. Modals use native `<dialog>`. Dropdown, popover, tooltip, and
-context menus use the top layer. Table virtualization, `rowan-rich-text-editor`,
+context menus use the top layer. Dropdown and popover re-clamp while open. Table virtualization, `rowan-rich-text-editor`,
 `rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
 `rowan-donut-chart`, `rowan-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`,
 `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`,
