@@ -251,6 +251,14 @@ not frozen. Nested filter groups and table-view-state version `2` stay
 experimental. Inline table editing is not a public API. Publish after this
 catalog commit is on `main`: tag `v0.21.1`.
 
+## 0.22.0 cut
+
+Version in `package.json` is `0.22.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. `rowan-column-sparkline` is Stable. Overlay re-clamp and
+column-sparkline LTR/nested-theme fills ship here. Nested filter groups and
+table-view-state version `2` stay experimental. Inline table editing is not a
+public API. Publish after this catalog commit is on `main`: tag `v0.22.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
