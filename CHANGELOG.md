@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- `rowan-context-menu` re-clamps the panel when the stylesheet loads or the panel size changes while open. No placement attribute.
+
 ## 0.22.0 - 2026-10-20
 
 ### Changed

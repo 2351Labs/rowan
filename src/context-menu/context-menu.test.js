@@ -3,11 +3,51 @@ import "./context-menu.js";
 import "../dialog/dialog.js";
 
 const wait = () => Promise.resolve();
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 const settle = async () => {
   await wait();
   await wait();
   await wait();
 };
+
+async function waitForContextMenuStyles(menu) {
+  const stylesheet = menu.shadowRoot.querySelector('link[rel="stylesheet"]');
+  if (!stylesheet) return;
+
+  const hasLoadedRules = () => {
+    try {
+      return Boolean(stylesheet.sheet?.cssRules.length);
+    } catch (_error) {
+      return false;
+    }
+  };
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (hasLoadedRules()) return;
+    await nextFrame();
+  }
+
+  throw new Error("Context menu styles did not apply within 60 animation frames.");
+}
+
+async function waitForViewportClamp(panel, originX) {
+  for (let frame = 0; frame < 60; frame += 1) {
+    const panelRect = panel.getBoundingClientRect();
+    const left = Number.parseFloat(panel.style.getPropertyValue("--rowan-context-menu-x"));
+    if (
+      panelRect.width > 0 &&
+      Number.isFinite(left) &&
+      left < originX &&
+      panelRect.right <= window.innerWidth &&
+      panelRect.left >= 0
+    ) {
+      return panelRect;
+    }
+    await nextFrame();
+  }
+
+  throw new Error("Panel did not clamp inside the viewport within 60 animation frames.");
+}
 
 function createMenu(target) {
   const menu = document.createElement("rowan-context-menu");
@@ -234,5 +274,47 @@ describe("rowan-context-menu", () => {
     expect(menu.shadowRoot.querySelector("rowan-menu").getAttribute("aria-label")).to.equal(
       "Project actions",
     );
+  });
+
+  it("re-clamps when the panel grows while open", async () => {
+    const target = document.createElement("button");
+    const { menu } = createMenu(target);
+    document.body.append(target, menu);
+    await settle();
+    await waitForContextMenuStyles(menu);
+
+    const originX = Math.max(8, window.innerWidth - 220);
+    menu.showAt(originX, 24);
+    await settle();
+
+    const long = document.createElement("rowan-menu-item");
+    long.value = "rename";
+    long.textContent = "Rename this trail to a much longer name";
+    long.style.inlineSize = "20rem";
+    menu.append(long);
+
+    const panel = menu.shadowRoot.querySelector(".panel");
+    const clamped = await waitForViewportClamp(panel, originX);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
+  });
+
+  it("clamps an initially open panel after styles apply", async () => {
+    const target = document.createElement("button");
+    target.style.position = "fixed";
+    target.style.top = "8px";
+    target.style.right = "0";
+    target.style.left = "auto";
+    const { menu } = createMenu(target);
+    menu.setAttribute("open", "");
+    document.body.append(target, menu);
+    await settle();
+    await waitForContextMenuStyles(menu);
+
+    const panel = menu.shadowRoot.querySelector(".panel");
+    const originX = target.getBoundingClientRect().left;
+    const clamped = await waitForViewportClamp(panel, originX);
+    expect(clamped.right).to.be.at.most(window.innerWidth);
+    expect(clamped.left).to.be.at.least(0);
   });
 });

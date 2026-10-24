@@ -47,7 +47,7 @@ the table. `rowan-filter-builder` `appearance="toolbar"` is chips on the bar.
 is CSS pixels. Additive property-only `target` splits the stroke at a value.
 Additive `variant="area"` fills under the stroke. A slotted gauge sits beside
 KPI metrics except below 10rem. Modals use native `<dialog>`. Dropdown, popover, tooltip, and
-context menus use the top layer. Dropdown and popover re-clamp while open. Table virtualization, `rowan-rich-text-editor`,
+context menus use the top layer. Dropdown, popover, and context menu re-clamp while open. Table virtualization, `rowan-rich-text-editor`,
 `rowan-filter-builder`, `rowan-trend-chart`, `rowan-kpi-card`, `rowan-sparkline`,
 `rowan-donut-chart`, `rowan-bar-chart`, `rowan-combo-chart`, `rowan-scatter-chart`,
 `rowan-heatmap-chart`, `rowan-funnel-chart`, `rowan-waterfall-chart`,
@@ -1154,7 +1154,7 @@ Required `rowan-text-field`, `rowan-textarea`, and `rowan-number-field` stay
 visually valid until blur or `reportValidity()` (form submit). `checkValidity()`
 still fails immediately.
 
-`rowan-context-menu` binds to an element through its `for` attribute or `target` property. It intercepts the target's native context menu, also opens from `Shift+F10` or the Context Menu key, manages Arrow/Home/End menu focus, and emits `rowan-change` when a user selects a `rowan-menu-item`.
+`rowan-context-menu` binds to an element through its `for` attribute or `target` property. It intercepts the target's native context menu, also opens from `Shift+F10` or the Context Menu key, manages Arrow/Home/End menu focus, and emits `rowan-change` when a user selects a `rowan-menu-item`. The panel re-clamps if styles load or the panel grows while open. No placement attribute.
 
 `rowan-status-indicator` is a compact persistent status marker. Use its `tone`, `size`, `label`, and optional `pulse` state; visible text comes from the default slot or `label` attribute.
 
