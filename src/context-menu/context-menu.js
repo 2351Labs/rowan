@@ -73,6 +73,8 @@ export class RowanContextMenu extends BaseElement {
   #position = null;
   #menuId = "";
   #messages = {};
+  #panelSizeObserver = null;
+  #watchingStylesheet = false;
 
   #handleTargetContextMenu = (event) => {
     event.preventDefault();
@@ -260,30 +262,36 @@ export class RowanContextMenu extends BaseElement {
     if (this.open === this.#isOpen) return;
 
     this.#isOpen = this.open;
-    this.#overlay.hidden = !this.open;
 
     if (this.open) {
+      this.#overlay.hidden = false;
       pushDismissible(this);
       if (!this.#position) {
         const bounds = this.#boundTarget?.getBoundingClientRect();
         this.#position = this.#normalizedPosition(bounds?.left ?? 0, bounds?.bottom ?? 0);
       }
 
+      this.#watchPanelLayout();
       queueMicrotask(() => {
         if (!this.open) return;
         this.#positionPanel();
+        this.#watchPanelLayout();
         this.#syncMenuItems();
         this.#setFocusItem(this.#focusItem ?? this.#availableItems()[0]);
       });
       return;
     }
 
+    this.#unobservePanelSize();
+    this.#overlay.hidden = true;
     removeDismissible(this);
     this.#releaseManagedItems();
     this.#restoreFocus();
   }
 
   #positionPanel() {
+    if (!this.#panel || !this.#position) return;
+
     const offset = this.#readOffset();
     const bounds = this.#panel.getBoundingClientRect();
     const isPositioned = getComputedStyle(this.#panel).position === "fixed";
@@ -300,6 +308,45 @@ export class RowanContextMenu extends BaseElement {
 
     this.#panel.style.setProperty("--rowan-context-menu-x", `${left}px`);
     this.#panel.style.setProperty("--rowan-context-menu-y", `${top}px`);
+  }
+
+  #watchPanelLayout() {
+    this.#watchStylesheet();
+    this.#observePanelSize();
+  }
+
+  #watchStylesheet() {
+    if (this.#watchingStylesheet) return;
+
+    const stylesheet = this.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (!stylesheet) return;
+
+    this.#watchingStylesheet = true;
+    this.listen(stylesheet, "load", () => {
+      if (this.open) this.#positionPanel();
+    });
+  }
+
+  #observePanelSize() {
+    if (typeof ResizeObserver === "undefined" || !this.#panel) return;
+
+    if (!this.#panelSizeObserver) {
+      this.#panelSizeObserver = new ResizeObserver(() => {
+        if (!this.open) return;
+        this.#positionPanel();
+      });
+      this.observe(this.#panelSizeObserver, () => {
+        if (this.open && this.#panel) this.#panelSizeObserver.observe(this.#panel);
+      });
+    }
+
+    this.#panelSizeObserver.observe(this.#panel);
+  }
+
+  #unobservePanelSize() {
+    if (this.#panelSizeObserver && this.#panel) {
+      this.#panelSizeObserver.unobserve(this.#panel);
+    }
   }
 
   #readOffset() {
