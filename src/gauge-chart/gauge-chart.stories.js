@@ -1,6 +1,7 @@
 import "./gauge-chart.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function sampleRanges() {
   return [
@@ -33,6 +34,7 @@ export default {
     target: 80,
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     min: { control: "number" },
     max: { control: "number" },
@@ -138,3 +140,11 @@ export const VibrantPalette = {
   name: "Vibrant palette",
   render: () => withVibrantChartPalette(Dashboard.render()),
 };
+
+const chartFixtures = coverageStories["rowan-gauge-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;

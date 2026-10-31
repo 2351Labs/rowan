@@ -21,7 +21,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["scripts/**/*.mjs", "packages/*/scripts/**/*.mjs", ".storybook/**/*.js"],
+      files: ["scripts/**/*.mjs", "packages/*/scripts/**/*.mjs", ".storybook/**/*.js", "test/**/*.mjs"],
       env: {
         node: true
       }

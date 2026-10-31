@@ -4,6 +4,7 @@ import "../column-sparkline/column-sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../gauge-chart/gauge-chart.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function sampleRanges() {
   return [
@@ -62,6 +63,7 @@ export default {
     description: "Unacknowledged incidents in the current window.",
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     value: { control: "number" },
     delta: { control: "number" },
@@ -247,3 +249,12 @@ export const VibrantPalette = {
   name: "Vibrant palette",
   render: () => withVibrantChartPalette(Tones.render()),
 };
+
+const chartFixtures = coverageStories["rowan-kpi-card"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureTones = chartFixtures.tones;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureLoading = chartFixtures.loading;
+export const FixtureError = chartFixtures.error;

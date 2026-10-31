@@ -1,3 +1,43 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const CHART_CSS_IMPORT = /@import\s+["'](\.\.\/chart\/[^"']+\.css)["'];?/g;
+
+function inlineChartImports(css) {
+  if (!css.includes("../chart/")) return css;
+  return css.replace(CHART_CSS_IMPORT, (_match, specifier) => {
+    const file = resolve(process.cwd(), "src/chart", specifier.slice("../chart/".length));
+    return `${readFileSync(file, "utf8")}\n`;
+  });
+}
+
+function inlineCssDataUrls(code) {
+  return code.replace(/data:text\/css(?:;charset=[^;,]+)?;base64,([A-Za-z0-9+/=]+)/g, (match, encoded) => {
+    const css = Buffer.from(encoded, "base64").toString("utf8");
+    const next = inlineChartImports(css);
+    if (next === css) return match;
+    return `data:text/css;base64,${Buffer.from(next).toString("base64")}`;
+  });
+}
+
+function inlineChartCssImports() {
+  return {
+    name: "inline-chart-css-imports",
+    generateBundle(_options, bundle) {
+      for (const item of Object.values(bundle)) {
+        if (item.type === "chunk") {
+          item.code = inlineCssDataUrls(item.code);
+          continue;
+        }
+        if (item.type !== "asset" || !String(item.fileName).endsWith(".css")) continue;
+        const source =
+          typeof item.source === "string" ? item.source : Buffer.from(item.source).toString("utf8");
+        item.source = inlineChartImports(source);
+      }
+    },
+  };
+}
+
 function storybookBase() {
   if (process.env.STORYBOOK_BASE) return process.env.STORYBOOK_BASE;
 
@@ -31,6 +71,7 @@ export default {
   },
   async viteFinal(config) {
     config.base = storybookBase();
+    config.plugins = [...(config.plugins || []), inlineChartCssImports()];
     config.esbuild = {
       ...config.esbuild,
       jsx: "automatic",

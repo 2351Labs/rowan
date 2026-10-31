@@ -1,6 +1,7 @@
 import "./waterfall-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function createWaterfall({
   label = "Lane cash movement",
@@ -32,6 +33,7 @@ export default {
     interactive: true,
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
@@ -62,3 +64,12 @@ export const VibrantPalette = {
   parameters: Playground.parameters,
   render: (args) => withVibrantChartPalette(createWaterfall(args)),
 };
+
+const chartFixtures = coverageStories["rowan-waterfall-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;

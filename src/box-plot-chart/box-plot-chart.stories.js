@@ -1,6 +1,8 @@
 import "./box-plot-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
+import { performanceStats } from "../../stories/fixtures/chart-data.js";
 
 function createBoxPlot({
   label = "Lane dwell",
@@ -36,6 +38,7 @@ export default {
     interactive: true,
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
@@ -48,6 +51,31 @@ export const Playground = {
     events: ["rowan-point-activate"],
   }),
   render: (args) => createBoxPlot(args),
+};
+
+export const PerformanceMetrics = {
+  name: "Performance metrics (realistic data)",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-box-plot-chart");
+    chart.label = "System Performance";
+    chart.description = "Response time distribution (ms) by component";
+    chart.labels = performanceStats.map((d) => d.category);
+    chart.series = [
+      {
+        id: "latency",
+        label: "Response Time (ms)",
+        values: performanceStats.map((d) => ({
+          min: d.min,
+          q1: d.q1,
+          median: d.median,
+          q3: d.q3,
+          max: d.max,
+        })),
+      },
+    ];
+    return chart;
+  },
 };
 
 export const Grouped = {
@@ -79,8 +107,87 @@ export const Grouped = {
   },
 };
 
+export const WithOutliers = {
+  name: "With outliers",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-box-plot-chart");
+    chart.label = "Request Latency";
+    chart.description = "Shows outliers beyond whiskers";
+    chart.labels = ["API", "Database", "Cache", "External"];
+    chart.series = [
+      {
+        id: "latency",
+        label: "Latency (ms)",
+        values: [
+          { min: 50, q1: 120, median: 180, q3: 280, max: 450, outliers: [620, 780, 920] },
+          { min: 20, q1: 45, median: 85, q3: 140, max: 320, outliers: [450, 580] },
+          { min: 5, q1: 12, median: 25, q3: 45, max: 85, outliers: [150] },
+          { min: 100, q1: 250, median: 400, q3: 620, max: 980, outliers: [1200, 1450, 1680, 2100] },
+        ],
+      },
+    ];
+    return chart;
+  },
+};
+
+export const SparseData = {
+  name: "Sparse data (null gaps)",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-box-plot-chart");
+    chart.label = "Service Availability";
+    chart.description = "Some services have missing data";
+    chart.labels = ["Service A", "Service B", "Service C", "Service D"];
+    chart.series = [
+      {
+        id: "uptime",
+        label: "Uptime %",
+        values: [
+          { min: 95, q1: 97, median: 98, q3: 99, max: 100 },
+          null,
+          { min: 92, q1: 95, median: 97, q3: 98, max: 99, outliers: [88] },
+          null,
+        ],
+      },
+    ];
+    return chart;
+  },
+};
+
+export const Empty = {
+  name: "Empty state",
+  render: () => {
+    const chart = document.createElement("rowan-box-plot-chart");
+    chart.label = "No data available";
+    chart.description = "Chart with empty data";
+    chart.labels = [];
+    chart.series = [];
+    return chart;
+  },
+};
+
+export const Loading = {
+  name: "Loading state",
+  render: () => {
+    const chart = document.createElement("rowan-box-plot-chart");
+    chart.label = "Loading...";
+    chart.loading = true;
+    return chart;
+  },
+};
+
 export const VibrantPalette = {
   name: "Vibrant palette",
   parameters: Playground.parameters,
   render: (args) => withVibrantChartPalette(createBoxPlot(args)),
 };
+
+const chartFixtures = coverageStories["rowan-box-plot-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;
