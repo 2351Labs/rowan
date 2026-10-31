@@ -1599,12 +1599,7 @@ export class RowanTable extends BaseElement {
     handle.dataset.resizeColumn = this.#normalizeText(column.id);
     handle.setAttribute("role", "separator");
     handle.setAttribute("aria-orientation", "vertical");
-    handle.setAttribute(
-      "aria-label",
-      resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizeColumn", {
-        header: column.header || column.id,
-      }),
-    );
+    handle.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizeColumn", { header: column.header || column.id }));
     handle.tabIndex = 0;
     return handle;
   }
@@ -1619,27 +1614,22 @@ export class RowanTable extends BaseElement {
     const th = handle.closest("th");
     if (!th) return;
 
-    const startX = event.clientX;
-    const startWidth = th.getBoundingClientRect().width;
     const column = this.#findColumn(columnId);
     const minWidth = column?.minWidth ? this.#parsePixels(column.minWidth) : 40;
+    const isRTL = getComputedStyle(this).direction === "rtl";
 
     this.#resizing = {
       columnId,
       th,
-      startX,
-      startWidth,
+      startX: event.clientX,
+      startWidth: th.getBoundingClientRect().width,
       minWidth,
+      isRTL,
     };
 
     const handleMove = (e) => {
       if (!this.#resizing) return;
-      const deltaX = e.clientX - this.#resizing.startX;
-      const isRTL = getComputedStyle(this).direction === "rtl";
-      const newWidth = Math.max(
-        this.#resizing.minWidth,
-        this.#resizing.startWidth + (isRTL ? -deltaX : deltaX),
-      );
+      const newWidth = Math.max(this.#resizing.minWidth, this.#resizing.startWidth + (e.clientX - this.#resizing.startX) * (this.#resizing.isRTL ? -1 : 1));
       this.#resizing.th.style.width = `${newWidth}px`;
     };
 
@@ -1648,13 +1638,7 @@ export class RowanTable extends BaseElement {
       const finalWidth = this.#resizing.th.style.width;
       if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
       this.#state.columnWidths.set(this.#resizing.columnId, finalWidth);
-
-      emit(this, "rowan-column-resize", {
-        columnId: this.#resizing.columnId,
-        width: finalWidth,
-        columns: this.columns,
-      });
-
+      emit(this, "rowan-column-resize", { columnId: this.#resizing.columnId, width: finalWidth, columns: this.columns });
       this.#resizing = null;
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleEnd);
@@ -1670,20 +1654,15 @@ export class RowanTable extends BaseElement {
     if (!handle) return;
 
     event.preventDefault();
-    const columnId = handle.dataset.resizeColumn;
     const th = handle.closest("th");
     if (!th) return;
 
-    const contentWidth = this.#measureColumnContent(columnId);
-    th.style.width = `${contentWidth}px`;
+    const columnId = handle.dataset.resizeColumn;
+    const width = `${this.#measureColumnContent(columnId)}px`;
+    th.style.width = width;
     if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
-    this.#state.columnWidths.set(columnId, `${contentWidth}px`);
-
-    emit(this, "rowan-column-resize", {
-      columnId,
-      width: `${contentWidth}px`,
-      columns: this.columns,
-    });
+    this.#state.columnWidths.set(columnId, width);
+    emit(this, "rowan-column-resize", { columnId, width, columns: this.columns });
   }
 
   #handleHeaderKeyDown(event) {
@@ -1694,42 +1673,24 @@ export class RowanTable extends BaseElement {
     const column = this.#findColumn(columnId);
     if (!column) return;
 
-    if (this.resizableColumns && event.target.classList.contains("resize-handle")) {
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        event.preventDefault();
-        const isRTL = getComputedStyle(this).direction === "rtl";
-        const delta = event.shiftKey ? 10 : 1;
-        const currentWidth = th.getBoundingClientRect().width;
-        const minWidth = column.minWidth ? this.#parsePixels(column.minWidth) : 40;
-
-        let newWidth;
-        if (
-          (event.key === "ArrowRight" && !isRTL) ||
-          (event.key === "ArrowLeft" && isRTL)
-        ) {
-          newWidth = currentWidth + delta;
-        } else {
-          newWidth = Math.max(minWidth, currentWidth - delta);
-        }
-
-        th.style.width = `${newWidth}px`;
-        if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
-        this.#state.columnWidths.set(columnId, `${newWidth}px`);
-
-        emit(this, "rowan-column-resize", {
-          columnId,
-          width: `${newWidth}px`,
-          columns: this.columns,
-        });
-      }
+    if (this.resizableColumns && event.target.classList.contains("resize-handle") && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+      event.preventDefault();
+      const isRTL = getComputedStyle(this).direction === "rtl";
+      const delta = event.shiftKey ? 10 : 1;
+      const minWidth = column.minWidth ? this.#parsePixels(column.minWidth) : 40;
+      const newWidth = Math.max(minWidth, th.getBoundingClientRect().width + delta * ((event.key === "ArrowRight") === !isRTL ? 1 : -1));
+      th.style.width = `${newWidth}px`;
+      if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
+      this.#state.columnWidths.set(columnId, `${newWidth}px`);
+      emit(this, "rowan-column-resize", { columnId, width: `${newWidth}px`, columns: this.columns });
       return;
     }
 
-    if (this.reorderableColumns && !column.sticky) {
-      if (event.key === "ArrowLeft" && event.altKey) {
+    if (this.reorderableColumns && !column.sticky && event.altKey) {
+      if (event.key === "ArrowLeft") {
         event.preventDefault();
         this.#moveColumn(columnId, -1);
-      } else if (event.key === "ArrowRight" && event.altKey) {
+      } else if (event.key === "ArrowRight") {
         event.preventDefault();
         this.#moveColumn(columnId, 1);
       }
@@ -1741,30 +1702,21 @@ export class RowanTable extends BaseElement {
     const th = event.target.closest("th");
     if (!th || th.classList.contains("select-column")) return;
 
-    const columnId = th.dataset.columnId;
-    const column = this.#findColumn(columnId);
-    if (column?.sticky) {
+    if (this.#findColumn(th.dataset.columnId)?.sticky) {
       event.preventDefault();
       return;
     }
 
-    this.#reordering = {
-      columnId,
-      fromIndex: parseInt(th.dataset.columnIndex, 10),
-    };
-
+    this.#reordering = { columnId: th.dataset.columnId, fromIndex: parseInt(th.dataset.columnIndex, 10) };
     event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/plain", columnId);
+    event.dataTransfer.setData("text/plain", th.dataset.columnId);
     th.classList.add("dragging");
   }
 
   #handleReorderOver(event) {
     if (!this.reorderableColumns || !this.#reordering) return;
     const th = event.target.closest("th");
-    if (!th || th.classList.contains("select-column")) return;
-
-    const column = this.#findColumn(th.dataset.columnId);
-    if (column?.sticky) return;
+    if (!th || th.classList.contains("select-column") || this.#findColumn(th.dataset.columnId)?.sticky) return;
 
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -1788,9 +1740,7 @@ export class RowanTable extends BaseElement {
 
   #handleReorderEnd() {
     if (!this.#reordering) return;
-    this.renderRoot.querySelectorAll(".dragging, .drop-target").forEach((el) => {
-      el.classList.remove("dragging", "drop-target");
-    });
+    this.renderRoot.querySelectorAll(".dragging, .drop-target").forEach((el) => el.classList.remove("dragging", "drop-target"));
     this.#reordering = null;
   }
 
@@ -1800,52 +1750,36 @@ export class RowanTable extends BaseElement {
     if (index === -1) return;
 
     const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= columns.length) return;
-
-    this.#reorderColumns(index, newIndex);
+    if (newIndex >= 0 && newIndex < columns.length) this.#reorderColumns(index, newIndex);
   }
 
   #reorderColumns(fromIndex, toIndex) {
     const columns = [...this.columns];
-    const renderableColumns = this.#renderableColumns();
-    
-    const fromColumn = renderableColumns[fromIndex];
-    const toColumn = renderableColumns[toIndex];
-    
-    if (!fromColumn || !toColumn) return;
+    const rc = this.#renderableColumns();
+    const from = rc[fromIndex];
+    const to = rc[toIndex];
+    if (!from || !to) return;
 
-    const fromActualIndex = columns.indexOf(fromColumn);
-    const toActualIndex = columns.indexOf(toColumn);
-
-    const [moved] = columns.splice(fromActualIndex, 1);
-    columns.splice(toActualIndex, 0, moved);
-
+    const [moved] = columns.splice(columns.indexOf(from), 1);
+    columns.splice(columns.indexOf(to), 0, moved);
     this.columns = columns;
-
-    emit(this, "rowan-column-reorder", {
-      fromIndex,
-      toIndex,
-      columns: this.columns,
-    });
+    emit(this, "rowan-column-reorder", { fromIndex, toIndex, columns: this.columns });
   }
 
   #measureColumnContent(columnId) {
     const cells = this.#cellsForColumn(columnId);
-    let maxWidth = 100;
-
-    cells.forEach((cell) => {
-      const content = cell.querySelector(".th-content") || cell;
-      const width = content.scrollWidth + 32;
-      maxWidth = Math.max(maxWidth, width);
-    });
-
-    return maxWidth;
+    let max = 100;
+    for (const cell of cells) {
+      const w = (cell.querySelector(".th-content") || cell).scrollWidth + 32;
+      if (w > max) max = w;
+    }
+    return max;
   }
 
   #parsePixels(value) {
     if (typeof value === "number") return value;
-    const match = String(value).match(/^(\d+(?:\.\d+)?)px$/);
-    return match ? parseFloat(match[1]) : 0;
+    const m = String(value).match(/^(\d+(?:\.\d+)?)px$/);
+    return m ? parseFloat(m[1]) : 0;
   }
 
   #handleBodyControlChange(event) {

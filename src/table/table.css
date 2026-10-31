@@ -175,7 +175,6 @@
 
 .resize-handle::before {
   content: "";
-  display: block;
   inline-size: 1px;
   block-size: 100%;
   background: var(--rowan-color-border);

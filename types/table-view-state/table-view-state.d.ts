@@ -55,6 +55,8 @@ export function restoreTableViewState(
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
+ * @property {Record<string, string> | null} columnWidths
+ * @property {string[] | null} columnOrder
  * @property {"sm" | "md" | "lg"} density
  * @property {RowanTableViewGroupBy | null} groupBy
  */
@@ -97,6 +99,8 @@ export type RowanTableViewState = {
   page: RowanTableViewPage | null;
   filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup>;
   visibleColumns: string[] | null;
+  columnWidths: Record<string, string> | null;
+  columnOrder: string[] | null;
   density: "sm" | "md" | "lg";
   groupBy: RowanTableViewGroupBy | null;
 };

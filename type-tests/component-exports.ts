@@ -513,6 +513,8 @@ const tableViewState: RowanTableViewState = {
   page: { index: 0, size: 25, total: 100 },
   filters: [tableViewFilter],
   visibleColumns: ["title", "status", "updated"],
+  columnWidths: null,
+  columnOrder: null,
   density: "md",
   groupBy: null,
 };
