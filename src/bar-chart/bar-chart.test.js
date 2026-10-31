@@ -40,7 +40,7 @@ describe("rowan-bar-chart", () => {
     expect(chart.shadowRoot.querySelectorAll("rect.bar")).to.have.length(5);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming4No data8");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Resolved276");
-    expect(chart.shadowRoot.querySelectorAll("button")).to.have.length(0);
+    expect(chart.shadowRoot.querySelectorAll("button[data-point-key]")).to.have.length(0);
   });
 
   it("keeps default vertical geometry when orientation is omitted or invalid", async () => {

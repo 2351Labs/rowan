@@ -21,6 +21,7 @@ export const BOOLEAN_ATTRIBUTES = new Set([
   "loading",
   "multiple",
   "navigation-open",
+  "no-motion",
   "open",
   "pulse",
   "range",

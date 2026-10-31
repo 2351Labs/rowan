@@ -1,11 +1,31 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
-import { emit } from "../lib/events.js";
+import {
+  emit,
+} from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
-import { renderChartTable, withRestoredPointFocus } from "../chart/dom.js";
+import {
+  renderChartTable,
+  withRestoredPointFocus,
+  emitPointActivate,
+} from "../chart/dom.js";
 import { cloneChartSeriesInput as cloneTrendSeriesInput } from "../chart/model.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  readTooltipFormatter,
+  writeTooltipFormatter,
+  seriesHoverText,
+} from "../chart/hover.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+  navigatePointKey,
+  visibleEntries,
+  applySeriesVisibility,
+} from "../chart/api.js";
 import {
   cloneTrendSeries,
   normalizeTrendLabels,
@@ -98,13 +118,22 @@ function createSvgElement(name) {
  * @cssprop --rowan-trend-chart-series-1
  * @cssprop --rowan-trend-chart-series-2
  * @event rowan-point-activate - Fired when a user activates an interactive data point.
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanTrendChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./trend-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-trend-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale"];
+  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "description",
@@ -115,6 +144,9 @@ export class RowanTrendChart extends BaseElement {
     "valueFormatter",
     "locale",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
 
   #control = null;
@@ -131,6 +163,7 @@ export class RowanTrendChart extends BaseElement {
   #detail = null;
   #summaryTable = null;
   #summary = null;
+  #hover = null;
   #seriesInput = [];
   #series = [];
   #labels = [];
@@ -152,6 +185,7 @@ export class RowanTrendChart extends BaseElement {
     this.#labelId = `${this.id}__label`;
     this.#descriptionId = `${this.id}__description`;
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -264,6 +298,33 @@ export class RowanTrendChart extends BaseElement {
     this.requestRender();
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#control) {
       this.renderRoot.innerHTML = `
@@ -308,6 +369,13 @@ export class RowanTrendChart extends BaseElement {
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
       this.#summary = this.renderRoot.querySelector("summary");
+      this.#hover = createChartHoverBubble();
+      this.renderRoot.querySelector(".chart").append(this.#hover);
+      bindChartHover(this, {
+        target: this.renderRoot.querySelector(".chart"),
+        bubble: this.#hover,
+        textForEvent: (event) => seriesHoverText(this.#entries, event, this.#plot),
+      });
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
       this.listen(this.#descriptionSlot, "slotchange", () => this.requestRender());
@@ -320,6 +388,7 @@ export class RowanTrendChart extends BaseElement {
     this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   #syncLabels() {
@@ -430,6 +499,7 @@ export class RowanTrendChart extends BaseElement {
       const seriesEntries = this.#entries.filter((entry) => entry.series.id === series.id);
       const path = createSvgElement("path");
       path.setAttribute("class", "series-line");
+      path.dataset.seriesId = series.id;
       path.setAttribute("part", "line");
       path.setAttribute("fill", "none");
       path.style.stroke = this.#seriesColor(series, seriesIndex);
@@ -607,44 +677,20 @@ export class RowanTrendChart extends BaseElement {
     if (entry) this.#setActivePoint(entry);
   }
 
-  #handlePointKeydown(event) {
-    const entry = this.#entryFromEvent(event);
-    if (!entry) return;
-
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      this.#activatePoint(entry);
-      return;
-    }
-
-    const index = this.#entries.findIndex((item) => item.key === entry.key);
-    let target = null;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      target = this.#entries[index + 1] ?? this.#entries.at(0);
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      target = this.#entries[index - 1] ?? this.#entries.at(-1);
-    } else if (event.key === "Home") {
-      target = this.#entries.at(0);
-    } else if (event.key === "End") {
-      target = this.#entries.at(-1);
-    }
-
-    if (!target) return;
-    event.preventDefault();
-    this.#setActivePoint(target);
-    this.#pointButtonFor(target.key)?.focus({ preventScroll: true });
+#handlePointKeydown(event) {
+    navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
+      if (activate) {
+        this.#activatePoint(entry);
+        return;
+      }
+      this.#setActivePoint(entry);
+      this.#pointButtonFor(entry.key)?.focus({ preventScroll: true });
+    });
   }
 
   #activatePoint(entry) {
     this.#setActivePoint(entry);
-    emit(this, "rowan-point-activate", {
-      seriesId: entry.series.id,
-      seriesLabel: entry.series.label,
-      index: entry.index,
-      label: entry.label,
-      value: entry.value,
-      formattedValue: entry.formattedValue,
-    });
+    emitPointActivate(this, emit, entry);
   }
 
   #setActivePoint(entry) {

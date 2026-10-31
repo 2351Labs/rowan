@@ -49,7 +49,7 @@ describe("rowan-stacked-bar-chart", () => {
     expect(mondayResolved).to.be.below(mondayIncoming);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Incoming42");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Resolved1No data");
-    expect(chart.shadowRoot.querySelectorAll("button")).to.have.length(0);
+    expect(chart.shadowRoot.querySelectorAll("button[data-point-key]")).to.have.length(0);
   });
 
   it("keeps default stack geometry when stack-mode is omitted or invalid", async () => {

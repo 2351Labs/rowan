@@ -7,5 +7,9 @@ import { createRowanComponent } from "../create-wrapper.js";
 export const RowanBulletChart = createRowanComponent({
   tagName: "rowan-bullet-chart",
   displayName: "RowanBulletChart",
-  events: {},
+  events: {
+    onRowanPointClick: "rowan-point-click",
+    onRowanSelectionChange: "rowan-selection-change",
+    onRowanSeriesToggle: "rowan-series-toggle",
+  },
 });

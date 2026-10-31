@@ -5,7 +5,15 @@ import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { createSvgElement } from "../chart/dom.js";
-import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  formatHoverLines,
+  readHiddenSeries,
+  readTooltipFormatter,
+  writeHiddenSeries,
+  writeTooltipFormatter,
+} from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
@@ -140,11 +148,20 @@ function formatTick(value, locale) {
  * @csspart tick
  * @csspart hover
  * @csspart table
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanBulletChart extends BaseElement {
   static styleUrl = new URL("./bullet-chart.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "scale", "intent", "encoding", "locale"];
+  static observedAttributes = ["label", "scale", "intent", "encoding", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "value",
@@ -155,6 +172,9 @@ export class RowanBulletChart extends BaseElement {
     "encoding",
     "locale",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
   static componentTokenPrefixes = ["--rowan-bullet-chart-"];
 
@@ -270,6 +290,33 @@ export class RowanBulletChart extends BaseElement {
   set ranges(value) {
     this.#ranges = normalizeBulletRanges(value);
     this.requestRender();
+  }
+
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
   }
 
   render() {

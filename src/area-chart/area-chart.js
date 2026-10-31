@@ -1,15 +1,31 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
-import { emit } from "../lib/events.js";
+import {
+  emit,
+} from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
-import { createReferenceLine, renderChartTable, withRestoredPointFocus } from "../chart/dom.js";
+import {
+  createReferenceLine,
+  renderChartTable,
+  withRestoredPointFocus,
+  emitPointActivate,
+} from "../chart/dom.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+  navigatePointKey,
+  visibleEntries,
+  applySeriesVisibility,
+} from "../chart/api.js";
 import {
   bindChartHover,
   createChartHoverBubble,
-  nearestPointByClientX,
   referenceLineHoverText,
+  readTooltipFormatter,
+  writeTooltipFormatter,
+  seriesHoverText,
 } from "../chart/hover.js";
 import {
   cloneChartSeriesInput as cloneTrendSeriesInput,
@@ -110,13 +126,22 @@ function createSvgElement(name) {
  * @csspart reference-line
  * @cssprop --rowan-area-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive data point.
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanAreaChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./area-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-area-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale"];
+  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "description",
@@ -128,6 +153,9 @@ export class RowanAreaChart extends BaseElement {
     "referenceLines",
     "locale",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
 
   #control = null;
@@ -167,6 +195,7 @@ export class RowanAreaChart extends BaseElement {
     this.#labelId = `${this.id}__label`;
     this.#descriptionId = `${this.id}__description`;
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -292,6 +321,33 @@ export class RowanAreaChart extends BaseElement {
     this.requestRender();
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#control) {
       this.renderRoot.innerHTML = `
@@ -355,6 +411,7 @@ export class RowanAreaChart extends BaseElement {
     this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   #syncLabels() {
@@ -475,6 +532,7 @@ export class RowanAreaChart extends BaseElement {
 
       const area = createSvgElement("path");
       area.setAttribute("class", "series-area");
+      area.dataset.seriesId = series.id;
       area.setAttribute("part", "area");
       area.style.fill = color;
       area.setAttribute("d", this.#areaPathData(seriesEntries, baselineY));
@@ -482,6 +540,7 @@ export class RowanAreaChart extends BaseElement {
 
       const path = createSvgElement("path");
       path.setAttribute("class", "series-line");
+      path.dataset.seriesId = series.id;
       path.setAttribute("part", "line");
       path.setAttribute("fill", "none");
       path.style.stroke = color;
@@ -656,9 +715,7 @@ export class RowanAreaChart extends BaseElement {
       resolveMessage(this.#messages, DEFAULT_MESSAGES, "reference"),
     );
     if (reference) return reference;
-    const nearest = nearestPointByClientX(this.#plot, this.#entries, event.clientX);
-    if (!nearest) return "";
-    return `${nearest.series.label}, ${nearest.label}: ${nearest.formattedValue}`;
+    return seriesHoverText(this.#entries, event, this.#plot);
   }
 
   #syncActivePoint() {
@@ -688,44 +745,20 @@ export class RowanAreaChart extends BaseElement {
     if (entry) this.#setActivePoint(entry);
   }
 
-  #handlePointKeydown(event) {
-    const entry = this.#entryFromEvent(event);
-    if (!entry) return;
-
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      this.#activatePoint(entry);
-      return;
-    }
-
-    const index = this.#entries.findIndex((item) => item.key === entry.key);
-    let target = null;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      target = this.#entries[index + 1] ?? this.#entries.at(0);
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      target = this.#entries[index - 1] ?? this.#entries.at(-1);
-    } else if (event.key === "Home") {
-      target = this.#entries.at(0);
-    } else if (event.key === "End") {
-      target = this.#entries.at(-1);
-    }
-
-    if (!target) return;
-    event.preventDefault();
-    this.#setActivePoint(target);
-    this.#pointButtonFor(target.key)?.focus({ preventScroll: true });
+#handlePointKeydown(event) {
+    navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
+      if (activate) {
+        this.#activatePoint(entry);
+        return;
+      }
+      this.#setActivePoint(entry);
+      this.#pointButtonFor(entry.key)?.focus({ preventScroll: true });
+    });
   }
 
   #activatePoint(entry) {
     this.#setActivePoint(entry);
-    emit(this, "rowan-point-activate", {
-      seriesId: entry.series.id,
-      seriesLabel: entry.series.label,
-      index: entry.index,
-      label: entry.label,
-      value: entry.value,
-      formattedValue: entry.formattedValue,
-    });
+    emitPointActivate(this, emit, entry);
   }
 
   #setActivePoint(entry) {

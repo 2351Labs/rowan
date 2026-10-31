@@ -1,11 +1,24 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
-import { createSvgElement } from "../chart/dom.js";
-import { bindChartHover, createChartHoverBubble, formatHoverLines } from "../chart/hover.js";
+import { createSvgElement, emitPointActivate } from "../chart/dom.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  formatHoverLines,
+  readTooltipFormatter,
+  writeTooltipFormatter,
+} from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+  bindValueKeyboard,
+  applySeriesVisibility,
+} from "../chart/api.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 200;
@@ -122,11 +135,20 @@ function bandPath(t0, t1) {
  * @cssprop --rowan-gauge-chart-track
  * @cssprop --rowan-gauge-chart-range
  * @cssprop --rowan-gauge-chart-target
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanGaugeChart extends BaseElement {
   static styleUrl = new URL("./gauge-chart.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "min", "max", "locale"];
+  static observedAttributes = ["label", "min", "max", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "min",
@@ -136,6 +158,9 @@ export class RowanGaugeChart extends BaseElement {
     "target",
     "ranges",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
   static componentTokenPrefixes = ["--rowan-gauge-chart-"];
 
@@ -231,11 +256,39 @@ export class RowanGaugeChart extends BaseElement {
     this.requestRender();
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#chart) {
       this.renderRoot.innerHTML = `
         <div class="chart" part="chart">
-          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" role="presentation"></svg>
+          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}"></svg>
+          <output class="detail sr-only" part="detail" aria-live="polite"></output>
           <table class="table" part="table"></table>
         </div>
       `;
@@ -249,11 +302,29 @@ export class RowanGaugeChart extends BaseElement {
         bubble: this.#hover,
         textForEvent: () => this.#hoverText(),
       });
+      bindValueKeyboard(this, this.#plot, {
+        live: this.renderRoot.querySelector(".detail"),
+        points: () => {
+          const text = this.#hoverText();
+          return text ? [{ text, value: this.#value, index: 0 }] : [];
+        },
+        onActivate: (point) => {
+          emitPointActivate(this, emit, {
+            series: { id: "gauge", label: this.label || "Gauge" },
+            index: 0,
+            label: this.label || "Gauge",
+            value: point.value,
+            formattedValue: point.value == null ? "" : this.#formatValue(point.value),
+            key: "gauge::0",
+          });
+        },
+      });
     }
 
     this.#renderPlot();
     this.#renderTable();
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   #scale() {

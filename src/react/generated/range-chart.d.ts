@@ -7,6 +7,9 @@ export const RowanRangeChart: ForwardRefExoticComponent<
     RowanRangeChartElement,
     {
       onRowanPointActivate?: (event: CustomEvent) => void;
+      onRowanPointClick?: (event: CustomEvent) => void;
+      onRowanSelectionChange?: (event: CustomEvent) => void;
+      onRowanSeriesToggle?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanRangeChartElement>

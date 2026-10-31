@@ -240,15 +240,27 @@ export function createReferenceLine({
  * box-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates
  * are not copied into the event.
  */
-export function emitPointActivate(host, emit, entry) {
+export function pointEventDetail(entry) {
   const extra = entry.detail && typeof entry.detail === "object" ? entry.detail : {};
+  const series = {
+    id: entry.series?.id,
+    label: entry.series?.label,
+  };
   const detail = {
-    seriesId: entry.series?.id,
-    seriesLabel: entry.series?.label,
+    seriesId: series.id,
+    seriesLabel: series.label,
+    series,
     index: entry.index,
     label: entry.label,
     value: entry.value,
     formattedValue: entry.formattedValue,
+    datum: {
+      ...(entry.point && typeof entry.point === "object" ? entry.point : {}),
+      ...(entry.datum && typeof entry.datum === "object" ? entry.datum : {}),
+      label: entry.label,
+      value: entry.value,
+      index: entry.index,
+    },
   };
   for (const key of [
     "x",
@@ -269,7 +281,15 @@ export function emitPointActivate(host, emit, entry) {
   ]) {
     if (extra[key] !== undefined) detail[key] = extra[key];
   }
+  return detail;
+}
+
+export function emitPointActivate(host, emit, entry) {
+  const detail = pointEventDetail(entry);
   emit(host, "rowan-point-activate", detail);
+  const proceed = emit(host, "rowan-point-click", detail, { cancelable: true });
+  if (proceed === false) return false;
+  return emit(host, "rowan-selection-change", detail, { cancelable: true });
 }
 
 export function pointControlFor(container, key) {

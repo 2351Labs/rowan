@@ -19,3 +19,79 @@
   width: max-content;
   z-index: 10;
 }
+
+.axis-pointer {
+  pointer-events: none;
+  stroke: var(--rowan-color-muted, #5c6560);
+  stroke-width: 1;
+}
+
+.is-series-hidden:not(.legend-button) {
+  display: none;
+}
+
+.chart.is-legend-dim [data-point-key]:not(.is-legend-hot):not(.legend-button),
+.chart.is-legend-dim [data-series-id]:not(.is-legend-hot):not(.legend-button) {
+  opacity: 0.28;
+}
+
+.legend-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: var(--rowan-space-2, 0.5rem);
+  padding: 0.1rem 0.2rem;
+}
+
+.legend-button[aria-pressed="false"] {
+  opacity: 0.45;
+}
+
+.legend-button:focus-visible {
+  outline: 2px solid var(--rowan-focus-ring, var(--rowan-color-accent));
+  outline-offset: 2px;
+}
+
+.plot,
+.point-controls,
+.chart {
+  touch-action: manipulation;
+}
+
+.point-marker,
+.bar,
+.series-line,
+.series-area {
+  transition: opacity 120ms linear;
+}
+
+.sr-only {
+  block-size: 1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  inline-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+:host([no-motion]),
+:host([no-motion]) * {
+  animation: none !important;
+  transition: none !important;
+}

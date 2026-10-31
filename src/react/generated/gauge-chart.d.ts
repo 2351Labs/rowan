@@ -3,5 +3,13 @@ import type { RowanGaugeChart as RowanGaugeChartElement } from "../../gauge-char
 import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const RowanGaugeChart: ForwardRefExoticComponent<
-  RowanWrapperProps<RowanGaugeChartElement, {}> & RefAttributes<RowanGaugeChartElement>
+  RowanWrapperProps<
+    RowanGaugeChartElement,
+    {
+      onRowanPointClick?: (event: CustomEvent) => void;
+      onRowanSelectionChange?: (event: CustomEvent) => void;
+      onRowanSeriesToggle?: (event: CustomEvent) => void;
+    }
+  > &
+    RefAttributes<RowanGaugeChartElement>
 >;

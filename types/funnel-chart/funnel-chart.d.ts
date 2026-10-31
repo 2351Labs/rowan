@@ -36,6 +36,15 @@
  * @csspart table
  * @cssprop --rowan-funnel-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive stage.
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanFunnelChart extends BaseElement {
   static shadowRootOptions: {
@@ -75,6 +84,14 @@ export class RowanFunnelChart extends BaseElement {
   set valueFormatter(value: import("../chart/model.js").RowanChartValueFormatter | null);
   /** @returns {import("../chart/model.js").RowanChartValueFormatter | null} */
   get valueFormatter(): import("../chart/model.js").RowanChartValueFormatter | null;
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value: string[]);
+  /** @returns {string[]} */
+  get hiddenSeries(): string[];
+  set tooltipFormatter(value: any);
+  get tooltipFormatter(): any;
+  set noMotion(value: boolean);
+  get noMotion(): boolean;
   #private;
 }
 export type RowanFunnelChartMessages = {

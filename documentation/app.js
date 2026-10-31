@@ -2861,6 +2861,70 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     },
   },
   {
+    id: "chart-interactivity",
+    group: "Components",
+    title: "Chart interactivity",
+    summary: "Shared tooltips, legends, selection, and keyboard access for Rowan charts.",
+    tags: ["data display", "charts", "accessibility", "tooltip"],
+    keywords: [
+      "tooltip",
+      "legend",
+      "hidden-series",
+      "rowan-point-click",
+      "rowan-selection-change",
+      "rowan-series-toggle",
+      "keyboard",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="chart-interaction-overview">
+        <h2>One interaction layer</h2>
+        <p>Every Rowan chart is still a native custom element. Hover, focus, and selection go through <code>src/chart/hover.js</code> and <code>src/chart/api.js</code> instead of a per-chart fork. Values use the chart's existing formatter and locale.</p>
+        <div class="demo-row">
+          <rowan-bar-chart id="docs-interaction-bar" label="Weekly throughput" description="Focus a bar and press Enter." interactive></rowan-bar-chart>
+        </div>
+        <pre id="chart-interaction-events" class="table-events"></pre>
+      </section>
+      <section class="doc-section" data-doc-section id="chart-interaction-tooltip">
+        <h2>Tooltips</h2>
+        <p>Pointer and keyboard focus both open the tooltip. The text is the series, label, and formatted value for the mark under the pointer. Set <code>tooltipFormatter</code> to return a string, or put text in the light-DOM <code>slot="tooltip"</code>. The formatter wins when it is set.</p>
+        <p>A shared multi-series tooltip, axis pointer, and viewport clamping are not in this release. Adding them on top of the selection layer pushes <code>rowan-bar-chart</code> and <code>rowan-trend-chart</code> past their 20 KB gzip budgets.</p>
+      </section>
+      <section class="doc-section" data-doc-section id="chart-interaction-legend">
+        <h2>Legends</h2>
+        <p><code>hidden-series</code> is a space-separated list of ids (also <code>hiddenSeries</code> as an array). Marks and point buttons whose id matches are hidden. The data table still lists them. <code>src/chart/legend.js</code> can turn the existing legend items into toggle buttons and emit cancelable <code>rowan-series-toggle</code>, but that module is not imported by the charts: linking it measures about 20.26 KB for bar and 20.31 KB for trend, over the 20 KB budget.</p>
+      </section>
+      <section class="doc-section" data-doc-section id="chart-interaction-selection">
+        <h2>Selection and keyboard</h2>
+        <p>Choosing a point still emits <code>rowan-point-activate</code>. It then emits cancelable <code>rowan-point-click</code> and, if that was not canceled, cancelable <code>rowan-selection-change</code>. Detail includes <code>series</code> (<code>id</code>, <code>label</code>), <code>index</code>, <code>datum</code>, <code>value</code>, and <code>formattedValue</code>, plus the chart-specific fields that <code>rowan-point-activate</code> already carried.</p>
+        <p>Arrow keys move across points. Home and End jump to the ends. Enter or Space selects. The existing polite live region announces the focused datum. Each chart also exposes its data table, either in a disclosure or visually hidden (sparkline, column sparkline, bullet, gauge). Column sparkline and gauge charts are keyboard-operable on the plot itself. Sparkline and bullet plot keyboards are deferred: sparkline is 17.35 KB of an 18 KB budget, and bullet ships inside the table bundle, which is 40.97 KB of a 41 KB budget.</p>
+      </section>
+      <section class="doc-section" data-doc-section id="chart-interaction-motion">
+        <h2>Motion, resize, and what is next</h2>
+        <p><code>no-motion</code> and <code>prefers-reduced-motion: reduce</code> turn off chart transitions. Enter and update animations are a later change. Touch uses pointer events. A <code>ResizeObserver</code> redraw is not added; SVG charts already scale with their view box, and the observer does not fit the remaining budget.</p>
+        <p>Zoom and pan are opt-in later, for linear and time cartesian charts: area, bar, trend, stacked area, stacked bar, combo, range, scatter, box plot, and waterfall. They are not planned for donut, funnel, radar, heatmap, gauge, bullet, sparkline, column sparkline, or KPI card.</p>
+      </section>
+    `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-interaction-bar");
+      const log = mainEl.querySelector("#chart-interaction-events");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      chart.series = [
+        { id: "incoming", label: "Incoming", values: [18, 24, 16, 12, 15] },
+        { id: "resolved", label: "Resolved", values: [13, 19, 20, 15, 16] },
+      ];
+      if (!log) return;
+      const lines = [];
+      const push = (type, event) => {
+        const detail = event.detail || {};
+        lines.unshift(`${type} ${detail.seriesId || ""} ${detail.label || ""} ${detail.value ?? ""}`.trim());
+        log.textContent = lines.slice(0, 6).join("\n");
+      };
+      chart.addEventListener("rowan-series-toggle", (event) => push("series", event));
+      chart.addEventListener("rowan-selection-change", (event) => push("select", event));
+    },
+  },
+  {
     id: "bar-chart",
     group: "Components",
     title: "Rowan Bar Chart",
