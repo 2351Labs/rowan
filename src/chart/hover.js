@@ -15,6 +15,38 @@ export function createChartHoverBubble() {
   return bubble;
 }
 
+
+export function readHiddenSeries(host) {
+  return String(host.getAttribute("hidden-series") || "")
+    .split(/[\s,]+/)
+    .map((id) => id.trim())
+    .filter(Boolean);
+}
+
+export function writeHiddenSeries(host, value) {
+  const ids = Array.isArray(value)
+    ? value.map((id) => String(id ?? "").trim()).filter(Boolean)
+    : String(value ?? "")
+        .split(/[\s,]+/)
+        .map((id) => id.trim())
+        .filter(Boolean);
+  const next = ids.join(" ");
+  if ((host.getAttribute("hidden-series") || "") === next) return;
+  if (next) host.setAttribute("hidden-series", next);
+  else host.removeAttribute("hidden-series");
+}
+
+const tooltipFormatters = new WeakMap();
+
+export function readTooltipFormatter(host) {
+  return tooltipFormatters.get(host) || null;
+}
+
+export function writeTooltipFormatter(host, value) {
+  if (typeof value === "function") tooltipFormatters.set(host, value);
+  else tooltipFormatters.delete(host);
+}
+
 export function hideChartHover(bubble) {
   if (!bubble) return;
 
@@ -64,15 +96,32 @@ export function showChartHover(bubble, text, clientX, clientY) {
  *   textForEvent: (event: PointerEvent) => string,
  * }} options
  */
+function tooltipText(element, event, textForEvent) {
+  const fallback = String(textForEvent(event) ?? "");
+  const formatter = tooltipFormatters.get(element);
+  if (formatter) {
+    const next = formatter({ text: fallback, event, host: element });
+    if (next != null && next !== false) return String(next);
+  }
+  const slot = element.querySelector?.('[slot="tooltip"]');
+  const slotted = slot?.textContent?.trim();
+  return slotted || fallback;
+}
+
 export function bindChartHover(element, { target, bubble, textForEvent }) {
   const show = (event) => {
-    showChartHover(bubble, textForEvent(event), event.clientX, event.clientY);
+    const node = event.type === "focusin" && event.target instanceof Element ? event.target : null;
+    const box = node?.getBoundingClientRect();
+    const x = box ? box.left + box.width / 2 : event.clientX;
+    const y = box ? box.top : event.clientY;
+    showChartHover(bubble, tooltipText(element, event, textForEvent), x, y);
   };
   const hide = () => hideChartHover(bubble);
-
   element.listen(target, "pointermove", show);
   element.listen(target, "pointerleave", hide);
   element.listen(target, "pointercancel", hide);
+  element.listen(target, "focusin", show);
+  element.listen(target, "focusout", hide);
   element.addCleanup(hide, { persist: true });
 }
 

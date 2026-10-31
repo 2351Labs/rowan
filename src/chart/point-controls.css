@@ -2,4 +2,5 @@
    Host stylesheets also set this: Firefox does not always apply @import from a shadow <link>. */
 .point-controls {
   direction: ltr;
+  touch-action: manipulation;
 }

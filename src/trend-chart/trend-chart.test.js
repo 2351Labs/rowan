@@ -164,10 +164,12 @@ describe("rowan-trend-chart", () => {
     expect(activations[0].detail).to.deep.equal({
       seriesId: "incidents",
       seriesLabel: "Incidents",
+      series: { id: "incidents", label: "Incidents" },
       index: 1,
       label: "Tue",
       value: 8,
       formattedValue: "8",
+      datum: { label: "Tue", value: 8, index: 1 },
     });
     expect(activations[0].bubbles).to.equal(true);
     expect(activations[0].composed).to.equal(true);

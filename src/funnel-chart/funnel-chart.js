@@ -12,7 +12,13 @@ import {
   withRestoredPointFocus,
   renderChartTable,
 } from "../chart/dom.js";
-import { bindChartHover, createChartHoverBubble, seriesHoverText } from "../chart/hover.js";
+import {
+  bindChartHover,
+  createChartHoverBubble,
+  seriesHoverText,
+  readTooltipFormatter,
+  writeTooltipFormatter,
+} from "../chart/hover.js";
 import {
   chartSeriesColor,
   cloneChartSeries,
@@ -23,6 +29,13 @@ import {
   resolveChartLabels,
 } from "../chart/model.js";
 import { funnelPath, funnelStages, funnelTrapezoids } from "./model.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+  navigatePointKey,
+  visibleEntries,
+  applySeriesVisibility,
+} from "../chart/api.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
 const SVG_NAMESPACE_HEIGHT = 400;
@@ -95,13 +108,22 @@ function normalizeText(value) {
  * @csspart table
  * @cssprop --rowan-funnel-chart-bg
  * @event rowan-point-activate - Fired when a user activates an interactive stage.
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanFunnelChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./funnel-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-funnel-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "variant", "locale"];
+  static observedAttributes = ["label", "description", "interactive", "variant", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "description",
@@ -113,6 +135,9 @@ export class RowanFunnelChart extends BaseElement {
     "valueFormatter",
     "locale",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
 
   #control = null;
@@ -269,6 +294,33 @@ export class RowanFunnelChart extends BaseElement {
     this.requestRender();
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#control) {
       this.renderRoot.innerHTML = `
@@ -325,6 +377,7 @@ export class RowanFunnelChart extends BaseElement {
     this.#summary.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTable");
     this.#renderChart();
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   #displayLabel() {
@@ -526,26 +579,16 @@ export class RowanFunnelChart extends BaseElement {
     }
   }
 
-  #handlePointKeydown(event) {
-    const entry = this.#entryFromEvent(event);
-    if (!entry) return;
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      this.#activatePoint(entry);
-      return;
-    }
-    const index = this.#entries.findIndex((item) => item.key === entry.key);
-    let target = null;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      target = this.#entries[index + 1] ?? this.#entries.at(0);
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      target = this.#entries[index - 1] ?? this.#entries.at(-1);
-    }
-    if (!target) return;
-    event.preventDefault();
-    this.#activePointKey = target.key;
-    this.#syncActivePoint();
-    pointControlFor(this.#pointControls, target.key)?.focus({ preventScroll: true });
+#handlePointKeydown(event) {
+    navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
+      if (activate) {
+        this.#activatePoint(entry);
+        return;
+      }
+      this.#activePointKey = entry.key;
+      this.#syncActivePoint();
+      pointControlFor(this.#pointControls, entry.key)?.focus({ preventScroll: true });
+    });
   }
 
   #activatePoint(entry) {

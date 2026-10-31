@@ -41,15 +41,33 @@ function compactNumber(value) {
   }).format(value);
 }
 
-function keyboardParameters(events = ["rowan-point-activate"]) {
+const INTERACTION_EVENTS = [
+  "rowan-point-activate",
+  "rowan-point-click",
+  "rowan-selection-change",
+  "rowan-series-toggle",
+];
+
+function keyboardParameters(events = INTERACTION_EVENTS) {
   return createEventScriptParameters({
     steps: [
-      "Hover a mark to read the tooltip.",
+      "Hover or focus a mark to read the tooltip. tooltipFormatter and slot=\"tooltip\" replace it.",
       "Move with the keyboard (Arrow, Home, End) and activate with Enter or Space.",
-      "Toggle focus across series, thresholds, and legend entries.",
+      "Toggle a legend entry. hiddenSeries and rowan-series-toggle track visibility. noMotion disables motion.",
     ],
     events,
   });
+}
+
+function withInteraction(chart) {
+  chart.noMotion = true;
+  chart.hiddenSeries = [];
+  chart.tooltipFormatter = ({ text }) => text;
+  const tip = document.createElement("span");
+  tip.slot = "tooltip";
+  tip.textContent = "";
+  chart.append(tip);
+  return chart;
 }
 
 function describeParts(parts) {
@@ -1704,3 +1722,11 @@ export const coverageStories = {
     ),
   },
 };
+
+for (const group of Object.values(coverageStories)) {
+  const base = group.catalog || Object.values(group).find((item) => item && typeof item.render === "function");
+  if (!base || group.interaction) continue;
+  group.interaction = story("Interaction", () => withInteraction(base.render()), {
+    events: INTERACTION_EVENTS,
+  });
+}

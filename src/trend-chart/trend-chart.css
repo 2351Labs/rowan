@@ -1,3 +1,4 @@
+@import "../chart/hover.css";
 @import "../chart/point-controls.css";
 
 :host {

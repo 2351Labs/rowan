@@ -651,6 +651,10 @@
             {
               "description": "Replaces the description attribute.",
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -803,6 +807,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -874,6 +911,18 @@
             {
               "description": "Fired when a user activates an interactive data point.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -900,6 +949,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -1382,6 +1445,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -1530,6 +1597,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -1601,6 +1701,18 @@
             {
               "description": "Fired when a user activates an interactive bar.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -1634,6 +1746,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -1715,6 +1841,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -1846,6 +1976,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -1917,6 +2080,18 @@
             {
               "description": "Fired when a user activates an interactive box. Detail includes min, q1, median, q3, and max.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -1943,6 +2118,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -1955,10 +2144,6 @@
         {
           "kind": "variable",
           "name": "label"
-        },
-        {
-          "kind": "variable",
-          "name": "index"
         }
       ],
       "exports": [
@@ -2601,6 +2786,12 @@
               "name": "table"
             }
           ],
+          "slots": [
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
+            }
+          ],
           "members": [
             {
               "kind": "field",
@@ -2723,6 +2914,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -2799,6 +3023,20 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
@@ -2832,6 +3070,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -3922,6 +4174,171 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/api.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "entryHidden",
+          "parameters": [
+            {
+              "name": "hidden"
+            },
+            {
+              "name": "entry"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "applySeriesVisibility",
+          "parameters": [
+            {
+              "name": "root"
+            },
+            {
+              "name": "ids"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "visibleEntries",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "entries"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "prefersReducedMotion"
+        },
+        {
+          "kind": "function",
+          "name": "navigatePointKey",
+          "parameters": [
+            {
+              "name": "event",
+              "type": {
+                "text": "KeyboardEvent"
+              }
+            },
+            {
+              "name": "entries",
+              "type": {
+                "text": "Array<{ key: string }>"
+              }
+            },
+            {
+              "name": "onMove",
+              "type": {
+                "text": "(entry: { key: string }, activate: boolean) => void"
+              }
+            }
+          ],
+          "description": "Arrow, Home, and End move across entries. Enter and Space activate."
+        },
+        {
+          "kind": "function",
+          "name": "bindValueKeyboard",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "BaseElement"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "text": "Element"
+              }
+            },
+            {
+              "name": "{ points, onActivate, live }"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{\n *   points: () => Array<{ text: string, value?: number, index?: number }>,\n *   onActivate?: (point: { text: string, value?: number, index?: number }, index: number) => void,\n *   live?: HTMLElement | null,\n * }"
+              }
+            }
+          ],
+          "description": "Keyboard across a single series of values (sparklines, bullet, gauge)."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "readHiddenSeries",
+          "declaration": {
+            "name": "readHiddenSeries",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeHiddenSeries",
+          "declaration": {
+            "name": "writeHiddenSeries",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "entryHidden",
+          "declaration": {
+            "name": "entryHidden",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applySeriesVisibility",
+          "declaration": {
+            "name": "applySeriesVisibility",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "visibleEntries",
+          "declaration": {
+            "name": "visibleEntries",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "prefersReducedMotion",
+          "declaration": {
+            "name": "prefersReducedMotion",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "navigatePointKey",
+          "declaration": {
+            "name": "navigatePointKey",
+            "module": "src/chart/api.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindValueKeyboard",
+          "declaration": {
+            "name": "bindValueKeyboard",
+            "module": "src/chart/api.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/dom.js",
       "declarations": [
         {
@@ -4030,6 +4447,24 @@
         },
         {
           "kind": "function",
+          "name": "pointEventDetail",
+          "parameters": [
+            {
+              "name": "entry"
+            }
+          ],
+          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type, range low/high,\nbox-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates\nare not copied into the event."
+        },
+        {
+          "kind": "variable",
+          "name": "series",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ id: entry.series?.id, label: entry.series?.label, }"
+        },
+        {
+          "kind": "function",
           "name": "emitPointActivate",
           "parameters": [
             {
@@ -4041,8 +4476,7 @@
             {
               "name": "entry"
             }
-          ],
-          "description": "Frozen hosts keep layout on `entry.x` / `entry.y`. Extra activate fields\n(scatter x/y/size, heatmap row/column, waterfall type, range low/high,\nbox-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates\nare not copied into the event."
+          ]
         },
         {
           "kind": "function",
@@ -4133,6 +4567,14 @@
         },
         {
           "kind": "js",
+          "name": "pointEventDetail",
+          "declaration": {
+            "name": "pointEventDetail",
+            "module": "src/chart/dom.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "emitPointActivate",
           "declaration": {
             "name": "emitPointActivate",
@@ -4184,6 +4626,48 @@
         },
         {
           "kind": "function",
+          "name": "readHiddenSeries",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "writeHiddenSeries",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "readTooltipFormatter",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "writeTooltipFormatter",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "hideChartHover",
           "parameters": [
             {
@@ -4214,19 +4698,10 @@
           "name": "bindChartHover",
           "parameters": [
             {
-              "name": "element",
-              "type": {
-                "text": "BaseElement"
-              }
+              "name": "element"
             },
             {
               "name": "{ target, bubble, textForEvent }"
-            },
-            {
-              "name": "options",
-              "type": {
-                "text": "{\n *   target: EventTarget,\n *   bubble: HTMLElement,\n *   textForEvent: (event: PointerEvent) => string,\n * }"
-              }
             }
           ]
         },
@@ -4313,6 +4788,38 @@
         },
         {
           "kind": "js",
+          "name": "readHiddenSeries",
+          "declaration": {
+            "name": "readHiddenSeries",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeHiddenSeries",
+          "declaration": {
+            "name": "writeHiddenSeries",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "readTooltipFormatter",
+          "declaration": {
+            "name": "readTooltipFormatter",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeTooltipFormatter",
+          "declaration": {
+            "name": "writeTooltipFormatter",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "hideChartHover",
           "declaration": {
             "name": "hideChartHover",
@@ -4365,6 +4872,57 @@
           "declaration": {
             "name": "nearestPointByClientX",
             "module": "src/chart/hover.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/legend.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "syncSeriesLegend",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "legend"
+            },
+            {
+              "name": "ids"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "bindSeriesLegend",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "legend"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "syncSeriesLegend",
+          "declaration": {
+            "name": "syncSeriesLegend",
+            "module": "src/chart/legend.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindSeriesLegend",
+          "declaration": {
+            "name": "bindSeriesLegend",
+            "module": "src/chart/legend.js"
           }
         }
       ]
@@ -5852,6 +6410,12 @@
               "name": "table"
             }
           ],
+          "slots": [
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
+            }
+          ],
           "members": [
             {
               "kind": "field",
@@ -6003,6 +6567,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -6070,6 +6667,20 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
@@ -6104,6 +6715,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -6182,6 +6807,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -6282,6 +6911,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -6353,6 +7015,18 @@
             {
               "description": "Fired when a user activates an interactive mark.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -6379,6 +7053,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -9158,6 +9846,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -9305,6 +9997,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -9376,6 +10101,18 @@
             {
               "description": "Fired when a user activates an interactive slice.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -9409,6 +10146,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -12075,6 +12826,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -12222,6 +12977,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -12293,6 +13081,18 @@
             {
               "description": "Fired when a user activates an interactive stage.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -12326,6 +13126,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -12497,6 +13311,12 @@
               "name": "table"
             }
           ],
+          "slots": [
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
+            }
+          ],
           "members": [
             {
               "kind": "field",
@@ -12600,6 +13420,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -12676,6 +13529,20 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
@@ -12700,6 +13567,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -12772,6 +13653,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -12927,6 +13812,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -13007,6 +13925,18 @@
             {
               "description": "Fired when a user activates an interactive cell.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -13033,6 +13963,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -14935,6 +15879,10 @@
             {
               "description": "Optional compact chart",
               "name": "chart"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -15036,6 +15984,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -15112,6 +16093,20 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
@@ -15142,6 +16137,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -16253,7 +17262,7 @@
         {
           "kind": "variable",
           "name": "BOOLEAN_ATTRIBUTES",
-          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"collapsed\", \"column-picker\", \"collapsible\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
+          "default": "new Set([ \"active\", \"alert\", \"animated\", \"caption-visually-hidden\", \"checked\", \"collapsed\", \"column-picker\", \"collapsible\", \"confirm-disabled\", \"disabled\", \"dismissible\", \"drag-active\", \"expanded\", \"external\", \"hidden\", \"hide-meta\", \"indeterminate\", \"interactive\", \"invalid\", \"loading\", \"multiple\", \"navigation-open\", \"no-motion\", \"open\", \"pulse\", \"range\", \"required\", \"selected\", \"sticky-header\", \"virtualized\", ])"
         },
         {
           "kind": "function",
@@ -19372,6 +20381,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -19519,6 +20532,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -19590,6 +20636,18 @@
             {
               "description": "Fired when a user activates an interactive vertex.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -19623,6 +20681,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -20302,6 +21374,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -20450,6 +21526,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -20521,6 +21630,18 @@
             {
               "description": "Fired when a user activates an interactive range. Detail includes `low` and `high`.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -20554,6 +21675,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -20566,10 +21701,6 @@
         {
           "kind": "variable",
           "name": "label"
-        },
-        {
-          "kind": "variable",
-          "name": "index"
         }
       ],
       "exports": [
@@ -22164,6 +23295,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -22256,6 +23391,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -22336,6 +23504,18 @@
             {
               "description": "Fired when a user activates an interactive point.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -22362,6 +23542,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -22374,10 +23568,6 @@
         {
           "kind": "variable",
           "name": "label"
-        },
-        {
-          "kind": "variable",
-          "name": "index"
         }
       ],
       "exports": [
@@ -24453,6 +25643,12 @@
               "name": "table"
             }
           ],
+          "slots": [
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
+            }
+          ],
           "members": [
             {
               "kind": "field",
@@ -24621,6 +25817,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -24688,6 +25917,20 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "label",
@@ -24730,6 +25973,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -25359,6 +26616,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -25528,6 +26789,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -25599,6 +26893,18 @@
             {
               "description": "Fired when a user activates an interactive point.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -25632,6 +26938,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -25725,6 +27045,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -25911,6 +27235,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -25982,6 +27339,18 @@
             {
               "description": "Fired when a user activates an interactive bar.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -26022,6 +27391,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -31331,6 +32714,10 @@
             {
               "description": "Replaces the description attribute.",
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -31462,6 +32849,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -31533,6 +32953,18 @@
             {
               "description": "Fired when a user activates an interactive data point.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -31559,6 +32991,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {
@@ -32286,6 +33732,10 @@
             },
             {
               "name": "description"
+            },
+            {
+              "description": "Custom tooltip content, used when tooltipFormatter is unset.",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -32378,6 +33828,39 @@
             },
             {
               "kind": "field",
+              "name": "hiddenSeries",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string[] | string | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Ids hidden from the plot. The data table still lists them."
+            },
+            {
+              "kind": "field",
+              "name": "tooltipFormatter",
+              "type": {
+                "text": "((context: { text: string, event: Event, host: HTMLElement }) => string) | null"
+              },
+              "description": "Custom tooltip text. Property-only."
+            },
+            {
+              "kind": "field",
+              "name": "noMotion"
+            },
+            {
+              "kind": "field",
               "name": "internals",
               "readonly": true,
               "inheritedFrom": {
@@ -32449,6 +33932,18 @@
             {
               "description": "Fired when a user activates an interactive bar.",
               "name": "rowan-point-activate"
+            },
+            {
+              "description": "Cancelable. Detail: series, index, datum, value.",
+              "name": "rowan-point-click"
+            },
+            {
+              "description": "Cancelable. Follows rowan-point-click when that event is not canceled.",
+              "name": "rowan-selection-change"
+            },
+            {
+              "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
+              "name": "rowan-series-toggle"
             }
           ],
           "attributes": [
@@ -32475,6 +33970,20 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "hidden-series",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated series or slice ids hidden from the plot."
+            },
+            {
+              "name": "no-motion",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables chart motion, including under prefers-reduced-motion."
             }
           ],
           "superclass": {

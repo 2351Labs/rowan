@@ -3,5 +3,13 @@ import type { RowanSparkline as RowanSparklineElement } from "../../sparkline/sp
 import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const RowanSparkline: ForwardRefExoticComponent<
-  RowanWrapperProps<RowanSparklineElement, {}> & RefAttributes<RowanSparklineElement>
+  RowanWrapperProps<
+    RowanSparklineElement,
+    {
+      onRowanPointClick?: (event: CustomEvent) => void;
+      onRowanSelectionChange?: (event: CustomEvent) => void;
+      onRowanSeriesToggle?: (event: CustomEvent) => void;
+    }
+  > &
+    RefAttributes<RowanSparklineElement>
 >;

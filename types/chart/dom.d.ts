@@ -128,7 +128,20 @@ export function createReferenceLine({
  * box-plot min/q1/median/q3/max) belong on `entry.detail` so plot coordinates
  * are not copied into the event.
  */
-export function emitPointActivate(host: any, emit: any, entry: any): void;
+export function pointEventDetail(entry: any): {
+  seriesId: any;
+  seriesLabel: any;
+  series: {
+    id: any;
+    label: any;
+  };
+  index: any;
+  label: any;
+  value: any;
+  formattedValue: any;
+  datum: any;
+};
+export function emitPointActivate(host: any, emit: any, entry: any): any;
 export function pointControlFor(container: any, key: any): any;
 /**
  * Rebuild point buttons without dropping keyboard focus when the overlay

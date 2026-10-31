@@ -219,3 +219,5 @@ export const FixtureLargeNumbers = chartFixtures.largeNumbers;
 export const FixtureSparse = chartFixtures.sparse;
 export const FixtureEmpty = chartFixtures.empty;
 export const FixtureError = chartFixtures.error;
+
+export const FixtureInteraction = chartFixtures.interaction;

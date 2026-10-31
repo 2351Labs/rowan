@@ -3,5 +3,13 @@ import type { RowanBulletChart as RowanBulletChartElement } from "../../bullet-c
 import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const RowanBulletChart: ForwardRefExoticComponent<
-  RowanWrapperProps<RowanBulletChartElement, {}> & RefAttributes<RowanBulletChartElement>
+  RowanWrapperProps<
+    RowanBulletChartElement,
+    {
+      onRowanPointClick?: (event: CustomEvent) => void;
+      onRowanSelectionChange?: (event: CustomEvent) => void;
+      onRowanSeriesToggle?: (event: CustomEvent) => void;
+    }
+  > &
+    RefAttributes<RowanBulletChartElement>
 >;

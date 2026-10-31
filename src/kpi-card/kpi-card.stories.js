@@ -258,3 +258,5 @@ export const FixtureLargeNumbers = chartFixtures.largeNumbers;
 export const FixtureEmpty = chartFixtures.empty;
 export const FixtureLoading = chartFixtures.loading;
 export const FixtureError = chartFixtures.error;
+
+export const FixtureInteraction = chartFixtures.interaction;

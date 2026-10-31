@@ -4,26 +4,22 @@
  */
 export function formatHoverLines(lines: string[]): string;
 export function createChartHoverBubble(): HTMLDivElement;
+export function readHiddenSeries(host: any): string[];
+export function writeHiddenSeries(host: any, value: any): void;
+export function readTooltipFormatter(host: any): any;
+export function writeTooltipFormatter(host: any, value: any): void;
 export function hideChartHover(bubble: any): void;
 export function showChartHover(bubble: any, text: any, clientX: any, clientY: any): void;
-/**
- * @param {import("../lib/base-element.js").BaseElement} element
- * @param {{
- *   target: EventTarget,
- *   bubble: HTMLElement,
- *   textForEvent: (event: PointerEvent) => string,
- * }} options
- */
 export function bindChartHover(
-  element: import("../lib/base-element.js").BaseElement,
+  element: any,
   {
     target,
     bubble,
     textForEvent,
   }: {
-    target: EventTarget;
-    bubble: HTMLElement;
-    textForEvent: (event: PointerEvent) => string;
+    target: any;
+    bubble: any;
+    textForEvent: any;
   },
 ): void;
 export function hoverKeyFromEvent(event: any): string;

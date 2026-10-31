@@ -9,5 +9,8 @@ export const RowanBarChart = createRowanComponent({
   displayName: "RowanBarChart",
   events: {
     onRowanPointActivate: "rowan-point-activate",
+    onRowanPointClick: "rowan-point-click",
+    onRowanSelectionChange: "rowan-selection-change",
+    onRowanSeriesToggle: "rowan-series-toggle",
   },
 });

@@ -6,25 +6,25 @@ Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attr
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-area-chart` | 41% | 100% | — |
-| `rowan-bar-chart` | 50% | 100% | — |
-| `rowan-box-plot-chart` | 45% | 100% | — |
-| `rowan-bullet-chart` | 65% | 100% | — |
-| `rowan-column-sparkline` | 75% | 100% | — |
-| `rowan-combo-chart` | 50% | 100% | — |
-| `rowan-donut-chart` | 45% | 100% | — |
-| `rowan-funnel-chart` | 55% | 100% | — |
-| `rowan-gauge-chart` | 45% | 100% | — |
-| `rowan-heatmap-chart` | 50% | 100% | — |
-| `rowan-kpi-card` | 58% | 100% | — |
-| `rowan-radar-chart` | 50% | 100% | — |
-| `rowan-range-chart` | 52% | 100% | — |
-| `rowan-scatter-chart` | 44% | 100% | — |
-| `rowan-sparkline` | 74% | 100% | — |
-| `rowan-stacked-area-chart` | 45% | 100% | — |
-| `rowan-stacked-bar-chart` | 51% | 100% | — |
-| `rowan-trend-chart` | 42% | 100% | — |
-| `rowan-waterfall-chart` | 46% | 100% | — |
+| `rowan-area-chart` | 35% | 100% | — |
+| `rowan-bar-chart` | 41% | 100% | — |
+| `rowan-box-plot-chart` | 36% | 100% | — |
+| `rowan-bullet-chart` | 54% | 100% | — |
+| `rowan-column-sparkline` | 64% | 100% | — |
+| `rowan-combo-chart` | 41% | 100% | — |
+| `rowan-donut-chart` | 38% | 100% | — |
+| `rowan-funnel-chart` | 45% | 100% | — |
+| `rowan-gauge-chart` | 36% | 100% | — |
+| `rowan-heatmap-chart` | 40% | 100% | — |
+| `rowan-kpi-card` | 49% | 100% | — |
+| `rowan-radar-chart` | 41% | 100% | — |
+| `rowan-range-chart` | 42% | 100% | — |
+| `rowan-scatter-chart` | 34% | 100% | — |
+| `rowan-sparkline` | 64% | 100% | — |
+| `rowan-stacked-area-chart` | 38% | 100% | — |
+| `rowan-stacked-bar-chart` | 44% | 100% | — |
+| `rowan-trend-chart` | 35% | 100% | — |
+| `rowan-waterfall-chart` | 36% | 100% | — |
 
 Before is the story file on `origin/main`, without shared fixture galleries.
 After includes `stories/chart-galleries.js` plus the story file.
@@ -81,7 +81,7 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-image` | 100% | 100% | — |
 | `rowan-row-details-panel` | 100% | 100% | — |
 | `rowan-source-meta` | 100% | 100% | — |
-| `rowan-table` | 96% | 100% | — |
+| `rowan-table` | 100% | 100% | — |
 | `rowan-table-toolbar` | 100% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 

@@ -7,5 +7,9 @@ import { createRowanComponent } from "../create-wrapper.js";
 export const RowanKpiCard = createRowanComponent({
   tagName: "rowan-kpi-card",
   displayName: "RowanKpiCard",
-  events: {},
+  events: {
+    onRowanPointClick: "rowan-point-click",
+    onRowanSelectionChange: "rowan-selection-change",
+    onRowanSeriesToggle: "rowan-series-toggle",
+  },
 });

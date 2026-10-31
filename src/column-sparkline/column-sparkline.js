@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
@@ -9,9 +10,17 @@ import {
   createChartHoverBubble,
   formatHoverLines,
   hideChartHover,
+  readTooltipFormatter,
+  writeTooltipFormatter,
 } from "../chart/hover.js";
-import { createSvgElement } from "../chart/dom.js";
+import { createSvgElement, emitPointActivate } from "../chart/dom.js";
 import { finiteOrNull } from "../chart/model.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+  bindValueKeyboard,
+  applySeriesVisibility,
+} from "../chart/api.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const VIEWBOX_WIDTH = 100;
@@ -106,11 +115,20 @@ function dashedTargetPath(y, plotWidthPx) {
  * @cssprop --rowan-column-sparkline-danger
  * @cssprop --rowan-column-sparkline-target
  * @cssprop --rowan-column-sparkline-target-width
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanColumnSparkline extends BaseElement {
   static styleUrl = new URL("./column-sparkline.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone", "above-tone", "below-tone", "locale"];
+  static observedAttributes = ["label", "tone", "above-tone", "below-tone", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "tone",
@@ -121,6 +139,9 @@ export class RowanColumnSparkline extends BaseElement {
     "labels",
     "target",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
   static componentTokenPrefixes = ["--rowan-column-sparkline-"];
 
@@ -259,11 +280,39 @@ export class RowanColumnSparkline extends BaseElement {
     super.attributeChangedCallback(name, oldValue, newValue);
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#chart) {
       this.renderRoot.innerHTML = `
         <div class="chart" part="chart">
-          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none" role="presentation"></svg>
+          <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none"></svg>
+          <output class="detail sr-only" part="detail" aria-live="polite"></output>
           <table class="table" part="table"></table>
         </div>
       `;
@@ -276,6 +325,27 @@ export class RowanColumnSparkline extends BaseElement {
         target: this.#plot,
         bubble: this.#hover,
         textForEvent: (event) => this.#hoverText(event),
+      });
+      bindValueKeyboard(this, this.#plot, {
+        live: this.renderRoot.querySelector(".detail"),
+        points: () =>
+          this.#plotColumns()
+            .filter((column) => column.value !== null)
+            .map((column) => ({
+              index: column.index,
+              value: column.value,
+              text: `${this.#pointLabel(column.index)}: ${this.#formatValue(column.value)}`,
+            })),
+        onActivate: (point) => {
+          emitPointActivate(this, emit, {
+            series: { id: "column-sparkline", label: this.label || "Column sparkline" },
+            index: point.index,
+            label: this.#pointLabel(point.index),
+            value: point.value,
+            formattedValue: this.#formatValue(point.value),
+            key: `column-sparkline::${point.index}`,
+          });
+        },
       });
       this.listen(this.#plot, "pointerleave", () => this.#syncActiveColumn(null));
       this.listen(this.#plot, "pointercancel", () => this.#syncActiveColumn(null));
@@ -293,6 +363,7 @@ export class RowanColumnSparkline extends BaseElement {
     this.#renderPlot();
     this.#renderTable();
     this.#applyDefaultA11y();
+    applySeriesVisibility(this.renderRoot, readHiddenSeries(this));
   }
 
   #domain() {

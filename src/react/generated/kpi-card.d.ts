@@ -3,5 +3,13 @@ import type { RowanKpiCard as RowanKpiCardElement } from "../../kpi-card/kpi-car
 import type { RowanWrapperProps } from "../wrapper-props.js";
 
 export const RowanKpiCard: ForwardRefExoticComponent<
-  RowanWrapperProps<RowanKpiCardElement, {}> & RefAttributes<RowanKpiCardElement>
+  RowanWrapperProps<
+    RowanKpiCardElement,
+    {
+      onRowanPointClick?: (event: CustomEvent) => void;
+      onRowanSelectionChange?: (event: CustomEvent) => void;
+      onRowanSeriesToggle?: (event: CustomEvent) => void;
+    }
+  > &
+    RefAttributes<RowanKpiCardElement>
 >;

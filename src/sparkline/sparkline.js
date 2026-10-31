@@ -9,6 +9,10 @@ import {
   createChartHoverBubble,
   formatHoverLines,
   nearestPointByClientX,
+  readHiddenSeries,
+  readTooltipFormatter,
+  writeHiddenSeries,
+  writeTooltipFormatter,
 } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
 
@@ -184,11 +188,20 @@ function dashedTargetPath(y, plotWidthPx) {
  * @cssprop --rowan-sparkline-fill-opacity
  * @cssprop --rowan-sparkline-target
  * @cssprop --rowan-sparkline-target-width
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanSparkline extends BaseElement {
   static styleUrl = new URL("./sparkline.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone", "variant", "above-tone", "below-tone", "locale"];
+  static observedAttributes = ["label", "tone", "variant", "above-tone", "below-tone", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "tone",
@@ -200,6 +213,9 @@ export class RowanSparkline extends BaseElement {
     "labels",
     "target",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
   static componentTokenPrefixes = ["--rowan-sparkline-"];
 
@@ -354,13 +370,41 @@ export class RowanSparkline extends BaseElement {
     super.attributeChangedCallback(name, oldValue, newValue);
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#chart) {
       this.renderRoot.innerHTML = `
         <div class="chart" part="chart">
           <div class="plot-wrap">
-            <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none" role="presentation"></svg>
+            <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}" preserveAspectRatio="none"></svg>
           </div>
+          <output class="detail sr-only" part="detail" aria-live="polite"></output>
           <table class="table" part="table"></table>
         </div>
       `;

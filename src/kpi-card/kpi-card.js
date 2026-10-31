@@ -4,6 +4,14 @@ import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import {
+  readTooltipFormatter,
+  writeTooltipFormatter,
+} from "../chart/hover.js";
+import {
+  readHiddenSeries,
+  writeHiddenSeries,
+} from "../chart/api.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -84,11 +92,20 @@ function formatDelta(value, locale) {
  * @cssprop --rowan-kpi-card-gap
  * @cssprop --rowan-kpi-card-value-size
  * @cssprop --rowan-kpi-card-chart-height
+ 
+ * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
+ * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
+ * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
+ * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
+ * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
+ * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
+ * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanKpiCard extends BaseElement {
   static styleUrl = new URL("./kpi-card.css", import.meta.url).href;
   static useElementInternals = true;
-  static observedAttributes = ["label", "tone", "delta-label", "loading", "locale"];
+  static observedAttributes = ["label", "tone", "delta-label", "loading", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
     "label",
     "tone",
@@ -98,6 +115,9 @@ export class RowanKpiCard extends BaseElement {
     "value",
     "delta",
     "messages",
+    "hiddenSeries",
+    "tooltipFormatter",
+    "noMotion",
   ];
   static componentTokenPrefixes = ["--rowan-kpi-card-"];
 
@@ -215,6 +235,33 @@ export class RowanKpiCard extends BaseElement {
     super.attributeChangedCallback(name, oldValue, newValue);
   }
 
+
+  /** @returns {string[]} */
+  get hiddenSeries() {
+    return readHiddenSeries(this);
+  }
+
+  /** @param {string[] | string | null | undefined} value */
+  set hiddenSeries(value) {
+    writeHiddenSeries(this, value);
+  }
+
+  get tooltipFormatter() {
+    return readTooltipFormatter(this);
+  }
+
+  set tooltipFormatter(value) {
+    writeTooltipFormatter(this, value);
+  }
+
+  get noMotion() {
+    return this.hasAttribute("no-motion");
+  }
+
+  set noMotion(value) {
+    this.reflectBoolean("no-motion", Boolean(value));
+  }
+
   render() {
     if (!this.#card) {
       this.renderRoot.innerHTML = `
@@ -223,16 +270,18 @@ export class RowanKpiCard extends BaseElement {
           <div class="body" part="body">
             <div class="metrics">
               <p class="label" part="label"></p>
-              <p class="value" part="value"></p>
+              <p class="value" part="value" aria-live="polite"></p>
               <p class="delta" part="delta"></p>
               <div class="description" part="description"><slot></slot></div>
             </div>
             <div class="chart" part="chart"><slot name="chart"></slot></div>
+            <slot name="tooltip" hidden></slot>
           </div>
         </article>
       `;
 
       this.#card = this.renderRoot.querySelector(".card");
+      this.#card.tabIndex = 0;
       this.#labelElement = this.renderRoot.querySelector(".label");
       this.#valueElement = this.renderRoot.querySelector(".value");
       this.#deltaElement = this.renderRoot.querySelector(".delta");
