@@ -28070,6 +28070,14 @@
             },
             {
               "kind": "field",
+              "name": "resizableColumns"
+            },
+            {
+              "kind": "field",
+              "name": "reorderableColumns"
+            },
+            {
+              "kind": "field",
               "name": "locale"
             },
             {
@@ -28289,6 +28297,14 @@
             {
               "description": "Fired when a group header is expanded or collapsed by the user",
               "name": "rowan-group-toggle"
+            },
+            {
+              "description": "Fired when a column is resized. `detail` contains columnId, width, and columns array.",
+              "name": "rowan-column-resize"
+            },
+            {
+              "description": "Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.",
+              "name": "rowan-column-reorder"
             }
           ],
           "attributes": [
@@ -28344,6 +28360,18 @@
               "name": "virtual-overscan",
               "type": {
                 "text": "number"
+              }
+            },
+            {
+              "name": "resizable-columns",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "reorderable-columns",
+              "type": {
+                "text": "boolean"
               }
             },
             {
