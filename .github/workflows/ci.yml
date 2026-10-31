@@ -27,6 +27,8 @@ jobs:
       - run: npm run verify --workspace=@rowan-ui/icons
       - run: npm run types --workspace=@rowan-ui/icons
       - run: npm run typecheck --workspace=@rowan-ui/icons
+      - name: Verify CI parity
+        run: node scripts/check-ci-parity.mjs
       - name: Verify generated artifacts
         run: |
           changes="$(git status --porcelain --untracked-files=all -- custom-elements.json types packages/icons/custom-elements.json packages/icons/types packages/maplibre/custom-elements.json packages/maplibre/types src/react/generated packages/icons/src/react/generated packages/maplibre/src/react/generated)"
