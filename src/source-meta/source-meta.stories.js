@@ -76,3 +76,18 @@ export const InTable = {
     return table;
   },
 };
+
+export const SlottedSource = {
+  name: "Slotted source",
+  render: () => {
+    const el = document.createElement("rowan-source-meta");
+    const source = document.createElement("span");
+    source.slot = "source";
+    source.textContent = "Warehouse events";
+    const asOf = document.createElement("span");
+    asOf.slot = "as-of";
+    asOf.textContent = "2026-09-23 14:02 UTC";
+    el.append(source, asOf);
+    return el;
+  },
+};

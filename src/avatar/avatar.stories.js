@@ -27,6 +27,7 @@ export const Playground = {
     el.src = src;
     el.alt = alt;
     if (size !== "md") el.setAttribute("size", size);
+    el.locale = "en-US";
     return el;
   },
 };

@@ -70,3 +70,20 @@ export const Fallback = {
     return el;
   },
 };
+
+export const LoadingModes = {
+  name: "Lazy and eager",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.display = "grid";
+    row.style.gap = "1rem";
+    for (const loading of ["lazy", "eager"]) {
+      const el = document.createElement("rowan-image");
+      el.src = SAMPLE_SRC;
+      el.alt = `North yard camera, ${loading}`;
+      el.loading = loading;
+      row.append(el);
+    }
+    return row;
+  },
+};

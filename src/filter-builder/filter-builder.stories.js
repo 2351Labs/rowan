@@ -140,3 +140,24 @@ export const NestedGroups = {
     return table;
   },
 };
+
+export const DisabledActions = {
+  name: "Disabled with actions",
+  render: () => {
+    const table = createTable();
+    table.id = "members";
+    const builder = document.createElement("rowan-filter-builder");
+    builder.forTable = "members";
+    builder.label = "Filters";
+    builder.addLabel = "Add filter";
+    builder.clearLabel = "Clear filters";
+    builder.disabled = true;
+    builder.fields = FIELDS;
+    const actions = document.createElement("span");
+    actions.slot = "actions";
+    actions.textContent = "Save view";
+    builder.append(actions);
+    table.append(builder);
+    return table;
+  },
+};

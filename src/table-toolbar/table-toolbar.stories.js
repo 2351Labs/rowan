@@ -109,3 +109,19 @@ export const WithBulkActions = {
     return table;
   },
 };
+
+export const LinkedTable = {
+  name: "Linked table",
+  render: () => {
+    const table = createTable();
+    table.id = "team-table";
+    const toolbar = createToolbar({ label: "Team table controls" });
+    toolbar.forTable = "team-table";
+    const end = document.createElement("span");
+    end.slot = "end";
+    end.textContent = "Export";
+    toolbar.append(end);
+    table.append(toolbar);
+    return table;
+  },
+};

@@ -1348,3 +1348,59 @@ export const InlineEditingValidation = {
     },
   },
 };
+
+export const CellEditChrome = {
+  name: "Cell edit chrome",
+  parameters: createEventScriptParameters({
+    steps: ["Expand a team group. rowan-group-toggle reports that group."],
+    events: ["rowan-group-toggle", "rowan-edit-start", "rowan-edit-commit"],
+  }),
+  render: () => {
+    const table = document.createElement("rowan-table");
+    table.locale = "en-US";
+    table.captionVisuallyHidden = true;
+    table.editMode = "cell";
+    table.config = {
+      caption: "Members grouped by team",
+      rowId: "id",
+      groupBy: { id: "team" },
+      columns: [
+        { id: "name", header: "Member", editable: true },
+        { id: "team", header: "Team" },
+      ],
+      rows: [
+        { id: "1", name: "Ada Lovelace", team: "Ops" },
+        { id: "2", name: "Grace Hopper", team: "Ops" },
+      ],
+    };
+    const toolbar = document.createElement("div");
+    toolbar.slot = "toolbar";
+    toolbar.textContent = "Member tools";
+    const caption = document.createElement("span");
+    caption.slot = "caption";
+    caption.textContent = "Members grouped by team";
+    const empty = document.createElement("p");
+    empty.slot = "empty";
+    empty.textContent = "No members match this view.";
+    const footer = document.createElement("span");
+    footer.slot = "footer";
+    footer.textContent = "2 members";
+    table.append(toolbar, caption, empty, footer);
+    return table;
+  },
+};
+
+export const Loading = {
+  name: "Loading",
+  render: () => {
+    const table = document.createElement("rowan-table");
+    table.loading = true;
+    table.locale = "en-US";
+    table.config = {
+      caption: "Members",
+      columns: [{ id: "name", header: "Member" }],
+      rows: [],
+    };
+    return table;
+  },
+};

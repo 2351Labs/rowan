@@ -1,6 +1,6 @@
 # Storybook coverage
 
-Charts and Forms & Input are enforced by `scripts/check-story-coverage.mjs`.
+Charts, Forms & Input, and Data Display are enforced by `scripts/check-story-coverage.mjs`.
 Other categories are report-only until their story PRs land.
 The check fails for every category only once each one is at 100%.
 
@@ -76,46 +76,46 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-avatar` | 88% | 88% | attribute locale |
-| `rowan-bulk-actions-bar` | 60% | 60% | attribute for-table, attribute disabled, slot label, slot end |
-| `rowan-card` | 67% | 67% | slot media, slot header |
-| `rowan-filter-builder` | 50% | 50% | attribute for-table, attribute add-label, attribute clear-label, attribute disabled, slot actions |
-| `rowan-image` | 75% | 75% | attribute loading, enum loading=lazy, enum loading=eager |
-| `rowan-row-details-panel` | 65% | 65% | attribute close-label, attribute locale, slot title, slot empty, slot pager, slot actions, event rowan-navigate |
-| `rowan-source-meta` | 50% | 50% | slot source, slot as-of |
-| `rowan-table` | 78% | 78% | attribute loading, attribute caption-visually-hidden, attribute locale, enum edit-mode=cell, slot toolbar, slot caption, slot empty, slot footer, event rowan-group-toggle |
-| `rowan-table-toolbar` | 75% | 75% | attribute for-table, slot end |
+| `rowan-avatar` | 88% | 100% | — |
+| `rowan-bulk-actions-bar` | 60% | 100% | — |
+| `rowan-card` | 67% | 100% | — |
+| `rowan-filter-builder` | 50% | 100% | — |
+| `rowan-image` | 75% | 100% | — |
+| `rowan-row-details-panel` | 65% | 100% | — |
+| `rowan-source-meta` | 50% | 100% | — |
+| `rowan-table` | 78% | 100% | — |
+| `rowan-table-toolbar` | 75% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
 ## Forms & Input
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-calendar` | 94% | 100% | — |
-| `rowan-checkbox` | 67% | 100% | — |
-| `rowan-color-picker` | 60% | 100% | — |
-| `rowan-combobox` | 67% | 100% | — |
-| `rowan-date-picker` | 78% | 100% | — |
-| `rowan-date-range-picker` | 69% | 100% | — |
-| `rowan-form-field` | 75% | 100% | — |
-| `rowan-form-layout` | 90% | 100% | — |
-| `rowan-form-wizard` | 80% | 100% | — |
-| `rowan-listbox` | 90% | 100% | — |
-| `rowan-multi-select-combobox` | 56% | 100% | — |
-| `rowan-number-field` | 75% | 100% | — |
-| `rowan-option` | 63% | 100% | — |
+| `rowan-calendar` | 100% | 100% | — |
+| `rowan-checkbox` | 100% | 100% | — |
+| `rowan-color-picker` | 100% | 100% | — |
+| `rowan-combobox` | 100% | 100% | — |
+| `rowan-date-picker` | 100% | 100% | — |
+| `rowan-date-range-picker` | 100% | 100% | — |
+| `rowan-form-field` | 100% | 100% | — |
+| `rowan-form-layout` | 100% | 100% | — |
+| `rowan-form-wizard` | 100% | 100% | — |
+| `rowan-listbox` | 100% | 100% | — |
+| `rowan-multi-select-combobox` | 100% | 100% | — |
+| `rowan-number-field` | 100% | 100% | — |
+| `rowan-option` | 100% | 100% | — |
 | `rowan-radio` | 100% | 100% | — |
 | `rowan-radio-group` | 100% | 100% | — |
-| `rowan-rating` | 71% | 100% | — |
-| `rowan-rich-text-editor` | 69% | 100% | — |
-| `rowan-segmented-control` | 80% | 100% | — |
-| `rowan-select` | 86% | 100% | — |
-| `rowan-slider` | 69% | 100% | — |
-| `rowan-switch` | 75% | 100% | — |
-| `rowan-text-field` | 76% | 100% | — |
-| `rowan-textarea` | 89% | 100% | — |
-| `rowan-time-picker` | 80% | 100% | — |
-| `rowan-validation-summary` | 33% | 100% | — |
+| `rowan-rating` | 100% | 100% | — |
+| `rowan-rich-text-editor` | 100% | 100% | — |
+| `rowan-segmented-control` | 100% | 100% | — |
+| `rowan-select` | 100% | 100% | — |
+| `rowan-slider` | 100% | 100% | — |
+| `rowan-switch` | 100% | 100% | — |
+| `rowan-text-field` | 100% | 100% | — |
+| `rowan-textarea` | 100% | 100% | — |
+| `rowan-time-picker` | 100% | 100% | — |
+| `rowan-validation-summary` | 100% | 100% | — |
 
 ## Overlays & Menus
 

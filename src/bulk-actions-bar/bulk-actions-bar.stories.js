@@ -84,3 +84,23 @@ export const CustomSlotAction = {
     return table;
   },
 };
+
+export const DisabledChrome = {
+  name: "Disabled with slots",
+  render: () => {
+    const table = createTable();
+    table.id = "members";
+    const bar = createBar([{ id: "archive", label: "Archive" }]);
+    bar.forTable = "members";
+    bar.disabled = true;
+    const label = document.createElement("span");
+    label.slot = "label";
+    label.textContent = "3 members selected";
+    const end = document.createElement("span");
+    end.slot = "end";
+    end.textContent = "More actions";
+    bar.append(label, end);
+    table.append(bar);
+    return table;
+  },
+};
