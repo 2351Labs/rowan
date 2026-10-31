@@ -130,7 +130,13 @@ function createSvgElement(name) {
  
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
- */
+ 
+ * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
+ * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
+ * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
+*/
 export class RowanTrendChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
@@ -496,9 +502,7 @@ export class RowanTrendChart extends BaseElement {
     fragment.append(grid);
 
     const paths = createSvgElement("g");
-    paths.setAttribute("class", "series-paths");
     const markers = createSvgElement("g");
-    markers.setAttribute("class", "series-markers");
 
     for (const [seriesIndex, series] of this.#series.entries()) {
       const seriesEntries = this.#entries.filter((entry) => entry.series.id === series.id);
@@ -516,11 +520,10 @@ export class RowanTrendChart extends BaseElement {
         marker.setAttribute("class", "point-marker");
         marker.setAttribute("part", "point-marker");
         marker.dataset.pointKey = entry.key;
-        marker.setAttribute("cx", String(entry.x));
-        marker.setAttribute("cy", String(entry.y));
+        marker.setAttribute("cx", entry.x);
+        marker.setAttribute("cy", entry.y);
         marker.setAttribute("r", "4");
         marker.style.fill = this.#seriesColor(series, seriesIndex);
-        marker.setAttribute("aria-hidden", "true");
         markers.append(marker);
       }
     }
@@ -547,7 +550,6 @@ export class RowanTrendChart extends BaseElement {
       const label = document.createElement("span");
       label.className = "axis-y-label";
       label.textContent = this.#formatValue(value, { tick: true });
-      label.title = label.textContent;
       yAxis.append(label);
     }
     this.#yAxis.replaceChildren(yAxis);
@@ -564,7 +566,6 @@ export class RowanTrendChart extends BaseElement {
       label.className = "axis-x-label";
       label.style.gridColumnStart = String(index + 1);
       label.textContent = value;
-      label.title = value;
       xAxis.append(label);
     });
     this.#xAxis.replaceChildren(xAxis);
@@ -599,19 +600,16 @@ export class RowanTrendChart extends BaseElement {
   }
 
   #appendGrid(group) {
-    const plotWidth = VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT;
+    const right = VIEWBOX_WIDTH - PLOT_RIGHT;
     const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
-
+    const path = createSvgElement("path");
+    let d = "";
     for (let tick = 0; tick <= 4; tick += 1) {
-      const ratio = tick / 4;
-      const y = PLOT_TOP + ratio * plotHeight;
-      const line = createSvgElement("line");
-      line.setAttribute("x1", String(PLOT_LEFT));
-      line.setAttribute("x2", String(PLOT_LEFT + plotWidth));
-      line.setAttribute("y1", String(y));
-      line.setAttribute("y2", String(y));
-      group.append(line);
+      const y = PLOT_TOP + (tick / 4) * plotHeight;
+      d += `M${PLOT_LEFT},${y}H${right}`;
     }
+    path.setAttribute("d", d);
+    group.append(path);
   }
 
   #renderPointControls() {
@@ -720,14 +718,10 @@ export class RowanTrendChart extends BaseElement {
   }
 
   #pathData(entries) {
-    let hasPreviousEntry = false;
-    let previousIndex = -1;
-
     return entries
-      .map((entry) => {
-        const command = hasPreviousEntry && entry.index === previousIndex + 1 ? "L" : "M";
-        hasPreviousEntry = true;
-        previousIndex = entry.index;
+      .map((entry, index) => {
+        const previous = entries[index - 1];
+        const command = previous && entry.index === previous.index + 1 ? "L" : "M";
         return `${command}${entry.x.toFixed(2)},${entry.y.toFixed(2)}`;
       })
       .join(" ");

@@ -131,7 +131,13 @@ function waterfallTone(entry) {
  
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
- */
+ 
+ * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
+ * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
+ * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
+*/
 export class RowanWaterfallChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };

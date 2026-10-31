@@ -35,6 +35,7 @@
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanBulletChart extends BaseElement {
   set label(value: string);

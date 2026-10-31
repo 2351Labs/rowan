@@ -17,20 +17,14 @@ export function createChartHoverBubble() {
 
 
 export function readHiddenSeries(host) {
-  return String(host.getAttribute("hidden-series") || "")
-    .split(/[\s,]+/)
-    .map((id) => id.trim())
-    .filter(Boolean);
+  return (host.getAttribute("hidden-series") || "").split(/[\s,]+/).filter(Boolean);
 }
 
 export function writeHiddenSeries(host, value) {
-  const ids = Array.isArray(value)
-    ? value.map((id) => String(id ?? "").trim()).filter(Boolean)
-    : String(value ?? "")
-        .split(/[\s,]+/)
-        .map((id) => id.trim())
-        .filter(Boolean);
-  const next = ids.join(" ");
+  const next = (Array.isArray(value) ? value : String(value ?? "").split(/[\s,]+/))
+    .map((id) => String(id).trim())
+    .filter(Boolean)
+    .join(" ");
   if ((host.getAttribute("hidden-series") || "") === next) return;
   if (next) host.setAttribute("hidden-series", next);
   else host.removeAttribute("hidden-series");
@@ -49,39 +43,26 @@ export function writeTooltipFormatter(host, value) {
 
 export function hideChartHover(bubble) {
   if (!bubble) return;
-
   bubble.textContent = "";
   bubble.hidden = true;
-  if (typeof bubble.hidePopover !== "function") return;
-
   try {
-    if (bubble.matches(":popover-open")) bubble.hidePopover();
+    if (typeof bubble.hidePopover === "function" && bubble.matches(":popover-open")) bubble.hidePopover();
   } catch {
-    return;
+    /* Popover is optional. */
   }
 }
 
 export function showChartHover(bubble, text, clientX, clientY) {
   if (!bubble) return;
-
   const content = String(text ?? "").trim();
-  if (!content) {
-    hideChartHover(bubble);
-    return;
-  }
-
+  if (!content) return hideChartHover(bubble);
   bubble.textContent = content;
   bubble.hidden = false;
   bubble.style.top = `${Math.round(clientY + 12)}px`;
   bubble.style.left = `${Math.round(clientX)}px`;
-
-  if (typeof bubble.showPopover !== "function") return;
-
-  if (bubble.getAttribute("popover") !== "manual") {
-    bubble.setAttribute("popover", "manual");
-  }
-
   try {
+    if (typeof bubble.showPopover !== "function") return;
+    if (bubble.getAttribute("popover") !== "manual") bubble.setAttribute("popover", "manual");
     if (!bubble.matches(":popover-open")) bubble.showPopover();
   } catch {
     bubble.hidden = false;
@@ -110,6 +91,7 @@ function tooltipText(element, event, textForEvent) {
 
 export function bindChartHover(element, { target, bubble, textForEvent }) {
   const show = (event) => {
+    element.__e = event;
     const node = event.type === "focusin" && event.target instanceof Element ? event.target : null;
     const box = node?.getBoundingClientRect();
     const x = box ? box.left + box.width / 2 : event.clientX;
@@ -117,6 +99,7 @@ export function bindChartHover(element, { target, bubble, textForEvent }) {
     showChartHover(bubble, tooltipText(element, event, textForEvent), x, y);
   };
   const hide = () => hideChartHover(bubble);
+  element.__k ||= import("./keys.js").then((m) => m.install(element));
   element.listen(target, "pointermove", show);
   element.listen(target, "pointerleave", hide);
   element.listen(target, "pointercancel", hide);
@@ -158,21 +141,8 @@ export function referenceLineHoverText(event, fallbackLabel = "Reference") {
  */
 export function nearestPointByClientX(svg, points, clientX) {
   if (!points.length) return null;
-
   const rect = svg.getBoundingClientRect();
-  const viewBox = svg.viewBox.baseVal;
-  const width = viewBox && viewBox.width ? viewBox.width : 100;
-  const x =
-    rect.width > 0 ? ((clientX - rect.left) / rect.width) * width : points[points.length - 1].x;
-
-  let best = points[0];
-  let bestDist = Math.abs(points[0].x - x);
-  for (const point of points) {
-    const dist = Math.abs(point.x - x);
-    if (dist < bestDist) {
-      best = point;
-      bestDist = dist;
-    }
-  }
-  return best;
+  const width = svg.viewBox.baseVal?.width || 100;
+  const x = rect.width > 0 ? ((clientX - rect.left) / rect.width) * width : points.at(-1).x;
+  return points.reduce((best, point) => (Math.abs(point.x - x) < Math.abs(best.x - x) ? point : best));
 }

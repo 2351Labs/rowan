@@ -1,4 +1,5 @@
 import { bindSeriesLegend, syncSeriesLegend } from "./legend.js";
+import { installChartExtras } from "./ix-more.js";
 
 function bubbleOf(host) {
   return host.renderRoot?.querySelector(".hover");
@@ -150,7 +151,11 @@ function mountZoom(host) {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (pointers.size === 1) {
       drag = { x: event.clientX, y: event.clientY, pan: event.shiftKey, view: { ...view } };
-      svg.setPointerCapture?.(event.pointerId);
+      try {
+        svg.setPointerCapture(event.pointerId);
+      } catch {
+        /* Synthetic events have no pointer to capture. */
+      }
     }
   });
   svg.addEventListener("pointermove", (event) => {
@@ -206,6 +211,7 @@ function mountZoom(host) {
         });
       }
     }
+    if (drag) host.__onZoomBrush?.(drag.x, event.clientX);
     brush?.remove();
     if (pointers.size === 0) drag = null;
   };
@@ -228,22 +234,34 @@ function mountResize(host) {
 }
 
 function replay(host, event, toggle) {
-  if (event.type === "click" && event.seriesId && toggle) toggle(event.seriesId);
-  if (event.type === "wheel") {
+  const type = event?.type;
+  if (type === "click" && toggle) {
+    const node = event.composedPath?.()[0];
+    const legend = host.renderRoot.querySelector(".legend");
+    const id =
+      node instanceof Element && legend?.contains(node) ? node.closest("[data-series-id]")?.dataset.seriesId : "";
+    if (id) toggle(id);
+  }
+  if (type === "wheel") {
     plotOf(host)?.dispatchEvent(
-      new WheelEvent("wheel", { clientX: event.clientX, clientY: event.clientY, deltaY: event.deltaY, bubbles: true, cancelable: true }),
+      new WheelEvent("wheel", {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        deltaY: event.deltaY,
+        bubbles: true,
+        cancelable: true,
+      }),
     );
   }
-  if (event.type === "pointermove" || event.type === "pointerenter" || event.type === "focusin") {
-    enhanceTooltip(host, event);
-  }
+  if (type === "pointermove" || type === "pointerenter" || type === "focusin") enhanceTooltip(host, event);
 }
 
 export function run(host, queued = []) {
+  const pending = Array.isArray(queued) ? queued : queued ? [queued] : [];
   if (!host?.renderRoot?.querySelector("svg")) {
     if (!host.__ixWait) {
       host.__ixWait = 1;
-      queueMicrotask(() => run(host, queued));
+      queueMicrotask(() => run(host, pending));
     }
     return;
   }
@@ -261,7 +279,8 @@ export function run(host, queued = []) {
   mountResize(host);
   mountZoom(host);
   if (!motionOff(host)) host.renderRoot.querySelector(".chart")?.setAttribute("data-animate", "");
-  for (const event of queued) replay(host, event, toggle);
+  installChartExtras(host);
+  for (const event of pending) replay(host, event, toggle);
 }
 
 export { bindSeriesLegend, syncSeriesLegend };

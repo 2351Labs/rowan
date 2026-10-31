@@ -117,3 +117,42 @@ export const Session = {
     return root;
   },
 };
+
+export const SyncedCharts = {
+  name: "Synced charts",
+  parameters: createEventScriptParameters({
+    steps: [
+      "Hover either chart. The other chart's axis pointer moves to the same category.",
+      "Drag a brush on a chart. The session stores the rowan-brush range.",
+    ],
+    events: ["rowan-sync", "rowan-brush"],
+  }),
+  render: () => {
+    const session = createDashboardFilters();
+    const root = document.createElement("div");
+    root.style.display = "grid";
+    root.style.gap = "1rem";
+    const status = document.createElement("p");
+    const make = (label, values) => {
+      const chart = document.createElement("rowan-bar-chart");
+      chart.label = label;
+      chart.interactive = true;
+      chart.labels = ["Mon", "Tue", "Wed"];
+      chart.series = [{ id: "fill", label: "Fill", values }];
+      chart.setAttribute("sync-group", "ops");
+      chart.setAttribute("brush", "");
+      chart.addEventListener("rowan-brush", (event) => {
+        if (event.detail.cleared) session.clear("range");
+        else session.set("range", `${event.detail.startLabel}–${event.detail.endLabel}`);
+      });
+      chart.addEventListener("rowan-sync", (event) => session.set("hover", event.detail.label));
+      return chart;
+    };
+    session.subscribe((snapshot) => {
+      status.textContent = `hover ${snapshot.hover || "—"} · range ${snapshot.range || "—"}`;
+    });
+    status.textContent = "hover — · range —";
+    root.append(status, make("North fill", [82, 88, 79]), make("South fill", [74, 71, 76]));
+    return root;
+  },
+};

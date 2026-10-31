@@ -927,6 +927,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -974,6 +982,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -1728,6 +1757,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -1782,6 +1819,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -2118,6 +2176,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -2165,6 +2231,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -3068,6 +3155,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Keyboard activation. Detail: index, label, value.",
+              "name": "rowan-point-activate"
             }
           ],
           "attributes": [
@@ -4911,6 +5002,31 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/ix-more.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "installChartExtras",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "installChartExtras",
+          "declaration": {
+            "name": "installChartExtras",
+            "module": "src/chart/ix-more.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/ix.js",
       "declarations": [
         {
@@ -4950,6 +5066,31 @@
           "declaration": {
             "name": "syncSeriesLegend",
             "module": "src/chart/ix.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/keys.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "install",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "install",
+          "declaration": {
+            "name": "install",
+            "module": "src/chart/keys.js"
           }
         }
       ]
@@ -6754,6 +6895,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -6804,6 +6953,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -7106,6 +7276,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -7153,6 +7331,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -10199,6 +10398,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -10246,6 +10453,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -13180,6 +13408,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -13227,6 +13463,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -13628,6 +13885,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -13668,6 +13933,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -14024,6 +14310,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -14064,6 +14358,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -20735,6 +21050,14 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -20782,6 +21105,27 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -21733,6 +22077,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -21787,6 +22139,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -23618,6 +23991,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -23665,6 +24046,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -26038,6 +26440,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Keyboard activation. Detail: index, label, value.",
+              "name": "rowan-point-activate"
             }
           ],
           "attributes": [
@@ -27018,6 +27424,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -27072,6 +27486,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -27475,6 +27910,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -27536,6 +27979,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -33341,6 +33805,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -33388,6 +33860,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -34342,6 +34835,14 @@
             {
               "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
               "name": "rowan-zoom"
+            },
+            {
+              "description": "Shared hover. Detail: group, index, label.",
+              "name": "rowan-sync"
+            },
+            {
+              "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+              "name": "rowan-brush"
             }
           ],
           "attributes": [
@@ -34389,6 +34890,27 @@
               },
               "description": "Opt-in plot zoom and pan.",
               "name": "zoom"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Share the axis pointer with charts that use the same group name.",
+              "name": "sync-group"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it.",
+              "name": "brush"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "name": "large-series"
             }
           ],
           "superclass": {

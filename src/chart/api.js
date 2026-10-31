@@ -4,33 +4,34 @@ import { readHiddenSeries, writeHiddenSeries } from "./hover.js";
 
 export { readHiddenSeries, writeHiddenSeries };
 
-export function entryHidden(hidden, entry) {
-  const id = entry?.series?.id || "";
-  const key = entry?.key || "";
+function idHidden(hidden, id, key, tone) {
   if (id && hidden.has(id)) return true;
-  if (entry?.tone && hidden.has(entry.tone)) return true;
+  if (tone && hidden.has(tone)) return true;
   if (key && hidden.has(key)) return true;
-  for (const item of hidden) {
-    if (key.startsWith(`${item}::`)) return true;
-  }
+  for (const item of hidden) if (key && key.startsWith(`${item}::`)) return true;
   return false;
 }
 
+export function entryHidden(hidden, entry) {
+  return idHidden(hidden, entry?.series?.id || "", entry?.key || "", entry?.tone || "");
+}
+
 function elementHidden(hidden, el) {
-  const seriesId = el.dataset.seriesId || "";
-  const pointKey = el.dataset.pointKey || "";
-  if (seriesId && hidden.has(seriesId)) return true;
-  if (pointKey && hidden.has(pointKey)) return true;
-  for (const id of hidden) {
-    if (pointKey.startsWith(`${id}::`)) return true;
-  }
-  return false;
+  return idHidden(hidden, el.dataset.seriesId || "", el.dataset.pointKey || "", el.dataset.tone || "");
 }
 
 export function applySeriesVisibility(root, ids) {
   if (!root) return;
   const host = root.parentNode.host;
-  if (host) host.__z ||= import("./ix.js").then((m) => m.run(host));
+  if (host && !host.__z) {
+    const queued = [];
+    const remember = (event) => queued.push(event);
+    host.addEventListener("wheel", remember);
+    host.__z = import("./ix.js").then((m) => {
+      host.removeEventListener("wheel", remember);
+      return m.run(host, queued.concat(host.__e || []));
+    });
+  }
   const hidden = new Set(ids);
   for (const el of root.querySelectorAll("[data-series-id],[data-point-key]")) {
     if (el.closest(".legend")) continue;
@@ -59,24 +60,22 @@ export function prefersReducedMotion() {
  * @param {(entry: { key: string }, activate: boolean) => void} onMove
  */
 export function navigatePointKey(event, entries, onMove) {
-  const node = event.target;
-  const button = node instanceof Element ? node.closest("button[data-point-key]") : null;
+  const button = event.target instanceof Element ? event.target.closest("button[data-point-key]") : null;
   if (!button) return;
   const index = entries.findIndex((entry) => entry.key === button.dataset.pointKey);
   if (index < 0) return;
-  if (event.key === "Enter" || event.key === " ") {
+  const key = event.key;
+  if (key === "Enter" || key === " ") {
     event.preventDefault();
     onMove(entries[index], true);
     return;
   }
-  let next = null;
-  if (event.key === "ArrowRight" || event.key === "ArrowDown") next = entries[index + 1] ?? entries[0];
-  else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = entries[index - 1] ?? entries.at(-1);
-  else if (event.key === "Home") next = entries[0];
-  else if (event.key === "End") next = entries.at(-1);
-  if (!next || next.key === button.dataset.pointKey) return;
+  const last = entries.length - 1;
+  const step =
+    key === "Home" ? 0 : key === "End" ? last : key === "ArrowRight" || key === "ArrowDown" ? (index + 1) % entries.length : key === "ArrowLeft" || key === "ArrowUp" ? (index + last) % entries.length : -1;
+  if (step < 0 || step === index) return;
   event.preventDefault();
-  onMove(next, false);
+  onMove(entries[step], false);
 }
 
 /**

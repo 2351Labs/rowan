@@ -11,6 +11,8 @@ export const RowanScatterChart: ForwardRefExoticComponent<
       onRowanSelectionChange?: (event: CustomEvent) => void;
       onRowanSeriesToggle?: (event: CustomEvent) => void;
       onRowanZoom?: (event: CustomEvent) => void;
+      onRowanSync?: (event: CustomEvent) => void;
+      onRowanBrush?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanScatterChartElement>

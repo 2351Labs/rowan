@@ -11,5 +11,6 @@ export const RowanBulletChart = createRowanComponent({
     onRowanPointClick: "rowan-point-click",
     onRowanSelectionChange: "rowan-selection-change",
     onRowanSeriesToggle: "rowan-series-toggle",
+    onRowanPointActivate: "rowan-point-activate",
   },
 });

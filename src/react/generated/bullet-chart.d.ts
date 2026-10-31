@@ -9,6 +9,7 @@ export const RowanBulletChart: ForwardRefExoticComponent<
       onRowanPointClick?: (event: CustomEvent) => void;
       onRowanSelectionChange?: (event: CustomEvent) => void;
       onRowanSeriesToggle?: (event: CustomEvent) => void;
+      onRowanPointActivate?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanBulletChartElement>

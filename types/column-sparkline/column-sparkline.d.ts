@@ -41,7 +41,13 @@
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
- */
+ 
+ * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
+ * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
+ * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
+*/
 export class RowanColumnSparkline extends BaseElement {
   set label(value: string);
   get label(): string;
