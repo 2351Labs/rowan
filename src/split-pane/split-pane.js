@@ -1,3 +1,4 @@
+import { declarations as splitPaneTokenDeclarations } from "../tokens/parts/split-pane.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -70,6 +71,7 @@ export class RowanSplitPane extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./split-pane.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-split-pane-"];
+  static componentTokenDeclarations = splitPaneTokenDeclarations;
   static observedAttributes = [
     "orientation",
     "position",

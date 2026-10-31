@@ -1,3 +1,4 @@
+import { declarations as sideNavItemTokenDeclarations } from "../tokens/parts/side-nav-item.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -55,6 +56,7 @@ export class RowanSideNavItem extends BaseElement {
   static styleUrl = new URL("./side-nav-item.css", import.meta.url).href;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static componentTokenPrefixes = ["--rowan-side-nav-item-"];
+  static componentTokenDeclarations = sideNavItemTokenDeclarations;
   static observedAttributes = [
     "value",
     "href",

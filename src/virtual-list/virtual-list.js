@@ -1,3 +1,4 @@
+import { declarations as virtualListTokenDeclarations } from "../tokens/parts/virtual-list.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { VirtualCollection } from "../lib/virtual-collection.js";
@@ -37,6 +38,7 @@ export class RowanVirtualList extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./virtual-list.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-virtual-list-"];
+  static componentTokenDeclarations = virtualListTokenDeclarations;
   static observedAttributes = ["item-size", "overscan"];
   static upgradeProperties = ["items", "itemKey", "renderItem", "itemSize", "overscan"];
 

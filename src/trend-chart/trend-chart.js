@@ -1,16 +1,11 @@
+import { declarations as trendChartTokenDeclarations } from "../tokens/parts/trend-chart.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
-import {
-  emit,
-} from "../lib/events.js";
+import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
-import {
-  renderChartTable,
-  withRestoredPointFocus,
-  emitPointActivate,
-} from "../chart/dom.js";
+import { renderChartTable, withRestoredPointFocus, emitPointActivate } from "../chart/dom.js";
 import { cloneChartSeriesInput as cloneTrendSeriesInput } from "../chart/model.js";
 import {
   bindChartHover,
@@ -142,7 +137,15 @@ export class RowanTrendChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./trend-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-trend-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static componentTokenDeclarations = trendChartTokenDeclarations;
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -307,7 +310,6 @@ export class RowanTrendChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -333,8 +335,6 @@ export class RowanTrendChart extends BaseElement {
   set noMotion(value) {
     this.reflectBoolean("no-motion", Boolean(value));
   }
-
-
 
   render() {
     if (!this.#control) {
@@ -680,7 +680,7 @@ export class RowanTrendChart extends BaseElement {
     if (entry) this.#setActivePoint(entry);
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

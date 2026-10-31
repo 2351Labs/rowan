@@ -1,3 +1,4 @@
+import { declarations as buttonTokenDeclarations } from "../tokens/parts/button.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -49,6 +50,7 @@ export class RowanButton extends BaseElement {
   ];
   static upgradeProperties = ["variant", "size", "disabled", "loading", "type"];
   static componentTokenPrefixes = ["--rowan-button-"];
+  static componentTokenDeclarations = buttonTokenDeclarations;
 
   #button = null;
   constructor() {

@@ -65,6 +65,7 @@
  * @event rowan-paste-result - Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.
  */
 export class RowanTable extends BaseElement {
+  static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   /** @param {RowanTableConfig | null | undefined} value */
   set config(value: RowanTableConfig | null | undefined);
@@ -256,7 +257,6 @@ export class RowanTable extends BaseElement {
     | {
         csv: string;
         blob: Blob;
-        /** @param {RowanTableConfig | null | undefined} value */
         exported: boolean;
         format: "csv" | "xlsx";
         filename: any;
@@ -336,7 +336,6 @@ export class RowanTable extends BaseElement {
     | {
         csv: string;
         blob: Blob;
-        /** @param {RowanTableConfig | null | undefined} value */
         exported: boolean;
         format: "csv" | "xlsx";
         filename: any;

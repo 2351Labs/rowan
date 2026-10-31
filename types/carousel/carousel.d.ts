@@ -22,6 +22,7 @@ export class RowanCarousel extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   set activeIndex(value: number);
   get activeIndex(): number;
   set label(value: string);

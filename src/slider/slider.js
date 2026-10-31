@@ -1,3 +1,4 @@
+import { declarations as sliderTokenDeclarations } from "../tokens/parts/slider.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -102,6 +103,7 @@ export class RowanSlider extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./slider.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-slider-"];
+  static componentTokenDeclarations = sliderTokenDeclarations;
   static observedAttributes = [
     "name",
     "name-start",

@@ -134,16 +134,16 @@ Rowan ships **109 components** across these categories:
 
 Rowan is designed to be lean for production. Direct component imports result in small, tree-shakeable bundles:
 
-- **3 controls** (button + checkbox + switch): 15.4 KB gzipped
-- **Form controls**: 17.7 KB gzipped
-- **Table** (full featured): 35.9 KB gzipped
+- **3 controls** (button + checkbox + switch): 8.4 KB gzipped
+- **Form controls**: 10.7 KB gzipped
+- **Table** (full featured): 34.5 KB gzipped
 
-The benchmark in `benchmarks/RESULTS.md` shows 703 KB for 3 controls because it measures **unminified ESM** over a local dev server. Production builds with minification and compression are **97.8% smaller**.
+The benchmark in `benchmarks/RESULTS.md` measures **unminified ESM plus Vite's inline source maps**. Re-measured on the same host, three controls moved from **819 KB / 31.9 ms** import p50 to **327 KB / 28.2 ms**. Production minified + gzip for that import is **8.4 KB** (was 15.4 KB).
 
 **⚠️ Import pattern matters:**
 
-- ✅ `import "@rowan-ui/core/button"` → 13.8 KB (recommended)
-- ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (registers all 109 components due to auto-registration side effects)
+- ✅ `import "@rowan-ui/core/button"` → 6.8 KB gzip (recommended)
+- ❌ `import { RowanButton } from "@rowan-ui/core"` registers every component, because each module calls `define()`
 
 See [**docs/BUNDLE_SIZE.md**](docs/BUNDLE_SIZE.md) for detailed guidance, optimization tips, and per-component sizes.
 

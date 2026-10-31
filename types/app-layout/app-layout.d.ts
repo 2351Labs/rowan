@@ -24,6 +24,7 @@ export class RowanAppLayout extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   set navigationOpen(value: boolean);
   get navigationOpen(): boolean;
   set navigationLabel(value: string);

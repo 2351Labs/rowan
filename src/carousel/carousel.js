@@ -1,3 +1,4 @@
+import { declarations as carouselTokenDeclarations } from "../tokens/parts/carousel.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -59,6 +60,7 @@ export class RowanCarousel extends BaseElement {
   static observedAttributes = ["active-index", "label"];
   static upgradeProperties = ["activeIndex", "label", "messages"];
   static componentTokenPrefixes = ["--rowan-carousel-"];
+  static componentTokenDeclarations = carouselTokenDeclarations;
 
   #carousel = null;
   #viewport = null;

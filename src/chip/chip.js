@@ -1,3 +1,4 @@
+import { declarations as chipTokenDeclarations } from "../tokens/parts/chip.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -26,6 +27,7 @@ export class RowanChip extends BaseElement {
   static observedAttributes = ["tone", "size"];
   static upgradeProperties = ["tone", "size"];
   static componentTokenPrefixes = ["--rowan-chip-"];
+  static componentTokenDeclarations = chipTokenDeclarations;
 
   /** @returns {"info" | "success" | "warning" | "danger"} */
   get tone() {

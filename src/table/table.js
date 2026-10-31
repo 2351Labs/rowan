@@ -1,3 +1,4 @@
+import { declarations as tableTokenDeclarations } from "../tokens/parts/table.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -332,6 +333,7 @@ function isDevelopmentEnvironment() {
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-table-"];
+  static componentTokenDeclarations = tableTokenDeclarations;
   static observedAttributes = [
     "selectable",
     "density",
@@ -1623,11 +1625,14 @@ export class RowanTable extends BaseElement {
       if (column.sticky === "start") td.classList.add("sticky-start");
       if (column.sticky === "end") td.classList.add("sticky-end");
 
-      const isEditable = entry.kind === "row" && this.#isColumnEditable(column, entry.row, entry.rowIndex);
+      const isEditable =
+        entry.kind === "row" && this.#isColumnEditable(column, entry.row, entry.rowIndex);
       if (isEditable) {
         td.setAttribute("data-editable", "true");
         td.setAttribute("tabindex", "0");
-        const editHint = resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell", { column: column.header });
+        const editHint = resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell", {
+          column: column.header,
+        });
         td.setAttribute("aria-description", editHint);
       }
 
@@ -1713,7 +1718,8 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyClick(event) {
-    const retry = event.target instanceof Element ? event.target.closest("[data-action='retry-load']") : null;
+    const retry =
+      event.target instanceof Element ? event.target.closest("[data-action='retry-load']") : null;
     if (retry) {
       event.preventDefault();
       this.#queueServer(false);
@@ -1757,20 +1763,21 @@ export class RowanTable extends BaseElement {
 
   #handleBodyKeyDown(event) {
     const td = event.target.closest("td[data-column-id]");
-    
+
     if (td && !this.#editing) {
       const tr = td.closest("tr[data-row-id]");
       if (tr) {
         const rowId = tr.dataset.rowId;
         const columnId = td.dataset.columnId;
         const column = this.#findColumn(columnId);
-        
+
         if (column) {
           const result = this.#getRowFromElement(tr);
           if (result) {
             const { row, rowIndex } = result;
             if (this.#isColumnEditable(column, row, rowIndex)) {
-              const typed = event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+              const typed =
+                event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
               if (event.key === "Enter" || event.key === "F2" || typed) {
                 event.preventDefault();
                 this.#openEditor(rowId, columnId, typed ? event.key : undefined);
@@ -1811,7 +1818,12 @@ export class RowanTable extends BaseElement {
     handle.dataset.resizeColumn = this.#normalizeText(column.id);
     handle.setAttribute("role", "separator");
     handle.setAttribute("aria-orientation", "vertical");
-    handle.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizeColumn", { header: column.header || column.id }));
+    handle.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizeColumn", {
+        header: column.header || column.id,
+      }),
+    );
     handle.tabIndex = 0;
     return handle;
   }
@@ -1841,7 +1853,11 @@ export class RowanTable extends BaseElement {
 
     const handleMove = (e) => {
       if (!this.#resizing) return;
-      const newWidth = Math.max(this.#resizing.minWidth, this.#resizing.startWidth + (e.clientX - this.#resizing.startX) * (this.#resizing.isRTL ? -1 : 1));
+      const newWidth = Math.max(
+        this.#resizing.minWidth,
+        this.#resizing.startWidth +
+          (e.clientX - this.#resizing.startX) * (this.#resizing.isRTL ? -1 : 1),
+      );
       this.#resizing.th.style.width = `${newWidth}px`;
     };
 
@@ -1850,7 +1866,11 @@ export class RowanTable extends BaseElement {
       const finalWidth = this.#resizing.th.style.width;
       if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
       this.#state.columnWidths.set(this.#resizing.columnId, finalWidth);
-      emit(this, "rowan-column-resize", { columnId: this.#resizing.columnId, width: finalWidth, columns: this.columns });
+      emit(this, "rowan-column-resize", {
+        columnId: this.#resizing.columnId,
+        width: finalWidth,
+        columns: this.columns,
+      });
       this.#resizing = null;
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleEnd);
@@ -1885,16 +1905,28 @@ export class RowanTable extends BaseElement {
     const column = this.#findColumn(columnId);
     if (!column) return;
 
-    if (this.resizableColumns && event.target.classList.contains("resize-handle") && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+    if (
+      this.resizableColumns &&
+      event.target.classList.contains("resize-handle") &&
+      (event.key === "ArrowLeft" || event.key === "ArrowRight")
+    ) {
       event.preventDefault();
       const isRTL = getComputedStyle(this).direction === "rtl";
       const delta = event.shiftKey ? 10 : 1;
       const minWidth = column.minWidth ? this.#parsePixels(column.minWidth) : 40;
-      const newWidth = Math.max(minWidth, th.getBoundingClientRect().width + delta * ((event.key === "ArrowRight") === !isRTL ? 1 : -1));
+      const newWidth = Math.max(
+        minWidth,
+        th.getBoundingClientRect().width +
+          delta * ((event.key === "ArrowRight") === !isRTL ? 1 : -1),
+      );
       th.style.width = `${newWidth}px`;
       if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
       this.#state.columnWidths.set(columnId, `${newWidth}px`);
-      emit(this, "rowan-column-resize", { columnId, width: `${newWidth}px`, columns: this.columns });
+      emit(this, "rowan-column-resize", {
+        columnId,
+        width: `${newWidth}px`,
+        columns: this.columns,
+      });
       return;
     }
 
@@ -1919,7 +1951,10 @@ export class RowanTable extends BaseElement {
       return;
     }
 
-    this.#reordering = { columnId: th.dataset.columnId, fromIndex: parseInt(th.dataset.columnIndex, 10) };
+    this.#reordering = {
+      columnId: th.dataset.columnId,
+      fromIndex: parseInt(th.dataset.columnIndex, 10),
+    };
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", th.dataset.columnId);
     th.classList.add("dragging");
@@ -1928,7 +1963,12 @@ export class RowanTable extends BaseElement {
   #handleReorderOver(event) {
     if (!this.reorderableColumns || !this.#reordering) return;
     const th = event.target.closest("th");
-    if (!th || th.classList.contains("select-column") || this.#findColumn(th.dataset.columnId)?.sticky) return;
+    if (
+      !th ||
+      th.classList.contains("select-column") ||
+      this.#findColumn(th.dataset.columnId)?.sticky
+    )
+      return;
 
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -1952,7 +1992,9 @@ export class RowanTable extends BaseElement {
 
   #handleReorderEnd() {
     if (!this.#reordering) return;
-    this.renderRoot.querySelectorAll(".dragging, .drop-target").forEach((el) => el.classList.remove("dragging", "drop-target"));
+    this.renderRoot
+      .querySelectorAll(".dragging, .drop-target")
+      .forEach((el) => el.classList.remove("dragging", "drop-target"));
     this.#reordering = null;
   }
 
@@ -2027,7 +2069,10 @@ export class RowanTable extends BaseElement {
         this.#rowEditing = rowEditing;
       },
     };
-    const open = this.editMode === "row" && initialValue === undefined ? editors.beginRowEdit : editors.beginCellEdit;
+    const open =
+      this.editMode === "row" && initialValue === undefined
+        ? editors.beginRowEdit
+        : editors.beginCellEdit;
     await open(ctx, this.#editing, this.#rowEditing, rowId, columnId, initialValue);
   }
 
@@ -2261,10 +2306,7 @@ export class RowanTable extends BaseElement {
       }
 
       if (columnIds.has(id)) {
-        this.#warn(
-          `column-duplicate-id-${id}`,
-          `column id "${id}" is duplicated.`,
-        );
+        this.#warn(`column-duplicate-id-${id}`, `column id "${id}" is duplicated.`);
         return;
       }
 
@@ -2280,10 +2322,7 @@ export class RowanTable extends BaseElement {
 
     const rowId = this.#state.rowId;
     if (typeof rowId !== "function" && (typeof rowId !== "string" || rowId.trim().length === 0)) {
-      this.#warn(
-        "row-id-accessor",
-        "rowId must be a non-empty string or function",
-      );
+      this.#warn("row-id-accessor", "rowId must be a non-empty string or function");
     }
   }
 
@@ -3644,7 +3683,10 @@ export class RowanTable extends BaseElement {
     if (!event.ctrlKey && !event.metaKey) return;
     if (event.altKey || event.shiftKey || this.#editing) return;
     const target = event.target;
-    if (target instanceof Element && target.closest("input, textarea, select, [contenteditable='true']")) {
+    if (
+      target instanceof Element &&
+      target.closest("input, textarea, select, [contenteditable='true']")
+    ) {
       return;
     }
     event.preventDefault();

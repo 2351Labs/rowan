@@ -15,6 +15,7 @@
  * @cssprop --rowan-chip-danger-bg
  */
 export class RowanChip extends BaseElement {
+  static componentTokenDeclarations: string[][];
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value: "info" | "success" | "warning" | "danger");
   /** @returns {"info" | "success" | "warning" | "danger"} */

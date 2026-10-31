@@ -22,6 +22,7 @@ export class RowanIconButton extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   set label(value: string);
   get label(): string;
   set icon(value: string);

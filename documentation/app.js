@@ -1339,14 +1339,16 @@ const DOC_PAGES = [
     id: "vue",
     group: "Overview",
     title: "Vue",
-    summary: "Use Rowan custom elements directly in Vue templates with v-bind for properties and v-on for events.",
+    summary:
+      "Use Rowan custom elements directly in Vue templates with v-bind for properties and v-on for events.",
     tags: ["vue", "vue3", "framework", "integration"],
     keywords: ["vue", "vue3", "composition", "property binding", "events"],
     content: () => `
       <section class="doc-section" data-doc-section id="vue-overview">
         <h2>Custom elements in Vue</h2>
         <p>Vue 3 has excellent native support for custom elements. Import the registration module and use tags directly in templates. Use <code>v-bind</code> or <code>:</code> for object/array properties and <code>v-on</code> or <code>@</code> for events.</p>
-        ${codeBlock(`<script setup>
+        ${codeBlock(
+          `<script setup>
 import { ref } from "vue";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1373,13 +1375,16 @@ function save() {
     @rowan-select="selected = $event.detail.selected"
   />
   <rowan-button @rowan-click="save">Save</rowan-button>
-</template>`, "vue")}
+</template>`,
+          "vue",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="vue-property-binding">
         <h2>Property binding</h2>
         <p>Use <code>:prop</code> or <code>v-bind:prop</code> to pass objects and arrays as properties. Vue automatically assigns these as properties, not attributes.</p>
-        ${codeBlock(`<template>
+        ${codeBlock(
+          `<template>
   <rowan-text-field
     label="Name"
     :value="name"
@@ -1390,13 +1395,16 @@ function save() {
     :checked="active"
     @rowan-change="active = $event.detail.checked"
   />
-</template>`, "vue")}
+</template>`,
+          "vue",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="vue-form-controls">
         <h2>Form-associated controls</h2>
         <p>Rowan form controls use ElementInternals for native form association. They work inside Vue form elements and emit standard validation events.</p>
-        ${codeBlock(`<template>
+        ${codeBlock(
+          `<template>
   <form @submit.prevent="handleSubmit">
     <rowan-text-field
       name="email"
@@ -1406,13 +1414,16 @@ function save() {
     />
     <rowan-button type="submit">Save</rowan-button>
   </form>
-</template>`, "vue")}
+</template>`,
+          "vue",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="vue-refs">
         <h2>Template refs</h2>
         <p>Access the custom element instance using template refs. The ref gives you direct access to the host element and its properties.</p>
-        ${codeBlock(`<script setup>
+        ${codeBlock(
+          `<script setup>
 import { ref } from "vue";
 
 const tableRef = ref(null);
@@ -1426,7 +1437,9 @@ function exportData() {
 <template>
   <rowan-table ref="tableRef" :config="config" />
   <rowan-button @rowan-click="exportData">Export</rowan-button>
-</template>`, "vue")}
+</template>`,
+          "vue",
+        )}
       </section>
     `,
   },
@@ -1441,7 +1454,8 @@ function exportData() {
       <section class="doc-section" data-doc-section id="angular-overview">
         <h2>Custom elements in Angular</h2>
         <p>Angular 20+ works with custom elements when you add <code>CUSTOM_ELEMENTS_SCHEMA</code> to your component or module. Import registration modules in your component and use tags in templates.</p>
-        ${codeBlock(`import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+        ${codeBlock(
+          `import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
 import "@rowan-ui/core/button";
@@ -1476,13 +1490,16 @@ export class MembersComponent {
   save() {
     console.log("Selected:", this.selected);
   }
-}`, "typescript")}
+}`,
+          "typescript",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="angular-property-binding">
         <h2>Property binding</h2>
         <p>Use Angular's <code>[property]</code> syntax to bind objects and arrays. Use <code>(event-name)</code> for event binding.</p>
-        ${codeBlock(`<rowan-text-field
+        ${codeBlock(
+          `<rowan-text-field
   label="Name"
   [value]="name"
   (rowan-change)="name = $any($event).detail.value"
@@ -1492,13 +1509,16 @@ export class MembersComponent {
   label="Active"
   [checked]="active"
   (rowan-change)="active = $any($event).detail.checked"
-></rowan-checkbox>`, "html")}
+></rowan-checkbox>`,
+          "html",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="angular-forms">
         <h2>Form-associated controls</h2>
         <p>Rowan form controls use ElementInternals for native form association. They work inside Angular forms and participate in validation.</p>
-        ${codeBlock(`<form (ngSubmit)="handleSubmit()">
+        ${codeBlock(
+          `<form (ngSubmit)="handleSubmit()">
   <rowan-text-field
     name="email"
     label="Email"
@@ -1506,7 +1526,9 @@ export class MembersComponent {
     required
   ></rowan-text-field>
   <rowan-button type="submit">Save</rowan-button>
-</form>`, "html")}
+</form>`,
+          "html",
+        )}
       </section>
     `,
   },
@@ -1521,7 +1543,8 @@ export class MembersComponent {
       <section class="doc-section" data-doc-section id="svelte-overview">
         <h2>Custom elements in Svelte</h2>
         <p>Svelte 5 has excellent support for custom elements. Import registration modules and use tags directly in templates. Use <code>bind:</code> or standard bindings for properties.</p>
-        ${codeBlock(`<script>
+        ${codeBlock(
+          `<script>
 import { writable } from "svelte/store";
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1547,13 +1570,16 @@ function save() {
   {selected}
   on:rowan-select={(e) => selected = e.detail.selected}
 />
-<rowan-button on:rowan-click={save}>Save</rowan-button>`, "svelte")}
+<rowan-button on:rowan-click={save}>Save</rowan-button>`,
+          "svelte",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="svelte-property-binding">
         <h2>Property binding</h2>
         <p>Use <code>{property}</code> shorthand or <code>property={value}</code> to pass properties. Svelte automatically assigns objects and arrays as properties.</p>
-        ${codeBlock(`<script>
+        ${codeBlock(
+          `<script>
 let name = $state("");
 let active = $state(false);
 </script>
@@ -1567,13 +1593,16 @@ let active = $state(false);
   label="Active"
   checked={active}
   on:rowan-change={(e) => active = e.detail.checked}
-/>`, "svelte")}
+/>`,
+          "svelte",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="svelte-forms">
         <h2>Form-associated controls</h2>
         <p>Rowan form controls use ElementInternals for native form association. They work inside Svelte form elements.</p>
-        ${codeBlock(`<script>
+        ${codeBlock(
+          `<script>
 function handleSubmit(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
@@ -1589,7 +1618,9 @@ function handleSubmit(event) {
     required
   />
   <rowan-button type="submit">Save</rowan-button>
-</form>`, "svelte")}
+</form>`,
+          "svelte",
+        )}
       </section>
     `,
   },
@@ -1597,7 +1628,8 @@ function handleSubmit(event) {
     id: "bundle-size",
     group: "Overview",
     title: "Bundle Size & Optimization",
-    summary: "Tree-shaking, per-component imports, and production optimization strategies for minimal bundle footprint.",
+    summary:
+      "Tree-shaking, per-component imports, and production optimization strategies for minimal bundle footprint.",
     tags: ["performance", "bundle", "tree-shaking", "optimization"],
     keywords: ["bundle size", "tree-shaking", "imports", "optimization", "production"],
     content: () => `
@@ -1608,40 +1640,40 @@ function handleSubmit(event) {
           <rowan-card>
             <p slot="title"><strong>Common Components</strong></p>
             <ul style="margin: 0; padding-left: 1.25rem;">
-              <li>Button: 13.8 KB</li>
-              <li>Checkbox: 14.4 KB</li>
-              <li>Text Field: 15.1 KB</li>
-              <li>Select: 14.8 KB</li>
-              <li>Alert: 13.8 KB</li>
+              <li>Button: 6.8 KB</li>
+              <li>Checkbox: 6.7 KB</li>
+              <li>Text Field: 7.4 KB</li>
+              <li>Select: 7.0 KB</li>
+              <li>Alert: 6.0 KB</li>
             </ul>
           </rowan-card>
           <rowan-card>
             <p slot="title"><strong>Complex Components</strong></p>
             <ul style="margin: 0; padding-left: 1.25rem;">
-              <li>Table: 35.9 KB</li>
-              <li>Trend Chart: 18.6 KB</li>
-              <li>Bar Chart: 19.1 KB</li>
-              <li>Dropdown: 16.1 KB</li>
-              <li>Dialog: 15.0 KB</li>
+              <li>Table: 34.5 KB</li>
+              <li>Trend Chart: 12.4 KB</li>
+              <li>Bar Chart: 12.0 KB</li>
+              <li>Dropdown: 9.0 KB</li>
+              <li>Dialog: 7.2 KB</li>
             </ul>
           </rowan-card>
           <rowan-card>
             <p slot="title"><strong>Common Scenarios</strong></p>
             <ul style="margin: 0; padding-left: 1.25rem;">
-              <li>3 controls: <strong>15.4 KB</strong></li>
-              <li>Form controls: <strong>17.7 KB</strong></li>
+              <li>3 controls: <strong>8.4 KB</strong></li>
+              <li>Form controls: <strong>10.7 KB</strong></li>
             </ul>
           </rowan-card>
         </div>
         <rowan-alert tone="success">
-          The benchmark in <code>benchmarks/RESULTS.md</code> shows 703 KB for 3 controls because it measures <strong>unminified ESM</strong> over a local dev server. Production builds are <strong>97.8% smaller</strong>.
+          The dev-server benchmark measures unminified ESM plus inline source maps. Three controls were 819 KB that way before token splitting, and 8.4 KB minified + gzip after. See <code>benchmarks/RESULTS.md</code>.
         </rowan-alert>
       </section>
 
       <section class="doc-section" data-doc-section id="bundle-import-patterns">
         <h2>Import Patterns</h2>
         <p><strong>✅ Recommended:</strong> Direct component imports for optimal tree-shaking</p>
-        ${codeBlock(`// ✅ Good: 15 KB
+        ${codeBlock(`// ✅ Good: 8.4 KB gzip
 import "@rowan-ui/core/button";
 import "@rowan-ui/core/checkbox";
 import "@rowan-ui/core/switch";`)}
@@ -1681,9 +1713,9 @@ async function loadAnalyticsDashboard() {
         <ul>
           <li><strong>Import only what you need</strong> - Use <code>@rowan-ui/core/button</code> not <code>@rowan-ui/core</code></li>
           <li><strong>Lazy-load heavy components</strong> - Charts and tables can be loaded on demand</li>
-          <li><strong>Use the right component</strong> - Badge (13 KB) vs Chip (13 KB) vs Status Indicator (14 KB)</li>
+          <li><strong>Use the right component</strong> - Badge (5.6 KB) vs Chip (5.9 KB) vs Spinner (5.9 KB)</li>
           <li><strong>Build with modern targets</strong> - Rowan uses ES2020; configure your bundler to match</li>
-          <li><strong>Enable Brotli compression</strong> - 15-20% better than gzip (15.4 KB → 12.6 KB)</li>
+          <li><strong>Enable Brotli compression</strong> - usually smaller than gzip for these bundles</li>
         </ul>
       </section>
 
@@ -1699,14 +1731,17 @@ async function loadAnalyticsDashboard() {
       <section class="doc-section" data-doc-section id="bundle-analysis">
         <h2>Analyzing Your Bundle</h2>
         <p>Use your bundler's analysis tools to verify tree-shaking and identify optimization opportunities:</p>
-        ${codeBlock(`# Vite
+        ${codeBlock(
+          `# Vite
 vite-bundle-visualizer
 
 # Webpack
 webpack-bundle-analyzer dist/stats.json
 
 # Rollup
-rollup --config --visualizer`, "bash")}
+rollup --config --visualizer`,
+          "bash",
+        )}
       </section>
 
       <section class="doc-section" data-doc-section id="bundle-faq">
@@ -1718,7 +1753,7 @@ rollup --config --visualizer`, "bash")}
           <li>Using an old bundler that doesn't tree-shake well</li>
         </ul>
         <p><strong>Q: Should I use Rowan in a performance-critical app?</strong></p>
-        <p>Yes! Rowan's production sizes are competitive: 3 controls = 15.4 KB vs Lit (~10 KB runtime only) vs Shoelace (~40-60 KB with deps).</p>
+        <p>Yes. Three controls are 8.4 KB minified + gzip, with each component's own tokens and without the rest of the catalog.</p>
         <p><strong>Q: Why do charts have larger bundles?</strong></p>
         <p>Charts include SVG rendering, axis generation, data transformation, and interactive features. Even so, they're reasonable: Sparkline (17 KB), Trend/Bar charts (19 KB), Table (36 KB).</p>
         <p>See <a href="https://github.com/2351Labs/rowan/blob/main/docs/BUNDLE_SIZE.md" target="_blank" rel="noopener">docs/BUNDLE_SIZE.md</a> for the complete guide.</p>
@@ -2631,8 +2666,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "column-sparkline",
     group: "Components",
     title: "Rowan Column Sparkline",
-    summary:
-      "Frozen compact one-series columns for KPI tiles, with a visually hidden data table.",
+    summary: "Frozen compact one-series columns for KPI tiles, with a visually hidden data table.",
     tags: ["data display", "sparkline", "kpi"],
     keywords: ["column sparkline", "compact chart", "kpi", "columns"],
     content: () => `
@@ -2818,7 +2852,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       const lines = [];
       const push = (type, event) => {
         const detail = event.detail || {};
-        lines.unshift(`${type} ${detail.seriesId || ""} ${detail.label || ""} ${detail.value ?? ""}`.trim());
+        lines.unshift(
+          `${type} ${detail.seriesId || ""} ${detail.label || ""} ${detail.value ?? ""}`.trim(),
+        );
         log.textContent = lines.slice(0, 6).join("\n");
       };
       chart.addEventListener("rowan-series-toggle", (event) => push("series", event));
@@ -4435,7 +4471,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       ${renderApiReference("rowan-row-details-panel")}
      `,
     afterRender: setupRowDetailsPanelDemo,
-  },  {
+  },
+  {
     id: "accordion",
     group: "Components",
     title: "Rowan Accordion",
@@ -7096,7 +7133,7 @@ function wireThemeToggle() {
 
 function wireQuickstartDialog() {
   quickstartCodeEl.textContent = QUICKSTART_SNIPPET;
-  
+
   const quickstartVersionEl = document.querySelector("#quickstart-version");
   if (quickstartVersionEl) {
     quickstartVersionEl.textContent = `@rowan-ui/core@${ROWAN_VERSION}`;

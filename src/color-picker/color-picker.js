@@ -1,3 +1,4 @@
+import { declarations as colorPickerTokenDeclarations } from "../tokens/parts/color-picker.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -133,6 +134,7 @@ export class RowanColorPicker extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./color-picker.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-color-picker-"];
+  static componentTokenDeclarations = colorPickerTokenDeclarations;
   static observedAttributes = [
     "name",
     "value",

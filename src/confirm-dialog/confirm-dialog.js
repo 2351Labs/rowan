@@ -1,3 +1,4 @@
+import { declarations as confirmDialogTokenDeclarations } from "../tokens/parts/confirm-dialog.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -66,6 +67,7 @@ export class RowanConfirmDialog extends BaseElement {
     "messages",
   ];
   static componentTokenPrefixes = ["--rowan-confirm-dialog-"];
+  static componentTokenDeclarations = confirmDialogTokenDeclarations;
 
   #dialog = null;
   #titleFallback = null;
