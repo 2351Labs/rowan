@@ -158,6 +158,8 @@ function nonNegativeInteger(value, fallback) {
  * @property {RowanTableCellConfig} [cell]
  * @property {{ tooltip?: string }} [headerCell]
  * @property {boolean | ((row: RowanTableRow, rowIndex: number) => boolean)} [editable]
+ * @property {boolean} [required] - Empty values cannot commit. Checkbox columns must be checked.
+ * @property {(value: unknown, row: RowanTableRow) => true | string | false} [validate] - Return true to accept a value, or an error message to keep the editor open.
  * @property {RowanTableColumnEditor} [editor]
  */
 
@@ -215,6 +217,11 @@ function nonNegativeInteger(value, fallback) {
  * @property {string | ((context: { rowId: string }) => string)} [selectRow]
  * @property {string} [subtotal]
  * @property {string} [switch]
+ * @property {string} [editCell]
+ * @property {string} [cancelEdit]
+ * @property {string} [commitEdit]
+ * @property {string} [required]
+ * @property {string} [invalidValue]
  */
 
 function isDevelopmentEnvironment() {
@@ -239,6 +246,7 @@ function isDevelopmentEnvironment() {
  * @attr {number} virtual-overscan
  * @attr {boolean} resizable-columns
  * @attr {boolean} reorderable-columns
+ * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -273,6 +281,12 @@ function isDevelopmentEnvironment() {
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  * @event rowan-column-resize - Fired when a column is resized. `detail` contains columnId, width, and columns array.
  * @event rowan-column-reorder - Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.
+ * @event rowan-edit-start - Fired before a cell editor opens. Cancelable.
+ * @event rowan-edit-validate - Fired before a cell or row commit, after `required` and `validate`. Cancelable. `preventDefault()` keeps the editor open. Not part of the commit event, so a rejected value is never delivered to commit listeners. `detail.message` is the error text; listeners may replace it.
+ * @event rowan-edit-commit - Fired when a cell value is accepted. Cancelable.
+ * @event rowan-edit-cancel - Fired when a cell edit is discarded.
+ * @event rowan-row-edit-commit - Fired when every editable cell in a row is valid. Cancelable. `detail.values` and `detail.oldValues` are keyed by column id.
+ * @event rowan-row-edit-cancel - Fired when a row edit is discarded.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;

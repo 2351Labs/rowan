@@ -27802,6 +27802,15 @@
           ]
         },
         {
+          "kind": "variable",
+          "name": "value"
+        },
+        {
+          "kind": "variable",
+          "name": "oldValue",
+          "default": "rowEditing.originalValues[entry.column.id]"
+        },
+        {
           "kind": "function",
           "name": "beginCellEdit",
           "parameters": [
@@ -28408,6 +28417,30 @@
             {
               "description": "Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.",
               "name": "rowan-column-reorder"
+            },
+            {
+              "description": "Fired before a cell editor opens. Cancelable.",
+              "name": "rowan-edit-start"
+            },
+            {
+              "description": "Fired before a cell or row commit, after `required` and `validate`. Cancelable. `preventDefault()` keeps the editor open. Not part of the commit event, so a rejected value is never delivered to commit listeners. `detail.message` is the error text; listeners may replace it.",
+              "name": "rowan-edit-validate"
+            },
+            {
+              "description": "Fired when a cell value is accepted. Cancelable.",
+              "name": "rowan-edit-commit"
+            },
+            {
+              "description": "Fired when a cell edit is discarded.",
+              "name": "rowan-edit-cancel"
+            },
+            {
+              "description": "Fired when every editable cell in a row is valid. Cancelable. `detail.values` and `detail.oldValues` are keyed by column id.",
+              "name": "rowan-row-edit-commit"
+            },
+            {
+              "description": "Fired when a row edit is discarded.",
+              "name": "rowan-row-edit-cancel"
             }
           ],
           "attributes": [
@@ -28482,6 +28515,13 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "type": {
+                "text": "\"cell\"|\"row\""
+              },
+              "description": "`cell` edits one cell. `row` edits every editable cell in the row.",
+              "name": "edit-mode"
             }
           ],
           "superclass": {

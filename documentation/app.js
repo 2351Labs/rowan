@@ -4315,6 +4315,12 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <pre id="table-events" class="table-events"></pre>
       </section>
 
+      <section class="doc-section" data-doc-section id="table-inline-editing">
+        <h2>Inline editing</h2>
+        <p>Set <code>column.editable</code> to open a cell with Enter, F2, or a typed character. <code>edit-mode="cell"</code> edits one cell. <code>edit-mode="row"</code> edits every editable cell in the row; Tab moves between them. Text and number editors, and the select, date, checkbox, and custom editors, load the first time an edit starts. A read-only table does not download that module.</p>
+        <p><code>column.required</code> rejects an empty value. A checkbox must be checked. <code>column.validate(value, row)</code> returns <code>true</code> or an error message. Validation is a separate cancelable <code>rowan-edit-validate</code> event, not part of <code>rowan-edit-commit</code> or <code>rowan-row-edit-commit</code>, so a rejected value is never handed to a commit listener. Call <code>preventDefault()</code> to reject a value the column rules accepted, and set <code>detail.message</code> for the text. An invalid cell stays in edit mode with <code>aria-invalid="true"</code> and <code>aria-describedby</code> pointing at the error. Row mode waits until every cell is valid before <code>rowan-row-edit-commit</code>. Escape still cancels with <code>rowan-edit-cancel</code> or <code>rowan-row-edit-cancel</code>. Override the stock strings with <code>messages.required</code> and <code>messages.invalidValue</code>.</p>
+      </section>
+
       ${renderApiReference("rowan-table")}
      `,
     afterRender: () => {
