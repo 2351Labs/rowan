@@ -11,9 +11,10 @@
 
 <p align="center">
   <a href="https://2351labs.github.io/rowan/">📚 Documentation</a> ·
+  <a href="https://2351labs.github.io/rowan/storybook/">🎨 Storybook</a> ·
+  <a href="https://2351labs.github.io/rowan/admin/">🗂️ Admin template</a> ·
   <a href="https://www.npmjs.com/package/@rowan-ui/core">📦 npm</a> ·
   <a href="CHANGELOG.md">📝 Changelog</a> ·
-  <a href="https://2351labs.github.io/rowan/storybook/">🎨 Storybook</a>
 </p>
 
 ---
@@ -65,8 +66,7 @@ table.config = {
 ```
 
 ```html
-<rowan-table></rowan-table>
-<rowan-button>Save</rowan-button>
+<rowan-table></rowan-table> <rowan-button>Save</rowan-button>
 ```
 
 ## Framework Integration
@@ -81,7 +81,7 @@ import { RowanTable } from "@rowan-ui/core/react/table";
 
 export function App() {
   const [selected, setSelected] = useState([]);
-  
+
   return (
     <RowanTable
       config={config}
@@ -119,12 +119,13 @@ Rowan ships **109 components** across these categories:
 Rowan is designed to be lean for production. Direct component imports result in small, tree-shakeable bundles:
 
 - **3 controls** (button + checkbox + switch): 15.4 KB gzipped
-- **Form controls**: 17.7 KB gzipped  
+- **Form controls**: 17.7 KB gzipped
 - **Table** (full featured): 35.9 KB gzipped
 
 The benchmark in `benchmarks/RESULTS.md` shows 703 KB for 3 controls because it measures **unminified ESM** over a local dev server. Production builds with minification and compression are **97.8% smaller**.
 
 **⚠️ Import pattern matters:**
+
 - ✅ `import "@rowan-ui/core/button"` → 13.8 KB (recommended)
 - ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (registers all 109 components due to auto-registration side effects)
 
@@ -188,7 +189,7 @@ Three-layer token system (primitive → semantic → component) with 6 built-in 
 
 ```js
 import "@rowan-ui/core/tokens";
-import "@rowan-ui/core/tokens/light";  // or dark, lagoon, ember, slate, midnight
+import "@rowan-ui/core/tokens/light"; // or dark, lagoon, ember, slate, midnight
 ```
 
 [**Learn more about theming →**](https://2351labs.github.io/rowan/#theming)
@@ -219,9 +220,6 @@ npm run storybook
 - `npm run documentation` serves the standalone static docs website at `/documentation/index.html`
 - `npm run storybook` starts Storybook on port 6006
 - `npm run build-storybook` builds Storybook static assets
-
-Releases publish the documentation site and Storybook to GitHub Pages via `.github/workflows/storybook-pages.yml`. One-time repo setting: **Settings → Pages → Source: GitHub Actions**.
-
 - `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit
 - `npm run test:browser` runs tests with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`
 - `npm run types` regenerates publishable declaration files
@@ -229,6 +227,16 @@ Releases publish the documentation site and Storybook to GitHub Pages via `.gith
 - `npm run lint` runs ESLint on source files
 - `npm run format` formats code via Prettier
 - `npm run size:check` verifies bundle size budgets
+
+Releases publish the documentation site, Storybook, and the Rowan Admin template to GitHub Pages via `.github/workflows/storybook-pages.yml`. The template is at `/rowan/admin/`. One-time repo setting: **Settings → Pages → Source: GitHub Actions**.
+
+## Admin template
+
+[templates/admin](templates/admin/README.md) is a vanilla operations console: dashboard, server-backed tables, record pages, settings, an offline map, and static auth. It uses `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre`.
+
+```bash
+npm run dev --workspace=@rowan-ui/admin-template
+```
 
 ## Browser Support
 

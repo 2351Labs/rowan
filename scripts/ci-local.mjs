@@ -2,7 +2,7 @@
 /**
  * Run GitHub CI checks locally before pushing or opening a PR.
  * Mirrors .github/workflows/ci.yml and storybook-pages.yml.
- * 
+ *
  * Usage:
  *   npm run ci:local             # Full run (all browsers, all checks)
  *   npm run ci:local -- --quick  # Fast iteration (lint, types, tests only)
@@ -73,7 +73,7 @@ function runCommand(cmd, args, label, env = {}) {
       const result = { label, status, duration, code };
       results.push(result);
       timings.push(`${status} ${label} (${formatDuration(duration)})`);
-      
+
       if (code !== 0) {
         console.error(`\n❌ ${label} failed with exit code ${code}\n`);
         if (!flags.keepGoing) {
@@ -83,7 +83,7 @@ function runCommand(cmd, args, label, env = {}) {
       } else {
         console.log(`\n✓ ${label} passed (${formatDuration(duration)})\n`);
       }
-      
+
       resolve(code);
     });
 
@@ -117,23 +117,23 @@ function formatDuration(ms) {
 function checkNodeModulesStale() {
   const lockFile = join(rootDir, "package-lock.json");
   const nodeModules = join(rootDir, "node_modules");
-  
+
   if (!existsSync(nodeModules)) {
     console.warn("⚠️  node_modules not found. Run npm ci first or use --clean.");
     return true;
   }
-  
+
   if (existsSync(lockFile)) {
     const lockStat = statSync(lockFile);
     const nodeModulesStat = statSync(nodeModules);
-    
+
     if (lockStat.mtime > nodeModulesStat.mtime) {
       console.warn("⚠️  package-lock.json is newer than node_modules.");
       console.warn("    Dependencies may be stale. Consider running: npm ci");
       console.warn("    Or use: npm run ci:local -- --clean\n");
     }
   }
-  
+
   return false;
 }
 
@@ -144,9 +144,9 @@ async function checkGeneratedArtifacts(label = "Verify generated artifacts") {
   console.log(`\n${"=".repeat(80)}`);
   console.log(`▶ ${label}`);
   console.log(`${"=".repeat(80)}\n`);
-  
+
   const start = Date.now();
-  
+
   return new Promise((resolve) => {
     const proc = spawn(
       "git",
@@ -168,7 +168,7 @@ async function checkGeneratedArtifacts(label = "Verify generated artifacts") {
       {
         cwd: rootDir,
         stdio: "pipe",
-      }
+      },
     );
 
     let output = "";
@@ -179,12 +179,12 @@ async function checkGeneratedArtifacts(label = "Verify generated artifacts") {
     proc.on("close", (_code) => {
       const duration = Date.now() - start;
       const changes = output.trim();
-      
+
       if (changes) {
         console.error("❌ Generated artifacts have uncommitted changes:\n");
         console.error(changes);
         console.error("\nRegenerate artifacts with: npm run analyze");
-        
+
         results.push({
           label,
           status: "✗",
@@ -192,7 +192,7 @@ async function checkGeneratedArtifacts(label = "Verify generated artifacts") {
           code: 1,
         });
         timings.push(`✗ ${label} (${formatDuration(duration)})`);
-        
+
         if (!flags.keepGoing) {
           printSummary();
           process.exit(1);
@@ -220,17 +220,17 @@ async function ensurePlaywrightBrowsers(browser) {
   console.log(`\n${"=".repeat(80)}`);
   console.log(`▶ Checking Playwright ${browser} installation`);
   console.log(`${"=".repeat(80)}\n`);
-  
+
   // Always install browsers to ensure they're up-to-date
   // Playwright install is idempotent and fast if already installed
   console.log(`Installing Playwright ${browser} (idempotent)...`);
-  
+
   return new Promise((resolve) => {
     const installProc = spawn("npx", ["playwright", "install", "--with-deps", browser], {
       cwd: rootDir,
       stdio: "inherit",
     });
-    
+
     installProc.on("close", (installCode) => {
       if (installCode === 0) {
         console.log(`\n✓ Playwright ${browser} ready\n`);
@@ -239,7 +239,7 @@ async function ensurePlaywrightBrowsers(browser) {
       }
       resolve(installCode);
     });
-    
+
     installProc.on("error", (err) => {
       console.error(`\n❌ Failed to install Playwright ${browser}:`, err);
       resolve(1);
@@ -254,18 +254,18 @@ function printSummary() {
   const totalDuration = Date.now() - totalStart;
   const passed = results.filter((r) => r.code === 0).length;
   const failed = results.filter((r) => r.code !== 0).length;
-  
+
   console.log(`\n${"=".repeat(80)}`);
   console.log(`CI LOCAL SUMMARY`);
   console.log(`${"=".repeat(80)}\n`);
-  
+
   timings.forEach((t) => console.log(`  ${t}`));
-  
+
   console.log(`\n${"=".repeat(80)}`);
   console.log(`Total: ${passed + failed} checks, ${passed} passed, ${failed} failed`);
   console.log(`Duration: ${formatDuration(totalDuration)}`);
   console.log(`${"=".repeat(80)}\n`);
-  
+
   if (failed > 0) {
     console.error("❌ CI local checks FAILED\n");
     console.error("Fix the errors above before pushing or opening a PR.\n");
@@ -298,23 +298,27 @@ async function main() {
   }
 
   // QUALITY JOB STEPS (mirrors .github/workflows/ci.yml quality job)
-  
+
   await runCommand("npm", ["run", "lint"], "Lint");
-  
+
   await runCommand("npm", ["run", "types"], "Generate types");
-  
+
   await runCommand("npm", ["run", "typecheck"], "Type check");
-  
+
   await runCommand("npm", ["run", "analyze"], "Analyze (CEM + React wrappers)");
 
   if (!flags.quick) {
     await runCommand("npm", ["run", "lint", "--workspace=@rowan-ui/icons"], "Icons: Lint");
     await runCommand("npm", ["run", "verify", "--workspace=@rowan-ui/icons"], "Icons: Verify");
-    await runCommand("npm", ["run", "types", "--workspace=@rowan-ui/icons"], "Icons: Generate types");
+    await runCommand(
+      "npm",
+      ["run", "types", "--workspace=@rowan-ui/icons"],
+      "Icons: Generate types",
+    );
     await runCommand(
       "npm",
       ["run", "typecheck", "--workspace=@rowan-ui/icons"],
-      "Icons: Type check"
+      "Icons: Type check",
     );
     await runCommand("node", ["scripts/check-ci-parity.mjs"], "Verify CI parity");
   }
@@ -334,7 +338,7 @@ async function main() {
     await runCommand("npm", ["run", "test", "--workspace=@rowan-ui/icons"], "Icons: Unit tests");
     // Full mode: documentation and storybook builds
     await runCommand("npm", ["run", "documentation:build"], "Build documentation");
-    
+
     await runCommand("npm", ["run", "build-storybook"], "Build Storybook");
 
     const chromiumReady = await ensurePlaywrightBrowsers("chromium");
@@ -346,18 +350,18 @@ async function main() {
       }
     }
 
-    await runCommand(
-      "node",
-      ["test/storybook-smoke.spec.mjs"],
-      "Storybook smoke test"
-    );
+    await runCommand("node", ["test/storybook-smoke.spec.mjs"], "Storybook smoke test");
 
     await runCommand(
-      "node",
-      ["scripts/check-docs-version.mjs"],
-      "Verify documentation version"
+      "npm",
+      ["run", "build", "--workspace=@rowan-ui/admin-template"],
+      "Build admin template",
     );
-    
+
+    await runCommand("node", ["templates/admin/e2e/smoke.mjs"], "Admin template smoke test");
+
+    await runCommand("node", ["scripts/check-docs-version.mjs"], "Verify documentation version");
+
     await runCommand(
       "node",
       ["scripts/generate-api-reference.mjs", "--check"],
@@ -367,28 +371,28 @@ async function main() {
     await runCommand(
       "node",
       ["scripts/check-component-docs-coverage.mjs"],
-      "Verify component docs coverage"
+      "Verify component docs coverage",
     );
 
     await runCommand("npm", ["run", "coverage:check"], "Check Storybook story coverage");
-    
+
     // npm pack dry runs
     await runCommand("npm", ["pack", "--dry-run"], "Pack core (dry-run)");
-    
+
     await runCommand(
       "npm",
       ["pack", "--dry-run", "--workspace=@rowan-ui/icons"],
-      "Pack icons (dry-run)"
+      "Pack icons (dry-run)",
     );
-    
+
     await runCommand(
       "npm",
       ["pack", "--dry-run", "--workspace=@rowan-ui/maplibre"],
-      "Pack maplibre (dry-run)"
+      "Pack maplibre (dry-run)",
     );
 
     // BROWSER-COMPATIBILITY JOB (mirrors .github/workflows/ci.yml browser-compatibility)
-    
+
     for (const browser of browsers) {
       // Ensure Playwright browser is installed
       const installCode = await ensurePlaywrightBrowsers(browser);
@@ -400,23 +404,20 @@ async function main() {
         }
         continue;
       }
-      
+
       // Run browser tests
-      await runCommand(
-        "npm",
-        ["run", "test:browser"],
-        `Browser tests (${browser})`,
-        { ROWAN_BROWSER: browser }
-      );
-      
+      await runCommand("npm", ["run", "test:browser"], `Browser tests (${browser})`, {
+        ROWAN_BROWSER: browser,
+      });
+
       await runCommand(
         "npm",
         ["run", "test:browser", "--workspace=@rowan-ui/icons"],
         `Icons: Browser tests (${browser})`,
-        { ROWAN_BROWSER: browser }
+        { ROWAN_BROWSER: browser },
       );
     }
-    
+
     await assemblePagesDryRun();
   }
 
@@ -445,7 +446,9 @@ function assemblePagesDryRun() {
 
   try {
     if (!existsSync(docsDir) || !existsSync(join(docsDir, "index.html"))) {
-      console.error("❌ Documentation build output not found at documentation/documentation-static-check/index.html");
+      console.error(
+        "❌ Documentation build output not found at documentation/documentation-static-check/index.html",
+      );
       failed = true;
     }
     if (!existsSync(storybookDir) || !existsSync(join(storybookDir, "index.html"))) {
@@ -458,19 +461,36 @@ function assemblePagesDryRun() {
       const storybookDest = join(deployDir, "storybook");
       mkdirSync(storybookDest, { recursive: true });
       cpSync(storybookDir, storybookDest, { recursive: true });
+      const adminDir = join(rootDir, "templates/admin/dist");
+      if (!existsSync(adminDir) || !existsSync(join(adminDir, "index.html"))) {
+        console.error(
+          "❌ Admin template build output not found at templates/admin/dist/index.html",
+        );
+        failed = true;
+      } else {
+        const adminDest = join(deployDir, "admin");
+        mkdirSync(adminDest, { recursive: true });
+        cpSync(adminDir, adminDest, { recursive: true });
+      }
       writeFileSync(join(deployDir, ".nojekyll"), "");
 
       const docsIndex = join(deployDir, "index.html");
       const storybookIndex = join(deployDir, "storybook", "index.html");
-      if (!existsSync(docsIndex) || !existsSync(storybookIndex)) {
+      const adminIndex = join(deployDir, "admin", "index.html");
+      if (
+        !failed &&
+        (!existsSync(docsIndex) || !existsSync(storybookIndex) || !existsSync(adminIndex))
+      ) {
         console.error("❌ Assembled Pages output is missing index.html files");
         console.error(`   Documentation: ${docsIndex}`);
         console.error(`   Storybook: ${storybookIndex}`);
+        console.error(`   Admin: ${adminIndex}`);
         failed = true;
-      } else {
+      } else if (!failed) {
         console.log(`✓ Pages deployment assembled in ${deployDir}`);
         console.log(`  - Documentation: ${docsIndex}`);
         console.log(`  - Storybook: ${storybookIndex}`);
+        console.log(`  - Admin: ${adminIndex}`);
       }
     }
   } catch (error) {

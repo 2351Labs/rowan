@@ -81,7 +81,7 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-image` | 100% | 100% | — |
 | `rowan-row-details-panel` | 100% | 100% | — |
 | `rowan-source-meta` | 100% | 100% | — |
-| `rowan-table` | 96% | 100% | — |
+| `rowan-table` | 100% | 100% | — |
 | `rowan-table-toolbar` | 100% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
