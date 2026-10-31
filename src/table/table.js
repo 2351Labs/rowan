@@ -407,6 +407,8 @@ export class RowanTable extends BaseElement {
       page: this.#normalizePage(next.page),
       groupBy: this.#normalizeGroupBy(next.groupBy),
       rowActivate: this.#normalizeRowActivate(next.rowActivate),
+      columnWidths: new Map(),
+      columnOrder: [],
     };
     this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
@@ -947,7 +949,7 @@ export class RowanTable extends BaseElement {
         th.append(handle);
       }
 
-      const storedWidth = this.#state.columnWidths.get(column.id);
+      const storedWidth = this.#state.columnWidths?.get(column.id);
       if (storedWidth) {
         th.style.width = storedWidth;
       } else if (column.width) {
@@ -1644,6 +1646,7 @@ export class RowanTable extends BaseElement {
     const handleEnd = () => {
       if (!this.#resizing) return;
       const finalWidth = this.#resizing.th.style.width;
+      if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
       this.#state.columnWidths.set(this.#resizing.columnId, finalWidth);
 
       emit(this, "rowan-column-resize", {
@@ -1673,6 +1676,7 @@ export class RowanTable extends BaseElement {
 
     const contentWidth = this.#measureColumnContent(columnId);
     th.style.width = `${contentWidth}px`;
+    if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
     this.#state.columnWidths.set(columnId, `${contentWidth}px`);
 
     emit(this, "rowan-column-resize", {
@@ -1709,6 +1713,7 @@ export class RowanTable extends BaseElement {
         }
 
         th.style.width = `${newWidth}px`;
+        if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
         this.#state.columnWidths.set(columnId, `${newWidth}px`);
 
         emit(this, "rowan-column-resize", {
