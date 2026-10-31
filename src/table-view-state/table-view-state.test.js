@@ -89,6 +89,26 @@ describe("table view state", () => {
     expect(restoreTableViewState("%not-json")).to.deep.equal(normalizeTableViewState());
   });
 
+  it("keeps one sort key as an object and several keys in order", () => {
+    expect(normalizeTableViewState({ sort: [{ id: "city", dir: "asc" }] }).sort).to.deep.equal({
+      id: "city",
+      dir: "asc",
+    });
+
+    const sort = [
+      { id: " city ", dir: "asc" },
+      { id: "name", dir: "desc" },
+      { id: "city", dir: "desc" },
+      { id: "role", dir: "sideways" },
+    ];
+    const state = normalizeTableViewState({ sort });
+    expect(state.sort).to.deep.equal([
+      { id: "city", dir: "asc" },
+      { id: "name", dir: "desc" },
+    ]);
+    expect(restoreTableViewState(serializeTableViewState({ sort }))).to.deep.equal(state);
+  });
+
   it("round-trips experimental filter groups as version 2", () => {
     const input = {
       filters: [

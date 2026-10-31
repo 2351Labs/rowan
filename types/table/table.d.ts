@@ -14,6 +14,7 @@
  * @attr {boolean} reorderable-columns
  * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
  * @attr {"client"|"server"} data-mode - `client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`.
+ * @attr {string} sort - JSON sort model. One `{"id","dir"}` object or an ordered array of those objects.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -23,8 +24,8 @@
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -40,7 +41,9 @@
  * @csspart viewport
  * @csspart spacer
  * @cssprop --rowan-table-virtual-height
- * @event rowan-sort - Fired when a sortable header changes direction
+ * @event rowan-sort - Fired when a sortable header changes direction. `detail` is the changed `{ id, dir }`.
+ * @event rowan-sort-change - Fired when the user changes the sort. `detail.sort` is the full ordered array of `{ id, dir }`.
+ * @event rowan-column-filter - Fired from a column menu filter field. Cancelable. `detail` is `{ columnId, value }`. `preventDefault()` leaves `filters` unchanged.
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
  * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
@@ -67,6 +70,10 @@
 export class RowanTable extends BaseElement {
   static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
+  /** @param {RowanTableSort | RowanTableSort[] | null} value */
+  set sort(value: RowanTableSort | RowanTableSort[] | null);
+  /** @returns {RowanTableSort | RowanTableSort[] | null} */
+  get sort(): RowanTableSort | RowanTableSort[] | null;
   /** @param {RowanTableConfig | null | undefined} value */
   set config(value: RowanTableConfig | null | undefined);
   /** @returns {RowanTableConfig} */
@@ -111,10 +118,6 @@ export class RowanTable extends BaseElement {
   set selected(value: string[]);
   /** @returns {string[]} */
   get selected(): string[];
-  /** @param {RowanTableSort | null} value */
-  set sort(value: RowanTableSort | null);
-  /** @returns {RowanTableSort | null} */
-  get sort(): RowanTableSort | null;
   /** @param {RowanTablePage | null} value */
   set page(value: RowanTablePage | null);
   /** @returns {RowanTablePage | null} */
@@ -459,6 +462,10 @@ export type RowanTableColumn = {
   align?: "center" | "start" | "end" | undefined;
   verticalAlign?: "center" | "start" | "end" | undefined;
   sortable?: boolean | undefined;
+  /**
+   * - Column menu shows a filter field. It updates `filters` and fires `rowan-column-filter`.
+   */
+  filterable?: boolean | undefined;
   sortDir?: "desc" | "asc" | null | undefined;
   sticky?: "start" | "end" | undefined;
   hidden?: boolean | undefined;
@@ -496,7 +503,10 @@ export type RowanTableConfig = {
   rowId?: string | ((row: RowanTableRow, rowIndex: number) => string) | undefined;
   selectable?: "none" | "single" | "multiple" | undefined;
   selected?: string[] | undefined;
-  sort?: RowanTableSort | null | undefined;
+  /**
+   * - One key, or an ordered list. The property returns one object when a single key is active.
+   */
+  sort?: RowanTableSort | RowanTableSort[] | null | undefined;
   caption?: string | undefined;
   captionVisuallyHidden?: boolean | undefined;
   density?: "sm" | "md" | "lg" | undefined;
@@ -530,6 +540,21 @@ export type RowanTableMessages = {
     string | ((context: { from: number; to: number; total: number }) => string) | undefined;
   previousPage?: string | undefined;
   resizeColumn?: string | ((context: { header: string }) => string) | undefined;
+  columnMenu?: string | ((context: { header: string }) => string) | undefined;
+  sortAscending?: string | undefined;
+  sortDescending?: string | undefined;
+  addToSort?: string | undefined;
+  clearSort?: string | undefined;
+  hideColumn?: string | undefined;
+  pinStart?: string | undefined;
+  pinEnd?: string | undefined;
+  unpin?: string | undefined;
+  autosizeColumn?: string | undefined;
+  resetColumnWidth?: string | undefined;
+  filterColumn?: string | undefined;
+  filterPlaceholder?: string | undefined;
+  hiddenColumns?: string | undefined;
+  showColumn?: string | ((context: { header: string }) => string) | undefined;
   selectAllRows?: string | undefined;
   selectRow?: string | ((context: { rowId: string }) => string) | undefined;
   subtotal?: string | undefined;

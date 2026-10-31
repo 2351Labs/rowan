@@ -7,6 +7,8 @@ export const RowanTable: ForwardRefExoticComponent<
     RowanTableElement,
     {
       onRowanSort?: (event: CustomEvent) => void;
+      onRowanSortChange?: (event: CustomEvent) => void;
+      onRowanColumnFilter?: (event: CustomEvent) => void;
       onRowanSelect?: (event: CustomEvent) => void;
       onRowanCellChange?: (event: CustomEvent) => void;
       onRowanCellAction?: (event: CustomEvent) => void;

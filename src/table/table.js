@@ -20,6 +20,7 @@ import "../progress/progress.js";
 import "../sparkline/sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
+import { clearColumnWidths, columnWidth } from "./column-widths.js";
 
 const CELL_TYPES = new Set([
   "text",
@@ -84,6 +85,21 @@ const DEFAULT_MESSAGES = Object.freeze({
   copiedCell: "Copied 1 cell.",
   nothingToCopy: "Nothing to copy.",
   copyFailed: "Could not copy.",
+  columnMenu: "{header} column menu",
+  sortAscending: "Sort ascending",
+  sortDescending: "Sort descending",
+  addToSort: "Add to sort",
+  clearSort: "Clear sort",
+  hideColumn: "Hide column",
+  pinStart: "Pin to start",
+  pinEnd: "Pin to end",
+  unpin: "Unpin",
+  autosizeColumn: "Autosize",
+  resetColumnWidth: "Reset width",
+  filterColumn: "Filter",
+  filterPlaceholder: "Contains…",
+  hiddenColumns: "Hidden columns",
+  showColumn: "Show {header}",
   exportedFile: "Exported {filename}.",
   exportFailed: "Could not export.",
   pastedCells: "Pasted {count}.",
@@ -167,6 +183,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {"start" | "center" | "end"} [align]
  * @property {"start" | "center" | "end"} [verticalAlign]
  * @property {boolean} [sortable]
+ * @property {boolean} [filterable] - Column menu shows a filter field. It updates `filters` and fires `rowan-column-filter`.
  * @property {"asc" | "desc" | null} [sortDir]
  * @property {"start" | "end"} [sticky]
  * @property {boolean} [hidden]
@@ -191,7 +208,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {string | ((row: RowanTableRow, rowIndex: number) => string)} [rowId]
  * @property {"none" | "single" | "multiple"} [selectable]
  * @property {string[]} [selected]
- * @property {RowanTableSort | null} [sort]
+ * @property {RowanTableSort | RowanTableSort[] | null} [sort] - One key, or an ordered list. The property returns one object when a single key is active.
  * @property {string} [caption]
  * @property {boolean} [captionVisuallyHidden]
  * @property {"sm" | "md" | "lg"} [density]
@@ -230,6 +247,21 @@ function nonNegativeInteger(value, fallback) {
  * @property {string | ((context: { from: number, to: number, total: number }) => string)} [paginationStatus]
  * @property {string} [previousPage]
  * @property {string | ((context: { header: string }) => string)} [resizeColumn]
+ * @property {string | ((context: { header: string }) => string)} [columnMenu]
+ * @property {string} [sortAscending]
+ * @property {string} [sortDescending]
+ * @property {string} [addToSort]
+ * @property {string} [clearSort]
+ * @property {string} [hideColumn]
+ * @property {string} [pinStart]
+ * @property {string} [pinEnd]
+ * @property {string} [unpin]
+ * @property {string} [autosizeColumn]
+ * @property {string} [resetColumnWidth]
+ * @property {string} [filterColumn]
+ * @property {string} [filterPlaceholder]
+ * @property {string} [hiddenColumns]
+ * @property {string | ((context: { header: string }) => string)} [showColumn]
  * @property {string} [selectAllRows]
  * @property {string | ((context: { rowId: string }) => string)} [selectRow]
  * @property {string} [subtotal]
@@ -280,6 +312,7 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} reorderable-columns
  * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
  * @attr {"client"|"server"} data-mode - `client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`.
+ * @attr {string} sort - JSON sort model. One `{"id","dir"}` object or an ordered array of those objects.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -289,8 +322,8 @@ function isDevelopmentEnvironment() {
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -306,7 +339,9 @@ function isDevelopmentEnvironment() {
  * @csspart viewport
  * @csspart spacer
  * @cssprop --rowan-table-virtual-height
- * @event rowan-sort - Fired when a sortable header changes direction
+ * @event rowan-sort - Fired when a sortable header changes direction. `detail` is the changed `{ id, dir }`.
+ * @event rowan-sort-change - Fired when the user changes the sort. `detail.sort` is the full ordered array of `{ id, dir }`.
+ * @event rowan-column-filter - Fired from a column menu filter field. Cancelable. `detail` is `{ columnId, value }`. `preventDefault()` leaves `filters` unchanged.
  * @event rowan-select - Fired when row selection changes
  * @event rowan-cell-change - Fired when checkbox cell value changes
  * @event rowan-cell-action - Fired when a link or button cell activates. Cancelable; preventDefault on a link action to block navigation.
@@ -348,6 +383,7 @@ export class RowanTable extends BaseElement {
     "reorderable-columns",
     "locale",
     "data-mode",
+    "sort",
   ];
   static upgradeProperties = [
     "config",
@@ -390,7 +426,6 @@ export class RowanTable extends BaseElement {
     editMode: "cell",
   };
   #toggledGroups = new Map();
-  #resizing = null;
   #reordering = null;
   #editing = null;
   #rowEditing = null;
@@ -430,6 +465,7 @@ export class RowanTable extends BaseElement {
   #server = null;
   #serverBoot = null;
   #serverReady = false;
+  #columnsModule = null;
 
   constructor() {
     super();
@@ -469,6 +505,11 @@ export class RowanTable extends BaseElement {
       this.#serverReady = false;
       if (this.dataMode !== "server") this.#server?.cancel();
       else this.#ensureServer();
+    }
+
+    if (name === "sort") {
+      this.sort = newValue ? this.#parseSortAttribute(newValue) : null;
+      return;
     }
 
     super.attributeChangedCallback(name, oldValue, newValue);
@@ -515,6 +556,7 @@ export class RowanTable extends BaseElement {
       columnWidths: new Map(),
       columnOrder: [],
     };
+    clearColumnWidths(this);
     this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
     this.#viewNeedsReconciliation = true;
@@ -585,17 +627,16 @@ export class RowanTable extends BaseElement {
     this.requestRender();
   }
 
-  /** @returns {RowanTableSort | null} */
+  /** @returns {RowanTableSort | RowanTableSort[] | null} */
   get sort() {
-    if (!this.#state.sort) return null;
-    return { ...this.#state.sort };
+    const list = this.#sortList();
+    if (!list) return null;
+    return list.length === 1 ? list[0] : list;
   }
 
-  /** @param {RowanTableSort | null} value */
+  /** @param {RowanTableSort | RowanTableSort[] | null} value */
   set sort(value) {
-    this.#state.sort = this.#normalizeSort(value);
-    this.#viewNeedsReconciliation = true;
-    this.requestRender();
+    this.#assignSort(value);
   }
 
   /** @returns {RowanTablePage | null} */
@@ -822,19 +863,7 @@ export class RowanTable extends BaseElement {
    * @param {{ emitEvent?: boolean }} [options]
    */
   sortBy(id, dir, options = {}) {
-    const normalized = this.#normalizeSort({ id, dir });
-    this.#state.sort = normalized;
-    this.#viewNeedsReconciliation = true;
-    if (this.dataMode === "server") {
-      void this.#bootServer().then((server) => {
-        if (this.dataMode === "server") server.onSort();
-      });
-    }
-    this.requestRender();
-
-    if (options.emitEvent && normalized) {
-      emit(this, "rowan-sort", { id: normalized.id, dir: normalized.dir });
-    }
+    this.#assignSort({ id, dir }, options);
   }
 
   render() {
@@ -1101,7 +1130,8 @@ export class RowanTable extends BaseElement {
 
         const indicator = document.createElement("span");
         indicator.className = "sort-indicator";
-        indicator.textContent = sortDir === "asc" ? "↑" : sortDir === "desc" ? "↓" : "↕";
+        const priority = this.#sortPriority(column);
+        indicator.textContent = `${sortDir === "asc" ? "↑" : sortDir === "desc" ? "↓" : "↕"}${priority || ""}`;
 
         button.append(label, indicator);
         contentWrapper.append(button);
@@ -1111,6 +1141,8 @@ export class RowanTable extends BaseElement {
         contentWrapper.append(label);
       }
 
+
+      contentWrapper.append(this.#createColumnMenuButton(column));
       th.append(contentWrapper);
 
       if (this.resizableColumns && i < columns.length - 1 && !column.sticky) {
@@ -1118,7 +1150,7 @@ export class RowanTable extends BaseElement {
         th.append(handle);
       }
 
-      const storedWidth = this.#state.columnWidths?.get(column.id);
+      const storedWidth = columnWidth(this, column.id);
       if (storedWidth) {
         th.style.width = storedWidth;
       } else if (column.width) {
@@ -1691,11 +1723,22 @@ export class RowanTable extends BaseElement {
   }
 
   #handleHeaderClick(event) {
+    const menuButton = this.#findActionElement(event, "col-menu");
+    if (menuButton) {
+      void this.#loadColumns().then((mod) => mod.openMenu(this, menuButton));
+      return;
+    }
+
     const button = this.#findActionElement(event, "sort");
     if (!button) return;
 
     const column = this.#findColumn(button.dataset.columnId);
     if (!column?.sortable) return;
+
+    if (event.shiftKey) {
+      void this.#loadColumns().then((mod) => mod.addSort(this, column.id));
+      return;
+    }
 
     this.sortBy(column.id, this.#nextSortDirection(column), { emitEvent: true });
   }
@@ -1830,74 +1873,29 @@ export class RowanTable extends BaseElement {
 
   #handleResizeStart(event) {
     if (!this.resizableColumns) return;
-    const handle = event.target.closest(".resize-handle");
+    const handle = event.target.closest?.(".resize-handle");
     if (!handle) return;
-
     event.preventDefault();
-    const columnId = handle.dataset.resizeColumn;
-    const th = handle.closest("th");
-    if (!th) return;
-
-    const column = this.#findColumn(columnId);
-    const minWidth = column?.minWidth ? this.#parsePixels(column.minWidth) : 40;
-    const isRTL = getComputedStyle(this).direction === "rtl";
-
-    this.#resizing = {
-      columnId,
-      th,
-      startX: event.clientX,
-      startWidth: th.getBoundingClientRect().width,
-      minWidth,
-      isRTL,
-    };
-
-    const handleMove = (e) => {
-      if (!this.#resizing) return;
-      const newWidth = Math.max(
-        this.#resizing.minWidth,
-        this.#resizing.startWidth +
-          (e.clientX - this.#resizing.startX) * (this.#resizing.isRTL ? -1 : 1),
-      );
-      this.#resizing.th.style.width = `${newWidth}px`;
-    };
-
-    const handleEnd = () => {
-      if (!this.#resizing) return;
-      const finalWidth = this.#resizing.th.style.width;
-      if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
-      this.#state.columnWidths.set(this.#resizing.columnId, finalWidth);
-      emit(this, "rowan-column-resize", {
-        columnId: this.#resizing.columnId,
-        width: finalWidth,
-        columns: this.columns,
-      });
-      this.#resizing = null;
-      document.removeEventListener("mousemove", handleMove);
-      document.removeEventListener("mouseup", handleEnd);
-    };
-
-    document.addEventListener("mousemove", handleMove);
-    document.addEventListener("mouseup", handleEnd);
+    const clientX = event.clientX;
+    void this.#loadColumns().then((mod) => mod.startResize(this, handle, clientX));
   }
 
   #handleHeaderDoubleClick(event) {
     if (!this.resizableColumns) return;
-    const handle = event.target.closest(".resize-handle");
+    const handle = event.target.closest?.(".resize-handle");
     if (!handle) return;
-
     event.preventDefault();
-    const th = handle.closest("th");
-    if (!th) return;
-
-    const columnId = handle.dataset.resizeColumn;
-    const width = `${this.#measureColumnContent(columnId)}px`;
-    th.style.width = width;
-    if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
-    this.#state.columnWidths.set(columnId, width);
-    emit(this, "rowan-column-resize", { columnId, width, columns: this.columns });
+    void this.#loadColumns().then((mod) => mod.autosizeHandle(this, handle));
   }
 
   #handleHeaderKeyDown(event) {
+    if (event.key === "ArrowDown" && event.target?.dataset?.tableAction === "col-menu") {
+      event.preventDefault();
+      const anchor = event.target;
+      void this.#loadColumns().then((mod) => mod.openMenu(this, anchor));
+      return;
+    }
+
     const th = event.target.closest("th");
     if (!th || th.classList.contains("select-column")) return;
 
@@ -1911,22 +1909,9 @@ export class RowanTable extends BaseElement {
       (event.key === "ArrowLeft" || event.key === "ArrowRight")
     ) {
       event.preventDefault();
-      const isRTL = getComputedStyle(this).direction === "rtl";
-      const delta = event.shiftKey ? 10 : 1;
-      const minWidth = column.minWidth ? this.#parsePixels(column.minWidth) : 40;
-      const newWidth = Math.max(
-        minWidth,
-        th.getBoundingClientRect().width +
-          delta * ((event.key === "ArrowRight") === !isRTL ? 1 : -1),
-      );
-      th.style.width = `${newWidth}px`;
-      if (!this.#state.columnWidths) this.#state.columnWidths = new Map();
-      this.#state.columnWidths.set(columnId, `${newWidth}px`);
-      emit(this, "rowan-column-resize", {
-        columnId,
-        width: `${newWidth}px`,
-        columns: this.columns,
-      });
+      const key = event.key;
+      const shiftKey = event.shiftKey;
+      void this.#loadColumns().then((mod) => mod.nudgeColumn(this, th, column, key, shiftKey));
       return;
     }
 
@@ -2018,22 +2003,6 @@ export class RowanTable extends BaseElement {
     columns.splice(columns.indexOf(to), 0, moved);
     this.columns = columns;
     emit(this, "rowan-column-reorder", { fromIndex, toIndex, columns: this.columns });
-  }
-
-  #measureColumnContent(columnId) {
-    const cells = this.#cellsForColumn(columnId);
-    let max = 100;
-    for (const cell of cells) {
-      const w = (cell.querySelector(".th-content") || cell).scrollWidth + 32;
-      if (w > max) max = w;
-    }
-    return max;
-  }
-
-  #parsePixels(value) {
-    if (typeof value === "number") return value;
-    const m = String(value).match(/^(\d+(?:\.\d+)?)px$/);
-    return m ? parseFloat(m[1]) : 0;
   }
 
   #getRowFromElement(tr) {
@@ -2970,7 +2939,7 @@ export class RowanTable extends BaseElement {
       setPage: (page) => {
         this.#state.page = page;
       },
-      getSort: () => this.sort,
+      getSort: () => this.#sortList(),
       getSource: () => this.#dataSource,
       getFilters: () => this.#filters,
       message: (key, params) => resolveMessage(this.#messages, DEFAULT_MESSAGES, key, params),
@@ -3252,25 +3221,22 @@ export class RowanTable extends BaseElement {
   }
 
   #applySort(entries) {
-    const sort = this.#state.sort;
-    if (!sort) return entries;
+    const sorts = this.#state.sort;
+    if (!sorts?.length) return entries;
 
-    const column = this.#findColumn(sort.id);
-    if (!column) return entries;
-
-    const direction = sort.dir === "desc" ? -1 : 1;
     const sortedEntries = [...entries];
-
     sortedEntries.sort((left, right) => {
-      const leftValue = this.#resolveValue(left.row, left.rowIndex, column);
-      const rightValue = this.#resolveValue(right.row, right.rowIndex, column);
-      const result = this.#compareValues(leftValue, rightValue, column.type);
-
-      if (result === 0) {
-        return left.rowIndex - right.rowIndex;
+      for (const sort of sorts) {
+        const column = this.#findColumn(sort.id);
+        if (!column) continue;
+        const result = this.#compareValues(
+          this.#resolveValue(left.row, left.rowIndex, column),
+          this.#resolveValue(right.row, right.rowIndex, column),
+          column.type,
+        );
+        if (result) return result * (sort.dir === "desc" ? -1 : 1);
       }
-
-      return result * direction;
+      return left.rowIndex - right.rowIndex;
     });
 
     return sortedEntries;
@@ -3315,22 +3281,81 @@ export class RowanTable extends BaseElement {
   }
 
   #normalizeSort(value) {
-    if (!value || typeof value !== "object") return null;
-    if (typeof value.id !== "string" || value.id.length === 0) return null;
-    if (!SORT_DIRECTIONS.has(value.dir)) return null;
+    const items = Array.isArray(value) ? value : value ? [value] : [];
+    const seen = new Set();
+    const sort = [];
+    for (const item of items) {
+      if (!item || typeof item.id !== "string" || item.id.length === 0 || !SORT_DIRECTIONS.has(item.dir)) continue;
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      sort.push({ id: item.id, dir: item.dir });
+    }
+    return sort.length ? sort : null;
+  }
 
-    return {
-      id: value.id,
-      dir: value.dir,
-    };
+  #sortList() {
+    if (!this.#state.sort?.length) return null;
+    return this.#state.sort.map((item) => ({ id: item.id, dir: item.dir }));
   }
 
   #columnSortDirection(column) {
-    if (this.#state.sort?.id === column.id) {
-      return this.#state.sort.dir;
-    }
-
+    const found = this.#state.sort?.find((item) => item.id === column.id);
+    if (found) return found.dir;
     return SORT_DIRECTIONS.has(column.sortDir) ? column.sortDir : null;
+  }
+
+  #sortPriority(column) {
+    const sort = this.#state.sort;
+    if (!sort || sort.length < 2) return 0;
+    const index = sort.findIndex((item) => item.id === column.id);
+    return index < 0 ? 0 : index + 1;
+  }
+
+  #assignSort(model, options = {}) {
+    const normalized = this.#normalizeSort(model);
+    this.#state.sort = normalized;
+    this.#viewNeedsReconciliation = true;
+    if (this.dataMode === "server") {
+      void this.#bootServer().then((server) => {
+        if (this.dataMode === "server") server.onSort();
+      });
+    }
+    this.requestRender();
+    if (!options.emitEvent) return;
+    const sort = this.#sortList() ?? [];
+    const changed = options.changed ?? sort[0];
+    if (changed?.dir) emit(this, "rowan-sort", { id: changed.id, dir: changed.dir });
+    emit(this, "rowan-sort-change", { sort });
+  }
+
+  #parseSortAttribute(value) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+
+  #loadColumns() {
+    return (this.#columnsModule ??= import("./table-columns.js"));
+  }
+
+  #createColumnMenuButton(column) {
+    const menu = document.createElement("button");
+    menu.type = "button";
+    menu.className = "col-menu";
+    menu.dataset.tableAction = "col-menu";
+    menu.dataset.columnId = this.#normalizeText(column.id);
+    menu.textContent = "⋮";
+    menu.setAttribute("aria-haspopup", "menu");
+    menu.setAttribute("aria-expanded", "false");
+    menu.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "columnMenu", {
+        header: column.header || column.id,
+      }),
+    );
+    return menu;
   }
 
   #nextSortDirection(column) {

@@ -51,7 +51,7 @@ export function restoreTableViewState(
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
  * @property {number} version
- * @property {RowanTableViewSort | null} sort
+ * @property {RowanTableViewSort | RowanTableViewSort[] | null} sort
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
@@ -95,7 +95,7 @@ export type RowanTableViewFilterGroup = {
  */
 export type RowanTableViewState = {
   version: number;
-  sort: RowanTableViewSort | null;
+  sort: RowanTableViewSort | RowanTableViewSort[] | null;
   page: RowanTableViewPage | null;
   filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup>;
   visibleColumns: string[] | null;

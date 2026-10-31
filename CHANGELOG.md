@@ -8,6 +8,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- `rowan-table` column menu and multi-sort: each header opens a top-layer menu (mouse, keyboard, and screen reader) for sort ascending, sort descending, add to sort, clear, hide, pin start or end, autosize, and reset width. Shift+click adds a sort key and shows its priority. `sort` accepts one `{ id, dir }` or an ordered array. `rowan-sort-change` reports the full model. A `filterable` column updates `filters` and fires cancelable `rowan-column-filter`. Menu labels use `table.messages`. The menu loads on first open. Client sorts are stable across the ordered keys.
 - `rowan-table` paste: Ctrl/Cmd+V and `pasteText(text)` paste TSV onto the focused editable cell. Blocks fill editable visible columns and following rows. A single value can fill the selected rows. Values pass `required`, `validate`, `rowan-edit-validate`, and `rowan-edit-commit`. Cancelable `rowan-paste`, then `rowan-paste-result`. Rejected cells keep the editor error. Server mode and paging only change loaded rows; extra rows are ignored. The paste module loads on first use.
 - `rowan-table` clipboard and export: Ctrl/Cmd+C copies selected rows, or the focused cell, as TSV and an HTML table. `copyToClipboard`, `exportCsv`, and `exportExcel` honor visible column order, hidden columns, formatters, and header options. CSV escaping and formula-injection guards are on by default. Excel is a real `.xlsx` file and loads with the export module on first use. Cancelable `rowan-copy` and `rowan-export`. In server mode the loaded page is exported unless `getRows` supplies rows. Paste is deferred.
 - `rowan-table` server data: `data-mode="server"` and `dataSource.getRows({ page, pageSize, sort, filters, signal })` return `{ rows, total }`. Paging, sorting, and debounced filters are requested from the source. Stale reads are aborted and ignored. Loading, empty, and error/retry states are announced and localizable. Cancelable `rowan-data-request`, plus `rowan-data-load` and `rowan-data-error`. Selection ids survive page changes; select-all applies to the current page. The fetch controller loads on first use.
@@ -18,6 +19,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - `rowan-table` column resizing: opt-in `resizable-columns` attribute enables drag handles on header edges with mouse/touch interaction, keyboard resizing via Arrow keys (with Shift for larger increments), double-click to auto-fit column width, and min/max width constraints. Emits `rowan-column-resize` event. Integrated with `table-view-state` for persistence.
 - `rowan-table` column reordering: opt-in `reorderable-columns` attribute enables drag-and-drop of headers and keyboard reordering via Alt+Arrow Left/Right. Respects frozen/pinned columns. Emits `rowan-column-reorder` event. Integrated with `table-view-state` for persistence.
 - `table-view-state` now includes `columnWidths` (map of column ID to width string) and `columnOrder` (array of column IDs) for restoring user-customized table layouts.
+
+### Changed
+
+- Server `dataSource.getRows({ sort })` receives an ordered array of `{ id, dir }`, or null when nothing is sorted. The `sort` property still returns a single `{ id, dir }` when only one key is active. Saved table views keep that same shape: one key stays an object, and two or more keys stay an ordered array.
 
 ### Fixed
 

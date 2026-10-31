@@ -29741,6 +29741,74 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table/column-widths.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "setColumnWidth",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "columnId"
+            },
+            {
+              "name": "width"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "columnWidth",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "columnId"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "clearColumnWidths",
+          "parameters": [
+            {
+              "name": "table"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "setColumnWidth",
+          "declaration": {
+            "name": "setColumnWidth",
+            "module": "src/table/column-widths.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "columnWidth",
+          "declaration": {
+            "name": "columnWidth",
+            "module": "src/table/column-widths.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "clearColumnWidths",
+          "declaration": {
+            "name": "clearColumnWidths",
+            "module": "src/table/column-widths.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table/index.js",
       "declarations": [],
       "exports": [
@@ -29750,6 +29818,134 @@
           "declaration": {
             "name": "RowanTable",
             "module": "./table.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table/table-columns.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "addSort",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "id"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "startResize",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "handle"
+            },
+            {
+              "name": "clientX"
+            }
+          ]
+        },
+        {
+          "kind": "variable",
+          "name": "th"
+        },
+        {
+          "kind": "variable",
+          "name": "columnId"
+        },
+        {
+          "kind": "function",
+          "name": "autosizeHandle",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "handle"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "nudgeColumn",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "th"
+            },
+            {
+              "name": "column"
+            },
+            {
+              "name": "key"
+            },
+            {
+              "name": "shiftKey"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "openMenu",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "anchor"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "addSort",
+          "declaration": {
+            "name": "addSort",
+            "module": "src/table/table-columns.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "startResize",
+          "declaration": {
+            "name": "startResize",
+            "module": "src/table/table-columns.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autosizeHandle",
+          "declaration": {
+            "name": "autosizeHandle",
+            "module": "src/table/table-columns.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "nudgeColumn",
+          "declaration": {
+            "name": "nudgeColumn",
+            "module": "src/table/table-columns.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "openMenu",
+          "declaration": {
+            "name": "openMenu",
+            "module": "src/table/table-columns.js"
           }
         }
       ]
@@ -30532,14 +30728,14 @@
               "name": "sort",
               "return": {
                 "type": {
-                  "text": "RowanTableSort | null"
+                  "text": "RowanTableSort | RowanTableSort[] | null"
                 }
               },
               "parameters": [
                 {
                   "name": "value",
                   "type": {
-                    "text": "RowanTableSort | null"
+                    "text": "RowanTableSort | RowanTableSort[] | null"
                   }
                 }
               ]
@@ -30675,7 +30871,7 @@
               "type": {
                 "text": "object | null"
               },
-              "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
+              "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
             },
             {
               "kind": "field",
@@ -30683,7 +30879,7 @@
               "type": {
                 "text": "Array<object>"
               },
-              "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself."
+              "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`."
             },
             {
               "kind": "field",
@@ -30952,8 +31148,16 @@
           ],
           "events": [
             {
-              "description": "Fired when a sortable header changes direction",
+              "description": "Fired when a sortable header changes direction. `detail` is the changed `{ id, dir }`.",
               "name": "rowan-sort"
+            },
+            {
+              "description": "Fired when the user changes the sort. `detail.sort` is the full ordered array of `{ id, dir }`.",
+              "name": "rowan-sort-change"
+            },
+            {
+              "description": "Fired from a column menu filter field. Cancelable. `detail` is `{ columnId, value }`. `preventDefault()` leaves `filters` unchanged.",
+              "name": "rowan-column-filter"
             },
             {
               "description": "Fired when row selection changes",
@@ -31123,6 +31327,13 @@
                 "text": "\"client\"|\"server\""
               },
               "description": "`client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`."
+            },
+            {
+              "name": "sort",
+              "type": {
+                "text": "string"
+              },
+              "description": "JSON sort model. One `{\"id\",\"dir\"}` object or an ordered array of those objects."
             },
             {
               "type": {

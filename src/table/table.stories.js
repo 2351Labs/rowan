@@ -1591,6 +1591,59 @@ export const CellEditChrome = {
   },
 };
 
+export const ColumnMenu = {
+  name: "Column menu and multi-sort",
+  render: () => `
+      <div style="padding: 1rem; display: grid; gap: 0.75rem;">
+        <p id="column-menu-status">Shift+click a header to add a sort. Open the column menu for sort, pin, hide, width, and filter.</p>
+        <rowan-table id="column-menu-table" sort='[{"id":"team","dir":"asc"},{"id":"score","dir":"desc"}]' selectable="multiple" density="md" resizable-columns reorderable-columns caption="Roster"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("#column-menu-table");
+        const status = document.querySelector("#column-menu-status");
+        const people = [
+          { id: "ada", name: "Ada Lovelace", team: "Platform", role: "Admin", score: 12, city: "London" },
+          { id: "alan", name: "Alan Turing", team: "Platform", role: "Editor", score: 9, city: "Manchester" },
+          { id: "grace", name: "Grace Hopper", team: "Compiler", role: "Admin", score: 14, city: "New York" },
+          { id: "radia", name: "Radia Perlman", team: "Network", role: "Editor", score: 11, city: "Portsmouth" },
+          { id: "ken", name: "Ken Thompson", team: "Platform", role: "Viewer", score: 8, city: "New Orleans" },
+          { id: "barbara", name: "Barbara Liskov", team: "Compiler", role: "Admin", score: 13, city: "Los Angeles" },
+        ];
+        table.config = {
+          rowId: "id",
+          columns: [
+            { id: "name", header: "Name", sortable: true, filterable: true, minWidth: "10rem" },
+            { id: "team", header: "Team", sortable: true, filterable: true },
+            { id: "role", header: "Role", sortable: true },
+            { id: "score", header: "Score", type: "number", sortable: true, align: "end" },
+            { id: "city", header: "City", sortable: true },
+            { id: "notes", header: "Notes", hidden: true },
+          ],
+          rows: people,
+          sort: [
+            { id: "team", dir: "asc" },
+            { id: "score", dir: "desc" },
+          ],
+        };
+        const note = (text) => {
+          status.textContent = text;
+        };
+        table.addEventListener("rowan-sort", (event) => note("rowan-sort " + event.detail.id + " " + event.detail.dir));
+        table.addEventListener("rowan-sort-change", (event) => note("rowan-sort-change " + event.detail.sort.map((item) => item.id + " " + item.dir).join(", ")));
+        table.addEventListener("rowan-column-filter", (event) => note("rowan-column-filter " + event.detail.columnId + " " + event.detail.value));
+        table.addEventListener("rowan-column-resize", (event) => note("rowan-column-resize " + event.detail.columnId + " " + event.detail.width));
+        table.addEventListener("rowan-column-reorder", (event) => note("rowan-column-reorder " + event.detail.fromIndex + " " + event.detail.toIndex));
+      </script>
+    `,
+  parameters: {
+    docs: {
+      description: {
+        story: "Column menu: sort ascending, sort descending, add to sort, clear sort, hide column, pin to start, pin to end, unpin, autosize, and reset width. Shift+click adds a sort key. sort accepts an ordered array. rowan-sort-change reports that array. filterable columns fire rowan-column-filter. Server getRows receives the same ordered sort array.",
+      },
+    },
+  },
+};
+
 export const Loading = {
   name: "Loading",
   render: () => {
