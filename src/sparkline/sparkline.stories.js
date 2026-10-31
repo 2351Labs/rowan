@@ -1,6 +1,10 @@
 import "./sparkline.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import {
+  sparklineValues,
+  monthlyRevenue,
+} from "../../stories/fixtures/chart-data.js";
 
 function createSparkline({
   label = "Open incidents",
@@ -138,4 +142,36 @@ export const AreaVersusTarget = {
 export const VibrantPalette = {
   name: "Vibrant palette",
   render: () => withVibrantChartPalette(InKpiCard.render()),
+};
+
+export const RealisticData = {
+  name: "Realistic monthly data",
+  render: () => {
+    const chart = document.createElement("rowan-sparkline");
+    chart.label = "Monthly revenue trend";
+    chart.values = sparklineValues.revenue;
+    chart.labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return chart;
+  },
+};
+
+export const NegativeValues = {
+  name: "Negative values",
+  render: () => {
+    const chart = document.createElement("rowan-sparkline");
+    chart.label = "Daily variance";
+    chart.values = sparklineValues.negative;
+    chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    return chart;
+  },
+};
+
+export const Empty = {
+  name: "Empty state",
+  render: () => {
+    const chart = document.createElement("rowan-sparkline");
+    chart.label = "No data available";
+    chart.values = [];
+    return chart;
+  },
 };

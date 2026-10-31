@@ -46,6 +46,8 @@ jobs:
         run: node scripts/check-docs-version.mjs
       - name: Verify all components have API references
         run: node scripts/check-component-docs-coverage.mjs
+      - name: Check Storybook story coverage
+        run: npm run coverage:check
       - run: npm pack --dry-run
       - run: npm pack --dry-run --workspace=@rowan-ui/icons
       - run: npm pack --dry-run --workspace=@rowan-ui/maplibre

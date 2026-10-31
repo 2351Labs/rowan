@@ -683,7 +683,9 @@
     "format": "prettier --write \"**/*.{js,jsx,css,md,mdx,json}\" test-fixtures/astro/astro.config.mjs \"test-fixtures/astro/src/**/*.astro\"",
     "format:check": "prettier --check \"**/*.{js,jsx,css,md,mdx,json}\" test-fixtures/astro/astro.config.mjs \"test-fixtures/astro/src/**/*.astro\"",
     "ci:local": "node ./scripts/ci-local.mjs",
-    "hooks:install": "git config core.hooksPath .githooks && echo '✓ Git hooks installed in .githooks/' && echo '  Pre-push hook will run: npm run ci:local -- --quick' && echo '  Skip with: ROWAN_SKIP_HOOKS=1 git push'"
+    "hooks:install": "git config core.hooksPath .githooks && echo '✓ Git hooks installed in .githooks/' && echo '  Pre-push hook will run: npm run ci:local -- --quick' && echo '  Skip with: ROWAN_SKIP_HOOKS=1 git push'",
+    "test:storybook": "npm run build-storybook && node test/storybook-smoke.spec.mjs",
+    "coverage:check": "node scripts/check-story-coverage.mjs"
   },
   "devDependencies": {
     "@angular/compiler": "^20.3.33",
