@@ -43,3 +43,33 @@ export const Empty = {
     heading: "Looks good",
   },
 };
+
+export const JumpToField = {
+  name: "Jump to field",
+  parameters: {
+    docs: {
+      description: {
+        story: "Activating an error emits rowan-jump and moves focus to the named field.",
+      },
+    },
+  },
+  render: () => {
+    const form = document.createElement("form");
+    form.id = "signup";
+    const name = document.createElement("input");
+    name.id = "name";
+    name.name = "name";
+    const summary = document.createElement("rowan-validation-summary");
+    summary.forForm = "signup";
+    summary.errors = [{ fieldId: "name", label: "Name", message: "Name is required" }];
+    const heading = document.createElement("span");
+    heading.slot = "heading";
+    heading.textContent = "Fix the signup form";
+    const empty = document.createElement("span");
+    empty.slot = "empty";
+    empty.textContent = "No remaining errors";
+    summary.append(heading, empty);
+    form.append(summary, name);
+    return form;
+  },
+};

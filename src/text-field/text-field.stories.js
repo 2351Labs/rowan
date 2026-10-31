@@ -45,3 +45,20 @@ export const Playground = {
     return el;
   },
 };
+
+export const EmailPattern = {
+  name: "Email pattern",
+  render: () => {
+    const el = document.createElement("rowan-text-field");
+    el.name = "email";
+    el.type = "email";
+    el.label = "Work email";
+    el.placeholder = "ada@rowan.example";
+    el.value = "not-an-email";
+    el.autocomplete = "email";
+    el.pattern = ".+@rowan\\.example";
+    el.required = true;
+    el.invalid = true;
+    return el;
+  },
+};

@@ -36,3 +36,15 @@ export const Playground = {
     return el;
   },
 };
+
+export const Indeterminate = {
+  name: "Indeterminate",
+  render: () => {
+    const el = document.createElement("rowan-checkbox");
+    el.name = "select-all";
+    el.value = "all";
+    el.indeterminate = true;
+    el.textContent = "Select all open incidents";
+    return el;
+  },
+};

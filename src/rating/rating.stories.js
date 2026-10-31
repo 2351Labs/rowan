@@ -69,3 +69,23 @@ export const TenPointScale = {
     return rating;
   },
 };
+
+export const InvalidWithSlots = {
+  name: "Invalid with slots",
+  render: () => {
+    const rating = createRating({ required: true, value: 0 });
+    rating.name = "service-quality";
+    rating.locale = "en-US";
+    rating.invalid = true;
+    rating.label = "";
+    rating.description = "";
+    const label = document.createElement("span");
+    label.slot = "label";
+    label.textContent = "Service quality";
+    const description = document.createElement("span");
+    description.slot = "description";
+    description.textContent = "A rating is required before you can submit.";
+    rating.append(label, description);
+    return rating;
+  },
+};

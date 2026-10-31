@@ -1,6 +1,11 @@
 /**
- * Enforce Storybook coverage for chart and KPI components.
- * Other components are listed in docs/STORY_COVERAGE.md and do not fail CI.
+ * Story coverage for every Rowan component.
+ *
+ * Charts stay on the gallery rules. Every other component is scored from
+ * custom-elements.json attributes, enum values, slots, and events.
+ * Charts and Forms & Input fail the run. The remaining categories are
+ * report-only until each one is filled; add a category here only when it is
+ * at 100%, and fail every category once the last one lands.
  */
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -43,6 +48,9 @@ const ALLOWLIST = new Set([
 ]);
 
 const GALLERY_PATH = "stories/chart-galleries.js";
+
+/** Categories that fail CI. Grow this only when that category is at 100%. */
+const ENFORCED_CATEGORIES = new Set(["Charts", "Forms & Input"]);
 
 function read(path) {
   return readFileSync(resolve(rootDir, path), "utf8");
@@ -213,23 +221,15 @@ function analyze(tag, declaration, sourcePath, storyText, galleryText) {
   };
 }
 
-function reportOnly(declaration) {
-  const storyHint = declaration.tagName?.replace("rowan-", "") ?? "";
-  return {
-    tag: declaration.tagName,
-    fields: publicFields(declaration).length,
-    slots: (declaration.slots || []).length,
-    events: (declaration.events || []).length,
-    hinted: storyHint,
-  };
-}
-
-function markdown(chartRows, others) {
+function markdown(chartRows, grouped) {
   const lines = [];
   lines.push("# Storybook coverage");
   lines.push("");
-  lines.push("Chart and KPI components are enforced by `scripts/check-story-coverage.mjs`.");
+  lines.push(
+    "Charts and Forms & Input are enforced by `scripts/check-story-coverage.mjs`.",
+  );
   lines.push("Other categories are report-only until their story PRs land.");
+  lines.push("The check fails for every category only once each one is at 100%.");
   lines.push("");
   lines.push("## Charts and data viz");
   lines.push("");
@@ -242,18 +242,98 @@ function markdown(chartRows, others) {
   lines.push("");
   lines.push("Before is the story file on `origin/main`, without shared fixture galleries.");
   lines.push("After includes `stories/chart-galleries.js` plus the story file.");
-  lines.push("Allowlisted inherited fields: `internals`, `form`, `validity`, `validationMessage`, `willValidate`, `externalLabelText`, and form-associated `labels` where it is not the category `string[]`.");
-  lines.push("Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads use the error story (`Unable to load chart data`) and an empty data set.");
+  lines.push(
+    "Allowlisted inherited fields: `internals`, `form`, `validity`, `validationMessage`, `willValidate`, `externalLabelText`, and form-associated `labels` where it is not the category `string[]`.",
+  );
+  lines.push(
+    "Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads use the error story (`Unable to load chart data`) and an empty data set.",
+  );
   lines.push("");
-  lines.push("## Other components (report only)");
-  lines.push("");
-  lines.push("| Component | Public fields | Slots | Events |");
-  lines.push("| --- | ---: | ---: | ---: |");
-  for (const row of others) {
-    lines.push(`| \`${row.tag}\` | ${row.fields} | ${row.slots} | ${row.events} |`);
+
+  for (const [category, rows] of grouped) {
+    lines.push(`## ${category}`);
+    lines.push("");
+    lines.push("| Component | Before | After | Missing |");
+    lines.push("| --- | ---: | ---: | --- |");
+    for (const row of rows) {
+      const missing = row.missing.length === 0 ? "—" : row.missing.join(", ");
+      lines.push(`| \`${row.tag}\` | ${row.before}% | ${row.after}% | ${missing} |`);
+    }
+    lines.push("");
   }
+
+  lines.push(
+    "Non-chart scores count public attributes, enum values, slots, and events from `custom-elements.json`. Before is `origin/main`. After is the story file on this branch.",
+  );
   lines.push("");
   return lines.join("\n");
+}
+
+function storyPathFor(tag) {
+  const name = tag.slice("rowan-".length);
+  return `src/${name}/${name}.stories.js`;
+}
+
+function categoryOf(tag, storyText) {
+  if (CHARTS.some(([chart]) => chart === tag)) return "Charts";
+  if (tag === "rowan-form-wizard") return "Forms & Input";
+  const match = storyText.match(/title:\s*["']Components\/([^/"']+)\//);
+  return match?.[1] || "Other";
+}
+
+function featureCoverage(declaration, text) {
+  const missing = [];
+  let total = 0;
+  let covered = 0;
+
+  function expect(ok, item) {
+    total += 1;
+    if (ok) covered += 1;
+    else missing.push(item);
+  }
+
+  for (const attribute of declaration.attributes || []) {
+    const names = [attribute.name, camel(attribute.name)];
+    expect(
+      names.some((name) => name && text.includes(name)),
+      `attribute ${attribute.name}`,
+    );
+    const options = [...String(attribute.type?.text || "").matchAll(/"([^"]+)"/g)].map(
+      (match) => match[1],
+    );
+    for (const option of options) {
+      expect(
+        text.includes(`"${option}"`) || text.includes(`'${option}'`),
+        `enum ${attribute.name}=${option}`,
+      );
+    }
+  }
+
+  for (const slot of declaration.slots || []) {
+    if (!slot.name) {
+      expect(/textContent|\.append\(/.test(text), "slot default");
+      continue;
+    }
+    if (slot.name.includes("*")) {
+      expect(text.includes(slot.name.replaceAll("*", "")), `slot ${slot.name}`);
+      continue;
+    }
+    expect(
+      text.includes(`"${slot.name}"`) || text.includes(`'${slot.name}'`),
+      `slot ${slot.name}`,
+    );
+  }
+
+  for (const event of declaration.events || []) {
+    if (event.name) expect(text.includes(event.name), `event ${event.name}`);
+  }
+
+  return {
+    total,
+    covered,
+    missing,
+    percent: total === 0 ? 100 : Math.round((covered / total) * 100),
+  };
 }
 
 function main() {
@@ -279,25 +359,50 @@ function main() {
     }
   }
 
-  const others = [...byTag.values()]
+  const grouped = new Map();
+  const components = [...byTag.values()]
     .filter((declaration) => declaration.customElement && declaration.tagName?.startsWith("rowan-"))
     .filter((declaration) => !chartTags.has(declaration.tagName))
-    .map(reportOnly)
-    .sort((a, b) => a.tag.localeCompare(b.tag));
+    .sort((a, b) => a.tagName.localeCompare(b.tagName));
 
-  const body = markdown(rows, others);
+  for (const declaration of components) {
+    const tag = declaration.tagName;
+    const path = storyPathFor(tag);
+    const current = existsSync(resolve(rootDir, path)) ? read(path) : "";
+    const category = categoryOf(tag, current);
+    const after = featureCoverage(declaration, current);
+    const before = featureCoverage(declaration, mainStoryFile(path));
+    const row = { tag, before: before.percent, after: after.percent, missing: after.missing };
+    if (!grouped.has(category)) grouped.set(category, []);
+    grouped.get(category).push(row);
+    if (ENFORCED_CATEGORIES.has(category) && after.missing.length > 0) {
+      failures.push(`${tag}: ${after.missing.join(", ")}`);
+    }
+  }
+
+  const body = markdown(rows, grouped);
   const outputPath = resolve(rootDir, "docs/STORY_COVERAGE.md");
   const previous = existsSync(outputPath) ? readFileSync(outputPath, "utf8") : "";
   if (previous !== body) writeFileSync(outputPath, body);
 
+  console.log(`Chart story coverage: ${rows.length} components.`);
+  for (const row of rows) console.log(`  ${row.tag}: ${row.before}% -> ${row.after}%`);
+  for (const [category, categoryRows] of grouped) {
+    const enforced = ENFORCED_CATEGORIES.has(category) ? "enforced" : "report-only";
+    const done = categoryRows.filter((row) => row.missing.length === 0).length;
+    console.log(`${category} (${enforced}): ${done}/${categoryRows.length} at 100%.`);
+    for (const row of categoryRows) {
+      console.log(`  ${row.tag}: ${row.before}% -> ${row.after}%`);
+    }
+  }
+
   if (failures.length > 0) {
-    console.error("Chart story coverage failed:\n");
+    console.error("\nStory coverage failed:\n");
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
 
-  console.log(`Chart story coverage passed for ${rows.length} components.`);
-  for (const row of rows) console.log(`  ${row.tag}: ${row.before}% -> ${row.after}%`);
+  console.log("\nEnforced story coverage passed.");
 }
 
 main();

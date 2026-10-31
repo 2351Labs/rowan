@@ -35,3 +35,16 @@ export const Playground = {
     return el;
   },
 };
+
+export const NamedValue = {
+  name: "Named value",
+  render: () => {
+    const el = document.createElement("rowan-switch");
+    el.name = "scheduling";
+    el.value = "available";
+    el.label = "Availability";
+    el.checked = true;
+    el.textContent = "Available for scheduling";
+    return el;
+  },
+};

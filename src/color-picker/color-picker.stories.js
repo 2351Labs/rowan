@@ -70,3 +70,22 @@ export const TranslucentCustomColor = {
     return picker;
   },
 };
+
+export const InvalidWithSlots = {
+  name: "Invalid with slots",
+  render: () => {
+    const picker = document.createElement("rowan-color-picker");
+    picker.name = "brand-color";
+    picker.value = "#b4392d";
+    picker.invalid = true;
+    picker.required = true;
+    const label = document.createElement("span");
+    label.slot = "label";
+    label.textContent = "Brand color";
+    const description = document.createElement("span");
+    description.slot = "description";
+    description.textContent = "This color fails the contrast check.";
+    picker.append(label, description);
+    return picker;
+  },
+};

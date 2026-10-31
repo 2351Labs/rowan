@@ -49,6 +49,23 @@ export const Playground = {
   },
 };
 
+export const OutOfRange = {
+  name: "Out of range",
+  render: () => {
+    const field = document.createElement("rowan-number-field");
+    field.name = "units";
+    field.label = "Units";
+    field.value = "250";
+    field.min = "0";
+    field.max = "100";
+    field.step = 5;
+    field.required = true;
+    field.invalid = true;
+    field.messages = { increaseValue: "Add five units", decreaseValue: "Remove five units" };
+    return field;
+  },
+};
+
 export const ReportCriteria = {
   args: {
     value: "25",

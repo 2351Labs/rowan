@@ -88,3 +88,33 @@ export const SlottedContent = {
     return formField;
   },
 };
+
+export const InvalidWithActions = {
+  name: "Invalid with actions",
+  render: () => {
+    const formField = document.createElement("rowan-form-field");
+    formField.invalid = true;
+    formField.required = true;
+
+    const label = document.createElement("span");
+    label.slot = "label";
+    label.textContent = "Workspace name";
+
+    const description = document.createElement("span");
+    description.slot = "description";
+    description.textContent = "Lowercase letters and hyphens only.";
+
+    const error = document.createElement("span");
+    error.slot = "error";
+    error.textContent = "That workspace name is already taken.";
+
+    const actions = document.createElement("span");
+    actions.slot = "actions";
+    actions.textContent = "Check availability";
+
+    const control = createTextField();
+    control.value = "northstar";
+    formField.append(label, description, control, error, actions);
+    return formField;
+  },
+};

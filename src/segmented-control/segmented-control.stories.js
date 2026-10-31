@@ -55,3 +55,16 @@ export const CompactModes = {
     return control;
   },
 };
+
+export const Required = {
+  name: "Required",
+  render: () => {
+    const control = document.createElement("rowan-segmented-control");
+    control.name = "view-mode";
+    control.label = "View mode";
+    control.required = true;
+    control.options = OPTIONS;
+    control.value = "board";
+    return control;
+  },
+};

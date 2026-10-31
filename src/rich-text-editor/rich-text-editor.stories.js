@@ -79,3 +79,22 @@ export const PlainTextFallback = {
   }),
   render: () => createEditor({ mode: "plain", value: { blocks: [] } }),
 };
+
+export const InvalidWithSlots = {
+  name: "Invalid with slots",
+  render: () => {
+    const editor = createEditor({ required: true, value: { blocks: [] } });
+    editor.name = "runbook";
+    editor.invalid = true;
+    editor.label = "";
+    editor.description = "";
+    const label = document.createElement("span");
+    label.slot = "label";
+    label.textContent = "Incident response guidance";
+    const description = document.createElement("span");
+    description.slot = "description";
+    description.textContent = "Add at least one response step.";
+    editor.append(label, description);
+    return editor;
+  },
+};

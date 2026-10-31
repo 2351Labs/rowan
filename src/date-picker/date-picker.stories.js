@@ -38,3 +38,18 @@ export const Playground = {
     return datePicker;
   },
 };
+
+export const Invalid = {
+  name: "Invalid",
+  render: () => {
+    const datePicker = document.createElement("rowan-date-picker");
+    datePicker.name = "start-date";
+    datePicker.label = "Start date";
+    datePicker.value = "2026-09-01";
+    datePicker.min = "2026-09-10";
+    datePicker.max = "2026-09-20";
+    datePicker.required = true;
+    datePicker.invalid = true;
+    return datePicker;
+  },
+};

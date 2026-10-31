@@ -22,6 +22,7 @@ function createLayout({ columns = 2, labelPosition = "top", labelAlign = "start"
   layout.labelPosition = labelPosition;
   layout.labelAlign = labelAlign;
   layout.labelWidth = "11rem";
+  layout.gap = "1rem";
 
   const project = createField({
     label: "Project name",
