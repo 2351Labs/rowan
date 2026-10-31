@@ -8,6 +8,7 @@ import "../src/tokens/themes/midnight.css";
 import "../src/tokens/charts-vibrant.css";
 
 import "../src/index.js";
+import packageJson from "../package.json";
 import "../packages/maplibre/src/map/map.js";
 import { ArrowRight } from "../packages/icons/src/icons/arrow-right.js";
 import { CalendarDays } from "../packages/icons/src/icons/calendar-days.js";
@@ -48,6 +49,7 @@ import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
+const ROWAN_VERSION = packageJson.version;
 const OPEN_FREE_MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const OPEN_FREE_MAP_ATTRIBUTION = [
   { label: "OpenFreeMap", href: "https://openfreemap.org/" },
@@ -94,7 +96,7 @@ import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/slate";
 import "@rowan-ui/core/tokens/midnight";`;
 
-const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.22.0
+const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@${ROWAN_VERSION}
 
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1214,6 +1216,123 @@ function collectSupportedComponents() {
   return [...byTagName.values()].sort((left, right) => left.tagName.localeCompare(right.tagName));
 }
 
+function getComponentManifestData(tagName) {
+  const modules = Array.isArray(customElementsManifest.modules)
+    ? customElementsManifest.modules
+    : [];
+
+  for (const moduleEntry of modules) {
+    const declarations = Array.isArray(moduleEntry.declarations) ? moduleEntry.declarations : [];
+    for (const declaration of declarations) {
+      if (declaration?.tagName === tagName && declaration?.customElement === true) {
+        return { declaration, modulePath: moduleEntry.path || "" };
+      }
+    }
+  }
+  return null;
+}
+
+function renderApiReference(tagName) {
+  const data = getComponentManifestData(tagName);
+  if (!data) return "";
+
+  const { declaration } = data;
+  let html = '<section class="doc-section" data-doc-section id="api-reference"><h2>API Reference</h2>';
+
+  // Attributes
+  const attributes = Array.isArray(declaration.attributes) ? declaration.attributes : [];
+  const publicAttributes = attributes.filter(
+    (attr) => !attr.name.startsWith("aria-") && !attr.inheritedFrom
+  );
+  if (publicAttributes.length > 0) {
+    html += "<h3>Attributes</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>';
+    for (const attr of publicAttributes) {
+      const type = attr.type?.text || attr.type || "string";
+      const description = attr.description || "";
+      html += `<tr><td><code>${escapeHtml(attr.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Properties
+  const members = Array.isArray(declaration.members) ? declaration.members : [];
+  const publicProperties = members.filter(
+    (m) =>
+      m.kind === "field" &&
+      !m.static &&
+      !m.inheritedFrom &&
+      !m.name.startsWith("_") &&
+      !m.name.startsWith("#") &&
+      m.name !== "internals"
+  );
+  if (publicProperties.length > 0) {
+    html += "<h3>Properties</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Type</th><th>Readonly</th><th>Description</th></tr></thead><tbody>';
+    for (const prop of publicProperties) {
+      const type = prop.return?.type?.text || prop.type?.text || "any";
+      const readonly = prop.readonly ? "Yes" : "No";
+      const description = prop.description || "";
+      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${readonly}</td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Events
+  const events = Array.isArray(declaration.events) ? declaration.events : [];
+  if (events.length > 0) {
+    html += "<h3>Events</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Event</th><th>Description</th></tr></thead><tbody>';
+    for (const event of events) {
+      const description = event.description || "";
+      html += `<tr><td><code>${escapeHtml(event.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Slots
+  const slots = Array.isArray(declaration.slots) ? declaration.slots : [];
+  if (slots.length > 0) {
+    html += "<h3>Slots</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Slot</th><th>Description</th></tr></thead><tbody>';
+    for (const slot of slots) {
+      const slotName = slot.name || "(default)";
+      const description = slot.description || "";
+      html += `<tr><td><code>${escapeHtml(slotName)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // CSS Parts
+  const cssParts = Array.isArray(declaration.cssParts) ? declaration.cssParts : [];
+  if (cssParts.length > 0) {
+    html += "<h3>CSS Parts</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Part</th><th>Description</th></tr></thead><tbody>';
+    for (const part of cssParts) {
+      const description = part.description || "";
+      html += `<tr><td><code>${escapeHtml(part.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // CSS Custom Properties
+  const cssProperties = Array.isArray(declaration.cssProperties)
+    ? declaration.cssProperties
+    : [];
+  if (cssProperties.length > 0) {
+    html += "<h3>CSS Custom Properties</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Description</th></tr></thead><tbody>';
+    for (const prop of cssProperties) {
+      const description = prop.description || "";
+      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  html += "</section>";
+  return html;
+}
+
 const SUPPORTED_COMPONENTS = collectSupportedComponents();
 const SUPPORTED_COMPONENT_TAG_NAMES = new Set(
   SUPPORTED_COMPONENTS.map((component) => component.tagName),
@@ -1252,7 +1371,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.22.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@${ROWAN_VERSION}</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -1312,6 +1431,380 @@ const DOC_PAGES = [
         <h2>Next.js and SSR</h2>
         <p>Import wrappers from a client component. Do not import them or registration modules from server-rendered code. The <code>@rowan-ui/core/react</code> entry is JSX types plus <code>createRowanComponent</code>; generated wrappers register the element.</p>
         ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
+      </section>
+    `,
+  },
+  {
+    id: "vue",
+    group: "Overview",
+    title: "Vue",
+    summary: "Use Rowan custom elements directly in Vue templates with v-bind for properties and v-on for events.",
+    tags: ["vue", "vue3", "framework", "integration"],
+    keywords: ["vue", "vue3", "composition", "property binding", "events"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="vue-overview">
+        <h2>Custom elements in Vue</h2>
+        <p>Vue 3 has excellent native support for custom elements. Import the registration module and use tags directly in templates. Use <code>v-bind</code> or <code>:</code> for object/array properties and <code>v-on</code> or <code>@</code> for events.</p>
+        ${codeBlock(`<script setup>
+import { ref } from "vue";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+const selected = ref([]);
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+function save() {
+  console.log("Selected:", selected.value);
+}
+</script>
+
+<template>
+  <rowan-table
+    :config="config"
+    :selected="selected"
+    @rowan-select="selected = $event.detail.selected"
+  />
+  <rowan-button @rowan-click="save">Save</rowan-button>
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-property-binding">
+        <h2>Property binding</h2>
+        <p>Use <code>:prop</code> or <code>v-bind:prop</code> to pass objects and arrays as properties. Vue automatically assigns these as properties, not attributes.</p>
+        ${codeBlock(`<template>
+  <rowan-text-field
+    label="Name"
+    :value="name"
+    @rowan-change="name = $event.detail.value"
+  />
+  <rowan-checkbox
+    label="Active"
+    :checked="active"
+    @rowan-change="active = $event.detail.checked"
+  />
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-form-controls">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Vue form elements and emit standard validation events.</p>
+        ${codeBlock(`<template>
+  <form @submit.prevent="handleSubmit">
+    <rowan-text-field
+      name="email"
+      label="Email"
+      type="email"
+      required
+    />
+    <rowan-button type="submit">Save</rowan-button>
+  </form>
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-refs">
+        <h2>Template refs</h2>
+        <p>Access the custom element instance using template refs. The ref gives you direct access to the host element and its properties.</p>
+        ${codeBlock(`<script setup>
+import { ref } from "vue";
+
+const tableRef = ref(null);
+
+function exportData() {
+  const table = tableRef.value;
+  console.log(table.selected);
+}
+</script>
+
+<template>
+  <rowan-table ref="tableRef" :config="config" />
+  <rowan-button @rowan-click="exportData">Export</rowan-button>
+</template>`, "vue")}
+      </section>
+    `,
+  },
+  {
+    id: "angular",
+    group: "Overview",
+    title: "Angular",
+    summary: "Angular 20+ recognizes Rowan as custom elements with CUSTOM_ELEMENTS_SCHEMA.",
+    tags: ["angular", "framework", "integration"],
+    keywords: ["angular", "custom elements", "property binding", "events"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="angular-overview">
+        <h2>Custom elements in Angular</h2>
+        <p>Angular 20+ works with custom elements when you add <code>CUSTOM_ELEMENTS_SCHEMA</code> to your component or module. Import registration modules in your component and use tags in templates.</p>
+        ${codeBlock(`import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+@Component({
+  selector: "app-members",
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: \\\`
+    <rowan-table
+      [config]="config"
+      [selected]="selected"
+      (rowan-select)="onSelect($event)"
+    ></rowan-table>
+    <rowan-button (rowan-click)="save()">Save</rowan-button>
+  \\\`,
+})
+export class MembersComponent {
+  selected: string[] = [];
+  config = {
+    rowId: "id",
+    selectable: "multiple" as const,
+    columns: [{ id: "name", header: "Name" }],
+    rows: [{ id: "1", name: "Ada" }],
+  };
+
+  onSelect(event: CustomEvent) {
+    this.selected = event.detail.selected;
+  }
+
+  save() {
+    console.log("Selected:", this.selected);
+  }
+}`, "typescript")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="angular-property-binding">
+        <h2>Property binding</h2>
+        <p>Use Angular's <code>[property]</code> syntax to bind objects and arrays. Use <code>(event-name)</code> for event binding.</p>
+        ${codeBlock(`<rowan-text-field
+  label="Name"
+  [value]="name"
+  (rowan-change)="name = $any($event).detail.value"
+></rowan-text-field>
+
+<rowan-checkbox
+  label="Active"
+  [checked]="active"
+  (rowan-change)="active = $any($event).detail.checked"
+></rowan-checkbox>`, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="angular-forms">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Angular forms and participate in validation.</p>
+        ${codeBlock(`<form (ngSubmit)="handleSubmit()">
+  <rowan-text-field
+    name="email"
+    label="Email"
+    type="email"
+    required
+  ></rowan-text-field>
+  <rowan-button type="submit">Save</rowan-button>
+</form>`, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "svelte",
+    group: "Overview",
+    title: "Svelte",
+    summary: "Svelte 5 handles custom elements naturally with native property and event bindings.",
+    tags: ["svelte", "framework", "integration"],
+    keywords: ["svelte", "svelte5", "property binding", "events", "runes"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="svelte-overview">
+        <h2>Custom elements in Svelte</h2>
+        <p>Svelte 5 has excellent support for custom elements. Import registration modules and use tags directly in templates. Use <code>bind:</code> or standard bindings for properties.</p>
+        ${codeBlock(`<script>
+import { writable } from "svelte/store";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+let selected = $state([]);
+
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+function save() {
+  console.log("Selected:", selected);
+}
+</script>
+
+<rowan-table
+  {config}
+  {selected}
+  on:rowan-select={(e) => selected = e.detail.selected}
+/>
+<rowan-button on:rowan-click={save}>Save</rowan-button>`, "svelte")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="svelte-property-binding">
+        <h2>Property binding</h2>
+        <p>Use <code>{property}</code> shorthand or <code>property={value}</code> to pass properties. Svelte automatically assigns objects and arrays as properties.</p>
+        ${codeBlock(`<script>
+let name = $state("");
+let active = $state(false);
+</script>
+
+<rowan-text-field
+  label="Name"
+  value={name}
+  on:rowan-change={(e) => name = e.detail.value}
+/>
+<rowan-checkbox
+  label="Active"
+  checked={active}
+  on:rowan-change={(e) => active = e.detail.checked}
+/>`, "svelte")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="svelte-forms">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Svelte form elements.</p>
+        ${codeBlock(`<script>
+function handleSubmit(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  console.log(Object.fromEntries(formData));
+}
+</script>
+
+<form on:submit={handleSubmit}>
+  <rowan-text-field
+    name="email"
+    label="Email"
+    type="email"
+    required
+  />
+  <rowan-button type="submit">Save</rowan-button>
+</form>`, "svelte")}
+      </section>
+    `,
+  },
+  {
+    id: "bundle-size",
+    group: "Overview",
+    title: "Bundle Size & Optimization",
+    summary: "Tree-shaking, per-component imports, and production optimization strategies for minimal bundle footprint.",
+    tags: ["performance", "bundle", "tree-shaking", "optimization"],
+    keywords: ["bundle size", "tree-shaking", "imports", "optimization", "production"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bundle-overview">
+        <h2>Development vs Production</h2>
+        <p>Rowan ships unbundled ES modules. Development bundles include source maps and unminified code. Production builds with tools like Vite, Rollup, or esbuild enable minification, tree-shaking, and compression.</p>
+        <rowan-alert tone="info">
+          Benchmark numbers in the repository measure development transfer sizes. Production bundles with minification and gzip are typically 40-60KB for a typical application using several components.
+        </rowan-alert>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-tree-shaking">
+        <h2>Tree-shaking and selective imports</h2>
+        <p>Import only the components you need instead of the full catalog. Each component is its own entry point, enabling modern bundlers to eliminate unused code.</p>
+        ${codeBlock(`// Import only what you need
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+import "@rowan-ui/core/dialog";
+
+// Avoid importing the full catalog unless you need most components
+// import "@rowan-ui/core"; // Loads all 109 components`)}
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-strategies">
+        <h2>Optimization strategies</h2>
+        <div class="info-grid">
+          <rowan-card>
+            <p slot="title"><strong>Per-component imports</strong></p>
+            <p>Import individual components like <code>@rowan-ui/core/button</code> instead of the full catalog. This is the most effective optimization.</p>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Code splitting</strong></p>
+            <p>Use dynamic <code>import()</code> for routes or features that aren't needed immediately. Lazy-load heavy components like charts on demand.</p>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Shared dependencies</strong></p>
+            <p>Rowan has zero production dependencies. All components share the same BaseElement foundation, so adding more components has minimal incremental cost.</p>
+          </rowan-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-lazy-loading">
+        <h2>Lazy loading example</h2>
+        <p>Defer loading of heavy components until they're needed. This is especially useful for chart components or features behind tabs/modals.</p>
+        ${codeBlock(`// Load charts only when the analytics tab is opened
+async function loadAnalyticsView() {
+  await import("@rowan-ui/core/trend-chart");
+  await import("@rowan-ui/core/bar-chart");
+  await import("@rowan-ui/core/kpi-card");
+  
+  // Now render the analytics view
+  renderAnalyticsDashboard();
+}
+
+// Or use dynamic imports in route loaders
+const routes = [
+  {
+    path: "/analytics",
+    async load() {
+      await import("@rowan-ui/core/trend-chart");
+      return AnalyticsPage;
+    },
+  },
+];`)}
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-measurements">
+        <h2>Measuring your bundle</h2>
+        <p>Use your bundler's analysis tools to verify tree-shaking and identify opportunities for code splitting.</p>
+        ${codeBlock(`# Vite
+npm run build -- --mode production
+npx vite-bundle-visualizer
+
+# Webpack
+npm install --save-dev webpack-bundle-analyzer
+npx webpack-bundle-analyzer dist/stats.json
+
+# Rollup
+npm install --save-dev rollup-plugin-visualizer
+# Add to rollup.config.js plugins`, "bash")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-size-targets">
+        <h2>Expected bundle sizes</h2>
+        <p><strong>Note:</strong> Another agent is currently working on detailed per-component bundle size measurements. This section will be updated with precise metrics once that work is complete. The guidelines below are based on development observations.</p>
+        <p>Typical production bundle sizes (minified + gzip):</p>
+        <ul>
+          <li><strong>Tokens + 3-5 basic components</strong> (button, card, text-field): ~45-60KB</li>
+          <li><strong>Table + toolbar + filter-builder:</strong> Additional ~80-100KB</li>
+          <li><strong>Chart components:</strong> ~20-30KB per chart (they share rendering utilities)</li>
+          <li><strong>Full catalog (109 components):</strong> Not recommended for production; use selective imports</li>
+        </ul>
+        <rowan-alert tone="warning">
+          Development bundles shown in benchmarks are larger due to source maps and unminified code. Always measure production builds for accurate size metrics.
+        </rowan-alert>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-best-practices">
+        <h2>Best practices</h2>
+        <ul>
+          <li><strong>Import selectively:</strong> Only import components you actually use</li>
+          <li><strong>Use code splitting:</strong> Defer heavy components to route chunks</li>
+          <li><strong>Share token imports:</strong> Import tokens once at app root, not per component</li>
+          <li><strong>Measure regularly:</strong> Track bundle size in CI to catch regressions early</li>
+          <li><strong>Consider lazy loading:</strong> Load charts and complex components on demand</li>
+        </ul>
       </section>
     `,
   },
@@ -1672,6 +2165,26 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         </div>
       </section>
 
+      <section class="doc-section" data-doc-section id="components-stability">
+        <h2>Component stability</h2>
+        <p>Most Rowan components are <strong>Stable</strong>, meaning their public API (attributes, properties, events, slots, and CSS parts) will not change in breaking ways. A small number of features remain <strong>Experimental</strong> and may evolve.</p>
+        <div class="info-grid">
+          <rowan-card>
+            <p slot="title"><strong>Stable</strong></p>
+            <p>Public API is frozen. Safe to use in production. Covers ${SUPPORTED_COMPONENTS.length - 2} of ${SUPPORTED_COMPONENTS.length} components.</p>
+            <rowan-badge tone="success">Stable</rowan-badge>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Experimental</strong></p>
+            <p>API may change before stabilization. Currently: nested filter-builder groups and table-view-state version 2.</p>
+            <rowan-badge tone="warning">Experimental</rowan-badge>
+          </rowan-card>
+        </div>
+        <rowan-alert tone="info">
+          <strong>Stability commitment:</strong> Stable components follow semantic versioning. Breaking changes will only occur in major version releases (e.g., 1.0 → 2.0). Experimental features are clearly marked in documentation and may change in minor releases.
+        </rowan-alert>
+      </section>
+
       <section class="doc-section" data-doc-section id="components-inventory-list">
         <h2>Component catalog</h2>
         <p>Each entry includes the tag name, class export, source module path, and summary from component JSDoc.</p>
@@ -1744,6 +2257,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Usage snippet</h2>
         ${codeBlock(ALERT_SNIPPET, "html")}
       </section>
+
+      ${renderApiReference("rowan-alert")}
     `,
   },
   {
@@ -1791,6 +2306,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Use the button token layer to tune visual hierarchy while preserving the component's state behavior.</p>
         ${codeBlock(BUTTON_TOKENS_SNIPPET, "css")}
       </section>
+
+      ${renderApiReference("rowan-button")}
     `,
   },
   {
@@ -1814,6 +2331,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Usage snippet</h2>
         ${codeBlock(DIALOG_SNIPPET, "html")}
       </section>
+
+      ${renderApiReference("rowan-dialog")}
     `,
   },
   {
@@ -4048,6 +4567,10 @@ const NAV_SECTIONS = [
     items: [
       { pageId: "getting-started", label: "What is Rowan?" },
       { pageId: "react", label: "React" },
+      { pageId: "vue", label: "Vue" },
+      { pageId: "angular", label: "Angular" },
+      { pageId: "svelte", label: "Svelte" },
+      { pageId: "bundle-size", label: "Bundle Size & Optimization" },
       { pageId: "theming", label: "Theming" },
       { pageId: "tokens", label: "Tokens" },
       { pageId: "formatting", label: "Locale Formatting" },
@@ -5542,6 +6065,11 @@ function wireThemeToggle() {
 
 function wireQuickstartDialog() {
   quickstartCodeEl.textContent = QUICKSTART_SNIPPET;
+  
+  const quickstartVersionEl = document.querySelector("#quickstart-version");
+  if (quickstartVersionEl) {
+    quickstartVersionEl.textContent = `@rowan-ui/core@${ROWAN_VERSION}`;
+  }
 
   quickstartTriggerEl.addEventListener("rowan-click", () => {
     quickstartDialogEl.show();
