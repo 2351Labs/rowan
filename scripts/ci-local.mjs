@@ -175,7 +175,7 @@ async function checkGeneratedArtifacts() {
       output += data.toString();
     });
 
-    proc.on("close", (code) => {
+    proc.on("close", (_code) => {
       const duration = Date.now() - start;
       const changes = output.trim();
       
@@ -507,7 +507,7 @@ async function main() {
     output += data.toString();
   });
   
-  proc.on("close", (code) => {
+  proc.on("close", (_code) => {
     const duration = Date.now() - finalStart;
     const changes = output.trim();
     
