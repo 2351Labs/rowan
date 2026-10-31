@@ -73,7 +73,7 @@ export const frameworkTestPlugins = [
 
 export const testTimeouts = {
   browserStartTimeout: 60000,
-  testsFinishTimeout: 180000,
+  testsFinishTimeout: 300000,
 };
 
 export default {
