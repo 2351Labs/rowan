@@ -316,4 +316,61 @@ describe("rowan-file-upload", () => {
     );
     expect(events).to.deep.equal([]);
   });
+
+  it("cancels an uploading file and does not restore file bytes from form state", async () => {
+    const element = document.createElement("rowan-file-upload");
+    element.multiple = true;
+    element.required = true;
+    element.files = [
+      { id: "queued", name: "notes.txt", size: 12, status: "queued", progress: 0 },
+      { id: "upload-1", name: "photo.png", size: 40, status: "uploading", progress: 20 },
+    ];
+    document.body.append(element);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(element.multiple).to.equal(true);
+    expect(element.shadowRoot.querySelector("rowan-dropzone").multiple).to.equal(true);
+    expect(element.reportValidity()).to.equal(false);
+
+    const cancels = [];
+    element.addEventListener("rowan-file-cancel", (event) => cancels.push(event.detail.file.id));
+    element.shadowRoot.querySelector(".file-list").dispatchEvent(
+      new CustomEvent("rowan-cancel", {
+        bubbles: true,
+        detail: {},
+      }),
+    );
+    await nextMicrotask();
+    expect(cancels).to.deep.equal([]);
+    expect(element.files.map((file) => file.status)).to.deep.equal(["queued", "uploading"]);
+
+    element.shadowRoot
+      .querySelector("[data-file-id='queued']")
+      .dispatchEvent(
+        new CustomEvent("rowan-cancel", { bubbles: true, detail: { fileId: "queued" } }),
+      );
+    element.shadowRoot
+      .querySelector("[data-file-id='upload-1']")
+      .dispatchEvent(
+        new CustomEvent("rowan-cancel", { bubbles: true, detail: { fileId: "upload-1" } }),
+      );
+    await nextMicrotask();
+
+    expect(cancels).to.deep.equal(["upload-1"]);
+    expect(element.files.find((file) => file.id === "upload-1").status).to.equal("failed");
+    expect(element.files.find((file) => file.id === "queued").status).to.equal("queued");
+
+    element.formStateRestoreCallback("photo.png");
+    await nextMicrotask();
+    expect(element.files).to.have.length(2);
+
+    element.disabled = true;
+    await nextMicrotask();
+    expect(element.shadowRoot.querySelector("rowan-dropzone").disabled).to.equal(true);
+    expect(element.internals.ariaDisabled).to.equal("true");
+    const messages = element.messages;
+    messages.empty = "Mutated";
+    expect(element.messages.empty).to.not.equal("Mutated");
+  });
 });

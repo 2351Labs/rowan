@@ -228,4 +228,47 @@ describe("rowan-rating", () => {
     expect(rating.shadowRoot.querySelector("output").textContent).to.equal("No selection");
     expect(changes).to.deep.equal([]);
   });
+
+  it("restores a rating, reports a missing value, and reflects description", async () => {
+    const form = document.createElement("form");
+    const rating = await renderRating({ value: 3, required: true });
+    rating.name = "quality";
+    rating.description = "How the handoff felt";
+    form.append(rating);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(rating.getAttribute("description")).to.equal("How the handoff felt");
+    expect(String(new FormData(form).get("quality"))).to.equal("3");
+    expect(rating.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    rating.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    rating.formStateRestoreCallback("5");
+    await nextMicrotask();
+    expect(rating.value).to.equal(5);
+    rating.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(rating.value).to.equal("");
+    expect(rating.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    form.reset();
+    await nextMicrotask();
+    expect(rating.value).to.equal(3);
+
+    rating.disabled = true;
+    rating.invalid = true;
+    rating.locale = "de";
+    await nextMicrotask();
+    expect(rating.internals.ariaDisabled).to.equal("true");
+    expect(rating.invalid).to.equal(true);
+    expect(rating.getAttribute("locale")).to.equal("de");
+    expect(new FormData(form).get("quality")).to.equal(null);
+    const messages = rating.messages;
+    messages.label = "Mutated";
+    expect(rating.messages.label).to.not.equal("Mutated");
+  });
 });

@@ -485,4 +485,21 @@ describe("rowan-popover", () => {
       "Filters",
     );
   });
+
+  it("keeps an author aria-controls value and returns a copy of messages", async () => {
+    const popover = document.createElement("rowan-popover");
+    const trigger = document.createElement("button");
+    trigger.slot = "trigger";
+    trigger.textContent = "Filters";
+    trigger.setAttribute("aria-controls", "author-panel");
+    popover.append(trigger);
+    popover.messages = { label: "Filters" };
+    document.body.append(popover);
+    await settle();
+
+    expect(trigger.getAttribute("aria-controls")).to.equal("author-panel");
+    const messages = popover.messages;
+    messages.label = "Mutated";
+    expect(popover.messages.label).to.equal("Filters");
+  });
 });

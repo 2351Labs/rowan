@@ -308,4 +308,72 @@ describe("rowan-combobox", () => {
     expect(el.shadowRoot.querySelector('[part="empty"]').textContent).to.equal("Sin resultados.");
     expect(changes).to.deep.equal([]);
   });
+
+  it("commits a clicked option, restores form state, and reports a missing value", async () => {
+    const form = document.createElement("form");
+    const el = document.createElement("rowan-combobox");
+    el.name = "city";
+    el.label = "City";
+    el.required = true;
+    el.options = [
+      { value: "seattle", label: "Seattle" },
+      { value: "portland", label: "Portland" },
+      { value: "boise", label: "Boise", disabled: true },
+    ];
+    el.value = "seattle";
+    form.append(el);
+    document.body.append(form);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(el.options.map((option) => option.value)).to.deep.equal([
+      "seattle",
+      "portland",
+      "boise",
+    ]);
+    expect(new FormData(form).get("city")).to.equal("seattle");
+    expect(el.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    el.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    el.formStateRestoreCallback("portland");
+    await nextMicrotask();
+    expect(el.value).to.equal("portland");
+    expect(changes).to.equal(0);
+
+    el.open = true;
+    await nextMicrotask();
+    el.shadowRoot.querySelector("rowan-option[value='boise']").click();
+    await nextMicrotask();
+    expect(el.value).to.equal("portland");
+    expect(el.open).to.equal(true);
+
+    el.shadowRoot.querySelector("rowan-option[value='portland']").click();
+    await nextMicrotask();
+    expect(el.value).to.equal("portland");
+    expect(el.open).to.equal(false);
+    expect(changes).to.equal(1);
+
+    el.value = "";
+    await nextMicrotask();
+    expect(el.reportValidity()).to.equal(false);
+
+    el.placeholder = "Choose a city";
+    el.disabled = true;
+    await nextMicrotask();
+    expect(el.shadowRoot.querySelector("input").placeholder).to.equal("Choose a city");
+    expect(el.shadowRoot.querySelector("input").disabled).to.equal(true);
+    expect(el.internals.ariaDisabled).to.equal("true");
+    expect(new FormData(form).get("city")).to.equal(null);
+
+    el.open = true;
+    await nextMicrotask();
+    document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    expect(el.open).to.equal(false);
+    const messages = el.messages;
+    messages.label = "Mutated";
+    expect(el.messages.label).to.not.equal("Mutated");
+  });
 });

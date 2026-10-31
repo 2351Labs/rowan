@@ -120,4 +120,69 @@ describe("applyFilters", () => {
     expect(group.filters).to.have.length(1);
     expect(clone.filters).to.have.length(2);
   });
+
+  it("compares dates, uses accessors, and treats thrown accessors as empty", () => {
+    expect(
+      applyFilters(
+        rows,
+        [{ field: "joined", operator: "greater-than", value: "2021-01-01" }],
+        fields,
+      ).map((row) => row.id),
+    ).to.deep.equal(["3"]);
+
+    expect(
+      applyFilters(rows, [{ field: "joined", operator: "equals", value: "not-a-date" }], fields),
+    ).to.deep.equal([]);
+
+    expect(
+      applyFilters(
+        [{ id: "dated", age: new Date(5_000) }],
+        [{ field: "age", operator: "greater-than", value: "0" }],
+        [{ id: "age", type: "number" }],
+      ).map((row) => row.id),
+    ).to.deep.equal(["dated"]);
+
+    expect(
+      applyFilters(
+        rows,
+        [{ field: "name", operator: "equals", value: "ADA" }],
+        [{ id: "name", type: "text", accessor: (row) => row.name.toUpperCase() }],
+      ).map((row) => row.id),
+    ).to.deep.equal(["1"]);
+
+    expect(
+      applyFilters(
+        [
+          { id: "tags", tags: [] },
+          { id: "kept", tags: ["open"] },
+        ],
+        [{ field: "tags", operator: "is-empty" }],
+        [{ id: "tags", type: "text" }],
+      ).map((row) => row.id),
+    ).to.deep.equal(["tags"]);
+
+    expect(
+      applyFilters(
+        rows,
+        [{ field: "name", operator: "equals", value: "Ada" }],
+        [
+          {
+            id: "name",
+            type: "text",
+            accessor() {
+              throw new Error("unavailable");
+            },
+          },
+        ],
+      ),
+    ).to.deep.equal([]);
+
+    expect(
+      applyFilters(
+        [null, rows[0]],
+        [{ field: "name", operator: "equals", value: "Ada" }],
+        fields,
+      ).map((row) => row.id),
+    ).to.deep.equal(["1"]);
+  });
 });

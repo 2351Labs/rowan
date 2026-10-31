@@ -1,4 +1,5 @@
 node_modules
+coverage/
 storybook-static/
 documentation/**/documentation-static-check/
 test-fixtures/astro/.astro/

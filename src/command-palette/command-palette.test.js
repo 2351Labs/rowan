@@ -351,4 +351,47 @@ describe("rowan-command-palette", () => {
       "No matching workflows.",
     );
   });
+
+  it("toggles from its public method and focuses search from the mod hotkey", async () => {
+    const palette = await renderPalette({ hotkey: "mod+k" });
+    expect(palette.open).to.equal(false);
+    palette.focusSearch();
+    palette.toggle();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(palette.open).to.equal(true);
+
+    palette.toggle();
+    await nextMicrotask();
+    expect(palette.open).to.equal(false);
+
+    const mac = /mac/i.test(navigator.userAgentData?.platform ?? navigator.platform ?? "");
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "k",
+        bubbles: true,
+        ctrlKey: !mac,
+        metaKey: mac,
+      }),
+    );
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(palette.open).to.equal(true);
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "k",
+        bubbles: true,
+        ctrlKey: !mac,
+        metaKey: mac,
+      }),
+    );
+    await nextMicrotask();
+    expect(palette.shadowRoot.activeElement).to.equal(palette.shadowRoot.querySelector("input"));
+    expect(palette.open).to.equal(true);
+
+    const messages = palette.messages;
+    messages.label = "Mutated";
+    expect(palette.messages.label).to.not.equal("Mutated");
+  });
 });

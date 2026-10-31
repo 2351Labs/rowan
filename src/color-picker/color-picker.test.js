@@ -173,4 +173,45 @@ describe("rowan-color-picker", () => {
       picker.shadowRoot.querySelector("button[data-value='#10261c']"),
     );
   });
+
+  it("restores a color, reports a missing required value, and reflects description", async () => {
+    const form = document.createElement("form");
+    const picker = await renderPicker({ value: "#2f6a4d", required: true });
+    picker.name = "brand";
+    picker.description = "Used on status chips";
+    form.append(picker);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(picker.getAttribute("description")).to.equal("Used on status chips");
+    expect(new FormData(form).get("brand")).to.equal("#2f6a4d");
+    expect(picker.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    picker.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    picker.formStateRestoreCallback("#10261c");
+    await nextMicrotask();
+    expect(picker.value).to.equal("#10261c");
+    picker.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(picker.value).to.equal("");
+    expect(picker.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    form.reset();
+    await nextMicrotask();
+    expect(picker.value).to.equal("#2f6a4d");
+
+    picker.disabled = true;
+    picker.invalid = true;
+    await nextMicrotask();
+    expect(picker.internals.ariaDisabled).to.equal("true");
+    expect(picker.invalid).to.equal(true);
+    expect(new FormData(form).get("brand")).to.equal(null);
+    const messages = picker.messages;
+    messages.label = "Mutated";
+    expect(picker.messages.label).to.not.equal("Mutated");
+  });
 });

@@ -346,4 +346,88 @@ describe("rowan-rich-text-editor", () => {
       children: [{ text: "Containment" }],
     });
   });
+
+  it("resets and restores the document and inserts dropped plain text", async () => {
+    const form = document.createElement("form");
+    const editor = document.createElement("rowan-rich-text-editor");
+    editor.name = "notes";
+    editor.label = "Notes";
+    editor.description = "Visible to the on-call lead";
+    editor.placeholder = "Write the handoff";
+    editor.required = true;
+    editor.value = { blocks: [{ type: "paragraph", children: [{ text: "Keep" }] }] };
+    form.append(editor);
+    document.body.append(form);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(editor.getAttribute("description")).to.equal("Visible to the on-call lead");
+    expect(editor.getAttribute("placeholder")).to.equal("Write the handoff");
+    expect(editor.reportValidity()).to.equal(true);
+    expect(String(new FormData(form).get("notes"))).to.include("Keep");
+
+    let changes = 0;
+    editor.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    editor.value = { blocks: [{ type: "paragraph", children: [{ text: "Changed" }] }] };
+    form.reset();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(editor.value.blocks[0].children[0].text).to.equal("Keep");
+
+    const stored = new FormData(form).get("notes");
+    editor.formStateRestoreCallback(stored);
+    await nextMicrotask();
+    expect(editor.value.blocks[0].children[0].text).to.equal("Keep");
+    editor.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(isEmptyDocument(editor.value)).to.equal(true);
+    expect(editor.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    editor.value = { blocks: [{ type: "paragraph", children: [{ text: "Start" }] }] };
+    await nextMicrotask();
+    const surface = selectEditorContents(editor);
+    const transfer = new DataTransfer();
+    transfer.setData("text/plain", " more");
+    const drop = new DragEvent("drop", { bubbles: true, cancelable: true, dataTransfer: transfer });
+    surface.dispatchEvent(drop);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(drop.defaultPrevented).to.equal(true);
+    expect(documentToText(editor.value)).to.include("more");
+
+    editor.disabled = true;
+    editor.invalid = true;
+    await nextMicrotask();
+    const ignored = new DragEvent("drop", {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: transfer,
+    });
+    surface.dispatchEvent(ignored);
+    expect(ignored.defaultPrevented).to.equal(false);
+    expect(editor.internals.ariaDisabled).to.equal("true");
+    expect(editor.invalid).to.equal(true);
+    expect(new FormData(form).get("notes")).to.equal(null);
+    const messages = editor.messages;
+    messages.label = "Mutated";
+    expect(editor.messages.label).to.not.equal("Mutated");
+  });
 });
+
+function documentToText(value) {
+  return value.blocks
+    .flatMap((block) => {
+      if (block.type === "paragraph" || block.type === "heading") {
+        return block.children.map((run) => run.text);
+      }
+      return block.items.flatMap((item) => item.map((run) => run.text));
+    })
+    .join("");
+}
+
+function isEmptyDocument(value) {
+  return documentToText(value).trim().length === 0;
+}

@@ -75,4 +75,19 @@ describe("rowan-tree-item", () => {
     expect(child.internals.ariaDisabled).to.equal("true");
     expect(button.disabled).to.equal(true);
   });
+
+  it("reflects an explicit level and falls back when the value is not a number", async () => {
+    const item = document.createElement("rowan-tree-item");
+    item.textContent = "Guides";
+    document.body.append(item);
+    await nextMicrotask();
+
+    item.level = 4.8;
+    expect(item.getAttribute("level")).to.equal("4");
+    expect(item.level).to.equal(4);
+
+    item.level = "deep";
+    expect(item.hasAttribute("level")).to.equal(false);
+    expect(item.level).to.equal(1);
+  });
 });

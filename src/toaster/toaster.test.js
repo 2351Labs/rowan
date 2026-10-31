@@ -304,4 +304,28 @@ describe("rowan-toaster", () => {
     expect(toast).to.not.equal(null);
     expect(toast.textContent.includes("Still visible")).to.equal(true);
   });
+
+  it("drops a queued toast before it is shown and clears every visible toast", async () => {
+    const pending = document.createElement("rowan-toaster");
+    const queuedId = pending.show("Queued before connect");
+    expect(pending.dismiss("")).to.equal(false);
+    expect(pending.dismiss(queuedId)).to.equal(true);
+    document.body.append(pending);
+    await nextMicrotask();
+    expect(pending.shadowRoot.querySelector(`[data-toast-id="${queuedId}"]`)).to.equal(null);
+
+    const toaster = document.createElement("rowan-toaster");
+    document.body.append(toaster);
+    await nextMicrotask();
+    const first = toaster.show("First notice");
+    const second = toaster.show("Second notice");
+    await nextMicrotask();
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${first}"]`)).to.not.equal(null);
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${second}"]`)).to.not.equal(null);
+
+    toaster.clear("user");
+    await nextMicrotask();
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${first}"]`)).to.equal(null);
+    expect(toaster.shadowRoot.querySelector(`[data-toast-id="${second}"]`)).to.equal(null);
+  });
 });

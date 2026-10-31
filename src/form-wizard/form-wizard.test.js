@@ -186,4 +186,110 @@ describe("rowan-form-wizard", () => {
 
     expect(wizard.shadowRoot.querySelector('[data-action="next"]').textContent).to.equal("Manual");
   });
+
+  it("infers slotted steps, dedupes ids, and keeps programmatic navigation silent", async () => {
+    const inferred = document.createElement("rowan-form-wizard");
+    const details = document.createElement("section");
+    details.slot = "step-details";
+    details.setAttribute("data-step-label", "Details");
+    const review = document.createElement("section");
+    review.slot = "step-review";
+    review.setAttribute("aria-label", "Review");
+    inferred.append(details, review);
+    document.body.append(inferred);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(inferred.steps.map((step) => step.id)).to.deep.equal(["details", "review"]);
+    expect(inferred.steps.map((step) => step.label)).to.deep.equal(["Details", "Review"]);
+
+    inferred.steps = "Alpha, Beta";
+    await nextMicrotask();
+    expect(inferred.getAttribute("steps")).to.equal("Alpha, Beta");
+    expect(inferred.steps.map((step) => step.label)).to.deep.equal(["Alpha", "Beta"]);
+
+    inferred.steps = [{ id: "review" }, { id: "review", label: "Again" }];
+    await nextMicrotask();
+    expect(inferred.steps.map((step) => step.id)).to.deep.equal(["review", "review-2"]);
+
+    inferred.orientation = "vertical";
+    inferred.label = "Intake";
+    inferred.previousLabel = "Back now";
+    inferred.completeLabel = "Finish";
+    inferred.disabled = true;
+    await nextMicrotask();
+
+    expect(inferred.getAttribute("orientation")).to.equal("vertical");
+    expect(inferred.shadowRoot.querySelector("rowan-stepper").orientation).to.equal("vertical");
+    expect(inferred.internals.ariaLabel).to.equal("Intake");
+    expect(inferred.internals.ariaDisabled).to.equal("true");
+    expect(inferred.shadowRoot.querySelector('[data-action="previous"]').textContent).to.equal(
+      "Back now",
+    );
+    expect(inferred.shadowRoot.querySelector('[data-action="next"]').disabled).to.equal(true);
+
+    const messages = inferred.messages;
+    messages.label = "Mutated";
+    expect(inferred.messages.label).to.not.equal("Mutated");
+
+    const empty = document.createElement("rowan-form-wizard");
+    empty.steps = [];
+    document.body.append(empty);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(empty.next()).to.equal(false);
+    expect(empty.previous()).to.equal(false);
+    expect(empty.complete()).to.equal(false);
+  });
+
+  it("validates through next() and emits completion only from the action button", async () => {
+    const { wizard, name } = await renderWizard();
+    const events = [];
+    wizard.addEventListener("rowan-step-change", () => events.push("step"));
+    wizard.addEventListener("rowan-invalid", () => events.push("invalid"));
+    wizard.addEventListener("rowan-complete", (event) => events.push(event.detail.stepId));
+
+    expect(wizard.next()).to.equal(false);
+    expect(wizard.currentStep).to.equal(1);
+    expect(events).to.deep.equal([]);
+
+    name.disabled = true;
+    expect(wizard.next()).to.equal(true);
+    expect(wizard.currentStep).to.equal(2);
+    expect(wizard.previous()).to.equal(true);
+    expect(wizard.currentStep).to.equal(1);
+    expect(events).to.deep.equal([]);
+
+    name.disabled = false;
+    name.value = "Ada";
+    expect(wizard.next()).to.equal(true);
+    expect(wizard.complete()).to.equal(true);
+    expect(events).to.deep.equal([]);
+
+    const extra = document.createElement("input");
+    extra.required = true;
+    wizard.querySelector('[slot="step-review"]').append(extra);
+    wizard.shadowRoot.querySelector('[data-action="next"]').click();
+    await nextMicrotask();
+    expect(wizard.currentStep).to.equal(2);
+    expect(events).to.deep.equal(["invalid"]);
+
+    extra.value = "ok";
+    wizard.shadowRoot.querySelector('[data-action="next"]').click();
+    await nextMicrotask();
+    expect(events).to.deep.equal(["invalid", "review"]);
+
+    wizard.disabled = true;
+    wizard.goTo(1);
+    events.length = 0;
+    wizard.shadowRoot.querySelector("rowan-stepper").dispatchEvent(
+      new CustomEvent("rowan-step-change", {
+        bubbles: true,
+        detail: { currentStep: 2 },
+      }),
+    );
+    await nextMicrotask();
+    expect(wizard.currentStep).to.equal(1);
+    expect(events).to.deep.equal([]);
+  });
 });

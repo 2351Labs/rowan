@@ -317,4 +317,41 @@ describe("rowan-context-menu", () => {
     expect(clamped.right).to.be.at.most(window.innerWidth);
     expect(clamped.left).to.be.at.least(0);
   });
+
+  it("binds forTarget, opens from Shift+F10, and hides again", async () => {
+    const target = document.createElement("button");
+    target.id = "row-actions";
+    target.textContent = "Row";
+    const menu = document.createElement("rowan-context-menu");
+    menu.forTarget = "row-actions";
+    const item = document.createElement("rowan-menu-item");
+    item.textContent = "Archive";
+    menu.append(item);
+    document.body.append(target, menu);
+    await settle();
+
+    expect(menu.forTarget).to.equal("row-actions");
+    expect(menu.getAttribute("for")).to.equal("row-actions");
+    expect(menu.target).to.equal(target);
+
+    target.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "F10", shiftKey: true, bubbles: true }),
+    );
+    await settle();
+    expect(menu.open).to.equal(true);
+
+    menu.hide();
+    await settle();
+    expect(menu.open).to.equal(false);
+
+    menu.forTarget = "";
+    menu.refresh();
+    await settle();
+    expect(menu.hasAttribute("for")).to.equal(false);
+    expect(menu.target).to.equal(null);
+
+    const messages = menu.messages;
+    messages.label = "Mutated";
+    expect(menu.messages.label).to.not.equal("Mutated");
+  });
 });

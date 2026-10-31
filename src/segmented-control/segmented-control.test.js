@@ -135,4 +135,49 @@ describe("rowan-segmented-control", () => {
     expect(control.getAttribute("aria-label")).to.equal("Workspace view");
     expect(control.internals.ariaLabel).to.equal("View mode");
   });
+
+  it("restores the selected mode, rejects an unknown size, and reports a missing value", async () => {
+    const form = document.createElement("form");
+    const control = await renderControl({ value: "board", required: true });
+    control.name = "view";
+    form.append(control);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(new FormData(form).get("view")).to.equal("board");
+    expect(control.reportValidity()).to.equal(true);
+    expect(control.options.map((option) => option.value)).to.deep.equal([
+      "board",
+      "list",
+      "timeline",
+    ]);
+
+    let changes = 0;
+    control.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    control.formStateRestoreCallback("timeline");
+    await nextMicrotask();
+    expect(control.value).to.equal("timeline");
+    control.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(control.value).to.equal("");
+    expect(control.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    form.reset();
+    await nextMicrotask();
+    expect(control.value).to.equal("board");
+
+    control.size = "lg";
+    expect(control.getAttribute("size")).to.equal("lg");
+    control.size = "xl";
+    expect(control.size).to.equal("md");
+    expect(control.hasAttribute("size")).to.equal(false);
+
+    control.disabled = true;
+    await nextMicrotask();
+    expect(control.shadowRoot.querySelector("button").disabled).to.equal(true);
+    expect(new FormData(form).get("view")).to.equal(null);
+  });
 });

@@ -173,4 +173,54 @@ describe("rowan-listbox", () => {
     await nextMicrotask();
     expect(listbox.checkValidity()).to.equal(true);
   });
+
+  it("restores form selection, clamps a single list, and reports a missing value", async () => {
+    const form = document.createElement("form");
+    const { listbox } = await renderListbox({ selection: "single", required: true });
+    listbox.name = "team";
+    form.append(listbox);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(listbox.reportValidity()).to.equal(false);
+    expect(listbox.internals.ariaInvalid).to.equal("true");
+
+    let changes = 0;
+    listbox.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+
+    listbox.formStateRestoreCallback('["engineering","design"]');
+    await nextMicrotask();
+    expect(listbox.selected).to.deep.equal(["design"]);
+    expect(new FormData(form).get("team")).to.equal("design");
+
+    listbox.formStateRestoreCallback("operations");
+    await nextMicrotask();
+    expect(listbox.selected).to.deep.equal(["operations"]);
+
+    listbox.formStateRestoreCallback("not-an-option");
+    await nextMicrotask();
+    expect(listbox.selected).to.deep.equal([]);
+
+    listbox.value = "operations";
+    await nextMicrotask();
+    expect(listbox.selected).to.deep.equal(["operations"]);
+
+    listbox.value = "";
+    listbox.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(listbox.selected).to.deep.equal([]);
+    expect(changes).to.equal(0);
+
+    listbox.selection = "multiple";
+    listbox.selected = ["design", "operations"];
+    await nextMicrotask();
+    expect(new FormData(form).getAll("team")).to.deep.equal(["design", "operations"]);
+
+    listbox.disabled = true;
+    await nextMicrotask();
+    expect(new FormData(form).get("team")).to.equal(null);
+    expect(listbox.internals.ariaDisabled).to.equal("true");
+  });
 });
