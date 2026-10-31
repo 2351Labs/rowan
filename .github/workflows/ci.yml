@@ -48,6 +48,8 @@ jobs:
         run: node test/storybook-smoke.spec.mjs
       - name: Verify documentation version consistency
         run: node scripts/check-docs-version.mjs
+      - name: Verify API reference is current
+        run: node scripts/generate-api-reference.mjs --check
       - name: Verify all components have API references
         run: node scripts/check-component-docs-coverage.mjs
       - name: Check Storybook story coverage

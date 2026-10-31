@@ -1,96 +1,94 @@
-#!/usr/bin/env node
 /**
- * Verify that all components in custom-elements.json have API reference
- * sections in the built documentation.
+ * Verify every public Rowan component has a generated API reference and that
+ * the built documentation bundle includes that component.
  */
 
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { join } from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const rootDir = join(__dirname, "..");
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Read custom-elements.json to get all components
-const cemPath = join(rootDir, "custom-elements.json");
-const cem = JSON.parse(readFileSync(cemPath, "utf-8"));
+const MANIFESTS = [
+  "custom-elements.json",
+  "packages/icons/custom-elements.json",
+  "packages/maplibre/custom-elements.json",
+];
 
-const allComponents = cem.modules
-  .flatMap((m) => m.declarations?.filter((d) => d.customElement) || [])
-  .map((d) => d.tagName)
-  .filter((t) => t && t.startsWith("rowan-"))
-  .sort();
+function manifestTags(path) {
+  const manifest = JSON.parse(readFileSync(join(rootDir, path), "utf8"));
+  const tags = [];
+  for (const moduleEntry of manifest.modules || []) {
+    for (const declaration of moduleEntry.declarations || []) {
+      if (declaration.customElement === true && declaration.tagName?.startsWith("rowan-")) {
+        tags.push(declaration.tagName);
+      }
+    }
+  }
+  return tags;
+}
 
-console.log(`\nChecking documentation coverage for ${allComponents.length} components...\n`);
+const requiredTags = [...new Set(MANIFESTS.flatMap(manifestTags))].sort();
+const catalog = JSON.parse(
+  readFileSync(join(rootDir, "documentation/generated/api-reference.json"), "utf8"),
+);
+const documented = new Set((catalog.components || []).map((component) => component.tagName));
 
-// Check if documentation build exists
+console.log(`\nChecking API references for ${requiredTags.length} components...\n`);
+
+const missing = [];
+for (const tagName of requiredTags) {
+  const component = (catalog.components || []).find((entry) => entry.tagName === tagName);
+  const complete = Boolean(
+    component?.description &&
+      component.usage &&
+      component.react?.component &&
+      Array.isArray(component.attributes) &&
+      Array.isArray(component.properties) &&
+      Array.isArray(component.events) &&
+      Array.isArray(component.slots) &&
+      Array.isArray(component.cssParts) &&
+      Array.isArray(component.cssProperties) &&
+      Array.isArray(component.methods) &&
+      Array.isArray(component.react.props) &&
+      Array.isArray(component.react.eventProps),
+  );
+  if (!documented.has(tagName) || !complete) {
+    missing.push(tagName);
+    console.error(`❌ ${tagName}: API reference missing or incomplete`);
+  } else {
+    console.log(`✓ ${tagName}: API reference complete`);
+  }
+}
+
 const docsDir = join(rootDir, "documentation/documentation-static-check");
 if (!existsSync(docsDir)) {
-  console.error("❌ Documentation build not found: " + docsDir);
+  console.error("\n❌ Documentation build not found: " + docsDir);
   console.error("   Run: npm run documentation:build");
   process.exit(1);
 }
 
-// Read all built JS files
 const assetsDir = join(docsDir, "assets");
-if (!existsSync(assetsDir)) {
-  console.error("❌ Documentation assets directory not found");
+const jsFiles = existsSync(assetsDir) ? readdirSync(assetsDir).filter((file) => file.endsWith(".js")) : [];
+const bundle = jsFiles.map((file) => readFileSync(join(assetsDir, file), "utf8")).join("\n");
+if (!bundle.includes("data-api-tag=") || !bundle.includes("React event props")) {
+  console.error("\n❌ Built documentation is missing the generated API reference renderer");
   process.exit(1);
 }
 
-const jsFiles = readdirSync(assetsDir).filter((f) => f.endsWith(".js"));
-if (jsFiles.length === 0) {
-  console.error("❌ No JavaScript files found in documentation build");
+const missingFromBuild = requiredTags.filter((tagName) => !bundle.includes(tagName));
+for (const tagName of missingFromBuild) {
+  console.error(`❌ ${tagName}: not present in the built documentation`);
+}
+
+console.log(
+  `\n${requiredTags.length - missing.length}/${requiredTags.length} components have a complete API reference`,
+);
+
+if (missing.length > 0 || missingFromBuild.length > 0) {
+  console.error("\n❌ Documentation coverage check failed");
+  console.error("Regenerate with: node scripts/generate-api-reference.mjs");
   process.exit(1);
 }
 
-// Search for API reference tables in the built documentation
-let combinedContent = "";
-for (const file of jsFiles) {
-  const filePath = join(assetsDir, file);
-  const content = readFileSync(filePath, "utf-8");
-  combinedContent += content;
-}
-
-let hasErrors = false;
-const missing = [];
-const found = [];
-
-for (const component of allComponents) {
-  // Look for the component's tag name appearing near API reference markers
-  // The docs-api-table class appears in sections with "Attributes", "Properties", etc.
-  // Check if the component appears with API reference patterns like:
-  // - "docs-api-table" nearby
-  // - Component name followed by attribute/property tables
-  const componentPattern = new RegExp(component.replace(/-/g, "\\-"), "g");
-  const matches = combinedContent.match(componentPattern);
-  
-  // Simple heuristic: if the component name appears at least 3 times (component page + API tables),
-  // and docs-api-table class exists in the content, we consider it documented
-  const hasApiTable = combinedContent.includes("docs-api-table");
-  const appearanceCount = matches ? matches.length : 0;
-  
-  if (hasApiTable && appearanceCount >= 2) {
-    found.push(component);
-    console.log(`✓ ${component}: API reference found (${appearanceCount} references)`);
-  } else {
-    missing.push(component);
-    console.error(`❌ ${component}: API reference NOT found (only ${appearanceCount} references)`);
-    hasErrors = true;
-  }
-}
-
-console.log(`\n${found.length}/${allComponents.length} components have API references`);
-
-if (hasErrors) {
-  console.error(`\n❌ Documentation coverage check failed`);
-  console.error(`Missing API references for ${missing.length} components:`);
-  missing.forEach((c) => console.error(`  - ${c}`));
-  console.error(`\nAdd API reference sections with: renderApiReference("${missing[0]}")`);
-  process.exit(1);
-} else {
-  console.log(`\n✓ All components have API reference documentation\n`);
-  process.exit(0);
-}
+console.log("\n✓ All components have API reference documentation\n");
