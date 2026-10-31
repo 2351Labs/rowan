@@ -8,6 +8,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- `rowan-table` inline cell editing (Phase 1): opt-in per-column with `column.editable` (boolean or function). Text and number editors included. Enter/F2 to edit, Esc to cancel, Enter/Tab to commit and move. Number editor supports `min`, `max`, `step` via `column.editor`. Emits cancelable `rowan-edit-start`, `rowan-edit-commit`, `rowan-edit-cancel` events for persistence/rollback. ARIA editing semantics, RTL support, works with virtualization/sorting/grouping/frozen columns/resize/reorder.
 - `rowan-table` column resizing: opt-in `resizable-columns` attribute enables drag handles on header edges with mouse/touch interaction, keyboard resizing via Arrow keys (with Shift for larger increments), double-click to auto-fit column width, and min/max width constraints. Emits `rowan-column-resize` event. Integrated with `table-view-state` for persistence.
 - `rowan-table` column reordering: opt-in `reorderable-columns` attribute enables drag-and-drop of headers and keyboard reordering via Alt+Arrow Left/Right. Respects frozen/pinned columns. Emits `rowan-column-reorder` event. Integrated with `table-view-state` for persistence.
 - `table-view-state` now includes `columnWidths` (map of column ID to width string) and `columnOrder` (array of column IDs) for restoring user-customized table layouts.

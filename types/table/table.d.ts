@@ -105,6 +105,8 @@ export class RowanTable extends BaseElement {
   get resizableColumns(): boolean;
   set reorderableColumns(value: boolean);
   get reorderableColumns(): boolean;
+  set editMode(value: string | null);
+  get editMode(): string | null;
   set locale(value: string);
   get locale(): string;
   /** @param {RowanTableMessages | null | undefined} value */
@@ -180,6 +182,27 @@ export type RowanTableCellConfig = {
   slot?: string | undefined;
   render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
 };
+export type RowanTableColumnEditor = {
+  type?: "number" | "select" | "text" | "date" | "checkbox" | "custom" | undefined;
+  options?:
+    | {
+        value: unknown;
+        label: string;
+      }[]
+    | undefined;
+  render?: ((context: RowanTableEditContext) => HTMLElement) | undefined;
+  validate?:
+    ((value: unknown, row: RowanTableRow) => Promise<string | null> | string | null) | undefined;
+};
+export type RowanTableEditContext = {
+  value: unknown;
+  row: RowanTableRow;
+  rowIndex: number;
+  column: RowanTableColumn;
+  cellEl: HTMLElement;
+  commit: () => void;
+  cancel: () => void;
+};
 export type RowanTableColumn = {
   id: string;
   header?: string | undefined;
@@ -200,6 +223,8 @@ export type RowanTableColumn = {
         tooltip?: string | undefined;
       }
     | undefined;
+  editable?: boolean | ((row: RowanTableRow, rowIndex: number) => boolean) | undefined;
+  editor?: RowanTableColumnEditor | undefined;
 };
 export type RowanTableSort = {
   id: string;

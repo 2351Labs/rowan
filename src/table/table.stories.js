@@ -1119,3 +1119,49 @@ export const ResizableAndReorderable = {
     },
   },
 };
+
+export const InlineEditing = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table density="md"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true },
+            { id: "age", header: "Age", type: "number", editable: true, editor: { type: "number", min: 0, max: 120 } },
+            { id: "email", header: "Email", editable: true },
+            { id: "role", header: "Role", type: "badge", editable: false }
+          ],
+          rows: [
+            { id: "1", name: "Alice Johnson", age: 28, email: "alice@example.com", role: "Engineer" },
+            { id: "2", name: "Bob Smith", age: 34, email: "bob@example.com", role: "Designer" },
+            { id: "3", name: "Carol White", age: 42, email: "carol@example.com", role: "Manager" },
+            { id: "4", name: "David Brown", age: 31, email: "david@example.com", role: "Developer" }
+          ]
+        };
+
+        table.addEventListener("rowan-edit-start", (e) => {
+          console.log("Edit started:", e.detail);
+        });
+
+        table.addEventListener("rowan-edit-commit", (e) => {
+          console.log("Edit committed:", e.detail);
+        });
+
+        table.addEventListener("rowan-edit-cancel", (e) => {
+          console.log("Edit cancelled:", e.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Editable columns can be edited inline. Click a cell, press Enter or F2 to start editing. Press Escape to cancel, Enter to commit and move down, Tab to commit and move right. Events allow server persistence and rollback on failure.",
+      },
+    },
+  },
+};
