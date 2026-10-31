@@ -1035,6 +1035,20 @@ html[data-theme="midnight"] body {
   font-weight: 600;
 }
 
+.stackblitz-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.stackblitz-badge {
+  display: block;
+  height: 2rem;
+  width: auto;
+}
+
 .docs-compatibility-table-wrap {
   border: 1px solid var(--docs-border);
   border-radius: 0.78rem;

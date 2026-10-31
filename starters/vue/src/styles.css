@@ -1,0 +1,43 @@
+:root {
+  color: var(--rowan-color-fg);
+  background: var(--rowan-color-bg);
+  font-family: var(--rowan-font-family, "Segoe UI", sans-serif);
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--rowan-space-4, 1rem);
+  margin: 0 auto;
+  max-width: 64rem;
+  padding: var(--rowan-space-5, 1.5rem);
+}
+
+.lede {
+  color: var(--rowan-color-muted);
+  margin: 0;
+}
+
+.kpis {
+  display: grid;
+  gap: var(--rowan-space-3, 0.75rem);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.panel {
+  display: grid;
+  gap: var(--rowan-space-2, 0.5rem);
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1rem;
+}

@@ -5,6 +5,7 @@ documentation/**/documentation-static-check/
 test-fixtures/astro/.astro/
 test-fixtures/astro/dist/
 templates/admin/dist/
+starters/*/dist/
 tmp/
 .bundle-analysis/
 .size-budget-check/

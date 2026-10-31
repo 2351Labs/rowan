@@ -52,6 +52,12 @@ jobs:
         run: npm run build --workspace=@rowan-ui/admin-template
       - name: Admin template smoke test
         run: node templates/admin/e2e/smoke.mjs
+      - name: Build Vite starter
+        run: npm run build --workspace=@rowan-ui/starter-vite
+      - name: Build React starter
+        run: npm run build --workspace=@rowan-ui/starter-react
+      - name: Build Vue starter
+        run: npm run build --workspace=@rowan-ui/starter-vue
       - name: Verify documentation version consistency
         run: node scripts/check-docs-version.mjs
       - name: Verify API reference is current

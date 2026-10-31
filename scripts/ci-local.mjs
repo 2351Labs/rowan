@@ -360,6 +360,22 @@ async function main() {
 
     await runCommand("node", ["templates/admin/e2e/smoke.mjs"], "Admin template smoke test");
 
+    await runCommand(
+      "npm",
+      ["run", "build", "--workspace=@rowan-ui/starter-vite"],
+      "Build Vite starter",
+    );
+    await runCommand(
+      "npm",
+      ["run", "build", "--workspace=@rowan-ui/starter-react"],
+      "Build React starter",
+    );
+    await runCommand(
+      "npm",
+      ["run", "build", "--workspace=@rowan-ui/starter-vue"],
+      "Build Vue starter",
+    );
+
     await runCommand("node", ["scripts/check-docs-version.mjs"], "Verify documentation version");
 
     await runCommand(

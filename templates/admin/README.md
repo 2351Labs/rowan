@@ -2,6 +2,10 @@
 
 Lumen is a sample wholesale operations console built with Rowan custom elements. It is a starter you can copy: app shell, dashboard, server-backed tables, a record page, settings, an offline map, and static auth screens. There is no framework and no network API. Orders, customers, and chart figures come from one fixture module.
 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/templates/admin)
+
+StackBlitz installs the published `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre` packages. The commands below, run from a checkout of this repository, use the local workspace copies.
+
 The shell uses `rowan-app-layout`, `rowan-side-nav`, and a command palette (`Ctrl+K` or `⌘K`). Light and dark themes swap Rowan token sheets.
 
 ## Run it
