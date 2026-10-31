@@ -32,6 +32,7 @@ export const Playground = {
     dropzone.accept = accept;
     dropzone.multiple = multiple;
     dropzone.disabled = disabled;
+    dropzone.dragActive = false;
     return dropzone;
   },
 };

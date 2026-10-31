@@ -3,9 +3,10 @@
  *
  * Charts stay on the gallery rules. Every other component is scored from
  * custom-elements.json attributes, enum values, slots, and events.
- * Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback fail the run. The remaining categories are
- * report-only until each one is filled; add a category here only when it is
- * at 100%, and fail every category once the last one lands.
+ * Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus,
+ * Actions & Feedback, and Files & Uploads fail the run. Stepper stays
+ * report-only until it is at 100%; add it here then, which makes every
+ * category a hard failure.
  */
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -57,6 +58,7 @@ const ENFORCED_CATEGORIES = new Set([
   "Navigation & Layout",
   "Overlays & Menus",
   "Actions & Feedback",
+  "Files & Uploads",
 ]);
 
 function read(path) {
@@ -233,7 +235,7 @@ function markdown(chartRows, grouped) {
   lines.push("# Storybook coverage");
   lines.push("");
   lines.push(
-    "Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback are enforced by `scripts/check-story-coverage.mjs`.",
+    "Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, Actions & Feedback, and Files & Uploads are enforced by `scripts/check-story-coverage.mjs`.",
   );
   lines.push("Other categories are report-only until their story PRs land.");
   lines.push("The check fails for every category only once each one is at 100%.");

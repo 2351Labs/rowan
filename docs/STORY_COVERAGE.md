@@ -1,6 +1,6 @@
 # Storybook coverage
 
-Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback are enforced by `scripts/check-story-coverage.mjs`.
+Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, Actions & Feedback, and Files & Uploads are enforced by `scripts/check-story-coverage.mjs`.
 Other categories are report-only until their story PRs land.
 The check fails for every category only once each one is at 100%.
 
@@ -137,9 +137,9 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-dropzone` | 86% | 86% | attribute drag-active |
-| `rowan-file-item` | 86% | 86% | attribute file-id, attribute locale |
-| `rowan-file-upload` | 83% | 83% | attribute required, attribute locale |
+| `rowan-dropzone` | 86% | 100% | — |
+| `rowan-file-item` | 86% | 100% | — |
+| `rowan-file-upload` | 83% | 100% | — |
 
 ## Other
 
