@@ -29,3 +29,18 @@ export const Playground = {
     return accordion;
   },
 };
+
+export const SlottedSummary = {
+  name: "Slotted summary",
+  render: () => {
+    const accordion = document.createElement("rowan-accordion");
+    accordion.open = true;
+    const summary = document.createElement("span");
+    summary.slot = "summary";
+    summary.textContent = "October release";
+    const body = document.createElement("p");
+    body.textContent = "Keyboard focus, contrast, and table editing shipped this month.";
+    accordion.append(summary, body);
+    return accordion;
+  },
+};

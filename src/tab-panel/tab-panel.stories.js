@@ -19,6 +19,8 @@ export const Playground = {
   render: ({ value, active, content }) => {
     const panel = document.createElement("rowan-tab-panel");
     panel.value = value;
+    panel.setAttribute("aria-labelledby", `${value}-tab`);
+    panel.setAttribute("aria-hidden", active ? "false" : "true");
     if (active) panel.setAttribute("active", "");
     panel.textContent = content;
     return panel;

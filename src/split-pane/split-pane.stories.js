@@ -26,6 +26,8 @@ function createSplitPane({ orientation = "horizontal", position = 34, disabled =
   pane.min = 20;
   pane.max = 80;
   pane.snapPoints = [25, 50, 75];
+  pane.snapThreshold = 8;
+  pane.locale = "en-US";
   pane.disabled = disabled;
   pane.style.blockSize = "20rem";
   pane.style.border = "1px solid var(--rowan-color-border)";

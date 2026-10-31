@@ -28,6 +28,7 @@ function createNavigation() {
 function createAppLayout({ navigationOpen = false } = {}) {
   const layout = document.createElement("rowan-app-layout");
   layout.navigationOpen = navigationOpen;
+  layout.navigationLabel = "Project navigation";
   layout.style.blockSize = "34rem";
   layout.style.border = "1px solid var(--rowan-color-border)";
   layout.style.borderRadius = "var(--rowan-radius-md)";
