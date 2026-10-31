@@ -1487,7 +1487,64 @@ export const ClipboardAndExport = {
   parameters: {
     docs: {
       description: {
-        story: "Ctrl/Cmd+C copies the selected rows, or the focused cell when nothing is selected, as TSV and an HTML table. copyToClipboard, exportCsv, and exportExcel accept includeHeaders, columns, scope (all, selected, page, or cell), formatValues, guardFormulas, filename, and getRows. Hidden columns stay out unless named. rowan-copy and rowan-export are cancelable. Paste is not built in.",
+        story: "Ctrl/Cmd+C copies the selected rows, or the focused cell when nothing is selected, as TSV and an HTML table. copyToClipboard, exportCsv, and exportExcel accept includeHeaders, columns, scope (all, selected, page, or cell), formatValues, guardFormulas, filename, and getRows. Hidden columns stay out unless named. rowan-copy and rowan-export are cancelable.",
+      },
+    },
+  },
+};
+
+export const PasteCells = {
+  render: () => {
+    return `
+      <div style="padding: 1rem; display: grid; gap: 0.75rem;">
+        <label>TSV <textarea id="paste-text" rows="4">Ada	12	Admin	true	2026-04-02
+Ken	4	Editor	false	2026-05-01</textarea></label>
+        <button type="button" id="paste-apply">pasteText</button>
+        <p id="paste-events"></p>
+        <rowan-table id="paste-table" selectable="multiple" density="md" caption="Roster"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("#paste-table");
+        const events = document.querySelector("#paste-events");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true },
+            { id: "score", header: "Score", type: "number", editable: true, required: true },
+            { id: "role", header: "Role", type: "select", editable: true, editor: { type: "select", options: [{ value: "admin", label: "Admin" }, { value: "editor", label: "Editor" }] } },
+            { id: "active", header: "Active", type: "checkbox", editable: true },
+            { id: "joined", header: "Joined", type: "date", editable: true },
+            { id: "note", header: "Note" },
+            { id: "secret", header: "Secret", hidden: true, editable: true },
+          ],
+          rows: [
+            { id: "p-1", name: "Grace", score: 10, role: "editor", active: false, joined: "2026-01-01", note: "keep", secret: "x" },
+            { id: "p-2", name: "Alan", score: 8, role: "admin", active: true, joined: "2026-02-01", note: "keep", secret: "y" },
+            { id: "p-3", name: "Radia", score: 9, role: "editor", active: false, joined: "2026-03-01", note: "keep", secret: "z" },
+          ],
+          rowId: "id",
+          page: { index: 0, size: 2 },
+        };
+        const focus = () => {
+          const cell = table.renderRoot.querySelector('td[data-column-id="name"]');
+          cell.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        };
+        document.querySelector("#paste-apply").addEventListener("click", async () => {
+          focus();
+          await table.pasteText(document.querySelector("#paste-text").value);
+        });
+        table.addEventListener("rowan-paste", (event) => {
+          events.textContent = "rowan-paste " + event.detail.targets.length;
+        });
+        table.addEventListener("rowan-paste-result", (event) => {
+          events.textContent = "rowan-paste-result applied " + event.detail.applied.length + " rejected " + event.detail.rejected.length;
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "pasteText(text) and Ctrl/Cmd+V write TSV onto the focused editable cell. Number, date, checkbox, and select columns are parsed. required and validate run, then rowan-edit-validate and rowan-edit-commit. rowan-paste can cancel or edit targets. rowan-paste-result lists applied and rejected cells. Hidden and non-editable columns are skipped. The page size is 2, so a third row is ignored. Server mode pastes only loaded rows.",
       },
     },
   },

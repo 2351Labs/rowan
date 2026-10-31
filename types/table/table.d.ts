@@ -61,6 +61,8 @@
  * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
  * @event rowan-copy - Fired before a clipboard write. Cancelable. `detail.text` is TSV and `detail.html` is an HTML table. Listeners may replace either, or `detail.rows`.
  * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
+ * @event rowan-paste - Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.
+ * @event rowan-paste-result - Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.
  */
 export class RowanTable extends BaseElement {
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -366,6 +368,22 @@ export class RowanTable extends BaseElement {
         error: any;
       }
   >;
+  /**
+   * Paste TSV at the focused editable cell. Omit `text` to read the clipboard.
+   * @param {string} [text]
+   * @param {object} [options] Reserved. Paste behavior does not read it yet.
+   * @returns {Promise<{ pasted: boolean, applied: object[], rejected: object[], ignored?: number, prevented?: boolean }>}
+   */
+  pasteText(
+    text?: string | undefined,
+    options?: object,
+  ): Promise<{
+    pasted: boolean;
+    applied: object[];
+    rejected: object[];
+    ignored?: number;
+    prevented?: boolean;
+  }>;
   #private;
 }
 export type RowanTableCellType =
@@ -531,5 +549,9 @@ export type RowanTableMessages = {
   copyFailed?: string | undefined;
   exportedFile?: string | ((context: { filename: string }) => string) | undefined;
   exportFailed?: string | undefined;
+  pastedCells?: string | ((context: { count: number }) => string) | undefined;
+  pasteRejected?: string | ((context: { count: number }) => string) | undefined;
+  pasteFailed?: string | undefined;
+  nothingToPaste?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

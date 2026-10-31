@@ -16697,6 +16697,16 @@
           "detail": ""
         },
         {
+          "name": "rowan-paste",
+          "description": "Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.",
+          "detail": ""
+        },
+        {
+          "name": "rowan-paste-result",
+          "description": "Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.",
+          "detail": ""
+        },
+        {
           "name": "rowan-row-activate",
           "description": "Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.",
           "detail": ""
@@ -16820,6 +16830,15 @@
           "description": "Download a real .xlsx workbook. Options match `exportCsv`."
         },
         {
+          "name": "pasteText",
+          "parameters": [
+            "text",
+            "options"
+          ],
+          "inherited": "",
+          "description": "Paste TSV at the focused editable cell. Omit `text` to read the clipboard."
+        },
+        {
           "name": "selectAll",
           "parameters": [],
           "inherited": "",
@@ -16930,6 +16949,14 @@
           {
             "name": "onRowanPageChange",
             "event": "rowan-page-change"
+          },
+          {
+            "name": "onRowanPaste",
+            "event": "rowan-paste"
+          },
+          {
+            "name": "onRowanPasteResult",
+            "event": "rowan-paste-result"
           },
           {
             "name": "onRowanRowActivate",

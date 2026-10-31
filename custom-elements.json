@@ -29344,13 +29344,49 @@
           ]
         },
         {
-          "kind": "variable",
-          "name": "value"
+          "kind": "function",
+          "name": "commitExternalCell",
+          "parameters": [
+            {
+              "name": "ctx",
+              "type": {
+                "text": "object"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "text": "{ rowId: string, rowIndex: number, row: object, column: object, value: unknown }"
+              }
+            }
+          ],
+          "description": "Apply a value that did not come from an open editor. Uses the same validation\nand `rowan-edit-commit` path as a cell edit. Does not paint an error; the caller does."
         },
         {
           "kind": "variable",
-          "name": "oldValue",
-          "default": "rowEditing.originalValues[entry.column.id]"
+          "name": "oldValue"
+        },
+        {
+          "kind": "function",
+          "name": "paintCellError",
+          "parameters": [
+            {
+              "name": "td",
+              "type": {
+                "text": "HTMLElement | null"
+              }
+            },
+            {
+              "name": "message",
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "variable",
+          "name": "value"
         },
         {
           "kind": "function",
@@ -29405,6 +29441,22 @@
           "name": "createEditor",
           "declaration": {
             "name": "createEditor",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "commitExternalCell",
+          "declaration": {
+            "name": "commitExternalCell",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "paintCellError",
+          "declaration": {
+            "name": "paintCellError",
             "module": "src/table/table-editors.js"
           }
         },
@@ -29617,6 +29669,21 @@
               }
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "pasteText",
+          "parameters": [
+            {
+              "name": "bridge"
+            },
+            {
+              "name": "text"
+            },
+            {
+              "name": "table"
+            }
+          ]
         }
       ],
       "exports": [
@@ -29690,6 +29757,145 @@
           "declaration": {
             "name": "exportExcel",
             "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pasteText",
+          "declaration": {
+            "name": "pasteText",
+            "module": "src/table/table-export.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/table/table-paste.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "parseTsv",
+          "parameters": [
+            {
+              "name": "text",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "string[][]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "parsePasteValue",
+          "parameters": [
+            {
+              "name": "column",
+              "type": {
+                "text": "object"
+              }
+            },
+            {
+              "name": "text",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "messages",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "pasteTable",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "object"
+              }
+            },
+            {
+              "name": "text",
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "variable",
+          "name": "matrix"
+        },
+        {
+          "kind": "variable",
+          "name": "applied",
+          "type": {
+            "text": "array"
+          },
+          "default": "[]"
+        },
+        {
+          "kind": "variable",
+          "name": "rejected",
+          "type": {
+            "text": "array"
+          },
+          "default": "[]"
+        },
+        {
+          "kind": "function",
+          "name": "pasteFromClipboard",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "object"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "parseTsv",
+          "declaration": {
+            "name": "parseTsv",
+            "module": "src/table/table-paste.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parsePasteValue",
+          "declaration": {
+            "name": "parsePasteValue",
+            "module": "src/table/table-paste.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pasteTable",
+          "declaration": {
+            "name": "pasteTable",
+            "module": "src/table/table-paste.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pasteFromClipboard",
+          "declaration": {
+            "name": "pasteFromClipboard",
+            "module": "src/table/table-paste.js"
           }
         }
       ]
@@ -30167,6 +30373,33 @@
               "description": "Download a real .xlsx workbook. Options match `exportCsv`."
             },
             {
+              "kind": "method",
+              "name": "pasteText",
+              "parameters": [
+                {
+                  "name": "text",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "description": "Reserved. Paste behavior does not read it yet.",
+                  "optional": true,
+                  "type": {
+                    "text": "object"
+                  }
+                }
+              ],
+              "description": "Paste TSV at the focused editable cell. Omit `text` to read the clipboard.",
+              "return": {
+                "type": {
+                  "text": "Promise<{ pasted: boolean, applied: object[], rejected: object[], ignored?: number, prevented?: boolean }>"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "itemKey",
               "type": {
@@ -30336,6 +30569,14 @@
             {
               "description": "Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.",
               "name": "rowan-export"
+            },
+            {
+              "description": "Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.",
+              "name": "rowan-paste"
+            },
+            {
+              "description": "Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.",
+              "name": "rowan-paste-result"
             }
           ],
           "attributes": [
