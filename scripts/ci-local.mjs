@@ -220,45 +220,32 @@ async function ensurePlaywrightBrowsers(browser) {
   console.log(`▶ Checking Playwright ${browser} installation`);
   console.log(`${"=".repeat(80)}\n`);
   
-  // Try to check if browser is installed
-  const proc = spawn("npx", ["playwright", "install", browser, "--dry-run"], {
-    cwd: rootDir,
-    stdio: "pipe",
-  });
+  // Always install browsers to ensure they're up-to-date
+  // Playwright install is idempotent and fast if already installed
+  console.log(`Installing Playwright ${browser} (idempotent)...`);
   
   return new Promise((resolve) => {
-    let output = "";
-    proc.stdout.on("data", (data) => {
-      output += data.toString();
-    });
-    proc.stderr.on("data", (data) => {
-      output += data.toString();
+    const installProc = spawn(
+      "npx",
+      ["playwright", "install", "--with-deps", browser],
+      {
+        cwd: rootDir,
+        stdio: "inherit",
+      }
+    );
+    
+    installProc.on("close", (installCode) => {
+      if (installCode === 0) {
+        console.log(`\n✓ Playwright ${browser} ready\n`);
+      } else {
+        console.error(`\n❌ Failed to install Playwright ${browser}\n`);
+      }
+      resolve(installCode);
     });
     
-    proc.on("close", (code) => {
-      // If dry-run succeeds or shows already installed, we're good
-      // Otherwise, install the browser
-      if (output.includes("is already installed") || code === 0) {
-        console.log(`✓ Playwright ${browser} is already installed\n`);
-        resolve(0);
-      } else {
-        console.log(`Installing Playwright ${browser}...`);
-        const installProc = spawn(
-          "npx",
-          ["playwright", "install", "--with-deps", browser],
-          {
-            cwd: rootDir,
-            stdio: "inherit",
-          }
-        );
-        
-        installProc.on("close", (installCode) => {
-          if (installCode === 0) {
-            console.log(`✓ Playwright ${browser} installed\n`);
-          }
-          resolve(installCode);
-        });
-      }
+    installProc.on("error", (err) => {
+      console.error(`\n❌ Failed to install Playwright ${browser}:`, err);
+      resolve(1);
     });
   });
 }
