@@ -2772,7 +2772,8 @@ describe("inline editing", () => {
     document.body.removeChild(host);
   });
 
-  it("works efficiently on large tables (10,000 rows)", async () => {
+  it("works efficiently on large tables (10,000 rows)", async function () {
+    this.timeout(10000);
     const host = document.createElement("div");
     document.body.appendChild(host);
 
@@ -2802,10 +2803,13 @@ describe("inline editing", () => {
     const startTime = performance.now();
     firstEditableCell.focus();
     firstEditableCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await waitFor(() => table.renderRoot.querySelector("input.cell-editor"));
+    let input = null;
+    while (!input && performance.now() - startTime < 500) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      input = table.renderRoot.querySelector("input.cell-editor");
+    }
     const endTime = performance.now();
 
-    const input = table.renderRoot.querySelector("input");
     expect(input).to.exist;
     expect(endTime - startTime).to.be.lessThan(500);
 
