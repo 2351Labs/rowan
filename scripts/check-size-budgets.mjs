@@ -42,7 +42,7 @@ const budgets = {
   "bar-chart": 20 * 1024,
 
   // Table (large, includes many features + column resizing/reordering + inline editing Phase 1)
-  table: 42 * 1024, // 42 KB (+4 KB for inline editing)
+  table: 41 * 1024, // 41 KB (+3 KB for inline editing text/number only)
 
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch

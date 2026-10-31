@@ -2763,4 +2763,44 @@ describe("inline editing", () => {
 
     document.body.removeChild(host);
   });
+
+  it("works efficiently on large tables (10,000 rows)", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    const largeDataset = Array.from({ length: 10000 }, (_, i) => ({
+      id: String(i),
+      name: `Row ${i}`,
+      value: i * 10,
+    }));
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "value", header: "Value", type: "number", editable: true },
+      ],
+      rows: largeDataset,
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const firstEditableCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    expect(firstEditableCell).to.exist;
+
+    const startTime = performance.now();
+    firstEditableCell.focus();
+    firstEditableCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+    const endTime = performance.now();
+
+    const input = table.renderRoot.querySelector("input");
+    expect(input).to.exist;
+    expect(endTime - startTime).to.be.lessThan(500);
+
+    document.body.removeChild(host);
+  });
 });

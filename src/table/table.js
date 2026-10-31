@@ -20,8 +20,6 @@ import "../sparkline/sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
 import "../text-field/text-field.js";
-import "../select/select.js";
-import "../date-picker/date-picker.js";
 
 const CELL_TYPES = new Set([
   "text",
@@ -123,10 +121,10 @@ function nonNegativeInteger(value, fallback) {
 
 /**
  * @typedef {object} RowanTableColumnEditor
- * @property {"text" | "number" | "select" | "date" | "checkbox" | "custom"} [type]
- * @property {Array<{value: unknown, label: string}>} [options]
- * @property {(context: RowanTableEditContext) => HTMLElement} [render]
- * @property {(value: unknown, row: RowanTableRow) => Promise<string | null> | string | null} [validate]
+ * @property {"text" | "number"} [type]
+ * @property {number} [min]
+ * @property {number} [max]
+ * @property {number} [step]
  */
 
 /**
@@ -1496,7 +1494,8 @@ export class RowanTable extends BaseElement {
       if (isEditable) {
         td.setAttribute("data-editable", "true");
         td.setAttribute("tabindex", "0");
-        td.setAttribute("role", "gridcell");
+        const editHint = resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell", { column: column.header });
+        td.setAttribute("aria-description", editHint);
       }
 
       const value = this.#resolveValue(entry.row, entry.rowIndex, column);
@@ -1627,9 +1626,9 @@ export class RowanTable extends BaseElement {
         const column = this.#findColumn(columnId);
         
         if (column) {
-          const row = this.#state.rows.find((r) => this.#resolveRowId(r, this.#state.rows.indexOf(r)) === rowId);
-          if (row) {
-            const rowIndex = this.#state.rows.indexOf(row);
+          const result = this.#getRowFromElement(tr);
+          if (result) {
+            const { row, rowIndex } = result;
             if (this.#isColumnEditable(column, row, rowIndex)) {
               if (event.key === "Enter" || event.key === "F2") {
                 event.preventDefault();
@@ -1858,6 +1857,14 @@ export class RowanTable extends BaseElement {
     return m ? parseFloat(m[1]) : 0;
   }
 
+  #getRowFromElement(tr) {
+    const rowIndex = Number(tr.dataset.rowIndex);
+    if (!Number.isInteger(rowIndex) || rowIndex < 0 || rowIndex >= this.#state.rows.length) {
+      return null;
+    }
+    return { row: this.#state.rows[rowIndex], rowIndex };
+  }
+
   #isColumnEditable(column, row, rowIndex) {
     if (!column.editable) return false;
     if (typeof column.editable === "function") {
@@ -1871,10 +1878,13 @@ export class RowanTable extends BaseElement {
       this.#stopEditing(false);
     }
 
-    const row = this.#state.rows.find((r) => this.#resolveRowId(r, this.#state.rows.indexOf(r)) === rowId);
-    if (!row) return;
+    const tr = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
+    if (!tr) return;
 
-    const rowIndex = this.#state.rows.indexOf(row);
+    const result = this.#getRowFromElement(tr);
+    if (!result) return;
+
+    const { row, rowIndex } = result;
     const column = this.#findColumn(columnId);
     if (!column || !this.#isColumnEditable(column, row, rowIndex)) return;
 
