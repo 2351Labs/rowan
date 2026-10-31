@@ -131,6 +131,35 @@ describe("rowan-form-field", () => {
       "Obligatorio",
     );
   });
+
+  it("places the label at the start and marks the field invalid", async () => {
+    const field = document.createElement("rowan-form-field");
+    field.label = "Workspace name";
+    field.labelPosition = "start";
+    field.invalid = true;
+    document.body.append(field);
+    await nextMicrotask();
+
+    expect(field.getAttribute("label-position")).to.equal("start");
+    expect(field.labelPosition).to.equal("start");
+    expect(field.hasAttribute("invalid")).to.equal(true);
+    expect(
+      field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid"),
+    ).to.equal(true);
+
+    field.labelPosition = "top";
+    field.invalid = false;
+    await nextMicrotask();
+    expect(field.hasAttribute("label-position")).to.equal(false);
+    expect(field.labelPosition).to.equal("top");
+    expect(
+      field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid"),
+    ).to.equal(false);
+
+    const messages = field.messages;
+    messages.required = "Mutated";
+    expect(field.messages.required).to.not.equal("Mutated");
+  });
 });
 
 function tokens(value) {

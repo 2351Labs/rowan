@@ -551,4 +551,43 @@ describe("rowan-filter-builder", () => {
     expect(events).to.deep.equal(["remove", "add"]);
     expect(builder.shadowRoot.querySelector("rowan-popover").open).to.equal(true);
   });
+
+  it("removes and clears filters without accepting a non-table target", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [
+      { id: "name", label: "Name", type: "text" },
+      { id: "active", label: "Active", type: "boolean" },
+    ];
+    document.body.append(builder);
+    await settle();
+
+    expect(builder.removeFilter("")).to.equal(false);
+    expect(builder.removeFilter("missing")).to.equal(false);
+    expect(builder.clearFilters()).to.equal(false);
+
+    const first = builder.addFilter({ field: "name", operator: "contains", value: "Ada" });
+    const second = builder.addFilter({ field: "active" });
+    await settle();
+    expect(builder.filters).to.have.length(2);
+
+    expect(builder.removeFilter(first.id)).to.equal(true);
+    expect(builder.filters.map((filter) => filter.id)).to.deep.equal([second.id]);
+    expect(builder.clearFilters()).to.equal(true);
+    expect(builder.filters).to.deep.equal([]);
+
+    builder.table = document.createElement("div");
+    expect(builder.table).to.equal(null);
+    builder.refresh();
+    await settle();
+    expect(builder.shadowRoot.querySelector('[part="builder"]')).to.not.equal(null);
+
+    builder.disabled = true;
+    builder.addLabel = "Add rule";
+    builder.clearLabel = "Clear rules";
+    await settle();
+    expect(builder.shadowRoot.querySelector('[data-action="add"]').disabled).to.equal(true);
+    const messages = builder.messages;
+    messages.add = "Mutated";
+    expect(builder.messages.add).to.not.equal("Mutated");
+  });
 });

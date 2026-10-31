@@ -150,4 +150,29 @@ describe("rowan-carousel", () => {
       "Panel 2 of 2",
     );
   });
+
+  it("moves with previous() without a user event and ignores an empty carousel", async () => {
+    const carousel = createCarousel({ activeIndex: 2 });
+    carousel.label = "Product shots";
+    await nextMicrotask();
+
+    const changes = [];
+    carousel.addEventListener("rowan-change", (event) => changes.push(event.detail));
+    carousel.previous();
+    await nextMicrotask();
+
+    expect(carousel.activeIndex).to.equal(1);
+    expect(changes).to.deep.equal([]);
+    expect(carousel.getAttribute("label")).to.equal("Product shots");
+    const messages = carousel.messages;
+    messages.nextPanel = "Mutated";
+    expect(carousel.messages.nextPanel).to.not.equal("Mutated");
+
+    const empty = document.createElement("rowan-carousel");
+    document.body.append(empty);
+    await nextMicrotask();
+    empty.previous();
+    empty.next();
+    expect(empty.activeIndex).to.equal(0);
+  });
 });

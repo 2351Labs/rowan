@@ -167,4 +167,57 @@ describe("rowan-slider", () => {
     input.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "ArrowLeft" }));
     expect(element.value).to.equal(5);
   });
+
+  it("submits custom range names, restores form state, and exposes validity semantics", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-slider");
+    element.range = true;
+    element.name = "price";
+    element.nameStart = "low";
+    element.nameEnd = "high";
+    element.label = "Price";
+    element.required = true;
+    element.value = { start: 10, end: 40 };
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(new FormData(form).get("low")).to.equal("10");
+    expect(new FormData(form).get("high")).to.equal("40");
+    expect(element.internals.ariaLabel).to.equal("Price");
+    expect(element.internals.ariaRequired).to.equal("true");
+    expect(element.checkValidity()).to.equal(true);
+    expect(element.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    element.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    element.value = { start: 15, end: 30 };
+    form.reset();
+    await nextMicrotask();
+
+    expect(element.value).to.deep.equal({ start: 10, end: 40 });
+    expect(changes).to.equal(0);
+
+    element.formStateRestoreCallback("5|25");
+    await nextMicrotask();
+    expect(element.value).to.deep.equal({ start: 5, end: 25 });
+    expect(changes).to.equal(0);
+
+    element.disabled = true;
+    element.invalid = true;
+    await nextMicrotask();
+    expect(new FormData(form).get("low")).to.equal(null);
+    expect(element.internals.ariaDisabled).to.equal("true");
+    expect(element.internals.ariaInvalid).to.equal("true");
+
+    element.formatValue = "not-a-function";
+    await nextMicrotask();
+    expect(element.formatValue).to.equal(null);
+    expect(element.shadowRoot.querySelector("output").textContent).to.not.equal("");
+    const messages = element.messages;
+    messages.value = "Mutated";
+    expect(element.messages.value).to.not.equal("Mutated");
+  });
 });

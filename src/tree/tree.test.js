@@ -313,4 +313,45 @@ describe("rowan-tree", () => {
     guides.shadowRoot.querySelector("button").click();
     expect(changeCount).to.equal(1);
   });
+
+  it("toggles a multiple selection off and returns focus when a branch collapses", async () => {
+    const { tree, guides, gettingStarted, reference } = await renderTree({
+      expanded: true,
+      selection: "multiple",
+    });
+    reference.disabled = true;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const changes = [];
+    tree.addEventListener("rowan-change", (event) => changes.push([...event.detail.selected]));
+    keydown(guides, " ");
+    keydown(guides, " ");
+    await nextMicrotask();
+
+    expect(changes).to.deep.equal([["guides"], []]);
+    expect(tree.selected).to.deep.equal([]);
+
+    keydown(guides, "ArrowRight");
+    await nextMicrotask();
+    expect(gettingStarted.shadowRoot.querySelector("button").tabIndex).to.equal(0);
+
+    guides.shadowRoot
+      .querySelector("button")
+      .dispatchEvent(
+        new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowLeft" }),
+      );
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(guides.expanded).to.equal(false);
+    expect(guides.shadowRoot.querySelector("button").tabIndex).to.equal(0);
+    expect(
+      gettingStarted.hidden || guides.shadowRoot.querySelector("button").tabIndex,
+    ).to.not.equal(-1);
+
+    keydown(guides, "End");
+    await nextMicrotask();
+    expect(guides.shadowRoot.querySelector("button").tabIndex).to.equal(0);
+  });
 });

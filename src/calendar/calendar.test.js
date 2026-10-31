@@ -410,4 +410,36 @@ describe("rowan-calendar", () => {
     expect(element.internals.ariaInvalid).to.equal("false");
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("submits custom range names and reports a missing required date", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-calendar");
+    element.selectionMode = "range";
+    element.name = "service";
+    element.nameStart = "from";
+    element.nameEnd = "to";
+    element.start = "2026-10-12";
+    element.end = "2026-10-18";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(new FormData(form).get("from")).to.equal("2026-10-12");
+    expect(new FormData(form).get("to")).to.equal("2026-10-18");
+    expect(element.reportValidity()).to.equal(true);
+
+    element.start = "";
+    element.end = "";
+    await nextMicrotask();
+    expect(element.reportValidity()).to.equal(false);
+
+    element.invalid = true;
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+    const messages = element.messages;
+    messages.today = "Mutated";
+    expect(element.messages.today).to.not.equal("Mutated");
+  });
 });

@@ -140,4 +140,47 @@ describe("rowan-time-picker", () => {
     expect(element.internals.ariaInvalid).to.equal("false");
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("resets and restores a time, rejects a non-positive step, and reports validity", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-time-picker");
+    element.name = "opens";
+    element.value = "09:30";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(new FormData(form).get("opens")).to.equal("09:30");
+    expect(element.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    element.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    element.value = "15:45";
+    form.reset();
+    await nextMicrotask();
+    expect(element.value).to.equal("09:30");
+
+    element.formStateRestoreCallback("18:00");
+    await nextMicrotask();
+    expect(element.value).to.equal("18:00");
+    element.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(element.value).to.equal("");
+    expect(element.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    element.step = 90;
+    expect(element.getAttribute("step")).to.equal("90");
+    element.step = 0;
+    expect(element.step).to.equal(60);
+    expect(element.hasAttribute("step")).to.equal(false);
+
+    element.invalid = true;
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+    expect(element.internals.ariaInvalid).to.equal("true");
+  });
 });

@@ -285,4 +285,61 @@ describe("rowan-multi-select-combobox", () => {
     );
     expect(changes).to.deep.equal([]);
   });
+
+  it("restores selection, removes a chip, and closes on an outside pointer", async () => {
+    const form = document.createElement("form");
+    const combobox = await renderCombobox({ selected: ["design"], required: true });
+    combobox.name = "teams";
+    form.append(combobox);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(combobox.reportValidity()).to.equal(true);
+    expect(new FormData(form).get("teams")).to.equal("design");
+
+    let changes = 0;
+    combobox.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    combobox.formStateRestoreCallback('["engineering","operations"]');
+    await nextMicrotask();
+    expect(combobox.selected).to.deep.equal(["engineering", "operations"]);
+    expect(changes).to.equal(0);
+
+    combobox.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(combobox.selected).to.deep.equal([]);
+    expect(combobox.reportValidity()).to.equal(false);
+
+    combobox.selected = ["design", "engineering"];
+    await nextMicrotask();
+    const remove = combobox.shadowRoot.querySelector("[data-remove-value='design']");
+    remove.click();
+    await nextMicrotask();
+    expect(combobox.selected).to.deep.equal(["engineering"]);
+    expect(changes).to.equal(1);
+
+    combobox.disabled = true;
+    await nextMicrotask();
+    combobox.shadowRoot.querySelector("[data-remove-value='engineering']").click();
+    await nextMicrotask();
+    expect(combobox.selected).to.deep.equal(["engineering"]);
+    expect(new FormData(form).get("teams")).to.equal(null);
+
+    combobox.disabled = false;
+    combobox.open = true;
+    await nextMicrotask();
+    document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    await nextMicrotask();
+    expect(combobox.open).to.equal(false);
+
+    combobox.placeholder = "Find a team";
+    combobox.locale = "fr";
+    await nextMicrotask();
+    expect(combobox.shadowRoot.querySelector("input").placeholder).to.equal("Find a team");
+    expect(combobox.getAttribute("locale")).to.equal("fr");
+    const messages = combobox.messages;
+    messages.placeholder = "Mutated";
+    expect(combobox.messages.placeholder).to.not.equal("Mutated");
+  });
 });

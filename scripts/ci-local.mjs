@@ -324,6 +324,7 @@ async function main() {
   await runCommand("npm", ["test"], "Unit tests");
 
   if (!flags.quick) {
+    await runCommand("npm", ["run", "coverage"], "Test coverage");
     await runCommand("npm", ["run", "test:package"], "Test package registration");
   }
 

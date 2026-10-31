@@ -259,4 +259,46 @@ describe("rowan-number-field", () => {
     expect(element.internals.ariaInvalid).to.equal("false");
     expect(element.internals.ariaDisabled).to.equal("true");
   });
+
+  it("resets and restores its value and reports an empty required field", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-number-field");
+    element.name = "count";
+    element.value = "4";
+    element.required = true;
+    element.placeholder = "How many";
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+
+    expect(element.shadowRoot.querySelector("input").placeholder).to.equal("How many");
+    expect(new FormData(form).get("count")).to.equal("4");
+    expect(element.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    element.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    element.value = "9";
+    form.reset();
+    await nextMicrotask();
+    expect(element.value).to.equal("4");
+
+    element.formStateRestoreCallback("12");
+    await nextMicrotask();
+    expect(element.value).to.equal("12");
+    element.formStateRestoreCallback(null);
+    await nextMicrotask();
+    expect(element.value).to.equal("");
+    expect(element.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    element.invalid = true;
+    await nextMicrotask();
+    expect(element.hasAttribute("invalid")).to.equal(true);
+    expect(element.internals.ariaInvalid).to.equal("true");
+    const messages = element.messages;
+    messages.label = "Mutated";
+    expect(element.messages.label).to.not.equal("Mutated");
+  });
 });

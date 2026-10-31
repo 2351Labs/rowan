@@ -3,6 +3,8 @@ import { expect } from "@esm-bundle/chai";
 import {
   documentFromEditingSurface,
   documentFromPlainText,
+  documentToPlainText,
+  isDocumentEmpty,
   normalizeDocument,
   parseStoredDocument,
   renderDocument,
@@ -139,5 +141,80 @@ describe("rich-text document", () => {
 
     expect(normalizeDocument("<p><strong>Markup</strong></p>")).to.deep.equal({ blocks: [] });
     expect(normalizeDocument("<script>alert(1)</script>")).to.deep.equal({ blocks: [] });
+  });
+
+  it("merges matching runs, flattens lists to text, and reads an editing surface", () => {
+    expect(
+      normalizeDocument({
+        blocks: [
+          {
+            type: "paragraph",
+            children: [
+              { text: "Open ", bold: true },
+              { text: "the", bold: true },
+              { text: "", italic: true },
+              { text: " record" },
+            ],
+          },
+          {
+            type: "unordered-list",
+            items: [[{ text: "Contain" }], []],
+          },
+        ],
+      }),
+    ).to.deep.equal({
+      blocks: [
+        {
+          type: "paragraph",
+          children: [{ text: "Open the", bold: true }, { text: " record" }],
+        },
+        {
+          type: "unordered-list",
+          items: [[{ text: "Contain" }], []],
+        },
+      ],
+    });
+
+    const value = normalizeDocument({
+      blocks: [
+        { type: "heading", level: 2, children: [{ text: "Runbook" }] },
+        { type: "ordered-list", items: [[{ text: "Contain" }], [{ text: "Recover" }]] },
+      ],
+    });
+    expect(documentToPlainText(value)).to.equal("Runbook\nContain\nRecover");
+    expect(
+      isDocumentEmpty({ blocks: [{ type: "paragraph", children: [{ text: "  " }] }] }),
+    ).to.equal(true);
+
+    const surface = document.createElement("div");
+    surface.append("Loose ");
+    surface.append(document.createElement("br"));
+    const list = document.createElement("ul");
+    const item = document.createElement("li");
+    item.textContent = "Contain";
+    list.append(item);
+    surface.append(list);
+    const paragraph = document.createElement("div");
+    const link = document.createElement("a");
+    link.setAttribute("href", "mailto:ops@example.test");
+    link.textContent = "Ops";
+    paragraph.append(link);
+    surface.append(paragraph);
+
+    expect(documentFromEditingSurface(surface)).to.deep.equal({
+      blocks: [
+        { type: "paragraph", children: [{ text: "Loose \n" }] },
+        { type: "unordered-list", items: [[{ text: "Contain" }]] },
+        {
+          type: "paragraph",
+          children: [{ text: "Ops", href: "mailto:ops@example.test" }],
+        },
+      ],
+    });
+
+    const emptyList = document.createElement("div");
+    renderDocument(emptyList, { blocks: [{ type: "unordered-list", items: [] }] });
+    expect(emptyList.querySelector("ul > li > br")).to.not.equal(null);
+    expect(documentFromEditingSurface(emptyList).blocks[0].type).to.equal("unordered-list");
   });
 });

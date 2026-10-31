@@ -197,4 +197,57 @@ describe("rowan-date-range-picker", () => {
     );
     expect(element.shadowRoot.querySelector('[part="separator"]').textContent).to.equal("jusqu’au");
   });
+
+  it("submits custom endpoint names and restores or clears range state", async () => {
+    const form = document.createElement("form");
+    const element = document.createElement("rowan-date-range-picker");
+    element.name = "trip";
+    element.nameStart = "depart";
+    element.nameEnd = "return";
+    element.start = "2026-04-01";
+    element.end = "2026-04-10";
+    element.required = true;
+    form.append(element);
+    document.body.append(form);
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(new FormData(form).get("depart")).to.equal("2026-04-01");
+    expect(new FormData(form).get("return")).to.equal("2026-04-10");
+    expect(element.checkValidity()).to.equal(true);
+    expect(element.reportValidity()).to.equal(true);
+
+    let changes = 0;
+    element.addEventListener("rowan-change", () => {
+      changes += 1;
+    });
+    element.start = "2026-05-01";
+    element.end = "2026-05-02";
+    form.reset();
+    await nextMicrotask();
+    expect(element.start).to.equal("2026-04-01");
+    expect(element.end).to.equal("2026-04-10");
+
+    element.formStateRestoreCallback("2026-06-01|2026-06-08");
+    await nextMicrotask();
+    expect(element.start).to.equal("2026-06-01");
+    expect(element.end).to.equal("2026-06-08");
+
+    element.formStateRestoreCallback("not-a-range");
+    await nextMicrotask();
+    expect(element.start).to.equal("");
+    expect(element.end).to.equal("");
+    expect(element.reportValidity()).to.equal(false);
+    expect(changes).to.equal(0);
+
+    element.disabled = true;
+    element.invalid = true;
+    await nextMicrotask();
+    expect(new FormData(form).get("depart")).to.equal(null);
+    expect(element.internals.ariaDisabled).to.equal("true");
+    expect(element.invalid).to.equal(true);
+    const messages = element.messages;
+    messages.clear = "Mutated";
+    expect(element.messages.clear).to.not.equal("Mutated");
+  });
 });

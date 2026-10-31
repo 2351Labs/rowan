@@ -161,4 +161,32 @@ describe("rowan-stepper", () => {
     await nextMicrotask();
     expect(element.shadowRoot.activeElement).to.equal(buttons[2]);
   });
+
+  it("parses a steps attribute, moves with next and previous, and copies messages", async () => {
+    const element = document.createElement("rowan-stepper");
+    element.steps = "Draft, Review, Publish";
+    document.body.append(element);
+    await nextMicrotask();
+
+    expect(element.getAttribute("steps")).to.equal("Draft, Review, Publish");
+    expect(element.steps.map((step) => step.label)).to.deep.equal(["Draft", "Review", "Publish"]);
+
+    element.currentStep = 2;
+    element.next();
+    await nextMicrotask();
+    expect(element.currentStep).to.equal(3);
+    element.next();
+    await nextMicrotask();
+    expect(element.currentStep).to.equal(3);
+    element.previous();
+    await nextMicrotask();
+    expect(element.currentStep).to.equal(2);
+
+    element.messages = { stepLabel: "Paso {step}" };
+    const messages = element.messages;
+    messages.stepLabel = "Mutated";
+    expect(element.messages.stepLabel).to.equal("Paso {step}");
+    expect(element.getAttribute("messages")).to.equal(null);
+    expect(element.shadowRoot.querySelector("[part='list']").textContent).to.include("Draft");
+  });
 });
