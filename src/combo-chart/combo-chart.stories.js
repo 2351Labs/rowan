@@ -1,6 +1,11 @@
 import "./combo-chart.js";
 import { createParetoData } from "./pareto.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
+import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import {
+  monthlyRevenue,
+  salesAndMargin,
+} from "../../stories/fixtures/chart-data.js";
 
 function createCombo({
   label = "Throughput mix",
@@ -13,7 +18,12 @@ function createCombo({
   chart.interactive = Boolean(interactive);
   chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   chart.series = [
-    { id: "volume", label: "Volume", geometry: "bar", values: [18, 24, 12, 20, 16] },
+    {
+      id: "volume",
+      label: "Volume",
+      geometry: "bar",
+      values: [18, 24, 12, 20, 16],
+    },
     {
       id: "fill",
       label: "Fill %",
@@ -49,7 +59,35 @@ export const Playground = {
   render: (args) => createCombo(args),
 };
 
+export const RevenueAndMargin = {
+  name: "Revenue and margin (realistic data)",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Sales Performance";
+    chart.description = "Revenue (bars) and margin percentage (line)";
+    chart.labels = monthlyRevenue.map((d) => d.month);
+    chart.series = [
+      {
+        id: "revenue",
+        label: "Revenue",
+        geometry: "bar",
+        values: salesAndMargin.map((d) => d.revenue),
+      },
+      {
+        id: "margin",
+        label: "Margin %",
+        geometry: "line",
+        axis: "secondary",
+        values: salesAndMargin.map((d) => d.margin),
+      },
+    ];
+    return chart;
+  },
+};
+
 export const AreaColumn = {
+  name: "Area + Column",
   args: {
     description: "Area behind bars on one category axis.",
   },
@@ -61,14 +99,111 @@ export const AreaColumn = {
     chart.interactive = Boolean(args.interactive);
     chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
     chart.series = [
-      { id: "trend", label: "Trend", geometry: "area", values: [14, 18, 11, 16, 13] },
-      { id: "volume", label: "Volume", geometry: "bar", values: [18, 24, 12, 20, 16] },
+      {
+        id: "trend",
+        label: "Trend",
+        geometry: "area",
+        values: [14, 18, 11, 16, 13],
+      },
+      {
+        id: "volume",
+        label: "Volume",
+        geometry: "bar",
+        values: [18, 24, 12, 20, 16],
+      },
+    ];
+    return chart;
+  },
+};
+
+export const MultipleLines = {
+  name: "Multiple lines with bars",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Sales vs Targets";
+    chart.description = "Actual (bars) with current and stretch targets (lines)";
+    chart.labels = monthlyRevenue.map((d) => d.month);
+    chart.series = [
+      {
+        id: "revenue",
+        label: "Revenue",
+        geometry: "bar",
+        values: monthlyRevenue.map((d) => d.revenue),
+      },
+      {
+        id: "target",
+        label: "Target",
+        geometry: "line",
+        values: monthlyRevenue.map((d) => d.target),
+      },
+      {
+        id: "stretch",
+        label: "Stretch",
+        geometry: "line",
+        values: monthlyRevenue.map((d) => d.target * 1.15),
+      },
+    ];
+    return chart;
+  },
+};
+
+export const DualAxis = {
+  name: "Dual axis scales",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Revenue and Growth";
+    chart.description = "Revenue in dollars (left) and growth rate (right)";
+    chart.labels = salesAndMargin.map((d) => d.month);
+    chart.series = [
+      {
+        id: "revenue",
+        label: "Revenue",
+        geometry: "bar",
+        values: salesAndMargin.map((d) => d.revenue),
+      },
+      {
+        id: "growth",
+        label: "Growth %",
+        geometry: "line",
+        axis: "secondary",
+        values: salesAndMargin.map((d) => d.growth),
+      },
+    ];
+    return chart;
+  },
+};
+
+export const SparseData = {
+  name: "Sparse data (null gaps)",
+  parameters: Playground.parameters,
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Incomplete Metrics";
+    chart.description = "Data with missing values (null)";
+    chart.labels = ["Q1", "Q2", "Q3", "Q4"];
+    chart.series = [
+      {
+        id: "volume",
+        label: "Volume",
+        geometry: "bar",
+        values: [180, null, 220, 240],
+      },
+      {
+        id: "efficiency",
+        label: "Efficiency %",
+        geometry: "line",
+        axis: "secondary",
+        values: [85, 88, null, 92],
+      },
     ];
     return chart;
   },
 };
 
 export const Pareto = {
+  name: "Pareto chart",
   parameters: Playground.parameters,
   render: (args) => {
     const chart = document.createElement("rowan-combo-chart");
@@ -81,7 +216,37 @@ export const Pareto = {
     });
     chart.labels = data.labels;
     chart.series = data.series;
-    chart.referenceLines = [{ value: 80, label: "80%", tone: "warning", axis: "secondary" }];
+    chart.referenceLines = [
+      { value: 80, label: "80%", tone: "warning", axis: "secondary" },
+    ];
     return chart;
   },
+};
+
+export const Empty = {
+  name: "Empty state",
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "No data available";
+    chart.description = "Chart with empty data";
+    chart.labels = [];
+    chart.series = [];
+    return chart;
+  },
+};
+
+export const Loading = {
+  name: "Loading state",
+  render: () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Loading...";
+    chart.loading = true;
+    return chart;
+  },
+};
+
+export const VibrantPalette = {
+  name: "Vibrant palette",
+  parameters: Playground.parameters,
+  render: (args) => withVibrantChartPalette(createCombo(args)),
 };
