@@ -26,116 +26,104 @@ const ciYml = readFileSync(ciYmlPath, "utf-8");
 const ciLocalPath = join(rootDir, "scripts/ci-local.mjs");
 const ciLocal = readFileSync(ciLocalPath, "utf-8");
 
-// Extract all `run:` steps from ci.yml (quality and browser-compatibility jobs)
+// Extract all `run:` steps from ci.yml (quality and browser-compatibility jobs).
+// Covers `- run: cmd`, `run: cmd` (named steps), and `run: |` blocks.
 const runSteps = [];
-
-// Simple YAML parser for `run:` steps
 const lines = ciYml.split("\n");
 for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
-  
-  // Look for `- run:` followed by command on same line
-  const inlineRunMatch = line.match(/^\s*-\s*run:\s*(.+)$/);
-  if (inlineRunMatch) {
-    runSteps.push(inlineRunMatch[1].trim());
+  const runMatch = line.match(/^(\s*)(?:-\s*)?run:\s*(.*)$/);
+  if (!runMatch) continue;
+
+  const baseIndent = runMatch[1].length;
+  const inline = runMatch[2].trim();
+
+  if (inline && inline !== "|" && inline !== ">") {
+    runSteps.push(inline);
     continue;
   }
-  
-  // Look for `run: |` or `run:` with command on next line
-  if (line.match(/^\s*run:\s*\|?\s*$/)) {
-    // Read continuation lines (indented more than current)
-    const baseIndent = line.search(/\S/);
-    let command = "";
-    let j = i + 1;
-    
-    while (j < lines.length) {
-      const nextLine = lines[j];
-      const nextIndent = nextLine.search(/\S/);
-      
-      // Stop if we hit a line at same or less indentation
-      if (nextLine.trim() && nextIndent <= baseIndent) {
-        break;
-      }
-      
-      if (nextLine.trim()) {
-        command += (command ? " " : "") + nextLine.trim();
-      }
+
+  let command = "";
+  let j = i + 1;
+  while (j < lines.length) {
+    const nextLine = lines[j];
+    if (!nextLine.trim()) {
       j++;
+      continue;
     }
-    
-    if (command) {
-      runSteps.push(command);
-    }
-    i = j - 1;
+    const nextIndent = nextLine.search(/\S/);
+    if (nextIndent <= baseIndent) break;
+    command += (command ? " " : "") + nextLine.trim();
+    j++;
   }
+  if (command) runSteps.push(command);
+  i = j - 1;
 }
 
 console.log(`Found ${runSteps.length} run steps in ci.yml:\n`);
 
 let hasErrors = false;
 
+/**
+ * A CI `run:` command is represented when ci-local.mjs contains the same argv.
+ * Workspace and script names must match; a generic `npm run lint` does not
+ * cover `npm run lint --workspace=@rowan-ui/icons`.
+ */
+function stepIsRepresented(step) {
+  const compact = step.replace(/\s+/g, " ").trim();
+
+  if (compact.includes("git status --porcelain")) {
+    return (
+      ciLocal.includes('status",') &&
+      ciLocal.includes('"--porcelain"') &&
+      ciLocal.includes('"custom-elements.json"') &&
+      ciLocal.includes('"packages/maplibre/src/react/generated"')
+    );
+  }
+
+  if (compact.includes("playwright install")) {
+    return ciLocal.includes('"playwright", "install", "--with-deps"');
+  }
+
+  const nodeScript = compact.match(/^node\s+(\S+)/);
+  if (nodeScript) {
+    return ciLocal.includes(`"${nodeScript[1]}"`);
+  }
+
+  const workspaceRun = compact.match(/^npm run (\S+) --workspace=(\S+)$/);
+  if (workspaceRun) {
+    const [, script, workspace] = workspaceRun;
+    return ciLocal.includes(`["run", "${script}", "--workspace=${workspace}"]`);
+  }
+
+  const plainRun = compact.match(/^npm run (\S+)$/);
+  if (plainRun) {
+    return ciLocal.includes(`["run", "${plainRun[1]}"]`);
+  }
+
+  if (compact === "npm test") {
+    return ciLocal.includes('["test"]');
+  }
+
+  if (compact === "npm ci") {
+    return ciLocal.includes('["ci"]');
+  }
+
+  const pack = compact.match(/^npm pack --dry-run(?: --workspace=(\S+))?$/);
+  if (pack) {
+    if (pack[1]) {
+      return ciLocal.includes(`["pack", "--dry-run", "--workspace=${pack[1]}"]`);
+    }
+    return ciLocal.includes('["pack", "--dry-run"]');
+  }
+
+  const tokens = compact.split(" ").filter((token) => token.length > 1 && !token.startsWith("$"));
+  return tokens.length > 0 && tokens.every((token) => ciLocal.includes(token));
+}
+
 // Check each step is represented in ci-local.mjs
 for (const step of runSteps) {
-  // Normalize step for matching
-  const normalized = step
-    .replace(/\$/g, "")
-    .replace(/\{|\}/g, "")
-    .replace(/matrix\.browser/g, "")
-    .trim();
-  
-  // Check if this step appears in ci-local.mjs
-  // We look for the key command parts
-  let found = false;
-  
-  // Extract the core npm command or node script
-  if (normalized.includes("npm ci")) {
-    found = ciLocal.includes('["ci"]') || ciLocal.includes("npm ci");
-  } else if (normalized.includes("npm run lint")) {
-    found = ciLocal.includes('["run", "lint"]') || ciLocal.includes('"lint"');
-  } else if (normalized.includes("npm run types")) {
-    found = ciLocal.includes('["run", "types"]') || ciLocal.includes('"types"');
-  } else if (normalized.includes("npm run typecheck")) {
-    found = ciLocal.includes('["run", "typecheck"]') || ciLocal.includes('"typecheck"');
-  } else if (normalized.includes("npm run analyze")) {
-    found = ciLocal.includes('["run", "analyze"]') || ciLocal.includes('"analyze"');
-  } else if (normalized.includes("npm run verify --workspace=@rowan-ui/icons")) {
-    found = ciLocal.includes('"verify", "--workspace=@rowan-ui/icons"');
-  } else if (normalized.includes("npm test")) {
-    found = ciLocal.includes('["test"]');
-  } else if (normalized.includes("npm run test:package")) {
-    found = ciLocal.includes('"test:package"');
-  } else if (normalized.includes("npm run test:browser")) {
-    found = ciLocal.includes('"test:browser"');
-  } else if (normalized.includes("npm run size:check")) {
-    found = ciLocal.includes('"size:check"');
-  } else if (normalized.includes("npm run documentation:build")) {
-    found = ciLocal.includes('"documentation:build"');
-  } else if (normalized.includes("npm run build-storybook")) {
-    found = ciLocal.includes('"build-storybook"');
-  } else if (normalized.includes("scripts/check-docs-version.mjs")) {
-    found = ciLocal.includes("check-docs-version.mjs");
-  } else if (normalized.includes("scripts/check-component-docs-coverage.mjs")) {
-    found = ciLocal.includes("check-component-docs-coverage.mjs");
-  } else if (normalized.includes("npm pack --dry-run")) {
-    found = ciLocal.includes('"pack", "--dry-run"');
-  } else if (normalized.includes("npx playwright install") || normalized.includes("playwright install")) {
-    found = ciLocal.includes("playwright install") || ciLocal.includes("ensurePlaywrightBrowsers");
-  } else if (normalized.includes("git status --porcelain")) {
-    found = ciLocal.includes("git status --porcelain") || 
-            ciLocal.includes("checkGeneratedArtifacts");
-  } else {
-    // For other steps, do a fuzzy check
-    const key = normalized
-      .replace(/^npm\s+(run\s+)?/, "")
-      .replace(/--workspace[^\s]*/, "")
-      .replace(/--with-deps/, "")
-      .trim()
-      .split(/\s+/)[0];
-    
-    if (key) {
-      found = ciLocal.includes(key);
-    }
-  }
+  const found = stepIsRepresented(step);
   
   if (found) {
     console.log(`  ✓ ${step}`);

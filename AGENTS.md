@@ -30,7 +30,7 @@ During development, use the quick mode for fast feedback:
 npm run ci:local -- --quick
 ```
 
-This runs lint, type checks, unit tests, and size checks only (skips browser tests and build steps). Use this for rapid iteration, but **always run the full suite before pushing**.
+This runs lint, types, typecheck, analyze, the generated-artifacts check, unit tests, and size:check only. Use this for rapid iteration, but **always run the full suite before pushing**.
 
 ### Local CI Options
 

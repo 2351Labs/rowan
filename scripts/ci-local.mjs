@@ -12,7 +12,8 @@
  */
 
 import { spawn } from "child_process";
-import { existsSync, statSync } from "fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from "fs";
+import { tmpdir } from "os";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -139,9 +140,9 @@ function checkNodeModulesStale() {
 /**
  * Check for uncommitted generated artifact changes
  */
-async function checkGeneratedArtifacts() {
+async function checkGeneratedArtifacts(label = "Verify generated artifacts") {
   console.log(`\n${"=".repeat(80)}`);
-  console.log(`▶ Verify generated artifacts (git status check)`);
+  console.log(`▶ ${label}`);
   console.log(`${"=".repeat(80)}\n`);
   
   const start = Date.now();
@@ -184,13 +185,13 @@ async function checkGeneratedArtifacts() {
         console.error(changes);
         console.error("\nRegenerate artifacts with: npm run analyze");
         
-        results.push({ 
-          label: "Verify generated artifacts", 
-          status: "✗", 
-          duration, 
-          code: 1 
+        results.push({
+          label,
+          status: "✗",
+          duration,
+          code: 1,
         });
-        timings.push(`✗ Verify generated artifacts (${formatDuration(duration)})`);
+        timings.push(`✗ ${label} (${formatDuration(duration)})`);
         
         if (!flags.keepGoing) {
           printSummary();
@@ -199,13 +200,13 @@ async function checkGeneratedArtifacts() {
         resolve(1);
       } else {
         console.log("✓ No uncommitted generated artifact changes\n");
-        results.push({ 
-          label: "Verify generated artifacts", 
-          status: "✓", 
-          duration, 
-          code: 0 
+        results.push({
+          label,
+          status: "✓",
+          duration,
+          code: 0,
         });
-        timings.push(`✓ Verify generated artifacts (${formatDuration(duration)})`);
+        timings.push(`✓ ${label} (${formatDuration(duration)})`);
         resolve(0);
       }
     });
@@ -225,14 +226,10 @@ async function ensurePlaywrightBrowsers(browser) {
   console.log(`Installing Playwright ${browser} (idempotent)...`);
   
   return new Promise((resolve) => {
-    const installProc = spawn(
-      "npx",
-      ["playwright", "install", "--with-deps", browser],
-      {
-        cwd: rootDir,
-        stdio: "inherit",
-      }
-    );
+    const installProc = spawn("npx", ["playwright", "install", "--with-deps", browser], {
+      cwd: rootDir,
+      stdio: "inherit",
+    });
     
     installProc.on("close", (installCode) => {
       if (installCode === 0) {
@@ -309,49 +306,31 @@ async function main() {
   await runCommand("npm", ["run", "typecheck"], "Type check");
   
   await runCommand("npm", ["run", "analyze"], "Analyze (CEM + React wrappers)");
-  
-  // Icons workspace checks
-  await runCommand(
-    "npm",
-    ["run", "lint", "--workspace=@rowan-ui/icons"],
-    "Icons: Lint"
-  );
-  
-  await runCommand(
-    "npm",
-    ["run", "verify", "--workspace=@rowan-ui/icons"],
-    "Icons: Verify"
-  );
-  
-  await runCommand(
-    "npm",
-    ["run", "types", "--workspace=@rowan-ui/icons"],
-    "Icons: Generate types"
-  );
-  
-  await runCommand(
-    "npm",
-    ["run", "typecheck", "--workspace=@rowan-ui/icons"],
-    "Icons: Type check"
-  );
-  
-  // Verify generated artifacts (git status check)
-  await checkGeneratedArtifacts();
-  
-  // Unit tests
-  await runCommand("npm", ["test"], "Unit tests");
-  
-  await runCommand("npm", ["run", "test:package"], "Test package registration");
-  
-  await runCommand("npm", ["run", "size:check"], "Check size budgets");
-  
-  await runCommand(
-    "npm",
-    ["run", "test", "--workspace=@rowan-ui/icons"],
-    "Icons: Unit tests"
-  );
-  
+
   if (!flags.quick) {
+    await runCommand("npm", ["run", "lint", "--workspace=@rowan-ui/icons"], "Icons: Lint");
+    await runCommand("npm", ["run", "verify", "--workspace=@rowan-ui/icons"], "Icons: Verify");
+    await runCommand("npm", ["run", "types", "--workspace=@rowan-ui/icons"], "Icons: Generate types");
+    await runCommand(
+      "npm",
+      ["run", "typecheck", "--workspace=@rowan-ui/icons"],
+      "Icons: Type check"
+    );
+    await runCommand("node", ["scripts/check-ci-parity.mjs"], "Verify CI parity");
+  }
+
+  await checkGeneratedArtifacts();
+
+  await runCommand("npm", ["test"], "Unit tests");
+
+  if (!flags.quick) {
+    await runCommand("npm", ["run", "test:package"], "Test package registration");
+  }
+
+  await runCommand("npm", ["run", "size:check"], "Check size budgets");
+
+  if (!flags.quick) {
+    await runCommand("npm", ["run", "test", "--workspace=@rowan-ui/icons"], "Icons: Unit tests");
     // Full mode: documentation and storybook builds
     await runCommand("npm", ["run", "documentation:build"], "Build documentation");
     
@@ -383,9 +362,7 @@ async function main() {
       ["pack", "--dry-run", "--workspace=@rowan-ui/maplibre"],
       "Pack maplibre (dry-run)"
     );
-  }
-  
-  if (!flags.quick) {
+
     // BROWSER-COMPATIBILITY JOB (mirrors .github/workflows/ci.yml browser-compatibility)
     
     for (const browser of browsers) {
@@ -416,120 +393,85 @@ async function main() {
       );
     }
     
-    // PAGES BUILD (mirrors .github/workflows/storybook-pages.yml PR dry-run)
-    // Already ran documentation:build and build-storybook above
-    
-    // Now verify assembly
-    console.log(`\n${"=".repeat(80)}`);
-    console.log(`▶ Pages: Verify build assembly (dry-run)`);
-    console.log(`${"=".repeat(80)}\n`);
-    
-    const start = Date.now();
-    const docsDir = join(rootDir, "documentation/documentation-static-check");
-    const storybookDir = join(rootDir, "storybook-static");
-    
-    let assemblyFailed = false;
-    
-    if (!existsSync(docsDir)) {
-      console.error("❌ Documentation build output not found at documentation/documentation-static-check/");
-      assemblyFailed = true;
-    } else if (!existsSync(join(docsDir, "index.html"))) {
-      console.error("❌ Documentation index.html not found");
-      assemblyFailed = true;
-    } else {
-      console.log("✓ Documentation build found: documentation/documentation-static-check/index.html");
-    }
-    
-    if (!existsSync(storybookDir)) {
-      console.error("❌ Storybook build output not found at storybook-static/");
-      assemblyFailed = true;
-    } else if (!existsSync(join(storybookDir, "index.html"))) {
-      console.error("❌ Storybook index.html not found");
-      assemblyFailed = true;
-    } else {
-      console.log("✓ Storybook build found: storybook-static/index.html");
-    }
-    
-    const duration = Date.now() - start;
-    
-    if (assemblyFailed) {
-      console.error("\n❌ Pages assembly verification failed\n");
-      results.push({
-        label: "Pages: Verify build assembly",
-        status: "✗",
-        duration,
-        code: 1,
-      });
-      timings.push(`✗ Pages: Verify build assembly (${formatDuration(duration)})`);
-      
-      if (!flags.keepGoing) {
-        printSummary();
-        process.exit(1);
-      }
-    } else {
-      console.log("\n✓ Pages assembly verification passed\n");
-      results.push({
-        label: "Pages: Verify build assembly",
-        status: "✓",
-        duration,
-        code: 0,
-      });
-      timings.push(`✓ Pages: Verify build assembly (${formatDuration(duration)})`);
-    }
+    await assemblePagesDryRun();
   }
-  
-  // Final check: verify no uncommitted generated artifacts after all steps
+
+  await checkGeneratedArtifacts("Final: generated artifacts unchanged");
+
+  printSummary();
+  const failed = results.filter((result) => result.code !== 0).length;
+  process.exit(failed > 0 ? 1 : 0);
+}
+
+/**
+ * Mirror the Pages workflow assemble step into a temp directory.
+ * Documentation at the root, Storybook under /storybook/, both index.html files required.
+ */
+function assemblePagesDryRun() {
   console.log(`\n${"=".repeat(80)}`);
-  console.log(`▶ Final: Verify no uncommitted changes from CI steps`);
+  console.log(`▶ Pages: Assemble deployment (dry-run)`);
   console.log(`${"=".repeat(80)}\n`);
-  
-  const finalStart = Date.now();
-  const proc = spawn("git", ["status", "--porcelain"], {
-    cwd: rootDir,
-    stdio: "pipe",
-  });
-  
-  let output = "";
-  proc.stdout.on("data", (data) => {
-    output += data.toString();
-  });
-  
-  proc.on("close", (_code) => {
-    const duration = Date.now() - finalStart;
-    const changes = output.trim();
-    
-    if (changes) {
-      console.error("❌ Working tree has uncommitted changes after CI steps:\n");
-      console.error(changes);
-      console.error("\nCI steps should not modify tracked files.");
-      console.error("Commit or regenerate these changes before pushing.\n");
-      
-      results.push({
-        label: "Final: No uncommitted changes",
-        status: "✗",
-        duration,
-        code: 1,
-      });
-      timings.push(`✗ Final: No uncommitted changes (${formatDuration(duration)})`);
-      
+
+  const start = Date.now();
+  const label = "Pages: Assemble deployment (dry-run)";
+  const docsDir = join(rootDir, "documentation/documentation-static-check");
+  const storybookDir = join(rootDir, "storybook-static");
+  const deployDir = mkdtempSync(join(tmpdir(), "rowan-pages-"));
+  let failed = false;
+
+  try {
+    if (!existsSync(docsDir) || !existsSync(join(docsDir, "index.html"))) {
+      console.error("❌ Documentation build output not found at documentation/documentation-static-check/index.html");
+      failed = true;
+    }
+    if (!existsSync(storybookDir) || !existsSync(join(storybookDir, "index.html"))) {
+      console.error("❌ Storybook build output not found at storybook-static/index.html");
+      failed = true;
+    }
+
+    if (!failed) {
+      cpSync(docsDir, deployDir, { recursive: true });
+      const storybookDest = join(deployDir, "storybook");
+      mkdirSync(storybookDest, { recursive: true });
+      cpSync(storybookDir, storybookDest, { recursive: true });
+      writeFileSync(join(deployDir, ".nojekyll"), "");
+
+      const docsIndex = join(deployDir, "index.html");
+      const storybookIndex = join(deployDir, "storybook", "index.html");
+      if (!existsSync(docsIndex) || !existsSync(storybookIndex)) {
+        console.error("❌ Assembled Pages output is missing index.html files");
+        console.error(`   Documentation: ${docsIndex}`);
+        console.error(`   Storybook: ${storybookIndex}`);
+        failed = true;
+      } else {
+        console.log(`✓ Pages deployment assembled in ${deployDir}`);
+        console.log(`  - Documentation: ${docsIndex}`);
+        console.log(`  - Storybook: ${storybookIndex}`);
+      }
+    }
+  } catch (error) {
+    console.error("❌ Pages assembly failed:", error);
+    failed = true;
+  } finally {
+    rmSync(deployDir, { recursive: true, force: true });
+  }
+
+  const duration = Date.now() - start;
+  if (failed) {
+    console.error("\n❌ Pages assembly verification failed\n");
+    results.push({ label, status: "✗", duration, code: 1 });
+    timings.push(`✗ ${label} (${formatDuration(duration)})`);
+    if (!flags.keepGoing) {
       printSummary();
       process.exit(1);
-    } else {
-      console.log("✓ Working tree is clean after CI steps\n");
-      results.push({
-        label: "Final: No uncommitted changes",
-        status: "✓",
-        duration,
-        code: 0,
-      });
-      timings.push(`✓ Final: No uncommitted changes (${formatDuration(duration)})`);
-      
-      printSummary();
-      
-      const failed = results.filter((r) => r.code !== 0).length;
-      process.exit(failed > 0 ? 1 : 0);
     }
-  });
+    return 1;
+  }
+
+  console.log("\n✓ Pages assembly verification passed\n");
+  results.push({ label, status: "✓", duration, code: 0 });
+  timings.push(`✓ ${label} (${formatDuration(duration)})`);
+  return 0;
 }
 
 main().catch((err) => {
