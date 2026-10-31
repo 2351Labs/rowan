@@ -1,6 +1,6 @@
 # Storybook coverage
 
-Charts, Forms & Input, and Data Display are enforced by `scripts/check-story-coverage.mjs`.
+Charts, Forms & Input, Data Display, and Navigation & Layout are enforced by `scripts/check-story-coverage.mjs`.
 Other categories are report-only until their story PRs land.
 The check fails for every category only once each one is at 100%.
 
@@ -37,21 +37,21 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-accordion` | 80% | 80% | slot summary |
-| `rowan-app-layout` | 83% | 83% | attribute navigation-label |
+| `rowan-accordion` | 80% | 100% | — |
+| `rowan-app-layout` | 83% | 100% | — |
 | `rowan-breadcrumb` | 100% | 100% | — |
 | `rowan-carousel` | 100% | 100% | — |
 | `rowan-divider` | 100% | 100% | — |
-| `rowan-pagination` | 75% | 75% | slot default |
+| `rowan-pagination` | 75% | 100% | — |
 | `rowan-side-nav` | 100% | 100% | — |
-| `rowan-side-nav-item` | 79% | 79% | attribute value, attribute target, attribute tabindex, slot prefix |
+| `rowan-side-nav-item` | 79% | 100% | — |
 | `rowan-side-nav-section` | 100% | 100% | — |
-| `rowan-split-pane` | 85% | 85% | attribute snap-threshold, attribute locale |
-| `rowan-tab` | 60% | 60% | attribute aria-controls, attribute aria-selected |
-| `rowan-tab-panel` | 60% | 60% | attribute aria-hidden, attribute aria-labelledby |
+| `rowan-split-pane` | 85% | 100% | — |
+| `rowan-tab` | 60% | 100% | — |
+| `rowan-tab-panel` | 60% | 100% | — |
 | `rowan-tabs` | 100% | 100% | — |
 | `rowan-tree` | 100% | 100% | — |
-| `rowan-tree-item` | 44% | 44% | attribute selected, attribute disabled, attribute level, attribute tabindex, slot prefix |
+| `rowan-tree-item` | 44% | 100% | — |
 
 ## Actions & Feedback
 
@@ -76,15 +76,15 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-avatar` | 88% | 100% | — |
-| `rowan-bulk-actions-bar` | 60% | 100% | — |
-| `rowan-card` | 67% | 100% | — |
-| `rowan-filter-builder` | 50% | 100% | — |
-| `rowan-image` | 75% | 100% | — |
-| `rowan-row-details-panel` | 65% | 100% | — |
-| `rowan-source-meta` | 50% | 100% | — |
-| `rowan-table` | 78% | 100% | — |
-| `rowan-table-toolbar` | 75% | 100% | — |
+| `rowan-avatar` | 100% | 100% | — |
+| `rowan-bulk-actions-bar` | 100% | 100% | — |
+| `rowan-card` | 100% | 100% | — |
+| `rowan-filter-builder` | 100% | 100% | — |
+| `rowan-image` | 100% | 100% | — |
+| `rowan-row-details-panel` | 100% | 100% | — |
+| `rowan-source-meta` | 100% | 100% | — |
+| `rowan-table` | 100% | 100% | — |
+| `rowan-table-toolbar` | 100% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
 ## Forms & Input

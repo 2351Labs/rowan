@@ -23,6 +23,7 @@ export const Playground = {
     const pagination = document.createElement("rowan-pagination");
     pagination.page = page;
     pagination.totalPages = totalPages;
+    pagination.textContent = `Page ${page} of ${totalPages}`;
     return pagination;
   },
 };

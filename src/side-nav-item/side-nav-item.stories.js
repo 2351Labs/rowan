@@ -14,6 +14,9 @@ function createItem({
   item.disabled = disabled;
   item.external = external;
   item.href = "#overview";
+  item.value = label.toLowerCase().replaceAll(/\s+/g, "-");
+  item.target = external ? "_blank" : "";
+  item.setAttribute("tabindex", "0");
   item.label = label;
   item.tone = tone;
   item.count = count;
@@ -59,10 +62,13 @@ export const Status = {
       createItem({ label: "Inbox", count: 12, countLabel: "unread", active: false }),
     );
     const custom = createItem({ label: "Live ops", active: false });
+    const prefix = document.createElement("span");
+    prefix.slot = "prefix";
+    prefix.textContent = "●";
     const suffix = document.createElement("span");
     suffix.slot = "suffix";
     suffix.textContent = "Beta";
-    custom.append(suffix);
+    custom.append(prefix, suffix);
     list.append(custom);
     return list;
   },
