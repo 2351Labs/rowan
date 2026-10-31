@@ -69,6 +69,22 @@ table.config = {
 <rowan-table></rowan-table> <rowan-button>Save</rowan-button>
 ```
 
+## Starters
+
+Each folder has its own `package.json` and installs `@rowan-ui/core` from npm when you open it in StackBlitz. In this repository, npm workspaces link the local packages instead.
+
+[![Open the admin template in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/templates/admin)
+[![Open the Vite starter in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/vite)
+[![Open the React starter in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/react)
+[![Open the Vue starter in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/vue)
+
+| Starter | What it is |
+| --- | --- |
+| [templates/admin](templates/admin/) | Operations console: shell, server tables, record page, map, auth |
+| [starters/vite](starters/vite/) | KPI cards, a trend chart, and a table. No framework |
+| [starters/react](starters/react/) | The same dashboard with the generated React wrappers |
+| [starters/vue](starters/vue/) | The same dashboard as Vue custom elements, with `compilerOptions.isCustomElement` |
+
 ## Framework Integration
 
 Rowan works seamlessly with all modern frameworks:

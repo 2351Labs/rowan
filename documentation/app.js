@@ -47,6 +47,7 @@ import { createResourceList } from "./workflows/resource-list.js";
 import { createSavedTableView } from "./workflows/saved-table-view.js";
 import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 import { API_REFERENCES, renderApiReference } from "./api-reference-view.js";
+import { GUIDE_PAGES } from "./guides.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -1275,6 +1276,7 @@ const DOC_PAGES = [
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
         </rowan-alert>
+        <p>The <a href="#starters">admin template and the Vite, React, and Vue dashboards</a> open in StackBlitz. Each one installs <code>@rowan-ui/core</code> from npm.</p>
       </section>
 
       <section class="doc-section" data-doc-section id="start-first-screen">
@@ -5562,6 +5564,7 @@ function appendMissingComponentPages(pages) {
 }
 
 appendMissingComponentPages(DOC_PAGES);
+DOC_PAGES.push(...GUIDE_PAGES);
 
 function getComponentNavigationLabel(page) {
   return page.title.replace(/^Rowan\s+/, "");
@@ -5618,6 +5621,16 @@ const NAV_SECTIONS = [
       { pageId: "record-editor", label: "Record Editor" },
       { pageId: "dashboard-drill-down", label: "Dashboard Drill-down" },
       { pageId: "saved-table-view", label: "Saved Table View" },
+    ],
+  },
+  {
+    id: "choose-rowan",
+    label: "Choose Rowan",
+    defaultOpen: true,
+    items: [
+      { pageId: "starters", label: "Starters" },
+      { pageId: "mit-features", label: "Free in Rowan" },
+      { pageId: "library-comparison", label: "Rowan and others" },
     ],
   },
   {
