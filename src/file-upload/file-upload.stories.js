@@ -32,6 +32,8 @@ export const Playground = {
     upload.multiple = multiple;
     upload.disabled = disabled;
     upload.maxFiles = maxFiles;
+    upload.required = true;
+    upload.locale = "en-US";
     return upload;
   },
 };

@@ -35,6 +35,8 @@ export const Playground = {
     item.status = status;
     item.progress = progress;
     item.disabled = disabled;
+    item.fileId = "report-q3";
+    item.locale = "en-US";
     return item;
   },
 };

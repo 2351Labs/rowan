@@ -3,9 +3,8 @@
  *
  * Charts stay on the gallery rules. Every other component is scored from
  * custom-elements.json attributes, enum values, slots, and events.
- * Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback fail the run. The remaining categories are
- * report-only until each one is filled; add a category here only when it is
- * at 100%, and fail every category once the last one lands.
+ * Every category fails the run. Stepper is included once its stories cover
+ * `rowan-step-change`, so a gap in any component fails CI.
  */
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -48,16 +47,6 @@ const ALLOWLIST = new Set([
 ]);
 
 const GALLERY_PATH = "stories/chart-galleries.js";
-
-/** Categories that fail CI. Grow this only when that category is at 100%. */
-const ENFORCED_CATEGORIES = new Set([
-  "Charts",
-  "Forms & Input",
-  "Data Display",
-  "Navigation & Layout",
-  "Overlays & Menus",
-  "Actions & Feedback",
-]);
 
 function read(path) {
   return readFileSync(resolve(rootDir, path), "utf8");
@@ -233,10 +222,8 @@ function markdown(chartRows, grouped) {
   lines.push("# Storybook coverage");
   lines.push("");
   lines.push(
-    "Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback are enforced by `scripts/check-story-coverage.mjs`.",
+    "Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attribute, enum value, slot, or event fails CI.",
   );
-  lines.push("Other categories are report-only until their story PRs land.");
-  lines.push("The check fails for every category only once each one is at 100%.");
   lines.push("");
   lines.push("## Charts and data viz");
   lines.push("");
@@ -382,7 +369,7 @@ function main() {
     const row = { tag, before: before.percent, after: after.percent, missing: after.missing };
     if (!grouped.has(category)) grouped.set(category, []);
     grouped.get(category).push(row);
-    if (ENFORCED_CATEGORIES.has(category) && after.missing.length > 0) {
+    if (after.missing.length > 0) {
       failures.push(`${tag}: ${after.missing.join(", ")}`);
     }
   }
@@ -395,9 +382,8 @@ function main() {
   console.log(`Chart story coverage: ${rows.length} components.`);
   for (const row of rows) console.log(`  ${row.tag}: ${row.before}% -> ${row.after}%`);
   for (const [category, categoryRows] of grouped) {
-    const enforced = ENFORCED_CATEGORIES.has(category) ? "enforced" : "report-only";
     const done = categoryRows.filter((row) => row.missing.length === 0).length;
-    console.log(`${category} (${enforced}): ${done}/${categoryRows.length} at 100%.`);
+    console.log(`${category} (enforced): ${done}/${categoryRows.length} at 100%.`);
     for (const row of categoryRows) {
       console.log(`  ${row.tag}: ${row.before}% -> ${row.after}%`);
     }
