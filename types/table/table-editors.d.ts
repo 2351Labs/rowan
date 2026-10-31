@@ -9,11 +9,11 @@ export function startRowEditing(
   table: any,
   rowId: any,
   getRowFromElement: any,
-  findColumn: any,
+  columns: any,
   isColumnEditable: any,
   resolveValue: any,
   createEditorFn: any,
-  messages: any,
+  _messages: any,
 ): Promise<{
   rowId: any;
   row: any;

@@ -27815,7 +27815,7 @@
               "name": "getRowFromElement"
             },
             {
-              "name": "findColumn"
+              "name": "columns"
             },
             {
               "name": "isColumnEditable"
@@ -27827,7 +27827,7 @@
               "name": "createEditorFn"
             },
             {
-              "name": "messages"
+              "name": "_messages"
             }
           ]
         },
