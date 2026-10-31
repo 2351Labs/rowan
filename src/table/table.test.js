@@ -7,6 +7,7 @@ import "../checkbox/checkbox.js";
 import "../filter-builder/filter-builder.js";
 import "../table-toolbar/table-toolbar.js";
 import "./table.js";
+import "./table-editors.js";
 
 const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
