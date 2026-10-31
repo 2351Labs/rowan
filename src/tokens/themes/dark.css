@@ -51,7 +51,7 @@
   --rowan-form-field-label-fg: var(--rowan-color-fg);
   --rowan-form-field-hint-fg: var(--rowan-color-muted);
   --rowan-form-field-error-fg: var(--rowan-color-danger);
-  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-fg: var(--rowan-color-muted);
   --rowan-table-toolbar-bg: var(--rowan-color-bg);
   --rowan-table-toolbar-fg: var(--rowan-color-fg);
   --rowan-table-toolbar-border: var(--rowan-color-border);

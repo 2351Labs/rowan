@@ -11,6 +11,17 @@ import {
 
 let mapId = 0;
 
+// Vendored beside this module. Vite 5 does not rewrite import.meta.resolve(),
+// and a document-level import does not style the shadow tree.
+function mapLibreCssHref(ctor) {
+  if (typeof ctor?.styleHref === "string" && ctor.styleHref) return ctor.styleHref;
+  try {
+    return new URL("./maplibre-gl.css", import.meta.url).href;
+  } catch {
+    return "";
+  }
+}
+
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
@@ -35,6 +46,7 @@ function eventLocation(location) {
  * @tag rowan-maplibre-map
  * @attr {string} label
  * @attr {string} description
+ * @attr {boolean} no-provider-styles - Do not inject `maplibre-gl.css` into the shadow root.
  * @property {Array<import("./model.js").RowanMapLocation>} locations - Property-only coordinate records.
  * @property {Array<import("./model.js").RowanMapLayer>} layers - Property-only marker layer metadata.
  * @property {string | Record<string, unknown> | null} mapStyle - Application-owned MapLibre style. This property is never reflected to an attribute.
@@ -57,7 +69,8 @@ function eventLocation(location) {
  * @event rowan-layer-change - Fired when a user changes a visible marker layer.
  */
 export class RowanMapLibreMap extends HTMLElement {
-  static observedAttributes = ["label", "description"];
+  static observedAttributes = ["label", "description", "no-provider-styles"];
+  static styleHref = "";
 
   #internals = null;
   #root = null;
@@ -106,6 +119,7 @@ export class RowanMapLibreMap extends HTMLElement {
       "mapStyle",
       "attribution",
       "maplibre",
+      "noProviderStyles",
     ]) {
       this.#upgradeProperty(property);
     }
@@ -155,6 +169,15 @@ export class RowanMapLibreMap extends HTMLElement {
 
   get description() {
     return this.getAttribute("description") ?? "";
+  }
+
+  get noProviderStyles() {
+    return this.hasAttribute("no-provider-styles");
+  }
+
+  set noProviderStyles(value) {
+    if (value) this.setAttribute("no-provider-styles", "");
+    else this.removeAttribute("no-provider-styles");
   }
 
   set description(value) {
@@ -330,7 +353,18 @@ export class RowanMapLibreMap extends HTMLElement {
 
     alternatives.append(listSection, tableSection);
     root.append(heading, mapFrame, attribution, layers, alternatives, selectionStatus);
-    this.shadowRoot.append(stylesheet, root);
+    this.shadowRoot.append(stylesheet);
+    if (!this.noProviderStyles) {
+      const href = mapLibreCssHref(this.constructor);
+      if (href) {
+        const providerStyles = document.createElement("link");
+        providerStyles.rel = "stylesheet";
+        providerStyles.dataset.maplibreStyles = "";
+        providerStyles.href = href;
+        this.shadowRoot.append(providerStyles);
+      }
+    }
+    this.shadowRoot.append(root);
 
     this.#root = root;
     this.#labelElement = label;

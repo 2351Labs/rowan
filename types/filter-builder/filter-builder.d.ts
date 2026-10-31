@@ -1,7 +1,7 @@
 /**
  * Configurable filter editor that composes with a Rowan data table.
  * @tag rowan-filter-builder
- * @attr {string} for-table
+ * @attr {string} for-table - Server mode writes this builder's filter tree onto the table, preserving quick `{ id, value }` filters. Client mode filters the table rows, including OR groups.
  * @attr {string} label
  * @attr {string} add-label
  * @attr {string} clear-label
@@ -26,7 +26,7 @@
  * @cssprop --rowan-filter-builder-border-width
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
- * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list of frozen leaves. Group nodes are experimental. Arrays are property-only.
+ * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
  * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */

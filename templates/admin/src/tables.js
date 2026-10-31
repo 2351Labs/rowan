@@ -1,24 +1,4 @@
-import { FILTER_SEPARATOR } from "./api.js";
 import { button, h } from "./dom.js";
-
-function leafFilters(nodes) {
-  const leaves = [];
-
-  for (const node of nodes || []) {
-    if (!node || typeof node !== "object") continue;
-    if (Array.isArray(node.filters)) {
-      leaves.push(...leafFilters(node.filters));
-      continue;
-    }
-    if (!node.field) continue;
-    leaves.push({
-      id: node.field,
-      value: `${node.operator || "contains"}${FILTER_SEPARATOR}${node.value ?? ""}`,
-    });
-  }
-
-  return leaves;
-}
 
 export function mountServerTable(parent, options) {
   const {
@@ -160,7 +140,9 @@ export function mountServerTable(parent, options) {
     const filters = [];
     if (state.q.trim()) filters.push({ id: "q", value: state.q.trim() });
     if (state.status && state.status !== "all") filters.push({ id: "status", value: state.status });
-    filters.push(...leafFilters(filterBuilder.filters));
+    for (const node of filterBuilder.filters || []) {
+      if (node) filters.push(node);
+    }
     return filters;
   }
 

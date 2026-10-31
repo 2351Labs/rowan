@@ -74,8 +74,6 @@ Built-in alternatives (`lagoon`, `ember`, `slate`, `midnight`) ship as `@rowan-u
 
 `src/styles.css` is only layout: page grid, header, and auth frame. Prefer a Rowan token over a new hex value so dark mode stays coherent.
 
-Chart hover styles are `@import`ed from `src/chart/` inside the component CSS. A production Vite build emits that CSS under `assets/`, which breaks the relative import. `vite.config.js` copies `hover.css` and `point-controls.css` to `dist/chart/` so the browser can still load them. Keep that plugin if you change bundlers and see 404s for those files.
-
 ## Make it yours
 
 | File              | Change                                                                                                                                   |

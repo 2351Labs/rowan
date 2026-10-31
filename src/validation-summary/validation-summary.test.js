@@ -24,16 +24,27 @@ describe("rowan-validation-summary", () => {
     expect(element.shadowRoot.querySelector('[data-part="empty"]').hidden).to.equal(true);
   });
 
-  it("shows empty state when no errors", async () => {
+  it("hides the summary when there are no errors", async () => {
     const element = document.createElement("rowan-validation-summary");
     document.body.append(element);
     await nextMicrotask();
 
+    const summary = element.shadowRoot.querySelector('[part="summary"]');
+    expect(summary.hidden).to.equal(true);
+    expect(element.internals.role).to.equal("presentation");
+  });
+
+  it("shows the empty message only when show-empty is set", async () => {
+    const element = document.createElement("rowan-validation-summary");
+    element.showEmpty = true;
+    document.body.append(element);
+    await nextMicrotask();
+
     const empty = element.shadowRoot.querySelector('[data-part="empty"]');
-    const list = element.shadowRoot.querySelector(".list");
-    expect(empty).to.not.equal(null);
+    expect(element.shadowRoot.querySelector('[part="summary"]').hidden).to.equal(false);
     expect(empty.hidden).to.equal(false);
-    expect(list.hidden).to.equal(true);
+    expect(empty.textContent).to.include("No validation issues");
+    expect(empty.getAttribute("aria-live")).to.equal("polite");
   });
 
   it("emits rowan-jump and focuses target field when user activates an error", async () => {
@@ -139,6 +150,9 @@ describe("rowan-validation-summary", () => {
     document.body.append(element);
     await nextMicrotask();
 
+    expect(element.internals.role).to.equal("presentation");
+    element.errors = [{ fieldId: "email", message: "Email is required" }];
+    await nextMicrotask();
     expect(element.internals.role).to.equal("region");
     expect(element.internals.ariaLabel).to.equal("Please fix these fields");
     expect(element.internals.ariaDisabled).to.equal("false");
@@ -174,6 +188,7 @@ describe("rowan-validation-summary", () => {
     expect(buttons[1].textContent).to.equal("Error 2: Campo 2 no es valido");
     expect(events).to.deep.equal([]);
 
+    element.showEmpty = true;
     element.errors = [];
     await nextMicrotask();
 

@@ -1,5 +1,10 @@
 const DEFAULT_PAGE_SIZE = 10;
 
+function cloneFilters(filters) {
+  if (!Array.isArray(filters)) return [];
+  return filters.map((filter) => JSON.parse(JSON.stringify(filter)));
+}
+
 /**
  * Server-mode session. Loaded only when `data-mode="server"`.
  * Owns paging math, the error row, the status text, and the fetch lifecycle.
@@ -28,7 +33,7 @@ export function attachServerTable(host) {
       page: host.getPage()?.index ?? 0,
       pageSize: pageSize(),
       sort: host.getSort(),
-      filters: host.getFilters().map((filter) => ({ ...filter })),
+      filters: cloneFilters(host.getFilters()),
       source: host.getSource(),
     };
   }

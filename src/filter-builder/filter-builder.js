@@ -10,7 +10,7 @@ import {
 } from "../lib/table-selection.js";
 import "../chip/chip.js";
 import "../popover/popover.js";
-import { cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+import { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
 
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
 const VALUELESS_OPERATORS = new Set(["is-empty", "is-not-empty"]);
@@ -255,7 +255,7 @@ function isFilterableColumn(column) {
 /**
  * Configurable filter editor that composes with a Rowan data table.
  * @tag rowan-filter-builder
- * @attr {string} for-table
+ * @attr {string} for-table - Server mode writes this builder's filter tree onto the table, preserving quick `{ id, value }` filters. Client mode filters the table rows, including OR groups.
  * @attr {string} label
  * @attr {string} add-label
  * @attr {string} clear-label
@@ -280,7 +280,7 @@ function isFilterableColumn(column) {
  * @cssprop --rowan-filter-builder-border-width
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
- * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list of frozen leaves. Group nodes are experimental. Arrays are property-only.
+ * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
  * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
@@ -327,6 +327,7 @@ export class RowanFilterBuilder extends BaseElement {
   #messages = {};
   #editingFilterId = null;
   #pendingEditorFocus = null;
+  #clientRows = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -400,6 +401,7 @@ export class RowanFilterBuilder extends BaseElement {
   set filters(value) {
     this.#filters = this.#normalizeFilters(value);
     this.requestRender();
+    this.#publishToTable();
   }
 
   get label() {
@@ -570,6 +572,7 @@ export class RowanFilterBuilder extends BaseElement {
       });
       this.#tableObserver.observe(nextTable.shadowRoot, { childList: true, subtree: true });
     }
+    this.#publishToTable();
   }
 
   #unbindTable() {
@@ -578,6 +581,7 @@ export class RowanFilterBuilder extends BaseElement {
     this.#tableAvailabilityCleanup?.();
     this.#tableAvailabilityCleanup = null;
     this.#boundTable = null;
+    this.#clientRows = null;
   }
 
   #observeTableAvailability() {
@@ -1281,6 +1285,38 @@ export class RowanFilterBuilder extends BaseElement {
       filter: filter ? cloneFilter(filter) : null,
       filters: this.filters,
     });
+    this.#publishToTable();
+  }
+
+  #isQuickFilter(item) {
+    return Boolean(item && item.id && item.field == null && item.join == null && !item.filters);
+  }
+
+  #publishToTable() {
+    const table = this.#boundTable;
+    if (!table) return;
+    const tree = this.#filters.map(cloneFilter);
+
+    if (table.dataMode === "server") {
+      const quick = (Array.isArray(table.filters) ? table.filters : []).filter((item) =>
+        this.#isQuickFilter(item),
+      );
+      table.filters = [...quick, ...tree];
+      return;
+    }
+
+    if (tree.length === 0) {
+      if (this.#clientRows) {
+        table.rows = this.#clientRows.map((row) => ({ ...row }));
+        this.#clientRows = null;
+      }
+      return;
+    }
+
+    if (!this.#clientRows) {
+      this.#clientRows = (table.rows || []).map((row) => ({ ...row }));
+    }
+    table.rows = applyFilters(this.#clientRows, tree, this.#resolvedFields());
   }
 
   #applyDefaultA11y() {

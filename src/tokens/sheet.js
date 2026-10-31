@@ -232,7 +232,7 @@ export const tokenCssText = `
   --rowan-form-field-label-font-size: var(--rowan-font-size-sm);
   --rowan-form-field-label-gap: var(--rowan-space-2);
   --rowan-form-field-label-align: start;
-  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-fg: var(--rowan-color-muted);
   --rowan-form-field-required-font-size: 0.75rem;
   --rowan-form-field-hint-fg: var(--rowan-color-muted);
   --rowan-form-field-error-fg: var(--rowan-color-danger);
@@ -717,7 +717,7 @@ export const tokenCssText = `
   --rowan-form-field-label-fg: var(--rowan-color-fg);
   --rowan-form-field-label-font-size: var(--rowan-font-size-sm);
   --rowan-form-field-label-gap: var(--rowan-space-2);
-  --rowan-form-field-required-fg: var(--rowan-color-danger);
+  --rowan-form-field-required-fg: var(--rowan-color-muted);
   --rowan-form-field-hint-fg: var(--rowan-color-muted);
   --rowan-form-field-error-fg: var(--rowan-color-danger);
   --rowan-form-field-support-gap: var(--rowan-space-1);
@@ -1857,7 +1857,7 @@ export const componentTokenDeclarations = [
   ["--rowan-form-field-label-font-size", "var(--rowan-font-size-sm)"],
   ["--rowan-form-field-label-gap", "var(--rowan-space-2)"],
   ["--rowan-form-field-label-align", "start"],
-  ["--rowan-form-field-required-fg", "var(--rowan-color-danger)"],
+  ["--rowan-form-field-required-fg", "var(--rowan-color-muted)"],
   ["--rowan-form-field-required-font-size", "0.75rem"],
   ["--rowan-form-field-hint-fg", "var(--rowan-color-muted)"],
   ["--rowan-form-field-error-fg", "var(--rowan-color-danger)"],

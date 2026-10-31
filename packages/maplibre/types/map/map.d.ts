@@ -3,6 +3,7 @@
  * @tag rowan-maplibre-map
  * @attr {string} label
  * @attr {string} description
+ * @attr {boolean} no-provider-styles - Do not inject `maplibre-gl.css` into the shadow root.
  * @property {Array<import("./model.js").RowanMapLocation>} locations - Property-only coordinate records.
  * @property {Array<import("./model.js").RowanMapLayer>} layers - Property-only marker layer metadata.
  * @property {string | Record<string, unknown> | null} mapStyle - Application-owned MapLibre style. This property is never reflected to an attribute.
@@ -26,6 +27,7 @@
  */
 export class RowanMapLibreMap extends HTMLElement {
     static observedAttributes: string[];
+    static styleHref: string;
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -33,6 +35,8 @@ export class RowanMapLibreMap extends HTMLElement {
     get label(): string;
     set description(value: string);
     get description(): string;
+    set noProviderStyles(value: boolean);
+    get noProviderStyles(): boolean;
     /** @param {Array<import("./model.js").RowanMapLocation>} value */
     set locations(value: import("./model.js").RowanMapLocation[]);
     /** @returns {Array<import("./model.js").RowanMapLocation>} */

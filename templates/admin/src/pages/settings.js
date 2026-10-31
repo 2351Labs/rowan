@@ -26,7 +26,6 @@ export function renderSettings(outlet, ctx) {
   const summary = h("rowan-validation-summary", {
     "for-form": "settings-form",
     heading: "Check the workspace settings",
-    hidden: true,
   });
 
   const workspace = h("rowan-text-field", {

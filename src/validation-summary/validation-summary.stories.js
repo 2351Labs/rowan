@@ -36,6 +36,7 @@ export const Empty = {
   render: ({ heading = "Looks good" }) => {
     const summary = document.createElement("rowan-validation-summary");
     summary.heading = heading;
+    summary.showEmpty = true;
     summary.errors = [];
     return summary;
   },

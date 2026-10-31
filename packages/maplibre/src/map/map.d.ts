@@ -19,6 +19,7 @@ export declare class RowanMapLibreMap extends HTMLElement {
 
 	label: string;
 	description: string;
+	noProviderStyles: boolean;
 	locations: RowanMapLocation[];
 	layers: RowanMapLayer[];
 	mapStyle: string | Record<string, unknown> | null;

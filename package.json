@@ -678,7 +678,7 @@
     "messages:sync": "node ./scripts/sync-message-catalog.mjs",
     "messages:check": "node ./scripts/sync-message-catalog.mjs --check",
     "themes:check": "node ./scripts/check-theme-tokens.mjs",
-    "css:check": "node ./scripts/check-css-tokens.mjs",
+    "css:check": "node ./scripts/check-css-tokens.mjs && node ./scripts/inline-chart-styles.mjs --check && node ./scripts/sync-maplibre-css.mjs --check",
     "types": "node ./scripts/clean-types.mjs && tsc --project tsconfig.types.json && node ./scripts/refine-generated-declarations.mjs && node ./scripts/sync-public-message-types.mjs && npm run types --workspace=@rowan-ui/maplibre && prettier --write \"types/**/*.d.ts\" \"src/**/*.d.ts\"",
     "typecheck": "tsc --project tsconfig.typecheck.root.json && tsc --project tsconfig.typecheck.components.json && tsc --project tsconfig.typecheck.react-18.json && tsc --project tsconfig.typecheck.react-19.json && npm run typecheck --workspace=@rowan-ui/maplibre",
     "lint": "npm run tokens:check && npm run messages:check && npm run themes:check && npm run css:check && eslint \"src/**/*.js\" \"scripts/**/*.mjs\" \"documentation/*.js\" \".storybook/**/*.js\" \"test/**/*.mjs\" \"test-fixtures/**/*.js\" \"test-fixtures/**/*.mjs\" web-test-runner.config.js web-test-runner.playwright.config.js web-test-runner.coverage.config.js \"packages/*/src/**/*.js\" \"packages/*/scripts/**/*.mjs\" \"templates/admin/src/**/*.js\" \"templates/admin/e2e/**/*.mjs\" \"templates/admin/vite.config.js\"",

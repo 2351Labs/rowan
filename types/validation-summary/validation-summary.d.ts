@@ -4,6 +4,7 @@
  * @attr {string} heading
  * @attr {string} for-form
  * @attr {boolean} disabled
+ * @attr {boolean} show-empty - Show the empty message when there are no errors. Default is hidden.
  * @property {RowanValidationSummaryMessages} messages - Property-only built-in message overrides.
  * @slot heading
  * @slot empty
@@ -22,6 +23,8 @@ export class RowanValidationSummary extends BaseElement {
   get forForm(): string;
   set disabled(value: boolean);
   get disabled(): boolean;
+  set showEmpty(value: boolean);
+  get showEmpty(): boolean;
   /** @param {RowanValidationSummaryMessages | null | undefined} value */
   set messages(value: RowanValidationSummaryMessages | null | undefined);
   /** @returns {RowanValidationSummaryMessages} */

@@ -86,5 +86,9 @@ export const ProviderFallback = {
       events: ["rowan-location-activate"],
     },
   },
-  render: () => createMap({ mapStyle: null }),
+  render: () => {
+    const map = createMap({ mapStyle: null });
+    map.noProviderStyles = true;
+    return map;
+  },
 };

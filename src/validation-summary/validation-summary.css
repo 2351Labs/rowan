@@ -7,6 +7,10 @@
   display: none;
 }
 
+.summary[hidden] {
+  display: none;
+}
+
 .summary {
   border: 1px solid var(--rowan-validation-summary-border, var(--rowan-color-border));
   border-radius: var(--rowan-radius-md, 0.5rem);

@@ -100,12 +100,19 @@ describe("rowan-form-field", () => {
     const field = document.createElement("rowan-form-field");
     const control = document.createElement("rowan-text-field");
     field.label = "Workspace name";
-    control.required = true;
+    field.required = true;
+    control.value = "North";
     field.append(control);
     document.body.append(field);
     await nextMicrotask();
 
-    expect(field.shadowRoot.querySelector('[part="required-indicator"]').hidden).to.equal(false);
+    const indicator = field.shadowRoot.querySelector('[part="required-indicator"]');
+    expect(indicator.hidden).to.equal(false);
+    expect(getComputedStyle(indicator).color).to.equal("rgb(66, 73, 69)");
+
+    field.style.setProperty("--rowan-form-field-required-fg", "rgb(1, 2, 3)");
+    expect(getComputedStyle(indicator).color).to.equal("rgb(1, 2, 3)");
+    field.style.removeProperty("--rowan-form-field-required-fg");
 
     control.invalid = true;
     await nextMicrotask();
@@ -114,6 +121,7 @@ describe("rowan-form-field", () => {
     expect(
       field.shadowRoot.querySelector('[part="field"]').classList.contains("is-invalid"),
     ).to.equal(true);
+    expect(getComputedStyle(indicator).color).to.equal("rgb(180, 57, 45)");
   });
 
   it("uses property-only messages for the generated required indicator", async () => {
