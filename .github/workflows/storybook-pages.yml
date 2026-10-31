@@ -2,11 +2,18 @@ name: Documentation and Storybook Pages
 
 # GitHub Pages must use Source: GitHub Actions (not "Deploy from a branch").
 # Deploys on releases (tags) and can be manually triggered.
+# Also runs as a build-only dry run on PRs that touch the workflow or docs config.
 
 on:
   release:
     types: [published]
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/storybook-pages.yml'
+      - 'documentation/**'
+      - '.storybook/**'
+      - 'stories/**'
 
 permissions:
   contents: read
@@ -38,12 +45,36 @@ jobs:
       
       # Combine both into a single deployment
       # Documentation at root, Storybook under /storybook/
-      - run: |
+      - name: Assemble Pages deployment
+        run: |
+          # Verify build outputs exist
+          if [ ! -d "documentation/documentation-static-check" ]; then
+            echo "❌ Documentation build output not found at documentation/documentation-static-check/"
+            echo "Expected: documentation/documentation-static-check/index.html"
+            ls -la documentation/ || true
+            exit 1
+          fi
+          
+          if [ ! -d "storybook-static" ]; then
+            echo "❌ Storybook build output not found at storybook-static/"
+            echo "Expected: storybook-static/index.html"
+            ls -la . | grep storybook || true
+            exit 1
+          fi
+          
+          # Assemble combined deployment
           mkdir -p pages-deploy
-          cp -r documentation-static-check/* pages-deploy/
+          cp -r documentation/documentation-static-check/* pages-deploy/
           mkdir -p pages-deploy/storybook
           cp -r storybook-static/* pages-deploy/storybook/
           touch pages-deploy/.nojekyll
+          
+          # Verify assembly
+          echo "✓ Pages deployment assembled:"
+          echo "  - Documentation: pages-deploy/index.html"
+          ls -lh pages-deploy/index.html
+          echo "  - Storybook: pages-deploy/storybook/index.html"
+          ls -lh pages-deploy/storybook/index.html
       
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -51,6 +82,8 @@ jobs:
 
   deploy:
     name: Deploy
+    # Only deploy on release or manual workflow_dispatch, not on pull requests
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
