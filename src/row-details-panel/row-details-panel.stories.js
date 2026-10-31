@@ -89,3 +89,34 @@ export const ControlledRecord = {
     return panel;
   },
 };
+
+export const SlottedNavigation = {
+  name: "Slotted navigation",
+  parameters: createEventScriptParameters({
+    steps: ["Use the pager controls. rowan-navigate reports previous or next."],
+    events: ["rowan-navigate", "rowan-close"],
+  }),
+  render: () => {
+    const panel = document.createElement("rowan-row-details-panel");
+    panel.locale = "en-US";
+    panel.closeLabel = "Close details";
+    panel.label = "";
+    panel.rowId = "3";
+    panel.row = ROWS[2];
+    panel.open = true;
+    const title = document.createElement("span");
+    title.slot = "title";
+    title.textContent = "Grace";
+    const empty = document.createElement("p");
+    empty.slot = "empty";
+    empty.textContent = "Select a member to see details.";
+    const pager = document.createElement("span");
+    pager.slot = "pager";
+    pager.textContent = "2 of 3";
+    const actions = document.createElement("span");
+    actions.slot = "actions";
+    actions.textContent = "Edit member";
+    panel.append(title, empty, pager, actions);
+    return panel;
+  },
+};
