@@ -559,3 +559,22 @@ export function exportCsv(host, options = {}) {
 export function exportExcel(host, options = {}) {
   return exportTable(host, options, "xlsx");
 }
+
+function pasteHost(bridge, table) {
+  const snap = bridge.snapshot();
+  return {
+    focus: snap.focus,
+    selected: snap.selected,
+    columns: snap.columns.filter((column) => !column.hidden).map((column) => column.column),
+    rows: snap.server || !snap.page ? snap.entries : pageSlice(snap.entries, snap.page),
+    messages: table.messages,
+    root: table.renderRoot,
+    table,
+  };
+}
+
+export async function pasteText(bridge, text, table) {
+  const mod = await import("./table-paste.js");
+  const host = pasteHost(bridge, table);
+  return text == null ? mod.pasteFromClipboard(host) : mod.pasteTable(host, text);
+}

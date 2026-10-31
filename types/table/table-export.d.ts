@@ -223,3 +223,47 @@ export function exportExcel(
       error: any;
     }
 >;
+export function pasteText(
+  bridge: any,
+  text: any,
+  table: any,
+): Promise<
+  | {
+      pasted: boolean;
+      applied: never[];
+      rejected: never[];
+      ignored: number;
+    }
+  | {
+      rowId: any;
+      columnId: any;
+      applied: {
+        rowId: any;
+        columnId: any;
+        value: any;
+      }[];
+      rejected: (
+        | {
+            rowId: any;
+            columnId: any;
+            value: any;
+            message: string;
+          }
+        | {
+            message: string;
+            cancelled: boolean;
+            rowId: any;
+            columnId: any;
+            value: any;
+          }
+      )[];
+      ignored: number;
+      pasted: boolean;
+    }
+  | {
+      pasted: boolean;
+      error: any;
+      applied: never[];
+      rejected: never[];
+    }
+>;

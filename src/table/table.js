@@ -85,6 +85,10 @@ const DEFAULT_MESSAGES = Object.freeze({
   copyFailed: "Could not copy.",
   exportedFile: "Exported {filename}.",
   exportFailed: "Could not export.",
+  pastedCells: "Pasted {count}.",
+  pasteRejected: "{count} not pasted.",
+  pasteFailed: "Paste failed.",
+  nothingToPaste: "Nothing to paste.",
 });
 
 function positiveNumber(value, fallback) {
@@ -245,6 +249,10 @@ function nonNegativeInteger(value, fallback) {
  * @property {string} [copyFailed]
  * @property {string | ((context: { filename: string }) => string)} [exportedFile]
  * @property {string} [exportFailed]
+ * @property {string | ((context: { count: number }) => string)} [pastedCells]
+ * @property {string | ((context: { count: number }) => string)} [pasteRejected]
+ * @property {string} [pasteFailed]
+ * @property {string} [nothingToPaste]
  */
 
 function isDevelopmentEnvironment() {
@@ -318,6 +326,8 @@ function isDevelopmentEnvironment() {
  * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
  * @event rowan-copy - Fired before a clipboard write. Cancelable. `detail.text` is TSV and `detail.html` is an HTML table. Listeners may replace either, or `detail.rows`.
  * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
+ * @event rowan-paste - Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.
+ * @event rowan-paste-result - Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -2253,7 +2263,7 @@ export class RowanTable extends BaseElement {
       if (columnIds.has(id)) {
         this.#warn(
           `column-duplicate-id-${id}`,
-          `column id "${id}" is duplicated and later columns with that id will be omitted.`,
+          `column id "${id}" is duplicated.`,
         );
         return;
       }
@@ -2263,7 +2273,7 @@ export class RowanTable extends BaseElement {
       if (!CELL_TYPES.has(cellType)) {
         this.#warn(
           `column-invalid-type-${id}-${this.#normalizeText(cellType)}`,
-          `column "${id}" uses unsupported cell type "${this.#normalizeText(cellType)}" and will render as text.`,
+          `column "${id}" uses unsupported cell type "${this.#normalizeText(cellType)}"`,
         );
       }
     });
@@ -2272,7 +2282,7 @@ export class RowanTable extends BaseElement {
     if (typeof rowId !== "function" && (typeof rowId !== "string" || rowId.trim().length === 0)) {
       this.#warn(
         "row-id-accessor",
-        "rowId must be a non-empty string or function; rows use their index until it is corrected.",
+        "rowId must be a non-empty string or function",
       );
     }
   }
@@ -2285,7 +2295,7 @@ export class RowanTable extends BaseElement {
       if (firstIndex !== undefined) {
         this.#warn(
           `row-duplicate-id-${entry.rowId}`,
-          `rows at indexes ${firstIndex} and ${entry.rowIndex} share row id "${entry.rowId}"; keyed reconciliation will fall back to a full body render.`,
+          `indexes ${firstIndex} and ${entry.rowIndex} share row id "${entry.rowId}"`,
         );
         continue;
       }
@@ -3557,6 +3567,18 @@ export class RowanTable extends BaseElement {
     return mod.exportExcel(this.#exportBridge(), options);
   }
 
+  /**
+   * Paste TSV at the focused editable cell. Omit `text` to read the clipboard.
+   * @param {string} [text]
+   * @param {object} [options] Reserved. Paste behavior does not read it yet.
+   * @returns {Promise<{ pasted: boolean, applied: object[], rejected: object[], ignored?: number, prevented?: boolean }>}
+   */
+  async pasteText(text, options) {
+    void options;
+    const mod = await import("./table-export.js");
+    return mod.pasteText(this.#exportBridge(), text, this);
+  }
+
   #exportBridge() {
     return {
       snapshot: (sourceRows) => {
@@ -3619,7 +3641,8 @@ export class RowanTable extends BaseElement {
   }
 
   #handleCopyKey(event) {
-    if (event.key !== "c" && event.key !== "C") return;
+    const key = event.key.toLowerCase();
+    if (key !== "c" && key !== "v") return;
     if (!event.ctrlKey && !event.metaKey) return;
     if (event.altKey || event.shiftKey || this.#editing) return;
     const target = event.target;
@@ -3627,7 +3650,7 @@ export class RowanTable extends BaseElement {
       return;
     }
     event.preventDefault();
-    void this.copyToClipboard();
+    void (key === "v" ? this.pasteText() : this.copyToClipboard());
   }
 
   #trackFocusedCell(event) {

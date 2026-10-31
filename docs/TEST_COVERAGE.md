@@ -15,10 +15,10 @@ Gap score is `weight × (uncovered lines + uncovered branches)`. Form controls a
 
 | Metric     | Covered |  Total | Coverage |  Floor |
 | ---------- | ------: | -----: | -------: | -----: |
-| lines      |  50,702 | 52,853 |   95.93% | 95.05% |
-| statements |  50,702 | 52,853 |   95.93% | 95.05% |
-| functions  |   3,660 |  3,963 |   92.35% | 91.31% |
-| branches   |  11,186 | 12,434 |   89.96% | 88.89% |
+| lines      |  51,055 | 53,228 |   95.91% | 95.05% |
+| statements |  51,055 | 53,228 |   95.91% | 95.05% |
+| functions  |   3,683 |  3,985 |   92.42% | 91.31% |
+| branches   |  11,285 | 12,561 |   89.84% | 88.89% |
 
 ## Largest gaps
 
@@ -28,7 +28,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | ----------------------- | ------------ | --------: | ---------------------: | ---------------------: | --------: |
 | `rich-text-editor`      | Form         |     384.0 |  95.99% (56 uncovered) |  80.59% (72 uncovered) |    97.83% |
 | `filter-builder`        | Form         |     231.0 |  95.41% (68 uncovered) |   98.00% (9 uncovered) |    98.92% |
-| `table`                 | Table        |     206.0 | 93.77% (306 uncovered) | 92.68% (106 uncovered) |    93.77% |
+| `table`                 | Table        |     231.0 | 93.80% (328 uncovered) | 91.49% (134 uncovered) |    94.50% |
 | `context-menu`          | Overlay      |     195.0 |  93.53% (33 uncovered) |  77.62% (32 uncovered) |   100.00% |
 | `row-details-panel`     | Data display |     186.0 |  93.09% (59 uncovered) |  82.47% (34 uncovered) |    81.43% |
 | `slider`                | Form         |     171.0 |  95.86% (28 uncovered) |  82.63% (29 uncovered) |    95.65% |
@@ -145,7 +145,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `switch`                | Form         |     1 |  91.53% (20 uncovered) |  91.53% (20 uncovered) |  88.00% (3 uncovered) |  100.00% (0 uncovered) |
 | `tab`                   | Navigation   |     1 |   98.31% (2 uncovered) |   98.31% (2 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `tab-panel`             | Navigation   |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   96.77% (1 uncovered) |
-| `table`                 | Table        |     4 | 93.77% (306 uncovered) | 93.77% (306 uncovered) | 93.77% (19 uncovered) | 92.68% (106 uncovered) |
+| `table`                 | Table        |     5 | 93.80% (328 uncovered) | 93.80% (328 uncovered) | 94.50% (18 uncovered) | 91.49% (134 uncovered) |
 | `table-csv`             | Table        |     1 |  89.90% (10 uncovered) |  89.90% (10 uncovered) | 100.00% (0 uncovered) |  74.00% (13 uncovered) |
 | `table-quick-find`      | Table        |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   94.59% (2 uncovered) |
 | `table-toolbar`         | Table        |     1 |  95.40% (20 uncovered) |  95.40% (20 uncovered) |  88.57% (4 uncovered) |   94.44% (6 uncovered) |

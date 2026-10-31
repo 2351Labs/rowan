@@ -156,13 +156,7 @@ function clearFieldError(field) {
   field.errorEl = null;
 }
 
-/**
- * Column rules (`required`, `validate`) run first. `rowan-edit-validate` then
- * fires on its own, before any commit event, so a rejected value never looks
- * like a commit. `preventDefault()` forces the field invalid and keeps the
- * editor open. Listeners may replace `detail.message`.
- */
-function acceptFieldValue(ctx, field, value, oldValue) {
+function evaluateField(ctx, field, value, oldValue) {
   const rulesMessage = columnValidationMessage(field.column, value, field.row, ctx.messages);
   const detail = {
     rowId: field.rowId,
@@ -177,15 +171,74 @@ function acceptFieldValue(ctx, field, value, oldValue) {
   };
   const allowed = emit(ctx.table, "rowan-edit-validate", detail, { cancelable: true });
   const rejected = !allowed || !detail.valid;
-  if (!rejected) {
+  const message = rejected
+    ? detail.message || rulesMessage || resolveMessage(ctx.messages, DEFAULT_MESSAGES, "invalidValue")
+    : "";
+  return { ok: !rejected, message };
+}
+
+/**
+ * Column rules (`required`, `validate`) run first. `rowan-edit-validate` then
+ * fires on its own, before any commit event, so a rejected value never looks
+ * like a commit. `preventDefault()` forces the field invalid and keeps the
+ * editor open. Listeners may replace `detail.message`.
+ */
+function acceptFieldValue(ctx, field, value, oldValue) {
+  const result = evaluateField(ctx, field, value, oldValue);
+  if (result.ok) {
     clearFieldError(field);
     return true;
   }
 
-  const message =
-    detail.message || rulesMessage || resolveMessage(ctx.messages, DEFAULT_MESSAGES, "invalidValue");
-  showFieldError(field, message);
+  showFieldError(field, result.message);
   return false;
+}
+
+/**
+ * Apply a value that did not come from an open editor. Uses the same validation
+ * and `rowan-edit-commit` path as a cell edit. Does not paint an error; the caller does.
+ * @param {object} ctx
+ * @param {{ rowId: string, rowIndex: number, row: object, column: object, value: unknown }} target
+ */
+export function commitExternalCell(ctx, target) {
+  const oldValue = ctx.resolveValue(target.row, target.rowIndex, target.column);
+  const field = {
+    rowId: target.rowId,
+    rowIndex: target.rowIndex,
+    row: target.row,
+    column: target.column,
+  };
+  const result = evaluateField(ctx, field, target.value, oldValue);
+  if (!result.ok) return { ok: false, message: result.message };
+
+  const allowed = emit(ctx.table, "rowan-edit-commit", {
+    rowId: target.rowId,
+    columnId: target.column.id,
+    value: target.value,
+    oldValue,
+    row: target.row,
+    rowIndex: target.rowIndex,
+    column: target.column,
+  }, { cancelable: true });
+  if (!allowed) return { ok: false, cancelled: true, message: "" };
+
+  target.row[target.column.id] = target.value;
+  return { ok: true, message: "" };
+}
+
+/** @param {HTMLElement | null} td @param {string} message */
+export function paintCellError(td, message) {
+  if (!td) return;
+  let error = td.querySelector(":scope > .cell-editor-error");
+  if (!error) {
+    error = document.createElement("span");
+    error.className = "cell-editor-error";
+    error.id = `rowan-table-edit-error-${++errorSequence}`;
+    td.append(error);
+  }
+  error.textContent = message;
+  td.setAttribute("aria-invalid", "true");
+  td.setAttribute("aria-describedby", error.id);
 }
 
 function commitCellEdit(ctx, editing) {

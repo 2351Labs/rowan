@@ -3795,3 +3795,215 @@ describe("clipboard and export", () => {
     document.body.removeChild(host);
   });
 });
+
+describe("paste", () => {
+  function mount(config) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      ...config,
+      rows: config.rows?.map((row) => ({ ...row })),
+    };
+    return { host, table };
+  }
+
+  async function focusCell(table, columnId, rowId) {
+    await waitFor(() => table.renderRoot.querySelector(`td[data-column-id="${columnId}"]`));
+    const cell = rowId
+      ? table.renderRoot.querySelector(`tr[data-row-id="${rowId}"] td[data-column-id="${columnId}"]`)
+      : table.renderRoot.querySelector(`td[data-column-id="${columnId}"]`);
+    cell.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    return cell;
+  }
+
+  const columns = [
+    { id: "name", header: "Name", editable: true },
+    { id: "note", header: "Note", editable: false },
+    {
+      id: "score",
+      header: "Score",
+      type: "number",
+      editable: true,
+      required: true,
+      validate: (value) => value == null || value >= 0 || "Too small",
+    },
+    {
+      id: "role",
+      header: "Role",
+      type: "select",
+      editable: true,
+      editor: {
+        type: "select",
+        options: [
+          { value: "admin", label: "Admin" },
+          { value: "editor", label: "Editor" },
+        ],
+      },
+    },
+    { id: "active", header: "Active", type: "checkbox", editable: true },
+    { id: "joined", header: "Joined", type: "date", editable: true },
+    { id: "secret", header: "Secret", hidden: true, editable: true },
+  ];
+
+  const rows = [
+    { id: "p-1", name: "Grace", note: "keep", score: 10, role: "editor", active: false, joined: "2026-01-01", secret: "x" },
+    { id: "p-2", name: "Alan", note: "keep", score: 8, role: "admin", active: true, joined: "2026-02-01", secret: "y" },
+    { id: "p-3", name: "Radia", note: "keep", score: 9, role: "editor", active: false, joined: "2026-03-01", secret: "z" },
+  ];
+
+  it("pastes a block across editable columns and rows, skipping hidden and read-only columns", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id", selectable: "multiple" });
+    const commits = [];
+    table.addEventListener("rowan-edit-commit", (event) => commits.push(event.detail.columnId));
+    await focusCell(table, "name");
+    const result = await table.pasteText("Ada\t12\tAdmin\ttrue\t2026-04-02\nKen\t4\tEditor\tno\t2026-05-01\nExtra\nBeyond");
+    expect(result.applied.map((item) => `${item.rowId}:${item.columnId}`)).to.deep.equal([
+      "p-1:name",
+      "p-1:score",
+      "p-1:role",
+      "p-1:active",
+      "p-1:joined",
+      "p-2:name",
+      "p-2:score",
+      "p-2:role",
+      "p-2:active",
+      "p-2:joined",
+      "p-3:name",
+    ]);
+    expect(table.rows[0]).to.include({
+      name: "Ada",
+      note: "keep",
+      score: 12,
+      role: "admin",
+      active: true,
+      joined: "2026-04-02",
+      secret: "x",
+    });
+    expect(table.rows[1].name).to.equal("Ken");
+    expect(table.rows[1].score).to.equal(4);
+    expect(table.rows[2].name).to.equal("Extra");
+    expect(result.ignored).to.equal(1);
+    expect(commits).to.include("score");
+    expect(table.renderRoot.textContent).to.include("Ada");
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("Pasted 11.");
+    document.body.removeChild(host);
+  });
+
+  it("rejects invalid values without committing and shows the error", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    await focusCell(table, "score", "p-1");
+    const result = await table.pasteText("nope\n-1");
+    expect(table.rows[0].score).to.equal(10);
+    expect(table.rows[1].score).to.equal(8);
+    expect(result.rejected.map((item) => item.message)).to.deep.equal(["Invalid value", "Too small"]);
+    const cell = table.renderRoot.querySelector('tr[data-row-id="p-1"] td[data-column-id="score"]');
+    expect(cell.getAttribute("aria-invalid")).to.equal("true");
+    expect(cell.querySelector(".cell-editor-error").textContent).to.equal("Invalid value");
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("2 not pasted.");
+    document.body.removeChild(host);
+  });
+
+  it("lets rowan-paste change or cancel the paste, and reports rowan-paste-result", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    await focusCell(table, "name");
+    table.addEventListener("rowan-paste", (event) => {
+      event.detail.targets[0].value = "Changed";
+    });
+    const results = [];
+    table.addEventListener("rowan-paste-result", (event) => results.push(event.detail));
+    const result = await table.pasteText("Ada");
+    expect(result.applied[0].value).to.equal("Changed");
+    expect(table.rows[0].name).to.equal("Changed");
+    expect(results[0].applied).to.have.length(1);
+
+    table.addEventListener("rowan-paste", (event) => event.preventDefault(), { once: true });
+    const blocked = await table.pasteText("Nope");
+    expect(blocked.prevented).to.equal(true);
+    expect(table.rows[0].name).to.equal("Changed");
+    document.body.removeChild(host);
+  });
+
+  it("fills selected rows with one value and pastes from the keyboard", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id", selectable: "multiple" });
+    table.selected = ["p-1", "p-3"];
+    await focusCell(table, "name", "p-1");
+    const filled = await table.pasteText("Shared");
+    expect(filled.applied.map((item) => item.rowId)).to.deep.equal(["p-1", "p-3"]);
+    expect(table.rows[0].name).to.equal("Shared");
+    expect(table.rows[1].name).to.equal("Alan");
+    expect(table.rows[2].name).to.equal("Shared");
+
+    const clipboard = navigator.clipboard;
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { readText: async () => "Keyed" },
+    });
+    const cell = await focusCell(table, "name", "p-2");
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "v", ctrlKey: true, bubbles: true }));
+    await waitFor(() => table.rows[1].name === "Keyed");
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: clipboard });
+    document.body.removeChild(host);
+  });
+
+  it("follows column order and stops at the loaded server page", async () => {
+    const { host, table } = mount({
+      columns: [
+        { id: "city", header: "City", editable: true },
+        { id: "name", header: "Name", editable: true },
+      ],
+      rows: [
+        { id: "p-1", name: "Grace", city: "London" },
+        { id: "p-2", name: "Alan", city: "Manchester" },
+      ],
+      rowId: "id",
+    });
+    await focusCell(table, "city");
+    await table.pasteText("Paris\tAda");
+    expect(table.rows[0]).to.include({ city: "Paris", name: "Ada" });
+    document.body.removeChild(host);
+
+    const serverHost = document.createElement("div");
+    document.body.appendChild(serverHost);
+    serverHost.innerHTML = `<rowan-table data-mode="server"></rowan-table>`;
+    const server = serverHost.querySelector("rowan-table");
+    const all = [
+      { id: "1", name: "One" },
+      { id: "2", name: "Two" },
+      { id: "3", name: "Three" },
+    ];
+    server.config = {
+      columns: [{ id: "name", header: "Name", editable: true }],
+      page: { index: 0, size: 2 },
+    };
+    server.dataSource = {
+      debounce: 0,
+      getRows: ({ page, pageSize }) => Promise.resolve({
+        rows: all.slice(page * pageSize, page * pageSize + pageSize),
+        total: all.length,
+      }),
+    };
+    await waitFor(() => server.renderRoot.textContent.includes("One"));
+    await focusCell(server, "name");
+    const pasted = await server.pasteText("Uno\nDos\nTres");
+    expect(server.renderRoot.textContent).to.include("Uno");
+    expect(server.renderRoot.textContent).to.include("Dos");
+    expect(server.renderRoot.textContent).to.not.include("Tres");
+    expect(pasted.ignored).to.equal(1);
+    expect(pasted.applied).to.have.length(2);
+    document.body.removeChild(serverHost);
+  });
+
+  it("honors rowan-edit-validate cancellation", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    table.addEventListener("rowan-edit-validate", (event) => {
+      if (event.detail.value === "Blocked") event.preventDefault();
+    });
+    await focusCell(table, "name");
+    const result = await table.pasteText("Blocked");
+    expect(result.rejected[0].message).to.equal("Invalid value");
+    expect(table.rows[0].name).to.equal("Grace");
+    document.body.removeChild(host);
+  });
+});
