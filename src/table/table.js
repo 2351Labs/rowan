@@ -1781,7 +1781,7 @@ export class RowanTable extends BaseElement {
     }
   }
 
-  #handleReorderEnd(event) {
+  #handleReorderEnd() {
     if (!this.#reordering) return;
     this.renderRoot.querySelectorAll(".dragging, .drop-target").forEach((el) => {
       el.classList.remove("dragging", "drop-target");
