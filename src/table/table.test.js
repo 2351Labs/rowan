@@ -2836,6 +2836,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const select = table.renderRoot.querySelector("rowan-select");
     expect(select).to.exist;
@@ -2881,6 +2882,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const select = table.renderRoot.querySelector("rowan-select");
     select.value = "inactive";
@@ -2920,6 +2922,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const datePicker = table.renderRoot.querySelector("rowan-date-picker");
     expect(datePicker).to.exist;
@@ -2954,6 +2957,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const checkbox = table.renderRoot.querySelector("rowan-checkbox");
     expect(checkbox).to.exist;
@@ -2996,6 +3000,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const customInput = table.renderRoot.querySelector(".custom-editor");
     expect(customInput).to.exist;
@@ -3026,6 +3031,7 @@ describe("inline editing", () => {
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const inputs = table.renderRoot.querySelectorAll("input");
     expect(inputs.length).to.equal(2);
@@ -3060,6 +3066,7 @@ describe("inline editing", () => {
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.value = "Bob";
@@ -3100,6 +3107,7 @@ describe("inline editing", () => {
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.value = "Bob";
@@ -3134,6 +3142,7 @@ describe("inline editing", () => {
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
+    await nextFrame();
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
