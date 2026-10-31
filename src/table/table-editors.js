@@ -44,7 +44,7 @@ export async function createEditor(type, value, column, context, messages) {
   return null;
 }
 
-export async function startRowEditing(table, rowId, getRowFromElement, findColumn, isColumnEditable, resolveValue, createEditorFn, messages) {
+export async function startRowEditing(table, rowId, getRowFromElement, columns, isColumnEditable, resolveValue, createEditorFn, messages) {
   const tr = table.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
   if (!tr) return null;
 
@@ -53,15 +53,12 @@ export async function startRowEditing(table, rowId, getRowFromElement, findColum
 
   const { row, rowIndex } = result;
   const editableCells = [];
-  const columns = table.querySelectorAll("rowan-table-column") || [];
 
-  for (const column of Array.from(columns)) {
-    const columnId = column.getAttribute("id");
-    const columnDef = findColumn(columnId);
-    if (columnDef && isColumnEditable(columnDef, row, rowIndex)) {
-      const td = tr.querySelector(`td[data-column-id="${columnId}"]`);
+  for (const column of columns) {
+    if (isColumnEditable(column, row, rowIndex)) {
+      const td = tr.querySelector(`td[data-column-id="${column.id}"]`);
       if (td) {
-        editableCells.push({ column: columnDef, td });
+        editableCells.push({ column, td });
       }
     }
   }

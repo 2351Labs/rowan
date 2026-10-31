@@ -1951,7 +1951,7 @@ export class RowanTable extends BaseElement {
       this,
       rowId,
       this.#getRowFromElement.bind(this),
-      (columnId) => this.#state.columns.find(c => c.id === columnId),
+      this.#state.columns,
       this.#isColumnEditable.bind(this),
       this.#resolveValue.bind(this),
       this.#createEditor.bind(this),
