@@ -223,6 +223,8 @@ html[data-theme="midnight"] body {
 
 .sidebar {
   align-self: start;
+  display: flex;
+  flex-direction: column;
   max-height: calc(100vh - 5.4rem);
 }
 
@@ -236,12 +238,15 @@ html[data-theme="midnight"] body {
   border-radius: 0.9rem;
   box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
   color: #e5eaed;
-  overflow: auto;
-  padding: 0.4rem 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.4rem 0.5rem 0;
 }
 
 .sidebar-eyebrow {
   color: #9ba9b2;
+  flex-shrink: 0;
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -251,7 +256,12 @@ html[data-theme="midnight"] body {
 
 .sidebar-nav {
   display: grid;
+  flex: 1 1 auto;
   gap: 0.08rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 1.5rem;
 }
 
 .nav-section {
