@@ -27,7 +27,29 @@ export const Metadata = {
     item.description = description;
     item.group = group;
     item.shortcut = shortcut;
+    item.keywords = "settings preferences";
+    item.setAttribute("tabindex", "0");
     item.disabled = disabled;
+    return item;
+  },
+};
+
+export const Slotted = {
+  name: "Slotted content",
+  render: () => {
+    const item = document.createElement("rowan-command-item");
+    item.value = "open-settings";
+    item.keywords = "settings";
+    const prefix = document.createElement("span");
+    prefix.slot = "prefix";
+    prefix.textContent = "⌘";
+    const description = document.createElement("span");
+    description.slot = "description";
+    description.textContent = "Update workspace preferences";
+    const shortcut = document.createElement("span");
+    shortcut.slot = "shortcut";
+    shortcut.textContent = "G S";
+    item.append(prefix, "Open settings", description, shortcut);
     return item;
   },
 };

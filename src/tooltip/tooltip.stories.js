@@ -16,6 +16,7 @@ export const Playground = {
   render: ({ text }) => {
     const tooltip = document.createElement("rowan-tooltip");
     tooltip.text = text;
+    tooltip.open = false;
 
     const button = document.createElement("rowan-button");
     button.textContent = "Hover me";

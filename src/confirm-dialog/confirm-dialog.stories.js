@@ -11,6 +11,8 @@ function createConfirmDialog({ open = false, confirmVariant = "danger" } = {}) {
   dialog.open = open;
   dialog.label = "Archive project";
   dialog.confirmLabel = "Archive";
+  dialog.cancelLabel = "Keep project";
+  dialog.confirmDisabled = false;
   dialog.confirmVariant = confirmVariant;
 
   const title = document.createElement("span");
@@ -20,6 +22,10 @@ function createConfirmDialog({ open = false, confirmVariant = "danger" } = {}) {
   const content = document.createElement("p");
   content.textContent = "Archived projects remain available to workspace administrators.";
   dialog.append(title, content);
+  const actions = document.createElement("span");
+  actions.slot = "actions";
+  actions.textContent = "Archive now";
+  dialog.append(actions);
 
   trigger.addEventListener("rowan-click", () => dialog.show());
   wrapper.append(trigger, dialog);

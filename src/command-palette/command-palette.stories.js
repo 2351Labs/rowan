@@ -81,6 +81,9 @@ export const OpenPalette = {
     palette.label = label;
     palette.placeholder = placeholder;
     palette.emptyLabel = emptyLabel;
+    palette.hotkey = "mod+k";
+    palette.query = "";
+    palette.locale = "en-US";
     palette.open = true;
     addWorkspaceCommands(palette);
     return palette;
@@ -102,5 +105,23 @@ export const TriggeredPalette = {
     addWorkspaceCommands(palette);
     wrapper.append(trigger, palette);
     return wrapper;
+  },
+};
+
+export const EmptyResults = {
+  name: "Empty results",
+  render: () => {
+    const palette = document.createElement("rowan-command-palette");
+    palette.label = "Workspace commands";
+    palette.placeholder = "Search commands";
+    palette.query = "zzzz";
+    palette.locale = "en-US";
+    palette.hotkey = "mod+k";
+    palette.open = true;
+    const empty = document.createElement("p");
+    empty.slot = "empty";
+    empty.textContent = "No workspace commands found.";
+    palette.append(empty);
+    return palette;
   },
 };
