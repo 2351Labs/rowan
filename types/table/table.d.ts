@@ -10,6 +10,8 @@
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
+ * @attr {boolean} resizable-columns
+ * @attr {boolean} reorderable-columns
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -42,6 +44,8 @@
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
+ * @event rowan-column-resize - Fired when a column is resized. `detail` contains columnId, width, and columns array.
+ * @event rowan-column-reorder - Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.
  */
 export class RowanTable extends BaseElement {
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -97,6 +101,10 @@ export class RowanTable extends BaseElement {
   set page(value: RowanTablePage | null);
   /** @returns {RowanTablePage | null} */
   get page(): RowanTablePage | null;
+  set resizableColumns(value: boolean);
+  get resizableColumns(): boolean;
+  set reorderableColumns(value: boolean);
+  get reorderableColumns(): boolean;
   set locale(value: string);
   get locale(): string;
   /** @param {RowanTableMessages | null | undefined} value */
@@ -241,6 +249,7 @@ export type RowanTableMessages = {
   paginationStatus?:
     string | ((context: { from: number; to: number; total: number }) => string) | undefined;
   previousPage?: string | undefined;
+  resizeColumn?: string | ((context: { header: string }) => string) | undefined;
   selectAllRows?: string | undefined;
   selectRow?: string | ((context: { rowId: string }) => string) | undefined;
   subtotal?: string | undefined;

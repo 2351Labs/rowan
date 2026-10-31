@@ -25,6 +25,8 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
+ * @property {Record<string, string> | null} columnWidths
+ * @property {string[] | null} columnOrder
  * @property {"sm" | "md" | "lg"} density
  * @property {RowanTableViewGroupBy | null} groupBy
  */
@@ -124,6 +126,28 @@ function normalizeVisibleColumns(value) {
   );
 }
 
+function normalizeColumnWidths(value) {
+  if (!isRecord(value)) return null;
+
+  const widths = {};
+  for (const [key, val] of Object.entries(value)) {
+    const columnId = normalizeText(key);
+    const width = normalizeText(val);
+    if (columnId && width) {
+      widths[columnId] = width;
+    }
+  }
+
+  return Object.keys(widths).length > 0 ? widths : null;
+}
+
+function normalizeColumnOrder(value) {
+  if (!Array.isArray(value)) return null;
+
+  const order = value.map(normalizeText).filter(Boolean);
+  return order.length > 0 ? order : null;
+}
+
 function normalizeDensity(value) {
   const density = normalizeText(value);
   return DENSITIES.has(density) ? density : "md";
@@ -154,6 +178,8 @@ function stateKeys(value) {
     ...(Object.hasOwn(value, "page") ? { page: value.page } : {}),
     ...(Object.hasOwn(value, "filters") ? { filters: value.filters } : {}),
     ...(Object.hasOwn(value, "visibleColumns") ? { visibleColumns: value.visibleColumns } : {}),
+    ...(Object.hasOwn(value, "columnWidths") ? { columnWidths: value.columnWidths } : {}),
+    ...(Object.hasOwn(value, "columnOrder") ? { columnOrder: value.columnOrder } : {}),
     ...(Object.hasOwn(value, "density") ? { density: value.density } : {}),
     ...(Object.hasOwn(value, "groupBy") ? { groupBy: value.groupBy } : {}),
   };
@@ -175,6 +201,8 @@ export function normalizeTableViewState(value) {
     page: normalizePage(source.page),
     filters,
     visibleColumns: normalizeVisibleColumns(source.visibleColumns),
+    columnWidths: normalizeColumnWidths(source.columnWidths),
+    columnOrder: normalizeColumnOrder(source.columnOrder),
     density: normalizeDensity(source.density),
     groupBy: normalizeGroupBy(source.groupBy),
   };

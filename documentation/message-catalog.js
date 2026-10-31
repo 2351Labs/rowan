@@ -465,6 +465,7 @@ export const ROWAN_MESSAGE_CATALOG = [
       "paginationLabel",
       "paginationStatus",
       "previousPage",
+      "resizeColumn",
       "selectAllRows",
       "selectRow",
       "subtotal",

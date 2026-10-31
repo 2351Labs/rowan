@@ -33,6 +33,8 @@ describe("table view state", () => {
         { field: "status", operator: "equals", value: "42" },
       ],
       visibleColumns: ["owner", "status"],
+      columnWidths: null,
+      columnOrder: null,
       density: "lg",
       groupBy: { id: "service", subtotals: true, collapsed: false },
     });
@@ -59,6 +61,8 @@ describe("table view state", () => {
       page: { index: 0, size: 50 },
       filters: [],
       visibleColumns: ["name", "status"],
+      columnWidths: null,
+      columnOrder: null,
       density: "lg",
       groupBy: { id: "team", subtotals: false, collapsed: false },
     });

@@ -14,6 +14,8 @@ export const RowanTable: ForwardRefExoticComponent<
       onRowanPageChange?: (event: CustomEvent) => void;
       onRowanRowActivate?: (event: CustomEvent) => void;
       onRowanGroupToggle?: (event: CustomEvent) => void;
+      onRowanColumnResize?: (event: CustomEvent) => void;
+      onRowanColumnReorder?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanTableElement>
