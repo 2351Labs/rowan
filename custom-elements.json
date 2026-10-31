@@ -27803,49 +27803,47 @@
         },
         {
           "kind": "function",
-          "name": "startRowEditing",
+          "name": "beginCellEdit",
           "parameters": [
             {
-              "name": "table"
+              "name": "ctx"
+            },
+            {
+              "name": "editing"
+            },
+            {
+              "name": "rowEditing"
             },
             {
               "name": "rowId"
             },
             {
-              "name": "getRowFromElement"
+              "name": "columnId"
             },
             {
-              "name": "columns"
-            },
-            {
-              "name": "isColumnEditable"
-            },
-            {
-              "name": "resolveValue"
-            },
-            {
-              "name": "createEditorFn"
-            },
-            {
-              "name": "_messages"
+              "name": "initialValue"
             }
           ]
         },
         {
-          "kind": "function",
-          "name": "commitRowEditing",
-          "parameters": [
-            {
-              "name": "rowEditState"
-            }
-          ]
+          "kind": "variable",
+          "name": "column"
         },
         {
           "kind": "function",
-          "name": "stopRowEditing",
+          "name": "beginRowEdit",
           "parameters": [
             {
-              "name": "rowEditState"
+              "name": "ctx"
+            },
+            {
+              "name": "editing"
+            },
+            {
+              "name": "rowEditing"
+            },
+            {
+              "name": "rowId"
             }
           ]
         }
@@ -27861,25 +27859,17 @@
         },
         {
           "kind": "js",
-          "name": "startRowEditing",
+          "name": "beginCellEdit",
           "declaration": {
-            "name": "startRowEditing",
+            "name": "beginCellEdit",
             "module": "src/table/table-editors.js"
           }
         },
         {
           "kind": "js",
-          "name": "commitRowEditing",
+          "name": "beginRowEdit",
           "declaration": {
-            "name": "commitRowEditing",
-            "module": "src/table/table-editors.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "stopRowEditing",
-          "declaration": {
-            "name": "stopRowEditing",
+            "name": "beginRowEdit",
             "module": "src/table/table-editors.js"
           }
         }
@@ -28503,12 +28493,11 @@
         },
         {
           "kind": "variable",
-          "name": "value"
+          "name": "row"
         },
         {
           "kind": "variable",
-          "name": "column",
-          "default": "columns[i]"
+          "name": "rowIndex"
         }
       ],
       "exports": [

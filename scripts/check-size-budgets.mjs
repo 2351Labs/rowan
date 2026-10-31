@@ -41,61 +41,88 @@ const budgets = {
   "trend-chart": 20 * 1024,
   "bar-chart": 20 * 1024,
 
-  // Table (large, includes many features + column resizing/reordering + inline editing Phase 1 & 2)
-  table: 41 * 1024, // entry chunk only; phase 2 editors and row editing load lazily
+  // Table (large, includes many features + column resizing/reordering + inline editing)
+  // Budget is the gzipped initial load: entry plus statically imported chunks.
+  table: 41 * 1024,
 
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch
   "form-controls": 19 * 1024, // button + text-field + checkbox + select + textarea
 };
 
+function gzipFile(path) {
+  return gzipSync(readFileSync(path), { level: 9 }).length;
+}
+
+/**
+ * Sum gzipped outputs reachable from the entry.
+ * `import-statement` edges are initial load. Chunks reached only through
+ * `dynamic-import` are lazy and reported separately.
+ */
+function graphSizes(metafile, entryOutputKey) {
+  const outputs = metafile.outputs;
+  const initial = new Set();
+  const initialQueue = [entryOutputKey];
+  while (initialQueue.length > 0) {
+    const key = initialQueue.pop();
+    if (!key || initial.has(key)) continue;
+    initial.add(key);
+    for (const imported of outputs[key]?.imports || []) {
+      if (imported.kind === "import-statement") initialQueue.push(imported.path);
+    }
+  }
+
+  const reachable = new Set();
+  const reachableQueue = [entryOutputKey];
+  while (reachableQueue.length > 0) {
+    const key = reachableQueue.pop();
+    if (!key || reachable.has(key)) continue;
+    reachable.add(key);
+    for (const imported of outputs[key]?.imports || []) reachableQueue.push(imported.path);
+  }
+
+  let initialBytes = 0;
+  for (const key of initial) initialBytes += gzipFile(key);
+
+  let lazyBytes = 0;
+  for (const key of reachable) {
+    if (!initial.has(key)) lazyBytes += gzipFile(key);
+  }
+
+  return { initialBytes, lazyBytes };
+}
+
 async function measureBundle(name, code) {
   const entryFile = join(tempDir, `${name}.js`);
-  
+  const outDir = join(tempDir, `${name}-out`);
+
   writeFileSync(entryFile, code);
 
   try {
-    // Use code splitting for components with dynamic imports (table)
-    const useCodeSplitting = name === "table";
-    const outDir = join(tempDir, `${name}-out`);
-    const outFile = join(tempDir, `${name}.out.js`);
+    mkdirSync(outDir, { recursive: true });
+    const result = await build({
+      entryPoints: [entryFile],
+      bundle: true,
+      minify: true,
+      format: "esm",
+      target: "es2020",
+      outdir: outDir,
+      write: true,
+      splitting: true,
+      treeShaking: true,
+      metafile: true,
+      logLevel: "error",
+    });
 
-    if (useCodeSplitting) {
-      mkdirSync(outDir, { recursive: true });
-      await build({
-        entryPoints: [entryFile],
-        bundle: true,
-        minify: true,
-        format: "esm",
-        target: "es2020",
-        outdir: outDir,
-        write: true,
-        splitting: true,
-        treeShaking: true,
-        logLevel: "error",
-      });
-
-      // Measure only the main entry file, not the lazy-loaded chunks
-      const mainFile = join(outDir, `${name}.js`);
-      const bundleContent = readFileSync(mainFile);
-      return gzipSync(bundleContent, { level: 9 }).length;
-    } else {
-      await build({
-        entryPoints: [entryFile],
-        bundle: true,
-        minify: true,
-        format: "esm",
-        target: "es2020",
-        outfile: outFile,
-        write: true,
-        external: [],
-        treeShaking: true,
-        logLevel: "error",
-      });
-
-      const bundleContent = readFileSync(outFile);
-      return gzipSync(bundleContent, { level: 9 }).length;
+    const entryOutputKey = Object.keys(result.metafile.outputs).find((outputPath) => {
+      const entryPoint = result.metafile.outputs[outputPath].entryPoint || "";
+      return entryPoint.endsWith(`/${name}.js`) && entryPoint.includes(".size-budget-check/");
+    });
+    if (!entryOutputKey) {
+      throw new Error(`No entry output for ${name}`);
     }
+
+    return graphSizes(result.metafile, entryOutputKey);
   } catch (error) {
     console.error(`Error building ${name}:`, error.message);
     return null;
@@ -141,21 +168,23 @@ async function main() {
     }
 
     process.stdout.write(`  ${name.padEnd(20)}...`);
-    const size = await measureBundle(name, code);
+    const measured = await measureBundle(name, code);
 
-    if (size === null) {
+    if (measured === null) {
       console.log(` ✗ Failed to build`);
       failed = true;
       continue;
     }
 
+    const size = measured.initialBytes;
     const budgetMet = size <= budget;
     const status = budgetMet ? "✓" : "✗";
     const emoji = budgetMet ? " " : "💥";
     const percentage = ((size / budget) * 100).toFixed(0);
+    const lazyNote = measured.lazyBytes > 0 ? `  lazy ${formatBytes(measured.lazyBytes)}` : "";
 
     console.log(
-      ` ${status} ${formatBytes(size).padStart(10)} / ${formatBytes(budget)} (${percentage}%)${emoji}`
+      ` ${status} ${formatBytes(size).padStart(10)} / ${formatBytes(budget)} (${percentage}%)${emoji}${lazyNote}`
     );
 
     results.push({

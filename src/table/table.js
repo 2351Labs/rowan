@@ -333,7 +333,6 @@ export class RowanTable extends BaseElement {
   #reordering = null;
   #editing = null;
   #rowEditing = null;
-  #editorModule = null;
 
   #root = null;
   #tableViewport = null;
@@ -1634,17 +1633,10 @@ export class RowanTable extends BaseElement {
           if (result) {
             const { row, rowIndex } = result;
             if (this.#isColumnEditable(column, row, rowIndex)) {
-              if (event.key === "Enter" || event.key === "F2") {
+              const typed = event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+              if (event.key === "Enter" || event.key === "F2" || typed) {
                 event.preventDefault();
-                if (this.editMode === "row") {
-                  this.#startRowEditing(rowId);
-                } else {
-                  this.#startEditing(rowId, columnId);
-                }
-                return;
-              } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
-                event.preventDefault();
-                this.#startEditing(rowId, columnId, event.key);
+                this.#openEditor(rowId, columnId, typed ? event.key : undefined);
                 return;
               }
             }
@@ -1881,317 +1873,25 @@ export class RowanTable extends BaseElement {
     return true;
   }
 
-  async #startEditing(rowId, columnId, initialValue = undefined) {
-    if (this.#editing) {
-      this.#stopEditing(false);
-    }
-    if (this.#rowEditing) {
-      this.#stopRowEditing(false);
-    }
-
-    const tr = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
-    if (!tr) return;
-
-    const result = this.#getRowFromElement(tr);
-    if (!result) return;
-
-    const { row, rowIndex } = result;
-    const column = this.#findColumn(columnId);
-    if (!column || !this.#isColumnEditable(column, row, rowIndex)) return;
-
-    const td = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"] td[data-column-id="${columnId}"]`);
-    if (!td) return;
-
-    const currentValue = initialValue !== undefined ? initialValue : this.#resolveValue(row, rowIndex, column);
-
-    const cancelable = emit(this, "rowan-edit-start", {
-      rowId,
-      columnId,
-      value: currentValue,
-      row,
-      rowIndex,
-      column,
-    }, { cancelable: true });
-
-    if (!cancelable) return;
-
-    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
-    const editor = await this.#createEditor(editorType, currentValue, column, { row, rowIndex });
-    if (!editor) return;
-
-    this.#editing = {
-      rowId,
-      columnId,
-      row,
-      rowIndex,
-      column,
-      td,
-      editor,
-      originalValue: currentValue,
-      originalContent: td.innerHTML,
+  async #openEditor(rowId, columnId, initialValue) {
+    const editors = await import("./table-editors.js");
+    const ctx = {
+      table: this,
+      root: this.renderRoot,
+      messages: this.#messages,
+      columns: this.#state.columns,
+      getRowFromElement: (tr) => this.#getRowFromElement(tr),
+      findColumn: (id) => this.#findColumn(id),
+      isColumnEditable: (column, row, rowIndex) => this.#isColumnEditable(column, row, rowIndex),
+      resolveValue: (row, rowIndex, column) => this.#resolveValue(row, rowIndex, column),
+      requestRender: () => this.requestRender(),
+      sync: (editing, rowEditing) => {
+        this.#editing = editing;
+        this.#rowEditing = rowEditing;
+      },
     };
-
-    td.innerHTML = "";
-    td.classList.add("editing");
-    td.append(editor);
-
-    if (editor.focus) editor.focus();
-    if (editor.select) editor.select();
-  }
-
-  async #startRowEditing(rowId) {
-    if (this.#editing) {
-      this.#stopEditing(false);
-    }
-    if (this.#rowEditing) {
-      this.#stopRowEditing(false);
-    }
-
-    this.#editorModule = await import("./table-editors.js");
-    const { startRowEditing } = this.#editorModule;
-    const rowEditState = await startRowEditing(
-      this,
-      rowId,
-      this.#getRowFromElement.bind(this),
-      this.#state.columns,
-      this.#isColumnEditable.bind(this),
-      this.#resolveValue.bind(this),
-      this.#createEditor.bind(this),
-      this.#messages
-    );
-
-    if (!rowEditState) return;
-
-    const { cellEditors } = rowEditState;
-    for (const { editor } of cellEditors) {
-      editor.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#commitRowEditing();
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#stopRowEditing(false);
-        } else if (e.key === "Tab") {
-          e.preventDefault();
-          e.stopPropagation();
-          const currentIndex = cellEditors.findIndex((ce) => ce.editor === editor);
-          const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
-          if (nextIndex >= 0 && nextIndex < cellEditors.length) {
-            const nextEditor = cellEditors[nextIndex].editor;
-            if (nextEditor.focus) nextEditor.focus();
-            if (nextEditor.select) nextEditor.select();
-          }
-        }
-      });
-    }
-
-    this.#rowEditing = rowEditState;
-
-    if (cellEditors.length > 0 && cellEditors[0].editor.focus) {
-      cellEditors[0].editor.focus();
-      if (cellEditors[0].editor.select) cellEditors[0].editor.select();
-    }
-  }
-
-  async #createEditor(type, value, column, context = {}) {
-    const editContext = {
-      value,
-      row: context.row,
-      rowIndex: context.rowIndex,
-      column,
-      cellEl: null,
-      commit: () => this.#commitEditing(),
-      cancel: () => this.#stopEditing(false),
-    };
-
-    let editor;
-
-    if (type === "text") {
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = value ?? "";
-      input.className = "cell-editor";
-      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
-      editor = input;
-    } else if (type === "number") {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = value ?? "";
-      input.className = "cell-editor";
-      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
-      
-      if (column.editor?.min !== undefined) input.min = column.editor.min;
-      if (column.editor?.max !== undefined) input.max = column.editor.max;
-      if (column.editor?.step !== undefined) input.step = column.editor.step;
-      editor = input;
-    } else if (type === "select" || type === "date" || type === "checkbox" || type === "custom") {
-      if (!this.#editorModule) {
-        this.#editorModule = await import("./table-editors.js");
-      }
-      editor = await this.#editorModule.createEditor(type, value, column, editContext, this.#messages);
-    }
-
-    if (!editor) return null;
-
-    editor.addEventListener("keydown", (e) => {
-      if (this.#rowEditing) return;
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.#commitEditing();
-        this.#moveEditFocus("down");
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        this.#stopEditing(false);
-      } else if (e.key === "Tab") {
-        e.preventDefault();
-        e.stopPropagation();
-        this.#commitEditing();
-        this.#moveEditFocus(e.shiftKey ? "left" : "right");
-      }
-    });
-
-    return editor;
-  }
-
-
-  #commitEditing() {
-    if (!this.#editing) return;
-
-    const { rowId, columnId, row, rowIndex, column, editor, originalValue } = this.#editing;
-    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
-    
-    let newValue;
-    if (editorType === "checkbox") {
-      newValue = editor.checked;
-    } else if (editorType === "number") {
-      newValue = editor.value === "" ? null : Number(editor.value);
-    } else {
-      newValue = editor.value;
-    }
-
-    const cancelable = emit(this, "rowan-edit-commit", {
-      rowId,
-      columnId,
-      value: newValue,
-      oldValue: originalValue,
-      row,
-      rowIndex,
-      column,
-    }, { cancelable: true });
-
-    if (!cancelable) {
-      this.#stopEditing(false);
-      return;
-    }
-
-    row[column.id] = newValue;
-    this.#stopEditing(true);
-    this.requestRender();
-  }
-
-  #stopEditing(committed) {
-    if (!this.#editing) return;
-
-    const { rowId, columnId, td, originalContent } = this.#editing;
-
-    if (!committed) {
-      emit(this, "rowan-edit-cancel", {
-        rowId,
-        columnId,
-        row: this.#editing.row,
-        rowIndex: this.#editing.rowIndex,
-        column: this.#editing.column,
-      });
-    }
-
-    td.innerHTML = originalContent;
-    td.classList.remove("editing");
-    this.#editing = null;
-  }
-
-  #commitRowEditing() {
-    if (!this.#rowEditing || !this.#editorModule) return;
-
-    const result = this.#editorModule.commitRowEditing(this.#rowEditing);
-    if (!result) return;
-
-    const { newValues, oldValues } = result;
-    const { rowId, row, rowIndex } = this.#rowEditing;
-
-    const cancelable = emit(this, "rowan-row-edit-commit", {
-      rowId,
-      values: newValues,
-      oldValues,
-      row,
-      rowIndex,
-    }, { cancelable: true });
-
-    if (!cancelable) {
-      this.#stopRowEditing(false);
-      return;
-    }
-
-    for (const [columnId, value] of Object.entries(newValues)) {
-      row[columnId] = value;
-    }
-    this.#stopRowEditing(true);
-  }
-
-  #stopRowEditing(committed) {
-    if (!this.#rowEditing) return;
-
-    const state = this.#rowEditing;
-    const { rowId } = state;
-    this.#rowEditing = null;
-
-    if (!committed) {
-      emit(this, "rowan-row-edit-cancel", {
-        rowId,
-      });
-    }
-
-    this.#editorModule?.stopRowEditing(state);
-    this.requestRender();
-  }
-
-  #moveEditFocus(direction) {
-    if (!this.#editing) return;
-
-    const isRTL = getComputedStyle(this).direction === "rtl";
-    const { rowId, columnId } = this.#editing;
-    const columns = this.#renderableColumns();
-    const columnIndex = columns.findIndex((c) => c.id === columnId);
-    
-    let nextRowId = rowId;
-    let nextColumnId = columnId;
-
-    if (direction === "right" || direction === "left") {
-      const delta = (direction === "right") === !isRTL ? 1 : -1;
-      const nextIndex = columnIndex + delta;
-      if (nextIndex >= 0 && nextIndex < columns.length) {
-        nextColumnId = columns[nextIndex].id;
-      } else {
-        return;
-      }
-    } else if (direction === "down" || direction === "up") {
-      const dataRows = Array.from(this.#tbody.querySelectorAll('tr[data-row-id]')).map((tr) => tr.dataset.rowId);
-      const rowIndex = dataRows.findIndex((id) => id === rowId);
-      const delta = direction === "down" ? 1 : -1;
-      const nextIndex = rowIndex + delta;
-      if (nextIndex >= 0 && nextIndex < dataRows.length) {
-        nextRowId = dataRows[nextIndex];
-      } else {
-        return;
-      }
-    }
-
-    if (nextRowId !== rowId || nextColumnId !== columnId) {
-      this.#startEditing(nextRowId, nextColumnId);
-    }
+    const open = this.editMode === "row" && initialValue === undefined ? editors.beginRowEdit : editors.beginCellEdit;
+    await open(ctx, this.#editing, this.#rowEditing, rowId, columnId, initialValue);
   }
 
   #handleBodyControlChange(event) {

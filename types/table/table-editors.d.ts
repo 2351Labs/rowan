@@ -5,29 +5,17 @@ export function createEditor(
   context: any,
   messages: any,
 ): Promise<any>;
-export function startRowEditing(
-  table: any,
+export function beginCellEdit(
+  ctx: any,
+  editing: any,
+  rowEditing: any,
   rowId: any,
-  getRowFromElement: any,
-  columns: any,
-  isColumnEditable: any,
-  resolveValue: any,
-  createEditorFn: any,
-  _messages: any,
-): Promise<{
-  rowId: any;
-  row: any;
-  rowIndex: any;
-  cellEditors: {
-    column: any;
-    td: any;
-    editor: any;
-    originalContent: any;
-  }[];
-  originalValues: {};
-} | null>;
-export function commitRowEditing(rowEditState: any): {
-  newValues: {};
-  oldValues: {};
-} | null;
-export function stopRowEditing(rowEditState: any): void;
+  columnId: any,
+  initialValue: any,
+): Promise<void> | undefined;
+export function beginRowEdit(
+  ctx: any,
+  editing: any,
+  rowEditing: any,
+  rowId: any,
+): Promise<void> | undefined;

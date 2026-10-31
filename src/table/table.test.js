@@ -2593,7 +2593,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 
-    await nextMicrotask();
+    await waitFor(() => cell.querySelector(".cell-editor"));
 
     expect(editStarted).to.be.true;
     expect(cell.classList.contains("editing")).to.be.true;
@@ -2625,7 +2625,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "F2", bubbles: true }));
 
-    await nextMicrotask();
+    await waitFor(() => cell.classList.contains("editing"));
 
     expect(editStarted).to.be.true;
     expect(cell.classList.contains("editing")).to.be.true;
@@ -2654,7 +2654,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 
-    await nextMicrotask();
+    await waitFor(() => cell.querySelector(".cell-editor"));
 
     const editor = cell.querySelector(".cell-editor");
     editor.value = "Changed";
@@ -2690,7 +2690,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 
-    await nextMicrotask();
+    await waitFor(() => cell.querySelector(".cell-editor"));
 
     const editor = cell.querySelector(".cell-editor");
     editor.value = "Bob";
@@ -2731,7 +2731,7 @@ describe("inline editing", () => {
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 
-    await nextMicrotask();
+    await waitFor(() => cell.querySelector(".cell-editor"));
 
     const editor = cell.querySelector(".cell-editor");
     expect(editor.type).to.equal("number");
@@ -2802,7 +2802,7 @@ describe("inline editing", () => {
     const startTime = performance.now();
     firstEditableCell.focus();
     firstEditableCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
+    await waitFor(() => table.renderRoot.querySelector("input.cell-editor"));
     const endTime = performance.now();
 
     const input = table.renderRoot.querySelector("input");
