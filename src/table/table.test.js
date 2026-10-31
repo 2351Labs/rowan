@@ -2803,4 +2803,295 @@ describe("inline editing", () => {
 
     document.body.removeChild(host);
   });
+
+  it("supports select editor", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        {
+          id: "status",
+          header: "Status",
+          editable: true,
+          editor: {
+            type: "select",
+            options: [
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ],
+          },
+        },
+      ],
+      rows: [{ id: "1", status: "active" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const select = table.renderRoot.querySelector("rowan-select");
+    expect(select).to.exist;
+    expect(select.value).to.equal("active");
+
+    document.body.removeChild(host);
+  });
+
+  it("supports date editor", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        {
+          id: "date",
+          header: "Date",
+          editable: true,
+          editor: { type: "date" },
+        },
+      ],
+      rows: [{ id: "1", date: "2024-01-01" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const datePicker = table.renderRoot.querySelector("rowan-date-picker");
+    expect(datePicker).to.exist;
+    expect(datePicker.value).to.equal("2024-01-01");
+
+    document.body.removeChild(host);
+  });
+
+  it("supports checkbox editor", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        {
+          id: "active",
+          header: "Active",
+          editable: true,
+          editor: { type: "checkbox" },
+        },
+      ],
+      rows: [{ id: "1", active: true }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const checkbox = table.renderRoot.querySelector("rowan-checkbox");
+    expect(checkbox).to.exist;
+    expect(checkbox.checked).to.be.true;
+
+    document.body.removeChild(host);
+  });
+
+  it("supports custom editor", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        {
+          id: "custom",
+          header: "Custom",
+          editable: true,
+          editor: {
+            type: "custom",
+            render: (context) => {
+              const input = document.createElement("input");
+              input.value = context.value || "";
+              input.className = "custom-editor";
+              return input;
+            },
+          },
+        },
+      ],
+      rows: [{ id: "1", custom: "test" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const customInput = table.renderRoot.querySelector(".custom-editor");
+    expect(customInput).to.exist;
+    expect(customInput.value).to.equal("test");
+
+    document.body.removeChild(host);
+  });
+
+  it("supports row edit mode", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "age", header: "Age", type: "number", editable: true },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const inputs = table.renderRoot.querySelectorAll("input");
+    expect(inputs.length).to.equal(2);
+
+    document.body.removeChild(host);
+  });
+
+  it("commits row edit with rowan-row-edit-commit event", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "age", header: "Age", type: "number", editable: true },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let commitEvent = null;
+    table.addEventListener("rowan-row-edit-commit", (e) => {
+      commitEvent = e;
+    });
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const nameInput = table.renderRoot.querySelector('input[type="text"]');
+    nameInput.value = "Bob";
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(commitEvent).to.exist;
+    expect(commitEvent.detail.values.name).to.equal("Bob");
+    expect(commitEvent.detail.oldValues.name).to.equal("Alice");
+
+    document.body.removeChild(host);
+  });
+
+  it("cancels row edit with Escape", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "age", header: "Age", type: "number", editable: true },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let cancelEvent = null;
+    table.addEventListener("rowan-row-edit-cancel", (e) => {
+      cancelEvent = e;
+    });
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const nameInput = table.renderRoot.querySelector('input[type="text"]');
+    nameInput.value = "Bob";
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await nextMicrotask();
+
+    expect(cancelEvent).to.exist;
+    expect(table.renderRoot.querySelectorAll("input").length).to.equal(0);
+
+    document.body.removeChild(host);
+  });
+
+  it("supports Tab navigation in row edit mode", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "age", header: "Age", type: "number", editable: true },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const nameInput = table.renderRoot.querySelector('input[type="text"]');
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+    await nextMicrotask();
+
+    const ageInput = table.renderRoot.querySelector('input[type="number"]');
+    expect(document.activeElement).to.equal(ageInput);
+
+    document.body.removeChild(host);
+  });
 });

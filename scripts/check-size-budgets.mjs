@@ -41,8 +41,8 @@ const budgets = {
   "trend-chart": 20 * 1024,
   "bar-chart": 20 * 1024,
 
-  // Table (large, includes many features + column resizing/reordering + inline editing Phase 1)
-  table: 41 * 1024, // 41 KB (+3 KB for inline editing text/number only)
+  // Table (large, includes many features + column resizing/reordering + inline editing Phase 1 & 2)
+  table: 43 * 1024, // 43 KB (+5 KB for inline editing with row mode; select/date/checkbox lazy loaded)
 
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch

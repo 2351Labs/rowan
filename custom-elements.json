@@ -28391,6 +28391,15 @@
           },
           "tagName": "rowan-table",
           "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "value"
+        },
+        {
+          "kind": "variable",
+          "name": "column",
+          "default": "columns[i]"
         }
       ],
       "exports": [
