@@ -1,8 +1,6 @@
 # Storybook coverage
 
-Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, Actions & Feedback, and Files & Uploads are enforced by `scripts/check-story-coverage.mjs`.
-Other categories are report-only until their story PRs land.
-The check fails for every category only once each one is at 100%.
+Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attribute, enum value, slot, or event fails CI.
 
 ## Charts and data viz
 
@@ -59,13 +57,13 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | --- | ---: | ---: | --- |
 | `rowan-alert` | 100% | 100% | — |
 | `rowan-badge` | 100% | 100% | — |
-| `rowan-button` | 71% | 100% | — |
-| `rowan-chip` | 83% | 100% | — |
+| `rowan-button` | 100% | 100% | — |
+| `rowan-chip` | 100% | 100% | — |
 | `rowan-data-state` | 100% | 100% | — |
 | `rowan-empty-state` | 100% | 100% | — |
-| `rowan-icon-button` | 67% | 100% | — |
+| `rowan-icon-button` | 100% | 100% | — |
 | `rowan-link` | 100% | 100% | — |
-| `rowan-progress` | 80% | 100% | — |
+| `rowan-progress` | 100% | 100% | — |
 | `rowan-skeleton` | 100% | 100% | — |
 | `rowan-spinner` | 100% | 100% | — |
 | `rowan-status-indicator` | 100% | 100% | — |
@@ -145,6 +143,6 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-stepper` | 86% | 86% | event rowan-step-change |
+| `rowan-stepper` | 86% | 100% | — |
 
 Non-chart scores count public attributes, enum values, slots, and events from `custom-elements.json`. Before is `origin/main`. After is the story file on this branch.

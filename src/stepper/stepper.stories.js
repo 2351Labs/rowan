@@ -1,4 +1,5 @@
 import "./stepper.js";
+import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const meta = {
   title: "Workflows/Stepper",
@@ -23,6 +24,10 @@ const Template = ({ currentStep = 2, orientation = "horizontal", disabled = fals
 };
 
 export const Playground = {
+  parameters: createEventScriptParameters({
+    steps: ["Activate another step. rowan-step-change reports the selected step."],
+    events: ["rowan-step-change"],
+  }),
   render: Template,
   args: {
     currentStep: 2,
