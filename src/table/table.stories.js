@@ -993,3 +993,129 @@ export const PinnedColumns = {
     return table;
   },
 };
+
+export const ColumnResizing = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table
+          resizable-columns
+          density="md"
+        ></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", type: "text", width: "150px" },
+            { id: "role", header: "Role", type: "badge", minWidth: "100px" },
+            { id: "email", header: "Email", type: "text" },
+            { id: "joined", header: "Joined", type: "date" },
+          ],
+          rows: [
+            { id: "1", name: "Ada Lovelace", role: "Admin", email: "ada@example.com", joined: "2024-01-15" },
+            { id: "2", name: "Alan Turing", role: "Editor", email: "alan@example.com", joined: "2024-02-20" },
+            { id: "3", name: "Grace Hopper", role: "Viewer", email: "grace@example.com", joined: "2024-03-10" },
+          ],
+        };
+
+        table.addEventListener("rowan-column-resize", (event) => {
+          console.log("Column resized:", event.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Columns can be resized by dragging the resize handles on header edges. Double-click a handle to auto-fit. Use keyboard (Arrow keys) on focused handle to resize incrementally. Shift+Arrow for larger steps.",
+      },
+    },
+  },
+};
+
+export const ColumnReordering = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table
+          reorderable-columns
+          density="md"
+        ></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", type: "text" },
+            { id: "role", header: "Role", type: "badge" },
+            { id: "email", header: "Email", type: "text" },
+            { id: "joined", header: "Joined", type: "date" },
+          ],
+          rows: [
+            { id: "1", name: "Ada Lovelace", role: "Admin", email: "ada@example.com", joined: "2024-01-15" },
+            { id: "2", name: "Alan Turing", role: "Editor", email: "alan@example.com", joined: "2024-02-20" },
+            { id: "3", name: "Grace Hopper", role: "Viewer", email: "grace@example.com", joined: "2024-03-10" },
+          ],
+        };
+
+        table.addEventListener("rowan-column-reorder", (event) => {
+          console.log("Column reordered:", event.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Columns can be reordered by dragging headers. Keyboard users can use Alt+Arrow Left/Right to move columns. Frozen/pinned columns cannot be reordered.",
+      },
+    },
+  },
+};
+
+export const ResizableAndReorderable = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table
+          resizable-columns
+          reorderable-columns
+          density="md"
+        ></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", type: "text", width: "150px" },
+            { id: "role", header: "Role", type: "badge" },
+            { id: "email", header: "Email", type: "text" },
+            { id: "active", header: "Active", type: "switch", align: "center" },
+            { id: "quota", header: "Quota", type: "progress" },
+          ],
+          rows: [
+            { id: "1", name: "Ada", role: "Admin", email: "ada@example.com", active: true, quota: 85 },
+            { id: "2", name: "Alan", role: "Editor", email: "alan@example.com", active: false, quota: 45 },
+            { id: "3", name: "Grace", role: "Viewer", email: "grace@example.com", active: true, quota: 92 },
+          ],
+        };
+
+        table.addEventListener("rowan-column-resize", (event) => {
+          console.log("Column resized:", event.detail);
+        });
+
+        table.addEventListener("rowan-column-reorder", (event) => {
+          console.log("Column reordered:", event.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Both resizing and reordering can be enabled simultaneously. This provides maximum flexibility for users to customize their table view.",
+      },
+    },
+  },
+};

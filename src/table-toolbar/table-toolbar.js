@@ -190,7 +190,7 @@ export class RowanTableToolbar extends BaseElement {
   render() {
     if (!this.#toolbar) {
       this.renderRoot.innerHTML = `
-        <section class="toolbar" part="toolbar">
+        <section class="toolbar" part="toolbar" role="toolbar" aria-label="${this.label}">
           <div class="start" part="start"><slot name="start"></slot></div>
           <div class="selection" part="selection" aria-live="polite" hidden>
             <slot name="selection"></slot>
@@ -227,6 +227,7 @@ export class RowanTableToolbar extends BaseElement {
       "selectionStatus",
       { count, selectionLabel: this.selectionLabel },
     );
+    this.#toolbar.setAttribute("aria-label", this.label);
     this.#syncColumnPicker();
     this.#syncFilterBuilderSlot();
     this.#applyDefaultA11y();

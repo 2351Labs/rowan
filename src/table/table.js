@@ -63,6 +63,7 @@ const DEFAULT_MESSAGES = Object.freeze({
   paginationLabel: "Pagination",
   paginationStatus: "Showing {from}-{to} of {total}",
   previousPage: "Previous",
+  resizeColumn: "Resize column {header}",
   selectAllRows: "Select all rows",
   selectRow: "Select row {rowId}",
   subtotal: "Subtotal",
@@ -181,6 +182,7 @@ function nonNegativeInteger(value, fallback) {
  * @property {string} [paginationLabel]
  * @property {string | ((context: { from: number, to: number, total: number }) => string)} [paginationStatus]
  * @property {string} [previousPage]
+ * @property {string | ((context: { header: string }) => string)} [resizeColumn]
  * @property {string} [selectAllRows]
  * @property {string | ((context: { rowId: string }) => string)} [selectRow]
  * @property {string} [subtotal]
@@ -207,6 +209,8 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} virtualized
  * @attr {number} virtual-item-size
  * @attr {number} virtual-overscan
+ * @attr {boolean} resizable-columns
+ * @attr {boolean} reorderable-columns
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -239,6 +243,8 @@ function isDevelopmentEnvironment() {
  * @event rowan-page-change - Fired when pagination changes. `detail.index` is 0-based; `detail.page` is 1-based.
  * @event rowan-row-activate - Fired on row activation by keyboard or double click. Not fired from interactive cells, and not fired when `rowActivate` is `none`.
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
+ * @event rowan-column-resize - Fired when a column is resized. `detail` contains columnId, width, and columns array.
+ * @event rowan-column-reorder - Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -253,6 +259,8 @@ export class RowanTable extends BaseElement {
     "virtualized",
     "virtual-item-size",
     "virtual-overscan",
+    "resizable-columns",
+    "reorderable-columns",
     "locale",
   ];
   static upgradeProperties = [
@@ -271,6 +279,8 @@ export class RowanTable extends BaseElement {
     "virtualized",
     "virtualItemSize",
     "virtualOverscan",
+    "resizableColumns",
+    "reorderableColumns",
     "groupBy",
     "rowActivate",
     "locale",
@@ -286,8 +296,12 @@ export class RowanTable extends BaseElement {
     page: null,
     groupBy: null,
     rowActivate: "dblclick",
+    columnWidths: new Map(),
+    columnOrder: [],
   };
   #toggledGroups = new Map();
+  #resizing = null;
+  #reordering = null;
 
   #root = null;
   #tableViewport = null;
@@ -570,6 +584,22 @@ export class RowanTable extends BaseElement {
     this.reflectNumber("virtual-overscan", next === DEFAULT_VIRTUAL_OVERSCAN ? null : next);
   }
 
+  get resizableColumns() {
+    return this.readBoolean("resizable-columns");
+  }
+
+  set resizableColumns(value) {
+    this.reflectBoolean("resizable-columns", Boolean(value));
+  }
+
+  get reorderableColumns() {
+    return this.readBoolean("reorderable-columns");
+  }
+
+  set reorderableColumns(value) {
+    this.reflectBoolean("reorderable-columns", Boolean(value));
+  }
+
   get locale() {
     return resolveLocale(this, this.readString("locale", "").trim());
   }
@@ -712,8 +742,36 @@ export class RowanTable extends BaseElement {
         this.#handleHeaderClick(event);
       });
 
+      this.listen(this.#theadRow, "dblclick", (event) => {
+        this.#handleHeaderDoubleClick(event);
+      });
+
+      this.listen(this.#theadRow, "keydown", (event) => {
+        this.#handleHeaderKeyDown(event);
+      });
+
       this.listen(this.#theadRow, "rowan-change", (event) => {
         this.#handleHeaderSelectionChange(event);
+      });
+
+      this.listen(this.#theadRow, "mousedown", (event) => {
+        this.#handleResizeStart(event);
+      });
+
+      this.listen(this.#theadRow, "dragstart", (event) => {
+        this.#handleReorderStart(event);
+      });
+
+      this.listen(this.#theadRow, "dragover", (event) => {
+        this.#handleReorderOver(event);
+      });
+
+      this.listen(this.#theadRow, "drop", (event) => {
+        this.#handleReorderDrop(event);
+      });
+
+      this.listen(this.#theadRow, "dragend", (event) => {
+        this.#handleReorderEnd(event);
       });
 
       this.listen(this.#tbody, "click", (event) => {
@@ -829,18 +887,29 @@ export class RowanTable extends BaseElement {
       this.#theadRow.append(this.#createSelectionHeaderCell());
     }
 
-    for (const column of this.#renderableColumns()) {
+    const columns = this.#renderableColumns();
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
       const th = document.createElement("th");
       th.className = "th";
       th.part = "th";
       th.scope = "col";
       th.dataset.columnId = this.#normalizeText(column.id);
+      th.dataset.columnIndex = String(i);
+
+      if (this.reorderableColumns && !column.sticky) {
+        th.draggable = true;
+        th.tabIndex = 0;
+      }
 
       const tooltip = this.#normalizeText(column.headerCell?.tooltip);
       if (tooltip) {
         th.title = tooltip;
         th.setAttribute("aria-description", tooltip);
       }
+
+      const contentWrapper = document.createElement("div");
+      contentWrapper.className = "th-content";
 
       if (column.sortable) {
         const sortDir = this.#columnSortDirection(column);
@@ -864,12 +933,26 @@ export class RowanTable extends BaseElement {
         indicator.textContent = sortDir === "asc" ? "↑" : sortDir === "desc" ? "↓" : "↕";
 
         button.append(label, indicator);
-        th.append(button);
+        contentWrapper.append(button);
       } else {
-        th.textContent = column.header ?? "";
+        const label = document.createElement("span");
+        label.textContent = column.header ?? "";
+        contentWrapper.append(label);
       }
 
-      if (column.width) th.style.width = column.width;
+      th.append(contentWrapper);
+
+      if (this.resizableColumns && i < columns.length - 1 && !column.sticky) {
+        const handle = this.#createResizeHandle(column);
+        th.append(handle);
+      }
+
+      const storedWidth = this.#state.columnWidths.get(column.id);
+      if (storedWidth) {
+        th.style.width = storedWidth;
+      } else if (column.width) {
+        th.style.width = column.width;
+      }
       if (column.minWidth) th.style.minWidth = column.minWidth;
       this.#applyColumnAlign(th, column);
 
@@ -1505,6 +1588,259 @@ export class RowanTable extends BaseElement {
       const nextChecked = !this.#state.selected.includes(entry.rowId);
       this.#toggleRowSelection(entry, nextChecked, { shiftKey: event.shiftKey });
     }
+  }
+
+  #createResizeHandle(column) {
+    const handle = document.createElement("div");
+    handle.className = "resize-handle";
+    handle.part = "resize-handle";
+    handle.dataset.resizeColumn = this.#normalizeText(column.id);
+    handle.setAttribute("role", "separator");
+    handle.setAttribute("aria-orientation", "vertical");
+    handle.setAttribute(
+      "aria-label",
+      resolveMessage(this.#messages, DEFAULT_MESSAGES, "resizeColumn", {
+        header: column.header || column.id,
+      }),
+    );
+    handle.tabIndex = 0;
+    return handle;
+  }
+
+  #handleResizeStart(event) {
+    if (!this.resizableColumns) return;
+    const handle = event.target.closest(".resize-handle");
+    if (!handle) return;
+
+    event.preventDefault();
+    const columnId = handle.dataset.resizeColumn;
+    const th = handle.closest("th");
+    if (!th) return;
+
+    const startX = event.clientX;
+    const startWidth = th.getBoundingClientRect().width;
+    const column = this.#findColumn(columnId);
+    const minWidth = column?.minWidth ? this.#parsePixels(column.minWidth) : 40;
+
+    this.#resizing = {
+      columnId,
+      th,
+      startX,
+      startWidth,
+      minWidth,
+    };
+
+    const handleMove = (e) => {
+      if (!this.#resizing) return;
+      const deltaX = e.clientX - this.#resizing.startX;
+      const isRTL = getComputedStyle(this).direction === "rtl";
+      const newWidth = Math.max(
+        this.#resizing.minWidth,
+        this.#resizing.startWidth + (isRTL ? -deltaX : deltaX),
+      );
+      this.#resizing.th.style.width = `${newWidth}px`;
+    };
+
+    const handleEnd = () => {
+      if (!this.#resizing) return;
+      const finalWidth = this.#resizing.th.style.width;
+      this.#state.columnWidths.set(this.#resizing.columnId, finalWidth);
+
+      emit(this, "rowan-column-resize", {
+        columnId: this.#resizing.columnId,
+        width: finalWidth,
+        columns: this.columns,
+      });
+
+      this.#resizing = null;
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleEnd);
+    };
+
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleEnd);
+  }
+
+  #handleHeaderDoubleClick(event) {
+    if (!this.resizableColumns) return;
+    const handle = event.target.closest(".resize-handle");
+    if (!handle) return;
+
+    event.preventDefault();
+    const columnId = handle.dataset.resizeColumn;
+    const th = handle.closest("th");
+    if (!th) return;
+
+    const contentWidth = this.#measureColumnContent(columnId);
+    th.style.width = `${contentWidth}px`;
+    this.#state.columnWidths.set(columnId, `${contentWidth}px`);
+
+    emit(this, "rowan-column-resize", {
+      columnId,
+      width: `${contentWidth}px`,
+      columns: this.columns,
+    });
+  }
+
+  #handleHeaderKeyDown(event) {
+    const th = event.target.closest("th");
+    if (!th || th.classList.contains("select-column")) return;
+
+    const columnId = th.dataset.columnId;
+    const column = this.#findColumn(columnId);
+    if (!column) return;
+
+    if (this.resizableColumns && event.target.classList.contains("resize-handle")) {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        const isRTL = getComputedStyle(this).direction === "rtl";
+        const delta = event.shiftKey ? 10 : 1;
+        const currentWidth = th.getBoundingClientRect().width;
+        const minWidth = column.minWidth ? this.#parsePixels(column.minWidth) : 40;
+
+        let newWidth;
+        if (
+          (event.key === "ArrowRight" && !isRTL) ||
+          (event.key === "ArrowLeft" && isRTL)
+        ) {
+          newWidth = currentWidth + delta;
+        } else {
+          newWidth = Math.max(minWidth, currentWidth - delta);
+        }
+
+        th.style.width = `${newWidth}px`;
+        this.#state.columnWidths.set(columnId, `${newWidth}px`);
+
+        emit(this, "rowan-column-resize", {
+          columnId,
+          width: `${newWidth}px`,
+          columns: this.columns,
+        });
+      }
+      return;
+    }
+
+    if (this.reorderableColumns && !column.sticky) {
+      if (event.key === "ArrowLeft" && event.altKey) {
+        event.preventDefault();
+        this.#moveColumn(columnId, -1);
+      } else if (event.key === "ArrowRight" && event.altKey) {
+        event.preventDefault();
+        this.#moveColumn(columnId, 1);
+      }
+    }
+  }
+
+  #handleReorderStart(event) {
+    if (!this.reorderableColumns) return;
+    const th = event.target.closest("th");
+    if (!th || th.classList.contains("select-column")) return;
+
+    const columnId = th.dataset.columnId;
+    const column = this.#findColumn(columnId);
+    if (column?.sticky) {
+      event.preventDefault();
+      return;
+    }
+
+    this.#reordering = {
+      columnId,
+      fromIndex: parseInt(th.dataset.columnIndex, 10),
+    };
+
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", columnId);
+    th.classList.add("dragging");
+  }
+
+  #handleReorderOver(event) {
+    if (!this.reorderableColumns || !this.#reordering) return;
+    const th = event.target.closest("th");
+    if (!th || th.classList.contains("select-column")) return;
+
+    const column = this.#findColumn(th.dataset.columnId);
+    if (column?.sticky) return;
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    th.classList.add("drop-target");
+  }
+
+  #handleReorderDrop(event) {
+    if (!this.reorderableColumns || !this.#reordering) return;
+    event.preventDefault();
+
+    const th = event.target.closest("th");
+    if (!th || th.classList.contains("select-column")) return;
+
+    const toIndex = parseInt(th.dataset.columnIndex, 10);
+    const fromIndex = this.#reordering.fromIndex;
+
+    if (!isNaN(toIndex) && !isNaN(fromIndex) && toIndex !== fromIndex) {
+      this.#reorderColumns(fromIndex, toIndex);
+    }
+  }
+
+  #handleReorderEnd(event) {
+    if (!this.#reordering) return;
+    this.renderRoot.querySelectorAll(".dragging, .drop-target").forEach((el) => {
+      el.classList.remove("dragging", "drop-target");
+    });
+    this.#reordering = null;
+  }
+
+  #moveColumn(columnId, direction) {
+    const columns = this.#renderableColumns();
+    const index = columns.findIndex((col) => col.id === columnId);
+    if (index === -1) return;
+
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= columns.length) return;
+
+    this.#reorderColumns(index, newIndex);
+  }
+
+  #reorderColumns(fromIndex, toIndex) {
+    const columns = [...this.columns];
+    const renderableColumns = this.#renderableColumns();
+    
+    const fromColumn = renderableColumns[fromIndex];
+    const toColumn = renderableColumns[toIndex];
+    
+    if (!fromColumn || !toColumn) return;
+
+    const fromActualIndex = columns.indexOf(fromColumn);
+    const toActualIndex = columns.indexOf(toColumn);
+
+    const [moved] = columns.splice(fromActualIndex, 1);
+    columns.splice(toActualIndex, 0, moved);
+
+    this.columns = columns;
+
+    emit(this, "rowan-column-reorder", {
+      fromIndex,
+      toIndex,
+      columns: this.columns,
+    });
+  }
+
+  #measureColumnContent(columnId) {
+    const cells = this.#cellsForColumn(columnId);
+    let maxWidth = 100;
+
+    cells.forEach((cell) => {
+      const content = cell.querySelector(".th-content") || cell;
+      const width = content.scrollWidth + 32;
+      maxWidth = Math.max(maxWidth, width);
+    });
+
+    return maxWidth;
+  }
+
+  #parsePixels(value) {
+    if (typeof value === "number") return value;
+    const match = String(value).match(/^(\d+(?:\.\d+)?)px$/);
+    return match ? parseFloat(match[1]) : 0;
   }
 
   #handleBodyControlChange(event) {

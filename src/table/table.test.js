@@ -2287,3 +2287,261 @@ describe("rowan-table", () => {
     ).to.equal("Pin this row");
   });
 });
+
+describe("rowan-table column resizing", () => {
+  it("adds resize handles when resizable-columns is enabled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table resizable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const resizeHandles = table.shadowRoot.querySelectorAll(".resize-handle");
+    expect(resizeHandles.length).to.be.greaterThan(0);
+
+    document.body.removeChild(host);
+  });
+
+  it("does not add resize handles when resizable-columns is disabled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const resizeHandles = table.shadowRoot.querySelectorAll(".resize-handle");
+    expect(resizeHandles.length).to.equal(0);
+
+    document.body.removeChild(host);
+  });
+
+  it("emits rowan-column-resize event when column width changes", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table resizable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let resizeEvent = null;
+    table.addEventListener("rowan-column-resize", (e) => {
+      resizeEvent = e;
+    });
+
+    const resizeHandle = table.shadowRoot.querySelector(".resize-handle");
+    expect(resizeHandle).to.exist;
+
+    const th = resizeHandle.closest("th");
+    const startWidth = th.getBoundingClientRect().width;
+
+    const mouseDown = new MouseEvent("mousedown", {
+      clientX: 100,
+      bubbles: true,
+    });
+    resizeHandle.dispatchEvent(mouseDown);
+
+    const mouseMove = new MouseEvent("mousemove", {
+      clientX: 150,
+      bubbles: true,
+    });
+    document.dispatchEvent(mouseMove);
+
+    const mouseUp = new MouseEvent("mouseup", {
+      bubbles: true,
+    });
+    document.dispatchEvent(mouseUp);
+
+    await nextMicrotask();
+
+    expect(resizeEvent).to.exist;
+    expect(resizeEvent.detail.columnId).to.exist;
+    expect(resizeEvent.detail.width).to.exist;
+
+    document.body.removeChild(host);
+  });
+
+  it("supports keyboard resizing with arrow keys", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table resizable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let resizeEvent = null;
+    table.addEventListener("rowan-column-resize", (e) => {
+      resizeEvent = e;
+    });
+
+    const resizeHandle = table.shadowRoot.querySelector(".resize-handle");
+    expect(resizeHandle).to.exist;
+
+    const th = resizeHandle.closest("th");
+    const startWidth = th.getBoundingClientRect().width;
+
+    const keyEvent = new KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+    });
+    resizeHandle.dispatchEvent(keyEvent);
+
+    await nextMicrotask();
+
+    const newWidth = th.getBoundingClientRect().width;
+    expect(newWidth).to.be.greaterThan(startWidth);
+    expect(resizeEvent).to.exist;
+
+    document.body.removeChild(host);
+  });
+});
+
+describe("rowan-table column reordering", () => {
+  it("makes columns draggable when reorderable-columns is enabled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table reorderable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const headers = table.shadowRoot.querySelectorAll("th:not(.select-column)");
+    expect(headers.length).to.be.greaterThan(0);
+    expect(headers[0].draggable).to.be.true;
+
+    document.body.removeChild(host);
+  });
+
+  it("does not make columns draggable when reorderable-columns is disabled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const headers = table.shadowRoot.querySelectorAll("th:not(.select-column)");
+    expect(headers.length).to.be.greaterThan(0);
+    expect(headers[0].draggable).to.be.false;
+
+    document.body.removeChild(host);
+  });
+
+  it("emits rowan-column-reorder event when columns are reordered", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table reorderable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let reorderEvent = null;
+    table.addEventListener("rowan-column-reorder", (e) => {
+      reorderEvent = e;
+    });
+
+    const headers = table.shadowRoot.querySelectorAll("th:not(.select-column)");
+    expect(headers.length).to.be.greaterThan(1);
+
+    const dragStart = new DragEvent("dragstart", {
+      dataTransfer: new DataTransfer(),
+      bubbles: true,
+    });
+    headers[0].dispatchEvent(dragStart);
+
+    const dragOver = new DragEvent("dragover", {
+      dataTransfer: new DataTransfer(),
+      bubbles: true,
+    });
+    headers[1].dispatchEvent(dragOver);
+
+    const drop = new DragEvent("drop", {
+      dataTransfer: new DataTransfer(),
+      bubbles: true,
+    });
+    headers[1].dispatchEvent(drop);
+
+    await nextMicrotask();
+
+    expect(reorderEvent).to.exist;
+    expect(reorderEvent.detail.fromIndex).to.exist;
+    expect(reorderEvent.detail.toIndex).to.exist;
+
+    document.body.removeChild(host);
+  });
+
+  it("supports keyboard reordering with Alt+Arrow keys", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table reorderable-columns></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = createConfig();
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let reorderEvent = null;
+    table.addEventListener("rowan-column-reorder", (e) => {
+      reorderEvent = e;
+    });
+
+    const headers = table.shadowRoot.querySelectorAll("th:not(.select-column)");
+    const firstColumnId = headers[0].dataset.columnId;
+
+    const keyEvent = new KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      altKey: true,
+      bubbles: true,
+    });
+    headers[0].dispatchEvent(keyEvent);
+
+    await nextMicrotask();
+
+    expect(reorderEvent).to.exist;
+    expect(reorderEvent.detail.columns).to.exist;
+
+    document.body.removeChild(host);
+  });
+});
+
+describe("rowan-table-toolbar ARIA", () => {
+  it("has role='toolbar' with aria-label", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table-toolbar label="Table controls"></rowan-table-toolbar>`;
+    const toolbar = host.querySelector("rowan-table-toolbar");
+
+    await nextMicrotask();
+    await waitForStyles(toolbar);
+
+    const toolbarEl = toolbar.shadowRoot.querySelector(".toolbar");
+    expect(toolbarEl.getAttribute("role")).to.equal("toolbar");
+    expect(toolbarEl.getAttribute("aria-label")).to.equal("Table controls");
+
+    document.body.removeChild(host);
+  });
+});

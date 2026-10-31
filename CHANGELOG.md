@@ -6,9 +6,16 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- `rowan-table` column resizing: opt-in `resizable-columns` attribute enables drag handles on header edges with mouse/touch interaction, keyboard resizing via Arrow keys (with Shift for larger increments), double-click to auto-fit column width, and min/max width constraints. Emits `rowan-column-resize` event. Integrated with `table-view-state` for persistence.
+- `rowan-table` column reordering: opt-in `reorderable-columns` attribute enables drag-and-drop of headers and keyboard reordering via Alt+Arrow Left/Right. Respects frozen/pinned columns. Emits `rowan-column-reorder` event. Integrated with `table-view-state` for persistence.
+- `table-view-state` now includes `columnWidths` (map of column ID to width string) and `columnOrder` (array of column IDs) for restoring user-customized table layouts.
+
 ### Fixed
 
 - `rowan-context-menu` re-clamps the panel when the stylesheet loads or the panel size changes while open. No placement attribute.
+- `rowan-table-toolbar` now has `role="toolbar"` with `aria-label` for proper screen reader navigation.
 
 ## 0.22.0 - 2026-10-20
 
