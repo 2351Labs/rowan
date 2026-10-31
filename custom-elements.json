@@ -27915,6 +27915,274 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table/table-export.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "guardFormula",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "enabled",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "description": "Prefix spreadsheet formulas so a text export cannot run as a formula.\nFinite numbers, including negatives, are left alone."
+        },
+        {
+          "kind": "function",
+          "name": "buildCsv",
+          "parameters": [
+            {
+              "name": "header",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "rows",
+              "type": {
+                "text": "string[][]"
+              }
+            },
+            {
+              "name": "includeHeaders",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "buildTsv",
+          "parameters": [
+            {
+              "name": "header",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "rows",
+              "type": {
+                "text": "string[][]"
+              }
+            },
+            {
+              "name": "includeHeaders",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "buildHtml",
+          "parameters": [
+            {
+              "name": "header",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "rows",
+              "type": {
+                "text": "string[][]"
+              }
+            },
+            {
+              "name": "includeHeaders",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "buildXlsx",
+          "parameters": [
+            {
+              "name": "header",
+              "type": {
+                "text": "string[]"
+              }
+            },
+            {
+              "name": "rows",
+              "type": {
+                "text": "object[][]"
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "{ includeHeaders: boolean, formatValues: boolean }"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "readStoredZip",
+          "parameters": [
+            {
+              "name": "bytes",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Read stored (uncompressed) ZIP members. Used by tests and by callers that want the worksheet XML."
+        },
+        {
+          "kind": "function",
+          "name": "copyTable",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "{ grid: Function, emit: Function, announce: Function, message: Function }"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "object"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "exportCsv",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "{ grid: Function, emit: Function, announce: Function, message: Function }"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "object"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "exportExcel",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "{ grid: Function, emit: Function, announce: Function, message: Function }"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "object"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "guardFormula",
+          "declaration": {
+            "name": "guardFormula",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildCsv",
+          "declaration": {
+            "name": "buildCsv",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildTsv",
+          "declaration": {
+            "name": "buildTsv",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildHtml",
+          "declaration": {
+            "name": "buildHtml",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildXlsx",
+          "declaration": {
+            "name": "buildXlsx",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "readStoredZip",
+          "declaration": {
+            "name": "readStoredZip",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "copyTable",
+          "declaration": {
+            "name": "copyTable",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "exportCsv",
+          "declaration": {
+            "name": "exportCsv",
+            "module": "src/table/table-export.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "exportExcel",
+          "declaration": {
+            "name": "exportExcel",
+            "module": "src/table/table-export.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table/table.js",
       "declarations": [
         {
@@ -28341,6 +28609,51 @@
               ]
             },
             {
+              "kind": "method",
+              "name": "copyToClipboard",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "{ includeHeaders?: boolean, columns?: string[], scope?: \"selected\" | \"page\" | \"all\" | \"cell\", formatValues?: boolean, guardFormulas?: boolean }"
+                  }
+                }
+              ],
+              "description": "Copy selected rows, or the focused cell when nothing is selected, as TSV and an HTML table."
+            },
+            {
+              "kind": "method",
+              "name": "exportCsv",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "{ filename?: string, columns?: string[], scope?: \"all\" | \"selected\" | \"page\", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }"
+                  }
+                }
+              ],
+              "description": "Download a CSV file. In server mode the loaded page is exported unless `getRows` supplies the full set."
+            },
+            {
+              "kind": "method",
+              "name": "exportExcel",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "{ filename?: string, columns?: string[], scope?: \"all\" | \"selected\" | \"page\", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }"
+                  }
+                }
+              ],
+              "description": "Download a real .xlsx workbook. Options match `exportCsv`."
+            },
+            {
               "kind": "field",
               "name": "itemKey",
               "type": {
@@ -28502,6 +28815,14 @@
             {
               "description": "Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.",
               "name": "rowan-data-error"
+            },
+            {
+              "description": "Fired before a clipboard write. Cancelable. `detail.text` is TSV and `detail.html` is an HTML table. Listeners may replace either, or `detail.rows`.",
+              "name": "rowan-copy"
+            },
+            {
+              "description": "Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.",
+              "name": "rowan-export"
             }
           ],
           "attributes": [

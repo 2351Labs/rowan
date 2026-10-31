@@ -42,8 +42,11 @@ const budgets = {
   "bar-chart": 20 * 1024,
 
   // Table initial load: entry plus statically imported chunks.
-  // Server-mode rendering loads with table-data-source.js and is not counted here.
+  // Clipboard and workbook export load with table-export.js and are not counted here.
   table: 41 * 1024,
+
+  // Lazy workbook/clipboard module, measured on its own (about 4.2 KB). 6 KB leaves headroom.
+  "table-export": 6 * 1024,
 
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch
@@ -162,6 +165,11 @@ async function main() {
         import "@rowan-ui/core/checkbox";
         import "@rowan-ui/core/select";
         import "@rowan-ui/core/textarea";
+      `;
+    } else if (name === "table-export") {
+      code = `
+        import * as tableExport from "../src/table/table-export.js";
+        globalThis.__tableExport = tableExport;
       `;
     } else {
       code = `import "@rowan-ui/core/${name}";`;

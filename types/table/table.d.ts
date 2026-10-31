@@ -59,6 +59,8 @@
  * @event rowan-data-request - Fired before a server read. Cancelable. `detail` is `{ page, pageSize, sort, filters }`. `preventDefault()` skips the request.
  * @event rowan-data-load - Fired after `getRows` resolves. `detail` includes `rows`, `total`, and the query.
  * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
+ * @event rowan-copy - Fired before a clipboard write. Cancelable. `detail.text` is TSV and `detail.html` is an HTML table. Listeners may replace either, or `detail.rows`.
+ * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
  */
 export class RowanTable extends BaseElement {
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -158,6 +160,212 @@ export class RowanTable extends BaseElement {
         }
       | undefined,
   ): void;
+  /**
+   * Copy selected rows, or the focused cell when nothing is selected, as TSV and an HTML table.
+   * @param {{ includeHeaders?: boolean, columns?: string[], scope?: "selected" | "page" | "all" | "cell", formatValues?: boolean, guardFormulas?: boolean }} [options]
+   */
+  copyToClipboard(
+    options?:
+      | {
+          includeHeaders?: boolean | undefined;
+          columns?: string[] | undefined;
+          scope?: "selected" | "cell" | "page" | "all" | undefined;
+          formatValues?: boolean | undefined;
+          guardFormulas?: boolean | undefined;
+        }
+      | undefined,
+  ): Promise<
+    | {
+        copied: boolean;
+        prevented: boolean;
+        text: string;
+        html: string;
+        header: any;
+        rows: any;
+        columns: any;
+        includeHeaders: any;
+        scope: any;
+      }
+    | {
+        copied: boolean;
+        text: string;
+        html: string;
+        header: any;
+        rows: any;
+        columns: any;
+        includeHeaders: any;
+        scope: any;
+      }
+    | {
+        copied: boolean;
+        error: any;
+        text: string;
+        html: string;
+        header: any;
+        rows: any;
+        columns: any;
+        includeHeaders: any;
+        scope: any;
+      }
+  >;
+  /**
+   * Download a CSV file. In server mode the loaded page is exported unless `getRows` supplies the full set.
+   * @param {{ filename?: string, columns?: string[], scope?: "all" | "selected" | "page", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }} [options]
+   */
+  exportCsv(
+    options?:
+      | {
+          filename?: string | undefined;
+          columns?: string[] | undefined;
+          scope?: "selected" | "page" | "all" | undefined;
+          includeHeaders?: boolean | undefined;
+          formatValues?: boolean | undefined;
+          guardFormulas?: boolean | undefined;
+          getRows?:
+            | (() => Promise<
+                | RowanTableRow[]
+                | {
+                    rows: RowanTableRow[];
+                  }
+              >)
+            | undefined;
+        }
+      | undefined,
+  ): Promise<
+    | {
+        exported: boolean;
+        format: "csv" | "xlsx";
+        error?: undefined;
+      }
+    | {
+        exported: boolean;
+        prevented: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        csv: string;
+        blob: Blob;
+        exported: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        bytes: Uint8Array;
+        blob: Blob;
+        exported: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        exported: boolean;
+        format: "csv" | "xlsx";
+        error: any;
+      }
+  >;
+  /**
+   * Download a real .xlsx workbook. Options match `exportCsv`.
+   * @param {{ filename?: string, columns?: string[], scope?: "all" | "selected" | "page", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }} [options]
+   */
+  exportExcel(
+    options?:
+      | {
+          filename?: string | undefined;
+          columns?: string[] | undefined;
+          scope?: "selected" | "page" | "all" | undefined;
+          includeHeaders?: boolean | undefined;
+          formatValues?: boolean | undefined;
+          guardFormulas?: boolean | undefined;
+          getRows?:
+            | (() => Promise<
+                | RowanTableRow[]
+                | {
+                    rows: RowanTableRow[];
+                  }
+              >)
+            | undefined;
+        }
+      | undefined,
+  ): Promise<
+    | {
+        exported: boolean;
+        format: "csv" | "xlsx";
+        error?: undefined;
+      }
+    | {
+        exported: boolean;
+        prevented: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        csv: string;
+        blob: Blob;
+        exported: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        bytes: Uint8Array;
+        blob: Blob;
+        exported: boolean;
+        format: "csv" | "xlsx";
+        filename: any;
+        scope: any;
+        includeHeaders: any;
+        columns: any;
+        header: any;
+        rows: any;
+        cells: any;
+        truncated: any;
+        error?: undefined;
+      }
+    | {
+        exported: boolean;
+        format: "csv" | "xlsx";
+        error: any;
+      }
+  >;
   #private;
 }
 export type RowanTableCellType =
@@ -317,5 +525,11 @@ export type RowanTableMessages = {
   retry?: string | undefined;
   rowsLoaded?: string | ((context: { count: number }) => string) | undefined;
   rowsFailed?: string | undefined;
+  copiedRows?: string | ((context: { count: number }) => string) | undefined;
+  copiedCell?: string | undefined;
+  nothingToCopy?: string | undefined;
+  copyFailed?: string | undefined;
+  exportedFile?: string | ((context: { filename: string }) => string) | undefined;
+  exportFailed?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";
