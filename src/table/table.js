@@ -289,7 +289,7 @@ function isDevelopmentEnvironment() {
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
  * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<{ id: string, value: string }>} filters - Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -3013,19 +3013,17 @@ export class RowanTable extends BaseElement {
   }
 
   #normalizeFilters(value) {
-    if (!value) return [];
-    if (Array.isArray(value)) {
-      return value
-        .filter((item) => item && item.id)
-        .map((item) => ({ id: String(item.id), value: String(item.value ?? "") }));
-    }
-    if (typeof value === "object") {
-      return Object.entries(value).map(([id, itemValue]) => ({
-        id: String(id),
-        value: String(itemValue ?? ""),
-      }));
-    }
-    return [];
+    const list = Array.isArray(value)
+      ? value
+      : value && typeof value === "object"
+        ? Object.entries(value).map(([id, itemValue]) => ({ id, value: itemValue }))
+        : [];
+    return list.flatMap((item) => {
+      if (!item) return [];
+      if (item.field || item.join || item.filters) return [item];
+      if (!item.id) return [];
+      return [{ id: String(item.id), value: String(item.value ?? "") }];
+    });
   }
 
   #buildView() {

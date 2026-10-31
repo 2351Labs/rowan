@@ -1,7 +1,8 @@
+import { applyFilters } from "@rowan-ui/core/filter-builder";
+
 import { createModel } from "./fixtures.js";
 
 const LATENCY_MS = 320;
-const FILTER_SEPARATOR = "\u001f";
 
 export function createStore() {
   const model = createModel();
@@ -43,43 +44,20 @@ function compare(left, right) {
   return String(left).localeCompare(String(right), "en", { numeric: true, sensitivity: "base" });
 }
 
-function matchOperator(cell, operator, value, numeric) {
-  const text = cell == null ? "" : String(cell);
-  const needle = String(value ?? "").trim();
-  const lower = text.toLowerCase();
-  const query = needle.toLowerCase();
-
-  if (operator === "is-empty") return text.trim() === "";
-  if (operator === "is-not-empty") return text.trim() !== "";
-  if (!needle) return true;
-  if (operator === "contains") return lower.includes(query);
-  if (operator === "starts-with") return lower.startsWith(query);
-  if (operator === "ends-with") return lower.endsWith(query);
-
-  if (numeric || operator.includes("greater") || operator.includes("less")) {
-    const left = Number(cell);
-    const right = Number(needle);
-    if (!Number.isFinite(left) || !Number.isFinite(right)) return false;
-    if (operator === "equals") return left === right;
-    if (operator === "not-equals") return left !== right;
-    if (operator === "greater-than") return left > right;
-    if (operator === "greater-than-or-equal") return left >= right;
-    if (operator === "less-than") return left < right;
-    if (operator === "less-than-or-equal") return left <= right;
-  }
-
-  if (operator === "equals") return lower === query;
-  if (operator === "not-equals") return lower !== query;
-  if (operator === "greater-than") return text > needle;
-  if (operator === "greater-than-or-equal") return text >= needle;
-  if (operator === "less-than") return text < needle;
-  if (operator === "less-than-or-equal") return text <= needle;
-  return lower.includes(query);
+function isTreeNode(filter) {
+  return Boolean(filter && (filter.field || filter.join || Array.isArray(filter.filters)));
 }
 
 export function applyRowFilters(rows, filters, { searchKeys }) {
-  return rows.filter((row) =>
-    filters.every((filter) => {
+  const quick = [];
+  const tree = [];
+  for (const filter of filters || []) {
+    if (isTreeNode(filter)) tree.push(filter);
+    else quick.push(filter);
+  }
+
+  const searched = rows.filter((row) =>
+    quick.every((filter) => {
       const raw = String(filter?.value ?? "");
       if (filter?.id === "q") {
         const needle = raw.trim().toLowerCase();
@@ -90,19 +68,12 @@ export function applyRowFilters(rows, filters, { searchKeys }) {
             .includes(needle),
         );
       }
-
-      if (!raw.includes(FILTER_SEPARATOR)) {
-        if (!raw || raw === "all") return true;
-        return String(row[filter.id] ?? "") === raw;
-      }
-
-      const splitAt = raw.indexOf(FILTER_SEPARATOR);
-      const operator = raw.slice(0, splitAt);
-      const value = raw.slice(splitAt + FILTER_SEPARATOR.length);
-      const numeric = typeof row[filter.id] === "number";
-      return matchOperator(row[filter.id], operator, value, numeric);
+      if (!raw || raw === "all") return true;
+      return String(row[filter.id] ?? "") === raw;
     }),
   );
+
+  return tree.length > 0 ? applyFilters(searched, tree) : searched;
 }
 
 export async function queryCollection(rows, request, { searchKeys, fail = false } = {}) {
@@ -223,5 +194,3 @@ export function refreshCustomerStats(store, customerId) {
 export function holdCount(store) {
   return store.orders.filter((order) => order.status === "hold").length;
 }
-
-export { FILTER_SEPARATOR };

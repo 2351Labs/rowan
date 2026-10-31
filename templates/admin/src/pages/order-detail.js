@@ -131,7 +131,6 @@ export function renderOrderDetail(outlet, ctx) {
   const shipSummary = h("rowan-validation-summary", {
     "for-form": "shipping-form",
     heading: "Check the shipping address",
-    hidden: true,
   });
   const recipient = textControl("ship-recipient", "recipient", order.shipping.recipient, {
     required: true,
@@ -205,7 +204,6 @@ export function renderOrderDetail(outlet, ctx) {
   const noteSummary = h("rowan-validation-summary", {
     "for-form": "note-form",
     heading: "The note needs a message",
-    hidden: true,
   });
   const noteBody = h("rowan-textarea", {
     id: "note-body",

@@ -29,7 +29,6 @@ export function renderOrders(outlet, ctx) {
   const summary = h("rowan-validation-summary", {
     "for-form": "new-order",
     heading: "Check the new order",
-    hidden: true,
   });
   const customer = h("rowan-select", {
     id: "new-order-customer",

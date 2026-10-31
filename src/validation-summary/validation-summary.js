@@ -80,6 +80,7 @@ function queryLabelForElement(element) {
  * @attr {string} heading
  * @attr {string} for-form
  * @attr {boolean} disabled
+ * @attr {boolean} show-empty - Show the empty message when there are no errors. Default is hidden.
  * @property {RowanValidationSummaryMessages} messages - Property-only built-in message overrides.
  * @slot heading
  * @slot empty
@@ -94,8 +95,8 @@ function queryLabelForElement(element) {
 export class RowanValidationSummary extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./validation-summary.css", import.meta.url).href;
-  static observedAttributes = ["heading", "for-form", "disabled"];
-  static upgradeProperties = ["heading", "forForm", "errors", "disabled", "messages"];
+  static observedAttributes = ["heading", "for-form", "disabled", "show-empty"];
+  static upgradeProperties = ["heading", "forForm", "errors", "disabled", "showEmpty", "messages"];
 
   #errors = [];
   #errorSources = [];
@@ -134,6 +135,14 @@ export class RowanValidationSummary extends BaseElement {
 
   set disabled(value) {
     this.reflectBoolean("disabled", Boolean(value));
+  }
+
+  get showEmpty() {
+    return this.readBoolean("show-empty");
+  }
+
+  set showEmpty(value) {
+    this.reflectBoolean("show-empty", Boolean(value));
   }
 
   /** @returns {RowanValidationSummaryMessages} */
@@ -200,7 +209,7 @@ export class RowanValidationSummary extends BaseElement {
             <slot name="heading"></slot>
             <span data-part="heading-text"></span>
           </div>
-          <ul class="list" part="list"></ul>
+          <ul class="list" part="list" aria-live="polite"></ul>
           <div class="empty" data-part="empty" part="empty">
             <slot name="empty"><span data-part="empty-text"></span></slot>
           </div>
@@ -269,8 +278,13 @@ export class RowanValidationSummary extends BaseElement {
     });
 
     this.#list.append(fragment);
-    this.#list.hidden = errors.length === 0;
-    this.#empty.hidden = errors.length > 0;
+    const hasErrors = errors.length > 0;
+    const showEmpty = this.showEmpty;
+    this.#root.hidden = !hasErrors && !showEmpty;
+    this.#list.hidden = !hasErrors;
+    this.#empty.hidden = hasErrors || !showEmpty;
+    this.#list.setAttribute("aria-live", hasErrors ? "polite" : "off");
+    this.#empty.setAttribute("aria-live", showEmpty && !hasErrors ? "polite" : "off");
 
     this.#applyDefaultA11y();
   }
@@ -324,8 +338,9 @@ export class RowanValidationSummary extends BaseElement {
   #applyDefaultA11y() {
     if (!this.internals) return;
 
+    const blank = this.#errors.length === 0 && !this.showEmpty;
     if (!this.hasAttribute("role") && "role" in this.internals) {
-      this.internals.role = "region";
+      this.internals.role = blank ? "presentation" : "region";
     }
 
     if (!this.hasAttribute("aria-label") && "ariaLabel" in this.internals) {

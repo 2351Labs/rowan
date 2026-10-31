@@ -308,4 +308,28 @@ describe("rowan-maplibre-map", () => {
     await settle();
     expect(status.textContent).to.include("location list and table remain available");
   });
+
+  it("injects maplibre-gl.css into the shadow root unless no-provider-styles is set", async () => {
+    const MapElement = customElements.get("rowan-maplibre-map");
+    const previous = MapElement.styleHref;
+    MapElement.styleHref = "data:text/css,";
+
+    const map = await renderMap();
+    const link = map.shadowRoot.querySelector("link[data-maplibre-styles]");
+    expect(link?.getAttribute("href")).to.equal("data:text/css,");
+
+    const optedOut = document.createElement("rowan-maplibre-map");
+    optedOut.noProviderStyles = true;
+    document.body.append(optedOut);
+    await settle();
+    expect(optedOut.shadowRoot.querySelector("link[data-maplibre-styles]")).to.equal(null);
+
+    MapElement.styleHref = "";
+    const automatic = await renderMap();
+    const automaticHref =
+      automatic.shadowRoot.querySelector("link[data-maplibre-styles]")?.getAttribute("href") ?? "";
+    expect(automaticHref).to.include("maplibre-gl.css");
+
+    MapElement.styleHref = previous;
+  });
 });

@@ -44,24 +44,15 @@ function clearDecorations(form) {
  * Native `invalid` does not bubble; the listener uses capture and does not
  * call `checkValidity` again, which would re-enter the event.
  */
-function showSummary(summary, errors) {
-  if (!summary) return;
-  summary.hidden = errors.length === 0;
-}
-
 export function bindForm(form, { summary, validate, onValid } = {}) {
   let batch = [];
   let scheduled = false;
-  if (summary) summary.hidden = true;
 
   const submitter = form.querySelector('rowan-button[type="submit"]');
   submitter?.addEventListener("rowan-click", () => {
     batch = [];
     clearDecorations(form);
-    if (summary) {
-      summary.errors = [];
-      summary.hidden = true;
-    }
+    if (summary) summary.errors = [];
   });
 
   form.addEventListener(
@@ -84,7 +75,6 @@ export function bindForm(form, { summary, validate, onValid } = {}) {
         }));
         if (summary) summary.errors = errors;
         decorate(form, errors);
-        showSummary(summary, errors);
       });
     },
     true,
@@ -96,13 +86,11 @@ export function bindForm(form, { summary, validate, onValid } = {}) {
     if (extra.length) {
       if (summary) summary.errors = extra;
       decorate(form, extra);
-      showSummary(summary, extra);
       return;
     }
 
     clearDecorations(form);
     if (summary) summary.errors = [];
-    showSummary(summary, []);
     onValid?.(readFormValues(form));
   });
 }

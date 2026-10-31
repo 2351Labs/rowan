@@ -62,7 +62,6 @@ export function renderCustomerDetail(outlet, ctx) {
   const summary = h("rowan-validation-summary", {
     "for-form": "customer-form",
     heading: "Check the account",
-    hidden: true,
   });
   const name = h("rowan-text-field", {
     id: "customer-name",

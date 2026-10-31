@@ -130,6 +130,10 @@
             },
             {
               "kind": "field",
+              "name": "noProviderStyles"
+            },
+            {
+              "kind": "field",
               "name": "locations",
               "return": {
                 "type": {
@@ -262,6 +266,13 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "no-provider-styles",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Do not inject `maplibre-gl.css` into the shadow root."
             }
           ],
           "superclass": {

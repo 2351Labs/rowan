@@ -231,10 +231,6 @@ rowan-app-layout {
   min-inline-size: 0;
 }
 
-rowan-form-field {
-  --rowan-form-field-required-fg: var(--rowan-color-muted);
-}
-
 .page,
 .auth-body {
   display: grid;

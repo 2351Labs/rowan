@@ -6905,7 +6905,7 @@
           "type": "string",
           "default": "",
           "reflects": true,
-          "description": ""
+          "description": "Server mode writes this builder's filter tree onto the table, preserving quick `{ id, value }` filters. Client mode filters the table rows, including OR groups."
         },
         {
           "name": "label",
@@ -6970,7 +6970,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Top-level AND list of frozen leaves. Group nodes are experimental. Arrays are property-only."
+          "description": "Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only."
         },
         {
           "name": "forTable",
@@ -9715,6 +9715,13 @@
           "default": "",
           "reflects": true,
           "description": ""
+        },
+        {
+          "name": "no-provider-styles",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Do not inject `maplibre-gl.css` into the shadow root."
         }
       ],
       "properties": [
@@ -9773,6 +9780,14 @@
           "reflects": false,
           "readonly": false,
           "description": "Application-owned MapLibre style. This property is never reflected to an attribute."
+        },
+        {
+          "name": "noProviderStyles",
+          "type": "",
+          "default": "",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
         }
       ],
       "events": [
@@ -9854,7 +9869,8 @@
           "layers",
           "locations",
           "maplibre",
-          "mapStyle"
+          "mapStyle",
+          "noProviderStyles"
         ],
         "eventProps": [
           {
@@ -16464,11 +16480,11 @@
         },
         {
           "name": "filters",
-          "type": "Array<{ id: string, value: string }>",
+          "type": "Array<object>",
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them."
+          "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself."
         },
         {
           "name": "groupBy",
@@ -18825,6 +18841,13 @@
           "default": "",
           "reflects": true,
           "description": ""
+        },
+        {
+          "name": "show-empty",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Show the empty message when there are no errors. Default is hidden."
         }
       ],
       "properties": [
@@ -18875,6 +18898,14 @@
           "reflects": false,
           "readonly": false,
           "description": "Property-only built-in message overrides."
+        },
+        {
+          "name": "showEmpty",
+          "type": "",
+          "default": "false",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
         }
       ],
       "events": [
@@ -18936,7 +18967,8 @@
           "errors",
           "forForm",
           "heading",
-          "messages"
+          "messages",
+          "showEmpty"
         ],
         "eventProps": [
           {

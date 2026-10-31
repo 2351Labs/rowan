@@ -94,7 +94,6 @@ function renderAuth(outlet, ctx, config) {
   const summary = h("rowan-validation-summary", {
     "for-form": config.formId,
     heading: config.heading,
-    hidden: true,
   });
   const layout = h("rowan-form-layout", { columns: "1" });
   for (const entry of config.fields) layout.append(entry.wrapper);

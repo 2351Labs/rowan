@@ -40,9 +40,13 @@
 }
 
 .required-indicator {
-  color: var(--rowan-form-field-required-fg, var(--rowan-color-danger, #b4392d));
+  color: var(--rowan-form-field-required-fg, var(--rowan-color-muted, #5c665d));
   font-size: var(--rowan-form-field-required-font-size, 0.75rem);
   font-weight: 600;
+}
+
+.field.is-invalid .required-indicator {
+  color: var(--rowan-form-field-error-fg, var(--rowan-color-danger, #b4392d));
 }
 
 .actions {

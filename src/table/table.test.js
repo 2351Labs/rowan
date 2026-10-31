@@ -3454,6 +3454,35 @@ describe("server data", () => {
     document.body.removeChild(host);
   });
 
+  it("passes a filter tree through to the data source", async () => {
+    const calls = [];
+    const { host, table } = mount((query) => {
+      calls.push(query.filters);
+      return Promise.resolve({ rows: [], total: 0 });
+    }, { debounce: 20 });
+
+    await waitFor(() => calls.length >= 1);
+    const tree = [
+      { id: "q", value: "ada" },
+      {
+        id: "g1",
+        join: "or",
+        filters: [
+          { id: "a", field: "role", operator: "equals", value: "Admin" },
+          { id: "b", field: "name", operator: "contains", value: "Ada" },
+        ],
+      },
+    ];
+    table.filters = tree;
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    const sent = calls.at(-1);
+    expect(sent).to.deep.equal(tree);
+    sent[1].filters[0].value = "changed";
+    expect(tree[1].filters[0].value).to.equal("Admin");
+
+    document.body.removeChild(host);
+  });
+
   it("ignores a stale response after a newer request", async () => {
     let releaseFirst;
     const first = new Promise((resolve) => {

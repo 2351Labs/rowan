@@ -113,7 +113,7 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-text-field` | 100% | 100% | — |
 | `rowan-textarea` | 100% | 100% | — |
 | `rowan-time-picker` | 100% | 100% | — |
-| `rowan-validation-summary` | 100% | 100% | — |
+| `rowan-validation-summary` | 86% | 100% | — |
 
 ## Overlays & Menus
 

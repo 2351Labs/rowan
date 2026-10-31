@@ -24,7 +24,7 @@
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
  * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<{ id: string, value: string }>} filters - Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -256,6 +256,7 @@ export class RowanTable extends BaseElement {
     | {
         csv: string;
         blob: Blob;
+        /** @param {RowanTableConfig | null | undefined} value */
         exported: boolean;
         format: "csv" | "xlsx";
         filename: any;
@@ -335,6 +336,7 @@ export class RowanTable extends BaseElement {
     | {
         csv: string;
         blob: Blob;
+        /** @param {RowanTableConfig | null | undefined} value */
         exported: boolean;
         format: "csv" | "xlsx";
         filename: any;

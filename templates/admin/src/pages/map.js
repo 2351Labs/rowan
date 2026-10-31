@@ -1,4 +1,3 @@
-import "maplibre-gl/dist/maplibre-gl.css";
 import "@rowan-ui/maplibre/map";
 
 import { h } from "../dom.js";

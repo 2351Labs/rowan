@@ -590,4 +590,91 @@ describe("rowan-filter-builder", () => {
     messages.add = "Mutated";
     expect(builder.messages.add).to.not.equal("Mutated");
   });
+
+  it("writes an OR group to a server table and keeps quick filters", async () => {
+    const calls = [];
+    const table = document.createElement("rowan-table");
+    table.id = "directory";
+    table.dataMode = "server";
+    table.config = {
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "role", header: "Role" },
+      ],
+      page: { index: 0, size: 5 },
+    };
+    table.dataSource = {
+      debounce: 0,
+      getRows(query) {
+        calls.push(query.filters);
+        return Promise.resolve({ rows: [], total: 0 });
+      },
+    };
+    const builder = document.createElement("rowan-filter-builder");
+    builder.forTable = "directory";
+    builder.fields = [
+      { id: "name", label: "Name" },
+      { id: "role", label: "Role" },
+    ];
+    document.body.append(table, builder);
+    await settle();
+    table.filters = [{ id: "q", value: "ada" }];
+    const tree = [
+      {
+        id: "g1",
+        join: "or",
+        filters: [
+          { id: "a", field: "role", operator: "equals", value: "Admin" },
+          { id: "b", field: "name", operator: "contains", value: "Ada" },
+        ],
+      },
+    ];
+    builder.filters = tree;
+    await new Promise((resolve) => setTimeout(resolve, 40));
+
+    expect(calls.at(-1)).to.deep.equal([{ id: "q", value: "ada" }, tree[0]]);
+  });
+
+  it("filters client table rows with an OR group", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "members";
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name" },
+        { id: "role", header: "Role" },
+      ],
+      rows: [
+        { id: "1", name: "Ada", role: "Admin" },
+        { id: "2", name: "Alan", role: "Editor" },
+        { id: "3", name: "Grace", role: "Viewer" },
+      ],
+    };
+    const builder = document.createElement("rowan-filter-builder");
+    builder.forTable = "members";
+    builder.fields = [
+      { id: "name", label: "Name" },
+      { id: "role", label: "Role" },
+    ];
+    document.body.append(table, builder);
+    await settle();
+
+    builder.filters = [
+      {
+        id: "g1",
+        join: "or",
+        filters: [
+          { id: "a", field: "role", operator: "equals", value: "Admin" },
+          { id: "b", field: "name", operator: "contains", value: "Grace" },
+        ],
+      },
+    ];
+    await settle();
+
+    expect(table.rows.map((row) => row.name)).to.deep.equal(["Ada", "Grace"]);
+
+    builder.filters = [];
+    await settle();
+    expect(table.rows.map((row) => row.name)).to.deep.equal(["Ada", "Alan", "Grace"]);
+  });
 });
