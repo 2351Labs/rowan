@@ -2536,7 +2536,6 @@ describe("rowan-table-toolbar ARIA", () => {
     document.body.removeChild(host);
   });
 });
-
 describe("inline editing", () => {
   it("marks editable cells with data-editable and tabindex", async () => {
     const host = document.createElement("div");
