@@ -1,6 +1,7 @@
 import "./heatmap-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function createHeatmap({
   label = "Lane dwell by hour",
@@ -31,6 +32,7 @@ export default {
     interactive: true,
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
@@ -65,3 +67,12 @@ export const VibrantPalette = {
   parameters: Playground.parameters,
   render: (args) => withVibrantChartPalette(createHeatmap(args)),
 };
+
+const chartFixtures = coverageStories["rowan-heatmap-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixturePoints = chartFixtures.points;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;

@@ -1,6 +1,7 @@
 import "./column-sparkline.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 import { sparklineValues } from "../../stories/fixtures/chart-data.js";
 
 function createColumnSparkline({
@@ -32,6 +33,7 @@ export default {
     tone: "neutral",
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     tone: {
       control: "select",
@@ -182,3 +184,12 @@ export const VibrantPalette = {
   name: "Vibrant palette",
   render: () => withVibrantChartPalette(InKpiCard.render()),
 };
+
+const chartFixtures = coverageStories["rowan-column-sparkline"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureTones = chartFixtures.tones;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;

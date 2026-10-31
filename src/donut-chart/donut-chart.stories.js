@@ -1,14 +1,19 @@
 import "./donut-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function createDonutChart({
   label = "Incident sources",
+  description = "Share of incident sources.",
   interactive = true,
   variant = "donut",
+  locale = "en-US",
 } = {}) {
   const chart = document.createElement("rowan-donut-chart");
   chart.label = label;
+  chart.description = description;
+  chart.locale = locale;
   chart.interactive = Boolean(interactive);
   chart.variant = variant;
   chart.labels = ["App", "Email", "Phone"];
@@ -26,6 +31,8 @@ export default {
     variant: "donut",
   },
   argTypes: {
+    locale: { control: "text" },
+    description: { control: "text" },
     label: { control: "text" },
     interactive: { control: "boolean" },
     variant: { control: "inline-radio", options: ["donut", "pie"] },
@@ -51,3 +58,13 @@ export const VibrantPalette = {
   parameters: Playground.parameters,
   render: (args) => withVibrantChartPalette(createDonutChart(args)),
 };
+
+const chartFixtures = coverageStories["rowan-donut-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixturePie = chartFixtures.pie;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;

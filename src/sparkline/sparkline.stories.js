@@ -2,6 +2,7 @@ import "./sparkline.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
 import { sparklineValues } from "../../stories/fixtures/chart-data.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function createSparkline({
   label = "Open incidents",
@@ -34,6 +35,7 @@ export default {
     tone: "neutral",
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     tone: {
       control: "select",
@@ -172,3 +174,13 @@ export const Empty = {
     return chart;
   },
 };
+
+const chartFixtures = coverageStories["rowan-sparkline"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureArea = chartFixtures.area;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureTones = chartFixtures.tones;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;

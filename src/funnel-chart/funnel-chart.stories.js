@@ -1,6 +1,7 @@
 import "./funnel-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 
 function createFunnel({
   label = "Inbound conversion",
@@ -29,6 +30,7 @@ export default {
     variant: "funnel",
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
@@ -61,3 +63,14 @@ export const VibrantPalette = {
   parameters: Playground.parameters,
   render: (args) => withVibrantChartPalette(createFunnel(args)),
 };
+
+const chartFixtures = coverageStories["rowan-funnel-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureCone = chartFixtures.cone;
+export const FixturePyramid = chartFixtures.pyramid;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;

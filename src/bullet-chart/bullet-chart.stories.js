@@ -1,6 +1,7 @@
 import "./bullet-chart.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 import { kpiValues } from "../../stories/fixtures/chart-data.js";
 
 function sampleRanges() {
@@ -44,6 +45,7 @@ export default {
     encoding: "ink",
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     value: { control: "number" },
     target: { control: "number" },
@@ -208,3 +210,12 @@ export const VibrantPalette = {
   name: "Vibrant palette",
   render: () => withVibrantChartPalette(InKpiCard.render()),
 };
+
+const chartFixtures = coverageStories["rowan-bullet-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureEncodings = chartFixtures.encodings;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;

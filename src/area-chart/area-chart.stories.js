@@ -1,6 +1,7 @@
 import "./area-chart.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
+import { coverageStories } from "../../stories/chart-galleries.js";
 import {
   monthlyRevenue,
   revenueAndCosts,
@@ -34,6 +35,7 @@ export default {
     interactive: true,
   },
   argTypes: {
+    locale: { control: "text" },
     label: { control: "text" },
     description: { control: "text" },
     interactive: { control: "boolean" },
@@ -152,16 +154,16 @@ export const Empty = {
     chart.description = "Chart with empty data";
     chart.labels = [];
     chart.series = [];
+    chart.messages = { noData: "No data", noMetricData: "No metric data" };
     return chart;
   },
 };
 
-export const Loading = {
-  name: "Loading state",
-  render: () => {
-    const chart = document.createElement("rowan-area-chart");
-    chart.label = "Loading...";
-    chart.loading = true;
-    return chart;
-  },
-};
+const chartFixtures = coverageStories["rowan-area-chart"];
+export const FixtureCatalog = chartFixtures.catalog;
+export const FixtureSparse = chartFixtures.sparse;
+export const FixtureNegative = chartFixtures.negative;
+export const FixtureLargeNumbers = chartFixtures.largeNumbers;
+export const FixtureEmpty = chartFixtures.empty;
+export const FixtureError = chartFixtures.error;
+export const FixtureSlots = chartFixtures.slots;
