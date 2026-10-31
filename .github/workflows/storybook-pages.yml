@@ -1,11 +1,11 @@
-name: Documentation Pages
+name: Documentation and Storybook Pages
 
 # GitHub Pages must use Source: GitHub Actions (not "Deploy from a branch").
-# Branch deploy from main runs Jekyll on README.md and hides documentation.
+# Deploys on releases (tags) and can be manually triggered.
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -29,11 +29,25 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run analyze
+      
+      # Build documentation site
       - run: npm run documentation:build
-      - run: touch documentation-static-check/.nojekyll
+      
+      # Build Storybook
+      - run: npm run build-storybook
+      
+      # Combine both into a single deployment
+      # Documentation at root, Storybook under /storybook/
+      - run: |
+          mkdir -p pages-deploy
+          cp -r documentation-static-check/* pages-deploy/
+          mkdir -p pages-deploy/storybook
+          cp -r storybook-static/* pages-deploy/storybook/
+          touch pages-deploy/.nojekyll
+      
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: documentation-static-check
+          path: pages-deploy
 
   deploy:
     name: Deploy

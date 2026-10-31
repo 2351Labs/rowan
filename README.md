@@ -12,7 +12,8 @@
 <p align="center">
   <a href="https://2351labs.github.io/rowan/">📚 Documentation</a> ·
   <a href="https://www.npmjs.com/package/@rowan-ui/core">📦 npm</a> ·
-  <a href="CHANGELOG.md">📝 Changelog</a>
+  <a href="CHANGELOG.md">📝 Changelog</a> ·
+  <a href="https://2351labs.github.io/rowan/storybook/">🎨 Storybook</a>
 </p>
 
 ---
@@ -113,6 +114,22 @@ Rowan ships **109 components** across these categories:
 
 [**View full component catalog →**](https://2351labs.github.io/rowan/#all-components)
 
+## Bundle Size
+
+Rowan is designed to be lean for production. Direct component imports result in small, tree-shakeable bundles:
+
+- **3 controls** (button + checkbox + switch): 15.4 KB gzipped
+- **Form controls**: 17.7 KB gzipped  
+- **Table** (full featured): 35.9 KB gzipped
+
+The benchmark in `benchmarks/RESULTS.md` shows 703 KB for 3 controls because it measures **unminified ESM** over a local dev server. Production builds with minification and compression are **97.8% smaller**.
+
+**⚠️ Import pattern matters:**
+- ✅ `import "@rowan-ui/core/button"` → 13.8 KB (recommended)
+- ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (registers all 109 components due to auto-registration side effects)
+
+See [**docs/BUNDLE_SIZE.md**](docs/BUNDLE_SIZE.md) for detailed guidance, optimization tips, and per-component sizes.
+
 ## Documentation
 
 Our comprehensive documentation site covers:
@@ -125,6 +142,12 @@ Our comprehensive documentation site covers:
 - **[Accessibility](https://2351labs.github.io/rowan/#quality)** - ARIA, keyboard navigation, screen readers
 
 [**📚 Browse full documentation →**](https://2351labs.github.io/rowan/)
+
+Additional resources:
+
+- [**Storybook →**](https://2351labs.github.io/rowan/storybook/) - Interactive component playground
+- [docs/BUNDLE_SIZE.md](docs/BUNDLE_SIZE.md) - Detailed bundle optimization guide
+- [CHANGELOG.md](CHANGELOG.md) - Release history
 
 ## Key Features
 
@@ -183,13 +206,13 @@ npm test
 npm run lint
 npm run typecheck
 
-# Build Storybook
-npm run storybook
-
-<<<<<<< HEAD
 # Run documentation site locally
 npm run documentation
-=======
+
+# Build and run Storybook
+npm run storybook
+```
+
 ### Scripts
 
 - `npm run analyze` generates `custom-elements.json`
@@ -197,54 +220,15 @@ npm run documentation
 - `npm run storybook` starts Storybook on port 6006
 - `npm run build-storybook` builds Storybook static assets
 
-Pushes to `main` publish Storybook to GitHub Pages via
-`.github/workflows/storybook-pages.yml`. One-time repo setting: **Settings →
-Pages → Source: GitHub Actions**. The project site is
-`https://<owner>.github.io/<repo>/` (for this repo,
-[https://2351labs.github.io/rowan/](https://2351labs.github.io/rowan/)); the
-**Home** docs page is the landing story. Local `npm run storybook` still serves
-at `/`.
+Releases publish the documentation site and Storybook to GitHub Pages via `.github/workflows/storybook-pages.yml`. One-time repo setting: **Settings → Pages → Source: GitHub Actions**.
 
-- `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit of representative widgets
-
-Storybook's a11y addon (`test: "error"`) skips axe rule `label`. FACE controls put the
-accessible name on the host via `ElementInternals`; axe still flags the inner native
-`<input>` as unlabeled. That is a Storybook false positive — do not add a second name
-on the inner control. `npm test` still audits the host. Chart Playgrounds that document
-keyboard keep `interactive: true`. Breadcrumb stories stay a slot demo; the host
-already renders `<nav aria-label="Breadcrumb">`.
-
-- `npm run test:browser` runs the same serial component contracts with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`
-- `npm run types` regenerates publishable declaration files in `/types`
-- `npm run typecheck` verifies root and per-component package imports, including `HTMLElementTagNameMap` discovery
+- `npm run test` runs web component tests with Web Test Runner, including an axe WCAG A/AA audit
+- `npm run test:browser` runs tests with Playwright; set `ROWAN_BROWSER` to `chromium`, `firefox`, or `webkit`
+- `npm run types` regenerates publishable declaration files
+- `npm run typecheck` verifies all package imports
 - `npm run lint` runs ESLint on source files
-- `npm run format` formats JS, CSS, JSON, MD, and MDX via Prettier
-- `npm run format:check` verifies formatting
-
-## Bundle Size
-
-Rowan is designed to be lean for production. Direct component imports result in small, tree-shakeable bundles:
-
-- **3 controls** (button + checkbox + switch): 15.4 KB gzipped
-- **Form controls**: 17.7 KB gzipped  
-- **Table** (full featured): 35.9 KB gzipped
-
-The benchmark in `benchmarks/RESULTS.md` shows 703 KB for 3 controls because it measures **unminified ESM** over a local dev server. Production builds with minification and compression are **97.8% smaller**.
-
-**⚠️ Import pattern matters:**
-- ✅ `import "@rowan-ui/core/button"` → 13.8 KB (recommended)
-- ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (registers all 109 components due to auto-registration side effects)
-
-See [docs/BUNDLE_SIZE.md](docs/BUNDLE_SIZE.md) for detailed guidance, optimization tips, and per-component sizes.
-
-## Documentation Source Of Truth
-
-`custom-elements.json` is generated by the Custom Elements Manifest analyzer and loaded into Storybook via `setCustomElementsManifest(...)`. Keep JSDoc on each component current, then run:
-
-```bash
-npm run analyze
->>>>>>> origin/main
-```
+- `npm run format` formats code via Prettier
+- `npm run size:check` verifies bundle size budgets
 
 ## Browser Support
 
@@ -279,6 +263,7 @@ MIT © 2351Labs
 
 <p align="center">
   <a href="https://2351labs.github.io/rowan/">Documentation</a> ·
+  <a href="https://2351labs.github.io/rowan/storybook/">Storybook</a> ·
   <a href="https://github.com/2351Labs/rowan/issues">Report Issue</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
