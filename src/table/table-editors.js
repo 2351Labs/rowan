@@ -3,7 +3,11 @@ import { resolveMessage } from "../lib/messages.js";
 
 const DEFAULT_MESSAGES = Object.freeze({
   editCell: "Edit cell",
+  invalidValue: "Invalid value",
+  required: "Required",
 });
+
+let errorSequence = 0;
 
 function editorLabel(messages) {
   return resolveMessage(messages, DEFAULT_MESSAGES, "editCell");
@@ -105,9 +109,90 @@ function stopRowEdit(ctx, rowEditing, committed) {
   ctx.requestRender();
 }
 
+function isEmptyEditValue(column, value) {
+  const type = column.editor?.type || column.type;
+  if (type === "checkbox") return value !== true;
+  if (value == null) return true;
+  if (typeof value === "string") return value.trim() === "";
+  return false;
+}
+
+function columnValidationMessage(column, value, row, messages) {
+  if (column.required && isEmptyEditValue(column, value)) {
+    return resolveMessage(messages, DEFAULT_MESSAGES, "required");
+  }
+
+  if (typeof column.validate !== "function") return "";
+
+  const result = column.validate(value, row);
+  if (result === true || result == null || result === "") return "";
+  if (typeof result === "string") return result;
+  return resolveMessage(messages, DEFAULT_MESSAGES, "invalidValue");
+}
+
+function showFieldError(field, message) {
+  let error = field.errorEl;
+  if (!error || !error.isConnected) {
+    error = document.createElement("span");
+    error.className = "cell-editor-error";
+    error.id = `rowan-table-edit-error-${++errorSequence}`;
+    field.errorEl = error;
+    field.td.append(error);
+  }
+
+  error.textContent = message;
+  field.editor.setAttribute("aria-invalid", "true");
+  field.editor.setAttribute("aria-describedby", error.id);
+  field.td.setAttribute("aria-invalid", "true");
+  field.td.setAttribute("aria-describedby", error.id);
+}
+
+function clearFieldError(field) {
+  field.editor.removeAttribute("aria-invalid");
+  field.editor.removeAttribute("aria-describedby");
+  field.td.removeAttribute("aria-invalid");
+  field.td.removeAttribute("aria-describedby");
+  field.errorEl?.remove();
+  field.errorEl = null;
+}
+
+/**
+ * Column rules (`required`, `validate`) run first. `rowan-edit-validate` then
+ * fires on its own, before any commit event, so a rejected value never looks
+ * like a commit. `preventDefault()` forces the field invalid and keeps the
+ * editor open. Listeners may replace `detail.message`.
+ */
+function acceptFieldValue(ctx, field, value, oldValue) {
+  const rulesMessage = columnValidationMessage(field.column, value, field.row, ctx.messages);
+  const detail = {
+    rowId: field.rowId,
+    rowIndex: field.rowIndex,
+    row: field.row,
+    columnId: field.column.id,
+    column: field.column,
+    value,
+    oldValue,
+    message: rulesMessage,
+    valid: rulesMessage === "",
+  };
+  const allowed = emit(ctx.table, "rowan-edit-validate", detail, { cancelable: true });
+  const rejected = !allowed || !detail.valid;
+  if (!rejected) {
+    clearFieldError(field);
+    return true;
+  }
+
+  const message =
+    detail.message || rulesMessage || resolveMessage(ctx.messages, DEFAULT_MESSAGES, "invalidValue");
+  showFieldError(field, message);
+  return false;
+}
+
 function commitCellEdit(ctx, editing) {
   if (!editing) return false;
   const newValue = readEditorValue(editing.column, editing.editor);
+  if (!acceptFieldValue(ctx, editing, newValue, editing.originalValue)) return false;
+
   const allowed = emit(ctx.table, "rowan-edit-commit", {
     rowId: editing.rowId,
     columnId: editing.columnId,
@@ -135,9 +220,20 @@ function commitRowEdit(ctx, rowEditing) {
   if (!rowEditing) return false;
   const values = {};
   const oldValues = {};
+  let firstInvalid = null;
   for (const entry of rowEditing.cellEditors) {
-    values[entry.column.id] = readEditorValue(entry.column, entry.editor);
-    oldValues[entry.column.id] = rowEditing.originalValues[entry.column.id];
+    entry.row = rowEditing.row;
+    entry.rowIndex = rowEditing.rowIndex;
+    entry.rowId = rowEditing.rowId;
+    const value = readEditorValue(entry.column, entry.editor);
+    const oldValue = rowEditing.originalValues[entry.column.id];
+    values[entry.column.id] = value;
+    oldValues[entry.column.id] = oldValue;
+    if (!acceptFieldValue(ctx, entry, value, oldValue) && !firstInvalid) firstInvalid = entry.editor;
+  }
+  if (firstInvalid) {
+    focusEditor(firstInvalid);
+    return false;
   }
 
   const allowed = emit(ctx.table, "rowan-row-edit-commit", {

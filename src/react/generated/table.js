@@ -18,5 +18,11 @@ export const RowanTable = createRowanComponent({
     onRowanGroupToggle: "rowan-group-toggle",
     onRowanColumnResize: "rowan-column-resize",
     onRowanColumnReorder: "rowan-column-reorder",
+    onRowanEditStart: "rowan-edit-start",
+    onRowanEditValidate: "rowan-edit-validate",
+    onRowanEditCommit: "rowan-edit-commit",
+    onRowanEditCancel: "rowan-edit-cancel",
+    onRowanRowEditCommit: "rowan-row-edit-commit",
+    onRowanRowEditCancel: "rowan-row-edit-cancel",
   },
 });

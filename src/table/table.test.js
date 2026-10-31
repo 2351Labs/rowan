@@ -3195,4 +3195,188 @@ describe("inline editing", () => {
 
     document.body.removeChild(host);
   });
+
+  it("keeps a required cell in edit mode and exposes the error", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name", editable: true, required: true }],
+      rows: [{ id: "1", name: "Alice" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let committed = false;
+    table.addEventListener("rowan-edit-commit", () => {
+      committed = true;
+    });
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await waitFor(() => cell.querySelector(".cell-editor"));
+
+    const editor = cell.querySelector(".cell-editor");
+    editor.value = "   ";
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const error = cell.querySelector(".cell-editor-error");
+    expect(committed).to.equal(false);
+    expect(cell.classList.contains("editing")).to.equal(true);
+    expect(editor.getAttribute("aria-invalid")).to.equal("true");
+    expect(cell.getAttribute("aria-invalid")).to.equal("true");
+    expect(error).to.exist;
+    expect(error.textContent).to.equal("Required");
+    expect(editor.getAttribute("aria-describedby")).to.equal(error.id);
+    expect(cell.getAttribute("aria-describedby")).to.equal(error.id);
+    expect(table.rows[0].name).to.equal("Alice");
+
+    document.body.removeChild(host);
+  });
+
+  it("uses column validate messages and commits when validate returns true", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [
+        {
+          id: "email",
+          header: "Email",
+          editable: true,
+          validate: (value) => (String(value).includes("@") ? true : "Enter an email address"),
+        },
+      ],
+      rows: [{ id: "1", email: "ada@example.com" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await waitFor(() => cell.querySelector(".cell-editor"));
+
+    const editor = cell.querySelector(".cell-editor");
+    editor.value = "not-an-email";
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(cell.querySelector(".cell-editor-error").textContent).to.equal("Enter an email address");
+    expect(table.rows[0].email).to.equal("ada@example.com");
+
+    editor.value = "grace@example.com";
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(cell.classList.contains("editing")).to.equal(false);
+    expect(table.rows[0].email).to.equal("grace@example.com");
+
+    document.body.removeChild(host);
+  });
+
+  it("rejects a value when rowan-edit-validate is cancelled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name", editable: true }],
+      rows: [{ id: "1", name: "Alice" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    table.addEventListener("rowan-edit-validate", (event) => {
+      event.detail.message = "Name is locked";
+      event.preventDefault();
+    });
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await waitFor(() => cell.querySelector(".cell-editor"));
+
+    const editor = cell.querySelector(".cell-editor");
+    editor.value = "Bob";
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(cell.querySelector(".cell-editor-error").textContent).to.equal("Name is locked");
+    expect(editor.getAttribute("aria-invalid")).to.equal("true");
+    expect(table.rows[0].name).to.equal("Alice");
+
+    document.body.removeChild(host);
+  });
+
+  it("blocks a row commit until every cell is valid", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true, required: true },
+        {
+          id: "age",
+          header: "Age",
+          type: "number",
+          editable: true,
+          validate: (value) => (Number(value) >= 18 ? true : "Must be 18 or older"),
+        },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let committed = false;
+    table.addEventListener("rowan-row-edit-commit", () => {
+      committed = true;
+    });
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await waitFor(() => table.renderRoot.querySelector('input[type="text"]'));
+
+    const nameInput = table.renderRoot.querySelector('input[type="text"]');
+    const ageInput = table.renderRoot.querySelector('input[type="number"]');
+    nameInput.value = "";
+    ageInput.value = "12";
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(committed).to.equal(false);
+    expect(table.renderRoot.querySelectorAll("input").length).to.equal(2);
+    expect(nameInput.getAttribute("aria-invalid")).to.equal("true");
+    expect(ageInput.getAttribute("aria-invalid")).to.equal("true");
+    expect(table.renderRoot.querySelectorAll(".cell-editor-error").length).to.equal(2);
+    expect(table.rows[0].name).to.equal("Alice");
+    expect(table.rows[0].age).to.equal(30);
+
+    nameInput.value = "Ada";
+    ageInput.value = "21";
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(committed).to.equal(true);
+    expect(table.rows[0].name).to.equal("Ada");
+    expect(table.rows[0].age).to.equal(21);
+    expect(table.renderRoot.querySelectorAll("input").length).to.equal(0);
+
+    document.body.removeChild(host);
+  });
 });

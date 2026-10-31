@@ -41,8 +41,8 @@ const budgets = {
   "trend-chart": 20 * 1024,
   "bar-chart": 20 * 1024,
 
-  // Table (large, includes many features + column resizing/reordering + inline editing)
-  // Budget is the gzipped initial load: entry plus statically imported chunks.
+  // Table initial load: entry plus statically imported chunks.
+  // Phase 3 measured 40.42 KB. Ceiling stays 41 KB (about 0.6 KB of headroom).
   table: 41 * 1024,
 
   // Common scenarios

@@ -436,6 +436,18 @@ td.editing {
   border-color: var(--rowan-primary-active, #0056b3);
 }
 
+.cell-editor[aria-invalid="true"] {
+  border-color: var(--rowan-color-danger);
+}
+
+.cell-editor-error {
+  color: var(--rowan-form-field-error-fg);
+  display: block;
+  font-size: var(--rowan-font-size-sm);
+  padding-block: var(--rowan-space-1);
+  padding-inline: var(--rowan-space-2);
+}
+
 td[data-editable="true"]:not(.editing):focus-within {
   outline: 2px solid var(--rowan-primary, #007bff);
   outline-offset: -2px;

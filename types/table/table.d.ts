@@ -12,6 +12,7 @@
  * @attr {number} virtual-overscan
  * @attr {boolean} resizable-columns
  * @attr {boolean} reorderable-columns
+ * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -46,6 +47,12 @@
  * @event rowan-group-toggle - Fired when a group header is expanded or collapsed by the user
  * @event rowan-column-resize - Fired when a column is resized. `detail` contains columnId, width, and columns array.
  * @event rowan-column-reorder - Fired when columns are reordered. `detail` contains fromIndex, toIndex, and columns array.
+ * @event rowan-edit-start - Fired before a cell editor opens. Cancelable.
+ * @event rowan-edit-validate - Fired before a cell or row commit, after `required` and `validate`. Cancelable. `preventDefault()` keeps the editor open. Not part of the commit event, so a rejected value is never delivered to commit listeners. `detail.message` is the error text; listeners may replace it.
+ * @event rowan-edit-commit - Fired when a cell value is accepted. Cancelable.
+ * @event rowan-edit-cancel - Fired when a cell edit is discarded.
+ * @event rowan-row-edit-commit - Fired when every editable cell in a row is valid. Cancelable. `detail.values` and `detail.oldValues` are keyed by column id.
+ * @event rowan-row-edit-cancel - Fired when a row edit is discarded.
  */
 export class RowanTable extends BaseElement {
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -225,6 +232,14 @@ export type RowanTableColumn = {
       }
     | undefined;
   editable?: boolean | ((row: RowanTableRow, rowIndex: number) => boolean) | undefined;
+  /**
+   * - Empty values cannot commit. Checkbox columns must be checked.
+   */
+  required?: boolean | undefined;
+  /**
+   * - Return true to accept a value, or an error message to keep the editor open.
+   */
+  validate?: ((value: unknown, row: RowanTableRow) => true | string | false) | undefined;
   editor?: RowanTableColumnEditor | undefined;
 };
 export type RowanTableSort = {
@@ -280,5 +295,10 @@ export type RowanTableMessages = {
   selectRow?: string | ((context: { rowId: string }) => string) | undefined;
   subtotal?: string | undefined;
   switch?: string | undefined;
+  editCell?: string | undefined;
+  cancelEdit?: string | undefined;
+  commitEdit?: string | undefined;
+  required?: string | undefined;
+  invalidValue?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

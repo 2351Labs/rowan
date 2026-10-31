@@ -1285,3 +1285,66 @@ export const RowEditMode = {
     },
   },
 };
+
+export const InlineEditingValidation = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table id="validation-cell" density="md" caption="Cell validation"></rowan-table>
+        <rowan-table id="validation-row" density="md" edit-mode="row" caption="Row validation"></rowan-table>
+      </div>
+      <script type="module">
+        const cellTable = document.querySelector("#validation-cell");
+        cellTable.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true, required: true },
+            {
+              id: "email",
+              header: "Email",
+              editable: true,
+              validate: (value) => (String(value).includes("@") ? true : "Enter an email address"),
+            },
+          ],
+          rows: [{ id: "1", name: "Alice Johnson", email: "alice@example.com" }],
+        };
+        cellTable.addEventListener("rowan-edit-validate", (event) => {
+          console.log("rowan-edit-validate", event.detail);
+        });
+        cellTable.addEventListener("rowan-edit-commit", (event) => {
+          console.log("rowan-edit-commit", event.detail);
+        });
+
+        const rowTable = document.querySelector("#validation-row");
+        rowTable.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true, required: true },
+            {
+              id: "age",
+              header: "Age",
+              type: "number",
+              editable: true,
+              validate: (value) => (Number(value) >= 18 ? true : "Must be 18 or older"),
+            },
+          ],
+          rows: [{ id: "1", name: "Alice Johnson", age: 28 }],
+        };
+        rowTable.addEventListener("rowan-edit-validate", (event) => {
+          console.log("rowan-edit-validate", event.detail);
+        });
+        rowTable.addEventListener("rowan-row-edit-commit", (event) => {
+          console.log("rowan-row-edit-commit", event.detail);
+        });
+        rowTable.addEventListener("rowan-row-edit-cancel", (event) => {
+          console.log("rowan-row-edit-cancel", event.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Phase 3 validation. column.required rejects blank values. column.validate(value, row) returns true or an error message. rowan-edit-validate fires before commit and is cancelable; preventDefault keeps the editor open with aria-invalid and an aria-describedby error. Row mode (edit-mode=\"row\") does not emit rowan-row-edit-commit until every cell is valid. Escape still cancels via rowan-row-edit-cancel.",
+      },
+    },
+  },
+};
