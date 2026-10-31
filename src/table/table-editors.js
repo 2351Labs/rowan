@@ -44,7 +44,7 @@ export async function createEditor(type, value, column, context, messages) {
   return null;
 }
 
-export async function startRowEditing(table, rowId, getRowFromElement, columns, isColumnEditable, resolveValue, createEditorFn, messages) {
+export async function startRowEditing(table, rowId, getRowFromElement, columns, isColumnEditable, resolveValue, createEditorFn, _messages) {
   const tr = table.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
   if (!tr) return null;
 
