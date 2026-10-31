@@ -4448,7 +4448,871 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       ${renderApiReference("rowan-row-details-panel")}
      `,
     afterRender: setupRowDetailsPanelDemo,
+  },  {
+    id: "accordion",
+    group: "Components",
+    title: "Rowan Accordion",
+    summary: "Accordion component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-accordion", "accordion"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-accordion-usage">
+        <h2>Accordion usage</h2>
+        <p>Use rowan-accordion to compose accordion patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-accordion></rowan-accordion>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-accordion-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-accordion></rowan-accordion>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-accordion")}
+    `,
   },
+  {
+    id: "avatar",
+    group: "Components",
+    title: "Rowan Avatar",
+    summary: "Avatar component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-avatar", "avatar"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-avatar-usage">
+        <h2>Avatar usage</h2>
+        <p>Use rowan-avatar to compose avatar patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-avatar></rowan-avatar>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-avatar-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-avatar></rowan-avatar>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-avatar")}
+    `,
+  },
+  {
+    id: "badge",
+    group: "Components",
+    title: "Rowan Badge",
+    summary: "Badge component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-badge", "badge"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-badge-usage">
+        <h2>Badge usage</h2>
+        <p>Use rowan-badge to compose badge patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-badge></rowan-badge>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-badge-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-badge></rowan-badge>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-badge")}
+    `,
+  },
+  {
+    id: "breadcrumb",
+    group: "Components",
+    title: "Rowan Breadcrumb",
+    summary: "Breadcrumb component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-breadcrumb", "breadcrumb"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-breadcrumb-usage">
+        <h2>Breadcrumb usage</h2>
+        <p>Use rowan-breadcrumb to compose breadcrumb patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-breadcrumb></rowan-breadcrumb>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-breadcrumb-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-breadcrumb></rowan-breadcrumb>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-breadcrumb")}
+    `,
+  },
+  {
+    id: "card",
+    group: "Components",
+    title: "Rowan Card",
+    summary: "Card component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-card", "card"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-card-usage">
+        <h2>Card usage</h2>
+        <p>Use rowan-card to compose card patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-card></rowan-card>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-card-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-card></rowan-card>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-card")}
+    `,
+  },
+  {
+    id: "checkbox",
+    group: "Components",
+    title: "Rowan Checkbox",
+    summary: "Checkbox component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-checkbox", "checkbox"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-checkbox-usage">
+        <h2>Checkbox usage</h2>
+        <p>Use rowan-checkbox to compose checkbox patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-checkbox></rowan-checkbox>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-checkbox-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-checkbox></rowan-checkbox>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-checkbox")}
+    `,
+  },
+  {
+    id: "chip",
+    group: "Components",
+    title: "Rowan Chip",
+    summary: "Chip component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-chip", "chip"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-chip-usage">
+        <h2>Chip usage</h2>
+        <p>Use rowan-chip to compose chip patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-chip></rowan-chip>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-chip-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-chip></rowan-chip>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-chip")}
+    `,
+  },
+  {
+    id: "combo-chart",
+    group: "Components",
+    title: "Rowan Combo Chart",
+    summary: "Combo Chart component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-combo-chart", "combo chart"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-combo-chart-usage">
+        <h2>Combo Chart usage</h2>
+        <p>Use rowan-combo-chart to compose combo chart patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-combo-chart></rowan-combo-chart>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-combo-chart-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-combo-chart></rowan-combo-chart>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-combo-chart")}
+    `,
+  },
+  {
+    id: "combobox",
+    group: "Components",
+    title: "Rowan Combobox",
+    summary: "Combobox component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-combobox", "combobox"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-combobox-usage">
+        <h2>Combobox usage</h2>
+        <p>Use rowan-combobox to compose combobox patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-combobox></rowan-combobox>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-combobox-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-combobox></rowan-combobox>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-combobox")}
+    `,
+  },
+  {
+    id: "command-item",
+    group: "Components",
+    title: "Rowan Command Item",
+    summary: "Command Item component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-command-item", "command item"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-command-item-usage">
+        <h2>Command Item usage</h2>
+        <p>Use rowan-command-item to compose command item patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-command-item></rowan-command-item>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-command-item-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-command-item></rowan-command-item>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-command-item")}
+    `,
+  },
+  {
+    id: "data-state",
+    group: "Components",
+    title: "Rowan Data State",
+    summary: "Data State component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-data-state", "data state"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-data-state-usage">
+        <h2>Data State usage</h2>
+        <p>Use rowan-data-state to compose data state patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-data-state></rowan-data-state>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-data-state-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-data-state></rowan-data-state>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-data-state")}
+    `,
+  },
+  {
+    id: "divider",
+    group: "Components",
+    title: "Rowan Divider",
+    summary: "Divider component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-divider", "divider"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-divider-usage">
+        <h2>Divider usage</h2>
+        <p>Use rowan-divider to compose divider patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-divider></rowan-divider>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-divider-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-divider></rowan-divider>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-divider")}
+    `,
+  },
+  {
+    id: "drawer",
+    group: "Components",
+    title: "Rowan Drawer",
+    summary: "Drawer component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-drawer", "drawer"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-drawer-usage">
+        <h2>Drawer usage</h2>
+        <p>Use rowan-drawer to compose drawer patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-drawer></rowan-drawer>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-drawer-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-drawer></rowan-drawer>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-drawer")}
+    `,
+  },
+  {
+    id: "dropdown",
+    group: "Components",
+    title: "Rowan Dropdown",
+    summary: "Dropdown component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-dropdown", "dropdown"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-dropdown-usage">
+        <h2>Dropdown usage</h2>
+        <p>Use rowan-dropdown to compose dropdown patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-dropdown></rowan-dropdown>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-dropdown-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-dropdown></rowan-dropdown>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-dropdown")}
+    `,
+  },
+  {
+    id: "empty-state",
+    group: "Components",
+    title: "Rowan Empty State",
+    summary: "Empty State component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-empty-state", "empty state"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-empty-state-usage">
+        <h2>Empty State usage</h2>
+        <p>Use rowan-empty-state to compose empty state patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-empty-state></rowan-empty-state>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-empty-state-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-empty-state></rowan-empty-state>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-empty-state")}
+    `,
+  },
+  {
+    id: "icon-button",
+    group: "Components",
+    title: "Rowan Icon Button",
+    summary: "Icon Button component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-icon-button", "icon button"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-icon-button-usage">
+        <h2>Icon Button usage</h2>
+        <p>Use rowan-icon-button to compose icon button patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-icon-button></rowan-icon-button>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-icon-button-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-icon-button></rowan-icon-button>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-icon-button")}
+    `,
+  },
+  {
+    id: "link",
+    group: "Components",
+    title: "Rowan Link",
+    summary: "Link component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-link", "link"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-link-usage">
+        <h2>Link usage</h2>
+        <p>Use rowan-link to compose link patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-link></rowan-link>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-link-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-link></rowan-link>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-link")}
+    `,
+  },
+  {
+    id: "menu",
+    group: "Components",
+    title: "Rowan Menu",
+    summary: "Menu component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-menu", "menu"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-menu-usage">
+        <h2>Menu usage</h2>
+        <p>Use rowan-menu to compose menu patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-menu></rowan-menu>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-menu-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-menu></rowan-menu>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-menu")}
+    `,
+  },
+  {
+    id: "menu-item",
+    group: "Components",
+    title: "Rowan Menu Item",
+    summary: "Menu Item component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-menu-item", "menu item"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-menu-item-usage">
+        <h2>Menu Item usage</h2>
+        <p>Use rowan-menu-item to compose menu item patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-menu-item></rowan-menu-item>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-menu-item-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-menu-item></rowan-menu-item>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-menu-item")}
+    `,
+  },
+  {
+    id: "pagination",
+    group: "Components",
+    title: "Rowan Pagination",
+    summary: "Pagination component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-pagination", "pagination"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-pagination-usage">
+        <h2>Pagination usage</h2>
+        <p>Use rowan-pagination to compose pagination patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-pagination></rowan-pagination>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-pagination-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-pagination></rowan-pagination>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-pagination")}
+    `,
+  },
+  {
+    id: "popover",
+    group: "Components",
+    title: "Rowan Popover",
+    summary: "Popover component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-popover", "popover"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-popover-usage">
+        <h2>Popover usage</h2>
+        <p>Use rowan-popover to compose popover patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-popover></rowan-popover>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-popover-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-popover></rowan-popover>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-popover")}
+    `,
+  },
+  {
+    id: "progress",
+    group: "Components",
+    title: "Rowan Progress",
+    summary: "Progress component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-progress", "progress"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-progress-usage">
+        <h2>Progress usage</h2>
+        <p>Use rowan-progress to compose progress patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-progress></rowan-progress>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-progress-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-progress></rowan-progress>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-progress")}
+    `,
+  },
+  {
+    id: "radio",
+    group: "Components",
+    title: "Rowan Radio",
+    summary: "Radio component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-radio", "radio"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-radio-usage">
+        <h2>Radio usage</h2>
+        <p>Use rowan-radio to compose radio patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-radio></rowan-radio>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-radio-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-radio></rowan-radio>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-radio")}
+    `,
+  },
+  {
+    id: "radio-group",
+    group: "Components",
+    title: "Rowan Radio Group",
+    summary: "Radio Group component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-radio-group", "radio group"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-radio-group-usage">
+        <h2>Radio Group usage</h2>
+        <p>Use rowan-radio-group to compose radio group patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-radio-group></rowan-radio-group>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-radio-group-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-radio-group></rowan-radio-group>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-radio-group")}
+    `,
+  },
+  {
+    id: "select",
+    group: "Components",
+    title: "Rowan Select",
+    summary: "Select component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-select", "select"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-select-usage">
+        <h2>Select usage</h2>
+        <p>Use rowan-select to compose select patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-select></rowan-select>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-select-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-select></rowan-select>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-select")}
+    `,
+  },
+  {
+    id: "skeleton",
+    group: "Components",
+    title: "Rowan Skeleton",
+    summary: "Skeleton component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-skeleton", "skeleton"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-skeleton-usage">
+        <h2>Skeleton usage</h2>
+        <p>Use rowan-skeleton to compose skeleton patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-skeleton></rowan-skeleton>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-skeleton-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-skeleton></rowan-skeleton>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-skeleton")}
+    `,
+  },
+  {
+    id: "source-meta",
+    group: "Components",
+    title: "Rowan Source Meta",
+    summary: "Source Meta component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-source-meta", "source meta"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-source-meta-usage">
+        <h2>Source Meta usage</h2>
+        <p>Use rowan-source-meta to compose source meta patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-source-meta></rowan-source-meta>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-source-meta-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-source-meta></rowan-source-meta>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-source-meta")}
+    `,
+  },
+  {
+    id: "spinner",
+    group: "Components",
+    title: "Rowan Spinner",
+    summary: "Spinner component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-spinner", "spinner"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-spinner-usage">
+        <h2>Spinner usage</h2>
+        <p>Use rowan-spinner to compose spinner patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-spinner></rowan-spinner>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-spinner-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-spinner></rowan-spinner>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-spinner")}
+    `,
+  },
+  {
+    id: "switch",
+    group: "Components",
+    title: "Rowan Switch",
+    summary: "Switch component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-switch", "switch"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-switch-usage">
+        <h2>Switch usage</h2>
+        <p>Use rowan-switch to compose switch patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-switch></rowan-switch>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-switch-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-switch></rowan-switch>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-switch")}
+    `,
+  },
+  {
+    id: "tab",
+    group: "Components",
+    title: "Rowan Tab",
+    summary: "Tab component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-tab", "tab"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-tab-usage">
+        <h2>Tab usage</h2>
+        <p>Use rowan-tab to compose tab patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-tab></rowan-tab>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-tab-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-tab></rowan-tab>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-tab")}
+    `,
+  },
+  {
+    id: "tab-panel",
+    group: "Components",
+    title: "Rowan Tab Panel",
+    summary: "Tab Panel component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-tab-panel", "tab panel"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-tab-panel-usage">
+        <h2>Tab Panel usage</h2>
+        <p>Use rowan-tab-panel to compose tab panel patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-tab-panel></rowan-tab-panel>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-tab-panel-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-tab-panel></rowan-tab-panel>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-tab-panel")}
+    `,
+  },
+  {
+    id: "tabs",
+    group: "Components",
+    title: "Rowan Tabs",
+    summary: "Tabs component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-tabs", "tabs"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-tabs-usage">
+        <h2>Tabs usage</h2>
+        <p>Use rowan-tabs to compose tabs patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-tabs></rowan-tabs>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-tabs-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-tabs></rowan-tabs>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-tabs")}
+    `,
+  },
+  {
+    id: "text-field",
+    group: "Components",
+    title: "Rowan Text Field",
+    summary: "Text Field component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-text-field", "text field"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-text-field-usage">
+        <h2>Text Field usage</h2>
+        <p>Use rowan-text-field to compose text field patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-text-field></rowan-text-field>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-text-field-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-text-field></rowan-text-field>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-text-field")}
+    `,
+  },
+  {
+    id: "textarea",
+    group: "Components",
+    title: "Rowan Textarea",
+    summary: "Textarea component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-textarea", "textarea"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-textarea-usage">
+        <h2>Textarea usage</h2>
+        <p>Use rowan-textarea to compose textarea patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-textarea></rowan-textarea>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-textarea-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-textarea></rowan-textarea>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-textarea")}
+    `,
+  },
+  {
+    id: "tooltip",
+    group: "Components",
+    title: "Rowan Tooltip",
+    summary: "Tooltip component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-tooltip", "tooltip"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-tooltip-usage">
+        <h2>Tooltip usage</h2>
+        <p>Use rowan-tooltip to compose tooltip patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-tooltip></rowan-tooltip>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-tooltip-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-tooltip></rowan-tooltip>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-tooltip")}
+    `,
+  },
+  {
+    id: "tree-item",
+    group: "Components",
+    title: "Rowan Tree Item",
+    summary: "Tree Item component for composable UI patterns.",
+    tags: ["component"],
+    keywords: ["rowan-tree-item", "tree item"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="rowan-tree-item-usage">
+        <h2>Tree Item usage</h2>
+        <p>Use rowan-tree-item to compose tree item patterns in your application.</p>
+        <div class="demo-row">
+          <rowan-tree-item></rowan-tree-item>
+        </div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="rowan-tree-item-snippet">
+        <h2>Basic example</h2>
+        ${codeBlock(`<rowan-tree-item></rowan-tree-item>`, "html")}
+      </section>
+
+      ${renderApiReference("rowan-tree-item")}
+    `,
+  },
+
   {
     id: "investigation-queue",
     group: "Workflows",
