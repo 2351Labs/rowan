@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Git pre-push hook: run quick CI checks before pushing
+# 
+# Runs `npm run ci:local -- --quick` to catch issues before they reach CI.
+# Can be skipped with: ROWAN_SKIP_HOOKS=1 git push
+# 
+# Install: npm run hooks:install
+
+set -e
+
+# Allow skipping with environment variable
+if [ -n "$ROWAN_SKIP_HOOKS" ]; then
+  echo "⚠️  Skipping pre-push hook (ROWAN_SKIP_HOOKS is set)"
+  exit 0
+fi
+
+echo ""
+echo "Running pre-push checks (npm run ci:local -- --quick)..."
+echo "Skip with: ROWAN_SKIP_HOOKS=1 git push"
+echo ""
+
+# Run quick CI checks
+npm run ci:local -- --quick
+
+exit $?
