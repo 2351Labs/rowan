@@ -27,5 +27,7 @@ export const RowanTable = createRowanComponent({
     onRowanDataRequest: "rowan-data-request",
     onRowanDataLoad: "rowan-data-load",
     onRowanDataError: "rowan-data-error",
+    onRowanCopy: "rowan-copy",
+    onRowanExport: "rowan-export",
   },
 });

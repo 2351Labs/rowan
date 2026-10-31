@@ -79,6 +79,12 @@ const DEFAULT_MESSAGES = Object.freeze({
   retry: "Retry",
   rowsFailed: "Could not load rows.",
   rowsLoaded: "Loaded {count} rows.",
+  copiedRows: "Copied {count} rows.",
+  copiedCell: "Copied 1 cell.",
+  nothingToCopy: "Nothing to copy.",
+  copyFailed: "Could not copy.",
+  exportedFile: "Exported {filename}.",
+  exportFailed: "Could not export.",
 });
 
 function positiveNumber(value, fallback) {
@@ -233,6 +239,12 @@ function nonNegativeInteger(value, fallback) {
  * @property {string} [retry]
  * @property {string | ((context: { count: number }) => string)} [rowsLoaded]
  * @property {string} [rowsFailed]
+ * @property {string | ((context: { count: number }) => string)} [copiedRows]
+ * @property {string} [copiedCell]
+ * @property {string} [nothingToCopy]
+ * @property {string} [copyFailed]
+ * @property {string | ((context: { filename: string }) => string)} [exportedFile]
+ * @property {string} [exportFailed]
  */
 
 function isDevelopmentEnvironment() {
@@ -304,6 +316,8 @@ function isDevelopmentEnvironment() {
  * @event rowan-data-request - Fired before a server read. Cancelable. `detail` is `{ page, pageSize, sort, filters }`. `preventDefault()` skips the request.
  * @event rowan-data-load - Fired after `getRows` resolves. `detail` includes `rows`, `total`, and the query.
  * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
+ * @event rowan-copy - Fired before a clipboard write. Cancelable. `detail.text` is TSV and `detail.html` is an HTML table. Listeners may replace either, or `detail.rows`.
+ * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -368,6 +382,7 @@ export class RowanTable extends BaseElement {
   #reordering = null;
   #editing = null;
   #rowEditing = null;
+  #focusedCell = null;
 
   #root = null;
   #tableViewport = null;
@@ -905,6 +920,14 @@ export class RowanTable extends BaseElement {
 
       this.listen(this.#theadRow, "dragend", (event) => {
         this.#handleReorderEnd(event);
+      });
+
+      this.listen(this.renderRoot, "keydown", (event) => {
+        this.#handleCopyKey(event);
+      });
+
+      this.listen(this.#tbody, "focusin", (event) => {
+        this.#trackFocusedCell(event);
       });
 
       this.listen(this.#tbody, "click", (event) => {
@@ -3505,6 +3528,115 @@ export class RowanTable extends BaseElement {
     const count = this.#renderableColumns().length;
     const selectableColumns = this.selectable === "none" ? 0 : 1;
     return Math.max(1, count + selectableColumns);
+  }
+
+  /**
+   * Copy selected rows, or the focused cell when nothing is selected, as TSV and an HTML table.
+   * @param {{ includeHeaders?: boolean, columns?: string[], scope?: "selected" | "page" | "all" | "cell", formatValues?: boolean, guardFormulas?: boolean }} [options]
+   */
+  async copyToClipboard(options = {}) {
+    const mod = await import("./table-export.js");
+    return mod.copyTable(this.#exportBridge(), options);
+  }
+
+  /**
+   * Download a CSV file. In server mode the loaded page is exported unless `getRows` supplies the full set.
+   * @param {{ filename?: string, columns?: string[], scope?: "all" | "selected" | "page", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }} [options]
+   */
+  async exportCsv(options = {}) {
+    const mod = await import("./table-export.js");
+    return mod.exportCsv(this.#exportBridge(), options);
+  }
+
+  /**
+   * Download a real .xlsx workbook. Options match `exportCsv`.
+   * @param {{ filename?: string, columns?: string[], scope?: "all" | "selected" | "page", includeHeaders?: boolean, formatValues?: boolean, guardFormulas?: boolean, getRows?: () => Promise<RowanTableRow[] | { rows: RowanTableRow[] }> }} [options]
+   */
+  async exportExcel(options = {}) {
+    const mod = await import("./table-export.js");
+    return mod.exportExcel(this.#exportBridge(), options);
+  }
+
+  #exportBridge() {
+    return {
+      snapshot: (sourceRows) => {
+        const entries = Array.isArray(sourceRows)
+          ? sourceRows.map((row, rowIndex) => ({
+              row,
+              rowIndex,
+              rowId: this.#resolveRowId(row, rowIndex),
+            }))
+          : this.dataMode === "server"
+            ? (this.#server?.rows() ?? []).map((row, rowIndex) => ({
+                row,
+                rowIndex,
+                rowId: this.#resolveRowId(row, rowIndex),
+              }))
+            : this.#applySort(
+                this.rows.map((row, rowIndex) => ({
+                  row,
+                  rowIndex,
+                  rowId: this.#resolveRowId(row, rowIndex),
+                })),
+              );
+        return {
+          server: this.dataMode === "server",
+          columns: this.#configuredColumns().map((column) => ({
+            column,
+            id: column.id,
+            header: column.header || column.id,
+            hidden: Boolean(column.hidden),
+            type: this.#resolveCellType(column),
+          })),
+          entries,
+          selected: this.#state.selected,
+          focus: this.#focusedCell,
+          page: this.#state.page,
+          total: this.page?.total ?? null,
+        };
+      },
+      cell: (entry, column, formatValues) => {
+        const value = this.#resolveValue(entry.row, entry.rowIndex, column.column);
+        return {
+          value,
+          text:
+            formatValues === false
+              ? this.#normalizeText(value)
+              : this.#formatValue(column.column, value, entry.row, entry.rowIndex),
+          type: column.type,
+        };
+      },
+      emit: (type, detail) => emit(this, type, detail, { cancelable: true }),
+      announce: (text) => this.#announceStatus(text),
+      message: (key, params) => resolveMessage(this.#messages, DEFAULT_MESSAGES, key, params),
+    };
+  }
+
+  #announceStatus(text) {
+    const status = this.renderRoot?.querySelector(".data-status");
+    if (!status || !text) return;
+    status.textContent = text;
+  }
+
+  #handleCopyKey(event) {
+    if (event.key !== "c" && event.key !== "C") return;
+    if (!event.ctrlKey && !event.metaKey) return;
+    if (event.altKey || event.shiftKey || this.#editing) return;
+    const target = event.target;
+    if (target instanceof Element && target.closest("input, textarea, select, [contenteditable='true']")) {
+      return;
+    }
+    event.preventDefault();
+    void this.copyToClipboard();
+  }
+
+  #trackFocusedCell(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const cell = target.closest("td[data-column-id]");
+    const row = cell?.closest("tr[data-row-id]");
+    if (!cell || !row || cell.dataset.columnId === SELECT_COLUMN_ID) return;
+    this.#focusedCell = { rowId: row.dataset.rowId, columnId: cell.dataset.columnId };
   }
 }
 

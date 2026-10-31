@@ -3553,3 +3553,245 @@ describe("server data", () => {
     document.body.removeChild(host);
   });
 });
+
+describe("clipboard and export", () => {
+  function mount(config) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = config;
+    return { host, table };
+  }
+
+  function stubClipboard() {
+    const writes = [];
+    const original = navigator.clipboard;
+    const clipboard = {
+      async write(items) {
+        const record = {};
+        for (const item of items) {
+          for (const type of item.types) record[type] = await (await item.getType(type)).text();
+        }
+        writes.push(record);
+      },
+      async writeText(text) {
+        writes.push({ "text/plain": text });
+      },
+    };
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: clipboard });
+    return {
+      writes,
+      restore() {
+        Object.defineProperty(navigator, "clipboard", { configurable: true, value: original });
+      },
+    };
+  }
+
+  const rows = [
+    { id: "a", name: "Ada", note: "Hello, \"world\"", score: 12, flag: true, joined: new Date(2020, 0, 15), secret: "hidden" },
+    { id: "b", name: "=cmd|' /C calc'!A0", note: "Plain", score: -3, flag: false, joined: new Date(2021, 5, 1), secret: "nope" },
+  ];
+
+  const columns = [
+    { id: "name", header: "Name", format: (value) => String(value).toUpperCase() },
+    { id: "note", header: "Note" },
+    { id: "score", header: "Score", type: "number" },
+    { id: "flag", header: "Flag", type: "checkbox" },
+    { id: "joined", header: "Joined", type: "date" },
+    { id: "secret", header: "Secret", hidden: true },
+  ];
+
+  it("copies selected rows as TSV and HTML and skips hidden columns", async () => {
+    const clipboard = stubClipboard();
+    const { host, table } = mount({ columns, rows, rowId: "id", selectable: "multiple" });
+    table.selected = ["b"];
+    const result = await table.copyToClipboard({ includeHeaders: true });
+    expect(result.copied).to.equal(true);
+    expect(result.text).to.equal(
+      `Name\tNote\tScore\tFlag\tJoined\n'=CMD|' /C CALC'!A0\tPlain\t-3\tfalse\t${String(rows[1].joined)}`,
+    );
+    expect(result.html).to.include("<th>Name</th>");
+    expect(result.html).to.not.include("Hello");
+    expect(result.text).to.not.include("hidden");
+    expect(clipboard.writes[0]["text/plain"]).to.equal(result.text);
+    expect(clipboard.writes[0]["text/html"]).to.include("<table>");
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("Copied 1 rows.");
+    clipboard.restore();
+    document.body.removeChild(host);
+  });
+
+  it("copies the focused cell when nothing is selected", async () => {
+    const clipboard = stubClipboard();
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    await nextFrame();
+    const cell = table.renderRoot.querySelector('td[data-column-id="note"]');
+    cell.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "c", ctrlKey: true, bubbles: true }));
+    await waitFor(() => clipboard.writes.length === 1);
+    expect(clipboard.writes[0]["text/plain"]).to.equal('Hello, "world"');
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("Copied 1 cell.");
+    clipboard.restore();
+    document.body.removeChild(host);
+  });
+
+  it("lets rowan-copy replace the payload or cancel the write", async () => {
+    const clipboard = stubClipboard();
+    const { host, table } = mount({ columns, rows, rowId: "id", selectable: "multiple" });
+    table.selected = ["a"];
+    table.addEventListener("rowan-copy", (event) => {
+      event.detail.text = "custom";
+      event.detail.html = "<table><tr><td>custom</td></tr></table>";
+    });
+    const replaced = await table.copyToClipboard();
+    expect(replaced.text).to.equal("custom");
+    expect(clipboard.writes.at(-1)["text/plain"]).to.equal("custom");
+
+    table.addEventListener("rowan-copy", (event) => event.preventDefault(), { once: true });
+    const blocked = await table.copyToClipboard();
+    expect(blocked.copied).to.equal(false);
+    expect(blocked.prevented).to.equal(true);
+    expect(clipboard.writes.length).to.equal(1);
+    clipboard.restore();
+    document.body.removeChild(host);
+  });
+
+  it("escapes CSV fields and guards formula injection", async () => {
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    const result = await table.exportCsv({ filename: "people.csv", scope: "all" });
+    expect(result.exported).to.equal(true);
+    expect(result.filename).to.equal("people.csv");
+    expect(result.csv.startsWith("\uFEFF")).to.equal(true);
+    const body = result.csv.slice(1);
+    expect(body.split("\r\n")[0]).to.equal("Name,Note,Score,Flag,Joined");
+    expect(body).to.include('"Hello, ""world"""');
+    expect(body).to.include("'=CMD|' /C CALC'!A0");
+    expect(body).to.not.include("hidden");
+    expect(body).to.include("-3");
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("Exported people.csv.");
+
+    table.addEventListener("rowan-export", (event) => {
+      event.detail.filename = "renamed.csv";
+      event.detail.rows = [["safe"]];
+    });
+    const renamed = await table.exportCsv({ scope: "selected", includeHeaders: false });
+    expect(renamed.filename).to.equal("renamed.csv");
+    expect(renamed.csv).to.include("safe");
+    expect(renamed.csv).to.not.include("Ada");
+    document.body.removeChild(host);
+  });
+
+  it("writes a stored xlsx workbook with typed values and a bold header", async () => {
+    const { readStoredZip } = await import("./table-export.js");
+    const { host, table } = mount({ columns, rows, rowId: "id" });
+    const result = await table.exportExcel({
+      filename: "people.xlsx",
+      scope: "all",
+      formatValues: false,
+      columns: ["name", "score", "flag", "joined", "secret"],
+    });
+    expect(result.exported).to.equal(true);
+    const files = readStoredZip(result.bytes);
+    expect(files.has("[Content_Types].xml")).to.equal(true);
+    expect(files.get("xl/workbook.xml")).to.include('sheet name="Sheet1"');
+    const sheet = files.get("xl/worksheets/sheet1.xml");
+    expect(sheet).to.include('s="1"');
+    expect(sheet).to.include("Ada");
+    expect(sheet).to.include("'=cmd|' /C calc'!A0");
+    expect(sheet).to.include("<v>12</v>");
+    expect(sheet).to.include('t="b"');
+    expect(sheet).to.include('s="2"');
+    const serial = String(Math.round((Date.UTC(2020, 0, 15) - Date.UTC(1899, 11, 30)) / 86400000));
+    expect(sheet).to.include(`<v>${serial}</v>`);
+    expect(sheet).to.include("hidden");
+    expect(files.get("xl/styles.xml")).to.include("<b/>");
+    document.body.removeChild(host);
+  });
+
+  it("exports the current page, selected rows, and column order", async () => {
+    const { host, table } = mount({
+      columns,
+      rows,
+      rowId: "id",
+      selectable: "multiple",
+      page: { index: 0, size: 1 },
+    });
+    const page = await table.exportCsv({ scope: "page", includeHeaders: false, formatValues: false, guardFormulas: false });
+    expect(page.csv).to.include("Ada");
+    expect(page.csv).to.not.include("=cmd");
+
+    table.selected = ["b"];
+    const selected = await table.exportCsv({
+      scope: "selected",
+      includeHeaders: false,
+      formatValues: false,
+      guardFormulas: false,
+    });
+    expect(selected.csv).to.include("=cmd|' /C calc'!A0");
+    expect(selected.csv).to.not.include("Ada");
+
+    const ordered = await table.exportCsv({
+      scope: "all",
+      columns: ["score", "name"],
+      includeHeaders: true,
+      formatValues: false,
+      guardFormulas: false,
+    });
+    expect(ordered.csv.slice(1).split("\r\n")[0]).to.equal("Score,Name");
+    document.body.removeChild(host);
+  });
+
+  it("exports the loaded server page unless getRows supplies the rest", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.innerHTML = `<rowan-table data-mode="server"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    const all = [
+      { id: "1", name: "One" },
+      { id: "2", name: "Two" },
+      { id: "3", name: "Three" },
+    ];
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      page: { index: 0, size: 2 },
+    };
+    table.dataSource = {
+      debounce: 0,
+      getRows: ({ page, pageSize }) => {
+        const start = page * pageSize;
+        return Promise.resolve({ rows: all.slice(start, start + pageSize), total: all.length });
+      },
+    };
+    await waitFor(() => table.renderRoot.textContent.includes("One"));
+    const loaded = await table.exportCsv({ includeHeaders: false, guardFormulas: false });
+    expect(loaded.scope).to.equal("page");
+    expect(loaded.csv).to.include("One");
+    expect(loaded.csv).to.include("Two");
+    expect(loaded.csv).to.not.include("Three");
+
+    const full = await table.exportCsv({
+      scope: "all",
+      includeHeaders: false,
+      guardFormulas: false,
+      getRows: async () => all,
+    });
+    expect(full.truncated).to.equal(false);
+    expect(full.csv).to.include("Three");
+
+    const truncated = await table.exportCsv({ scope: "all", includeHeaders: false, guardFormulas: false });
+    expect(truncated.truncated).to.equal(true);
+    expect(truncated.csv).to.not.include("Three");
+
+    table.selectable = "multiple";
+    table.selected = ["1", "3"];
+    const selected = await table.exportCsv({ scope: "selected", includeHeaders: false, guardFormulas: false });
+    expect(selected.csv).to.include("One");
+    expect(selected.csv).to.not.include("Three");
+
+    table.addEventListener("rowan-export", (event) => event.preventDefault(), { once: true });
+    const blocked = await table.exportCsv();
+    expect(blocked.exported).to.equal(false);
+    expect(blocked.prevented).to.equal(true);
+    document.body.removeChild(host);
+  });
+});

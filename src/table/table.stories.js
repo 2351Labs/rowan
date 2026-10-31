@@ -1432,6 +1432,67 @@ export const ServerData = {
   },
 };
 
+export const ClipboardAndExport = {
+  render: () => {
+    return `
+      <div style="padding: 1rem; display: grid; gap: 0.75rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <button type="button" id="copy-rows">copyToClipboard</button>
+          <button type="button" id="copy-headers">copyToClipboard includeHeaders</button>
+          <button type="button" id="export-csv">exportCsv</button>
+          <button type="button" id="export-page">exportCsv scope page</button>
+          <button type="button" id="export-selected">exportCsv scope selected</button>
+          <button type="button" id="export-xlsx">exportExcel</button>
+          <button type="button" id="export-raw">exportExcel formatValues false</button>
+        </div>
+        <p id="export-events"></p>
+        <rowan-table id="export-table" selectable="multiple" density="md" caption="Orders"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("#export-table");
+        const events = document.querySelector("#export-events");
+        const note = (text) => { events.textContent = text; };
+        table.config = {
+          columns: [
+            { id: "order", header: "Order", type: "number" },
+            { id: "customer", header: "Customer" },
+            { id: "note", header: "Note", format: (value) => String(value).trim() },
+            { id: "total", header: "Total", type: "number", format: (value) => "$" + Number(value).toFixed(2) },
+            { id: "paid", header: "Paid", type: "checkbox" },
+            { id: "shipped", header: "Shipped", type: "date" },
+            { id: "internal", header: "Internal", hidden: true },
+          ],
+          rows: [
+            { id: "o-1", order: 1042, customer: "Northwind Traders", note: "Net 30", total: 1280, paid: true, shipped: "2026-03-02", internal: "skip" },
+            { id: "o-2", order: 1043, customer: "Ada Lovelace", note: "Rush, dock 4", total: 640.5, paid: false, shipped: "2026-03-18", internal: "skip" },
+            { id: "o-3", order: 1044, customer: "=SUM(A1)", note: "Check the formula text", total: 90, paid: true, shipped: "2026-04-01", internal: "skip" },
+            { id: "o-4", order: 1045, customer: "Grace Hopper", note: "Hold", total: 2100, paid: false, shipped: "2026-04-09", internal: "skip" },
+          ],
+          rowId: "id",
+          page: { index: 0, size: 3 },
+        };
+        table.selected = ["o-2", "o-4"];
+        document.querySelector("#copy-rows").addEventListener("click", () => table.copyToClipboard());
+        document.querySelector("#copy-headers").addEventListener("click", () => table.copyToClipboard({ includeHeaders: true, guardFormulas: true }));
+        document.querySelector("#export-csv").addEventListener("click", () => table.exportCsv({ filename: "orders.csv", scope: "all", columns: ["customer", "note", "total"] }));
+        document.querySelector("#export-page").addEventListener("click", () => table.exportCsv({ filename: "page.csv", scope: "page", includeHeaders: true }));
+        document.querySelector("#export-selected").addEventListener("click", () => table.exportCsv({ filename: "selected.csv", scope: "selected", guardFormulas: false }));
+        document.querySelector("#export-xlsx").addEventListener("click", () => table.exportExcel({ filename: "orders.xlsx", scope: "all" }));
+        document.querySelector("#export-raw").addEventListener("click", () => table.exportExcel({ filename: "orders-raw.xlsx", scope: "all", formatValues: false, getRows: async () => table.rows }));
+        table.addEventListener("rowan-copy", (event) => note("rowan-copy " + event.detail.scope + " " + event.detail.rows.length));
+        table.addEventListener("rowan-export", (event) => note("rowan-export " + event.detail.format + " " + event.detail.filename));
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Ctrl/Cmd+C copies the selected rows, or the focused cell when nothing is selected, as TSV and an HTML table. copyToClipboard, exportCsv, and exportExcel accept includeHeaders, columns, scope (all, selected, page, or cell), formatValues, guardFormulas, filename, and getRows. Hidden columns stay out unless named. rowan-copy and rowan-export are cancelable. Paste is not built in.",
+      },
+    },
+  },
+};
+
 export const CellEditChrome = {
   name: "Cell edit chrome",
   parameters: createEventScriptParameters({
