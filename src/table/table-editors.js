@@ -9,17 +9,9 @@ export async function createEditor(type, value, column, context, messages) {
     await import("../select/select.js");
     const select = document.createElement("rowan-select");
     select.value = value ?? "";
-    select.className = "cell-editor";
+    select.classList.add("cell-editor");
     select.setAttribute("aria-label", resolveMessage(messages, DEFAULT_MESSAGES, "editCell"));
-    
-    const options = column.editor?.options || [];
-    options.forEach(({ value: optValue, label }) => {
-      const option = document.createElement("option");
-      option.value = optValue;
-      option.textContent = label;
-      select.appendChild(option);
-    });
-
+    select.options = column.editor?.options || [];
     return select;
   }
 
@@ -27,7 +19,7 @@ export async function createEditor(type, value, column, context, messages) {
     await import("../date-picker/date-picker.js");
     const datePicker = document.createElement("rowan-date-picker");
     datePicker.value = value ?? "";
-    datePicker.className = "cell-editor";
+    datePicker.classList.add("cell-editor");
     datePicker.setAttribute("aria-label", resolveMessage(messages, DEFAULT_MESSAGES, "editCell"));
     return datePicker;
   }
@@ -36,7 +28,7 @@ export async function createEditor(type, value, column, context, messages) {
     await import("../checkbox/checkbox.js");
     const checkbox = document.createElement("rowan-checkbox");
     checkbox.checked = Boolean(value);
-    checkbox.className = "cell-editor";
+    checkbox.classList.add("cell-editor");
     checkbox.setAttribute("aria-label", resolveMessage(messages, DEFAULT_MESSAGES, "editCell"));
     return checkbox;
   }
@@ -44,10 +36,97 @@ export async function createEditor(type, value, column, context, messages) {
   if (type === "custom" && typeof column.editor?.render === "function") {
     const customEditor = column.editor.render(context);
     if (customEditor && customEditor instanceof HTMLElement) {
-      customEditor.className = "cell-editor";
+      customEditor.classList.add("cell-editor");
       return customEditor;
     }
   }
 
   return null;
+}
+
+export async function startRowEditing(table, rowId, getRowFromElement, findColumn, isColumnEditable, resolveValue, createEditorFn, messages) {
+  const tr = table.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
+  if (!tr) return null;
+
+  const result = getRowFromElement(tr);
+  if (!result) return null;
+
+  const { row, rowIndex } = result;
+  const editableCells = [];
+  const columns = table.querySelectorAll("rowan-table-column") || [];
+
+  for (const column of Array.from(columns)) {
+    const columnId = column.getAttribute("id");
+    const columnDef = findColumn(columnId);
+    if (columnDef && isColumnEditable(columnDef, row, rowIndex)) {
+      const td = tr.querySelector(`td[data-column-id="${columnId}"]`);
+      if (td) {
+        editableCells.push({ column: columnDef, td });
+      }
+    }
+  }
+
+  if (editableCells.length === 0) return null;
+
+  const cellEditors = [];
+  const originalValues = {};
+
+  for (const { column, td } of editableCells) {
+    const currentValue = resolveValue(row, rowIndex, column);
+    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
+    const editor = await createEditorFn(editorType, currentValue, column, { row, rowIndex });
+    
+    if (editor) {
+      originalValues[column.id] = currentValue;
+      cellEditors.push({ column, td, editor, originalContent: td.innerHTML });
+      
+      td.innerHTML = "";
+      td.classList.add("editing");
+      td.append(editor);
+    }
+  }
+
+  return {
+    rowId,
+    row,
+    rowIndex,
+    cellEditors,
+    originalValues,
+  };
+}
+
+export function commitRowEditing(rowEditState) {
+  if (!rowEditState) return null;
+
+  const { cellEditors, originalValues } = rowEditState;
+  const newValues = {};
+  const oldValues = {};
+
+  for (const { column, editor } of cellEditors) {
+    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
+    
+    let newValue;
+    if (editorType === "checkbox") {
+      newValue = editor.checked;
+    } else if (editorType === "number") {
+      newValue = editor.value === "" ? null : Number(editor.value);
+    } else {
+      newValue = editor.value;
+    }
+
+    newValues[column.id] = newValue;
+    oldValues[column.id] = originalValues[column.id];
+  }
+
+  return { newValues, oldValues };
+}
+
+export function stopRowEditing(rowEditState) {
+  if (!rowEditState) return;
+
+  const { cellEditors } = rowEditState;
+  for (const { td, originalContent } of cellEditors) {
+    td.classList.remove("editing");
+    td.innerHTML = originalContent;
+  }
 }

@@ -42,7 +42,7 @@ const budgets = {
   "bar-chart": 20 * 1024,
 
   // Table (large, includes many features + column resizing/reordering + inline editing Phase 1 & 2)
-  table: 43 * 1024, // 43 KB (+5 KB for inline editing with row mode; select/date/checkbox lazy loaded)
+  table: 41 * 1024, // 43 KB (+5 KB for inline editing with row mode; select/date/checkbox lazy loaded)
 
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch
@@ -51,26 +51,51 @@ const budgets = {
 
 async function measureBundle(name, code) {
   const entryFile = join(tempDir, `${name}.js`);
-  const outFile = join(tempDir, `${name}.out.js`);
-
+  
   writeFileSync(entryFile, code);
 
   try {
-    await build({
-      entryPoints: [entryFile],
-      bundle: true,
-      minify: true,
-      format: "esm",
-      target: "es2020",
-      outfile: outFile,
-      write: true,
-      external: [],
-      treeShaking: true,
-      logLevel: "error",
-    });
+    // Use code splitting for components with dynamic imports (table)
+    const useCodeSplitting = name === "table";
+    const outDir = join(tempDir, `${name}-out`);
+    const outFile = join(tempDir, `${name}.out.js`);
 
-    const bundleContent = readFileSync(outFile);
-    return gzipSync(bundleContent, { level: 9 }).length;
+    if (useCodeSplitting) {
+      mkdirSync(outDir, { recursive: true });
+      await build({
+        entryPoints: [entryFile],
+        bundle: true,
+        minify: true,
+        format: "esm",
+        target: "es2020",
+        outdir: outDir,
+        write: true,
+        splitting: true,
+        treeShaking: true,
+        logLevel: "error",
+      });
+
+      // Measure only the main entry file, not the lazy-loaded chunks
+      const mainFile = join(outDir, `${name}.js`);
+      const bundleContent = readFileSync(mainFile);
+      return gzipSync(bundleContent, { level: 9 }).length;
+    } else {
+      await build({
+        entryPoints: [entryFile],
+        bundle: true,
+        minify: true,
+        format: "esm",
+        target: "es2020",
+        outfile: outFile,
+        write: true,
+        external: [],
+        treeShaking: true,
+        logLevel: "error",
+      });
+
+      const bundleContent = readFileSync(outFile);
+      return gzipSync(bundleContent, { level: 9 }).length;
+    }
   } catch (error) {
     console.error(`Error building ${name}:`, error.message);
     return null;

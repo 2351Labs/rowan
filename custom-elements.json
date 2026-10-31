@@ -27778,6 +27778,115 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table/table-editors.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createEditor",
+          "parameters": [
+            {
+              "name": "type"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "column"
+            },
+            {
+              "name": "context"
+            },
+            {
+              "name": "messages"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "startRowEditing",
+          "parameters": [
+            {
+              "name": "table"
+            },
+            {
+              "name": "rowId"
+            },
+            {
+              "name": "getRowFromElement"
+            },
+            {
+              "name": "findColumn"
+            },
+            {
+              "name": "isColumnEditable"
+            },
+            {
+              "name": "resolveValue"
+            },
+            {
+              "name": "createEditorFn"
+            },
+            {
+              "name": "messages"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "commitRowEditing",
+          "parameters": [
+            {
+              "name": "rowEditState"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "stopRowEditing",
+          "parameters": [
+            {
+              "name": "rowEditState"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createEditor",
+          "declaration": {
+            "name": "createEditor",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "startRowEditing",
+          "declaration": {
+            "name": "startRowEditing",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "commitRowEditing",
+          "declaration": {
+            "name": "commitRowEditing",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stopRowEditing",
+          "declaration": {
+            "name": "stopRowEditing",
+            "module": "src/table/table-editors.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table/table.js",
       "declarations": [
         {

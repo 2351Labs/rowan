@@ -2844,6 +2844,56 @@ describe("inline editing", () => {
     document.body.removeChild(host);
   });
 
+  it("commits select editor value correctly", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        {
+          id: "status",
+          header: "Status",
+          editable: true,
+          editor: {
+            type: "select",
+            options: [
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ],
+          },
+        },
+      ],
+      rows: [{ id: "1", status: "active" }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    let commitEvent = null;
+    table.addEventListener("rowan-edit-commit", (e) => {
+      commitEvent = e;
+    });
+
+    const cell = table.renderRoot.querySelector('td[data-editable="true"]');
+    cell.focus();
+    cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    const select = table.renderRoot.querySelector("rowan-select");
+    select.value = "inactive";
+    select.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(commitEvent).to.exist;
+    expect(commitEvent.detail.newValue).to.equal("inactive");
+    expect(commitEvent.detail.oldValue).to.equal("active");
+
+    document.body.removeChild(host);
+  });
+
   it("supports date editor", async () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
