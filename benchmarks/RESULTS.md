@@ -2,6 +2,13 @@
 
 Generated: 2026-10-01T04:51:17.511Z
 
+> **Note:** These benchmarks measure **unminified ESM** transfer over a local Vite dev server.
+> For production bundle sizes (minified + gzip), see [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md).
+>
+> **Quick comparison:**
+> - **Dev (this benchmark):** 3 controls = 703 KB unminified
+> - **Production:** 3 controls = **15.4 KB** minified + gzip (**97.8% smaller**)
+
 ## Environment
 
 - Node: v24.14.1
@@ -38,6 +45,8 @@ The table uses its public configuration API with text/number columns, multiple s
 | Page transition             |    6.7 / 7.33 |                     n/a |         0 / 0 |               0 / 0 |
 
 ## Scope Notes
+
+**Development vs Production:** These benchmarks measure unminified ESM module loading over a local dev server, not production bundle sizes. Production builds with minification and compression are 95-98% smaller. See [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md) for production measurements.
 
 Lit and FAST Element are authoring runtimes, so their adapters are minimal comparable custom elements rather than third-party design-system controls. Web Awesome uses its direct button, checkbox, and switch modules. Reconnect reuse compares internal shadow-DOM element identity after detach/reappend. No verified Web Awesome table component was available for this release, and the harness intentionally does not claim a cross-library table comparison. Heap measurements use Chromium's non-standard `performance.memory` API when available; unsupported engines report no heap values, and a zero result can reflect measurement granularity or collection timing.
 

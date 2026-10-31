@@ -36,6 +36,7 @@ jobs:
           fi
       - run: npm test
       - run: npm run test:package
+      - run: npm run size:check
       - run: npm run test --workspace=@rowan-ui/icons
       - run: npm run build-storybook
       - run: npm pack --dry-run

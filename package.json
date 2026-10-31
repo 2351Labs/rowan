@@ -669,6 +669,8 @@
     "test:package": "node ./scripts/check-registration-side-effects.mjs",
     "test:browser": "npm run fixtures:astro:build && web-test-runner \"{src,packages/*/src,test-fixtures/*}/**/*.test.js\" --node-resolve --config web-test-runner.playwright.config.js --concurrency=1",
     "benchmark": "node ./scripts/run-benchmarks.mjs && prettier --write benchmarks/RESULTS.md benchmarks/results/latest.json",
+    "size": "node ./scripts/analyze-bundle-size.mjs",
+    "size:check": "node ./scripts/check-size-budgets.mjs",
     "tokens:sync": "node ./scripts/sync-token-sheet.mjs",
     "tokens:check": "node ./scripts/sync-token-sheet.mjs --check",
     "messages:sync": "node ./scripts/sync-message-catalog.mjs",
