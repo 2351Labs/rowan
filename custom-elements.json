@@ -27778,6 +27778,35 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table/table-data-source.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "attachServerTable",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "object"
+              }
+            }
+          ],
+          "description": "Server-mode session. Loaded only when `data-mode=\"server\"`.\nOwns paging math, the error row, the status text, and the fetch lifecycle."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "attachServerTable",
+          "declaration": {
+            "name": "attachServerTable",
+            "module": "src/table/table-data-source.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table/table-editors.js",
       "declarations": [
         {
@@ -28186,6 +28215,26 @@
             },
             {
               "kind": "field",
+              "name": "dataMode"
+            },
+            {
+              "kind": "field",
+              "name": "dataSource",
+              "type": {
+                "text": "object | null"
+              },
+              "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
+            },
+            {
+              "kind": "field",
+              "name": "filters",
+              "type": {
+                "text": "Array<{ id: string, value: string }>"
+              },
+              "description": "Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them."
+            },
+            {
+              "kind": "field",
               "name": "editMode"
             },
             {
@@ -28441,6 +28490,18 @@
             {
               "description": "Fired when a row edit is discarded.",
               "name": "rowan-row-edit-cancel"
+            },
+            {
+              "description": "Fired before a server read. Cancelable. `detail` is `{ page, pageSize, sort, filters }`. `preventDefault()` skips the request.",
+              "name": "rowan-data-request"
+            },
+            {
+              "description": "Fired after `getRows` resolves. `detail` includes `rows`, `total`, and the query.",
+              "name": "rowan-data-load"
+            },
+            {
+              "description": "Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.",
+              "name": "rowan-data-error"
             }
           ],
           "attributes": [
@@ -28515,6 +28576,13 @@
               "type": {
                 "text": "string"
               }
+            },
+            {
+              "name": "data-mode",
+              "type": {
+                "text": "\"client\"|\"server\""
+              },
+              "description": "`client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`."
             },
             {
               "type": {

@@ -24,5 +24,8 @@ export const RowanTable = createRowanComponent({
     onRowanEditCancel: "rowan-edit-cancel",
     onRowanRowEditCommit: "rowan-row-edit-commit",
     onRowanRowEditCancel: "rowan-row-edit-cancel",
+    onRowanDataRequest: "rowan-data-request",
+    onRowanDataLoad: "rowan-data-load",
+    onRowanDataError: "rowan-data-error",
   },
 });

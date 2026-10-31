@@ -42,7 +42,7 @@ const budgets = {
   "bar-chart": 20 * 1024,
 
   // Table initial load: entry plus statically imported chunks.
-  // Phase 3 measured 40.42 KB. Ceiling stays 41 KB (about 0.6 KB of headroom).
+  // Server-mode rendering loads with table-data-source.js and is not counted here.
   table: 41 * 1024,
 
   // Common scenarios
