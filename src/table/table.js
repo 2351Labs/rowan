@@ -121,10 +121,12 @@ function nonNegativeInteger(value, fallback) {
 
 /**
  * @typedef {object} RowanTableColumnEditor
- * @property {"text" | "number"} [type]
+ * @property {"text" | "number" | "select" | "date" | "checkbox" | "custom"} [type]
  * @property {number} [min]
  * @property {number} [max]
  * @property {number} [step]
+ * @property {Array<{value: unknown, label: string}>} [options]
+ * @property {(context: RowanTableEditContext) => HTMLElement} [render]
  */
 
 /**
@@ -330,6 +332,7 @@ export class RowanTable extends BaseElement {
   #resizing = null;
   #reordering = null;
   #editing = null;
+  #rowEditing = null;
 
   #root = null;
   #tableViewport = null;
@@ -1630,13 +1633,10 @@ export class RowanTable extends BaseElement {
           if (result) {
             const { row, rowIndex } = result;
             if (this.#isColumnEditable(column, row, rowIndex)) {
-              if (event.key === "Enter" || event.key === "F2") {
+              const typed = event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+              if (event.key === "Enter" || event.key === "F2" || typed) {
                 event.preventDefault();
-                this.#startEditing(rowId, columnId);
-                return;
-              } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
-                event.preventDefault();
-                this.#startEditing(rowId, columnId, event.key);
+                this.#openEditor(rowId, columnId, typed ? event.key : undefined);
                 return;
               }
             }
@@ -1873,209 +1873,25 @@ export class RowanTable extends BaseElement {
     return true;
   }
 
-  #startEditing(rowId, columnId, initialValue = undefined) {
-    if (this.#editing) {
-      this.#stopEditing(false);
-    }
-
-    const tr = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
-    if (!tr) return;
-
-    const result = this.#getRowFromElement(tr);
-    if (!result) return;
-
-    const { row, rowIndex } = result;
-    const column = this.#findColumn(columnId);
-    if (!column || !this.#isColumnEditable(column, row, rowIndex)) return;
-
-    const td = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"] td[data-column-id="${columnId}"]`);
-    if (!td) return;
-
-    const currentValue = initialValue !== undefined ? initialValue : this.#resolveValue(row, rowIndex, column);
-
-    const cancelable = emit(this, "rowan-edit-start", {
-      rowId,
-      columnId,
-      value: currentValue,
-      row,
-      rowIndex,
-      column,
-    });
-
-    if (!cancelable) return;
-
-    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
-    const editor = this.#createEditor(editorType, currentValue, column);
-    if (!editor) return;
-
-    this.#editing = {
-      rowId,
-      columnId,
-      row,
-      rowIndex,
-      column,
-      td,
-      editor,
-      originalValue: currentValue,
-      originalContent: td.innerHTML,
+  async #openEditor(rowId, columnId, initialValue) {
+    const editors = await import("./table-editors.js");
+    const ctx = {
+      table: this,
+      root: this.renderRoot,
+      messages: this.#messages,
+      columns: this.#state.columns,
+      getRowFromElement: (tr) => this.#getRowFromElement(tr),
+      findColumn: (id) => this.#findColumn(id),
+      isColumnEditable: (column, row, rowIndex) => this.#isColumnEditable(column, row, rowIndex),
+      resolveValue: (row, rowIndex, column) => this.#resolveValue(row, rowIndex, column),
+      requestRender: () => this.requestRender(),
+      sync: (editing, rowEditing) => {
+        this.#editing = editing;
+        this.#rowEditing = rowEditing;
+      },
     };
-
-    td.innerHTML = "";
-    td.classList.add("editing");
-    td.append(editor);
-
-    if (editor.focus) editor.focus();
-    if (editor.select) editor.select();
-  }
-
-  #createEditor(type, value, column) {
-    if (type === "text") {
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = value ?? "";
-      input.className = "cell-editor";
-      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
-      
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#commitEditing();
-          this.#moveEditFocus("down");
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#stopEditing(false);
-        } else if (e.key === "Tab") {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#commitEditing();
-          this.#moveEditFocus(e.shiftKey ? "left" : "right");
-        }
-      });
-
-      return input;
-    }
-
-    if (type === "number") {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = value ?? "";
-      input.className = "cell-editor";
-      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
-      
-      if (column.editor?.min !== undefined) input.min = column.editor.min;
-      if (column.editor?.max !== undefined) input.max = column.editor.max;
-      if (column.editor?.step !== undefined) input.step = column.editor.step;
-
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#commitEditing();
-          this.#moveEditFocus("down");
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#stopEditing(false);
-        } else if (e.key === "Tab") {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#commitEditing();
-          this.#moveEditFocus(e.shiftKey ? "left" : "right");
-        }
-      });
-
-      return input;
-    }
-
-    return null;
-  }
-
-  #commitEditing() {
-    if (!this.#editing) return;
-
-    const { rowId, columnId, row, rowIndex, column, editor, originalValue } = this.#editing;
-    let newValue = editor.value;
-
-    if (column.type === "number" || column.editor?.type === "number") {
-      newValue = newValue === "" ? null : Number(newValue);
-    }
-
-    const cancelable = emit(this, "rowan-edit-commit", {
-      rowId,
-      columnId,
-      value: newValue,
-      oldValue: originalValue,
-      row,
-      rowIndex,
-      column,
-    });
-
-    if (!cancelable) {
-      this.#stopEditing(false);
-      return;
-    }
-
-    row[column.id] = newValue;
-    this.#stopEditing(true);
-    this.requestRender();
-  }
-
-  #stopEditing(committed) {
-    if (!this.#editing) return;
-
-    const { rowId, columnId, td, originalContent } = this.#editing;
-
-    if (!committed) {
-      emit(this, "rowan-edit-cancel", {
-        rowId,
-        columnId,
-        row: this.#editing.row,
-        rowIndex: this.#editing.rowIndex,
-        column: this.#editing.column,
-      });
-    }
-
-    td.innerHTML = originalContent;
-    td.classList.remove("editing");
-    this.#editing = null;
-  }
-
-  #moveEditFocus(direction) {
-    if (!this.#editing) return;
-
-    const isRTL = getComputedStyle(this).direction === "rtl";
-    const { rowId, columnId } = this.#editing;
-    const columns = this.#renderableColumns();
-    const columnIndex = columns.findIndex((c) => c.id === columnId);
-    
-    let nextRowId = rowId;
-    let nextColumnId = columnId;
-
-    if (direction === "right" || direction === "left") {
-      const delta = (direction === "right") === !isRTL ? 1 : -1;
-      const nextIndex = columnIndex + delta;
-      if (nextIndex >= 0 && nextIndex < columns.length) {
-        nextColumnId = columns[nextIndex].id;
-      } else {
-        return;
-      }
-    } else if (direction === "down" || direction === "up") {
-      const dataRows = Array.from(this.#tbody.querySelectorAll('tr[data-row-id]')).map((tr) => tr.dataset.rowId);
-      const rowIndex = dataRows.findIndex((id) => id === rowId);
-      const delta = direction === "down" ? 1 : -1;
-      const nextIndex = rowIndex + delta;
-      if (nextIndex >= 0 && nextIndex < dataRows.length) {
-        nextRowId = dataRows[nextIndex];
-      } else {
-        return;
-      }
-    }
-
-    if (nextRowId !== rowId || nextColumnId !== columnId) {
-      this.#startEditing(nextRowId, nextColumnId);
-    }
+    const open = this.editMode === "row" && initialValue === undefined ? editors.beginRowEdit : editors.beginCellEdit;
+    await open(ctx, this.#editing, this.#rowEditing, rowId, columnId, initialValue);
   }
 
   #handleBodyControlChange(event) {

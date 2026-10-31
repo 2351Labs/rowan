@@ -183,10 +183,17 @@ export type RowanTableCellConfig = {
   render?: ((context: RowanTableCellContext) => Node | string | void) | undefined;
 };
 export type RowanTableColumnEditor = {
-  type?: "number" | "text" | undefined;
+  type?: "number" | "select" | "text" | "date" | "checkbox" | "custom" | undefined;
   min?: number | undefined;
   max?: number | undefined;
   step?: number | undefined;
+  options?:
+    | {
+        value: unknown;
+        label: string;
+      }[]
+    | undefined;
+  render?: ((context: RowanTableEditContext) => HTMLElement) | undefined;
 };
 export type RowanTableEditContext = {
   value: unknown;

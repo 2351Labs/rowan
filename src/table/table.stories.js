@@ -1165,3 +1165,123 @@ export const InlineEditing = {
     },
   },
 };
+
+export const InlineEditingPhase2 = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table density="md"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true },
+            { id: "age", header: "Age", type: "number", editable: true, editor: { type: "number", min: 0, max: 120 } },
+            { 
+              id: "status", 
+              header: "Status", 
+              editable: true,
+              editor: {
+                type: "select",
+                options: [
+                  { value: "active", label: "Active" },
+                  { value: "inactive", label: "Inactive" },
+                  { value: "pending", label: "Pending" }
+                ]
+              }
+            },
+            { id: "dob", header: "Date of Birth", editable: true, editor: { type: "date" } },
+            { id: "verified", header: "Verified", editable: true, editor: { type: "checkbox" } },
+            { 
+              id: "custom", 
+              header: "Custom", 
+              editable: true,
+              editor: {
+                type: "custom",
+                render: (context) => {
+                  const input = document.createElement("input");
+                  input.value = context.value || "";
+                  input.style.border = "2px solid blue";
+                  input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                      context.commit();
+                    } else if (e.key === "Escape") {
+                      context.cancel();
+                    }
+                  });
+                  return input;
+                }
+              }
+            }
+          ],
+          rows: [
+            { id: "1", name: "Alice Johnson", age: 28, status: "active", dob: "1995-03-15", verified: true, custom: "Custom 1" },
+            { id: "2", name: "Bob Smith", age: 34, status: "inactive", dob: "1989-07-22", verified: false, custom: "Custom 2" },
+            { id: "3", name: "Carol White", age: 42, status: "pending", dob: "1981-11-08", verified: true, custom: "Custom 3" }
+          ]
+        };
+
+        table.addEventListener("rowan-edit-start", (e) => {
+          console.log("Edit started:", e.detail);
+        });
+
+        table.addEventListener("rowan-edit-commit", (e) => {
+          console.log("Edit committed:", e.detail);
+        });
+
+        table.addEventListener("rowan-edit-cancel", (e) => {
+          console.log("Edit canceled:", e.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Phase 2 adds select, date, checkbox, and custom editor types. Each editor is lazily loaded on first use.",
+      },
+    },
+  },
+};
+
+export const RowEditMode = {
+  render: () => {
+    return `
+      <div style="padding: 1rem;">
+        <rowan-table density="md" edit-mode="row"></rowan-table>
+      </div>
+      <script type="module">
+        const table = document.querySelector("rowan-table");
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", editable: true },
+            { id: "email", header: "Email", editable: true },
+            { id: "age", header: "Age", type: "number", editable: true, editor: { type: "number", min: 0, max: 120 } },
+            { id: "role", header: "Role", type: "badge", editable: false }
+          ],
+          rows: [
+            { id: "1", name: "Alice Johnson", email: "alice@example.com", age: 28, role: "Engineer" },
+            { id: "2", name: "Bob Smith", email: "bob@example.com", age: 34, role: "Designer" },
+            { id: "3", name: "Carol White", email: "carol@example.com", age: 42, role: "Manager" }
+          ]
+        };
+
+        table.addEventListener("rowan-row-edit-commit", (e) => {
+          console.log("Row edit committed:", e.detail);
+        });
+
+        table.addEventListener("rowan-row-edit-cancel", (e) => {
+          console.log("Row edit canceled:", e.detail);
+        });
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Row edit mode (edit-mode=\"row\") allows editing all editable cells in a row at once. Press Enter/F2 to start editing, Tab to navigate between cells, Enter to commit all changes, and Escape to cancel.",
+      },
+    },
+  },
+};

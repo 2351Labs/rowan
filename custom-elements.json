@@ -27778,6 +27778,105 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/table/table-editors.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createEditor",
+          "parameters": [
+            {
+              "name": "type"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "column"
+            },
+            {
+              "name": "context"
+            },
+            {
+              "name": "messages"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "beginCellEdit",
+          "parameters": [
+            {
+              "name": "ctx"
+            },
+            {
+              "name": "editing"
+            },
+            {
+              "name": "rowEditing"
+            },
+            {
+              "name": "rowId"
+            },
+            {
+              "name": "columnId"
+            },
+            {
+              "name": "initialValue"
+            }
+          ]
+        },
+        {
+          "kind": "variable",
+          "name": "column"
+        },
+        {
+          "kind": "function",
+          "name": "beginRowEdit",
+          "parameters": [
+            {
+              "name": "ctx"
+            },
+            {
+              "name": "editing"
+            },
+            {
+              "name": "rowEditing"
+            },
+            {
+              "name": "rowId"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createEditor",
+          "declaration": {
+            "name": "createEditor",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "beginCellEdit",
+          "declaration": {
+            "name": "beginCellEdit",
+            "module": "src/table/table-editors.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "beginRowEdit",
+          "declaration": {
+            "name": "beginRowEdit",
+            "module": "src/table/table-editors.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/table/table.js",
       "declarations": [
         {
@@ -28391,6 +28490,14 @@
           },
           "tagName": "rowan-table",
           "customElement": true
+        },
+        {
+          "kind": "variable",
+          "name": "row"
+        },
+        {
+          "kind": "variable",
+          "name": "rowIndex"
         }
       ],
       "exports": [
