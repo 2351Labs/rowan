@@ -1696,7 +1696,7 @@ The benchmark in `benchmarks/RESULTS.md` shows 703 KB for 3 controls because it 
 
 **⚠️ Import pattern matters:**
 - ✅ `import "@rowan-ui/core/button"` → 13.8 KB (recommended)
-- ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (pulls all 109 components)
+- ❌ `import { RowanButton } from "@rowan-ui/core"` → 175 KB (registers all 109 components due to auto-registration side effects)
 
 See [docs/BUNDLE_SIZE.md](docs/BUNDLE_SIZE.md) for detailed guidance, optimization tips, and per-component sizes.
 

@@ -58,9 +58,11 @@ import { RowanButton, RowanCheckbox, RowanSwitch } from "@rowan-ui/core";
 ```
 
 **Why to avoid:**
-- Each component file registers itself (side effect)
-- Bundlers cannot tree-shake side-effectful modules
+- The barrel import registers ALL 109 components (side effect)
+- Each component file calls `define()` to register itself
+- Bundlers cannot tree-shake auto-registering components
 - Results in ~175 KB (all 109 components) instead of 15 KB
+- This is correct behavior, not a bug - the import does exactly what it's supposed to do
 
 **When it's OK:**
 - Prototyping and development

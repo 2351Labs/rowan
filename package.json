@@ -547,6 +547,7 @@
     "brand/rowan_icon.svg"
   ],
   "sideEffects": [
+    "./src/index.js",
     "./src/accordion/accordion.js",
     "./src/alert/alert.js",
     "./src/area-chart/area-chart.js",
