@@ -1,10 +1,7 @@
 import "./sparkline.js";
 import "../kpi-card/kpi-card.js";
 import { withVibrantChartPalette } from "../storybook/chart-palette.js";
-import {
-  sparklineValues,
-  monthlyRevenue,
-} from "../../stories/fixtures/chart-data.js";
+import { sparklineValues } from "../../stories/fixtures/chart-data.js";
 
 function createSparkline({
   label = "Open incidents",
