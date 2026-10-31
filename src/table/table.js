@@ -19,6 +19,7 @@ import "../progress/progress.js";
 import "../sparkline/sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
+import "../text-field/text-field.js";
 
 const CELL_TYPES = new Set([
   "text",
@@ -49,6 +50,7 @@ const DENSITIES = new Set(["sm", "md", "lg"]);
 const ROW_ACTIVATE_MODES = new Set(["dblclick", "none"]);
 const INTERACTIVE_CELL_TYPES = new Set(["link", "checkbox", "switch", "button", "icon-button"]);
 const INTERACTIVE_CONTROL_TAGS = new Set(["a", "button", "input", "select", "textarea"]);
+const EDIT_MODES = new Set(["cell", "row"]);
 const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
 const DEFAULT_VIRTUAL_OVERSCAN = 3;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -68,6 +70,9 @@ const DEFAULT_MESSAGES = Object.freeze({
   selectRow: "Select row {rowId}",
   subtotal: "Subtotal",
   switch: "switch",
+  editCell: "Edit cell",
+  cancelEdit: "Cancel editing",
+  commitEdit: "Save changes",
 });
 
 function positiveNumber(value, fallback) {
@@ -115,6 +120,25 @@ function nonNegativeInteger(value, fallback) {
  */
 
 /**
+ * @typedef {object} RowanTableColumnEditor
+ * @property {"text" | "number"} [type]
+ * @property {number} [min]
+ * @property {number} [max]
+ * @property {number} [step]
+ */
+
+/**
+ * @typedef {object} RowanTableEditContext
+ * @property {unknown} value
+ * @property {RowanTableRow} row
+ * @property {number} rowIndex
+ * @property {RowanTableColumn} column
+ * @property {HTMLElement} cellEl
+ * @property {() => void} commit
+ * @property {() => void} cancel
+ */
+
+/**
  * @typedef {object} RowanTableColumn
  * @property {string} id
  * @property {string} [header]
@@ -131,6 +155,8 @@ function nonNegativeInteger(value, fallback) {
  * @property {(value: unknown, row: RowanTableRow, rowIndex: number) => string} [format]
  * @property {RowanTableCellConfig} [cell]
  * @property {{ tooltip?: string }} [headerCell]
+ * @property {boolean | ((row: RowanTableRow, rowIndex: number) => boolean)} [editable]
+ * @property {RowanTableColumnEditor} [editor]
  */
 
 /** @typedef {{ id: string, dir: "asc" | "desc" }} RowanTableSort */
@@ -298,10 +324,12 @@ export class RowanTable extends BaseElement {
     rowActivate: "dblclick",
     columnWidths: new Map(),
     columnOrder: [],
+    editMode: "cell",
   };
   #toggledGroups = new Map();
   #resizing = null;
   #reordering = null;
+  #editing = null;
 
   #root = null;
   #tableViewport = null;
@@ -600,6 +628,16 @@ export class RowanTable extends BaseElement {
 
   set reorderableColumns(value) {
     this.reflectBoolean("reorderable-columns", Boolean(value));
+  }
+
+  get editMode() {
+    const value = this.getAttribute("edit-mode");
+    return EDIT_MODES.has(value) ? value : "cell";
+  }
+
+  set editMode(value) {
+    const normalized = EDIT_MODES.has(value) ? value : "cell";
+    this.setAttribute("edit-mode", normalized);
   }
 
   get locale() {
@@ -1452,6 +1490,14 @@ export class RowanTable extends BaseElement {
       if (column.sticky === "start") td.classList.add("sticky-start");
       if (column.sticky === "end") td.classList.add("sticky-end");
 
+      const isEditable = entry.kind === "row" && this.#isColumnEditable(column, entry.row, entry.rowIndex);
+      if (isEditable) {
+        td.setAttribute("data-editable", "true");
+        td.setAttribute("tabindex", "0");
+        const editHint = resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell", { column: column.header });
+        td.setAttribute("aria-description", editHint);
+      }
+
       const value = this.#resolveValue(entry.row, entry.rowIndex, column);
       this.#renderCellContent(td, {
         row: entry.row,
@@ -1570,6 +1616,35 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyKeyDown(event) {
+    const td = event.target.closest("td[data-column-id]");
+    
+    if (td && !this.#editing) {
+      const tr = td.closest("tr[data-row-id]");
+      if (tr) {
+        const rowId = tr.dataset.rowId;
+        const columnId = td.dataset.columnId;
+        const column = this.#findColumn(columnId);
+        
+        if (column) {
+          const result = this.#getRowFromElement(tr);
+          if (result) {
+            const { row, rowIndex } = result;
+            if (this.#isColumnEditable(column, row, rowIndex)) {
+              if (event.key === "Enter" || event.key === "F2") {
+                event.preventDefault();
+                this.#startEditing(rowId, columnId);
+                return;
+              } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                event.preventDefault();
+                this.#startEditing(rowId, columnId, event.key);
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
     const row = this.#findEventRowElement(event);
     if (!(row instanceof HTMLTableRowElement) || event.target !== row) return;
 
@@ -1780,6 +1855,227 @@ export class RowanTable extends BaseElement {
     if (typeof value === "number") return value;
     const m = String(value).match(/^(\d+(?:\.\d+)?)px$/);
     return m ? parseFloat(m[1]) : 0;
+  }
+
+  #getRowFromElement(tr) {
+    const rowIndex = Number(tr.dataset.rowIndex);
+    if (!Number.isInteger(rowIndex) || rowIndex < 0 || rowIndex >= this.#state.rows.length) {
+      return null;
+    }
+    return { row: this.#state.rows[rowIndex], rowIndex };
+  }
+
+  #isColumnEditable(column, row, rowIndex) {
+    if (!column.editable) return false;
+    if (typeof column.editable === "function") {
+      return column.editable(row, rowIndex);
+    }
+    return true;
+  }
+
+  #startEditing(rowId, columnId, initialValue = undefined) {
+    if (this.#editing) {
+      this.#stopEditing(false);
+    }
+
+    const tr = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"]`);
+    if (!tr) return;
+
+    const result = this.#getRowFromElement(tr);
+    if (!result) return;
+
+    const { row, rowIndex } = result;
+    const column = this.#findColumn(columnId);
+    if (!column || !this.#isColumnEditable(column, row, rowIndex)) return;
+
+    const td = this.renderRoot.querySelector(`tr[data-row-id="${rowId}"] td[data-column-id="${columnId}"]`);
+    if (!td) return;
+
+    const currentValue = initialValue !== undefined ? initialValue : this.#resolveValue(row, rowIndex, column);
+
+    const cancelable = emit(this, "rowan-edit-start", {
+      rowId,
+      columnId,
+      value: currentValue,
+      row,
+      rowIndex,
+      column,
+    });
+
+    if (!cancelable) return;
+
+    const editorType = column.editor?.type || (column.type === "number" ? "number" : "text");
+    const editor = this.#createEditor(editorType, currentValue, column);
+    if (!editor) return;
+
+    this.#editing = {
+      rowId,
+      columnId,
+      row,
+      rowIndex,
+      column,
+      td,
+      editor,
+      originalValue: currentValue,
+      originalContent: td.innerHTML,
+    };
+
+    td.innerHTML = "";
+    td.classList.add("editing");
+    td.append(editor);
+
+    if (editor.focus) editor.focus();
+    if (editor.select) editor.select();
+  }
+
+  #createEditor(type, value, column) {
+    if (type === "text") {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value ?? "";
+      input.className = "cell-editor";
+      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
+      
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#commitEditing();
+          this.#moveEditFocus("down");
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#stopEditing(false);
+        } else if (e.key === "Tab") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#commitEditing();
+          this.#moveEditFocus(e.shiftKey ? "left" : "right");
+        }
+      });
+
+      return input;
+    }
+
+    if (type === "number") {
+      const input = document.createElement("input");
+      input.type = "number";
+      input.value = value ?? "";
+      input.className = "cell-editor";
+      input.setAttribute("aria-label", resolveMessage(this.#messages, DEFAULT_MESSAGES, "editCell"));
+      
+      if (column.editor?.min !== undefined) input.min = column.editor.min;
+      if (column.editor?.max !== undefined) input.max = column.editor.max;
+      if (column.editor?.step !== undefined) input.step = column.editor.step;
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#commitEditing();
+          this.#moveEditFocus("down");
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#stopEditing(false);
+        } else if (e.key === "Tab") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.#commitEditing();
+          this.#moveEditFocus(e.shiftKey ? "left" : "right");
+        }
+      });
+
+      return input;
+    }
+
+    return null;
+  }
+
+  #commitEditing() {
+    if (!this.#editing) return;
+
+    const { rowId, columnId, row, rowIndex, column, editor, originalValue } = this.#editing;
+    let newValue = editor.value;
+
+    if (column.type === "number" || column.editor?.type === "number") {
+      newValue = newValue === "" ? null : Number(newValue);
+    }
+
+    const cancelable = emit(this, "rowan-edit-commit", {
+      rowId,
+      columnId,
+      value: newValue,
+      oldValue: originalValue,
+      row,
+      rowIndex,
+      column,
+    });
+
+    if (!cancelable) {
+      this.#stopEditing(false);
+      return;
+    }
+
+    row[column.id] = newValue;
+    this.#stopEditing(true);
+    this.requestRender();
+  }
+
+  #stopEditing(committed) {
+    if (!this.#editing) return;
+
+    const { rowId, columnId, td, originalContent } = this.#editing;
+
+    if (!committed) {
+      emit(this, "rowan-edit-cancel", {
+        rowId,
+        columnId,
+        row: this.#editing.row,
+        rowIndex: this.#editing.rowIndex,
+        column: this.#editing.column,
+      });
+    }
+
+    td.innerHTML = originalContent;
+    td.classList.remove("editing");
+    this.#editing = null;
+  }
+
+  #moveEditFocus(direction) {
+    if (!this.#editing) return;
+
+    const isRTL = getComputedStyle(this).direction === "rtl";
+    const { rowId, columnId } = this.#editing;
+    const columns = this.#renderableColumns();
+    const columnIndex = columns.findIndex((c) => c.id === columnId);
+    
+    let nextRowId = rowId;
+    let nextColumnId = columnId;
+
+    if (direction === "right" || direction === "left") {
+      const delta = (direction === "right") === !isRTL ? 1 : -1;
+      const nextIndex = columnIndex + delta;
+      if (nextIndex >= 0 && nextIndex < columns.length) {
+        nextColumnId = columns[nextIndex].id;
+      } else {
+        return;
+      }
+    } else if (direction === "down" || direction === "up") {
+      const dataRows = Array.from(this.#tbody.querySelectorAll('tr[data-row-id]')).map((tr) => tr.dataset.rowId);
+      const rowIndex = dataRows.findIndex((id) => id === rowId);
+      const delta = direction === "down" ? 1 : -1;
+      const nextIndex = rowIndex + delta;
+      if (nextIndex >= 0 && nextIndex < dataRows.length) {
+        nextRowId = dataRows[nextIndex];
+      } else {
+        return;
+      }
+    }
+
+    if (nextRowId !== rowId || nextColumnId !== columnId) {
+      this.#startEditing(nextRowId, nextColumnId);
+    }
   }
 
   #handleBodyControlChange(event) {

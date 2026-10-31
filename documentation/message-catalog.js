@@ -455,7 +455,10 @@ export const ROWAN_MESSAGE_CATALOG = [
     module: "table",
     keys: [
       "action",
+      "cancelEdit",
       "checkbox",
+      "commitEdit",
+      "editCell",
       "empty",
       "emptyGroup",
       "groupLabel",
