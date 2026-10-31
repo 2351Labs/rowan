@@ -48,6 +48,9 @@ const budgets = {
   // Lazy workbook/clipboard module, measured on its own (about 4.2 KB). 6 KB leaves headroom.
   "table-export": 6 * 1024,
 
+  // Lazy chart interaction (legend, shared tooltip, zoom, resize). About 3.2 KB.
+  "chart-interaction": 6 * 1024,
+
   // Common scenarios
   "three-controls": 17 * 1024, // button + checkbox + switch
   "form-controls": 19 * 1024, // button + text-field + checkbox + select + textarea
@@ -170,6 +173,11 @@ async function main() {
       code = `
         import * as tableExport from "../src/table/table-export.js";
         globalThis.__tableExport = tableExport;
+      `;
+    } else if (name === "chart-interaction") {
+      code = `
+        import * as chartInteraction from "../src/chart/ix.js";
+        globalThis.__chartInteraction = chartInteraction;
       `;
     } else {
       code = `import "@rowan-ui/core/${name}";`;

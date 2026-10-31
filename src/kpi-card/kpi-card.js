@@ -8,10 +8,7 @@ import {
   readTooltipFormatter,
   writeTooltipFormatter,
 } from "../chart/hover.js";
-import {
-  readHiddenSeries,
-  writeHiddenSeries,
-} from "../chart/api.js";
+import { readHiddenSeries, writeHiddenSeries } from "../chart/api.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({

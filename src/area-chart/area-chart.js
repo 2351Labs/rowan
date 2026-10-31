@@ -8,6 +8,7 @@ import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   createReferenceLine,
+  createSvgElement,
   renderChartTable,
   withRestoredPointFocus,
   emitPointActivate,
@@ -40,7 +41,6 @@ import {
   trendValueDomain,
 } from "../trend-chart/model.js";
 
-const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const VIEWBOX_WIDTH = 1000;
 const VIEWBOX_HEIGHT = 400;
 const PLOT_LEFT = 18;
@@ -73,10 +73,6 @@ function isObject(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function createSvgElement(name) {
-  return document.createElementNS(SVG_NAMESPACE, name);
 }
 
 /**
@@ -135,6 +131,9 @@ function createSvgElement(name) {
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ 
+ * @attr {boolean} zoom - Opt-in plot zoom and pan.
+ * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  */
 export class RowanAreaChart extends BaseElement {
   static useElementInternals = true;
@@ -347,6 +346,8 @@ export class RowanAreaChart extends BaseElement {
   set noMotion(value) {
     this.reflectBoolean("no-motion", Boolean(value));
   }
+
+
 
   render() {
     if (!this.#control) {

@@ -161,6 +161,99 @@ describe("chart interaction", () => {
     expect(getComputedStyle(bar).transitionDuration).to.equal("0s");
   });
 
+  async function interactionReady(chart) {
+    if (chart.__z) await chart.__z;
+    await nextMicrotask();
+  }
+
+  it("turns legend rows into toggle buttons after the lazy module loads", async () => {
+    const chart = await barChart();
+    await interactionReady(chart);
+    const button = chart.shadowRoot.querySelector('button.legend-button[data-series-id="incoming"]');
+    expect(button, "legend button").to.exist;
+    const toggles = [];
+    chart.addEventListener("rowan-series-toggle", (event) => toggles.push(event.detail));
+    button.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Enter" }));
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(toggles[0].seriesId).to.equal("incoming");
+    expect(chart.hiddenSeries).to.deep.equal(["incoming"]);
+    expect(
+      chart.shadowRoot.querySelector('rect.bar[data-point-key="incoming::0"]').classList.contains(
+        "is-series-hidden",
+      ),
+    ).to.equal(true);
+  });
+
+  it("shares a cartesian tooltip and keeps it in the viewport", async () => {
+    const chart = await barChart();
+    await interactionReady(chart);
+    const bar = chart.shadowRoot.querySelector('rect.bar[data-point-key="incoming::0"]');
+    const box = bar.getBoundingClientRect();
+    bar.dispatchEvent(
+      new PointerEvent("pointermove", {
+        bubbles: true,
+        clientX: box.left + box.width / 2 || 8,
+        clientY: box.top + 4,
+      }),
+    );
+    const hover = chart.shadowRoot.querySelector(".hover");
+    expect(hover.hidden).to.equal(false);
+    expect(hover.textContent).to.include("Incoming");
+    expect(hover.textContent).to.include("Resolved");
+    const left = Number.parseFloat(hover.style.left);
+    expect(left).to.be.at.least(8);
+    expect(chart.shadowRoot.querySelector(".axis-pointer")).to.exist;
+  });
+
+  it("zooms from the wheel and resets the view box", async () => {
+    const chart = await barChart();
+    chart.setAttribute("zoom", "");
+    await interactionReady(chart);
+    const plot = chart.shadowRoot.querySelector("svg.plot");
+    const before = plot.getAttribute("viewBox");
+    const zooms = [];
+    chart.addEventListener("rowan-zoom", (event) => zooms.push(event.detail));
+    plot.dispatchEvent(new WheelEvent("wheel", { bubbles: true, cancelable: true, clientX: 40, clientY: 40, deltaY: -100 }));
+    expect(zooms.length).to.be.at.least(1);
+    expect(plot.getAttribute("viewBox")).to.not.equal(before);
+    const reset = chart.shadowRoot.querySelector(".zoom-reset");
+    expect(reset.hidden).to.equal(false);
+    reset.click();
+    expect(plot.getAttribute("viewBox")).to.equal(before);
+  });
+
+  it("redraws when the chart width changes", async () => {
+    const chart = await barChart();
+    await interactionReady(chart);
+    let renders = 0;
+    const original = chart.requestRender.bind(chart);
+    chart.requestRender = () => {
+      renders += 1;
+      original();
+    };
+    chart.style.width = "640px";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    expect(renders).to.be.at.least(1);
+  });
+
+  it("skips the enter animation when no-motion is set", async () => {
+    const chart = document.createElement("rowan-bar-chart");
+    chart.label = "Throughput";
+    chart.interactive = true;
+    chart.noMotion = true;
+    chart.labels = ["Mon", "Tue"];
+    chart.series = [
+      { id: "incoming", label: "Incoming", values: [4, 8] },
+      { id: "resolved", label: "Resolved", values: [2, 6] },
+    ];
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await interactionReady(chart);
+    expect(chart.shadowRoot.querySelector(".chart").hasAttribute("data-animate")).to.equal(false);
+  });
+
   it("shows a sparkline tooltip and keeps a visually hidden data table", async () => {
     const chart = document.createElement("rowan-sparkline");
     chart.label = "Incidents";

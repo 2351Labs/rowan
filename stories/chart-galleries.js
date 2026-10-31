@@ -46,7 +46,21 @@ const INTERACTION_EVENTS = [
   "rowan-point-click",
   "rowan-selection-change",
   "rowan-series-toggle",
+  "rowan-zoom",
 ];
+
+const ZOOM_CHARTS = new Set([
+  "rowan-area-chart",
+  "rowan-bar-chart",
+  "rowan-box-plot-chart",
+  "rowan-combo-chart",
+  "rowan-range-chart",
+  "rowan-scatter-chart",
+  "rowan-stacked-area-chart",
+  "rowan-stacked-bar-chart",
+  "rowan-trend-chart",
+  "rowan-waterfall-chart",
+]);
 
 function keyboardParameters(events = INTERACTION_EVENTS) {
   return createEventScriptParameters({
@@ -63,6 +77,7 @@ function withInteraction(chart) {
   chart.noMotion = true;
   chart.hiddenSeries = [];
   chart.tooltipFormatter = ({ text }) => text;
+  if (ZOOM_CHARTS.has(chart.localName)) chart.setAttribute("zoom", "");
   const tip = document.createElement("span");
   tip.slot = "tooltip";
   tip.textContent = "";

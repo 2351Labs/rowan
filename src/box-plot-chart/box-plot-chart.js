@@ -145,6 +145,9 @@ function normalizeText(value) {
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ 
+ * @attr {boolean} zoom - Opt-in plot zoom and pan.
+ * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  */
 export class RowanBoxPlotChart extends BaseElement {
   static useElementInternals = true;
@@ -329,6 +332,8 @@ export class RowanBoxPlotChart extends BaseElement {
   set noMotion(value) {
     this.reflectBoolean("no-motion", Boolean(value));
   }
+
+
 
   render() {
     if (!this.#control) {
