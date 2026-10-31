@@ -124,3 +124,21 @@ export const VisualStates = {
     return showcase;
   },
 };
+
+export const MenuTrigger = {
+  name: "Menu trigger",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.gap = "0.75rem";
+    for (const type of ["button", "submit", "reset"]) {
+      const button = createIconButton(`${type} menu`, "menu");
+      button.type = type;
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-haspopup", "menu");
+      button.setAttribute("aria-controls", "project-menu");
+      row.append(button);
+    }
+    return row;
+  },
+};

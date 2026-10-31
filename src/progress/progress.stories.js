@@ -21,6 +21,7 @@ export const Playground = {
     el.value = Number(value);
     el.max = Number(max);
     el.label = label;
+    el.locale = "en-US";
     return el;
   },
 };

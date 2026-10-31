@@ -85,6 +85,24 @@ export const Playground = {
   },
 };
 
+export const FormTypes = {
+  name: "Button types",
+  render: () => {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.gap = "0.75rem";
+    for (const type of ["button", "submit", "reset"]) {
+      const el = document.createElement("rowan-button");
+      el.type = type;
+      el.setAttribute("aria-expanded", "false");
+      el.setAttribute("aria-haspopup", "menu");
+      el.textContent = type;
+      row.append(el);
+    }
+    return row;
+  },
+};
+
 export const VisualStates = {
   render: () => {
     const showcase = createShowcase();
