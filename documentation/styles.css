@@ -1315,6 +1315,10 @@ html[data-theme="midnight"] body {
 }
 
 /* API Reference Tables */
+.docs-api-scroll {
+  overflow-x: auto;
+}
+
 .docs-api-table {
   width: 100%;
   border-collapse: collapse;

@@ -359,6 +359,12 @@ async function main() {
     
     await runCommand(
       "node",
+      ["scripts/generate-api-reference.mjs", "--check"],
+      "Verify API reference is current"
+    );
+
+    await runCommand(
+      "node",
       ["scripts/check-component-docs-coverage.mjs"],
       "Verify component docs coverage"
     );

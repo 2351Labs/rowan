@@ -46,6 +46,7 @@ import { createRecordEditor } from "./workflows/record-editor.js";
 import { createResourceList } from "./workflows/resource-list.js";
 import { createSavedTableView } from "./workflows/saved-table-view.js";
 import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
+import { API_REFERENCES, renderApiReference } from "./api-reference-view.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -1216,124 +1217,22 @@ function collectSupportedComponents() {
   return [...byTagName.values()].sort((left, right) => left.tagName.localeCompare(right.tagName));
 }
 
-function getComponentManifestData(tagName) {
-  const modules = Array.isArray(customElementsManifest.modules)
-    ? customElementsManifest.modules
-    : [];
-
-  for (const moduleEntry of modules) {
-    const declarations = Array.isArray(moduleEntry.declarations) ? moduleEntry.declarations : [];
-    for (const declaration of declarations) {
-      if (declaration?.tagName === tagName && declaration?.customElement === true) {
-        return { declaration, modulePath: moduleEntry.path || "" };
-      }
-    }
-  }
-  return null;
-}
-
-function renderApiReference(tagName) {
-  const data = getComponentManifestData(tagName);
-  if (!data) return "";
-
-  const { declaration } = data;
-  let html = '<section class="doc-section" data-doc-section id="api-reference"><h2>API Reference</h2>';
-
-  // Attributes
-  const attributes = Array.isArray(declaration.attributes) ? declaration.attributes : [];
-  const publicAttributes = attributes.filter(
-    (attr) => !attr.name.startsWith("aria-") && !attr.inheritedFrom
-  );
-  if (publicAttributes.length > 0) {
-    html += "<h3>Attributes</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>';
-    for (const attr of publicAttributes) {
-      const type = attr.type?.text || attr.type || "string";
-      const description = attr.description || "";
-      html += `<tr><td><code>${escapeHtml(attr.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  // Properties
-  const members = Array.isArray(declaration.members) ? declaration.members : [];
-  const publicProperties = members.filter(
-    (m) =>
-      m.kind === "field" &&
-      !m.static &&
-      !m.inheritedFrom &&
-      !m.name.startsWith("_") &&
-      !m.name.startsWith("#") &&
-      m.name !== "internals"
-  );
-  if (publicProperties.length > 0) {
-    html += "<h3>Properties</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Type</th><th>Readonly</th><th>Description</th></tr></thead><tbody>';
-    for (const prop of publicProperties) {
-      const type = prop.return?.type?.text || prop.type?.text || "any";
-      const readonly = prop.readonly ? "Yes" : "No";
-      const description = prop.description || "";
-      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${readonly}</td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  // Events
-  const events = Array.isArray(declaration.events) ? declaration.events : [];
-  if (events.length > 0) {
-    html += "<h3>Events</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Event</th><th>Description</th></tr></thead><tbody>';
-    for (const event of events) {
-      const description = event.description || "";
-      html += `<tr><td><code>${escapeHtml(event.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  // Slots
-  const slots = Array.isArray(declaration.slots) ? declaration.slots : [];
-  if (slots.length > 0) {
-    html += "<h3>Slots</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Slot</th><th>Description</th></tr></thead><tbody>';
-    for (const slot of slots) {
-      const slotName = slot.name || "(default)";
-      const description = slot.description || "";
-      html += `<tr><td><code>${escapeHtml(slotName)}</code></td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  // CSS Parts
-  const cssParts = Array.isArray(declaration.cssParts) ? declaration.cssParts : [];
-  if (cssParts.length > 0) {
-    html += "<h3>CSS Parts</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Part</th><th>Description</th></tr></thead><tbody>';
-    for (const part of cssParts) {
-      const description = part.description || "";
-      html += `<tr><td><code>${escapeHtml(part.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  // CSS Custom Properties
-  const cssProperties = Array.isArray(declaration.cssProperties)
-    ? declaration.cssProperties
-    : [];
-  if (cssProperties.length > 0) {
-    html += "<h3>CSS Custom Properties</h3>";
-    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Description</th></tr></thead><tbody>';
-    for (const prop of cssProperties) {
-      const description = prop.description || "";
-      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
-    }
-    html += "</tbody></table>";
-  }
-
-  html += "</section>";
-  return html;
-}
-
 const SUPPORTED_COMPONENTS = collectSupportedComponents();
+for (const entry of API_REFERENCES) {
+  if (SUPPORTED_COMPONENTS.some((component) => component.tagName === entry.tagName)) continue;
+  SUPPORTED_COMPONENTS.push({
+    tagName: entry.tagName,
+    className: entry.className,
+    description: entry.description,
+    modulePath: entry.modulePath,
+    category: getComponentCategoryLabel(entry.tagName),
+    attributes: entry.attributes.map((attribute) =>
+      attribute.type ? `${attribute.name}: ${attribute.type}` : attribute.name,
+    ),
+    events: entry.events.map((event) => event.name),
+    slots: entry.slots.map((slot) => slot.name),
+  });
+}
 const SUPPORTED_COMPONENT_TAG_NAMES = new Set(
   SUPPORTED_COMPONENTS.map((component) => component.tagName),
 );
@@ -5637,6 +5536,32 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
   },
 ];
 
+function appendMissingComponentPages(pages) {
+  const ids = new Set(pages.map((page) => page.id));
+  for (const entry of API_REFERENCES) {
+    const pageId = entry.tagName.replace(/^rowan-/, "");
+    if (ids.has(pageId)) continue;
+    pages.push({
+      id: pageId,
+      group: "Components",
+      title: `Rowan ${entry.title}`,
+      summary: entry.description,
+      tags: ["component", "api"],
+      keywords: [entry.tagName, entry.title.toLowerCase()],
+      content: () => `
+        <section class="doc-section" data-doc-section id="${pageId}-overview">
+          <h2>${escapeHtml(entry.title)}</h2>
+          <p>${escapeHtml(entry.description)}</p>
+        </section>
+        ${renderApiReference(entry.tagName)}
+      `,
+    });
+    ids.add(pageId);
+  }
+}
+
+appendMissingComponentPages(DOC_PAGES);
+
 function getComponentNavigationLabel(page) {
   return page.title.replace(/^Rowan\s+/, "");
 }
@@ -6126,6 +6051,14 @@ function renderCurrentPage() {
     .map((tag) => `<rowan-chip size="sm">${escapeHtml(tag)}</rowan-chip>`)
     .join("");
 
+  const pageHtml = page.content();
+  const componentTag = `rowan-${page.id}`;
+  const apiMarkup =
+    API_REFERENCES.some((entry) => entry.tagName === componentTag) &&
+    !pageHtml.includes('id="api-reference"')
+      ? renderApiReference(componentTag)
+      : "";
+
   mainEl.innerHTML = `
     <article class="doc-page">
       <header class="doc-header">
@@ -6137,7 +6070,8 @@ function renderCurrentPage() {
         <p>${escapeHtml(page.summary)}</p>
         <div class="doc-meta">${tagMarkup}</div>
       </header>
-      ${page.content()}
+      ${pageHtml}
+      ${apiMarkup}
     </article>
   `;
 

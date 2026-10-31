@@ -9,6 +9,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "chip",
       "data-state",
       "empty-state",
+      "icon",
       "icon-button",
       "link",
       "progress",
