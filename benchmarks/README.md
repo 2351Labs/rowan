@@ -8,6 +8,8 @@ npm run benchmark
 
 The command starts an ephemeral local Vite server, launches a headless Playwright browser, and writes raw measurements to `benchmarks/results/latest.json` plus a checked-in summary to `benchmarks/RESULTS.md`.
 
+> **Important:** These benchmarks measure **unminified ESM** module loading over a local dev server, not production bundle sizes. For production measurements (minified + gzip/brotli), see [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md).
+
 ## Workloads
 
 Every adapter receives one fresh Playwright browser context for each sample. The default is 15 samples. The report records the installed Rowan, peer-library, and Playwright versions alongside the host and browser environment. The browser loads source ESM modules through the local Vite server, so these results compare development-time module loading and browser DOM work; they are not a production-bundle size claim.
@@ -20,11 +22,21 @@ The Rowan-specific table workload creates a 100-row configuration with text and 
 
 - Duration ends when the expected DOM state is observable after microtask/frame settling.
 - `p50` and `p95` use linear interpolation over the recorded samples.
-- Transfer bytes are the sum of same-page script `PerformanceResourceTiming.transferSize` entries created during module loading.
+- **Transfer bytes are unminified ESM source** — the sum of same-page script `PerformanceResourceTiming.transferSize` entries created during module loading. This reflects development-time overhead, not production bundle sizes. Production builds with minification and compression are typically 95-98% smaller.
 - Heap growth is a best-effort difference from Chromium's non-standard `performance.memory.usedJSHeapSize`; unsupported engines report no value, while zero can reflect browser measurement granularity or collection timing.
 - Use `ROWAN_BENCHMARK_BROWSER=firefox` or `webkit` for a different Playwright engine. Heap values are normally unavailable outside Chromium.
 
 The harness keeps table results separate from the peer comparison. Lit and FAST Element are element-authoring runtimes, not comparable data-table products, and Web Awesome 3.12.0 has no verified table/data-table import. Rowan therefore makes no table-performance parity claim.
+
+## Production Bundle Sizes
+
+For production deployment, run the bundle size analysis:
+
+```sh
+npm run size
+```
+
+This measures minified + gzip/brotli sizes for individual components and common scenarios. These are the numbers that matter for user-facing load times. See [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md) for current measurements and optimization guidance.
 
 ## Options
 

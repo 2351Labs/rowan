@@ -8,6 +8,7 @@ import "../src/tokens/themes/midnight.css";
 import "../src/tokens/charts-vibrant.css";
 
 import "../src/index.js";
+import packageJson from "../package.json";
 import "../packages/maplibre/src/map/map.js";
 import { ArrowRight } from "../packages/icons/src/icons/arrow-right.js";
 import { CalendarDays } from "../packages/icons/src/icons/calendar-days.js";
@@ -48,6 +49,7 @@ import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
+const ROWAN_VERSION = packageJson.version;
 const OPEN_FREE_MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const OPEN_FREE_MAP_ATTRIBUTION = [
   { label: "OpenFreeMap", href: "https://openfreemap.org/" },
@@ -94,7 +96,7 @@ import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/slate";
 import "@rowan-ui/core/tokens/midnight";`;
 
-const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@0.22.0
+const FIRST_SCREEN_SNIPPET = `npm install @rowan-ui/core@${ROWAN_VERSION}
 
 import "@rowan-ui/core/tokens";
 import "@rowan-ui/core/tokens/light";
@@ -1214,6 +1216,123 @@ function collectSupportedComponents() {
   return [...byTagName.values()].sort((left, right) => left.tagName.localeCompare(right.tagName));
 }
 
+function getComponentManifestData(tagName) {
+  const modules = Array.isArray(customElementsManifest.modules)
+    ? customElementsManifest.modules
+    : [];
+
+  for (const moduleEntry of modules) {
+    const declarations = Array.isArray(moduleEntry.declarations) ? moduleEntry.declarations : [];
+    for (const declaration of declarations) {
+      if (declaration?.tagName === tagName && declaration?.customElement === true) {
+        return { declaration, modulePath: moduleEntry.path || "" };
+      }
+    }
+  }
+  return null;
+}
+
+function renderApiReference(tagName) {
+  const data = getComponentManifestData(tagName);
+  if (!data) return "";
+
+  const { declaration } = data;
+  let html = '<section class="doc-section" data-doc-section id="api-reference"><h2>API Reference</h2>';
+
+  // Attributes
+  const attributes = Array.isArray(declaration.attributes) ? declaration.attributes : [];
+  const publicAttributes = attributes.filter(
+    (attr) => !attr.name.startsWith("aria-") && !attr.inheritedFrom
+  );
+  if (publicAttributes.length > 0) {
+    html += "<h3>Attributes</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>';
+    for (const attr of publicAttributes) {
+      const type = attr.type?.text || attr.type || "string";
+      const description = attr.description || "";
+      html += `<tr><td><code>${escapeHtml(attr.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Properties
+  const members = Array.isArray(declaration.members) ? declaration.members : [];
+  const publicProperties = members.filter(
+    (m) =>
+      m.kind === "field" &&
+      !m.static &&
+      !m.inheritedFrom &&
+      !m.name.startsWith("_") &&
+      !m.name.startsWith("#") &&
+      m.name !== "internals"
+  );
+  if (publicProperties.length > 0) {
+    html += "<h3>Properties</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Type</th><th>Readonly</th><th>Description</th></tr></thead><tbody>';
+    for (const prop of publicProperties) {
+      const type = prop.return?.type?.text || prop.type?.text || "any";
+      const readonly = prop.readonly ? "Yes" : "No";
+      const description = prop.description || "";
+      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td><code>${escapeHtml(type)}</code></td><td>${readonly}</td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Events
+  const events = Array.isArray(declaration.events) ? declaration.events : [];
+  if (events.length > 0) {
+    html += "<h3>Events</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Event</th><th>Description</th></tr></thead><tbody>';
+    for (const event of events) {
+      const description = event.description || "";
+      html += `<tr><td><code>${escapeHtml(event.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // Slots
+  const slots = Array.isArray(declaration.slots) ? declaration.slots : [];
+  if (slots.length > 0) {
+    html += "<h3>Slots</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Slot</th><th>Description</th></tr></thead><tbody>';
+    for (const slot of slots) {
+      const slotName = slot.name || "(default)";
+      const description = slot.description || "";
+      html += `<tr><td><code>${escapeHtml(slotName)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // CSS Parts
+  const cssParts = Array.isArray(declaration.cssParts) ? declaration.cssParts : [];
+  if (cssParts.length > 0) {
+    html += "<h3>CSS Parts</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Part</th><th>Description</th></tr></thead><tbody>';
+    for (const part of cssParts) {
+      const description = part.description || "";
+      html += `<tr><td><code>${escapeHtml(part.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  // CSS Custom Properties
+  const cssProperties = Array.isArray(declaration.cssProperties)
+    ? declaration.cssProperties
+    : [];
+  if (cssProperties.length > 0) {
+    html += "<h3>CSS Custom Properties</h3>";
+    html += '<table class="docs-api-table"><thead><tr><th>Property</th><th>Description</th></tr></thead><tbody>';
+    for (const prop of cssProperties) {
+      const description = prop.description || "";
+      html += `<tr><td><code>${escapeHtml(prop.name)}</code></td><td>${escapeHtml(description)}</td></tr>`;
+    }
+    html += "</tbody></table>";
+  }
+
+  html += "</section>";
+  return html;
+}
+
 const SUPPORTED_COMPONENTS = collectSupportedComponents();
 const SUPPORTED_COMPONENT_TAG_NAMES = new Set(
   SUPPORTED_COMPONENTS.map((component) => component.tagName),
@@ -1252,7 +1371,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@0.22.0</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@${ROWAN_VERSION}</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -1312,6 +1431,396 @@ const DOC_PAGES = [
         <h2>Next.js and SSR</h2>
         <p>Import wrappers from a client component. Do not import them or registration modules from server-rendered code. The <code>@rowan-ui/core/react</code> entry is JSX types plus <code>createRowanComponent</code>; generated wrappers register the element.</p>
         ${codeBlock(NEXT_JS_SNIPPET, "tsx")}
+      </section>
+    `,
+  },
+  {
+    id: "vue",
+    group: "Overview",
+    title: "Vue",
+    summary: "Use Rowan custom elements directly in Vue templates with v-bind for properties and v-on for events.",
+    tags: ["vue", "vue3", "framework", "integration"],
+    keywords: ["vue", "vue3", "composition", "property binding", "events"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="vue-overview">
+        <h2>Custom elements in Vue</h2>
+        <p>Vue 3 has excellent native support for custom elements. Import the registration module and use tags directly in templates. Use <code>v-bind</code> or <code>:</code> for object/array properties and <code>v-on</code> or <code>@</code> for events.</p>
+        ${codeBlock(`<script setup>
+import { ref } from "vue";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+const selected = ref([]);
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+function save() {
+  console.log("Selected:", selected.value);
+}
+</script>
+
+<template>
+  <rowan-table
+    :config="config"
+    :selected="selected"
+    @rowan-select="selected = $event.detail.selected"
+  />
+  <rowan-button @rowan-click="save">Save</rowan-button>
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-property-binding">
+        <h2>Property binding</h2>
+        <p>Use <code>:prop</code> or <code>v-bind:prop</code> to pass objects and arrays as properties. Vue automatically assigns these as properties, not attributes.</p>
+        ${codeBlock(`<template>
+  <rowan-text-field
+    label="Name"
+    :value="name"
+    @rowan-change="name = $event.detail.value"
+  />
+  <rowan-checkbox
+    label="Active"
+    :checked="active"
+    @rowan-change="active = $event.detail.checked"
+  />
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-form-controls">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Vue form elements and emit standard validation events.</p>
+        ${codeBlock(`<template>
+  <form @submit.prevent="handleSubmit">
+    <rowan-text-field
+      name="email"
+      label="Email"
+      type="email"
+      required
+    />
+    <rowan-button type="submit">Save</rowan-button>
+  </form>
+</template>`, "vue")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="vue-refs">
+        <h2>Template refs</h2>
+        <p>Access the custom element instance using template refs. The ref gives you direct access to the host element and its properties.</p>
+        ${codeBlock(`<script setup>
+import { ref } from "vue";
+
+const tableRef = ref(null);
+
+function exportData() {
+  const table = tableRef.value;
+  console.log(table.selected);
+}
+</script>
+
+<template>
+  <rowan-table ref="tableRef" :config="config" />
+  <rowan-button @rowan-click="exportData">Export</rowan-button>
+</template>`, "vue")}
+      </section>
+    `,
+  },
+  {
+    id: "angular",
+    group: "Overview",
+    title: "Angular",
+    summary: "Angular 20+ recognizes Rowan as custom elements with CUSTOM_ELEMENTS_SCHEMA.",
+    tags: ["angular", "framework", "integration"],
+    keywords: ["angular", "custom elements", "property binding", "events"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="angular-overview">
+        <h2>Custom elements in Angular</h2>
+        <p>Angular 20+ works with custom elements when you add <code>CUSTOM_ELEMENTS_SCHEMA</code> to your component or module. Import registration modules in your component and use tags in templates.</p>
+        ${codeBlock(`import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+@Component({
+  selector: "app-members",
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: \\\`
+    <rowan-table
+      [config]="config"
+      [selected]="selected"
+      (rowan-select)="onSelect($event)"
+    ></rowan-table>
+    <rowan-button (rowan-click)="save()">Save</rowan-button>
+  \\\`,
+})
+export class MembersComponent {
+  selected: string[] = [];
+  config = {
+    rowId: "id",
+    selectable: "multiple" as const,
+    columns: [{ id: "name", header: "Name" }],
+    rows: [{ id: "1", name: "Ada" }],
+  };
+
+  onSelect(event: CustomEvent) {
+    this.selected = event.detail.selected;
+  }
+
+  save() {
+    console.log("Selected:", this.selected);
+  }
+}`, "typescript")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="angular-property-binding">
+        <h2>Property binding</h2>
+        <p>Use Angular's <code>[property]</code> syntax to bind objects and arrays. Use <code>(event-name)</code> for event binding.</p>
+        ${codeBlock(`<rowan-text-field
+  label="Name"
+  [value]="name"
+  (rowan-change)="name = $any($event).detail.value"
+></rowan-text-field>
+
+<rowan-checkbox
+  label="Active"
+  [checked]="active"
+  (rowan-change)="active = $any($event).detail.checked"
+></rowan-checkbox>`, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="angular-forms">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Angular forms and participate in validation.</p>
+        ${codeBlock(`<form (ngSubmit)="handleSubmit()">
+  <rowan-text-field
+    name="email"
+    label="Email"
+    type="email"
+    required
+  ></rowan-text-field>
+  <rowan-button type="submit">Save</rowan-button>
+</form>`, "html")}
+      </section>
+    `,
+  },
+  {
+    id: "svelte",
+    group: "Overview",
+    title: "Svelte",
+    summary: "Svelte 5 handles custom elements naturally with native property and event bindings.",
+    tags: ["svelte", "framework", "integration"],
+    keywords: ["svelte", "svelte5", "property binding", "events", "runes"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="svelte-overview">
+        <h2>Custom elements in Svelte</h2>
+        <p>Svelte 5 has excellent support for custom elements. Import registration modules and use tags directly in templates. Use <code>bind:</code> or standard bindings for properties.</p>
+        ${codeBlock(`<script>
+import { writable } from "svelte/store";
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/table";
+
+let selected = $state([]);
+
+const config = {
+  rowId: "id",
+  selectable: "multiple",
+  columns: [{ id: "name", header: "Name" }],
+  rows: [{ id: "1", name: "Ada" }],
+};
+
+function save() {
+  console.log("Selected:", selected);
+}
+</script>
+
+<rowan-table
+  {config}
+  {selected}
+  on:rowan-select={(e) => selected = e.detail.selected}
+/>
+<rowan-button on:rowan-click={save}>Save</rowan-button>`, "svelte")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="svelte-property-binding">
+        <h2>Property binding</h2>
+        <p>Use <code>{property}</code> shorthand or <code>property={value}</code> to pass properties. Svelte automatically assigns objects and arrays as properties.</p>
+        ${codeBlock(`<script>
+let name = $state("");
+let active = $state(false);
+</script>
+
+<rowan-text-field
+  label="Name"
+  value={name}
+  on:rowan-change={(e) => name = e.detail.value}
+/>
+<rowan-checkbox
+  label="Active"
+  checked={active}
+  on:rowan-change={(e) => active = e.detail.checked}
+/>`, "svelte")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="svelte-forms">
+        <h2>Form-associated controls</h2>
+        <p>Rowan form controls use ElementInternals for native form association. They work inside Svelte form elements.</p>
+        ${codeBlock(`<script>
+function handleSubmit(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  console.log(Object.fromEntries(formData));
+}
+</script>
+
+<form on:submit={handleSubmit}>
+  <rowan-text-field
+    name="email"
+    label="Email"
+    type="email"
+    required
+  />
+  <rowan-button type="submit">Save</rowan-button>
+</form>`, "svelte")}
+      </section>
+    `,
+  },
+  {
+    id: "bundle-size",
+    group: "Overview",
+    title: "Bundle Size & Optimization",
+    summary: "Tree-shaking, per-component imports, and production optimization strategies for minimal bundle footprint.",
+    tags: ["performance", "bundle", "tree-shaking", "optimization"],
+    keywords: ["bundle size", "tree-shaking", "imports", "optimization", "production"],
+    content: () => `
+      <section class="doc-section" data-doc-section id="bundle-overview">
+        <h2>Production Bundle Sizes</h2>
+        <p>Rowan is designed to be lean and tree-shakeable for production builds. All sizes below are <strong>minified + gzip</strong> and include the shared Rowan runtime (base components, token system, utilities).</p>
+        <div class="docs-bundle-grid">
+          <rowan-card>
+            <p slot="title"><strong>Common Components</strong></p>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+              <li>Button: 13.8 KB</li>
+              <li>Checkbox: 14.4 KB</li>
+              <li>Text Field: 15.1 KB</li>
+              <li>Select: 14.8 KB</li>
+              <li>Alert: 13.8 KB</li>
+            </ul>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Complex Components</strong></p>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+              <li>Table: 35.9 KB</li>
+              <li>Trend Chart: 18.6 KB</li>
+              <li>Bar Chart: 19.1 KB</li>
+              <li>Dropdown: 16.1 KB</li>
+              <li>Dialog: 15.0 KB</li>
+            </ul>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Common Scenarios</strong></p>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+              <li>3 controls: <strong>15.4 KB</strong></li>
+              <li>Form controls: <strong>17.7 KB</strong></li>
+            </ul>
+          </rowan-card>
+        </div>
+        <rowan-alert tone="success">
+          The benchmark in <code>benchmarks/RESULTS.md</code> shows 703 KB for 3 controls because it measures <strong>unminified ESM</strong> over a local dev server. Production builds are <strong>97.8% smaller</strong>.
+        </rowan-alert>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-import-patterns">
+        <h2>Import Patterns</h2>
+        <p><strong>✅ Recommended:</strong> Direct component imports for optimal tree-shaking</p>
+        ${codeBlock(`// ✅ Good: 15 KB
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/checkbox";
+import "@rowan-ui/core/switch";`)}
+        <p><strong>⚠️ Not Recommended:</strong> Barrel imports register all 109 components</p>
+        ${codeBlock(`// ❌ Bad: 175 KB - registers ALL components
+import { RowanButton, RowanCheckbox } from "@rowan-ui/core";`)}
+        <rowan-alert tone="warning">
+          The barrel import registers ALL 109 components as a side effect. Each component calls <code>define()</code> to register itself, and bundlers cannot tree-shake auto-registering components. This is correct behavior—use direct imports for production.
+        </rowan-alert>
+        <p><strong>When barrel imports are OK:</strong> Prototyping, internal tools, or apps that use most Rowan components.</p>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-lazy-loading">
+        <h2>Lazy Loading</h2>
+        <p>Defer loading of heavy components until they're needed using dynamic imports:</p>
+        ${codeBlock(`// Load table only when needed
+async function showDataView() {
+  await import("@rowan-ui/core/table");
+  const table = document.createElement("rowan-table");
+  table.config = config;
+  document.body.append(table);
+}
+
+// Load charts on demand
+async function loadAnalyticsDashboard() {
+  await Promise.all([
+    import("@rowan-ui/core/trend-chart"),
+    import("@rowan-ui/core/bar-chart"),
+    import("@rowan-ui/core/kpi-card"),
+  ]);
+  renderDashboard();
+}`)}
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-optimization">
+        <h2>Optimization Tips</h2>
+        <ul>
+          <li><strong>Import only what you need</strong> - Use <code>@rowan-ui/core/button</code> not <code>@rowan-ui/core</code></li>
+          <li><strong>Lazy-load heavy components</strong> - Charts and tables can be loaded on demand</li>
+          <li><strong>Use the right component</strong> - Badge (13 KB) vs Chip (13 KB) vs Status Indicator (14 KB)</li>
+          <li><strong>Build with modern targets</strong> - Rowan uses ES2020; configure your bundler to match</li>
+          <li><strong>Enable Brotli compression</strong> - 15-20% better than gzip (15.4 KB → 12.6 KB)</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-size-budgets">
+        <h2>Size Budget CI</h2>
+        <p>Rowan enforces size budgets in CI to prevent regressions. Run locally to check your changes:</p>
+        ${codeBlock(`npm run size:check`, "bash")}
+        <p>Generate a detailed analysis report with per-component sizes:</p>
+        ${codeBlock(`npm run size`, "bash")}
+        <p>This creates <code>.bundle-analysis/REPORT.md</code> with component sizes, common scenarios, and tree-shaking effectiveness.</p>
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-analysis">
+        <h2>Analyzing Your Bundle</h2>
+        <p>Use your bundler's analysis tools to verify tree-shaking and identify optimization opportunities:</p>
+        ${codeBlock(`# Vite
+vite-bundle-visualizer
+
+# Webpack
+webpack-bundle-analyzer dist/stats.json
+
+# Rollup
+rollup --config --visualizer`, "bash")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="bundle-faq">
+        <h2>FAQ</h2>
+        <p><strong>Q: Why is my bundle larger than expected?</strong></p>
+        <ul>
+          <li>Importing from <code>@rowan-ui/core</code> instead of <code>@rowan-ui/core/component</code></li>
+          <li>Not enabling minification in your build</li>
+          <li>Using an old bundler that doesn't tree-shake well</li>
+        </ul>
+        <p><strong>Q: Should I use Rowan in a performance-critical app?</strong></p>
+        <p>Yes! Rowan's production sizes are competitive: 3 controls = 15.4 KB vs Lit (~10 KB runtime only) vs Shoelace (~40-60 KB with deps).</p>
+        <p><strong>Q: Why do charts have larger bundles?</strong></p>
+        <p>Charts include SVG rendering, axis generation, data transformation, and interactive features. Even so, they're reasonable: Sparkline (17 KB), Trend/Bar charts (19 KB), Table (36 KB).</p>
+        <p>See <a href="https://github.com/2351Labs/rowan/blob/main/docs/BUNDLE_SIZE.md" target="_blank" rel="noopener">docs/BUNDLE_SIZE.md</a> for the complete guide.</p>
       </section>
     `,
   },
@@ -1672,6 +2181,26 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         </div>
       </section>
 
+      <section class="doc-section" data-doc-section id="components-stability">
+        <h2>Component stability</h2>
+        <p>Most Rowan components are <strong>Stable</strong>, meaning their public API (attributes, properties, events, slots, and CSS parts) will not change in breaking ways. A small number of features remain <strong>Experimental</strong> and may evolve.</p>
+        <div class="info-grid">
+          <rowan-card>
+            <p slot="title"><strong>Stable</strong></p>
+            <p>Public API is frozen. Safe to use in production. Covers ${SUPPORTED_COMPONENTS.length - 2} of ${SUPPORTED_COMPONENTS.length} components.</p>
+            <rowan-badge tone="success">Stable</rowan-badge>
+          </rowan-card>
+          <rowan-card>
+            <p slot="title"><strong>Experimental</strong></p>
+            <p>API may change before stabilization. Currently: nested filter-builder groups and table-view-state version 2.</p>
+            <rowan-badge tone="warning">Experimental</rowan-badge>
+          </rowan-card>
+        </div>
+        <rowan-alert tone="info">
+          <strong>Stability commitment:</strong> Stable components follow semantic versioning. Breaking changes will only occur in major version releases (e.g., 1.0 → 2.0). Experimental features are clearly marked in documentation and may change in minor releases.
+        </rowan-alert>
+      </section>
+
       <section class="doc-section" data-doc-section id="components-inventory-list">
         <h2>Component catalog</h2>
         <p>Each entry includes the tag name, class export, source module path, and summary from component JSDoc.</p>
@@ -1744,6 +2273,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Usage snippet</h2>
         ${codeBlock(ALERT_SNIPPET, "html")}
       </section>
+
+      ${renderApiReference("rowan-alert")}
     `,
   },
   {
@@ -1791,6 +2322,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Use the button token layer to tune visual hierarchy while preserving the component's state behavior.</p>
         ${codeBlock(BUTTON_TOKENS_SNIPPET, "css")}
       </section>
+
+      ${renderApiReference("rowan-button")}
     `,
   },
   {
@@ -1814,6 +2347,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Usage snippet</h2>
         ${codeBlock(DIALOG_SNIPPET, "html")}
       </section>
+
+      ${renderApiReference("rowan-dialog")}
     `,
   },
   {
@@ -1848,7 +2383,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Parent changes to open remain silent. The default controls emit rowan-confirm or rowan-cancel, while Escape, the close control, and backdrop dismissal emit rowan-close.</p>
         ${codeBlock(CONFIRM_DIALOG_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-confirm-dialog")}
+     `,
     afterRender: setupConfirmDialogDemo,
   },
   {
@@ -1879,7 +2416,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Context-menu opens are user interactions, while open remains available for silent parent-driven control. Selecting a rowan-menu-item emits rowan-change; Escape and outside dismissal emit rowan-close.</p>
         ${codeBlock(CONTEXT_MENU_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-context-menu")}
+     `,
     afterRender: setupContextMenuDemo,
   },
   {
@@ -1908,7 +2447,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>tone accepts neutral, info, success, warning, and danger. The component provides status semantics by default without replacing author-provided role or aria-label values.</p>
         ${codeBlock(STATUS_INDICATOR_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-status-indicator")}
+     `,
   },
   {
     id: "date-picker",
@@ -1937,7 +2478,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-date-picker emits rowan-change only for user-committed changes and keeps value reflection synchronized with form submission.</p>
         ${codeBlock(DATE_PICKER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-date-picker")}
+     `,
   },
   {
     id: "time-picker",
@@ -1967,7 +2510,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-time-picker emits rowan-change on user commit and does not emit that event when parent code assigns value directly.</p>
         ${codeBlock(TIME_PICKER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-time-picker")}
+     `,
   },
   {
     id: "color-picker",
@@ -1998,7 +2543,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>value reflects as lowercase #rrggbb for opaque colors or #rrggbbaa when opacity is below 100%. palette remains property-only, and rowan-change fires only after user interaction.</p>
         ${codeBlock(COLOR_PICKER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-color-picker")}
+     `,
     afterRender: setupColorPickerDemo,
   },
   {
@@ -2030,7 +2577,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>value reflects an integer within min, max, and step, or an empty value for no rating. Arrow keys, Home, and End select ratings; the clear control restores the no-rating state. rowan-change fires only after user interaction.</p>
         ${codeBlock(RATING_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-rating")}
+     `,
     afterRender: setupRatingDemo,
   },
   {
@@ -2062,7 +2611,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The component never accepts HTML as a value. It emits a normalized block-and-run document object, and rich clipboard data is inserted as plain text. Form submission serializes that document as JSON; applications own persistence, authorization, collaboration, and any rendering outside the component.</p>
         ${codeBlock(RICH_TEXT_EDITOR_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-rich-text-editor")}
+     `,
     afterRender: setupRichTextEditorDemo,
   },
   {
@@ -2083,7 +2634,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           </rowan-image>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-image")}
+     `,
     afterRender: (mainEl) => {
       const image = mainEl.querySelector("#docs-image");
       if (!image) return;
@@ -2115,7 +2668,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Null value shows No data. loading replaces the value with a skeleton and sets aria-busy. A chart slot follows the label and value in reading order. A slotted gauge sits immediately beside the metrics except below 10rem. Sparkline, column sparkline, and bullet stay under the value. value and delta stay property-only. Padding, value type, and slotted chart height follow inline size. Pass a formatted value string when the number must go compact. --rowan-kpi-card-value-size and --rowan-kpi-card-chart-height pin a fixed scale.</p>
         ${codeBlock(KPI_CARD_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-kpi-card")}
+     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-kpi-card");
       if (!card) return;
@@ -2149,7 +2704,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>values, labels, and target are property-only. The accessible name comes from label. Assistive technology can still read the table. variant is line (default) or area; area fills under the stroke, or to the target when set. When target is set, above-tone (default warning) and below-tone (default success) color the stroke on each side of a dashed target line. Stroke width is CSS pixels (<code>--rowan-sparkline-stroke-width</code>, default <code>1.75px</code>) and does not thicken when the plot scales. The plot fills its box. Size the plot with <code>--rowan-sparkline-height</code> (default <code>2.25rem</code>). Hover dots still scale with the viewBox. Page-wide labeled trends belong on rowan-trend-chart. rowan-progress hide-meta hides the percent caption without dropping the progressbar name.</p>
         ${codeBlock(SPARKLINE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-sparkline")}
+     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-sparkline-kpi");
       const chart = mainEl.querySelector("#docs-sparkline");
@@ -2196,7 +2753,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>values, labels, and target are property-only. The accessible name comes from label. Assistive technology can still read the table. When target is set, above-tone (default warning) and below-tone (default success) color each column on each side of a dashed target line. The domain includes zero so column height encodes magnitude. The plot fills its box. Size the plot with <code>--rowan-column-sparkline-height</code> (default <code>2.25rem</code>). Page-wide labeled bars belong on rowan-bar-chart.</p>
         ${codeBlock(COLUMN_SPARKLINE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-column-sparkline")}
+     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-column-sparkline-kpi");
       const chart = mainEl.querySelector("#docs-column-sparkline");
@@ -2238,7 +2797,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>ranges, value, and target are property-only. Invalid or zero-width ranges are dropped. Reversed from/to are swapped.</p>
         ${codeBlock(BULLET_CHART_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-bullet-chart")}
+     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-bullet-kpi");
       const chart = mainEl.querySelector("#docs-bullet-chart");
@@ -2279,7 +2840,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>min and max are attributes (default 0 and 100). value, target, and ranges are property-only. Invalid or zero-width ranges are dropped.</p>
         ${codeBlock(GAUGE_CHART_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-gauge-chart")}
+     `,
     afterRender: (mainEl) => {
       const card = mainEl.querySelector("#docs-gauge-kpi");
       const chart = mainEl.querySelector("#docs-gauge-chart");
@@ -2312,7 +2875,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-bar-chart id="docs-bar-chart" label="Incidents by day" interactive></rowan-bar-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-bar-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-bar-chart");
       if (!chart) return;
@@ -2338,7 +2903,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-area-chart id="docs-area-chart" label="Throughput" interactive></rowan-area-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-area-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-area-chart");
       if (!chart) return;
@@ -2364,7 +2931,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-stacked-area-chart id="docs-stacked-area-chart" label="Incidents by day" interactive></rowan-stacked-area-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-stacked-area-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-stacked-area-chart");
       if (!chart) return;
@@ -2391,7 +2960,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-stacked-bar-chart id="docs-stacked-bar-chart" label="Incidents by day" interactive></rowan-stacked-bar-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-stacked-bar-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-stacked-bar-chart");
       if (!chart) return;
@@ -2418,7 +2989,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-donut-chart id="docs-donut-chart" label="Incident sources" interactive></rowan-donut-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-donut-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-donut-chart");
       if (!chart) return;
@@ -2441,7 +3014,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-scatter-chart id="docs-scatter-chart" label="Dwell vs fill" interactive></rowan-scatter-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-scatter-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-scatter-chart");
       if (!chart) return;
@@ -2473,7 +3048,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-heatmap-chart id="docs-heatmap-chart" label="Lane dwell" interactive></rowan-heatmap-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-heatmap-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-heatmap-chart");
       if (!chart) return;
@@ -2500,7 +3077,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-funnel-chart id="docs-funnel-chart" label="Conversion" interactive></rowan-funnel-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-funnel-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-funnel-chart");
       if (!chart) return;
@@ -2523,7 +3102,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-waterfall-chart id="docs-waterfall-chart" label="Cash movement" interactive></rowan-waterfall-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-waterfall-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-waterfall-chart");
       if (!chart) return;
@@ -2552,7 +3133,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-range-chart id="docs-range-chart" label="Dwell window" interactive></rowan-range-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-range-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-range-chart");
       if (!chart) return;
@@ -2585,7 +3168,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-box-plot-chart id="docs-box-plot-chart" label="Lane dwell" interactive></rowan-box-plot-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-box-plot-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-box-plot-chart");
       if (!chart) return;
@@ -2618,7 +3203,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
           <rowan-radar-chart id="docs-radar-chart" label="Yard profile" interactive></rowan-radar-chart>
         </div>
       </section>
-    `,
+
+      ${renderApiReference("rowan-radar-chart")}
+     `,
     afterRender: (mainEl) => {
       const chart = mainEl.querySelector("#docs-radar-chart");
       if (!chart) return;
@@ -2657,7 +3244,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>series, labels, config, and valueFormatter are the frozen line-chart API and stay property-only. A null value is shown as a no-data gap: it breaks the line, has no interactive point, and appears as No data in the table. Interactive points are keyboard-focusable; Arrow keys move between points, and Enter or Space emits rowan-point-activate. The component has no charting runtime dependency and no motion-dependent information. Area, bar, stacked bar, donut, and sparkline charts are separate hosts.</p>
         ${codeBlock(TREND_CHART_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-trend-chart")}
+     `,
     afterRender: setupTrendChartDemo,
   },
   {
@@ -2731,7 +3320,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-date-range-picker emits rowan-change when users commit start or end dates and when they clear the current range.</p>
         ${codeBlock(DATE_RANGE_PICKER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-date-range-picker")}
+     `,
   },
   {
     id: "calendar",
@@ -2764,7 +3355,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-calendar emits rowan-change only for user selection actions. In range mode, start and end reflect the selected endpoints and submit as name-start and name-end.</p>
         ${codeBlock(CALENDAR_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-calendar")}
+     `,
   },
   {
     id: "number-field",
@@ -2794,7 +3387,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-number-field emits rowan-change on user commits and keeps form value + validity in sync via FACE APIs.</p>
         ${codeBlock(NUMBER_FIELD_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-number-field")}
+     `,
   },
   {
     id: "slider",
@@ -2827,7 +3422,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-slider emits rowan-change for user-originated input only. Parent value assignments remain silent and form association stays synchronized in single and range modes.</p>
         ${codeBlock(SLIDER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-slider")}
+     `,
     afterRender: () => {
       const capacity = document.querySelector("#docs-capacity-slider");
       const budget = document.querySelector("#docs-budget-slider");
@@ -2862,7 +3459,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Slots replace the label, hint, description, or error attributes where richer content is needed. Use for to associate a visible field wrapper with an external control.</p>
         ${codeBlock(FORM_FIELD_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-form-field")}
+     `,
   },
   {
     id: "form-layout",
@@ -2894,7 +3493,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The layout is visual only: field controls retain their own values, validation, form association, and user events.</p>
         ${codeBlock(FORM_LAYOUT_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-form-layout")}
+     `,
     afterRender: () => {
       const slider = document.querySelector("#docs-layout-slider");
       if (slider) slider.formatValue = (value) => "$" + value;
@@ -2926,7 +3527,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Arrow keys move the single tab stop between available options. Space and Enter update selection, while parent assignments remain silent.</p>
         ${codeBlock(LISTBOX_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-listbox")}
+     `,
   },
   {
     id: "option",
@@ -2953,7 +3556,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The surrounding listbox owns roving focus and selection changes. Options preserve their standalone reflected state when moved out of a listbox.</p>
         ${codeBlock('<rowan-option value="engineering" label="Engineering"></rowan-option>', "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-option")}
+     `,
   },
   {
     id: "multi-select-combobox",
@@ -2977,7 +3582,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Each selected value submits under the configured name. User changes emit one rowan-change event from the outer control, not an additional internal listbox event.</p>
         ${codeBlock(MULTI_SELECT_COMBOBOX_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-multi-select-combobox")}
+     `,
     afterRender: () => {
       const control = document.querySelector("#docs-multi-select-demo");
       if (!control) return;
@@ -3013,7 +3620,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The selected value reflects as an attribute for declarative bindings, while the options array remains a property-only configuration surface.</p>
         ${codeBlock(SEGMENTED_CONTROL_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-segmented-control")}
+     `,
     afterRender: () => {
       const control = document.querySelector("#docs-segmented-control-demo");
       if (!control) return;
@@ -3052,7 +3661,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-dropzone applies accept to both picker and drop, then emits rowan-files-add. detail.files are matches; detail.rejected failed accept. Empty accept allows every file.</p>
         ${codeBlock(DROPZONE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-dropzone")}
+     `,
   },
   {
     id: "file-item",
@@ -3081,7 +3692,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-file-item emits rowan-retry, rowan-cancel, and rowan-remove for explicit queue orchestration in parent components.</p>
         ${codeBlock(FILE_ITEM_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-file-item")}
+     `,
   },
   {
     id: "file-upload",
@@ -3109,7 +3722,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-file-upload emits rowan-files-add, rowan-file-remove, rowan-file-retry, and rowan-file-cancel with queue-aware detail payloads.</p>
         ${codeBlock(FILE_UPLOAD_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-file-upload")}
+     `,
   },
   {
     id: "stepper",
@@ -3136,7 +3751,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-stepper emits rowan-step-change when users activate a different step and does not emit that event for parent-driven property updates.</p>
         ${codeBlock(STEPPER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-stepper")}
+     `,
   },
   {
     id: "carousel",
@@ -3185,7 +3802,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Keyboard and motion</h2>
         <p>Previous and next controls remain keyboard-operable, the viewport supports directional and boundary keys, and the visible position is announced as panels change. Panel entry motion is disabled when reduced motion is requested.</p>
       </section>
-    `,
+
+      ${renderApiReference("rowan-carousel")}
+     `,
     afterRender: setupCarouselDemo,
   },
   {
@@ -3219,7 +3838,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Set selection to none, single, or multiple. Assign selected values through the property; user selection emits rowan-change and user disclosure emits rowan-toggle.</p>
         ${codeBlock(TREE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-tree")}
+     `,
     afterRender: setupTreeDemo,
   },
   {
@@ -3261,7 +3882,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>navigation-open reflects the shell state for declarative control. Parent assignments remain silent; user use of the compact toggle, backdrop, or Escape emits rowan-change.</p>
         ${codeBlock(APP_LAYOUT_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-app-layout")}
+     `,
     afterRender: setupAppLayoutDemo,
   },
   {
@@ -3296,7 +3919,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>position, min, max, and step are reflected numeric APIs. snapPoints is property-only, so structured layout values never serialize into markup. User resizing emits rowan-resize; parent-set position remains silent.</p>
         ${codeBlock(SPLIT_PANE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-split-pane")}
+     `,
     afterRender: setupSplitPaneDemo,
   },
   {
@@ -3327,7 +3952,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Set value from application state to update the active item without an event. User activation emits one composed rowan-change. For SPA routing, omit href or preventDefault on rowan-change when href is set.</p>
         ${codeBlock(SIDE_NAV_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-side-nav")}
+     `,
     afterRender: setupSideNavDemo,
   },
   {
@@ -3368,7 +3995,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>active reflects the current destination and maps to an internal aria-current page marker. disabled items are removed from the tab order and skipped by the side navigation controller.</p>
         ${codeBlock(SIDE_NAV_ITEM_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-side-nav-item")}
+     `,
   },
   {
     id: "side-nav-section",
@@ -3382,7 +4011,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <h2>Labeled groups</h2>
         <p>Wrap rowan-side-nav-item children in rowan-side-nav-section. The parent nav still has one value and one keyboard sequence.</p>
       </section>
-    `,
+
+      ${renderApiReference("rowan-side-nav-section")}
+     `,
   },
   {
     id: "command-palette",
@@ -3446,7 +4077,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The optional hotkey uses mod for Command on macOS and Control elsewhere. Programmatic open, hide, and query updates are silent; user activation emits rowan-command, while Escape, backdrop, and close-control dismissal emit rowan-close.</p>
         ${codeBlock(COMMAND_PALETTE_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-command-palette")}
+     `,
     afterRender: setupCommandPaletteDemo,
   },
   {
@@ -3483,7 +4116,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-validation-summary emits rowan-jump when users activate an error entry and keeps host accessibility defaults through ElementInternals.</p>
         ${codeBlock(VALIDATION_SUMMARY_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-validation-summary")}
+     `,
     afterRender: setupValidationSummaryDemo,
   },
   {
@@ -3515,7 +4150,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Configure semantic step IDs with the steps property, map panels through step-ID slots, and react to user-only transition, validation, and completion events.</p>
         ${codeBlock(FORM_WIZARD_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-form-wizard")}
+     `,
     afterRender: setupFormWizardDemo,
   },
   {
@@ -3555,7 +4192,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>rowan-toast emits rowan-dismiss only on user-triggered dismissal and does not fire it when parents toggle visibility programmatically.</p>
         ${codeBlock(TOAST_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-toast")}
+     `,
   },
   {
     id: "toaster",
@@ -3585,7 +4224,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <rowan-toaster id="docs-toaster-demo" placement="bottom-center" max-visible="2" duration="2800"></rowan-toaster>
         <pre id="toaster-events" class="table-events"></pre>
       </section>
-    `,
+
+      ${renderApiReference("rowan-toaster")}
+     `,
     afterRender: setupToasterDemo,
   },
   {
@@ -3613,7 +4254,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>items, itemKey, and renderItem are property-only APIs. Use item-size as the estimate before the list measures visible content, and use scrollToIndex when application flow needs to reveal a record.</p>
         ${codeBlock(VIRTUAL_LIST_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-virtual-list")}
+     `,
     afterRender: setupVirtualListDemo,
   },
   {
@@ -3671,7 +4314,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         </div>
         <pre id="table-events" class="table-events"></pre>
       </section>
-    `,
+
+      ${renderApiReference("rowan-table")}
+     `,
     afterRender: () => {
       setupTableDemo();
       setupVirtualTableDemo();
@@ -3704,7 +4349,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>The toolbar reads selected IDs and rows as properties, responds to table selection updates, and stays silent when application code updates the table state.</p>
         ${codeBlock(TABLE_TOOLBAR_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-table-toolbar")}
+     `,
     afterRender: setupTableToolbarDemo,
   },
   {
@@ -3732,7 +4379,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Pass actions through the property, listen for rowan-bulk-action to persist work, and use the built-in clear action to return the table to an unselected state.</p>
         ${codeBlock(BULK_ACTIONS_BAR_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-bulk-actions-bar")}
+     `,
     afterRender: setupBulkActionsBarDemo,
   },
   {
@@ -3760,7 +4409,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Pass field and filter arrays through properties. The top-level list is frozen AND of id, field, operator, and value. Nested groups with join and filters are experimental. appearance is panel or toolbar; it does not change the filter model. applyFilters(rows, filters, fields) evaluates the tree. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-filter-builder")}
+     `,
     afterRender: setupFilterBuilderDemo,
   },
   {
@@ -3793,7 +4444,9 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <p>Rowan does not provide inline table drafts, commit, cancel, validation, or persistence behavior. For an edit workflow, project application-owned fields into the panel and actions slots, clone the selected row into a local draft, then validate and persist that draft before replacing <code>table.rows</code>. The panel owns the overlay and focus scope; the application owns the draft and source records.</p>
         ${codeBlock(ROW_DETAILS_EDITING_SNIPPET, "html")}
       </section>
-    `,
+
+      ${renderApiReference("rowan-row-details-panel")}
+     `,
     afterRender: setupRowDetailsPanelDemo,
   },
   {
@@ -4048,6 +4701,10 @@ const NAV_SECTIONS = [
     items: [
       { pageId: "getting-started", label: "What is Rowan?" },
       { pageId: "react", label: "React" },
+      { pageId: "vue", label: "Vue" },
+      { pageId: "angular", label: "Angular" },
+      { pageId: "svelte", label: "Svelte" },
+      { pageId: "bundle-size", label: "Bundle Size & Optimization" },
       { pageId: "theming", label: "Theming" },
       { pageId: "tokens", label: "Tokens" },
       { pageId: "formatting", label: "Locale Formatting" },
@@ -5542,6 +6199,11 @@ function wireThemeToggle() {
 
 function wireQuickstartDialog() {
   quickstartCodeEl.textContent = QUICKSTART_SNIPPET;
+  
+  const quickstartVersionEl = document.querySelector("#quickstart-version");
+  if (quickstartVersionEl) {
+    quickstartVersionEl.textContent = `@rowan-ui/core@${ROWAN_VERSION}`;
+  }
 
   quickstartTriggerEl.addEventListener("rowan-click", () => {
     quickstartDialogEl.show();
