@@ -56,3 +56,19 @@ export const Required = {
     return combobox;
   },
 };
+
+export const Filtered = {
+  name: "Filtered query",
+  render: () => {
+    const combobox = document.createElement("rowan-multi-select-combobox");
+    combobox.name = "teams";
+    combobox.locale = "en-US";
+    combobox.label = "Assigned teams";
+    combobox.placeholder = "Find a team";
+    combobox.query = "eng";
+    combobox.open = true;
+    combobox.options = OPTIONS;
+    combobox.selected = ["engineering"];
+    return combobox;
+  },
+};

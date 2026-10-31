@@ -41,3 +41,19 @@ export const Playground = {
     return timePicker;
   },
 };
+
+export const Invalid = {
+  name: "Invalid",
+  render: () => {
+    const timePicker = document.createElement("rowan-time-picker");
+    timePicker.name = "start-time";
+    timePicker.label = "Start time";
+    timePicker.value = "07:15";
+    timePicker.min = "08:00";
+    timePicker.max = "18:00";
+    timePicker.step = 900;
+    timePicker.required = true;
+    timePicker.invalid = true;
+    return timePicker;
+  },
+};

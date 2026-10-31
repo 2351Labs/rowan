@@ -41,3 +41,16 @@ export const Playground = {
     return textarea;
   },
 };
+
+export const NamedNotes = {
+  name: "Named notes",
+  render: () => {
+    const textarea = document.createElement("rowan-textarea");
+    textarea.name = "project-notes";
+    textarea.label = "Notes";
+    textarea.placeholder = "Add project notes";
+    textarea.rows = 4;
+    textarea.value = "Ship the October audit before Friday.";
+    return textarea;
+  },
+};

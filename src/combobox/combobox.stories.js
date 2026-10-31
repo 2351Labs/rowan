@@ -38,3 +38,18 @@ export const Playground = {
     return combobox;
   },
 };
+
+export const OpenWithLocale = {
+  name: "Open suggestions",
+  render: () => {
+    const combobox = document.createElement("rowan-combobox");
+    combobox.name = "city";
+    combobox.locale = "en-US";
+    combobox.label = "City";
+    combobox.placeholder = "Search city";
+    combobox.options = OPTIONS;
+    combobox.value = "Portland";
+    combobox.open = true;
+    return combobox;
+  },
+};

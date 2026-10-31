@@ -32,3 +32,25 @@ export const InListbox = {
     return listbox;
   },
 };
+
+export const WithAffixes = {
+  name: "Prefix and suffix",
+  render: () => {
+    const listbox = document.createElement("rowan-listbox");
+    listbox.label = "Teams";
+    const option = document.createElement("rowan-option");
+    option.value = "engineering";
+    option.label = "Engineering";
+    option.selected = true;
+    option.setAttribute("tabindex", "0");
+    const prefix = document.createElement("span");
+    prefix.slot = "prefix";
+    prefix.textContent = "EN";
+    const suffix = document.createElement("span");
+    suffix.slot = "suffix";
+    suffix.textContent = "12";
+    option.append(prefix, suffix);
+    listbox.append(option);
+    return listbox;
+  },
+};

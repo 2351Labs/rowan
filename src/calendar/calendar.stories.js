@@ -1,4 +1,5 @@
 import "./calendar.js";
+import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const today = new Date();
 const monthValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
@@ -54,6 +55,10 @@ function renderCalendar(args) {
 }
 
 export const Playground = {
+  parameters: createEventScriptParameters({
+    steps: ["Choose a day, or move with the arrow keys and press Enter."],
+    events: ["rowan-change"],
+  }),
   render: renderCalendar,
 };
 

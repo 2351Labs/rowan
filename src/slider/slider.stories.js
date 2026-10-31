@@ -69,3 +69,17 @@ export const Formatter = {
     return slider;
   },
 };
+
+export const InvalidRange = {
+  name: "Invalid range",
+  render: () => {
+    const slider = createSlider({ min: 0, max: 500, step: 25, range: true });
+    slider.name = "budget";
+    slider.nameStart = "budget-min";
+    slider.nameEnd = "budget-max";
+    slider.locale = "en-US";
+    slider.required = true;
+    slider.invalid = true;
+    return slider;
+  },
+};

@@ -53,6 +53,7 @@ export const Multiple = {
     const listbox = document.createElement("rowan-listbox");
     listbox.label = "Teams";
     listbox.selection = "multiple";
+    listbox.name = "teams";
     listbox.selected = ["design", "operations"];
     listbox.append(
       createOption("design", "Design"),

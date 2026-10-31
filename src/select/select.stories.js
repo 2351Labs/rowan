@@ -42,3 +42,17 @@ export const Playground = {
     return select;
   },
 };
+
+export const NamedField = {
+  name: "Named field",
+  render: () => {
+    const select = document.createElement("rowan-select");
+    select.name = "role";
+    select.label = "Role";
+    select.placeholder = "Choose role";
+    select.options = OPTIONS;
+    select.value = "editor";
+    select.required = true;
+    return select;
+  },
+};

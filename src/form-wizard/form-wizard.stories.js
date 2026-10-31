@@ -42,6 +42,9 @@ function createWizard({
   wizard.currentStep = currentStep;
   wizard.orientation = orientation;
   wizard.disabled = disabled;
+  wizard.previousLabel = "Back";
+  wizard.nextLabel = "Continue";
+  wizard.completeLabel = "Finish setup";
 
   const details = createPanel(
     "step-details",

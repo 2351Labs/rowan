@@ -67,3 +67,19 @@ export const ReportFilters = {
     return wrapper;
   },
 };
+
+export const NamedEndpoints = {
+  name: "Named endpoints",
+  render: () => {
+    const picker = document.createElement("rowan-date-range-picker");
+    picker.name = "submitted";
+    picker.nameStart = "submitted-start";
+    picker.nameEnd = "submitted-end";
+    picker.label = "Submitted between";
+    picker.start = "2026-10-01";
+    picker.end = "2026-10-15";
+    picker.invalid = true;
+    picker.messages = { separator: "to", clear: "Clear range" };
+    return picker;
+  },
+};
