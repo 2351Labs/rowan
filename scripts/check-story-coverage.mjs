@@ -3,7 +3,7 @@
  *
  * Charts stay on the gallery rules. Every other component is scored from
  * custom-elements.json attributes, enum values, slots, and events.
- * Charts, Forms & Input, Data Display, and Navigation & Layout fail the run. The remaining categories are
+ * Charts, Forms & Input, Data Display, Navigation & Layout, and Overlays & Menus fail the run. The remaining categories are
  * report-only until each one is filled; add a category here only when it is
  * at 100%, and fail every category once the last one lands.
  */
@@ -50,7 +50,13 @@ const ALLOWLIST = new Set([
 const GALLERY_PATH = "stories/chart-galleries.js";
 
 /** Categories that fail CI. Grow this only when that category is at 100%. */
-const ENFORCED_CATEGORIES = new Set(["Charts", "Forms & Input", "Data Display", "Navigation & Layout"]);
+const ENFORCED_CATEGORIES = new Set([
+  "Charts",
+  "Forms & Input",
+  "Data Display",
+  "Navigation & Layout",
+  "Overlays & Menus",
+]);
 
 function read(path) {
   return readFileSync(resolve(rootDir, path), "utf8");
@@ -226,7 +232,7 @@ function markdown(chartRows, grouped) {
   lines.push("# Storybook coverage");
   lines.push("");
   lines.push(
-    "Charts, Forms & Input, Data Display, and Navigation & Layout are enforced by `scripts/check-story-coverage.mjs`.",
+    "Charts, Forms & Input, Data Display, Navigation & Layout, and Overlays & Menus are enforced by `scripts/check-story-coverage.mjs`.",
   );
   lines.push("Other categories are report-only until their story PRs land.");
   lines.push("The check fails for every category only once each one is at 100%.");

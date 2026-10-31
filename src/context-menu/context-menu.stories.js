@@ -23,6 +23,7 @@ function createContextMenu() {
   const menu = document.createElement("rowan-context-menu");
   menu.label = "Project actions";
   menu.target = target;
+  menu.open = false;
 
   for (const [value, label] of [
     ["rename", "Rename"],

@@ -1,6 +1,6 @@
 # Storybook coverage
 
-Charts, Forms & Input, Data Display, and Navigation & Layout are enforced by `scripts/check-story-coverage.mjs`.
+Charts, Forms & Input, Data Display, Navigation & Layout, and Overlays & Menus are enforced by `scripts/check-story-coverage.mjs`.
 Other categories are report-only until their story PRs land.
 The check fails for every category only once each one is at 100%.
 
@@ -37,21 +37,21 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-accordion` | 80% | 100% | — |
-| `rowan-app-layout` | 83% | 100% | — |
+| `rowan-accordion` | 100% | 100% | — |
+| `rowan-app-layout` | 100% | 100% | — |
 | `rowan-breadcrumb` | 100% | 100% | — |
 | `rowan-carousel` | 100% | 100% | — |
 | `rowan-divider` | 100% | 100% | — |
-| `rowan-pagination` | 75% | 100% | — |
+| `rowan-pagination` | 100% | 100% | — |
 | `rowan-side-nav` | 100% | 100% | — |
-| `rowan-side-nav-item` | 79% | 100% | — |
+| `rowan-side-nav-item` | 100% | 100% | — |
 | `rowan-side-nav-section` | 100% | 100% | — |
-| `rowan-split-pane` | 85% | 100% | — |
-| `rowan-tab` | 60% | 100% | — |
-| `rowan-tab-panel` | 60% | 100% | — |
+| `rowan-split-pane` | 100% | 100% | — |
+| `rowan-tab` | 100% | 100% | — |
+| `rowan-tab-panel` | 100% | 100% | — |
 | `rowan-tabs` | 100% | 100% | — |
 | `rowan-tree` | 100% | 100% | — |
-| `rowan-tree-item` | 44% | 100% | — |
+| `rowan-tree-item` | 100% | 100% | — |
 
 ## Actions & Feedback
 
@@ -121,17 +121,17 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-command-item` | 50% | 50% | attribute keywords, attribute tabindex, slot default, slot prefix, slot description, slot shortcut |
-| `rowan-command-palette` | 64% | 64% | attribute hotkey, attribute query, attribute locale, slot empty |
-| `rowan-confirm-dialog` | 79% | 79% | attribute cancel-label, attribute confirm-disabled, slot actions |
-| `rowan-context-menu` | 83% | 83% | attribute open |
-| `rowan-dialog` | 83% | 83% | attribute alert |
+| `rowan-command-item` | 50% | 100% | — |
+| `rowan-command-palette` | 64% | 100% | — |
+| `rowan-confirm-dialog` | 79% | 100% | — |
+| `rowan-context-menu` | 83% | 100% | — |
+| `rowan-dialog` | 83% | 100% | — |
 | `rowan-drawer` | 100% | 100% | — |
 | `rowan-dropdown` | 100% | 100% | — |
 | `rowan-menu` | 100% | 100% | — |
-| `rowan-menu-item` | 75% | 75% | attribute tabindex |
+| `rowan-menu-item` | 75% | 100% | — |
 | `rowan-popover` | 100% | 100% | — |
-| `rowan-tooltip` | 67% | 67% | attribute open |
+| `rowan-tooltip` | 67% | 100% | — |
 
 ## Files & Uploads
 

@@ -19,6 +19,7 @@ export const Playground = {
   render: ({ value, disabled, label }) => {
     const item = document.createElement("rowan-menu-item");
     item.value = value;
+    item.setAttribute("tabindex", "0");
     if (disabled) item.setAttribute("disabled", "");
     item.textContent = label;
     return item;

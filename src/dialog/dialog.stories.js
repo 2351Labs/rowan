@@ -29,6 +29,7 @@ export const Playground = {
     trigger.textContent = "Open dialog";
 
     const dialog = document.createElement("rowan-dialog");
+    dialog.alert = false;
     if (open) dialog.setAttribute("open", "");
 
     const title = document.createElement("span");
