@@ -66,7 +66,12 @@ function isChartStory(story) {
 
 function safeFilePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0].split("#")[0]);
-  const relative = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
+  let relative = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
+  // CI builds Storybook with base `/rowan/`. The smoke server still hosts the
+  // static output at the site root, so strip that prefix when it is present.
+  if (relative === "rowan" || relative.startsWith("rowan/")) {
+    relative = relative.slice("rowan/".length) || "index.html";
+  }
   const filePath = normalize(join(storybookDir, relative));
   if (filePath !== storybookDir && !filePath.startsWith(`${storybookDir}/`)) {
     return null;
@@ -211,7 +216,7 @@ async function runSmokeTests() {
                   return chart?.shadowRoot?.querySelector("svg");
                 }),
               [...CHART_DIRS],
-              { timeout: 8000 },
+              { timeout: 3000 },
             )
             .catch(() => {});
         } else {
