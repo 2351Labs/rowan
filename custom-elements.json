@@ -28078,6 +28078,10 @@
             },
             {
               "kind": "field",
+              "name": "editMode"
+            },
+            {
+              "kind": "field",
               "name": "locale"
             },
             {
