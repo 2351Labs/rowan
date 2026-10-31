@@ -8,10 +8,10 @@ export async function createEditor(type, value, column, context, messages) {
   if (type === "select") {
     await import("../select/select.js");
     const select = document.createElement("rowan-select");
-    select.value = value ?? "";
     select.classList.add("cell-editor");
     select.setAttribute("aria-label", resolveMessage(messages, DEFAULT_MESSAGES, "editCell"));
     select.options = column.editor?.options || [];
+    select.value = value == null ? "" : String(value);
     return select;
   }
 

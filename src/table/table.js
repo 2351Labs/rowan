@@ -333,6 +333,7 @@ export class RowanTable extends BaseElement {
   #reordering = null;
   #editing = null;
   #rowEditing = null;
+  #editorModule = null;
 
   #root = null;
   #tableViewport = null;
@@ -1910,7 +1911,7 @@ export class RowanTable extends BaseElement {
       row,
       rowIndex,
       column,
-    });
+    }, { cancelable: true });
 
     if (!cancelable) return;
 
@@ -1946,7 +1947,8 @@ export class RowanTable extends BaseElement {
       this.#stopRowEditing(false);
     }
 
-    const { startRowEditing } = await import("./table-editors.js");
+    this.#editorModule = await import("./table-editors.js");
+    const { startRowEditing } = this.#editorModule;
     const rowEditState = await startRowEditing(
       this,
       rowId,
@@ -2025,13 +2027,16 @@ export class RowanTable extends BaseElement {
       if (column.editor?.step !== undefined) input.step = column.editor.step;
       editor = input;
     } else if (type === "select" || type === "date" || type === "checkbox" || type === "custom") {
-      const { createEditor: createPhase2Editor } = await import("./table-editors.js");
-      editor = await createPhase2Editor(type, value, column, editContext, this.#messages);
+      if (!this.#editorModule) {
+        this.#editorModule = await import("./table-editors.js");
+      }
+      editor = await this.#editorModule.createEditor(type, value, column, editContext, this.#messages);
     }
 
     if (!editor) return null;
 
     editor.addEventListener("keydown", (e) => {
+      if (this.#rowEditing) return;
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         e.stopPropagation();
@@ -2076,7 +2081,7 @@ export class RowanTable extends BaseElement {
       row,
       rowIndex,
       column,
-    });
+    }, { cancelable: true });
 
     if (!cancelable) {
       this.#stopEditing(false);
@@ -2108,11 +2113,10 @@ export class RowanTable extends BaseElement {
     this.#editing = null;
   }
 
-  async #commitRowEditing() {
-    if (!this.#rowEditing) return;
+  #commitRowEditing() {
+    if (!this.#rowEditing || !this.#editorModule) return;
 
-    const { commitRowEditing } = await import("./table-editors.js");
-    const result = commitRowEditing(this.#rowEditing);
+    const result = this.#editorModule.commitRowEditing(this.#rowEditing);
     if (!result) return;
 
     const { newValues, oldValues } = result;
@@ -2124,20 +2128,25 @@ export class RowanTable extends BaseElement {
       oldValues,
       row,
       rowIndex,
-    });
+    }, { cancelable: true });
 
     if (!cancelable) {
       this.#stopRowEditing(false);
       return;
     }
 
+    for (const [columnId, value] of Object.entries(newValues)) {
+      row[columnId] = value;
+    }
     this.#stopRowEditing(true);
   }
 
-  async #stopRowEditing(committed) {
+  #stopRowEditing(committed) {
     if (!this.#rowEditing) return;
 
-    const { rowId } = this.#rowEditing;
+    const state = this.#rowEditing;
+    const { rowId } = state;
+    this.#rowEditing = null;
 
     if (!committed) {
       emit(this, "rowan-row-edit-cancel", {
@@ -2145,10 +2154,7 @@ export class RowanTable extends BaseElement {
       });
     }
 
-    const { stopRowEditing } = await import("./table-editors.js");
-    stopRowEditing(this.#rowEditing);
-
-    this.#rowEditing = null;
+    this.#editorModule?.stopRowEditing(state);
     this.requestRender();
   }
 

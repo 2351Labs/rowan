@@ -12,6 +12,13 @@ import "./table-editors.js";
 const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
+async function waitFor(predicate, frames = 45) {
+  for (let frame = 0; frame < frames; frame += 1) {
+    if (predicate()) return;
+    await nextFrame();
+  }
+}
+
 async function waitForStyles(element) {
   const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
   if (!stylesheet) return;
@@ -2836,11 +2843,11 @@ describe("inline editing", () => {
     const cell = table.renderRoot.querySelector('td[data-editable="true"]');
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => cell.querySelector("rowan-select"));
 
-    const select = table.renderRoot.querySelector("rowan-select");
+    const select = cell.querySelector("rowan-select");
     expect(select).to.exist;
+    expect(select.options.map((option) => option.value)).to.deep.equal(["active", "inactive"]);
     expect(select.value).to.equal("active");
 
     document.body.removeChild(host);
@@ -2882,17 +2889,17 @@ describe("inline editing", () => {
     const cell = table.renderRoot.querySelector('td[data-editable="true"]');
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => cell.querySelector("rowan-select"));
 
-    const select = table.renderRoot.querySelector("rowan-select");
+    const select = cell.querySelector("rowan-select");
     select.value = "inactive";
     select.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await nextMicrotask();
 
     expect(commitEvent).to.exist;
-    expect(commitEvent.detail.newValue).to.equal("inactive");
+    expect(commitEvent.detail.value).to.equal("inactive");
     expect(commitEvent.detail.oldValue).to.equal("active");
+    expect(table.rows[0].status).to.equal("inactive");
 
     document.body.removeChild(host);
   });
@@ -2922,10 +2929,9 @@ describe("inline editing", () => {
     const cell = table.renderRoot.querySelector('td[data-editable="true"]');
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => cell.querySelector("rowan-date-picker"));
 
-    const datePicker = table.renderRoot.querySelector("rowan-date-picker");
+    const datePicker = cell.querySelector("rowan-date-picker");
     expect(datePicker).to.exist;
     expect(datePicker.value).to.equal("2024-01-01");
 
@@ -2957,10 +2963,9 @@ describe("inline editing", () => {
     const cell = table.renderRoot.querySelector('td[data-editable="true"]');
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => cell.querySelector("rowan-checkbox"));
 
-    const checkbox = table.renderRoot.querySelector("rowan-checkbox");
+    const checkbox = cell.querySelector("rowan-checkbox");
     expect(checkbox).to.exist;
     expect(checkbox.checked).to.be.true;
 
@@ -3000,12 +3005,13 @@ describe("inline editing", () => {
     const cell = table.renderRoot.querySelector('td[data-editable="true"]');
     cell.focus();
     cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => cell.querySelector(".custom-editor"));
 
-    const customInput = table.renderRoot.querySelector(".custom-editor");
+    const customInput = cell.querySelector(".custom-editor");
     expect(customInput).to.exist;
     expect(customInput.value).to.equal("test");
+    expect(customInput.classList.contains("custom-editor")).to.equal(true);
+    expect(customInput.classList.contains("cell-editor")).to.equal(true);
 
     document.body.removeChild(host);
   });
@@ -3031,8 +3037,7 @@ describe("inline editing", () => {
     const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => table.renderRoot.querySelectorAll("input").length === 2);
 
     const inputs = table.renderRoot.querySelectorAll("input");
     expect(inputs.length).to.equal(2);
@@ -3066,8 +3071,7 @@ describe("inline editing", () => {
     const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => table.renderRoot.querySelector('input[type="text"]'));
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.value = "Bob";
@@ -3077,6 +3081,45 @@ describe("inline editing", () => {
     expect(commitEvent).to.exist;
     expect(commitEvent.detail.values.name).to.equal("Bob");
     expect(commitEvent.detail.oldValues.name).to.equal("Alice");
+    expect(table.rows[0].name).to.equal("Bob");
+
+    document.body.removeChild(host);
+  });
+
+  it("leaves the row unchanged when rowan-row-edit-commit is cancelled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    host.innerHTML = `<rowan-table edit-mode="row"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", editable: true },
+        { id: "age", header: "Age", type: "number", editable: true },
+      ],
+      rows: [{ id: "1", name: "Alice", age: 30 }],
+    };
+
+    await nextMicrotask();
+    await waitForStyles(table);
+
+    table.addEventListener("rowan-row-edit-commit", (event) => {
+      event.preventDefault();
+    });
+
+    const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
+    firstCell.focus();
+    firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await waitFor(() => table.renderRoot.querySelector('input[type="text"]'));
+
+    const nameInput = table.renderRoot.querySelector('input[type="text"]');
+    nameInput.value = "Bob";
+    nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await nextMicrotask();
+
+    expect(table.rows[0].name).to.equal("Alice");
+    expect(table.renderRoot.querySelectorAll("input").length).to.equal(0);
 
     document.body.removeChild(host);
   });
@@ -3107,8 +3150,7 @@ describe("inline editing", () => {
     const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => table.renderRoot.querySelector('input[type="text"]'));
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.value = "Bob";
@@ -3142,15 +3184,14 @@ describe("inline editing", () => {
     const firstCell = table.renderRoot.querySelector('td[data-editable="true"]');
     firstCell.focus();
     firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-    await nextMicrotask();
-    await nextFrame();
+    await waitFor(() => table.renderRoot.querySelector('input[type="text"]'));
 
     const nameInput = table.renderRoot.querySelector('input[type="text"]');
     nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
     await nextMicrotask();
 
     const ageInput = table.renderRoot.querySelector('input[type="number"]');
-    expect(document.activeElement).to.equal(ageInput);
+    expect(table.shadowRoot.activeElement).to.equal(ageInput);
 
     document.body.removeChild(host);
   });
