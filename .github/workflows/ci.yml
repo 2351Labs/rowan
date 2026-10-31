@@ -48,6 +48,10 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Storybook smoke test
         run: node test/storybook-smoke.spec.mjs
+      - name: Build admin template
+        run: npm run build --workspace=@rowan-ui/admin-template
+      - name: Admin template smoke test
+        run: node templates/admin/e2e/smoke.mjs
       - name: Verify documentation version consistency
         run: node scripts/check-docs-version.mjs
       - name: Verify API reference is current

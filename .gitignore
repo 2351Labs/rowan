@@ -4,6 +4,7 @@ storybook-static/
 documentation/**/documentation-static-check/
 test-fixtures/astro/.astro/
 test-fixtures/astro/dist/
+templates/admin/dist/
 tmp/
 .bundle-analysis/
 .size-budget-check/
