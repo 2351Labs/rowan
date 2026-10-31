@@ -1,6 +1,6 @@
 # Storybook coverage
 
-Charts, Forms & Input, Data Display, Navigation & Layout, and Overlays & Menus are enforced by `scripts/check-story-coverage.mjs`.
+Charts, Forms & Input, Data Display, Navigation & Layout, Overlays & Menus, and Actions & Feedback are enforced by `scripts/check-story-coverage.mjs`.
 Other categories are report-only until their story PRs land.
 The check fails for every category only once each one is at 100%.
 
@@ -59,13 +59,13 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | --- | ---: | ---: | --- |
 | `rowan-alert` | 100% | 100% | — |
 | `rowan-badge` | 100% | 100% | — |
-| `rowan-button` | 71% | 71% | attribute type, enum type=button, enum type=submit, enum type=reset, attribute aria-expanded, attribute aria-haspopup |
-| `rowan-chip` | 83% | 83% | slot prefix, slot suffix |
+| `rowan-button` | 71% | 100% | — |
+| `rowan-chip` | 83% | 100% | — |
 | `rowan-data-state` | 100% | 100% | — |
 | `rowan-empty-state` | 100% | 100% | — |
-| `rowan-icon-button` | 67% | 67% | attribute type, enum type=button, enum type=submit, enum type=reset, attribute aria-expanded, attribute aria-haspopup, attribute aria-controls |
+| `rowan-icon-button` | 67% | 100% | — |
 | `rowan-link` | 100% | 100% | — |
-| `rowan-progress` | 80% | 80% | attribute locale |
+| `rowan-progress` | 80% | 100% | — |
 | `rowan-skeleton` | 100% | 100% | — |
 | `rowan-spinner` | 100% | 100% | — |
 | `rowan-status-indicator` | 100% | 100% | — |
@@ -121,17 +121,17 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-command-item` | 50% | 100% | — |
-| `rowan-command-palette` | 64% | 100% | — |
-| `rowan-confirm-dialog` | 79% | 100% | — |
-| `rowan-context-menu` | 83% | 100% | — |
-| `rowan-dialog` | 83% | 100% | — |
+| `rowan-command-item` | 100% | 100% | — |
+| `rowan-command-palette` | 100% | 100% | — |
+| `rowan-confirm-dialog` | 100% | 100% | — |
+| `rowan-context-menu` | 100% | 100% | — |
+| `rowan-dialog` | 100% | 100% | — |
 | `rowan-drawer` | 100% | 100% | — |
 | `rowan-dropdown` | 100% | 100% | — |
 | `rowan-menu` | 100% | 100% | — |
-| `rowan-menu-item` | 75% | 100% | — |
+| `rowan-menu-item` | 100% | 100% | — |
 | `rowan-popover` | 100% | 100% | — |
-| `rowan-tooltip` | 67% | 100% | — |
+| `rowan-tooltip` | 100% | 100% | — |
 
 ## Files & Uploads
 

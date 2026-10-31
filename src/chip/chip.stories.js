@@ -30,3 +30,19 @@ export const Playground = {
     return el;
   },
 };
+
+export const WithAffixes = {
+  name: "Prefix and suffix",
+  render: () => {
+    const el = document.createElement("rowan-chip");
+    el.tone = "success";
+    const prefix = document.createElement("span");
+    prefix.slot = "prefix";
+    prefix.textContent = "EN";
+    const suffix = document.createElement("span");
+    suffix.slot = "suffix";
+    suffix.textContent = "12";
+    el.append(prefix, "Platform", suffix);
+    return el;
+  },
+};
