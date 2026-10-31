@@ -335,7 +335,22 @@ async function main() {
     await runCommand("npm", ["run", "documentation:build"], "Build documentation");
     
     await runCommand("npm", ["run", "build-storybook"], "Build Storybook");
-    
+
+    const chromiumReady = await ensurePlaywrightBrowsers("chromium");
+    if (chromiumReady !== 0) {
+      console.error("❌ Failed to install Playwright chromium for the Storybook smoke test");
+      if (!flags.keepGoing) {
+        printSummary();
+        process.exit(1);
+      }
+    }
+
+    await runCommand(
+      "node",
+      ["test/storybook-smoke.spec.mjs"],
+      "Storybook smoke test"
+    );
+
     await runCommand(
       "node",
       ["scripts/check-docs-version.mjs"],
@@ -347,6 +362,8 @@ async function main() {
       ["scripts/check-component-docs-coverage.mjs"],
       "Verify component docs coverage"
     );
+
+    await runCommand("npm", ["run", "coverage:check"], "Check Storybook story coverage");
     
     // npm pack dry runs
     await runCommand("npm", ["pack", "--dry-run"], "Pack core (dry-run)");
