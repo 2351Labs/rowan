@@ -13,6 +13,7 @@
  * @attr {boolean} resizable-columns
  * @attr {boolean} reorderable-columns
  * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
+ * @attr {"client"|"server"} data-mode - `client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -22,6 +23,8 @@
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<{ id: string, value: string }>} filters - Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -53,6 +56,9 @@
  * @event rowan-edit-cancel - Fired when a cell edit is discarded.
  * @event rowan-row-edit-commit - Fired when every editable cell in a row is valid. Cancelable. `detail.values` and `detail.oldValues` are keyed by column id.
  * @event rowan-row-edit-cancel - Fired when a row edit is discarded.
+ * @event rowan-data-request - Fired before a server read. Cancelable. `detail` is `{ page, pageSize, sort, filters }`. `preventDefault()` skips the request.
+ * @event rowan-data-load - Fired after `getRows` resolves. `detail` includes `rows`, `total`, and the query.
+ * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
  */
 export class RowanTable extends BaseElement {
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
@@ -112,6 +118,12 @@ export class RowanTable extends BaseElement {
   get resizableColumns(): boolean;
   set reorderableColumns(value: boolean);
   get reorderableColumns(): boolean;
+  set dataMode(value: string | null);
+  get dataMode(): string | null;
+  set dataSource(value: null);
+  get dataSource(): null;
+  set filters(value: any[]);
+  get filters(): any[];
   set editMode(value: string | null);
   get editMode(): string | null;
   set locale(value: string);
@@ -300,5 +312,10 @@ export type RowanTableMessages = {
   commitEdit?: string | undefined;
   required?: string | undefined;
   invalidValue?: string | undefined;
+  loadError?: string | undefined;
+  loadingRows?: string | undefined;
+  retry?: string | undefined;
+  rowsLoaded?: string | ((context: { count: number }) => string) | undefined;
+  rowsFailed?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

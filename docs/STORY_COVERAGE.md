@@ -81,7 +81,7 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-image` | 100% | 100% | — |
 | `rowan-row-details-panel` | 100% | 100% | — |
 | `rowan-source-meta` | 100% | 100% | — |
-| `rowan-table` | 100% | 100% | — |
+| `rowan-table` | 87% | 100% | — |
 | `rowan-table-toolbar` | 100% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
@@ -135,14 +135,14 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-dropzone` | 86% | 100% | — |
-| `rowan-file-item` | 86% | 100% | — |
-| `rowan-file-upload` | 83% | 100% | — |
+| `rowan-dropzone` | 100% | 100% | — |
+| `rowan-file-item` | 100% | 100% | — |
+| `rowan-file-upload` | 100% | 100% | — |
 
 ## Other
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-stepper` | 86% | 100% | — |
+| `rowan-stepper` | 100% | 100% | — |
 
 Non-chart scores count public attributes, enum values, slots, and events from `custom-elements.json`. Before is `origin/main`. After is the story file on this branch.

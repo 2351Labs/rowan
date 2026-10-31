@@ -19,7 +19,6 @@ import "../progress/progress.js";
 import "../sparkline/sparkline.js";
 import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
-import "../text-field/text-field.js";
 
 const CELL_TYPES = new Set([
   "text",
@@ -51,6 +50,8 @@ const ROW_ACTIVATE_MODES = new Set(["dblclick", "none"]);
 const INTERACTIVE_CELL_TYPES = new Set(["link", "checkbox", "switch", "button", "icon-button"]);
 const INTERACTIVE_CONTROL_TAGS = new Set(["a", "button", "input", "select", "textarea"]);
 const EDIT_MODES = new Set(["cell", "row"]);
+const DATA_MODES = new Set(["client", "server"]);
+const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_VIRTUAL_ITEM_SIZE = 40;
 const DEFAULT_VIRTUAL_OVERSCAN = 3;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -73,6 +74,11 @@ const DEFAULT_MESSAGES = Object.freeze({
   editCell: "Edit cell",
   cancelEdit: "Cancel editing",
   commitEdit: "Save changes",
+  loadError: "Unable to load rows.",
+  loadingRows: "Loading rows.",
+  retry: "Retry",
+  rowsFailed: "Could not load rows.",
+  rowsLoaded: "Loaded {count} rows.",
 });
 
 function positiveNumber(value, fallback) {
@@ -222,6 +228,11 @@ function nonNegativeInteger(value, fallback) {
  * @property {string} [commitEdit]
  * @property {string} [required]
  * @property {string} [invalidValue]
+ * @property {string} [loadError]
+ * @property {string} [loadingRows]
+ * @property {string} [retry]
+ * @property {string | ((context: { count: number }) => string)} [rowsLoaded]
+ * @property {string} [rowsFailed]
  */
 
 function isDevelopmentEnvironment() {
@@ -247,6 +258,7 @@ function isDevelopmentEnvironment() {
  * @attr {boolean} resizable-columns
  * @attr {boolean} reorderable-columns
  * @attr {"cell"|"row"} edit-mode - `cell` edits one cell. `row` edits every editable cell in the row.
+ * @attr {"client"|"server"} data-mode - `client` pages, sorts, and groups local rows. `server` asks `dataSource.getRows` instead. Default `client`.
  * @attr {string} locale
  * @property {object} config - Replaces the complete table configuration.
  * @property {Array<object>} columns - Updates columns without replacing other configuration.
@@ -256,6 +268,8 @@ function isDevelopmentEnvironment() {
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<{ id: string, value: string }>} filters - Column filters sent to `dataSource`. Assigning them resets to the first page and is debounced. Client mode ignores them.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -287,6 +301,9 @@ function isDevelopmentEnvironment() {
  * @event rowan-edit-cancel - Fired when a cell edit is discarded.
  * @event rowan-row-edit-commit - Fired when every editable cell in a row is valid. Cancelable. `detail.values` and `detail.oldValues` are keyed by column id.
  * @event rowan-row-edit-cancel - Fired when a row edit is discarded.
+ * @event rowan-data-request - Fired before a server read. Cancelable. `detail` is `{ page, pageSize, sort, filters }`. `preventDefault()` skips the request.
+ * @event rowan-data-load - Fired after `getRows` resolves. `detail` includes `rows`, `total`, and the query.
+ * @event rowan-data-error - Fired when `getRows` rejects. `detail.error` is the Error. The error row offers retry.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -304,6 +321,7 @@ export class RowanTable extends BaseElement {
     "resizable-columns",
     "reorderable-columns",
     "locale",
+    "data-mode",
   ];
   static upgradeProperties = [
     "config",
@@ -327,6 +345,9 @@ export class RowanTable extends BaseElement {
     "rowActivate",
     "locale",
     "messages",
+    "dataMode",
+    "dataSource",
+    "filters",
   ];
 
   #state = {
@@ -377,6 +398,11 @@ export class RowanTable extends BaseElement {
   #virtualObservedRows = new Set();
   #virtualResizeRenderQueued = false;
   #messages = {};
+  #dataSource = null;
+  #filters = [];
+  #server = null;
+  #serverBoot = null;
+  #serverReady = false;
 
   constructor() {
     super();
@@ -409,6 +435,13 @@ export class RowanTable extends BaseElement {
 
     if (name === "virtual-item-size") {
       this.#virtualCollection.clearMeasurements();
+    }
+
+    if (name === "data-mode") {
+      this.#bodyNeedsRender = true;
+      this.#serverReady = false;
+      if (this.dataMode !== "server") this.#server?.cancel();
+      else this.#ensureServer();
     }
 
     super.attributeChangedCallback(name, oldValue, newValue);
@@ -647,6 +680,39 @@ export class RowanTable extends BaseElement {
     this.reflectBoolean("reorderable-columns", Boolean(value));
   }
 
+  get dataMode() {
+    const value = this.getAttribute("data-mode");
+    return DATA_MODES.has(value) ? value : "client";
+  }
+
+  set dataMode(value) {
+    const normalized = DATA_MODES.has(value) ? value : "client";
+    this.setAttribute("data-mode", normalized);
+  }
+
+  get dataSource() {
+    return this.#dataSource;
+  }
+
+  set dataSource(value) {
+    this.#dataSource = value && typeof value === "object" ? value : null;
+    if (this.dataMode !== "server") return;
+    this.#server?.markUnloaded();
+    this.#queueServer(false);
+  }
+
+  get filters() {
+    return this.#filters.map((filter) => ({ ...filter }));
+  }
+
+  set filters(value) {
+    this.#filters = this.#normalizeFilters(value);
+    if (this.dataMode !== "server") return;
+    void this.#bootServer().then((server) => {
+      if (this.dataMode === "server") server.onFilters();
+    });
+  }
+
   get editMode() {
     const value = this.getAttribute("edit-mode");
     return EDIT_MODES.has(value) ? value : "cell";
@@ -703,14 +769,18 @@ export class RowanTable extends BaseElement {
   /** @returns {RowanTableRow[]} */
   get selectedRows() {
     const selectedIds = new Set(this.#state.selected);
+    const source = this.dataMode === "server" ? (this.#server?.rows() ?? []) : this.rows;
 
-    return this.rows.filter((row, index) => selectedIds.has(this.#resolveRowId(row, index)));
+    return source.filter((row, index) => selectedIds.has(this.#resolveRowId(row, index)));
   }
 
   selectAll() {
     if (this.selectable !== "multiple") return;
 
     const selectedIds = new Set(this.#visibleRows.map((entry) => entry.rowId));
+    if (this.dataMode === "server") {
+      for (const rowId of this.#state.selected) selectedIds.add(rowId);
+    }
     this.selected = this.#orderedSelection(selectedIds);
   }
 
@@ -728,6 +798,11 @@ export class RowanTable extends BaseElement {
     const normalized = this.#normalizeSort({ id, dir });
     this.#state.sort = normalized;
     this.#viewNeedsReconciliation = true;
+    if (this.dataMode === "server") {
+      void this.#bootServer().then((server) => {
+        if (this.dataMode === "server") server.onSort();
+      });
+    }
     this.requestRender();
 
     if (options.emitEvent && normalized) {
@@ -752,6 +827,7 @@ export class RowanTable extends BaseElement {
                 </thead>
                 <tbody class="tbody" part="tbody"></tbody>
               </table>
+              <div class="data-status visually-hidden" role="status"></div>
             </div>
           </div>
           <div class="footer" part="footer">
@@ -858,7 +934,7 @@ export class RowanTable extends BaseElement {
 
     this.#validateConfiguration();
     const view = this.#buildView();
-    this.#pruneSelection(view.entries);
+    if (this.dataMode !== "server") this.#pruneSelection(view.entries);
     this.#visibleRows = view.dataRows;
 
     this.#renderHeader();
@@ -866,11 +942,14 @@ export class RowanTable extends BaseElement {
     this.#renderPagination(view.pageInfo);
 
     const table = this.renderRoot.querySelector("table");
-    table.setAttribute("aria-busy", this.loading ? "true" : "false");
+    const busy = this.loading || this.#serverBusy();
+    table.setAttribute("aria-busy", busy ? "true" : "false");
     this.#syncRowCountSemantics(table, view);
+    this.#syncServerStatus();
 
     this.#renderCaption();
     this.#applyStickyOffsets();
+    this.#ensureServer();
   }
 
   /** Virtualized and paginated tables hold only a window of rows, so AT needs the real totals. */
@@ -1046,13 +1125,17 @@ export class RowanTable extends BaseElement {
   }
 
   #renderBody(viewRows, hasDuplicateRowIds) {
-    if (this.loading || !viewRows.length) {
+    const remoteBusy = this.loading || this.#serverBusy();
+    const remoteError = !remoteBusy && this.dataMode === "server" && this.#server?.hasError();
+    if (remoteBusy || remoteError || !viewRows.length) {
       this.#deactivateVirtualization();
       this.#tbody.replaceChildren();
       this.#renderedBodyRows.clear();
 
-      if (this.loading) {
+      if (remoteBusy) {
         this.#renderLoadingRow();
+      } else if (remoteError) {
+        this.#server.renderError(this.#tbody);
       } else {
         this.#renderEmptyRow();
       }
@@ -1597,6 +1680,13 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyClick(event) {
+    const retry = event.target instanceof Element ? event.target.closest("[data-action='retry-load']") : null;
+    if (retry) {
+      event.preventDefault();
+      this.#queueServer(false);
+      return;
+    }
+
     const toggle = this.#findActionElement(event, "toggle-group");
     if (toggle) {
       this.#toggleGroup(toggle.dataset.groupKey);
@@ -2790,12 +2880,124 @@ export class RowanTable extends BaseElement {
   }
 
   #orderedSelection(selection) {
-    return this.rows
+    const source = this.dataMode === "server" ? (this.#server?.rows() ?? []) : this.rows;
+    const ordered = source
       .map((row, index) => this.#resolveRowId(row, index))
       .filter((rowId) => selection.has(rowId));
+    if (this.dataMode !== "server" || !this.#server) return ordered;
+    return this.#server.retainSelection(ordered, selection);
+  }
+
+  #serverBusy() {
+    return this.dataMode === "server" && (!this.#server || this.#server.isBusy());
+  }
+
+  #serverHost() {
+    return {
+      getPage: () => this.#state.page,
+      setPage: (page) => {
+        this.#state.page = page;
+      },
+      getSort: () => this.sort,
+      getSource: () => this.#dataSource,
+      getFilters: () => this.#filters,
+      message: (key, params) => resolveMessage(this.#messages, DEFAULT_MESSAGES, key, params),
+      columnCount: () => this.#visibleColumnCount(),
+      rowId: (row, index) => this.#resolveRowId(row, index),
+      validateRowIds: (entries) => this.#validateRowIds(entries),
+      duplicateRowIds: (entries) => this.#hasDuplicateRowIds(entries),
+      emit: (type, detail, options) => emit(this, type, detail, options),
+      selectedIds: () => this.#state.selected,
+      dirty: () => {
+        this.#bodyNeedsRender = true;
+        this.#viewNeedsReconciliation = true;
+      },
+      render: () => this.requestRender(),
+    };
+  }
+
+  #bootServer() {
+    if (this.#server) return Promise.resolve(this.#server);
+    if (this.dataMode !== "server") return Promise.resolve(null);
+    this.#serverBoot ??= import("./table-data-source.js").then((mod) => {
+      if (!this.#server) {
+        this.#server = mod.attachServerTable(this.#serverHost());
+        this.requestRender();
+      }
+      return this.#server;
+    });
+    return this.#serverBoot;
+  }
+
+  #queueServer(debounce) {
+    if (this.dataMode !== "server") return;
+    void this.#bootServer().then((server) => {
+      if (this.dataMode === "server") server.queue(debounce);
+    });
+  }
+
+  #ensureServer() {
+    if (this.dataMode !== "server" || this.#serverReady) return;
+    this.#serverReady = true;
+    this.#queueServer(false);
+  }
+
+  #syncServerStatus() {
+    const status = this.renderRoot.querySelector(".data-status");
+    if (!status) return;
+    if (this.dataMode !== "server") {
+      if (status.textContent) status.textContent = "";
+      return;
+    }
+    if (!this.#server) {
+      const text = resolveMessage(this.#messages, DEFAULT_MESSAGES, "loadingRows");
+      if (status.textContent !== text) status.textContent = text;
+      return;
+    }
+    this.#server.syncStatus(status);
+  }
+
+  #emptyServerView() {
+    const page = this.#state.page;
+    const size = Math.max(1, page?.size || DEFAULT_PAGE_SIZE);
+    const index = page?.index ?? 0;
+    return {
+      entries: [],
+      rows: [],
+      dataRows: [],
+      renderRows: [],
+      a11yRows: null,
+      pageInfo: {
+        index,
+        size,
+        total: 0,
+        totalPages: 1,
+        start: index * size,
+        end: index * size,
+      },
+      hasDuplicateRowIds: false,
+    };
+  }
+
+  #normalizeFilters(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value
+        .filter((item) => item && item.id)
+        .map((item) => ({ id: String(item.id), value: String(item.value ?? "") }));
+    }
+    if (typeof value === "object") {
+      return Object.entries(value).map(([id, itemValue]) => ({
+        id: String(id),
+        value: String(itemValue ?? ""),
+      }));
+    }
+    return [];
   }
 
   #buildView() {
+    if (this.dataMode === "server") return this.#server?.buildView() ?? this.#emptyServerView();
+
     const entries = this.rows.map((row, rowIndex) => ({
       row,
       rowIndex,
@@ -3161,9 +3363,16 @@ export class RowanTable extends BaseElement {
   }
 
   #changePage(nextIndex) {
+    if (this.dataMode === "server") {
+      void this.#bootServer().then((server) => {
+        if (this.dataMode === "server") server.changePage(nextIndex);
+      });
+      return;
+    }
+
     if (!this.#state.page) return;
 
-    const size = this.#state.page.size;
+    const size = this.#state.page.size ?? DEFAULT_PAGE_SIZE;
     const total = this.#state.page.total ?? this.rows.length;
     const totalPages = Math.max(1, Math.ceil(total / size));
     const index = Math.min(Math.max(0, nextIndex), totalPages - 1);
@@ -3171,8 +3380,9 @@ export class RowanTable extends BaseElement {
     if (index === this.#state.page.index) return;
 
     this.#state.page = {
-      ...this.#state.page,
       index,
+      size,
+      total: this.#state.page.total,
     };
 
     this.#viewNeedsReconciliation = true;
@@ -3181,7 +3391,7 @@ export class RowanTable extends BaseElement {
     emit(this, "rowan-page-change", {
       index,
       page: index + 1,
-      size: this.#state.page.size,
+      size,
     });
   }
 

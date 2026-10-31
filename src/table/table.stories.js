@@ -1349,6 +1349,89 @@ export const InlineEditingValidation = {
   },
 };
 
+export const ServerData = {
+  render: () => {
+    return `
+      <div style="padding: 1rem; display: grid; gap: 0.75rem;">
+        <label>Filter name <input id="server-filter" type="search" value="" /></label>
+        <label><input id="server-fail" type="checkbox" /> Fail the next request</label>
+        <p id="server-events"></p>
+        <rowan-table id="server-table" data-mode="server" density="md" caption="Directory"></rowan-table>
+        <p>data-mode "client" keeps paging and sorting on local rows. data-mode "server" calls dataSource.</p>
+      </div>
+      <script type="module">
+        const SERVER_ROWS = [
+          { id: "u-1", name: "Ada Lovelace", role: "Admin", city: "London" },
+          { id: "u-2", name: "Alan Turing", role: "Editor", city: "Manchester" },
+          { id: "u-3", name: "Grace Hopper", role: "Admin", city: "New York" },
+          { id: "u-4", name: "Katherine Johnson", role: "Viewer", city: "Hampton" },
+          { id: "u-5", name: "Margaret Hamilton", role: "Editor", city: "Boston" },
+          { id: "u-6", name: "Radia Perlman", role: "Viewer", city: "Portsmouth" },
+          { id: "u-7", name: "Tim Berners-Lee", role: "Admin", city: "Geneva" },
+          { id: "u-8", name: "Barbara Liskov", role: "Editor", city: "Los Angeles" },
+          { id: "u-9", name: "Edsger Dijkstra", role: "Viewer", city: "Rotterdam" },
+          { id: "u-10", name: "Donald Knuth", role: "Admin", city: "Milwaukee" },
+          { id: "u-11", name: "Frances Allen", role: "Editor", city: "Peru" },
+          { id: "u-12", name: "John McCarthy", role: "Viewer", city: "Boston" },
+        ];
+        const table = document.querySelector("#server-table");
+        const events = document.querySelector("#server-events");
+        const note = (text) => { events.textContent = text; };
+        table.config = {
+          columns: [
+            { id: "name", header: "Name", sortable: true, editable: true },
+            { id: "role", header: "Role", type: "badge", sortable: true },
+            { id: "city", header: "City", sortable: true },
+          ],
+          page: { index: 0, size: 4 },
+        };
+        table.dataSource = {
+          debounce: 200,
+          async getRows({ page, pageSize, sort, filters, signal }) {
+            await new Promise((resolve, reject) => {
+              const timer = setTimeout(resolve, 350);
+              signal.addEventListener("abort", () => {
+                clearTimeout(timer);
+                reject(new DOMException("Aborted", "AbortError"));
+              });
+            });
+            if (document.querySelector("#server-fail").checked) {
+              document.querySelector("#server-fail").checked = false;
+              throw new Error("Directory unavailable");
+            }
+            let rows = SERVER_ROWS.slice();
+            for (const filter of filters) {
+              const needle = filter.value.trim().toLowerCase();
+              if (!needle) continue;
+              rows = rows.filter((row) => String(row[filter.id] ?? "").toLowerCase().includes(needle));
+            }
+            if (sort) {
+              const direction = sort.dir === "desc" ? -1 : 1;
+              rows.sort((left, right) => String(left[sort.id]).localeCompare(String(right[sort.id])) * direction);
+            }
+            const start = page * pageSize;
+            return { rows: rows.slice(start, start + pageSize), total: rows.length };
+          },
+        };
+        document.querySelector("#server-filter").addEventListener("input", (event) => {
+          table.filters = [{ id: "name", value: event.target.value }];
+        });
+        table.addEventListener("rowan-data-request", (event) => note("rowan-data-request " + JSON.stringify(event.detail)));
+        table.addEventListener("rowan-data-load", (event) => note("rowan-data-load " + event.detail.total));
+        table.addEventListener("rowan-data-error", (event) => note("rowan-data-error " + event.detail.error.message));
+        table.addEventListener("rowan-edit-commit", (event) => note("rowan-edit-commit " + event.detail.value));
+      </script>
+    `;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Server mode (data-mode=\"server\") loads pages from dataSource.getRows with simulated latency. Sort headers, the pager, and the debounced name filter call the source. Check \"Fail the next request\" to show the error state and Retry. rowan-data-request, rowan-data-load, and rowan-data-error are announced above the grid. Client mode (\"client\") is unchanged. Selection ids are kept across pages; select-all applies to the current page. Inline rowan-edit-commit still fires and the app persists it.",
+      },
+    },
+  },
+};
+
 export const CellEditChrome = {
   name: "Cell edit chrome",
   parameters: createEventScriptParameters({

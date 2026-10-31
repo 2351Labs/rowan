@@ -22,6 +22,9 @@ export const RowanTable: ForwardRefExoticComponent<
       onRowanEditCancel?: (event: CustomEvent) => void;
       onRowanRowEditCommit?: (event: CustomEvent) => void;
       onRowanRowEditCancel?: (event: CustomEvent) => void;
+      onRowanDataRequest?: (event: CustomEvent) => void;
+      onRowanDataLoad?: (event: CustomEvent) => void;
+      onRowanDataError?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanTableElement>

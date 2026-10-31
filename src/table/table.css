@@ -105,6 +105,7 @@
   display: none;
 }
 
+.data-status.visually-hidden,
 .caption.visually-hidden {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
@@ -446,6 +447,14 @@ td.editing {
   font-size: var(--rowan-font-size-sm);
   padding-block: var(--rowan-space-1);
   padding-inline: var(--rowan-space-2);
+}
+
+.data-error {
+  padding: var(--rowan-space-4);
+}
+
+.data-error-text {
+  margin: 0 0 var(--rowan-space-3);
 }
 
 td[data-editable="true"]:not(.editing):focus-within {

@@ -3384,3 +3384,172 @@ describe("inline editing", () => {
     document.body.removeChild(host);
   });
 });
+
+describe("server data", () => {
+  function people(count = 25) {
+    return Array.from({ length: count }, (_, index) => ({
+      id: `p-${index + 1}`,
+      name: `N${String(index + 1).padStart(2, "0")}`,
+      city: index % 2 === 0 ? "Paris" : "Lyon",
+    }));
+  }
+
+  function mount(getRows, { debounce = 0, pageSize = 10 } = {}) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.innerHTML = `<rowan-table data-mode="server"></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", sortable: true, editable: true },
+        { id: "city", header: "City", sortable: true },
+      ],
+      page: { index: 0, size: pageSize },
+    };
+    table.dataSource = { debounce, getRows };
+    return { host, table };
+  }
+
+  it("requests a page instead of slicing local rows", async () => {
+    const calls = [];
+    const { host, table } = mount(({ page, pageSize, signal }) => {
+      calls.push({ page, pageSize, aborted: signal.aborted });
+      const rows = people().slice(page * pageSize, page * pageSize + pageSize);
+      return Promise.resolve({ rows, total: 25 });
+    });
+
+    await waitFor(() => table.renderRoot.textContent.includes("N01"));
+    expect(calls.at(-1)).to.deep.equal({ page: 0, pageSize: 10, aborted: false });
+    expect(table.renderRoot.textContent.includes("N11")).to.equal(false);
+
+    table.renderRoot.querySelector('[data-action="next-page"]').click();
+    await waitFor(() => table.renderRoot.textContent.includes("N11"));
+    expect(calls.at(-1).page).to.equal(1);
+    expect(table.renderRoot.textContent.includes("N01")).to.equal(false);
+
+    document.body.removeChild(host);
+  });
+
+  it("sends sort and debounced filters to the data source", async () => {
+    const calls = [];
+    const { host, table } = mount((query) => {
+      calls.push({ sort: query.sort, filters: query.filters, page: query.page });
+      return Promise.resolve({ rows: people(1), total: 1 });
+    }, { debounce: 30 });
+
+    await waitFor(() => calls.length >= 1);
+    table.renderRoot.querySelector('th[data-column-id="city"] button').click();
+    await waitFor(() => calls.some((call) => call.sort?.id === "city"));
+    expect(calls.at(-1).page).to.equal(0);
+
+    const before = calls.length;
+    table.filters = [{ id: "name", value: "a" }];
+    table.filters = [{ id: "name", value: "ann" }];
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const filterCalls = calls.slice(before);
+    expect(filterCalls.length).to.equal(1);
+    expect(filterCalls[0].filters).to.deep.equal([{ id: "name", value: "ann" }]);
+    expect(filterCalls[0].page).to.equal(0);
+
+    document.body.removeChild(host);
+  });
+
+  it("ignores a stale response after a newer request", async () => {
+    let releaseFirst;
+    const first = new Promise((resolve) => {
+      releaseFirst = resolve;
+    });
+    let generation = 0;
+    const { host, table } = mount(() => {
+      generation += 1;
+      const current = generation;
+      if (current === 1) {
+        return first.then(() => ({ rows: [{ id: "stale", name: "Stale" }], total: 1 }));
+      }
+      return Promise.resolve({ rows: [{ id: "fresh", name: "Fresh", city: "Nice" }], total: 1 });
+    });
+
+    await waitFor(() => generation === 1);
+    table.renderRoot.querySelector('th[data-column-id="name"] button').click();
+    await waitFor(() => table.renderRoot.textContent.includes("Fresh"));
+    releaseFirst();
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    expect(table.renderRoot.textContent.includes("Stale")).to.equal(false);
+    expect(table.renderRoot.textContent.includes("Fresh")).to.equal(true);
+
+    document.body.removeChild(host);
+  });
+
+  it("skips the read when rowan-data-request is cancelled", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.innerHTML = `<rowan-table></rowan-table>`;
+    const table = host.querySelector("rowan-table");
+    table.config = {
+      columns: [{ id: "name", header: "Name" }],
+      page: { index: 0, size: 5 },
+    };
+    let reads = 0;
+    table.addEventListener("rowan-data-request", (event) => event.preventDefault());
+    table.dataSource = {
+      debounce: 0,
+      getRows: () => {
+        reads += 1;
+        return Promise.resolve({ rows: people(1), total: 1 });
+      },
+    };
+    table.dataMode = "server";
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    expect(reads).to.equal(0);
+    expect(table.renderRoot.querySelector("[data-action='retry-load']")).to.equal(null);
+
+    document.body.removeChild(host);
+  });
+
+  it("shows an error with retry and announces loading", async () => {
+    let attempt = 0;
+    const { host, table } = mount(() => {
+      attempt += 1;
+      if (attempt === 1) return Promise.reject(new Error("offline"));
+      return Promise.resolve({ rows: [{ id: "1", name: "Recovered", city: "Lille" }], total: 1 });
+    });
+
+    await waitFor(() => table.renderRoot.querySelector("[data-action='retry-load']"));
+    const status = table.renderRoot.querySelector(".data-status");
+    expect(status.getAttribute("role")).to.equal("status");
+    expect(status.textContent).to.equal("Could not load rows.");
+    expect(table.renderRoot.querySelector("table").getAttribute("aria-busy")).to.equal("false");
+    expect(table.renderRoot.textContent).to.include("Unable to load rows.");
+    expect(table.renderRoot.textContent).to.include("Retry");
+
+    table.renderRoot.querySelector("[data-action='retry-load']").click();
+    await waitFor(() => table.renderRoot.querySelector("table").getAttribute("aria-busy") === "true" || table.renderRoot.textContent.includes("Recovered"));
+    await waitFor(() => table.renderRoot.textContent.includes("Recovered"));
+    expect(table.renderRoot.querySelector(".data-status").textContent).to.equal("Loaded 1 rows.");
+
+    document.body.removeChild(host);
+  });
+
+  it("keeps selected ids when the page changes", async () => {
+    const { host, table } = mount(({ page, pageSize }) => {
+      const rows = people().slice(page * pageSize, page * pageSize + pageSize);
+      return Promise.resolve({ rows, total: 25 });
+    }, { pageSize: 5 });
+    table.selectable = "multiple";
+
+    await waitFor(() => table.renderRoot.textContent.includes("N01"));
+    const box = table.renderRoot.querySelector("td rowan-checkbox");
+    box.checked = true;
+    box.dispatchEvent(new CustomEvent("rowan-change", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    const selectedId = table.selected[0];
+    expect(selectedId).to.equal("p-1");
+
+    table.renderRoot.querySelector('[data-action="next-page"]').click();
+    await waitFor(() => table.renderRoot.textContent.includes("N06"));
+    expect(table.selected).to.include(selectedId);
+    expect(table.renderRoot.textContent.includes("N01")).to.equal(false);
+
+    document.body.removeChild(host);
+  });
+});
