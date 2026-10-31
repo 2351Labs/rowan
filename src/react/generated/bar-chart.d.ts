@@ -10,6 +10,7 @@ export const RowanBarChart: ForwardRefExoticComponent<
       onRowanPointClick?: (event: CustomEvent) => void;
       onRowanSelectionChange?: (event: CustomEvent) => void;
       onRowanSeriesToggle?: (event: CustomEvent) => void;
+      onRowanZoom?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanBarChartElement>

@@ -923,6 +923,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -963,6 +967,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -1713,6 +1724,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -1760,6 +1775,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -2092,6 +2114,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -2132,6 +2158,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -4878,6 +4911,51 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/ix.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "run",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "queued",
+              "default": "[]"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "run",
+          "declaration": {
+            "name": "run",
+            "module": "src/chart/ix.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindSeriesLegend",
+          "declaration": {
+            "name": "bindSeriesLegend",
+            "module": "src/chart/ix.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "syncSeriesLegend",
+          "declaration": {
+            "name": "syncSeriesLegend",
+            "module": "src/chart/ix.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/legend.js",
       "declarations": [
         {
@@ -4889,9 +4967,6 @@
             },
             {
               "name": "legend"
-            },
-            {
-              "name": "ids"
             }
           ]
         },
@@ -7027,6 +7102,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -7067,6 +7146,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -21642,6 +21728,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -21689,6 +21779,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -23516,6 +23613,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -23556,6 +23657,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -26905,6 +27013,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -26952,6 +27064,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -27351,6 +27470,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -27405,6 +27528,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -32965,6 +33095,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -33005,6 +33139,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {
@@ -33944,6 +34085,10 @@
             {
               "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
               "name": "rowan-series-toggle"
+            },
+            {
+              "description": "Fired when the zoom window changes. Detail: x, y, width, height.",
+              "name": "rowan-zoom"
             }
           ],
           "attributes": [
@@ -33984,6 +34129,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Opt-in plot zoom and pan.",
+              "name": "zoom"
             }
           ],
           "superclass": {

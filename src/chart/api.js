@@ -29,6 +29,8 @@ function elementHidden(hidden, el) {
 
 export function applySeriesVisibility(root, ids) {
   if (!root) return;
+  const host = root.parentNode.host;
+  if (host) host.__z ||= import("./ix.js").then((m) => m.run(host));
   const hidden = new Set(ids);
   for (const el of root.querySelectorAll("[data-series-id],[data-point-key]")) {
     if (el.closest(".legend")) continue;
