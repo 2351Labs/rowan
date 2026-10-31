@@ -1,11 +1,11 @@
-name: Storybook Pages
+name: Documentation and Storybook Pages
 
 # GitHub Pages must use Source: GitHub Actions (not "Deploy from a branch").
-# Branch deploy from main runs Jekyll on README.md and hides Storybook.
+# Deploys on releases (tags) and can be manually triggered.
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: storybook-pages
+  group: documentation-pages
   cancel-in-progress: true
 
 jobs:
@@ -29,11 +29,25 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run analyze
+      
+      # Build documentation site
+      - run: npm run documentation:build
+      
+      # Build Storybook
       - run: npm run build-storybook
-      - run: touch storybook-static/.nojekyll
+      
+      # Combine both into a single deployment
+      # Documentation at root, Storybook under /storybook/
+      - run: |
+          mkdir -p pages-deploy
+          cp -r documentation-static-check/* pages-deploy/
+          mkdir -p pages-deploy/storybook
+          cp -r storybook-static/* pages-deploy/storybook/
+          touch pages-deploy/.nojekyll
+      
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: storybook-static
+          path: pages-deploy
 
   deploy:
     name: Deploy
@@ -51,7 +65,7 @@ jobs:
           if [ "$type" != "workflow" ]; then
             echo "GitHub Pages source is '${type}', not 'workflow'."
             echo "Set Settings → Pages → Source to GitHub Actions."
-            echo "Branch deploy from main publishes README.md via Jekyll instead of Storybook."
+            echo "Branch deploy from main publishes README.md via Jekyll instead of documentation."
             exit 1
           fi
       - id: deployment
