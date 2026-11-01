@@ -3,9 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rowan Vue starter</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>Harbor · Rowan Vue starter</title>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("rowan-starter-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        } catch (error) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
+    <a class="skip" href="#main">Skip to content</a>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
