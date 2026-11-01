@@ -21,7 +21,7 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
  * @property {number} version
- * @property {RowanTableViewSort | null} sort
+ * @property {RowanTableViewSort | RowanTableViewSort[] | null} sort
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
  * @property {string[] | null} visibleColumns
@@ -52,7 +52,7 @@ function positiveInteger(value) {
   return numeric && numeric > 0 ? numeric : null;
 }
 
-function normalizeSort(value) {
+function normalizeSortItem(value) {
   if (!isRecord(value)) return null;
 
   const id = normalizeText(value.id);
@@ -60,6 +60,23 @@ function normalizeSort(value) {
   if (!id || !SORT_DIRECTIONS.has(dir)) return null;
 
   return { id, dir };
+}
+
+function normalizeSort(value) {
+  if (!Array.isArray(value)) return normalizeSortItem(value);
+
+  const seen = new Set();
+  const sort = [];
+  for (const item of value) {
+    const normalized = normalizeSortItem(item);
+    if (!normalized || seen.has(normalized.id)) continue;
+    seen.add(normalized.id);
+    sort.push(normalized);
+  }
+
+  if (sort.length === 0) return null;
+  if (sort.length === 1) return sort[0];
+  return sort;
 }
 
 function normalizePage(value) {

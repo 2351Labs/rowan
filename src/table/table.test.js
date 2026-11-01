@@ -2355,19 +2355,13 @@ describe("rowan-table column resizing", () => {
       bubbles: true,
     });
     resizeHandle.dispatchEvent(mouseDown);
-
-    const mouseMove = new MouseEvent("mousemove", {
-      clientX: 150,
-      bubbles: true,
+    const mouseMove = new MouseEvent("mousemove", { clientX: 150, bubbles: true });
+    const mouseUp = new MouseEvent("mouseup", { bubbles: true });
+    await waitFor(() => {
+      document.dispatchEvent(mouseMove);
+      document.dispatchEvent(mouseUp);
+      return resizeEvent;
     });
-    document.dispatchEvent(mouseMove);
-
-    const mouseUp = new MouseEvent("mouseup", {
-      bubbles: true,
-    });
-    document.dispatchEvent(mouseUp);
-
-    await nextMicrotask();
 
     expect(resizeEvent).to.exist;
     expect(resizeEvent.detail.columnId).to.exist;
@@ -2401,7 +2395,7 @@ describe("rowan-table column resizing", () => {
     });
     resizeHandle.dispatchEvent(keyEvent);
 
-    await nextMicrotask();
+    await waitFor(() => resizeEvent);
 
     expect(resizeEvent).to.exist;
 
@@ -3438,8 +3432,8 @@ describe("server data", () => {
     }, { debounce: 30 });
 
     await waitFor(() => calls.length >= 1);
-    table.renderRoot.querySelector('th[data-column-id="city"] button').click();
-    await waitFor(() => calls.some((call) => call.sort?.id === "city"));
+    table.renderRoot.querySelector('th[data-column-id="city"] .sort-button').click();
+    await waitFor(() => calls.some((call) => call.sort?.[0]?.id === "city" && call.sort[0].dir === "asc"));
     expect(calls.at(-1).page).to.equal(0);
 
     const before = calls.length;
@@ -4033,6 +4027,247 @@ describe("paste", () => {
     const result = await table.pasteText("Blocked");
     expect(result.rejected[0].message).to.equal("Invalid value");
     expect(table.rows[0].name).to.equal("Grace");
+    document.body.removeChild(host);
+  });
+});
+
+describe("column menu and multi-sort", () => {
+  function mount(config) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const table = document.createElement("rowan-table");
+    host.append(table);
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", sortable: true, filterable: true },
+        { id: "score", header: "Score", type: "number", sortable: true },
+        { id: "note", header: "Note", hidden: true },
+      ],
+      rows: [
+        { id: "1", name: "Ada", score: 1, note: "kept" },
+        { id: "2", name: "Ada", score: 5, note: "kept" },
+        { id: "3", name: "Bea", score: 3, note: "kept" },
+        { id: "4", name: "Ada", score: 5, note: "kept" },
+      ],
+      ...config,
+    };
+    return { host, table };
+  }
+
+  function names(table) {
+    return [...table.renderRoot.querySelectorAll('td[data-column-id="name"]')].map((cell) => cell.textContent.trim());
+  }
+
+  async function openMenu(table, columnId) {
+    const button = table.renderRoot.querySelector(`th[data-column-id="${columnId}"] .col-menu`);
+    button.click();
+    await waitFor(() => table.renderRoot.querySelector(".col-menu-panel"));
+    return table.renderRoot.querySelector(".col-menu-panel");
+  }
+
+  it("sorts stably by an ordered sort array and reflects the sort attribute", async () => {
+    const { host, table } = mount();
+    const events = [];
+    table.addEventListener("rowan-sort-change", (event) => events.push(event.detail.sort));
+    table.sort = [
+      { id: "name", dir: "asc" },
+      { id: "score", dir: "desc" },
+    ];
+    await nextMicrotask();
+    expect(events).to.deep.equal([]);
+    expect(table.sort).to.deep.equal([
+      { id: "name", dir: "asc" },
+      { id: "score", dir: "desc" },
+    ]);
+    expect([...table.renderRoot.querySelectorAll("tbody tr")].map((row) => row.dataset.rowId)).to.deep.equal(["2", "4", "1", "3"]);
+    expect(table.renderRoot.querySelector('th[data-column-id="name"] .sort-indicator').textContent).to.equal("↑1");
+    expect(table.renderRoot.querySelector('th[data-column-id="score"] .sort-indicator').textContent).to.equal("↓2");
+
+    table.setAttribute("sort", JSON.stringify({ id: "score", dir: "asc" }));
+    await nextMicrotask();
+    expect(table.sort).to.deep.equal({ id: "score", dir: "asc" });
+    expect([...table.renderRoot.querySelectorAll("tbody tr")].map((row) => row.dataset.rowId)).to.deep.equal(["1", "3", "2", "4"]);
+    document.body.removeChild(host);
+  });
+
+  it("adds a sort with Shift+click and reports the full model", async () => {
+    const { host, table } = mount();
+    const sorts = [];
+    const models = [];
+    table.addEventListener("rowan-sort", (event) => sorts.push(event.detail));
+    table.addEventListener("rowan-sort-change", (event) => models.push(event.detail.sort));
+    await nextMicrotask();
+    table.renderRoot.querySelector('th[data-column-id="name"] .sort-button').click();
+    await nextMicrotask();
+    const score = table.renderRoot.querySelector('th[data-column-id="score"] .sort-button');
+    score.dispatchEvent(new MouseEvent("click", { bubbles: true, shiftKey: true }));
+    await waitFor(() => Array.isArray(table.sort) && table.sort.length === 2);
+    expect(sorts.map((item) => item.id)).to.deep.equal(["name", "score"]);
+    expect(models.at(-1)).to.deep.equal([
+      { id: "name", dir: "asc" },
+      { id: "score", dir: "asc" },
+    ]);
+    expect(names(table)).to.deep.equal(["Ada", "Ada", "Ada", "Bea"]);
+    document.body.removeChild(host);
+  });
+
+  it("opens an accessible column menu for sort, pin, hide, width, and filter", async () => {
+    const { host, table } = mount();
+    await nextMicrotask();
+    const trigger = table.renderRoot.querySelector('th[data-column-id="name"] .col-menu');
+    expect(trigger.getAttribute("aria-haspopup")).to.equal("menu");
+    expect(trigger.getAttribute("aria-expanded")).to.equal("false");
+    expect(trigger.getAttribute("aria-label")).to.equal("Name column menu");
+    trigger.focus();
+    trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    await waitFor(() => table.renderRoot.querySelector(".col-menu-panel"));
+    const panel = table.renderRoot.querySelector(".col-menu-panel");
+    expect(panel.getAttribute("role")).to.equal("menu");
+    expect(trigger.getAttribute("aria-expanded")).to.equal("true");
+    expect(table.shadowRoot.activeElement?.getAttribute("role")).to.equal("menuitem");
+    table.shadowRoot.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    expect(table.shadowRoot.activeElement?.dataset?.action).to.equal("desc");
+    table.shadowRoot.activeElement.click();
+    await nextMicrotask();
+    expect(table.sort).to.deep.equal({ id: "name", dir: "desc" });
+    expect(names(table)[0]).to.equal("Bea");
+
+    const pinned = await openMenu(table, "name");
+    pinned.querySelector('[data-action="pin-end"]').click();
+    await nextMicrotask();
+    const headerIds = [...table.renderRoot.querySelectorAll("thead th")].map((cell) => cell.dataset.columnId);
+    expect(headerIds.at(-1)).to.equal("name");
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]').classList.contains("sticky-end")).to.equal(true);
+
+    const hiding = await openMenu(table, "name");
+    hiding.querySelector('[data-action="hide"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]')).to.equal(null);
+    const showing = await openMenu(table, "score");
+    showing.querySelector('[data-action="show:name"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]')).to.not.equal(null);
+    expect(table.renderRoot.querySelector('th[data-column-id="note"]')).to.equal(null);
+    const reveal = await openMenu(table, "name");
+    reveal.querySelector('[data-action="show:note"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="note"]')).to.not.equal(null);
+
+    const sizing = await openMenu(table, "name");
+    sizing.querySelector('[data-action="autosize"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]').style.width).to.match(/px$/);
+    const reset = await openMenu(table, "name");
+    reset.querySelector('[data-action="reset"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]').style.width).to.equal("");
+
+    const blocked = [];
+    table.addEventListener("rowan-column-filter", (event) => {
+      blocked.push(event.detail);
+      event.preventDefault();
+    }, { once: true });
+    const filtering = await openMenu(table, "name");
+    const input = filtering.querySelector("input");
+    expect(input).to.not.equal(null);
+    expect(filtering.querySelector('[data-action="asc"]').disabled).to.equal(false);
+    input.value = "Bea";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+    expect(blocked[0]).to.deep.equal({ columnId: "name", value: "Bea" });
+    expect(table.filters).to.deep.equal([]);
+    expect(names(table)).to.have.length(4);
+
+    input.value = "Bea";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+    expect(table.filters).to.deep.equal([{ id: "name", value: "Bea" }]);
+    expect(names(table)).to.have.length(4);
+    document.body.removeChild(host);
+  });
+
+  it("sends an ordered sort array from server mode", async () => {
+    const calls = [];
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const table = document.createElement("rowan-table");
+    table.dataMode = "server";
+    host.append(table);
+    table.config = {
+      columns: [
+        { id: "name", header: "Name", sortable: true },
+        { id: "city", header: "City", sortable: true },
+      ],
+      page: { index: 0, size: 5 },
+    };
+    table.dataSource = {
+      debounce: 0,
+      getRows(query) {
+        calls.push(query.sort);
+        return Promise.resolve({ rows: [{ id: "1", name: "Ada", city: "Paris" }], total: 1 });
+      },
+    };
+    await waitFor(() => calls.length >= 1);
+    expect(calls.at(-1)).to.equal(null);
+    table.sort = [
+      { id: "city", dir: "asc" },
+      { id: "name", dir: "desc" },
+    ];
+    await waitFor(() => Array.isArray(calls.at(-1)) && calls.at(-1).length === 2);
+    expect(calls.at(-1)).to.deep.equal([
+      { id: "city", dir: "asc" },
+      { id: "name", dir: "desc" },
+    ]);
+    table.sort = { id: "name", dir: "asc" };
+    await waitFor(() => Array.isArray(calls.at(-1)) && calls.at(-1).length === 1);
+    expect(calls.at(-1)).to.deep.equal([{ id: "name", dir: "asc" }]);
+    expect(table.sort).to.deep.equal({ id: "name", dir: "asc" });
+    document.body.removeChild(host);
+  });
+
+  it("keeps a dragged width when columns are replaced and restores the authored width", async () => {
+    const { host, table } = mount({
+      columns: [
+        { id: "name", header: "Name", sortable: true, width: "9rem" },
+        { id: "score", header: "Score", type: "number", sortable: true },
+        { id: "note", header: "Note" },
+      ],
+    });
+    table.resizableColumns = true;
+    await nextMicrotask();
+    const handle = table.renderRoot.querySelector('.resize-handle');
+    handle.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await waitFor(() => table.renderRoot.querySelector('th[data-column-id="name"]').style.width.endsWith("px"));
+    const dragged = table.renderRoot.querySelector('th[data-column-id="name"]').style.width;
+
+    table.columns = table.columns.map((column) => ({ ...column }));
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]').style.width).to.equal(dragged);
+    expect(table.columns[0].width).to.equal("9rem");
+
+    const menu = await openMenu(table, "name");
+    menu.querySelector('[data-action="reset"]').click();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('th[data-column-id="name"]').style.width).to.equal("9rem");
+    document.body.removeChild(host);
+  });
+
+  it("clears one sort key from the column menu", async () => {
+    const { host, table } = mount();
+    const models = [];
+    table.sort = [
+      { id: "name", dir: "asc" },
+      { id: "score", dir: "desc" },
+    ];
+    await nextMicrotask();
+    table.addEventListener("rowan-sort-change", (event) => models.push(event.detail.sort));
+    const menu = await openMenu(table, "name");
+    menu.querySelector('[data-action="clear"]').click();
+    await nextMicrotask();
+    expect(table.sort).to.deep.equal({ id: "score", dir: "desc" });
+    expect(models.at(-1)).to.deep.equal([{ id: "score", dir: "desc" }]);
+    expect(table.renderRoot.querySelector('th[data-column-id="score"] .sort-indicator').textContent).to.equal("↓");
     document.body.removeChild(host);
   });
 });

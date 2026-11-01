@@ -16941,6 +16941,13 @@
           "description": ""
         },
         {
+          "name": "sort",
+          "type": "string",
+          "default": "",
+          "reflects": true,
+          "description": "JSON sort model. One `{\"id\",\"dir\"}` object or an ordered array of those objects."
+        },
+        {
           "name": "sticky-header",
           "type": "boolean",
           "default": "false",
@@ -17016,7 +17023,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
+          "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
         },
         {
           "name": "density",
@@ -17048,7 +17055,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself."
+          "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`."
         },
         {
           "name": "groupBy",
@@ -17156,9 +17163,9 @@
         },
         {
           "name": "sort",
-          "type": "RowanTableSort | null",
+          "type": "RowanTableSort | RowanTableSort[] | null",
           "default": "",
-          "reflects": false,
+          "reflects": true,
           "readonly": false,
           "description": ""
         },
@@ -17209,6 +17216,11 @@
         {
           "name": "rowan-cell-change",
           "description": "Fired when checkbox cell value changes",
+          "detail": ""
+        },
+        {
+          "name": "rowan-column-filter",
+          "description": "Fired from a column menu filter field. Cancelable. `detail` is `{ columnId, value }`. `preventDefault()` leaves `filters` unchanged.",
           "detail": ""
         },
         {
@@ -17308,7 +17320,12 @@
         },
         {
           "name": "rowan-sort",
-          "description": "Fired when a sortable header changes direction",
+          "description": "Fired when a sortable header changes direction. `detail` is the changed `{ id, dir }`.",
+          "detail": ""
+        },
+        {
+          "name": "rowan-sort-change",
+          "description": "Fired when the user changes the sort. `detail.sort` is the full ordered array of `{ id, dir }`.",
           "detail": ""
         }
       ],
@@ -17479,6 +17496,10 @@
             "event": "rowan-cell-change"
           },
           {
+            "name": "onRowanColumnFilter",
+            "event": "rowan-column-filter"
+          },
+          {
             "name": "onRowanColumnReorder",
             "event": "rowan-column-reorder"
           },
@@ -17557,6 +17578,10 @@
           {
             "name": "onRowanSort",
             "event": "rowan-sort"
+          },
+          {
+            "name": "onRowanSortChange",
+            "event": "rowan-sort-change"
           }
         ]
       },

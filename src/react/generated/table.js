@@ -9,6 +9,8 @@ export const RowanTable = createRowanComponent({
   displayName: "RowanTable",
   events: {
     onRowanSort: "rowan-sort",
+    onRowanSortChange: "rowan-sort-change",
+    onRowanColumnFilter: "rowan-column-filter",
     onRowanSelect: "rowan-select",
     onRowanCellChange: "rowan-cell-change",
     onRowanCellAction: "rowan-cell-action",
