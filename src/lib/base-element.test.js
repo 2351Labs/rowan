@@ -2,6 +2,16 @@ import { expect } from "@esm-bundle/chai";
 import { BaseElement } from "./base-element.js";
 
 const nextTask = () => new Promise((resolve) => setTimeout(resolve));
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+async function waitForTokenColor(element, color) {
+  for (let frame = 0; frame < 60; frame += 1) {
+    if (getComputedStyle(element).color === color) return;
+    await nextFrame();
+  }
+
+  throw new Error(`Token color ${color} was not applied.`);
+}
 const TEST_TAG = "rowan-base-element-observer-test";
 const STATIC_STYLE_TEST_TAG = "rowan-base-element-static-style-test";
 const TOKEN_FALLBACK_TEST_TAG = "rowan-base-element-token-fallback-test";
@@ -189,7 +199,7 @@ describe("BaseElement", () => {
   it("retains standalone component token defaults after connection", async () => {
     const element = document.createElement(TOKEN_FALLBACK_TEST_TAG);
     document.body.append(element);
-    await nextTask();
+    await waitForTokenColor(element, "rgb(29, 67, 47)");
 
     expect(getComputedStyle(element).color).to.equal("rgb(29, 67, 47)");
   });
@@ -209,7 +219,7 @@ describe("BaseElement", () => {
 
     const standaloneElement = document.createElement(TOKEN_FALLBACK_TEST_TAG);
     document.body.append(standaloneElement);
-    await nextTask();
+    await waitForTokenColor(standaloneElement, "rgb(20, 40, 30)");
 
     expect(getComputedStyle(wrappedElement).color).to.equal("rgb(30, 60, 45)");
     expect(getComputedStyle(hostElement).color).to.equal("rgb(40, 80, 60)");

@@ -17,6 +17,7 @@
  * @cssprop --rowan-virtual-list-fg
  */
 export class RowanVirtualList extends BaseElement {
+  static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   /** @param {unknown[]} value */
   set items(value: unknown[]);

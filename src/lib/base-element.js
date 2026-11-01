@@ -8,13 +8,12 @@ import {
   reflectNumberAttribute,
   reflectStringAttribute,
 } from "./reflect.js";
+import { tokenPropertiesRegistered } from "../tokens/foundation.js";
 import {
-  componentTokenCssFor,
-  rowanTokenStyleSheet,
-  tokenCssText,
-  tokenPropertiesRegistered,
-  unregisteredTokenNames,
-} from "../tokens/sheet.js";
+  componentTokensFromDeclarations,
+  loadComponentTokens,
+  peekComponentTokens,
+} from "../tokens/load-component-tokens.js";
 
 const supportsAdoptedStyleSheets =
   typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
@@ -36,39 +35,37 @@ function componentTokenStyleSheetFor(cssText) {
   return stylesheet;
 }
 
-function elementSuppliesComponentTokens(element) {
-  if (typeof getComputedStyle !== "function") {
-    return false;
-  }
-
-  const tokenPrefixes = componentTokenPrefixesFor(element);
-  if (tokenPrefixes.length === 0) {
+function elementSuppliesComponentTokens(element, names) {
+  if (names.length === 0 || typeof getComputedStyle !== "function") {
     return false;
   }
 
   const styles = getComputedStyle(element);
-  return unregisteredTokenNames
-    .filter((name) => tokenPrefixes.some((prefix) => name.startsWith(prefix)))
-    .some((name) => styles.getPropertyValue(name).trim().length > 0);
+  return names.some((name) => styles.getPropertyValue(name).trim().length > 0);
 }
 
-function documentSuppliesRowanTokens() {
-  if (typeof document === "undefined" || typeof getComputedStyle !== "function") {
+function documentSuppliesRowanTokens(names) {
+  if (
+    names.length === 0 ||
+    typeof document === "undefined" ||
+    typeof getComputedStyle !== "function"
+  ) {
     return false;
   }
 
   const root = document.documentElement;
   if (!root) return false;
 
-  return [
-    "--rowan-color-bg",
-    "--rowan-color-fg",
-    "--rowan-color-accent",
-    "--rowan-color-border",
-    "--rowan-font-family",
-    "--rowan-space-1",
-    ...unregisteredTokenNames,
-  ].some((name) => getComputedStyle(root).getPropertyValue(name).trim().length > 0);
+  const styles = getComputedStyle(root);
+  return names.some((name) => styles.getPropertyValue(name).trim().length > 0);
+}
+
+let legacyTokenSheetPromise = null;
+let activeLegacyStyleSheet = null;
+
+function loadLegacyTokenSheet() {
+  legacyTokenSheetPromise ??= import("../tokens/legacy-sheet.js");
+  return legacyTokenSheetPromise;
 }
 
 export class BaseElement extends HTMLElement {
@@ -100,6 +97,7 @@ export class BaseElement extends HTMLElement {
   #constraintAnchor = undefined;
   #baseDisabledControls = new Set();
   #labelTextObserver = null;
+  #tokenApplyId = 0;
 
   constructor() {
     super();
@@ -403,9 +401,65 @@ export class BaseElement extends HTMLElement {
   }
 
   #refreshTokenStyles() {
+    const applyId = ++this.#tokenApplyId;
+
+    if (!tokenPropertiesRegistered) {
+      void loadLegacyTokenSheet().then((legacy) => {
+        if (applyId !== this.#tokenApplyId) return;
+        activeLegacyStyleSheet = legacy.rowanTokenStyleSheet;
+        this.#applyResolvedTokenStyles({
+          componentCss: "",
+          componentNames: [],
+          legacyCss: legacy.tokenCssText,
+          legacySheet: legacy.rowanTokenStyleSheet,
+          useLegacy: !documentSuppliesRowanTokens(legacy.probeNames),
+        });
+      });
+      return;
+    }
+
+    const prefixes = componentTokenPrefixesFor(this);
+    const declared = this.constructor.componentTokenDeclarations;
+    const apply = (tokens) => {
+      if (applyId !== this.#tokenApplyId) return;
+      this.#applyResolvedTokenStyles({
+        componentCss: tokens.cssText,
+        componentNames: tokens.names,
+        legacyCss: "",
+        legacySheet: null,
+        useLegacy: false,
+      });
+    };
+
+    if (prefixes.length === 0) {
+      apply({ cssText: "", names: [] });
+      return;
+    }
+
+    if (Array.isArray(declared)) {
+      apply(componentTokensFromDeclarations(declared, prefixes));
+      return;
+    }
+
+    const ready = peekComponentTokens(prefixes);
+    if (ready) {
+      apply(ready);
+      return;
+    }
+
+    void loadComponentTokens(prefixes).then(apply);
+  }
+
+  #applyResolvedTokenStyles({ componentCss, componentNames, legacyCss, legacySheet, useLegacy }) {
+    // Drop our previous token sheet before asking whether the host already
+    // supplies these names. Otherwise the second refresh sees our own defaults
+    // and removes them.
     if (supportsAdoptedStyleSheets) {
       const componentSheets = this.shadowRoot.adoptedStyleSheets.filter(
-        (sheet) => sheet !== this.#componentTokenSheet && sheet !== rowanTokenStyleSheet,
+        (sheet) =>
+          sheet !== this.#componentTokenSheet &&
+          sheet !== activeLegacyStyleSheet &&
+          sheet !== legacySheet,
       );
 
       if (this.#componentSheet && !componentSheets.includes(this.#componentSheet)) {
@@ -413,47 +467,42 @@ export class BaseElement extends HTMLElement {
       }
 
       this.shadowRoot.adoptedStyleSheets = componentSheets;
+    } else {
+      this.#tokenStyleTag?.remove();
+      this.#tokenStyleTag = null;
+    }
 
-      const componentTokenCss = componentTokenCssFor(componentTokenPrefixesFor(this));
-      const shouldApplyComponentTokenDefaults =
-        tokenPropertiesRegistered &&
-        componentTokenCss.length > 0 &&
-        !elementSuppliesComponentTokens(this);
-      const shouldApplyLegacyTokenDefaults =
-        !tokenPropertiesRegistered && !documentSuppliesRowanTokens();
+    const shouldApplyComponentTokenDefaults =
+      tokenPropertiesRegistered &&
+      componentCss.length > 0 &&
+      !elementSuppliesComponentTokens(this, componentNames);
+    const shouldApplyLegacyTokenDefaults = useLegacy;
+
+    if (supportsAdoptedStyleSheets) {
+      const componentSheets = [...this.shadowRoot.adoptedStyleSheets];
       this.#componentTokenSheet = shouldApplyComponentTokenDefaults
-        ? componentTokenStyleSheetFor(componentTokenCss)
+        ? componentTokenStyleSheetFor(componentCss)
         : null;
+      const legacy = shouldApplyLegacyTokenDefaults ? legacySheet : null;
 
       this.shadowRoot.adoptedStyleSheets = [
-        ...(shouldApplyLegacyTokenDefaults ? [rowanTokenStyleSheet] : []),
+        ...(legacy ? [legacy] : []),
         ...(this.#componentTokenSheet ? [this.#componentTokenSheet] : []),
         ...componentSheets,
       ];
       return;
     }
 
-    this.#tokenStyleTag?.remove();
-    this.#tokenStyleTag = null;
-
-    const componentTokenCss = componentTokenCssFor(componentTokenPrefixesFor(this));
-    const shouldApplyComponentTokenDefaults =
-      tokenPropertiesRegistered &&
-      componentTokenCss.length > 0 &&
-      !elementSuppliesComponentTokens(this);
-    const shouldApplyLegacyTokenDefaults =
-      !tokenPropertiesRegistered && !documentSuppliesRowanTokens();
     const fallbackTokenCss = shouldApplyComponentTokenDefaults
-      ? componentTokenCss
+      ? componentCss
       : shouldApplyLegacyTokenDefaults
-        ? tokenCssText
+        ? legacyCss
         : "";
 
     if (!fallbackTokenCss) return;
 
     this.#tokenStyleTag = document.createElement("style");
     this.shadowRoot.prepend(this.#tokenStyleTag);
-
     this.#tokenStyleTag.textContent = fallbackTokenCss;
   }
 

@@ -1,3 +1,4 @@
+import { declarations as formFieldTokenDeclarations } from "../tokens/parts/form-field.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
@@ -62,6 +63,7 @@ export class RowanFormField extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./form-field.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-form-field-"];
+  static componentTokenDeclarations = formFieldTokenDeclarations;
   static observedAttributes = [
     "label",
     "hint",

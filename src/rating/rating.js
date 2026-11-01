@@ -1,3 +1,4 @@
+import { declarations as ratingTokenDeclarations } from "../tokens/parts/rating.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -86,6 +87,7 @@ export class RowanRating extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./rating.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-rating-"];
+  static componentTokenDeclarations = ratingTokenDeclarations;
   static observedAttributes = [
     "name",
     "value",

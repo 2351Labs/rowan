@@ -38,6 +38,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   /** @param {RowanMultiSelectComboboxOption[]} value */
   set options(value: RowanMultiSelectComboboxOption[]);
   /** @returns {RowanMultiSelectComboboxOption[]} */

@@ -1,3 +1,4 @@
+import { declarations as multiSelectComboboxTokenDeclarations } from "../tokens/parts/multi-select-combobox.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -86,6 +87,7 @@ export class RowanMultiSelectCombobox extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./multi-select-combobox.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-multi-select-combobox-"];
+  static componentTokenDeclarations = multiSelectComboboxTokenDeclarations;
   static observedAttributes = [
     "name",
     "label",

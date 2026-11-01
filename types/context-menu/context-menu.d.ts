@@ -20,6 +20,7 @@
  * @event rowan-close - Fired when the user dismisses the menu
  */
 export class RowanContextMenu extends BaseElement {
+  static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set open(value: boolean);
   get open(): boolean;

@@ -30,6 +30,7 @@ export class RowanButton extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   /** @param {"primary" | "secondary" | "ghost" | "danger"} value */
   set variant(value: "danger" | "primary" | "secondary" | "ghost");
   /** @returns {"primary" | "secondary" | "ghost" | "danger"} */

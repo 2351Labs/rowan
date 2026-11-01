@@ -1,23 +1,18 @@
 # Benchmark Results
 
-Generated: 2026-10-01T04:51:17.511Z
+Generated: 2026-10-31T21:26:52.076Z
 
-> **Note:** These benchmarks measure **unminified ESM** transfer over a local Vite dev server.
-> For production bundle sizes (minified + gzip), see [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md).
->
-> **Quick comparison:**
-> - **Dev (this benchmark):** 3 controls = 703 KB unminified
-> - **Production:** 3 controls = **15.4 KB** minified + gzip (**97.8% smaller**)
+Transfer bytes are unminified ESM from the local Vite dev server, including inline source maps. This is the same measurement as the historical three-control comparison. Production minified and gzip sizes are in [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md).
 
 ## Environment
 
-- Node: v24.14.1
-- Platform: darwin (arm64)
-- Operating system: 25.6.0
-- CPU: Apple M4 Pro
+- Node: v22.23.4
+- Platform: linux (x64)
+- Operating system: 6.12.94+
+- CPU: Intel(R) Xeon(R) Processor
 - Browser: chromium 153.0.8010.12
-- User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
-- Packages: Rowan 0.15.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
+- User agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
+- Packages: Rowan 0.22.0; Lit 3.3.3; FAST Element 3.0.3; Web Awesome 3.12.0; Playwright 1.63.0
 - Samples per adapter: 15
 - Table workload: 100 rows; 50 rows per page
 
@@ -27,10 +22,10 @@ Each adapter imports and defines one button, checkbox, and switch, mounts the th
 
 | Adapter      | Import and definition (ms) | Transfer (bytes) | First render (ms) | Reconnect (ms) | Reconnect shadow DOM reuse (%) | Import heap growth (bytes) | First render heap growth (bytes) | Reconnect heap growth (bytes) |
 | ------------ | -------------------------: | ---------------: | ----------------: | -------------: | -----------------------------: | -------------------------: | -------------------------------: | ----------------------------: |
-| Rowan        |               11.6 / 14.48 |  703182 / 703182 |         1.2 / 1.4 |      0.4 / 0.5 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| Lit          |                 6.7 / 7.16 |    89179 / 89179 |         0.8 / 0.9 |       0 / 0.13 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| FAST Element |                 8.6 / 8.93 |  225007 / 225007 |         0.7 / 0.8 |        0 / 0.1 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
-| Web Awesome  |                9.3 / 10.36 |  270158 / 270158 |        4.2 / 4.53 |      0.2 / 0.3 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Rowan        |               28.2 / 38.21 |  327179 / 327179 |        1.7 / 3.59 |     0.7 / 0.73 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Lit          |                13.9 / 16.6 |    79770 / 79770 |        1.2 / 1.65 |       0 / 0.13 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| FAST Element |               16.6 / 19.61 |  215525 / 215525 |        1.1 / 1.48 |      0.1 / 0.2 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
+| Web Awesome  |               20.7 / 31.63 |  262930 / 262930 |        7.2 / 8.91 |     0.4 / 0.63 |                      100 / 100 |                      0 / 0 |                            0 / 0 |                         0 / 0 |
 
 ## Rowan Table Workload
 
@@ -38,15 +33,13 @@ The table uses its public configuration API with text/number columns, multiple s
 
 | Metric                      | Duration (ms) | Import transfer (bytes) | Row reuse (%) | Heap growth (bytes) |
 | --------------------------- | ------------: | ----------------------: | ------------: | ------------------: |
-| Table import and definition |    13 / 20.61 |         792363 / 792363 |           n/a |               0 / 0 |
-| First render                |  18.9 / 22.62 |                     n/a |           n/a |               0 / 0 |
-| Selection                   |     2.7 / 2.9 |                     n/a |     100 / 100 |               0 / 0 |
-| Sort                        |  10.5 / 11.33 |                     n/a |     100 / 100 |               0 / 0 |
-| Page transition             |    6.7 / 7.33 |                     n/a |         0 / 0 |               0 / 0 |
+| Table import and definition |  54.2 / 76.31 |       1280505 / 1280505 |           n/a |               0 / 0 |
+| First render                |  31.9 / 36.55 |                     n/a |           n/a |               0 / 0 |
+| Selection                   |    5.7 / 6.62 |                     n/a |     100 / 100 |               0 / 0 |
+| Sort                        |  18.8 / 21.65 |                     n/a |     100 / 100 |               0 / 0 |
+| Page transition             |  12.3 / 13.63 |                     n/a |         0 / 0 |               0 / 0 |
 
 ## Scope Notes
-
-**Development vs Production:** These benchmarks measure unminified ESM module loading over a local dev server, not production bundle sizes. Production builds with minification and compression are 95-98% smaller. See [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md) for production measurements.
 
 Lit and FAST Element are authoring runtimes, so their adapters are minimal comparable custom elements rather than third-party design-system controls. Web Awesome uses its direct button, checkbox, and switch modules. Reconnect reuse compares internal shadow-DOM element identity after detach/reappend. No verified Web Awesome table component was available for this release, and the harness intentionally does not claim a cross-library table comparison. Heap measurements use Chromium's non-standard `performance.memory` API when available; unsupported engines report no heap values, and a zero result can reflect measurement granularity or collection timing.
 

@@ -1,3 +1,4 @@
+import { declarations as optionTokenDeclarations } from "../tokens/parts/option.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 
@@ -27,6 +28,7 @@ export class RowanOption extends BaseElement {
   static styleUrl = new URL("./option.css", import.meta.url).href;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-option-"];
+  static componentTokenDeclarations = optionTokenDeclarations;
   static observedAttributes = ["value", "label", "selected", "disabled", "tabindex"];
   static upgradeProperties = ["value", "label", "selected", "disabled"];
 

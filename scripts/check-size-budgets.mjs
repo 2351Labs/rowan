@@ -7,10 +7,9 @@
 
 import { build } from "esbuild";
 import { gzipSync } from "zlib";
-import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, statSync } from "fs";
+import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
@@ -19,41 +18,45 @@ const tempDir = join(rootDir, ".size-budget-check");
 // Size budgets (in bytes, gzipped)
 // Set slightly above current sizes to allow for small additions
 const budgets = {
-  // Individual components (small, commonly used)
-  button: 15 * 1024, // 15 KB
-  checkbox: 15 * 1024,
-  switch: 15 * 1024,
-  "text-field": 16 * 1024,
-  alert: 15 * 1024,
-  badge: 14 * 1024,
-  chip: 14 * 1024,
-  spinner: 14 * 1024,
+  // Individual components. Headroom is about 15% over the measured gzip initial
+  // graph after token chunks were split out of the eager module.
+  button: 8 * 1024,
+  checkbox: 8 * 1024,
+  switch: 8 * 1024,
+  "text-field": 9 * 1024,
+  alert: 7 * 1024,
+  badge: 7 * 1024,
+  chip: 7 * 1024,
+  spinner: 7 * 1024,
 
   // Medium components
-  select: 16 * 1024,
-  dialog: 16 * 1024,
-  dropdown: 17 * 1024,
-  tooltip: 15 * 1024,
-  progress: 15 * 1024,
+  select: 8 * 1024,
+  dialog: 9 * 1024,
+  dropdown: 11 * 1024,
+  tooltip: 8 * 1024,
+  progress: 8 * 1024,
 
-  // Charts (larger due to SVG rendering logic)
-  sparkline: 18 * 1024,
-  "trend-chart": 20 * 1024,
-  "bar-chart": 20 * 1024,
+  // Charts, including synced crosshairs, brush, and large-series mode.
+  // Ceilings that must not be exceeded: sparkline 18 KB, trend/bar 20 KB.
+  sparkline: 11 * 1024,
+  "trend-chart": 14 * 1024,
+  "bar-chart": 14 * 1024,
 
   // Table initial load: entry plus statically imported chunks.
   // Clipboard and workbook export load with table-export.js and are not counted here.
-  table: 41 * 1024,
+  // Measured about 34.5 KB. Ceiling is 41 KB.
+  table: 37 * 1024,
 
-  // Lazy workbook/clipboard module, measured on its own (about 4.2 KB). 6 KB leaves headroom.
+  // Lazy workbook/clipboard module, measured on its own (about 4.8 KB).
   "table-export": 6 * 1024,
 
-  // Lazy chart interaction (legend, tooltip, zoom, resize, sync, brush, large series). About 5.2 KB.
+  // Lazy chart interaction (legend, tooltip, zoom, resize, sync, brush, large series).
+  // Measured about 5.2 KB. Ceiling is 6 KB.
   "chart-interaction": 6 * 1024,
 
   // Common scenarios
-  "three-controls": 17 * 1024, // button + checkbox + switch
-  "form-controls": 19 * 1024, // button + text-field + checkbox + select + textarea
+  "three-controls": 10 * 1024, // button + checkbox + switch
+  "form-controls": 12 * 1024, // button + text-field + checkbox + select + textarea
 };
 
 function gzipFile(path) {
@@ -139,7 +142,64 @@ function formatBytes(bytes) {
   return `${(bytes / 1024).toFixed(2)} KB`;
 }
 
+const FORBIDDEN_INITIAL_MODULES = ["src/tokens/sheet.js", "src/tokens/legacy-sheet.js"];
+const ALLOWED_BASIC_CONTROL_PARTS = new Set(["src/tokens/parts/button.js"]);
+
+function staticImportGraph(entry) {
+  const seen = new Set();
+  const stack = [resolve(rootDir, entry)];
+  while (stack.length > 0) {
+    const file = stack.pop();
+    if (seen.has(file)) continue;
+    let text;
+    try {
+      text = readFileSync(file, "utf8");
+      statSync(file);
+    } catch {
+      continue;
+    }
+    seen.add(file);
+    const pattern =
+      /(?:import|export)\s+(?:[^'"]*from\s+)?['"](\.[^'"]+)['"]|import\(\s*['"](\.[^'"]+)['"]\s*\)/g;
+    let match;
+    while ((match = pattern.exec(text))) {
+      const specifier = match[1];
+      if (!specifier) continue;
+      const base = resolve(dirname(file), specifier.split("?")[0]);
+      const candidates = [base, `${base}.js`, join(base, "index.js")];
+      const resolved = candidates.find((candidate) => {
+        try {
+          return statSync(candidate).isFile();
+        } catch {
+          return false;
+        }
+      });
+      if (resolved) stack.push(resolved);
+    }
+  }
+  return [...seen];
+}
+
+function assertBasicControlsDoNotEagerLoadTokenCatalog() {
+  const files = [
+    ...staticImportGraph("src/button/button.js"),
+    ...staticImportGraph("src/checkbox/checkbox.js"),
+    ...staticImportGraph("src/switch/switch.js"),
+  ];
+  const leaked = files.filter((file) => {
+    const relative = file.slice(rootDir.length + 1);
+    if (FORBIDDEN_INITIAL_MODULES.some((forbidden) => relative.includes(forbidden))) return true;
+    return relative.includes("src/tokens/parts/") && !ALLOWED_BASIC_CONTROL_PARTS.has(relative);
+  });
+  if (leaked.length > 0) {
+    throw new Error(
+      `Basic controls statically import the full token catalog:\n${leaked.join("\n")}`,
+    );
+  }
+}
+
 async function main() {
+  assertBasicControlsDoNotEagerLoadTokenCatalog();
   console.log("📏 Checking bundle size budgets...\n");
 
   // Clean and create temp directory
@@ -200,7 +260,7 @@ async function main() {
     const lazyNote = measured.lazyBytes > 0 ? `  lazy ${formatBytes(measured.lazyBytes)}` : "";
 
     console.log(
-      ` ${status} ${formatBytes(size).padStart(10)} / ${formatBytes(budget)} (${percentage}%)${emoji}${lazyNote}`
+      ` ${status} ${formatBytes(size).padStart(10)} / ${formatBytes(budget)} (${percentage}%)${emoji}${lazyNote}`,
     );
 
     results.push({

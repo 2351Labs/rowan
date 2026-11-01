@@ -1,3 +1,4 @@
+import { declarations as sideNavTokenDeclarations } from "../tokens/parts/side-nav.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -23,6 +24,7 @@ function isSideNavItem(value) {
 export class RowanSideNav extends BaseElement {
   static styleUrl = new URL("./side-nav.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-side-nav-"];
+  static componentTokenDeclarations = sideNavTokenDeclarations;
   static observedAttributes = ["label", "value"];
   static upgradeProperties = ["label", "value"];
 

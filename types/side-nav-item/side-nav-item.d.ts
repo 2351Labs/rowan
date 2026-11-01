@@ -27,6 +27,7 @@ export class RowanSideNavItem extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   set value(value: string);
   get value(): string;
   set href(value: string);

@@ -181,6 +181,8 @@ function formatBenchmarkMarkdown(report) {
     "",
     `Generated: ${report.generatedAt}`,
     "",
+    "Transfer bytes are unminified ESM from the local Vite dev server, including inline source maps. This is the same measurement as the historical three-control comparison. Production minified and gzip sizes are in [../docs/BUNDLE_SIZE.md](../docs/BUNDLE_SIZE.md).",
+    "",
     "## Environment",
     "",
     `- Node: ${report.environment.node}`,

@@ -9,6 +9,7 @@
  * @event rowan-change - Fired when a user activates a different navigation item. Cancelable when the item has an in-app href; preventDefault to block navigation.
  */
 export class RowanSideNav extends BaseElement {
+  static componentTokenDeclarations: string[][];
   set label(value: string);
   get label(): string;
   set value(value: string);

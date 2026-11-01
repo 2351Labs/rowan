@@ -1,3 +1,4 @@
+import { declarations as listboxTokenDeclarations } from "../tokens/parts/listbox.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -50,6 +51,7 @@ export class RowanListbox extends BaseElement {
   static styleUrl = new URL("./listbox.css", import.meta.url).href;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-listbox-"];
+  static componentTokenDeclarations = listboxTokenDeclarations;
   static observedAttributes = ["name", "value", "label", "selection", "disabled", "required"];
   static upgradeProperties = [
     "name",

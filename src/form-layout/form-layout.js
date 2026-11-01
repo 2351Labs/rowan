@@ -1,3 +1,4 @@
+import { declarations as formLayoutTokenDeclarations } from "../tokens/parts/form-layout.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 
@@ -38,6 +39,7 @@ function normalizeLength(value, fallback) {
 export class RowanFormLayout extends BaseElement {
   static styleUrl = new URL("./form-layout.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-form-layout-"];
+  static componentTokenDeclarations = formLayoutTokenDeclarations;
   static observedAttributes = ["columns", "gap", "label-position", "label-align", "label-width"];
   static upgradeProperties = ["columns", "gap", "labelPosition", "labelAlign", "labelWidth"];
 

@@ -1,3 +1,4 @@
+import { declarations as statusIndicatorTokenDeclarations } from "../tokens/parts/status-indicator.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -37,6 +38,7 @@ export class RowanStatusIndicator extends BaseElement {
   static observedAttributes = ["tone", "size", "label", "pulse"];
   static upgradeProperties = ["tone", "size", "label", "pulse"];
   static componentTokenPrefixes = ["--rowan-status-indicator-"];
+  static componentTokenDeclarations = statusIndicatorTokenDeclarations;
 
   #labelSlot = null;
   #labelFallback = null;

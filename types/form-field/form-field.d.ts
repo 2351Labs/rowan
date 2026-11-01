@@ -35,6 +35,7 @@
  * @cssprop --rowan-form-field-error-fg
  */
 export class RowanFormField extends BaseElement {
+  static componentTokenDeclarations: string[][];
   set label(value: string);
   get label(): string;
   set hint(value: string);

@@ -66,6 +66,7 @@ export class RowanTrendChart extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set label(value: string);
   get label(): string;

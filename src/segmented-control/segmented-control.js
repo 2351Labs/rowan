@@ -1,3 +1,4 @@
+import { declarations as segmentedControlTokenDeclarations } from "../tokens/parts/segmented-control.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -37,6 +38,7 @@ export class RowanSegmentedControl extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./segmented-control.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-segmented-control-"];
+  static componentTokenDeclarations = segmentedControlTokenDeclarations;
   static observedAttributes = ["name", "value", "label", "size", "disabled", "required"];
   static upgradeProperties = ["name", "value", "label", "size", "disabled", "required", "options"];
 

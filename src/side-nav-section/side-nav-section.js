@@ -1,3 +1,4 @@
+import { declarations as sideNavSectionTokenDeclarations } from "../tokens/parts/side-nav-section.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
@@ -27,6 +28,7 @@ export class RowanSideNavSection extends BaseElement {
   static styleUrl = new URL("./side-nav-section.css", import.meta.url).href;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-side-nav-section-"];
+  static componentTokenDeclarations = sideNavSectionTokenDeclarations;
   static observedAttributes = ["label", "collapsible", "collapsed"];
   static upgradeProperties = ["label", "collapsible", "collapsed"];
 

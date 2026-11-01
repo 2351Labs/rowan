@@ -1,3 +1,4 @@
+import { declarations as richTextEditorTokenDeclarations } from "../tokens/parts/rich-text-editor.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -127,6 +128,7 @@ export class RowanRichTextEditor extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./rich-text-editor.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-rich-text-editor-"];
+  static componentTokenDeclarations = richTextEditorTokenDeclarations;
   static observedAttributes = [
     "name",
     "label",

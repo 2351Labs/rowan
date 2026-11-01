@@ -1,3 +1,4 @@
+import { declarations as contextMenuTokenDeclarations } from "../tokens/parts/context-menu.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -57,6 +58,7 @@ export class RowanContextMenu extends BaseElement {
   static observedAttributes = ["open", "for", "label"];
   static upgradeProperties = ["open", "forTarget", "target", "label", "messages"];
   static componentTokenPrefixes = ["--rowan-context-menu-"];
+  static componentTokenDeclarations = contextMenuTokenDeclarations;
 
   #targetOverride = null;
   #boundTarget = null;

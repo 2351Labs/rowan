@@ -1,3 +1,4 @@
+import { declarations as imageTokenDeclarations } from "../tokens/parts/image.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -33,6 +34,7 @@ export class RowanImage extends BaseElement {
   static useElementInternals = true;
   static styleUrl = new URL("./image.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-image-"];
+  static componentTokenDeclarations = imageTokenDeclarations;
   static observedAttributes = ["src", "alt", "href", "fit", "loading"];
   static upgradeProperties = ["src", "alt", "href", "fit", "loading"];
 

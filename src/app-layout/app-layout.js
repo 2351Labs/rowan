@@ -1,3 +1,4 @@
+import { declarations as appLayoutTokenDeclarations } from "../tokens/parts/app-layout.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
@@ -35,6 +36,7 @@ export class RowanAppLayout extends BaseElement {
   static styleUrl = new URL("./app-layout.css", import.meta.url).href;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static componentTokenPrefixes = ["--rowan-app-layout-"];
+  static componentTokenDeclarations = appLayoutTokenDeclarations;
   static observedAttributes = ["navigation-open", "navigation-label"];
   static upgradeProperties = ["navigationOpen", "navigationLabel", "messages"];
 

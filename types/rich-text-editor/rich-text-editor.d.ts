@@ -55,6 +55,7 @@ export class RowanRichTextEditor extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set name(value: string);
   get name(): string;

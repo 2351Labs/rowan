@@ -1,3 +1,4 @@
+import { declarations as skeletonTokenDeclarations } from "../tokens/parts/skeleton.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
@@ -21,6 +22,7 @@ export class RowanSkeleton extends BaseElement {
   static observedAttributes = ["shape", "width", "height", "animated"];
   static upgradeProperties = ["shape", "width", "height", "animated"];
   static componentTokenPrefixes = ["--rowan-skeleton-"];
+  static componentTokenDeclarations = skeletonTokenDeclarations;
 
   #skeleton = null;
 
