@@ -41,8 +41,11 @@ jobs:
       # Build documentation site
       - run: npm run documentation:build
 
-      # Build Storybook
-      - run: npm run build-storybook
+      # Build Storybook for https://2351labs.github.io/rowan/storybook/
+      - name: Build Storybook
+        run: npm run build-storybook
+        env:
+          STORYBOOK_BASE: /rowan/storybook/
 
       # Rowan Admin starter, published at /rowan/admin/
       - run: npm run build --workspace=@rowan-ui/admin-template

@@ -2,8 +2,8 @@
  * Storybook smoke test. Serves storybook-static and opens every story.
  *
  * Fails when a story throws, logs a console error, renders NaN/undefined
- * text, or a chart story draws no data marks. Empty, loading, error, and
- * disabled stories are allowed to draw no marks.
+ * text, or a chart story draws no data marks or an empty-state message.
+ * Empty, loading, error, disabled, and "No data" stories are exempt.
  */
 
 import { chromium } from "playwright";
@@ -11,6 +11,7 @@ import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CHART_RENDER_CONFIG, inspectRenderedCharts } from "./chart-render-check.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const storybookDir = resolve(__dirname, "../storybook-static");
@@ -27,6 +28,7 @@ const CHART_DIRS = new Set([
   "funnel-chart",
   "gauge-chart",
   "heatmap-chart",
+  "kpi-card",
   "radar-chart",
   "range-chart",
   "scatter-chart",
@@ -36,6 +38,9 @@ const CHART_DIRS = new Set([
   "trend-chart",
   "waterfall-chart",
 ]);
+
+// Longest prefix first. CI builds Storybook with base `/rowan/storybook/`.
+const SITE_BASES = ["rowan/storybook/", "rowan/"];
 
 const CONTENT_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -67,10 +72,13 @@ function isChartStory(story) {
 function safeFilePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0].split("#")[0]);
   let relative = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
-  // CI builds Storybook with base `/rowan/`. The smoke server still hosts the
-  // static output at the site root, so strip that prefix when it is present.
-  if (relative === "rowan" || relative.startsWith("rowan/")) {
-    relative = relative.slice("rowan/".length) || "index.html";
+  // The Pages build requests assets from `/rowan/storybook/`. This server hosts
+  // storybook-static at the site root, so strip that prefix when it is present.
+  for (const base of SITE_BASES) {
+    if (relative === base.slice(0, -1) || relative.startsWith(base)) {
+      relative = relative.slice(base.length) || "index.html";
+      break;
+    }
   }
   const filePath = normalize(join(storybookDir, relative));
   if (filePath !== storybookDir && !filePath.startsWith(`${storybookDir}/`)) {
@@ -113,27 +121,14 @@ function startServer(port) {
   });
 }
 
-async function storyHasDataMarks(page) {
-  return page.evaluate((dirs) => {
-    const charts = [...document.querySelectorAll("*")].filter((node) => {
-      const tag = node.localName || "";
-      return dirs.some((dir) => tag === `rowan-${dir}`);
-    });
-
-    for (const chart of charts) {
-      const svg = chart.shadowRoot?.querySelector("svg");
-      if (!svg) continue;
-      const marks = [...svg.querySelectorAll("path, circle, rect, polygon, polyline, line")].filter(
-        (mark) => {
-          const role = `${mark.getAttribute("class") || ""} ${mark.getAttribute("part") || ""}`;
-          if (/axis|grid|tick|frame|border|guide/.test(role)) return false;
-          return true;
-        },
-      );
-      if (marks.length > 0) return true;
-    }
-    return false;
-  }, [...CHART_DIRS]);
+async function waitForChartRender(page) {
+  const deadline = Date.now() + 5000;
+  let result = await page.evaluate(inspectRenderedCharts, CHART_RENDER_CONFIG);
+  while (result.problems.length > 0 && Date.now() < deadline) {
+    await page.waitForTimeout(100);
+    result = await page.evaluate(inspectRenderedCharts, CHART_RENDER_CONFIG);
+  }
+  return result;
 }
 
 async function runSmokeTests() {
@@ -208,24 +203,10 @@ async function runSmokeTests() {
         await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
         await page.waitForSelector("#storybook-root", { timeout: 10000 });
         if (isChartStory(story) && !NO_MARK_STORY.test(story.name)) {
-          await page
-            .waitForFunction(
-              (dirs) =>
-                dirs.some((dir) => {
-                  const chart = document.querySelector(`rowan-${dir}`);
-                  return chart?.shadowRoot?.querySelector("svg");
-                }),
-              [...CHART_DIRS],
-              { timeout: 3000 },
-            )
-            .catch(() => {});
+          const rendered = await waitForChartRender(page);
+          for (const problem of rendered.problems) errors.push(problem);
         } else {
           await page.waitForTimeout(200);
-        }
-
-        if (isChartStory(story) && !NO_MARK_STORY.test(story.name)) {
-          const hasMarks = await storyHasDataMarks(page);
-          if (!hasMarks) errors.push("Chart rendered with no visible data marks");
         }
 
         const hasInvalidText = await page.evaluate(() => {

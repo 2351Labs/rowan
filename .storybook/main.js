@@ -38,12 +38,23 @@ function inlineChartCssImports() {
   };
 }
 
+function withTrailingSlash(value) {
+  const base = String(value || "/");
+  if (base === "/") return "/";
+  return base.endsWith("/") ? base : `${base}/`;
+}
+
+/**
+ * GitHub Pages serves this repo at `/<repo>/` and copies the Storybook build to
+ * `/<repo>/storybook/`. A base of `/<repo>/` requests scripts from `/<repo>/assets/`,
+ * which 404s. `STORYBOOK_BASE` overrides the path (CI sets `/rowan/storybook/`).
+ */
 function storybookBase() {
-  if (process.env.STORYBOOK_BASE) return process.env.STORYBOOK_BASE;
+  if (process.env.STORYBOOK_BASE) return withTrailingSlash(process.env.STORYBOOK_BASE);
 
   if (process.env.GITHUB_ACTIONS === "true" && process.env.GITHUB_REPOSITORY) {
     const repository = process.env.GITHUB_REPOSITORY.split("/")[1];
-    return `/${repository}/`;
+    return `/${repository}/storybook/`;
   }
 
   return "/";

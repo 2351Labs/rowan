@@ -339,7 +339,9 @@ async function main() {
     // Full mode: documentation and storybook builds
     await runCommand("npm", ["run", "documentation:build"], "Build documentation");
 
-    await runCommand("npm", ["run", "build-storybook"], "Build Storybook");
+    await runCommand("npm", ["run", "build-storybook"], "Build Storybook", {
+      STORYBOOK_BASE: "/rowan/storybook/",
+    });
 
     const chromiumReady = await ensurePlaywrightBrowsers("chromium");
     if (chromiumReady !== 0) {
@@ -350,7 +352,15 @@ async function main() {
       }
     }
 
+    await runCommand(
+      "node",
+      ["scripts/check-storybook-pages-base.mjs"],
+      "Storybook Pages base",
+    );
+
     await runCommand("node", ["test/storybook-smoke.spec.mjs"], "Storybook smoke test");
+
+    await runCommand("node", ["test/docs-chart-smoke.spec.mjs"], "Documentation chart smoke test");
 
     await runCommand(
       "npm",
