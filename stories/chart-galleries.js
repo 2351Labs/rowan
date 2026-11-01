@@ -47,6 +47,8 @@ const INTERACTION_EVENTS = [
   "rowan-selection-change",
   "rowan-series-toggle",
   "rowan-zoom",
+  "rowan-sync",
+  "rowan-brush",
 ];
 
 const ZOOM_CHARTS = new Set([
@@ -78,6 +80,9 @@ function withInteraction(chart) {
   chart.hiddenSeries = [];
   chart.tooltipFormatter = ({ text }) => text;
   if (ZOOM_CHARTS.has(chart.localName)) chart.setAttribute("zoom", "");
+  chart.setAttribute("sync-group", "ops");
+  chart.setAttribute("brush", "");
+  chart.setAttribute("large-series", "500");
   const tip = document.createElement("span");
   tip.slot = "tooltip";
   tip.textContent = "";

@@ -343,6 +343,13 @@
       "modulePath": "src/area-chart/area-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -371,6 +378,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -383,6 +397,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -508,6 +529,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive data point.",
           "detail": ""
@@ -526,6 +552,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -638,6 +669,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -652,6 +687,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -879,6 +918,13 @@
       "modulePath": "src/bar-chart/bar-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -907,6 +953,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -926,6 +979,13 @@
           "default": "vertical",
           "reflects": true,
           "description": "Category axis. Default `vertical`."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -1051,6 +1111,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive bar.",
           "detail": ""
@@ -1069,6 +1134,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -1153,6 +1223,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -1169,6 +1243,10 @@
             "event": "rowan-series-toggle"
           },
           {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
+          },
+          {
             "name": "onRowanZoom",
             "event": "rowan-zoom"
           }
@@ -1183,6 +1261,13 @@
       "description": "Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data. Own series model — not categorical `series.values`.",
       "modulePath": "src/box-plot-chart/box-plot-chart.js",
       "attributes": [
+        {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
         {
           "name": "description",
           "type": "string",
@@ -1212,6 +1297,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -1224,6 +1316,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -1341,6 +1440,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive box. Detail includes min, q1, median, q3, and max.",
           "detail": ""
@@ -1359,6 +1463,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -1438,6 +1547,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -1452,6 +1565,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -1931,6 +2048,11 @@
       ],
       "events": [
         {
+          "name": "rowan-point-activate",
+          "description": "Keyboard activation. Detail: index, label, value.",
+          "detail": "index, label, value."
+        },
+        {
           "name": "rowan-point-click",
           "description": "Cancelable. Detail: series, index, datum, value.",
           "detail": "series, index, datum, value."
@@ -2005,6 +2127,10 @@
           "value"
         ],
         "eventProps": [
+          {
+            "name": "onRowanPointActivate",
+            "event": "rowan-point-activate"
+          },
           {
             "name": "onRowanPointClick",
             "event": "rowan-point-click"
@@ -3320,6 +3446,13 @@
           "description": "Fill at or below target. Used when `target` is set."
         },
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "hidden-series",
           "type": "string",
           "default": "",
@@ -3334,6 +3467,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -3346,6 +3486,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "tone",
@@ -3463,6 +3610,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-click",
           "description": "Cancelable. Detail: series, index, datum, value.",
           "detail": "series, index, datum, value."
@@ -3476,6 +3628,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -3562,6 +3719,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointClick",
             "event": "rowan-point-click"
           },
@@ -3572,6 +3733,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -3584,6 +3749,13 @@
       "description": "Categorical combo: bars, lines, and areas on a shared category axis. Optional `axis: \"secondary\"` for a second value scale (Pareto cumulative %). Bar, area, and trend charts stay separate hosts.",
       "modulePath": "src/combo-chart/combo-chart.js",
       "attributes": [
+        {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
         {
           "name": "description",
           "type": "string",
@@ -3613,6 +3785,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -3625,6 +3804,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -3750,6 +3936,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive mark.",
           "detail": ""
@@ -3768,6 +3959,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -3844,6 +4040,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -3858,6 +4058,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -5699,6 +5903,13 @@
       "modulePath": "src/donut-chart/donut-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -5727,6 +5938,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -5739,6 +5957,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "variant",
@@ -5864,6 +6089,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive slice.",
           "detail": ""
@@ -5882,6 +6112,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -5957,6 +6192,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -5971,6 +6210,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -7829,6 +8072,13 @@
       "modulePath": "src/funnel-chart/funnel-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -7857,6 +8107,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -7869,6 +8126,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "variant",
@@ -7994,6 +8258,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive stage.",
           "detail": ""
@@ -8012,6 +8281,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -8075,6 +8349,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -8089,6 +8367,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -8102,6 +8384,13 @@
       "modulePath": "src/gauge-chart/gauge-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "hidden-series",
           "type": "string",
           "default": "",
@@ -8114,6 +8403,13 @@
           "default": "",
           "reflects": true,
           "description": ""
+        },
+        {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
         },
         {
           "name": "locale",
@@ -8142,6 +8438,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         }
       ],
       "properties": [
@@ -8244,6 +8547,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-click",
           "description": "Cancelable. Detail: series, index, datum, value.",
           "detail": "series, index, datum, value."
@@ -8257,6 +8565,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -8347,6 +8660,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointClick",
             "event": "rowan-point-click"
           },
@@ -8357,6 +8674,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -8369,6 +8690,13 @@
       "description": "Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.",
       "modulePath": "src/heatmap-chart/heatmap-chart.js",
       "attributes": [
+        {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
         {
           "name": "description",
           "type": "string",
@@ -8398,6 +8726,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -8410,6 +8745,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         }
       ],
       "properties": [
@@ -8536,6 +8878,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive cell.",
           "detail": ""
@@ -8554,6 +8901,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -8619,6 +8971,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -8633,6 +8989,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -11007,6 +11367,13 @@
       "modulePath": "src/radar-chart/radar-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -11042,6 +11409,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -11054,6 +11428,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         }
       ],
       "properties": [
@@ -11172,6 +11553,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive vertex.",
           "detail": ""
@@ -11190,6 +11576,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         }
       ],
       "slots": [
@@ -11261,6 +11652,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -11275,6 +11670,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           }
         ]
       },
@@ -11564,6 +11963,13 @@
       "modulePath": "src/range-chart/range-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -11592,6 +11998,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -11604,6 +12017,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "variant",
@@ -11736,6 +12156,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive range. Detail includes `low` and `high`.",
           "detail": ""
@@ -11754,6 +12179,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -11826,6 +12256,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -11840,6 +12274,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -12734,6 +13172,13 @@
       "modulePath": "src/scatter-chart/scatter-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -12762,6 +13207,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -12774,6 +13226,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -12883,6 +13342,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive point.",
           "detail": ""
@@ -12901,6 +13365,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -12968,6 +13437,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -12982,6 +13455,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -14565,6 +15042,11 @@
       ],
       "events": [
         {
+          "name": "rowan-point-activate",
+          "description": "Keyboard activation. Detail: index, label, value.",
+          "detail": "index, label, value."
+        },
+        {
           "name": "rowan-point-click",
           "description": "Cancelable. Detail: series, index, datum, value.",
           "detail": "series, index, datum, value."
@@ -14684,6 +15166,10 @@
           "variant"
         ],
         "eventProps": [
+          {
+            "name": "onRowanPointActivate",
+            "event": "rowan-point-activate"
+          },
           {
             "name": "onRowanPointClick",
             "event": "rowan-point-click"
@@ -15012,6 +15498,13 @@
       "modulePath": "src/stacked-area-chart/stacked-area-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -15040,6 +15533,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -15059,6 +15559,13 @@
           "default": "absolute",
           "reflects": true,
           "description": "`normalized` scales each category to 100. Default `absolute`."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -15192,6 +15699,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive point.",
           "detail": ""
@@ -15210,6 +15722,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -15311,6 +15828,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -15327,6 +15848,10 @@
             "event": "rowan-series-toggle"
           },
           {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
+          },
+          {
             "name": "onRowanZoom",
             "event": "rowan-zoom"
           }
@@ -15341,6 +15866,13 @@
       "description": "Stacked categorical bar chart. Positive values stack from zero. Null and negatives are no-data.",
       "modulePath": "src/stacked-bar-chart/stacked-bar-chart.js",
       "attributes": [
+        {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
         {
           "name": "description",
           "type": "string",
@@ -15370,6 +15902,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -15396,6 +15935,13 @@
           "default": "absolute",
           "reflects": true,
           "description": "`normalized` scales each category to 100. Default `absolute`."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -15537,6 +16083,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive bar.",
           "detail": ""
@@ -15555,6 +16106,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -15653,6 +16209,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -15667,6 +16227,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -18513,6 +19077,13 @@
       "modulePath": "src/trend-chart/trend-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -18541,6 +19112,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -18553,6 +19131,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -18670,6 +19255,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive data point.",
           "detail": ""
@@ -18688,6 +19278,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -18791,6 +19386,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -18805,6 +19404,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",
@@ -19125,6 +19728,13 @@
       "modulePath": "src/waterfall-chart/waterfall-chart.js",
       "attributes": [
         {
+          "name": "brush",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Drag, or Shift+Arrow, to select an x range. Escape clears it."
+        },
+        {
           "name": "description",
           "type": "string",
           "default": "",
@@ -19153,6 +19763,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "number",
+          "default": "",
+          "reflects": false,
+          "description": "Downsample drawn marks above this count. The data table keeps every row."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -19165,6 +19782,13 @@
           "default": "false",
           "reflects": true,
           "description": "Disables chart motion, including under prefers-reduced-motion."
+        },
+        {
+          "name": "sync-group",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Share the axis pointer with charts that use the same group name."
         },
         {
           "name": "zoom",
@@ -19282,6 +19906,11 @@
       ],
       "events": [
         {
+          "name": "rowan-brush",
+          "description": "Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.",
+          "detail": "startIndex, endIndex, startLabel, endLabel, or cleared."
+        },
+        {
           "name": "rowan-point-activate",
           "description": "Fired when a user activates an interactive bar.",
           "detail": ""
@@ -19300,6 +19929,11 @@
           "name": "rowan-series-toggle",
           "description": "Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.",
           "detail": "seriesId, hiddenSeries."
+        },
+        {
+          "name": "rowan-sync",
+          "description": "Shared hover. Detail: group, index, label.",
+          "detail": "group, index, label."
         },
         {
           "name": "rowan-zoom",
@@ -19367,6 +20001,10 @@
         ],
         "eventProps": [
           {
+            "name": "onRowanBrush",
+            "event": "rowan-brush"
+          },
+          {
             "name": "onRowanPointActivate",
             "event": "rowan-point-activate"
           },
@@ -19381,6 +20019,10 @@
           {
             "name": "onRowanSeriesToggle",
             "event": "rowan-series-toggle"
+          },
+          {
+            "name": "onRowanSync",
+            "event": "rowan-sync"
           },
           {
             "name": "onRowanZoom",

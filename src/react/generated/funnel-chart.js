@@ -12,5 +12,7 @@ export const RowanFunnelChart = createRowanComponent({
     onRowanPointClick: "rowan-point-click",
     onRowanSelectionChange: "rowan-selection-change",
     onRowanSeriesToggle: "rowan-series-toggle",
+    onRowanSync: "rowan-sync",
+    onRowanBrush: "rowan-brush",
   },
 });

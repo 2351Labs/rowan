@@ -48,7 +48,7 @@ const budgets = {
   // Lazy workbook/clipboard module, measured on its own (about 4.2 KB). 6 KB leaves headroom.
   "table-export": 6 * 1024,
 
-  // Lazy chart interaction (legend, shared tooltip, zoom, resize). About 3.2 KB.
+  // Lazy chart interaction (legend, tooltip, zoom, resize, sync, brush, large series). About 5.2 KB.
   "chart-interaction": 6 * 1024,
 
   // Common scenarios

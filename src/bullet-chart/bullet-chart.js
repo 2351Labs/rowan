@@ -157,6 +157,7 @@ function formatTick(value, locale) {
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanBulletChart extends BaseElement {
   static styleUrl = new URL("./bullet-chart.css", import.meta.url).href;
@@ -386,7 +387,6 @@ export class RowanBulletChart extends BaseElement {
     const status = this.intent === "lower" ? [...stops].reverse() : stops;
     return this.#ranges.map((range, index) => ({
       ...range,
-      level: index,
       intensity: levels[Math.min(index, levels.length - 1)],
       status: status[Math.min(index, status.length - 1)],
     }));
@@ -408,7 +408,6 @@ export class RowanBulletChart extends BaseElement {
       band.setAttribute("class", "range");
       band.setAttribute("part", "range");
       band.setAttribute("data-tone", range.tone);
-      band.setAttribute("data-level", String(range.level));
       band.setAttribute("data-intensity", String(range.intensity));
       band.setAttribute("data-status", range.status);
       band.style.setProperty("--range-ink", `${range.intensity}%`);

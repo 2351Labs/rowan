@@ -73,13 +73,7 @@ function normalizeText(value) {
  * @returns {number | null}
  */
 export function finiteOrNull(value) {
-  if (value === null || value === undefined) return null;
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (trimmed === "") return null;
-    const numeric = Number(trimmed);
-    return Number.isFinite(numeric) ? numeric : null;
-  }
+  if (value == null || (typeof value === "string" && value.trim() === "")) return null;
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
 }

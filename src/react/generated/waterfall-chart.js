@@ -13,5 +13,7 @@ export const RowanWaterfallChart = createRowanComponent({
     onRowanSelectionChange: "rowan-selection-change",
     onRowanSeriesToggle: "rowan-series-toggle",
     onRowanZoom: "rowan-zoom",
+    onRowanSync: "rowan-sync",
+    onRowanBrush: "rowan-brush",
   },
 });

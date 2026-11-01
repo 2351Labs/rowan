@@ -10,6 +10,8 @@ export const RowanDonutChart: ForwardRefExoticComponent<
       onRowanPointClick?: (event: CustomEvent) => void;
       onRowanSelectionChange?: (event: CustomEvent) => void;
       onRowanSeriesToggle?: (event: CustomEvent) => void;
+      onRowanSync?: (event: CustomEvent) => void;
+      onRowanBrush?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanDonutChartElement>

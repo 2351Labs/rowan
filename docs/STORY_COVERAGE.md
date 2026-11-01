@@ -6,25 +6,25 @@ Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attr
 
 | Component | Before | After | Missing |
 | --- | ---: | ---: | --- |
-| `rowan-area-chart` | 34% | 100% | — |
-| `rowan-bar-chart` | 40% | 100% | — |
-| `rowan-box-plot-chart` | 35% | 100% | — |
-| `rowan-bullet-chart` | 54% | 100% | — |
-| `rowan-column-sparkline` | 64% | 100% | — |
-| `rowan-combo-chart` | 39% | 100% | — |
-| `rowan-donut-chart` | 38% | 100% | — |
-| `rowan-funnel-chart` | 45% | 100% | — |
-| `rowan-gauge-chart` | 36% | 100% | — |
-| `rowan-heatmap-chart` | 40% | 100% | — |
+| `rowan-area-chart` | 33% | 100% | — |
+| `rowan-bar-chart` | 39% | 100% | — |
+| `rowan-box-plot-chart` | 33% | 100% | — |
+| `rowan-bullet-chart` | 52% | 100% | — |
+| `rowan-column-sparkline` | 61% | 100% | — |
+| `rowan-combo-chart` | 38% | 100% | — |
+| `rowan-donut-chart` | 36% | 100% | — |
+| `rowan-funnel-chart` | 43% | 100% | — |
+| `rowan-gauge-chart` | 34% | 100% | — |
+| `rowan-heatmap-chart` | 38% | 100% | — |
 | `rowan-kpi-card` | 49% | 100% | — |
-| `rowan-radar-chart` | 41% | 100% | — |
-| `rowan-range-chart` | 41% | 100% | — |
-| `rowan-scatter-chart` | 33% | 100% | — |
-| `rowan-sparkline` | 64% | 100% | — |
-| `rowan-stacked-area-chart` | 38% | 100% | — |
-| `rowan-stacked-bar-chart` | 43% | 100% | — |
-| `rowan-trend-chart` | 34% | 100% | — |
-| `rowan-waterfall-chart` | 35% | 100% | — |
+| `rowan-radar-chart` | 39% | 100% | — |
+| `rowan-range-chart` | 39% | 100% | — |
+| `rowan-scatter-chart` | 31% | 100% | — |
+| `rowan-sparkline` | 63% | 100% | — |
+| `rowan-stacked-area-chart` | 36% | 100% | — |
+| `rowan-stacked-bar-chart` | 42% | 100% | — |
+| `rowan-trend-chart` | 33% | 100% | — |
+| `rowan-waterfall-chart` | 33% | 100% | — |
 
 Before is the story file on `origin/main`, without shared fixture galleries.
 After includes `stories/chart-galleries.js` plus the story file.

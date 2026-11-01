@@ -169,3 +169,25 @@ export const FixtureError = chartFixtures.error;
 export const FixtureSlots = chartFixtures.slots;
 
 export const FixtureInteraction = chartFixtures.interaction;
+
+export const LargeSeries = {
+  name: "Large series",
+  render: () => {
+    const chart = document.createElement("rowan-area-chart");
+    chart.label = "High frequency signal";
+    chart.description = "Marks are downsampled. The table keeps every sample.";
+    chart.interactive = true;
+    chart.locale = "en-US";
+    chart.setAttribute("large-series", "40");
+    const count = 240;
+    chart.labels = Array.from({ length: count }, (_, index) => `t${index}`);
+    chart.series = [
+      {
+        id: "signal",
+        label: "Signal",
+        values: Array.from({ length: count }, (_, index) => Math.round(50 + 40 * Math.sin(index / 9))),
+      },
+    ];
+    return chart;
+  },
+};

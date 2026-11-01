@@ -27,11 +27,24 @@
   stroke-width: 1;
 }
 
-.zoom-brush {
+.zoom-brush,
+.range-brush {
   fill: var(--rowan-color-accent, #1d432f);
   fill-opacity: 0.15;
   pointer-events: none;
   stroke: var(--rowan-color-accent, #1d432f);
+}
+
+.table-pager {
+  align-items: center;
+  display: flex;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+  margin-block-start: 0.4rem;
+}
+
+.table-pager button {
+  font: inherit;
 }
 
 .zoom-reset {
@@ -89,7 +102,8 @@
   opacity: 0.45;
 }
 
-.legend-button:focus-visible {
+.legend-button:focus-visible,
+.plot:focus-visible {
   outline: 2px solid var(--rowan-focus-ring, var(--rowan-color-accent));
   outline-offset: 2px;
 }
