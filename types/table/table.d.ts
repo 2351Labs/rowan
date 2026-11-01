@@ -24,8 +24,9 @@
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`.
+ * @property {object | null} tree - Hierarchical rows. Use `childrenField` (default `"children"`), `getChildren(row)`, or `parentField` for a flat parent id. `hasChildren(row)` marks a server row that can load children. `expanded` is the initial open row ids. `defaultExpanded` opens every loaded parent. `groupBy` is ignored while a tree is set. Pagination slices root rows; expanded children stay with their parent. Sibling sort follows the ordered `sort` array. Column menu actions apply to these columns.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `getChildren({ parentId, parent, sort, filters, signal })` returns `{ rows }` for one expanded parent and receives that same ordered `sort`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them unless `tree` is set, where `{ id, value }` filters keep ancestors of matches. The filter builder still evaluates its own tree. A column menu filter updates this list and fires `rowan-column-filter`.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -66,6 +67,7 @@
  * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
  * @event rowan-paste - Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.
  * @event rowan-paste-result - Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.
+ * @event rowan-tree-toggle - Fired when a tree row expands or collapses. `detail` is `{ rowId, expanded, row }`.
  */
 export class RowanTable extends BaseElement {
   static componentTokenDeclarations: string[][];
@@ -106,6 +108,10 @@ export class RowanTable extends BaseElement {
   set virtualOverscan(value: number);
   /** @returns {number} */
   get virtualOverscan(): number;
+  /** @param {RowanTableTree | null | undefined} value */
+  set tree(value: RowanTableTree | null);
+  /** @returns {RowanTableTree | null} */
+  get tree(): RowanTableTree | null;
   /** @param {RowanTableColumn[]} value */
   set columns(value: RowanTableColumn[]);
   /** @returns {RowanTableColumn[]} */
@@ -140,6 +146,10 @@ export class RowanTable extends BaseElement {
   set messages(value: RowanTableMessages | null | undefined);
   /** @returns {RowanTableMessages} */
   get messages(): RowanTableMessages;
+  /** Opens every loaded tree parent. Child fetches run when a row has no local children. */
+  expandAll(): void;
+  /** Collapses every tree row. */
+  collapseAll(): void;
   /** @param {string | RowanTableGroupBy | null | undefined} value */
   set groupBy(value: RowanTableGroupBy | null);
   /** @returns {RowanTableGroupBy | null} */
@@ -524,6 +534,29 @@ export type RowanTableGroupBy = {
   subtotals?: boolean | undefined;
   collapsed?: boolean | undefined;
 };
+export type RowanTableTree = {
+  /**
+   * - Field holding nested child rows. Default `children`. Ignored when `parentField` or `getChildren` is set.
+   */
+  childrenField?: string | undefined;
+  /**
+   * - Field on a flat row that stores its parent row id. Roots have an empty parent.
+   */
+  parentField?: string | undefined;
+  getChildren?: ((row: RowanTableRow) => RowanTableRow[] | null | undefined) | undefined;
+  /**
+   * - Server rows with no local children still show an expander.
+   */
+  hasChildren?: ((row: RowanTableRow) => boolean) | undefined;
+  /**
+   * - Row ids that start expanded.
+   */
+  expanded?: string[] | undefined;
+  /**
+   * - Expand every loaded parent until the user collapses one.
+   */
+  defaultExpanded?: boolean | undefined;
+};
 export type RowanTableDensity = "sm" | "md" | "lg";
 export type RowanTableSelectable = "none" | "single" | "multiple";
 export type RowanTableMessages = {
@@ -579,5 +612,9 @@ export type RowanTableMessages = {
   pasteRejected?: string | ((context: { count: number }) => string) | undefined;
   pasteFailed?: string | undefined;
   nothingToPaste?: string | undefined;
+  treeExpand?: string | ((context: { name: string }) => string) | undefined;
+  treeCollapse?: string | ((context: { name: string }) => string) | undefined;
+  treeLoading?: string | undefined;
+  treeChildrenFailed?: string | undefined;
 };
 import { BaseElement } from "../lib/base-element.js";

@@ -219,9 +219,39 @@
 }
 
 .sort-button:focus-visible,
-.col-menu:focus-visible {
+.col-menu:focus-visible,
+.tree-toggle:focus-visible,
+.tree-retry:focus-visible {
   box-shadow: var(--rowan-focus-ring);
   outline: none;
+}
+
+.tree-toggle,
+.tree-retry {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  margin-inline-end: var(--rowan-space-2);
+  padding: 0;
+}
+
+.tree-toggle::before {
+  content: "▸";
+  display: inline-block;
+  inline-size: 1em;
+  text-align: center;
+}
+
+.tree-toggle[aria-expanded="true"]::before {
+  content: "▾";
+}
+
+.tree-status {
+  color: var(--rowan-color-muted);
 }
 
 .sort-indicator {

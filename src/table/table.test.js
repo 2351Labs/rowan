@@ -4271,3 +4271,283 @@ describe("column menu and multi-sort", () => {
     document.body.removeChild(host);
   });
 });
+describe("rowan-table tree data", () => {
+  function mount(rows, tree, extra = {}) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const table = document.createElement("rowan-table");
+    host.append(table);
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", sortable: true },
+        { id: "role", header: "Role" },
+      ],
+      rows,
+      ...extra,
+    };
+    table.tree = tree;
+    return { host, table };
+  }
+
+  const nested = [
+    {
+      id: "ada",
+      name: "Ada",
+      role: "Lead",
+      children: [
+        { id: "alan", name: "Alan", role: "Research" },
+        { id: "grace", name: "Grace", role: "Compiler" },
+      ],
+    },
+    {
+      id: "radia",
+      name: "Radia",
+      role: "Network",
+      children: [{ id: "barbara", name: "Barbara", role: "Systems" }],
+    },
+  ];
+
+  function names(table) {
+    return [...table.renderRoot.querySelectorAll('td[data-column-id="name"]')].map((cell) =>
+      cell.textContent.trim(),
+    );
+  }
+
+  it("expands nested rows with treegrid semantics and keyboard", async () => {
+    const { host, table } = mount(nested, { childrenField: "children", expanded: ["ada"] });
+    const toggles = [];
+    table.addEventListener("rowan-tree-toggle", (event) => toggles.push(event.detail));
+    await waitFor(() => table.renderRoot.querySelector('[aria-level="2"]'));
+    const grid = table.renderRoot.querySelector("table");
+    expect(grid.getAttribute("role")).to.equal("treegrid");
+    const parent = table.renderRoot.querySelector('tr[data-row-id="ada"]');
+    expect(parent.getAttribute("aria-expanded")).to.equal("true");
+    expect(parent.getAttribute("aria-level")).to.equal("1");
+    expect(table.renderRoot.querySelector('tr[data-row-id="alan"]').getAttribute("aria-level")).to.equal("2");
+    expect(names(table)).to.deep.equal(["Ada", "Alan", "Grace", "Radia"]);
+
+    parent.focus();
+    parent.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+    await waitFor(() => parent.getAttribute("aria-expanded") === "false" || table.renderRoot.querySelector('tr[data-row-id="ada"]').getAttribute("aria-expanded") === "false");
+    expect(table.renderRoot.querySelector('tr[data-row-id="alan"]')).to.equal(null);
+    expect(toggles.at(-1)).to.include({ rowId: "ada", expanded: false });
+
+    let collapsed = table.renderRoot.querySelector('tr[data-row-id="ada"]');
+    collapsed.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="alan"]'));
+    collapsed = table.renderRoot.querySelector('tr[data-row-id="ada"]');
+    collapsed.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await nextMicrotask();
+    expect(table.shadowRoot.activeElement?.dataset.rowId).to.equal("alan");
+    document.body.removeChild(host);
+  });
+
+  it("sorts siblings, keeps ancestors of a filter match, and selects a child", async () => {
+    const { host, table } = mount(nested, { defaultExpanded: true });
+    await waitFor(() => names(table).length === 5);
+    table.sort = { id: "name", dir: "desc" };
+    await nextMicrotask();
+    expect(names(table)).to.deep.equal(["Radia", "Barbara", "Ada", "Grace", "Alan"]);
+
+    table.filters = [{ id: "name", value: "barbara" }];
+    await nextMicrotask();
+    expect(names(table)).to.deep.equal(["Radia", "Barbara"]);
+    expect(table.renderRoot.querySelector('tr[data-row-id="radia"]').getAttribute("aria-expanded")).to.equal("true");
+
+    table.filters = [];
+    table.selectable = "multiple";
+    await nextMicrotask();
+    const box = table.renderRoot.querySelector('tr[data-row-id="barbara"] rowan-checkbox');
+    box.checked = true;
+    box.dispatchEvent(new CustomEvent("rowan-change", { bubbles: true, composed: true }));
+    await nextMicrotask();
+    expect(table.selected).to.include("barbara");
+    document.body.removeChild(host);
+  });
+
+  it("builds a parent id tree and expands or collapses every row", async () => {
+    const { host, table } = mount(
+      [
+        { id: "ada", name: "Ada", role: "Lead", parentId: "" },
+        { id: "alan", name: "Alan", role: "Research", parentId: "ada" },
+        { id: "grace", name: "Grace", role: "Compiler", parentId: "ada" },
+      ],
+      { parentField: "parentId" },
+    );
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="ada"]'));
+    expect(table.renderRoot.querySelector('tr[data-row-id="alan"]')).to.equal(null);
+    table.expandAll();
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="grace"]'));
+    expect(names(table)).to.deep.equal(["Ada", "Alan", "Grace"]);
+    table.collapseAll();
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="alan"]') === null);
+    expect(names(table)).to.deep.equal(["Ada"]);
+    document.body.removeChild(host);
+  });
+
+  it("keeps an expanded child inside a virtualized window", async () => {
+    const rows = Array.from({ length: 40 }, (_value, index) => ({
+      id: `root-${index}`,
+      name: `Root ${index}`,
+      role: "Lead",
+      children: index === 0 ? [{ id: "child-0", name: "First child", role: "Research" }] : [],
+    }));
+    const { host, table } = mount(rows, { expanded: ["root-0"] }, { virtualized: true, virtualItemSize: 20, virtualOverscan: 1 });
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="child-0"]'));
+    const viewport = table.renderRoot.querySelector(".table-scroll");
+    viewport.style.height = "80px";
+    viewport.style.overflow = "auto";
+    await nextFrame();
+    await nextMicrotask();
+    expect(table.renderRoot.querySelector('tr[data-row-id="child-0"]').getAttribute("aria-level")).to.equal("2");
+    expect(table.renderRoot.querySelectorAll("tbody tr[data-row-id]").length).to.be.lessThan(rows.length);
+    document.body.removeChild(host);
+  });
+
+  it("exports level and indent and lazy-loads server children", async () => {
+    const { host, table } = mount(nested, { expanded: ["ada"] });
+    await waitFor(() => table.renderRoot.querySelector('tr[data-row-id="alan"]'));
+    let detail = null;
+    table.addEventListener("rowan-export", (event) => {
+      detail = event.detail;
+      event.preventDefault();
+    });
+    await table.exportCsv();
+    expect(detail.cells.map((row) => row[0].level)).to.deep.equal([1, 2, 2, 1, 2]);
+    expect(detail.cells[1][0].text.startsWith("  ")).to.equal(true);
+    expect(detail.cells[0][0].text.startsWith("  ")).to.equal(false);
+    document.body.removeChild(host);
+
+    const serverHost = document.createElement("div");
+    document.body.appendChild(serverHost);
+    const server = document.createElement("rowan-table");
+    server.dataMode = "server";
+    serverHost.append(server);
+    let childCalls = 0;
+    server.config = {
+      rowId: "id",
+      columns: [{ id: "name", header: "Name" }],
+      page: { index: 0, size: 10 },
+    };
+    server.tree = { hasChildren: (row) => row.hasChildren === true };
+    server.dataSource = {
+      debounce: 0,
+      getRows: () => Promise.resolve({ rows: [{ id: "ada", name: "Ada", hasChildren: true }], total: 1 }),
+      getChildren: ({ parentId, sort }) => {
+        childCalls += 1;
+        expect(parentId).to.equal("ada");
+        expect(sort).to.equal(null);
+        return Promise.resolve({ rows: [{ id: "alan", name: "Alan" }] });
+      },
+    };
+    await waitFor(() => server.renderRoot?.querySelector('tr[data-row-id="ada"] .tree-toggle'));
+    server.renderRoot.querySelector('tr[data-row-id="ada"] .tree-toggle').click();
+    await waitFor(() => server.renderRoot.textContent.includes("Loading child rows."));
+    await waitFor(() => server.renderRoot.querySelector('tr[data-row-id="alan"]'));
+    expect(childCalls).to.equal(1);
+    expect(server.renderRoot.querySelector('tr[data-row-id="alan"]').getAttribute("aria-level")).to.equal("2");
+    document.body.removeChild(serverHost);
+  });
+
+  it("sorts tree siblings from the column menu using the ordered multi-sort", async () => {
+    const rows = [
+      {
+        id: "ada",
+        name: "Ada",
+        role: "Lead",
+        score: 1,
+        children: [
+          { id: "bea", name: "Bea", role: "Admin", score: 2 },
+          { id: "amy", name: "Amy", role: "Research", score: 9 },
+          { id: "zoe", name: "Zoe", role: "Research", score: 1 },
+        ],
+      },
+      {
+        id: "mia",
+        name: "Mia",
+        role: "Admin",
+        score: 5,
+        children: [{ id: "ned", name: "Ned", role: "Admin", score: 3 }],
+      },
+    ];
+    const { host, table } = mount(rows, { defaultExpanded: true }, {
+      columns: [
+        { id: "name", header: "Name", sortable: true, filterable: true },
+        { id: "role", header: "Role", sortable: true },
+        { id: "score", header: "Score", type: "number", sortable: true },
+      ],
+    });
+    await waitFor(() => names(table).length === 6);
+    const roleMenu = table.renderRoot.querySelector('th[data-column-id="role"] .col-menu');
+    expect(roleMenu.getAttribute("aria-haspopup")).to.equal("menu");
+    roleMenu.click();
+    await waitFor(() => table.renderRoot.querySelector(".col-menu-panel"));
+    table.renderRoot.querySelector('.col-menu-panel [data-action="asc"]').click();
+    await nextMicrotask();
+    expect(names(table)).to.deep.equal(["Mia", "Ned", "Ada", "Bea", "Amy", "Zoe"]);
+
+    table.renderRoot
+      .querySelector('th[data-column-id="score"] .sort-button')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, shiftKey: true }));
+    await waitFor(() => Array.isArray(table.sort) && table.sort.length === 2);
+    expect(table.sort).to.deep.equal([
+      { id: "role", dir: "asc" },
+      { id: "score", dir: "asc" },
+    ]);
+    expect(names(table)).to.deep.equal(["Mia", "Ned", "Ada", "Bea", "Zoe", "Amy"]);
+    expect(table.renderRoot.querySelector('th[data-column-id="role"] .sort-indicator').textContent).to.equal("↑1");
+    expect(table.renderRoot.querySelector('th[data-column-id="score"] .sort-indicator').textContent).to.equal("↑2");
+
+    const nameMenu = table.renderRoot.querySelector('th[data-column-id="name"] .col-menu');
+    nameMenu.click();
+    await waitFor(() => table.renderRoot.querySelector(".col-menu-panel input"));
+    const input = table.renderRoot.querySelector(".col-menu-panel input");
+    input.value = "Amy";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await nextMicrotask();
+    expect(table.filters).to.deep.equal([{ id: "name", value: "Amy" }]);
+    expect(names(table)).to.deep.equal(["Ada", "Amy"]);
+    expect(table.renderRoot.querySelector('tr[data-row-id="ada"]').getAttribute("aria-expanded")).to.equal("true");
+    document.body.removeChild(host);
+  });
+
+  it("sends the ordered sort array when a tree parent loads children", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const table = document.createElement("rowan-table");
+    table.dataMode = "server";
+    host.append(table);
+    const seen = [];
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", sortable: true },
+        { id: "role", header: "Role", sortable: true },
+      ],
+      page: { index: 0, size: 10 },
+    };
+    table.tree = { hasChildren: (row) => row.hasChildren === true };
+    table.dataSource = {
+      debounce: 0,
+      getRows: () => Promise.resolve({ rows: [{ id: "ada", name: "Ada", hasChildren: true }], total: 1 }),
+      getChildren: ({ sort }) => {
+        seen.push(sort);
+        return Promise.resolve({ rows: [{ id: "alan", name: "Alan", role: "Research" }] });
+      },
+    };
+    await waitFor(() => table.renderRoot?.querySelector('tr[data-row-id="ada"] .tree-toggle'));
+    table.sort = [
+      { id: "role", dir: "asc" },
+      { id: "name", dir: "desc" },
+    ];
+    await nextMicrotask();
+    table.renderRoot.querySelector('tr[data-row-id="ada"] .tree-toggle').click();
+    await waitFor(() => seen.length > 0 && table.renderRoot.querySelector('tr[data-row-id="alan"]'));
+    expect(seen.at(-1)).to.deep.equal([
+      { id: "role", dir: "asc" },
+      { id: "name", dir: "desc" },
+    ]);
+    document.body.removeChild(host);
+  });
+});
