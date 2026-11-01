@@ -4644,25 +4644,35 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     id: "combo-chart",
     group: "Components",
     title: "Rowan Combo Chart",
-    summary: "Combo Chart component for composable UI patterns.",
-    tags: ["component"],
-    keywords: ["rowan-combo-chart", "combo chart"],
+    summary: "Bars and a line on one category axis, with an optional secondary scale.",
+    tags: ["data display", "combo", "chart"],
+    keywords: ["combo chart", "dual axis", "bar", "line"],
     content: () => `
-      <section class="doc-section" data-doc-section id="rowan-combo-chart-usage">
-        <h2>Combo Chart usage</h2>
-        <p>Use rowan-combo-chart to compose combo chart patterns in your application.</p>
+      <section class="doc-section" data-doc-section id="combo-chart-overview">
+        <h2>Bars and a line</h2>
+        <p>rowan-combo-chart draws bar and line series against the same categories. A series with <code>axis: "secondary"</code> uses the right scale. series, labels, config, and valueFormatter are property-only. Null is no-data and does not contribute a mark.</p>
         <div class="demo-row">
-          <rowan-combo-chart></rowan-combo-chart>
+          <rowan-combo-chart id="docs-combo-chart" label="Throughput mix" description="Volume on the left scale, fill rate on the right." interactive></rowan-combo-chart>
         </div>
-      </section>
-
-      <section class="doc-section" data-doc-section id="rowan-combo-chart-snippet">
-        <h2>Basic example</h2>
-        ${codeBlock(`<rowan-combo-chart></rowan-combo-chart>`, "html")}
       </section>
 
       ${renderApiReference("rowan-combo-chart")}
     `,
+    afterRender: (mainEl) => {
+      const chart = mainEl.querySelector("#docs-combo-chart");
+      if (!chart) return;
+      chart.labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      chart.series = [
+        { id: "volume", label: "Volume", geometry: "bar", values: [180, 210, 164, 240, 198] },
+        {
+          id: "fill",
+          label: "Fill rate",
+          geometry: "line",
+          axis: "secondary",
+          values: [72, 81, 64, 88, 76],
+        },
+      ];
+    },
   },
   {
     id: "combobox",
@@ -6130,7 +6140,9 @@ function renderCurrentPage() {
   document.title = `Rowan Documentation - ${page.title}`;
   renderNavigation();
   renderToc();
-  page.afterRender?.();
+  // Pass the page root. Several demos declare `afterRender(mainEl)` and would
+  // otherwise shadow the outer `mainEl` with undefined and never set chart data.
+  page.afterRender?.(mainEl);
   scrollToRouteSection(page.id);
 }
 

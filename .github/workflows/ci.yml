@@ -43,11 +43,18 @@ jobs:
       - run: npm run size:check
       - run: npm run test --workspace=@rowan-ui/icons
       - run: npm run documentation:build
-      - run: npm run build-storybook
+      - name: Build Storybook
+        run: npm run build-storybook
+        env:
+          STORYBOOK_BASE: /rowan/storybook/
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+      - name: Storybook Pages base
+        run: node scripts/check-storybook-pages-base.mjs
       - name: Storybook smoke test
         run: node test/storybook-smoke.spec.mjs
+      - name: Documentation chart smoke test
+        run: node test/docs-chart-smoke.spec.mjs
       - name: Build admin template
         run: npm run build --workspace=@rowan-ui/admin-template
       - name: Admin template smoke test
