@@ -2,7 +2,7 @@
   "name": "@rowan-ui/starter-vite",
   "private": true,
   "version": "0.22.0",
-  "description": "Minimal Rowan dashboard on Vite. Installs @rowan-ui/core from npm.",
+  "description": "Harbor commerce dashboard on Vite. Installs @rowan-ui/core from npm.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "preview": "vite preview --host 127.0.0.1 --port 4175"
   },
   "dependencies": {
-    "@rowan-ui/core": "^0.22.0"
+    "@rowan-ui/core": "^0.22.0",
+    "@rowan-ui/icons": "^0.22.0"
   },
   "devDependencies": {
     "vite": "^5.4.10"

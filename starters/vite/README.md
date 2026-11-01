@@ -1,8 +1,14 @@
 # Rowan Vite starter
 
-A one-page dashboard: three KPI cards, a trend chart, and a table. It installs `@rowan-ui/core` from npm. There is no framework and no network call.
+Harbor is a one-page commerce dashboard: app shell, KPI cards with sparklines, a trend chart, a stacked bar chart, a donut chart, and a filterable orders table. It installs `@rowan-ui/core` and `@rowan-ui/icons` from npm. There is no framework.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/vite)
+
+The header theme button switches Rowan light and dark tokens. The orders table sorts from the column headers and filters from the toolbar search and status field. Figures are local sample data.
+
+![Harbor dashboard in the light theme](./screenshots/light.png)
+
+![Harbor dashboard in the dark theme](./screenshots/dark.png)
 
 From a checkout of this folder:
 

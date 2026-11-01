@@ -2,7 +2,7 @@
   "name": "@rowan-ui/starter-react",
   "private": true,
   "version": "0.22.0",
-  "description": "Minimal Rowan dashboard in React, using the generated wrappers.",
+  "description": "Harbor commerce dashboard in React, using the generated wrappers.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@rowan-ui/core": "^0.22.0",
+    "@rowan-ui/icons": "^0.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
