@@ -106,6 +106,10 @@ const DEFAULT_MESSAGES = Object.freeze({
   pasteRejected: "{count} not pasted.",
   pasteFailed: "Paste failed.",
   nothingToPaste: "Nothing to paste.",
+  treeExpand: "Expand {name}",
+  treeCollapse: "Collapse {name}",
+  treeLoading: "Loading child rows.",
+  treeChildrenFailed: "Could not load child rows.",
 });
 
 function positiveNumber(value, fallback) {
@@ -229,6 +233,16 @@ function nonNegativeInteger(value, fallback) {
  * @property {boolean} [collapsed]
  */
 
+/**
+ * @typedef {object} RowanTableTree
+ * @property {string} [childrenField] - Field holding nested child rows. Default `children`. Ignored when `parentField` or `getChildren` is set.
+ * @property {string} [parentField] - Field on a flat row that stores its parent row id. Roots have an empty parent.
+ * @property {(row: RowanTableRow) => RowanTableRow[] | null | undefined} [getChildren]
+ * @property {(row: RowanTableRow) => boolean} [hasChildren] - Server rows with no local children still show an expander.
+ * @property {string[]} [expanded] - Row ids that start expanded.
+ * @property {boolean} [defaultExpanded] - Expand every loaded parent until the user collapses one.
+ */
+
 /** @typedef {"sm" | "md" | "lg"} RowanTableDensity */
 
 /** @typedef {"none" | "single" | "multiple"} RowanTableSelectable */
@@ -286,6 +300,10 @@ function nonNegativeInteger(value, fallback) {
  * @property {string | ((context: { count: number }) => string)} [pasteRejected]
  * @property {string} [pasteFailed]
  * @property {string} [nothingToPaste]
+ * @property {string | ((context: { name: string }) => string)} [treeExpand]
+ * @property {string | ((context: { name: string }) => string)} [treeCollapse]
+ * @property {string} [treeLoading]
+ * @property {string} [treeChildrenFailed]
  */
 
 function isDevelopmentEnvironment() {
@@ -322,8 +340,9 @@ function isDevelopmentEnvironment() {
  * @property {number} virtualItemSize - Estimated row height used before a row is measured.
  * @property {number} virtualOverscan - Extra rows mounted before and after the visible window.
  * @property {RowanTableMessages} messages - Property-only built-in message overrides.
- * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
- * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`.
+ * @property {object | null} tree - Hierarchical rows. Use `childrenField` (default `"children"`), `getChildren(row)`, or `parentField` for a flat parent id. `hasChildren(row)` marks a server row that can load children. `expanded` is the initial open row ids. `defaultExpanded` opens every loaded parent. `groupBy` is ignored while a tree is set. Pagination slices root rows; expanded children stay with their parent. Sibling sort follows the ordered `sort` array. Column menu actions apply to these columns.
+ * @property {object | null} dataSource - Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `getChildren({ parentId, parent, sort, filters, signal })` returns `{ rows }` for one expanded parent and receives that same ordered `sort`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`.
+ * @property {Array<object>} filters - Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them unless `tree` is set, where `{ id, value }` filters keep ancestors of matches. The filter builder still evaluates its own tree. A column menu filter updates this list and fires `rowan-column-filter`.
  * @slot toolbar - View controls. Shares the table's outer chrome; nested cards drop their own border.
  * @slot caption
  * @slot empty
@@ -364,6 +383,7 @@ function isDevelopmentEnvironment() {
  * @event rowan-export - Fired before a CSV or Excel download. Cancelable. `detail` includes `format`, `filename`, `header`, `rows`, and `truncated`. Listeners may replace `filename` or `rows`.
  * @event rowan-paste - Fired before pasted cells are validated. Cancelable. `detail` includes the start cell, the TSV matrix, and `targets`. Listeners may change `targets` or call `preventDefault()`.
  * @event rowan-paste-result - Fired after a paste. `detail.applied` and `detail.rejected` list the cells, with `message` on rejects. `detail.ignored` counts values that did not fit.
+ * @event rowan-tree-toggle - Fired when a tree row expands or collapses. `detail` is `{ rowId, expanded, row }`.
  */
 export class RowanTable extends BaseElement {
   static styleUrl = new URL("./table.css", import.meta.url).href;
@@ -410,6 +430,7 @@ export class RowanTable extends BaseElement {
     "dataMode",
     "dataSource",
     "filters",
+    "tree",
   ];
 
   #state = {
@@ -466,6 +487,11 @@ export class RowanTable extends BaseElement {
   #serverBoot = null;
   #serverReady = false;
   #columnsModule = null;
+  #treeModule = null;
+  #treeModulePromise = null;
+  #treeExpandAll = false;
+  #treeExpanded = new Set();
+  #treeParents = [];
 
   constructor() {
     super();
@@ -535,6 +561,7 @@ export class RowanTable extends BaseElement {
       virtualOverscan: this.virtualOverscan,
       groupBy: this.groupBy,
       rowActivate: this.rowActivate,
+      tree: this.tree,
     };
   }
 
@@ -555,8 +582,12 @@ export class RowanTable extends BaseElement {
       rowActivate: this.#normalizeRowActivate(next.rowActivate),
       columnWidths: new Map(),
       columnOrder: [],
+      tree: null,
     };
     clearColumnWidths(this);
+    this.#treeExpandAll = false;
+    this.#treeExpanded = new Set();
+    this.#treeParents = [];
     this.#toggledGroups = new Map();
     this.#bodyNeedsRender = true;
     this.#viewNeedsReconciliation = true;
@@ -573,8 +604,8 @@ export class RowanTable extends BaseElement {
     this.virtualized = Boolean(next.virtualized);
     this.virtualItemSize = next.virtualItemSize;
     this.virtualOverscan = next.virtualOverscan;
-
-    this.requestRender();
+    if (next.tree) this.tree = next.tree;
+    else this.requestRender();
   }
 
   /** @returns {RowanTableColumn[]} */
@@ -775,6 +806,11 @@ export class RowanTable extends BaseElement {
 
   set filters(value) {
     this.#filters = this.#normalizeFilters(value);
+    if (this.#state.tree) {
+      this.#viewNeedsReconciliation = true;
+      this.#bodyNeedsRender = true;
+      this.requestRender();
+    }
     if (this.dataMode !== "server") return;
     void this.#bootServer().then((server) => {
       if (this.dataMode === "server") server.onFilters();
@@ -809,6 +845,50 @@ export class RowanTable extends BaseElement {
     this.#messages = normalizeMessages(value, DEFAULT_MESSAGES);
     this.#bodyNeedsRender = true;
     this.requestRender();
+  }
+
+  /** @returns {RowanTableTree | null} */
+  get tree() {
+    const tree = this.#state.tree;
+    if (!tree) return null;
+    const expanded = this.#treeExpandAll ? [...this.#treeParents] : [...this.#treeExpanded];
+    return { ...tree, expanded };
+  }
+
+  /** @param {RowanTableTree | null | undefined} value */
+  set tree(value) {
+    const next = this.#normalizeTree(value);
+    this.#state.tree = next;
+    this.#treeExpandAll = Boolean(next?.defaultExpanded) && !next?.expanded;
+    this.#treeExpanded = new Set(next?.expanded ?? []);
+    this.#treeParents = [];
+    this.#bodyNeedsRender = true;
+    this.#viewNeedsReconciliation = true;
+    if (!next) {
+      this.requestRender();
+      return;
+    }
+    if (this.#treeModule) {
+      this.requestRender();
+      return;
+    }
+    void this.#loadTree().then(() => {
+      if (this.#state.tree) this.requestRender();
+    });
+  }
+
+  /** Opens every loaded tree parent. Child fetches run when a row has no local children. */
+  expandAll() {
+    void this.#loadTree().then((mod) => {
+      if (this.#state.tree) mod.expandAll(this.#treeHost());
+    });
+  }
+
+  /** Collapses every tree row. */
+  collapseAll() {
+    void this.#loadTree().then((mod) => {
+      if (this.#state.tree) mod.collapseAll(this.#treeHost());
+    });
   }
 
   /** @returns {RowanTableGroupBy | null} */
@@ -1008,6 +1088,8 @@ export class RowanTable extends BaseElement {
     const table = this.renderRoot.querySelector("table");
     const busy = this.loading || this.#serverBusy();
     table.setAttribute("aria-busy", busy ? "true" : "false");
+    if (this.#state.tree) table.setAttribute("role", "treegrid");
+    else table.removeAttribute("role");
     this.#syncRowCountSemantics(table, view);
     this.#syncServerStatus();
 
@@ -1634,6 +1716,9 @@ export class RowanTable extends BaseElement {
   #createBodyRow(entry) {
     if (entry.kind === "group") return this.#createGroupRow(entry);
     if (entry.kind === "subtotal") return this.#createSubtotalRow(entry);
+    if (entry.kind === "tree-status") {
+      return this.#treeModule.statusRow(entry, this.#bodyColumnCount(), this.#treeHost());
+    }
 
     const tr = document.createElement("tr");
     tr.part = "tr";
@@ -1680,6 +1765,7 @@ export class RowanTable extends BaseElement {
       tr.append(td);
     });
 
+    if (entry.level != null) this.#treeModule?.decorate(tr, entry, this.#treeHost());
     return tr;
   }
 
@@ -1775,6 +1861,21 @@ export class RowanTable extends BaseElement {
       return;
     }
 
+    const treeToggle = this.#findActionElement(event, "toggle-tree");
+    if (treeToggle) {
+      const rowId = treeToggle.dataset.rowId;
+      void this.#loadTree().then((mod) => mod.toggle(this.#treeHost(), rowId));
+      return;
+    }
+
+    const treeRetry =
+      event.target instanceof Element ? event.target.closest("[data-action='retry-tree']") : null;
+    if (treeRetry) {
+      const parentId = treeRetry.dataset.rowId;
+      void this.#loadTree().then((mod) => mod.retry(this.#treeHost(), parentId));
+      return;
+    }
+
     const selector = this.#findActionElement(event, "select-row");
     if (selector) {
       this.#selectionModifiers.set(selector, Boolean(event.shiftKey));
@@ -1805,6 +1906,22 @@ export class RowanTable extends BaseElement {
   }
 
   #handleBodyKeyDown(event) {
+    if (
+      this.#state.tree &&
+      (event.key === "ArrowRight" || event.key === "ArrowLeft") &&
+      event.target instanceof Element
+    ) {
+      const row = event.target.closest("tr[data-row-id]");
+      const onRow = event.target === row || event.target.dataset?.tableAction === "toggle-tree";
+      if (row && onRow) {
+        event.preventDefault();
+        const key = event.key;
+        const rowId = row.dataset.rowId;
+        void this.#loadTree().then((mod) => mod.onKey(this.#treeHost(), key, rowId));
+        return;
+      }
+    }
+
     const td = event.target.closest("td[data-column-id]");
 
     if (td && !this.#editing) {
@@ -2171,6 +2288,9 @@ export class RowanTable extends BaseElement {
   }
 
   #findVisibleRow(row) {
+    const rowId = row.dataset.rowId;
+    const byId = rowId ? this.#visibleRows.find((entry) => entry.rowId === rowId) : null;
+    if (byId) return byId;
     const rowIndex = Number(row.dataset.rowIndex);
     if (!Number.isInteger(rowIndex)) return null;
 
@@ -2921,6 +3041,14 @@ export class RowanTable extends BaseElement {
   }
 
   #orderedSelection(selection) {
+    if (this.#state.tree && this.#treeModule) {
+      const known = this.#treeModule.exportEntries(this.#treeHost()).map((entry) => entry.rowId);
+      const ordered = known.filter((rowId) => selection.has(rowId));
+      for (const rowId of selection) {
+        if (!ordered.includes(rowId)) ordered.push(rowId);
+      }
+      return ordered;
+    }
     const source = this.dataMode === "server" ? (this.#server?.rows() ?? []) : this.rows;
     const ordered = source
       .map((row, index) => this.#resolveRowId(row, index))
@@ -3035,7 +3163,13 @@ export class RowanTable extends BaseElement {
   }
 
   #buildView() {
-    if (this.dataMode === "server") return this.#server?.buildView() ?? this.#emptyServerView();
+    if (this.dataMode === "server") {
+      const view = this.#server?.buildView() ?? this.#emptyServerView();
+      if (this.#state.tree && this.#treeModule) return this.#treeModule.augmentServer(this.#treeHost(), view);
+      return view;
+    }
+
+    if (this.#state.tree && this.#treeModule) return this.#treeModule.buildClient(this.#treeHost());
 
     const entries = this.rows.map((row, rowIndex) => ({
       row,
@@ -3220,12 +3354,9 @@ export class RowanTable extends BaseElement {
     return { renderRows, dataRows };
   }
 
-  #applySort(entries) {
+  #compareEntries(left, right) {
     const sorts = this.#state.sort;
-    if (!sorts?.length) return entries;
-
-    const sortedEntries = [...entries];
-    sortedEntries.sort((left, right) => {
+    if (sorts?.length) {
       for (const sort of sorts) {
         const column = this.#findColumn(sort.id);
         if (!column) continue;
@@ -3236,10 +3367,91 @@ export class RowanTable extends BaseElement {
         );
         if (result) return result * (sort.dir === "desc" ? -1 : 1);
       }
-      return left.rowIndex - right.rowIndex;
-    });
+    }
+    return left.rowIndex - right.rowIndex;
+  }
 
-    return sortedEntries;
+  #loadTree() {
+    return (this.#treeModulePromise ??= import("./table-tree.js").then((mod) => {
+      this.#treeModule = mod;
+      return mod;
+    }));
+  }
+
+  #normalizeTree(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const parentField = typeof value.parentField === "string" ? value.parentField.trim() : "";
+    const childrenField = typeof value.childrenField === "string" ? value.childrenField.trim() : "";
+    const tree = { defaultExpanded: Boolean(value.defaultExpanded) };
+    if (parentField) tree.parentField = parentField;
+    else if (typeof value.getChildren === "function") tree.getChildren = value.getChildren;
+    else tree.childrenField = childrenField || "children";
+    if (typeof value.hasChildren === "function") tree.hasChildren = value.hasChildren;
+    if (Array.isArray(value.expanded)) {
+      tree.expanded = value.expanded.map((id) => this.#normalizeText(id)).filter(Boolean);
+    }
+    return tree;
+  }
+
+  #treeHost() {
+    return {
+      table: this,
+      rows: () => this.rows,
+      sort: () => this.#sortList(),
+      filters: () => this.#filters,
+      tree: () => this.#state.tree,
+      source: () => this.#dataSource,
+      rowId: (row, index) => this.#resolveRowId(row, index),
+      normalize: (value) => this.#normalizeText(value),
+      compare: (left, right) => this.#compareEntries(left, right),
+      text: (row, index, columnId) => {
+        const column = this.#findColumn(columnId);
+        if (!column) return "";
+        return this.#formatValue(column, this.#resolveValue(row, index, column), row, index);
+      },
+      firstColumnId: () => this.#renderableColumns()[0]?.id ?? null,
+      isExpanded: (id) => this.#treeExpandAll || this.#treeExpanded.has(id),
+      isExpandAll: () => this.#treeExpandAll,
+      setExpanded: (id, expanded, parentIds) => {
+        if (this.#treeExpandAll && !expanded) {
+          this.#treeExpandAll = false;
+          this.#treeExpanded = new Set(parentIds);
+          this.#treeExpanded.delete(id);
+          return;
+        }
+        if (expanded) this.#treeExpanded.add(id);
+        else this.#treeExpanded.delete(id);
+      },
+      markExpandAll: () => {
+        this.#treeExpandAll = true;
+        this.#treeExpanded.clear();
+      },
+      markCollapseAll: () => {
+        this.#treeExpandAll = false;
+        this.#treeExpanded.clear();
+      },
+      noteParents: (ids) => {
+        this.#treeParents = ids;
+      },
+      render: () => {
+        this.#viewNeedsReconciliation = true;
+        this.#bodyNeedsRender = true;
+        this.requestRender();
+      },
+      validate: (entries) => this.#validateRowIds(entries),
+      duplicate: (entries) => this.#hasDuplicateRowIds(entries),
+      resolvePageInfo: (count) => this.#resolvePageInfo(count),
+      message: (key, params) => resolveMessage(this.#messages, DEFAULT_MESSAGES, key, params),
+      focus: (rowId) => {
+        const row = this.renderRoot?.querySelector(`tr[data-row-id="${CSS.escape(rowId)}"]`);
+        row?.focus();
+      },
+    };
+  }
+
+  #applySort(entries) {
+    if (!this.#state.sort?.length) return entries;
+    return [...entries].sort((left, right) => this.#compareEntries(left, right));
   }
 
   #compareValues(left, right, type) {
@@ -3644,7 +3856,13 @@ export class RowanTable extends BaseElement {
   #exportBridge() {
     return {
       snapshot: (sourceRows) => {
-        const entries = Array.isArray(sourceRows)
+        const treeEntries =
+          !sourceRows && this.#state.tree && this.#treeModule
+            ? this.#treeModule.exportEntries(this.#treeHost())
+            : null;
+        const entries = treeEntries
+          ? treeEntries
+          : Array.isArray(sourceRows)
           ? sourceRows.map((row, rowIndex) => ({
               row,
               rowIndex,
@@ -3681,14 +3899,16 @@ export class RowanTable extends BaseElement {
       },
       cell: (entry, column, formatValues) => {
         const value = this.#resolveValue(entry.row, entry.rowIndex, column.column);
-        return {
-          value,
-          text:
-            formatValues === false
-              ? this.#normalizeText(value)
-              : this.#formatValue(column.column, value, entry.row, entry.rowIndex),
-          type: column.type,
-        };
+        let text =
+          formatValues === false
+            ? this.#normalizeText(value)
+            : this.#formatValue(column.column, value, entry.row, entry.rowIndex);
+        let type = column.type;
+        if (entry.level > 1 && column.id === entry.indentColumn) {
+          text = `${"  ".repeat(entry.level - 1)}${text}`;
+          type = "text";
+        }
+        return entry.level ? { value, text, type, level: entry.level } : { value, text, type };
       },
       emit: (type, detail) => emit(this, type, detail, { cancelable: true }),
       announce: (text) => this.#announceStatus(text),

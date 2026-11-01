@@ -33,5 +33,6 @@ export const RowanTable = createRowanComponent({
     onRowanExport: "rowan-export",
     onRowanPaste: "rowan-paste",
     onRowanPasteResult: "rowan-paste-result",
+    onRowanTreeToggle: "rowan-tree-toggle",
   },
 });

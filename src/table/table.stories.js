@@ -1644,6 +1644,84 @@ export const ColumnMenu = {
   },
 };
 
+export const TreeData = {
+  name: "Tree data",
+  render: () => {
+    const host = document.createElement("div");
+    host.style.cssText = "padding: 1rem; display: grid; gap: 0.75rem;";
+    const status = document.createElement("p");
+    status.id = "tree-status";
+    status.textContent = "Arrow Right expands a row. Arrow Left collapses it or moves to the parent. The column menu and Shift+click sort siblings.";
+    const controls = document.createElement("div");
+    controls.style.cssText = "display: flex; gap: 0.5rem;";
+    const expand = document.createElement("button");
+    expand.type = "button";
+    expand.textContent = "Expand all";
+    const collapse = document.createElement("button");
+    collapse.type = "button";
+    collapse.textContent = "Collapse all";
+    controls.append(expand, collapse);
+    const table = document.createElement("rowan-table");
+    table.selectable = "multiple";
+    table.caption = "Research groups";
+    table.config = {
+      rowId: "id",
+      columns: [
+        { id: "name", header: "Name", sortable: true, filterable: true },
+        { id: "role", header: "Role", sortable: true },
+        { id: "city", header: "City" },
+      ],
+      rows: [
+        {
+          id: "ada",
+          name: "Ada Lovelace",
+          role: "Lead",
+          city: "London",
+          children: [
+            { id: "alan", name: "Alan Turing", role: "Research", city: "Manchester" },
+            {
+              id: "grace",
+              name: "Grace Hopper",
+              role: "Compiler",
+              city: "New York",
+              children: [{ id: "barbara", name: "Barbara Liskov", role: "Systems", city: "Los Angeles" }],
+            },
+          ],
+        },
+        {
+          id: "radia",
+          name: "Radia Perlman",
+          role: "Network",
+          city: "Portsmouth",
+          children: [{ id: "ken", name: "Ken Thompson", role: "Kernel", city: "New Orleans" }],
+        },
+      ],
+      sort: [
+        { id: "role", dir: "asc" },
+        { id: "name", dir: "asc" },
+      ],
+    };
+    table.tree = { childrenField: "children", expanded: ["ada", "grace"] };
+    expand.addEventListener("click", () => table.expandAll());
+    collapse.addEventListener("click", () => table.collapseAll());
+    table.addEventListener("rowan-tree-toggle", (event) => {
+      status.textContent = `rowan-tree-toggle ${event.detail.rowId} ${event.detail.expanded ? "expanded" : "collapsed"}`;
+    });
+    table.addEventListener("rowan-sort-change", (event) => {
+      status.textContent = `rowan-sort-change ${event.detail.sort.map((item) => item.id + " " + item.dir).join(", ")}`;
+    });
+    host.append(status, controls, table);
+    return host;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "tree accepts childrenField, getChildren, or parentField. Rows expose aria-expanded, aria-level, aria-posinset, and aria-setsize, and the table uses role=treegrid. ArrowRight expands or moves to the first child. ArrowLeft collapses or moves to the parent. expandAll and collapseAll cover every loaded parent. The column menu and Shift+click multi-sort reorder siblings and leave parents in place. sort is an ordered array. rowan-sort-change reports that array. A filterable column menu keeps ancestors of matches. Virtualization and selection use the visible tree order. Export cells include level and indent the first column. Server mode calls dataSource.getChildren({ parentId, parent, sort, filters, signal }) with that ordered sort and shows a loading row. rowan-tree-toggle reports the toggled row.",
+      },
+    },
+  },
+};
+
 export const Loading = {
   name: "Loading",
   render: () => {

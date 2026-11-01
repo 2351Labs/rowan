@@ -17023,7 +17023,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
+          "description": "Server reads. `getRows({ page, pageSize, sort, filters, signal })` returns `{ rows, total }`. `sort` is an ordered array of `{ id, dir }`, or null. Optional `getChildren({ parentId, parent, sort, filters, signal })` returns `{ rows }` for one expanded parent and receives that same ordered `sort`. Optional `debounce` replaces the 200ms filter delay. Ignored when `data-mode` is `client`."
         },
         {
           "name": "density",
@@ -17055,7 +17055,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them; the filter builder evaluates that tree itself. A column menu filter updates this list and fires `rowan-column-filter`."
+          "description": "Sent to `dataSource.getRows`. Quick filters are `{ id, value }`. A `rowan-filter-builder` tree (`{ field, operator, value }` leaves and `{ join, filters }` groups) is passed through intact. Assigning filters resets to the first page and is debounced. Client mode does not apply them unless `tree` is set, where `{ id, value }` filters keep ancestors of matches. The filter builder still evaluates its own tree. A column menu filter updates this list and fires `rowan-column-filter`."
         },
         {
           "name": "groupBy",
@@ -17176,6 +17176,14 @@
           "reflects": true,
           "readonly": false,
           "description": ""
+        },
+        {
+          "name": "tree",
+          "type": "object | null",
+          "default": "",
+          "reflects": false,
+          "readonly": false,
+          "description": "Hierarchical rows. Use `childrenField` (default `\"children\"`), `getChildren(row)`, or `parentField` for a flat parent id. `hasChildren(row)` marks a server row that can load children. `expanded` is the initial open row ids. `defaultExpanded` opens every loaded parent. `groupBy` is ignored while a tree is set. Pagination slices root rows; expanded children stay with their parent. Sibling sort follows the ordered `sort` array. Column menu actions apply to these columns."
         },
         {
           "name": "virtualItemSize",
@@ -17327,6 +17335,11 @@
           "name": "rowan-sort-change",
           "description": "Fired when the user changes the sort. `detail.sort` is the full ordered array of `{ id, dir }`.",
           "detail": ""
+        },
+        {
+          "name": "rowan-tree-toggle",
+          "description": "Fired when a tree row expands or collapses. `detail` is `{ rowId, expanded, row }`.",
+          "detail": ""
         }
       ],
       "slots": [
@@ -17403,12 +17416,24 @@
           "description": ""
         },
         {
+          "name": "collapseAll",
+          "parameters": [],
+          "inherited": "",
+          "description": "Collapses every tree row."
+        },
+        {
           "name": "copyToClipboard",
           "parameters": [
             "options"
           ],
           "inherited": "",
           "description": "Copy selected rows, or the focused cell when nothing is selected, as TSV and an HTML table."
+        },
+        {
+          "name": "expandAll",
+          "parameters": [],
+          "inherited": "",
+          "description": "Opens every loaded tree parent. Child fetches run when a row has no local children."
         },
         {
           "name": "exportCsv",
@@ -17478,6 +17503,7 @@
           "selected",
           "sort",
           "stickyHeader",
+          "tree",
           "virtualItemSize",
           "virtualized",
           "virtualOverscan"
@@ -17582,6 +17608,10 @@
           {
             "name": "onRowanSortChange",
             "event": "rowan-sort-change"
+          },
+          {
+            "name": "onRowanTreeToggle",
+            "event": "rowan-tree-toggle"
           }
         ]
       },

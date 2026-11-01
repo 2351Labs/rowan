@@ -31,6 +31,7 @@ export const RowanTable: ForwardRefExoticComponent<
       onRowanExport?: (event: CustomEvent) => void;
       onRowanPaste?: (event: CustomEvent) => void;
       onRowanPasteResult?: (event: CustomEvent) => void;
+      onRowanTreeToggle?: (event: CustomEvent) => void;
     }
   > &
     RefAttributes<RowanTableElement>
