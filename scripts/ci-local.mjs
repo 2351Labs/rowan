@@ -386,6 +386,12 @@ async function main() {
       "Build Vue starter",
     );
 
+    await runCommand(
+      "node",
+      ["scripts/check-standalone-apps.mjs"],
+      "Standalone registry smoke",
+    );
+
     await runCommand("node", ["scripts/check-docs-version.mjs"], "Verify documentation version");
 
     await runCommand(

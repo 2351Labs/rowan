@@ -65,6 +65,8 @@ jobs:
         run: npm run build --workspace=@rowan-ui/starter-react
       - name: Build Vue starter
         run: npm run build --workspace=@rowan-ui/starter-vue
+      - name: Standalone registry smoke
+        run: node scripts/check-standalone-apps.mjs
       - name: Verify documentation version consistency
         run: node scripts/check-docs-version.mjs
       - name: Verify API reference is current

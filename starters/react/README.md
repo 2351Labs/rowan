@@ -15,4 +15,4 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5176/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-react` uses the local workspace copy. StackBlitz installs the published package.
+Open http://127.0.0.1:5176/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-react` uses the local workspace copy. StackBlitz installs the published package and runs `npm run dev`. `vite.config.js` keeps `@rowan-ui/core` and `@rowan-ui/icons` out of Vite's dependency prebundle so component stylesheets resolve.

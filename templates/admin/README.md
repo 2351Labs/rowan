@@ -4,7 +4,7 @@ Lumen is a sample wholesale operations console built with Rowan custom elements.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/templates/admin)
 
-StackBlitz installs the published `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre` packages. The commands below, run from a checkout of this repository, use the local workspace copies.
+StackBlitz installs the published `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre` packages (`^0.22.0`) and runs `npm run dev`. `vite.config.js` keeps those packages out of Vite's dependency prebundle so each component's stylesheet URL still points at a real file. The commands below, run from a checkout of this repository, use the local workspace copies.
 
 The shell uses `rowan-app-layout`, `rowan-side-nav`, and a command palette (`Ctrl+K` or `⌘K`). Light and dark themes swap Rowan token sheets.
 
