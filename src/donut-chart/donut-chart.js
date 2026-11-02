@@ -25,6 +25,7 @@ import {
   navigatePointKey,
   visibleEntries,
   applySeriesVisibility,
+  entryHidden,
 } from "../chart/api.js";
 import {
   chartSeriesColor,
@@ -119,7 +120,7 @@ function slicePath(startAngle, endAngle, inner = INNER, outer = OUTER) {
  * @tag rowan-donut-chart
  * @attr {string} label
  * @attr {string} description
- * @attr {boolean} interactive
+ * @attr {boolean} interactive - Each legend item is the slice button for pointer and keyboard activation. No second control list is drawn.
  * @attr {"donut"|"pie"} variant - `pie` fills the hole. Default `donut`. Total stays in the matching table.
  * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - First series is drawn. Arrays are property-only.
@@ -160,7 +161,15 @@ export class RowanDonutChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styleUrl = new URL("./donut-chart.css", import.meta.url).href;
   static componentTokenPrefixes = ["--rowan-donut-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "variant", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "variant",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -186,7 +195,6 @@ export class RowanDonutChart extends BaseElement {
   #plot = null;
   #total = null;
   #legend = null;
-  #pointControls = null;
   #detail = null;
   #hover = null;
   #summaryTable = null;
@@ -331,7 +339,6 @@ export class RowanDonutChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -370,7 +377,6 @@ export class RowanDonutChart extends BaseElement {
             <div class="plot-wrap">
               <svg class="plot" part="plot" viewBox="0 0 ${VIEWBOX} ${VIEWBOX}"></svg>
               <div class="total" part="total"></div>
-              <div class="point-controls"></div>
             </div>
             <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
@@ -391,7 +397,6 @@ export class RowanDonutChart extends BaseElement {
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#total = this.renderRoot.querySelector(".total");
       this.#legend = this.renderRoot.querySelector(".legend");
-      this.#pointControls = this.renderRoot.querySelector(".point-controls");
       this.#detail = this.renderRoot.querySelector(".detail");
       this.#summaryTable = this.renderRoot.querySelector("table");
       this.#summary = this.renderRoot.querySelector("summary");
@@ -405,9 +410,9 @@ export class RowanDonutChart extends BaseElement {
 
       this.listen(this.#labelSlot, "slotchange", () => this.requestRender());
       this.listen(this.#descriptionSlot, "slotchange", () => this.requestRender());
-      this.listen(this.#pointControls, "click", (event) => this.#handlePointClick(event));
-      this.listen(this.#pointControls, "focusin", (event) => this.#handlePointFocus(event));
-      this.listen(this.#pointControls, "keydown", (event) => this.#handlePointKeydown(event));
+      this.listen(this.#legend, "click", (event) => this.#handlePointClick(event));
+      this.listen(this.#legend, "focusin", (event) => this.#handlePointFocus(event));
+      this.listen(this.#legend, "keydown", (event) => this.#handlePointKeydown(event));
     }
 
     this.#syncLabels();
@@ -520,7 +525,6 @@ export class RowanDonutChart extends BaseElement {
         : resolveMessage(this.#messages, DEFAULT_MESSAGES, "noData");
 
     this.#renderLegend();
-    this.#renderPointControls();
     renderChartTable(this.#summaryTable, {
       caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
         chart: this.#displayLabel() || this.#chartName(),
@@ -542,42 +546,42 @@ export class RowanDonutChart extends BaseElement {
   }
 
   #renderLegend() {
-    this.#legend.replaceChildren();
-    this.#legend.setAttribute(
-      "aria-label",
-      resolveMessage(this.#messages, DEFAULT_MESSAGES, "slices"),
-    );
-    const fragment = document.createDocumentFragment();
-    this.#entries.forEach((entry, index) => {
-      const item = document.createElement("li");
-      item.className = "legend-item";
-      const swatch = document.createElement("span");
-      swatch.className = "legend-swatch";
-      swatch.setAttribute("aria-hidden", "true");
-      swatch.style.setProperty(
-        "--series-color",
-        chartSeriesColor({ ...entry.series, color: "" }, index),
+    withRestoredPointFocus(this.#legend, this.#activePointKey, () => {
+      this.#legend.replaceChildren();
+      this.#legend.setAttribute(
+        "aria-label",
+        resolveMessage(this.#messages, DEFAULT_MESSAGES, "slices"),
       );
-      item.append(swatch, document.createTextNode(`${entry.label} ${entry.formattedValue}`));
-      fragment.append(item);
-    });
-    this.#legend.append(fragment);
-  }
-
-  #renderPointControls() {
-    withRestoredPointFocus(this.#pointControls, this.#activePointKey, () => {
-      this.#pointControls.textContent = "";
-      this.#pointControls.hidden = !this.interactive;
-      if (!this.interactive) return;
+      const hidden = new Set(readHiddenSeries(this));
       const fragment = document.createDocumentFragment();
-      for (const entry of this.#entries) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.dataset.pointKey = entry.key;
-        button.textContent = `${entry.label}, ${entry.formattedValue}`;
-        fragment.append(button);
-      }
-      this.#pointControls.append(fragment);
+      this.#entries.forEach((entry, index) => {
+        const item = document.createElement("li");
+        item.className = "legend-item";
+        item.dataset.seriesId = entry.key;
+        const swatch = document.createElement("span");
+        swatch.className = "legend-swatch";
+        swatch.setAttribute("aria-hidden", "true");
+        swatch.style.setProperty(
+          "--series-color",
+          chartSeriesColor({ ...entry.series, color: "" }, index),
+        );
+        const visibleText = `${entry.label} ${entry.formattedValue}`;
+        const controlName = `${entry.label}, ${entry.formattedValue}`;
+        if (this.interactive) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "legend-button";
+          button.dataset.pointKey = entry.key;
+          button.dataset.seriesId = entry.key;
+          button.disabled = entryHidden(hidden, entry);
+          button.append(swatch, document.createTextNode(controlName));
+          item.append(button);
+        } else {
+          item.append(swatch, document.createTextNode(visibleText));
+        }
+        fragment.append(item);
+      });
+      this.#legend.append(fragment);
     });
   }
 
@@ -600,7 +604,7 @@ export class RowanDonutChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);
@@ -608,7 +612,7 @@ export class RowanDonutChart extends BaseElement {
       }
       this.#activePointKey = entry.key;
       this.#syncActivePoint();
-      pointControlFor(this.#pointControls, entry.key)?.focus({ preventScroll: true });
+      pointControlFor(this.#legend, entry.key)?.focus({ preventScroll: true });
     });
   }
 
@@ -622,7 +626,7 @@ export class RowanDonutChart extends BaseElement {
     const button = event
       .composedPath()
       .find((node) => node instanceof HTMLButtonElement && node.dataset.pointKey);
-    if (!button) return null;
+    if (!button || button.disabled) return null;
     return this.#entries.find((entry) => entry.key === button.dataset.pointKey) ?? null;
   }
 

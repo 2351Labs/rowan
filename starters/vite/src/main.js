@@ -147,6 +147,7 @@ const bars = el("rowan-stacked-bar-chart", {
   interactive: true,
   locale: "en-US",
 });
+// Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
 const donut = el("rowan-donut-chart", {
   className: "chart-donut",
   label: DONUT.label,
@@ -304,7 +305,7 @@ async function bindDashboard() {
   table.columns = COLUMNS;
   table.rows = ORDERS;
   table.page = firstPage();
-  // The toolbar reads columns while it first renders. Toggle the picker once they exist.
+  // Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
   toolbar.columnPicker = false;
   toolbar.columnPicker = true;
 }

@@ -1,13 +1,14 @@
 import "./table-toolbar.js";
 import "../badge/badge.js";
 import "../bulk-actions-bar/bulk-actions-bar.js";
+import "../button/button.js";
 import "../table/table.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const ROWS = [
-  { id: "1", name: "Ada", team: "Platform" },
-  { id: "2", name: "Alan", team: "Research" },
-  { id: "3", name: "Grace", team: "Operations" },
+  { id: "1", name: "Ada", team: "Platform", role: "Engineer" },
+  { id: "2", name: "Alan", team: "Research", role: "Scientist" },
+  { id: "3", name: "Grace", team: "Operations", role: "Lead" },
 ];
 
 function createTable() {
@@ -20,6 +21,7 @@ function createTable() {
     columns: [
       { id: "name", header: "Name", type: "text" },
       { id: "team", header: "Team", type: "text" },
+      { id: "role", header: "Role", type: "text", hidden: true },
     ],
     rows: ROWS.map((row) => ({ ...row })),
   };
@@ -70,7 +72,8 @@ export const Playground = {
     steps: [
       "Select one or more table rows.",
       "Observe the selected-row status in the toolbar.",
-      "Open the Columns dropdown to hide a column.",
+      "Open Columns. Role starts hidden. Hide Team, then show it again.",
+      "Hide Team from the Name column menu. The Columns checkbox follows that change.",
       "Clear selection with the table header checkbox.",
     ],
     events: ["rowan-select"],
@@ -110,12 +113,51 @@ export const WithBulkActions = {
   },
 };
 
+export const ColumnsReplacedLater = {
+  name: "Columns replaced later",
+  parameters: createEventScriptParameters({
+    steps: [
+      "Columns lists Name, Team, and Role. Role starts unchecked.",
+      "Choose Replace columns. The menu swaps to Order, Account, and Status.",
+      "Status stays hidden until it is checked.",
+    ],
+    events: ["rowan-select"],
+  }),
+  render: () => {
+    const table = createTable();
+    const toolbar = createToolbar({ label: "Order controls", selectionLabel: "selected" });
+    toolbar.columnPicker = true;
+    const replace = document.createElement("rowan-button");
+    replace.slot = "end";
+    replace.variant = "secondary";
+    replace.size = "sm";
+    replace.type = "button";
+    replace.textContent = "Replace columns";
+    replace.addEventListener("rowan-click", () => {
+      table.columns = [
+        { id: "order", header: "Order", type: "text" },
+        { id: "account", header: "Account", type: "text" },
+        { id: "status", header: "Status", type: "text", hidden: true },
+      ];
+      table.rows = [
+        { id: "1", order: "SO-1042", account: "Northwind", status: "Packed" },
+        { id: "2", order: "SO-1048", account: "Contoso", status: "Held" },
+        { id: "3", order: "SO-1051", account: "Fabrikam", status: "Shipped" },
+      ];
+    });
+    toolbar.append(replace);
+    table.append(toolbar);
+    return table;
+  },
+};
+
 export const LinkedTable = {
   name: "Linked table",
   render: () => {
     const table = createTable();
     table.id = "team-table";
     const toolbar = createToolbar({ label: "Team table controls" });
+    toolbar.columnPicker = true;
     toolbar.forTable = "team-table";
     const end = document.createElement("span");
     end.slot = "end";

@@ -112,6 +112,7 @@ function App() {
         gauge.target = FULFILLMENT.target;
         gauge.ranges = FULFILLMENT.ranges;
       }
+      // Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
       const toolbar = document.querySelector("rowan-table-toolbar");
       if (toolbar) {
         toolbar.columnPicker = false;
@@ -262,6 +263,7 @@ function App() {
             labels={STACKED.labels}
             series={STACKED.series}
           />
+          {/* Workaround for @rowan-ui/core <= 0.22.0; remove after the next release */}
           <RowanDonutChart
             ref={donutRef}
             className="chart-donut"

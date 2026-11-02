@@ -163,8 +163,8 @@ describe("rowan-donut-chart", () => {
     chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
 
     expect(chart.getAttribute("messages")).to.equal(null);
-    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Punkt 1 12");
-    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert 8");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Punkt 1, 12");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert, 8");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include(
       "MetricPunkt 1AutorisiertQuellen128",
     );
@@ -176,8 +176,97 @@ describe("rowan-donut-chart", () => {
     await nextMicrotask();
     await nextMicrotask();
 
-    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Kategorie 1 12");
-    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert 8");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Kategorie 1, 12");
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("Autorisiert, 8");
     expect(activations).to.deep.equal([]);
+  });
+
+  it("uses the legend as the only slice control, including after interaction loads", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["App", "Phone"],
+      series: [{ id: "sources", label: "Sources", values: [12, 8] }],
+    });
+    const activations = [];
+    chart.addEventListener("rowan-point-activate", (event) => activations.push(event.detail));
+
+    const sliceButtons = () => [...chart.shadowRoot.querySelectorAll("button[data-point-key]")];
+    expect(sliceButtons()).to.have.length(2);
+    expect(sliceButtons().every((button) => button.closest(".legend"))).to.equal(true);
+    expect(chart.shadowRoot.querySelector(".point-controls")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".legend button button")).to.equal(null);
+    expect(sliceButtons()[0].textContent).to.equal("App, 12");
+    expect(sliceButtons()[0].getAttribute("aria-label")).to.equal(null);
+
+    if (chart.__z) await chart.__z;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    expect(sliceButtons()).to.have.length(2);
+    expect(chart.shadowRoot.querySelectorAll(".legend button")).to.have.length(2);
+    expect(chart.shadowRoot.querySelector(".legend button button")).to.equal(null);
+    expect(sliceButtons().every((button) => button.closest(".legend"))).to.equal(true);
+
+    sliceButtons()[0].click();
+    await nextMicrotask();
+    expect(activations).to.have.length(1);
+    expect(activations[0].label).to.equal("App");
+    expect(chart.hiddenSeries).to.deep.equal([]);
+    expect(sliceButtons()).to.have.length(2);
+  });
+
+  it("disables a hidden slice button without adding a second control", async () => {
+    const chart = await renderChart({
+      interactive: true,
+      labels: ["App", "Phone"],
+      series: [{ id: "sources", label: "Sources", values: [12, 8] }],
+    });
+    chart.hiddenSeries = ["sources::0"];
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const hiddenButton = chart.shadowRoot.querySelector('button[data-point-key="sources::0"]');
+    const visibleButton = chart.shadowRoot.querySelector('button[data-point-key="sources::1"]');
+    expect(hiddenButton.disabled).to.equal(true);
+    expect(hiddenButton.textContent).to.equal("App, 12");
+    expect(visibleButton.disabled).to.equal(false);
+    expect(chart.shadowRoot.querySelectorAll("button[data-point-key]")).to.have.length(2);
+    expect(
+      chart.shadowRoot
+        .querySelector('path.slice[data-point-key="sources::0"]')
+        .classList.contains("is-series-hidden"),
+    ).to.equal(true);
+
+    visibleButton.focus();
+    visibleButton.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, composed: true, key: "ArrowRight" }),
+    );
+    await nextMicrotask();
+    expect(chart.shadowRoot.activeElement).to.equal(visibleButton);
+  });
+
+  it("still toggles slices from the legend when interactive is off", async () => {
+    const chart = await renderChart({
+      labels: ["App", "Phone"],
+      series: [{ id: "sources", label: "Sources", values: [12, 8] }],
+    });
+    expect(chart.shadowRoot.querySelector("button[data-point-key]")).to.equal(null);
+    expect(chart.shadowRoot.querySelector(".legend").textContent).to.include("App 12");
+
+    if (chart.__z) await chart.__z;
+    await nextMicrotask();
+    await nextMicrotask();
+
+    const toggles = [...chart.shadowRoot.querySelectorAll(".legend button")];
+    expect(toggles).to.have.length(2);
+    expect(toggles.every((button) => !button.dataset.pointKey)).to.equal(true);
+    const events = [];
+    chart.addEventListener("rowan-series-toggle", (event) => events.push(event.detail));
+    toggles[0].click();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(events).to.have.length(1);
+    expect(chart.hiddenSeries).to.have.length(1);
+    expect(chart.shadowRoot.querySelectorAll("button[data-point-key]")).to.have.length(0);
   });
 });

@@ -36,6 +36,12 @@ export function syncSeriesLegend(host, legend) {
   const hidden = new Set(hiddenIds(host));
   for (const item of items) {
     const id = item.dataset.seriesId;
+    const point = item.querySelector(":scope > button[data-point-key]");
+    if (point) {
+      point.classList.add("legend-button");
+      if (id) point.dataset.seriesId = id;
+      continue;
+    }
     if (!id) continue;
     let button = item.querySelector(":scope > button.legend-button");
     if (!button) {
@@ -70,19 +76,22 @@ export function bindSeriesLegend(host, legend) {
     syncSeriesLegend(host, legend);
   };
   legend.addEventListener("click", (event) => {
-    const button = event.target instanceof Element ? event.target.closest("button.legend-button") : null;
-    if (!button || !legend.contains(button)) return;
+    const button =
+      event.target instanceof Element ? event.target.closest("button.legend-button") : null;
+    if (!button || !legend.contains(button) || button.dataset.pointKey) return;
     toggle(button.dataset.seriesId || "");
   });
   legend.addEventListener("keydown", (event) => {
-    const button = event.target instanceof Element ? event.target.closest("button.legend-button") : null;
-    if (!button || (event.key !== "Enter" && event.key !== " ")) return;
+    const button =
+      event.target instanceof Element ? event.target.closest("button.legend-button") : null;
+    if (!button || button.dataset.pointKey || (event.key !== "Enter" && event.key !== " ")) return;
     event.preventDefault();
     toggle(button.dataset.seriesId || "");
   });
   const chartOf = () => host.renderRoot?.querySelector(".chart");
   legend.addEventListener("pointerover", (event) => {
-    const button = event.target instanceof Element ? event.target.closest("button.legend-button") : null;
+    const button =
+      event.target instanceof Element ? event.target.closest("button.legend-button") : null;
     const chart = chartOf();
     if (!chart) return;
     const id = button?.dataset.seriesId || "";
@@ -90,7 +99,10 @@ export function bindSeriesLegend(host, legend) {
     for (const el of host.renderRoot.querySelectorAll("[data-series-id],[data-point-key]")) {
       if (el.closest(".legend")) continue;
       const key = el.dataset.pointKey || "";
-      el.classList.toggle("is-legend-hot", Boolean(id) && (el.dataset.seriesId === id || key === id || key.startsWith(`${id}::`)));
+      el.classList.toggle(
+        "is-legend-hot",
+        Boolean(id) && (el.dataset.seriesId === id || key === id || key.startsWith(`${id}::`)),
+      );
     }
   });
   legend.addEventListener("pointerout", () => {

@@ -50,6 +50,106 @@ export function readTableSelection(table) {
 }
 
 const SELECTION_OBSERVERS = Symbol.for("rowan.tableSelectionObservers");
+const COLUMN_LISTENERS = Symbol.for("rowan.tableColumnListeners");
+const COLUMNS_PATCHED = Symbol.for("rowan.tableColumnsPatched");
+const COLUMN_TRAP = Symbol.for("rowan.tableColumnTrap");
+
+function notifyColumnListeners(table) {
+  const listeners = table?.[COLUMN_LISTENERS];
+  if (!listeners) return;
+  for (const listener of listeners) listener();
+}
+
+function patchTableColumns(proto) {
+  if (!proto || proto[COLUMNS_PATCHED]) return Boolean(proto?.[COLUMNS_PATCHED]);
+
+  const descriptor = Object.getOwnPropertyDescriptor(proto, "columns");
+  if (typeof descriptor?.get !== "function" || typeof descriptor?.set !== "function") return false;
+
+  const originalSet = descriptor.set;
+  Object.defineProperty(proto, "columns", {
+    configurable: descriptor.configurable,
+    enumerable: descriptor.enumerable,
+    get: descriptor.get,
+    set(value) {
+      originalSet.call(this, value);
+      notifyColumnListeners(this);
+    },
+  });
+  proto[COLUMNS_PATCHED] = true;
+  return true;
+}
+
+function installColumnPatch() {
+  const ctor = customElements.get("rowan-table");
+  return ctor ? patchTableColumns(ctor.prototype) : false;
+}
+
+function installColumnTrap(table) {
+  const current = Object.getOwnPropertyDescriptor(table, "columns");
+  if (current?.set?.[COLUMN_TRAP]) return;
+
+  let stored = current && "value" in current ? current.value : undefined;
+  const set = (value) => {
+    stored = value;
+    notifyColumnListeners(table);
+  };
+  set[COLUMN_TRAP] = true;
+  Object.defineProperty(table, "columns", {
+    configurable: true,
+    enumerable: true,
+    get() {
+      return stored;
+    },
+    set,
+  });
+}
+
+function releaseColumnTrap(table) {
+  const current = Object.getOwnPropertyDescriptor(table, "columns");
+  if (!current?.set?.[COLUMN_TRAP]) return;
+
+  const value = table.columns;
+  delete table.columns;
+  if (value !== undefined) table.columns = value;
+}
+
+/**
+ * Notifies when `columns` is assigned or replaced.
+ * Before `rowan-table` is defined, assignments are trapped.
+ * After upgrade, the prototype setter reports later replacements,
+ * including column-menu hide and show.
+ */
+export function observeTableColumns(table, onChange) {
+  if (!isRowanTable(table) || typeof onChange !== "function") {
+    return () => {};
+  }
+
+  let listeners = table[COLUMN_LISTENERS];
+  if (!listeners) {
+    listeners = new Set();
+    table[COLUMN_LISTENERS] = listeners;
+  }
+  listeners.add(onChange);
+
+  if (!installColumnPatch()) {
+    installColumnTrap(table);
+    customElements.whenDefined("rowan-table").then(() => {
+      if (!table[COLUMN_LISTENERS]?.has(onChange)) return;
+      installColumnPatch();
+      notifyColumnListeners(table);
+    });
+  }
+
+  return () => {
+    const current = table[COLUMN_LISTENERS];
+    current?.delete(onChange);
+    if (current && current.size === 0) {
+      delete table[COLUMN_LISTENERS];
+      releaseColumnTrap(table);
+    }
+  };
+}
 
 export function observeTableSelection(table, onChange) {
   if (!isRowanTable(table) || typeof onChange !== "function") {
