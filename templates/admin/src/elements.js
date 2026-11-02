@@ -52,6 +52,7 @@ import "@rowan-ui/core/table-toolbar";
 import "@rowan-ui/core/tabs";
 import "@rowan-ui/core/text-field";
 import "@rowan-ui/core/textarea";
+import "@rowan-ui/core/toaster";
 import "@rowan-ui/core/tooltip";
 import "@rowan-ui/core/trend-chart";
 import "@rowan-ui/core/validation-summary";

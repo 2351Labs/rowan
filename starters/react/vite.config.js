@@ -1,6 +1,13 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  // Vite's dep prebundle rewrites `new URL("./x.css", import.meta.url)` to
+  // `/node_modules/.vite/deps/*.css`, which is never emitted. Rowan loads each
+  // component stylesheet from that URL, so a registry install (StackBlitz)
+  // renders with no shadow styles. Leave the packages unbundled.
+  optimizeDeps: {
+    exclude: ["@rowan-ui/core", "@rowan-ui/icons"],
+  },
   esbuild: {
     jsx: "automatic",
     jsxImportSource: "react",
