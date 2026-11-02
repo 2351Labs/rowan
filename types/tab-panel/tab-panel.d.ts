@@ -7,6 +7,7 @@
  * @csspart panel
  */
 export class RowanTabPanel extends BaseElement {
+  static styles: string;
   set value(value: string);
   get value(): string;
   set active(value: boolean);

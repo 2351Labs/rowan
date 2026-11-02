@@ -1,6 +1,7 @@
 import { declarations as optionTokenDeclarations } from "../tokens/parts/option.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./option.styles.js";
 
 function hasAssignedContent(slot) {
   return slot.assignedNodes().some((node) => {
@@ -25,7 +26,7 @@ function hasAssignedContent(slot) {
  * @cssprop --rowan-option-selected-bg
  */
 export class RowanOption extends BaseElement {
-  static styleUrl = new URL("./option.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-option-"];
   static componentTokenDeclarations = optionTokenDeclarations;

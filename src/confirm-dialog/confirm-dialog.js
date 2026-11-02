@@ -6,6 +6,7 @@ import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 import "../button/button.js";
 import "../dialog/dialog.js";
+import componentStyles from "./confirm-dialog.styles.js";
 
 const CONFIRM_VARIANTS = new Set(["primary", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -48,7 +49,7 @@ function normalizeText(value) {
  * @event rowan-close - Fired when the user passively dismisses the dialog
  */
 export class RowanConfirmDialog extends BaseElement {
-  static styleUrl = new URL("./confirm-dialog.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "open",
     "label",

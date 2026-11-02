@@ -12,7 +12,7 @@ Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attr
 | `rowan-bullet-chart` | 52% | 100% | — |
 | `rowan-column-sparkline` | 61% | 100% | — |
 | `rowan-combo-chart` | 38% | 100% | — |
-| `rowan-donut-chart` | 36% | 100% | — |
+| `rowan-donut-chart` | 38% | 100% | — |
 | `rowan-funnel-chart` | 43% | 100% | — |
 | `rowan-gauge-chart` | 34% | 100% | — |
 | `rowan-heatmap-chart` | 38% | 100% | — |

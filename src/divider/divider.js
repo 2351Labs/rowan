@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./divider.styles.js";
 
 function normalizeOrientation(value) {
   return String(value ?? "")
@@ -16,7 +17,7 @@ function normalizeOrientation(value) {
  * @csspart divider
  */
 export class RowanDivider extends BaseElement {
-  static styleUrl = new URL("./divider.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["orientation"];
   static upgradeProperties = ["orientation"];

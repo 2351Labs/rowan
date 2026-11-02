@@ -11,6 +11,7 @@
  * @event rowan-toggle - Fired when a user expands or collapses an item
  */
 export class RowanTree extends BaseElement {
+  static styles: string;
   set label(value: string);
   get label(): string;
   /** @param {RowanTreeSelection} value */

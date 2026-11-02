@@ -19,6 +19,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { formatChartValue } from "../chart/model.js";
+import componentStyles from "./heatmap-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -149,7 +150,7 @@ function cellOpacity(value, domain) {
 export class RowanHeatmapChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./heatmap-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-heatmap-chart-"];
   static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

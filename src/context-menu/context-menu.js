@@ -12,6 +12,7 @@ import {
 } from "../lib/overlay-stack.js";
 
 import "../menu/menu.js";
+import componentStyles from "./context-menu.styles.js";
 
 let contextMenuId = 0;
 const DEFAULT_MESSAGES = Object.freeze({ label: "Context menu" });
@@ -54,7 +55,7 @@ function isKeyboardInvocation(event) {
  * @event rowan-close - Fired when the user dismisses the menu
  */
 export class RowanContextMenu extends BaseElement {
-  static styleUrl = new URL("./context-menu.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["open", "for", "label"];
   static upgradeProperties = ["open", "forTarget", "target", "label", "messages"];
   static componentTokenPrefixes = ["--rowan-context-menu-"];

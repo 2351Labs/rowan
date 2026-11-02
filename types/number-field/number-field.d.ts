@@ -29,6 +29,7 @@ export class RowanNumberField extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set name(value: string);
   get name(): string;
   set value(value: string);

@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { RowanMenuItem } from "../menu-item/menu-item.js";
+import componentStyles from "./menu.styles.js";
 
 function isMenuItem(value) {
   return value instanceof RowanMenuItem;
@@ -16,7 +17,7 @@ function isMenuItem(value) {
  * @event rowan-change - Fired when a menu item is selected
  */
 export class RowanMenu extends BaseElement {
-  static styleUrl = new URL("./menu.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
 
   #menu = null;

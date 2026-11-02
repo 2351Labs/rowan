@@ -7,6 +7,7 @@ import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 import "../option/option.js";
+import componentStyles from "./combobox.styles.js";
 
 let comboboxId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -47,7 +48,7 @@ const DEFAULT_MESSAGES = Object.freeze({
 export class RowanCombobox extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./combobox.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./empty-state.styles.js";
 
 /**
  * Empty state message block.
@@ -15,7 +16,7 @@ import { define } from "../lib/define.js";
  * @csspart actions
  */
 export class RowanEmptyState extends BaseElement {
-  static styleUrl = new URL("./empty-state.css", import.meta.url).href;
+  static styles = componentStyles;
 
   render() {
     if (this.renderRoot.firstElementChild) return;

@@ -4,6 +4,7 @@ import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { RowanTreeItem } from "../tree-item/tree-item.js";
+import componentStyles from "./tree.styles.js";
 
 const SELECTION_MODES = new Set(["none", "single", "multiple"]);
 
@@ -26,7 +27,7 @@ function isTreeItem(value) {
  * @event rowan-toggle - Fired when a user expands or collapses an item
  */
 export class RowanTree extends BaseElement {
-  static styleUrl = new URL("./tree.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "selection"];
   static upgradeProperties = ["label", "selection", "selected"];

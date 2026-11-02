@@ -11,6 +11,7 @@ import {
 } from "../lib/overlay-stack.js";
 
 import "../button/button.js";
+import componentStyles from "./dropdown.styles.js";
 
 let dropdownId = 0;
 
@@ -27,7 +28,7 @@ let dropdownId = 0;
  * @event rowan-change - Fired when a user toggles or dismisses the dropdown
  */
 export class RowanDropdown extends BaseElement {
-  static styleUrl = new URL("./dropdown.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["open", "label"];
   static upgradeProperties = ["open", "label"];
 

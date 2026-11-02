@@ -1,0 +1,2 @@
+declare const _default: ':host{display:block} :host([hidden]){display:none} .nav{color:var(--rowan-color-muted);display:inline-flex;font-family:var(--rowan-font-family);font-size:var(--rowan-font-size-sm);gap:.35rem} .nav ::slotted(a){color:var(--rowan-color-accent);text-decoration:none} .nav ::slotted(span[aria-current="page"]){color:var(--rowan-color-fg)}';
+export default _default;

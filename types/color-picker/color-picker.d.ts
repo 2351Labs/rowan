@@ -32,6 +32,7 @@ export class RowanColorPicker extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   static componentTokenDeclarations: string[][];
   /** @param {Array<string | RowanColorPickerPaletteEntry>} value */
   set palette(value: (string | RowanColorPickerPaletteEntry)[]);

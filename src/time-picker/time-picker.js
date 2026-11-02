@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./time-picker.styles.js";
 
 let timePickerId = 0;
 
@@ -43,7 +44,7 @@ function parseTimeToSeconds(value) {
 export class RowanTimePicker extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./time-picker.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

@@ -22,11 +22,25 @@ const nextTask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 // Waits for the shadow tree to exist and for style recalc to land, not just for the link.
+function hasAppliedStyles(element) {
+  const root = element.shadowRoot;
+  if (!root) return false;
+  const link = root.querySelector('link[rel="stylesheet"]');
+  if (link?.sheet?.cssRules?.length) return true;
+  return [...(root.adoptedStyleSheets || [])].some((sheet) => {
+    try {
+      return sheet.cssRules.length > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
 async function waitForStyles(element) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
 
-    if (stylesheet?.sheet) {
+    if (hasAppliedStyles(element) || stylesheet?.sheet) {
       await nextFrame();
       return;
     }

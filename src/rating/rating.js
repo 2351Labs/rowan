@@ -8,6 +8,7 @@ import { keys } from "../lib/keys.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./rating.styles.js";
 
 let ratingId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -85,7 +86,7 @@ export class RowanRating extends BaseElement {
   static formAssociated = true;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./rating.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-rating-"];
   static componentTokenDeclarations = ratingTokenDeclarations;
   static observedAttributes = [

@@ -19,6 +19,7 @@ export class RowanTextField extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set name(value: string);
   get name(): string;

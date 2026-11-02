@@ -9,6 +9,7 @@ export default {
   exclude: [
     "src/**/*.stories.js",
     "src/**/*.test.js",
+    "src/**/*.styles.js",
     "src/icons/**",
     "src/elements/**",
     "src/react/**",

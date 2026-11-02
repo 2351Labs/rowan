@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./stacked-area-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -149,7 +150,7 @@ function normalizeText(value) {
 export class RowanStackedAreaChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./stacked-area-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-stacked-area-chart-"];
   static observedAttributes = ["label", "description", "interactive", "stack-mode", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

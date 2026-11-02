@@ -1,0 +1,2 @@
+declare const _default: ':host{display:block} :host([hidden]){display:none} .stack{display:grid;gap:var(--rowan-space-3,.75rem)} .panel[hidden],.actions[hidden]{display:none} .fallback{color:var(--rowan-color-muted);font-family:var(--rowan-font-family,system-ui,sans-serif);font-size:var(--rowan-font-size-sm,.875rem);line-height:var(--rowan-line-height,1.4)} .panel[data-state="error"] .fallback{color:var(--rowan-color-danger)} .actions{align-items:center;display:flex;gap:var(--rowan-space-2,.5rem)}';
+export default _default;

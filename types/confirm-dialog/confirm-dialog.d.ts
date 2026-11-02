@@ -27,6 +27,7 @@
  * @event rowan-close - Fired when the user passively dismisses the dialog
  */
 export class RowanConfirmDialog extends BaseElement {
+  static styles: string;
   static componentTokenDeclarations: string[][];
   set open(value: boolean);
   get open(): boolean;

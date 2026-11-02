@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { keys } from "../lib/keys.js";
+import componentStyles from "./tooltip.styles.js";
 
 function isHTMLElement(value) {
   return value instanceof HTMLElement;
@@ -16,7 +17,7 @@ function isHTMLElement(value) {
  * @csspart tooltip
  */
 export class RowanTooltip extends BaseElement {
-  static styleUrl = new URL("./tooltip.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["text", "open"];
   static upgradeProperties = ["text", "open"];
 

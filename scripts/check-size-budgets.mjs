@@ -18,8 +18,8 @@ const tempDir = join(rootDir, ".size-budget-check");
 // Size budgets (in bytes, gzipped)
 // Set slightly above current sizes to allow for small additions
 const budgets = {
-  // Individual components. Headroom is about 15% over the measured gzip initial
-  // graph after token chunks were split out of the eager module.
+  // Individual components. The gzip initial graph includes each component's CSS,
+  // which is embedded in the module. Headroom is tight on form-controls.
   button: 8 * 1024,
   checkbox: 8 * 1024,
   switch: 8 * 1024,

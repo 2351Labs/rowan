@@ -70,6 +70,7 @@
  * @event rowan-tree-toggle - Fired when a tree row expands or collapses. `detail` is `{ rowId, expanded, row }`.
  */
 export class RowanTable extends BaseElement {
+  static styles: string;
   static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   /** @param {RowanTableSort | RowanTableSort[] | null} value */

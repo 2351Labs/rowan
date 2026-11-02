@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./number-field.styles.js";
 
 let numberFieldId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -74,7 +75,7 @@ function normalizeStep(value, fallback = 1) {
 export class RowanNumberField extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./number-field.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

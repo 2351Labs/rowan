@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./validation-summary.styles.js";
 
 let generatedTargetId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -94,7 +95,7 @@ function queryLabelForElement(element) {
  */
 export class RowanValidationSummary extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./validation-summary.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["heading", "for-form", "disabled", "show-empty"];
   static upgradeProperties = ["heading", "forForm", "errors", "disabled", "showEmpty", "messages"];
 

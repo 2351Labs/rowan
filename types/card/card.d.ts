@@ -17,5 +17,7 @@
  * @cssprop --rowan-card-bg
  * @cssprop --rowan-card-border
  */
-export class RowanCard extends BaseElement {}
+export class RowanCard extends BaseElement {
+  static styles: string;
+}
 import { BaseElement } from "../lib/base-element.js";

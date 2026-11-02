@@ -8,32 +8,32 @@ Rowan is designed to be lean and tree-shakeable for production builds. This guid
 
 **Common components:**
 
-- Button: 6.8 KB
-- Checkbox: 6.7 KB
+- Button: 7.5 KB
+- Checkbox: 6.5 KB
 - Switch: 6.7 KB
-- Text Field: 7.4 KB
-- Select: 7.0 KB
-- Alert: 6.0 KB
-- Badge: 5.6 KB
+- Text Field: 7.3 KB
+- Select: 6.9 KB
+- Alert: 5.9 KB
+- Badge: 5.4 KB
 
 **Charts:**
 
-- Sparkline: 9.5 KB
-- Trend Chart: 12.4 KB
-- Bar Chart: 12.0 KB
+- Sparkline: 10.4 KB
+- Trend Chart: 13.8 KB
+- Bar Chart: 12.9 KB
 
 **Complex components:**
 
-- Table: 34.5 KB (includes virtualization, sorting, filtering, selection)
-- Dropdown: 9.0 KB
+- Table: 35.2 KB (includes virtualization, sorting, filtering, selection)
+- Dropdown: 10.0 KB
 - Dialog: 7.2 KB
 
 **Common scenarios:**
 
-- Button + Checkbox + Switch: **8.4 KB**
-- Form controls (Button + TextField + Checkbox + Select + Textarea): **10.7 KB**
+- Button + Checkbox + Switch: **9.7 KB**
+- Form controls (Button + TextField + Checkbox + Select + Textarea): **11.8 KB**
 
-All sizes are **minified + gzip** initial graphs. A component's own token defaults are in that graph. The full token catalog and the legacy CSS fallback are separate chunks.
+All sizes are **minified + gzip** initial graphs. Component CSS is embedded in those modules and counted here. A component's own token defaults are in that graph. The full token catalog and the legacy CSS fallback are separate chunks.
 
 ## Import Patterns
 
@@ -165,8 +165,8 @@ export default {
 
 Brotli compresses 15-20% better than gzip for Rowan bundles:
 
-- 3 controls: 8.4 KB gzip, and Brotli is smaller still
-- Table: 35.9 KB gzip → 30.4 KB brotli
+- 3 controls: 9.7 KB gzip, and Brotli is smaller still
+- Table: 35.2 KB gzip, and Brotli is smaller still
 
 Configure your CDN or server to serve `.br` files when available.
 

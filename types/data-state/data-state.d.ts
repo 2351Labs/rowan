@@ -22,6 +22,7 @@
  * @csspart actions
  */
 export class RowanDataState extends BaseElement {
+  static styles: string;
   /** @param {"ready" | "loading" | "empty" | "error"} value */
   set state(value: "error" | "loading" | "ready" | "empty");
   /** @returns {"ready" | "loading" | "empty" | "error"} */

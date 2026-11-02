@@ -17,6 +17,7 @@
  * @event rowan-jump - Fired when a user activates an error target
  */
 export class RowanValidationSummary extends BaseElement {
+  static styles: string;
   set heading(value: string);
   get heading(): string;
   set forForm(value: string);

@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./range-chart.styles.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -147,7 +148,7 @@ function normalizeText(value) {
 export class RowanRangeChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./range-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-range-chart-"];
   static observedAttributes = ["label", "description", "interactive", "variant", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

@@ -5,12 +5,19 @@ const nextMicrotask = () => Promise.resolve();
 
 async function waitForStyles(element) {
   const styleLink = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (styleLink.sheet) return;
+  if (styleLink && !styleLink.sheet) {
+    await new Promise((resolve, reject) => {
+      styleLink.addEventListener("load", resolve, { once: true });
+      styleLink.addEventListener("error", reject, { once: true });
+    });
+    return;
+  }
 
-  await new Promise((resolve, reject) => {
-    styleLink.addEventListener("load", resolve, { once: true });
-    styleLink.addEventListener("error", reject, { once: true });
-  });
+  // Adopted styles are already on the shadow root, but WebKit does not
+  // include them in computed style until the next frame.
+  if (!styleLink) {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
 }
 
 async function loadStylesheet(path) {

@@ -6,6 +6,7 @@ import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./color-picker.styles.js";
 
 const COLOR_PATTERN = /^#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i;
 const DEFAULT_INPUT_COLOR = "#1d432f";
@@ -132,7 +133,7 @@ export class RowanColorPicker extends BaseElement {
   static formAssociated = true;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./color-picker.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-color-picker-"];
   static componentTokenDeclarations = colorPickerTokenDeclarations;
   static observedAttributes = [

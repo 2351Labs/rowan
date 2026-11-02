@@ -18,6 +18,7 @@
  * @event rowan-change - Fired when a user changes the active panel
  */
 export class RowanCarousel extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

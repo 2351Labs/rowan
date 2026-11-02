@@ -40,6 +40,7 @@ export class RowanRating extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   static componentTokenDeclarations: string[][];
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set name(value: string);

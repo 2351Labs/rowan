@@ -16,6 +16,7 @@
  * @event rowan-close - Fired when the user dismisses the dialog
  */
 export class RowanDialog extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

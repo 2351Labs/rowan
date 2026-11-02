@@ -20,6 +20,7 @@
  * @event rowan-change - Fired when a user opens or closes compact navigation.
  */
 export class RowanAppLayout extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

@@ -22,6 +22,7 @@
  * @event rowan-toast-dismiss - Fired when a toast is dismissed
  */
 export class RowanToaster extends BaseElement {
+  static styles: string;
   /** @param {RowanToasterPlacement} value */
   set placement(value: RowanToasterPlacement);
   /** @returns {RowanToasterPlacement} */

@@ -326,9 +326,11 @@ describe("rowan-maplibre-map", () => {
 
     MapElement.styleHref = "";
     const automatic = await renderMap();
-    const automaticHref =
-      automatic.shadowRoot.querySelector("link[data-maplibre-styles]")?.getAttribute("href") ?? "";
-    expect(automaticHref).to.include("maplibre-gl.css");
+    expect(automatic.shadowRoot.querySelector("link[data-maplibre-styles]")).to.equal(null);
+    const embedded = [...automatic.shadowRoot.adoptedStyleSheets].some((sheet) =>
+      [...sheet.cssRules].some((rule) => rule.cssText.includes("maplibregl")),
+    );
+    expect(embedded).to.equal(true);
 
     MapElement.styleHref = previous;
   });

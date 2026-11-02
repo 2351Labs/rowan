@@ -1,0 +1,2 @@
+// Generated from src/side-nav/side-nav.css. Edit that file, then run: node scripts/sync-component-styles.mjs
+export default ":host{--_side-nav-gap:var(--rowan-side-nav-gap,var(--rowan-space-1));display:block;min-inline-size:0} :host([hidden]){display:none} .nav{display:grid;gap:var(--_side-nav-gap);min-inline-size:0}";

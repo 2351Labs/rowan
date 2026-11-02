@@ -7,6 +7,7 @@ import { lowerCaseForLocale, resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
 import "../option/option.js";
+import componentStyles from "./multi-select-combobox.styles.js";
 
 let multiSelectComboboxId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -85,7 +86,7 @@ function parseRestoredSelection(state) {
 export class RowanMultiSelectCombobox extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./multi-select-combobox.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-multi-select-combobox-"];
   static componentTokenDeclarations = multiSelectComboboxTokenDeclarations;
   static observedAttributes = [

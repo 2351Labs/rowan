@@ -23,6 +23,7 @@
  * @cssprop --rowan-side-nav-item-active-bg
  */
 export class RowanSideNavItem extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

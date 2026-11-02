@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { hasModalOverlay, subscribeOverlayChange } from "../lib/overlay-stack.js";
 
 import "../toast/toast.js";
+import componentStyles from "./toaster.styles.js";
 
 const DEFAULT_DURATION = 5000;
 const DEFAULT_MAX_VISIBLE = 3;
@@ -45,7 +46,7 @@ const VALID_TONES = new Set(["info", "success", "warning", "danger"]);
  * @event rowan-toast-dismiss - Fired when a toast is dismissed
  */
 export class RowanToaster extends BaseElement {
-  static styleUrl = new URL("./toaster.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["placement", "max-visible", "duration"];
   static upgradeProperties = ["placement", "maxVisible", "duration"];
 

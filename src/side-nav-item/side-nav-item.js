@@ -3,6 +3,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
+import componentStyles from "./side-nav-item.styles.js";
 
 const TONES = new Set(["none", "info", "success", "warning", "danger"]);
 const COUNT_LABELS = {
@@ -53,7 +54,7 @@ function assignedText(slot) {
  * @cssprop --rowan-side-nav-item-active-bg
  */
 export class RowanSideNavItem extends BaseElement {
-  static styleUrl = new URL("./side-nav-item.css", import.meta.url).href;
+  static styles = componentStyles;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static componentTokenPrefixes = ["--rowan-side-nav-item-"];
   static componentTokenDeclarations = sideNavItemTokenDeclarations;

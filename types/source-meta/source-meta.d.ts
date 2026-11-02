@@ -16,6 +16,7 @@
  * @csspart as-of
  */
 export class RowanSourceMeta extends BaseElement {
+  static styles: string;
   set source(value: string);
   get source(): string;
   set asOf(value: string);

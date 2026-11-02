@@ -15,6 +15,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
+import componentStyles from "./bullet-chart.styles.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const ENCODINGS = new Set(["ink", "accent", "status", "tone"]);
@@ -160,7 +161,7 @@ function formatTick(value, locale) {
  * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanBulletChart extends BaseElement {
-  static styleUrl = new URL("./bullet-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "scale", "intent", "encoding", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

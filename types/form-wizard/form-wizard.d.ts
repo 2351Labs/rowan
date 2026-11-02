@@ -46,6 +46,7 @@ export class RowanFormWizard extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set currentStep(value: number);
   get currentStep(): number;
   set steps(

@@ -11,6 +11,7 @@ import {
 import "../chip/chip.js";
 import "../popover/popover.js";
 import { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+import componentStyles from "./filter-builder.styles.js";
 
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
 const VALUELESS_OPERATORS = new Set(["is-empty", "is-not-empty"]);
@@ -287,7 +288,7 @@ function isFilterableColumn(column) {
 export class RowanFilterBuilder extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./filter-builder.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "for-table",
     "label",

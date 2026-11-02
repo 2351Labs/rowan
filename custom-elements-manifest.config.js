@@ -9,11 +9,13 @@ export default {
   exclude: [
     "src/**/*.stories.js",
     "src/**/*.test.js",
+    "src/**/*.styles.js",
     "src/react/**",
     "src/tokens/parts/**",
     "src/tokens/foundation.js",
     "src/tokens/legacy-sheet.js",
     "src/tokens/load-component-tokens.js",
+    "src/tokens/component-token-css.js",
   ],
   outdir: ".",
   plugins: [cemPublicApiPlugin()],

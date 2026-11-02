@@ -16,6 +16,7 @@
  * @event rowan-change - Fired when a user toggles or dismisses the popover
  */
 export class RowanPopover extends BaseElement {
+  static styles: string;
   set open(value: boolean);
   get open(): boolean;
   set label(value: string);

@@ -11,6 +11,7 @@
  * @csspart spinner
  */
 export class RowanSpinner extends BaseElement {
+  static styles: string;
   /** @param {"sm" | "md" | "lg"} value */
   set size(value: "sm" | "md" | "lg");
   /** @returns {"sm" | "md" | "lg"} */

@@ -5,6 +5,7 @@
  * @csspart divider
  */
 export class RowanDivider extends BaseElement {
+  static styles: string;
   /** @param {"horizontal" | "vertical"} value */
   set orientation(value: "vertical" | "horizontal");
   /** @returns {"horizontal" | "vertical"} */

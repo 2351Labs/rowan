@@ -22,6 +22,7 @@
  * @cssprop --rowan-command-item-shortcut-bg
  */
 export class RowanCommandItem extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

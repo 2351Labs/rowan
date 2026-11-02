@@ -30,6 +30,7 @@
  * @cssprop --rowan-table-toolbar-selection-bg
  */
 export class RowanTableToolbar extends BaseElement {
+  static styles: string;
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set table(value: null);
   get table(): null;

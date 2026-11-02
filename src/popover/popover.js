@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { keys } from "../lib/keys.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./popover.styles.js";
 import {
   isTopmostOverlay,
   noteDismissibleClose,
@@ -66,7 +67,7 @@ function setElementReferences(element, property, elements) {
  * @event rowan-change - Fired when a user toggles or dismisses the popover
  */
 export class RowanPopover extends BaseElement {
-  static styleUrl = new URL("./popover.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["open", "label", "trigger"];
   static upgradeProperties = ["open", "label", "trigger", "messages"];
 

@@ -49,6 +49,7 @@ export class RowanComboChart extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set label(value: string);
   get label(): string;
   set description(value: string);

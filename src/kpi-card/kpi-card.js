@@ -9,6 +9,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { readHiddenSeries, writeHiddenSeries } from "../chart/api.js";
+import componentStyles from "./kpi-card.styles.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -100,7 +101,7 @@ function formatDelta(value, locale) {
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanKpiCard extends BaseElement {
-  static styleUrl = new URL("./kpi-card.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "tone", "delta-label", "loading", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

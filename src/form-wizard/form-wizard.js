@@ -5,6 +5,7 @@ import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 import "../stepper/stepper.js";
 import "../validation-summary/validation-summary.js";
+import componentStyles from "./form-wizard.styles.js";
 
 let formWizardId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -179,7 +180,7 @@ function controlLabel(control, fallback) {
 export class RowanFormWizard extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./form-wizard.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "current-step",
     "steps",

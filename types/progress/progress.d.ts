@@ -18,6 +18,7 @@
  * @csspart meta
  */
 export class RowanProgress extends BaseElement {
+  static styles: string;
   set value(value: number);
   get value(): number;
   set max(value: number);

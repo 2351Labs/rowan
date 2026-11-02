@@ -48,6 +48,7 @@
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
  */
 export class RowanKpiCard extends BaseElement {
+  static styles: string;
   /** @param {"neutral" | "info" | "success" | "warning" | "danger"} value */
   set tone(value: "info" | "success" | "warning" | "danger" | "neutral");
   /** @returns {"neutral" | "info" | "success" | "warning" | "danger"} */

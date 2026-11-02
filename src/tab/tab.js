@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./tab.styles.js";
 
 /**
  * Single tab button.
@@ -10,7 +11,7 @@ import { define } from "../lib/define.js";
  * @csspart tab
  */
 export class RowanTab extends BaseElement {
-  static styleUrl = new URL("./tab.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["value", "active", "aria-controls", "aria-selected"];

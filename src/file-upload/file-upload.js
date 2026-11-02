@@ -8,6 +8,7 @@ import { validityMessage } from "../lib/validity-messages.js";
 
 import "../dropzone/dropzone.js";
 import "../file-item/file-item.js";
+import componentStyles from "./file-upload.styles.js";
 
 const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
 let uploadRecordId = 0;
@@ -131,7 +132,7 @@ function normalizeRecord(record) {
 export class RowanFileUpload extends BaseElement {
   static formAssociated = true;
   static useElementInternals = true;
-  static styleUrl = new URL("./file-upload.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "label",

@@ -1,0 +1,2 @@
+declare const _default: ":host{display:inline-grid;gap:.35rem;min-width:8rem} :host([hidden]){display:none} .progress{background:var( --rowan-progress-track-bg,color-mix(in srgb,var(--rowan-color-fg) 12%,var(--rowan-color-bg)) );border-radius:999px;height:.5rem;overflow:hidden} .bar{background:var(--rowan-color-accent);border-radius:999px;height:100%;width:0} .meta{color:var(--rowan-color-muted);font-family:var(--rowan-font-family);font-size:.75rem} .meta[hidden]{display:none}";
+export default _default;

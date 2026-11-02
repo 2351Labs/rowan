@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./select.styles.js";
 
 let selectId = 0;
 
@@ -24,7 +25,7 @@ let selectId = 0;
 export class RowanSelect extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./select.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["name", "value", "label", "placeholder", "disabled", "required"];
   static upgradeProperties = [
     "name",

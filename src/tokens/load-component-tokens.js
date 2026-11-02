@@ -1,5 +1,9 @@
 // Generated from src/tokens/tokens.css by scripts/sync-token-sheet.mjs. Do not edit directly.
 // Per-prefix chunks. Basic controls import only the prefixes they declare.
+import { componentTokensFromDeclarations, cssForDeclarations } from "./component-token-css.js";
+
+export { componentTokensFromDeclarations };
+
 const partLoaders = [
   ["--rowan-multi-select-combobox-", () => import("./parts/multi-select-combobox.js")],
   ["--rowan-segmented-control-", () => import("./parts/segmented-control.js")],
@@ -36,12 +40,6 @@ function cacheKey(prefixes) {
   return prefixes.join("\0");
 }
 
-function cssForDeclarations(declarations) {
-  if (declarations.length === 0) return "";
-  const body = declarations.map(([name, value]) => "  " + name + ": " + value + ";").join("\n");
-  return ":host {\n" + body + "\n}";
-}
-
 function styleFromModules(modules, prefixes) {
   const declarations = modules
     .flatMap((part) => part.declarations)
@@ -49,16 +47,6 @@ function styleFromModules(modules, prefixes) {
   return {
     names: declarations.map(([name]) => name),
     cssText: cssForDeclarations(declarations),
-  };
-}
-
-export function componentTokensFromDeclarations(declarations, prefixes) {
-  const matched = declarations.filter(([name]) =>
-    prefixes.some((prefix) => name.startsWith(prefix)),
-  );
-  return {
-    names: matched.map(([name]) => name),
-    cssText: cssForDeclarations(matched),
   };
 }
 

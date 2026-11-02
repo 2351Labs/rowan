@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./file-item.styles.js";
 
 const FILE_STATUSES = new Set(["queued", "uploading", "success", "failed"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -102,7 +103,7 @@ function formatBytes(bytesValue, locale, messages) {
  */
 export class RowanFileItem extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./file-item.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "file-id",
     "filename",

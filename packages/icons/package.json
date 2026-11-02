@@ -62,6 +62,7 @@
   },
   "files": [
     "src/element.css",
+    "src/element.styles.js",
     "src/element.d.ts",
     "src/element.js",
     "src/elements.d.ts",

@@ -15,6 +15,7 @@ import {
 } from "../chart/hover.js";
 import { createSvgElement, emitPointActivate } from "../chart/dom.js";
 import { finiteOrNull } from "../chart/model.js";
+import componentStyles from "./column-sparkline.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -132,7 +133,7 @@ function dashedTargetPath(y, plotWidthPx) {
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanColumnSparkline extends BaseElement {
-  static styleUrl = new URL("./column-sparkline.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "tone", "above-tone", "below-tone", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

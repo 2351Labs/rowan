@@ -19,6 +19,7 @@
  * @cssprop --rowan-tree-item-children-border
  */
 export class RowanTreeItem extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

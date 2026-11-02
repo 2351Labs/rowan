@@ -11,6 +11,7 @@ import {
 } from "../lib/table-selection.js";
 
 import "../dropdown/dropdown.js";
+import componentStyles from "./table-toolbar.styles.js";
 
 function arraysEqual(left, right) {
   if (left.length !== right.length) return false;
@@ -67,7 +68,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  */
 export class RowanTableToolbar extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./table-toolbar.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["for-table", "label", "selection-label", "column-picker"];
   static upgradeProperties = [
     "table",

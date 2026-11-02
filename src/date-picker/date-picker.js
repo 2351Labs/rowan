@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
 import { normalizeCalendarDate } from "../lib/calendar-date.js";
+import componentStyles from "./date-picker.styles.js";
 
 let datePickerId = 0;
 
@@ -30,7 +31,7 @@ function normalizeDateValue(value) {
 export class RowanDatePicker extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./date-picker.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

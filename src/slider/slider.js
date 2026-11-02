@@ -6,6 +6,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber as formatLocalizedNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./slider.styles.js";
 
 let sliderId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -101,7 +102,7 @@ function parseRangeState(state) {
 export class RowanSlider extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./slider.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-slider-"];
   static componentTokenDeclarations = sliderTokenDeclarations;
   static observedAttributes = [

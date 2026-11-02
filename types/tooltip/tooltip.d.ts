@@ -8,6 +8,7 @@
  * @csspart tooltip
  */
 export class RowanTooltip extends BaseElement {
+  static styles: string;
   set text(value: string);
   get text(): string;
   set open(value: boolean);

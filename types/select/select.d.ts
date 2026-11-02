@@ -18,6 +18,7 @@ export class RowanSelect extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   /** @param {RowanSelectOption[]} value */
   set options(value: RowanSelectOption[]);
   /** @returns {RowanSelectOption[]} */

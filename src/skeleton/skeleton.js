@@ -2,6 +2,7 @@ import { declarations as skeletonTokenDeclarations } from "../tokens/parts/skele
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import componentStyles from "./skeleton.styles.js";
 
 const SHAPES = new Set(["text", "rect", "circle"]);
 
@@ -18,7 +19,7 @@ const SHAPES = new Set(["text", "rect", "circle"]);
  * @cssprop --rowan-skeleton-shimmer-duration
  */
 export class RowanSkeleton extends BaseElement {
-  static styleUrl = new URL("./skeleton.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["shape", "width", "height", "animated"];
   static upgradeProperties = ["shape", "width", "height", "animated"];
   static componentTokenPrefixes = ["--rowan-skeleton-"];

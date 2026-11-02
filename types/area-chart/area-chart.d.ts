@@ -68,6 +68,7 @@ export class RowanAreaChart extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   set label(value: string);
   get label(): string;

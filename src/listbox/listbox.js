@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { validityMessage } from "../lib/validity-messages.js";
 import { RowanOption } from "../option/option.js";
+import componentStyles from "./listbox.styles.js";
 
 const SELECTION_MODES = new Set(["single", "multiple"]);
 
@@ -48,7 +49,7 @@ function parseRestoredSelection(state) {
  */
 export class RowanListbox extends BaseElement {
   static formAssociated = true;
-  static styleUrl = new URL("./listbox.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-listbox-"];
   static componentTokenDeclarations = listboxTokenDeclarations;

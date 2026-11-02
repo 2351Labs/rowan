@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./alert.styles.js";
 
 const TONES = new Set(["info", "success", "warning", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -29,7 +30,7 @@ function normalizeTone(value) {
  * @event rowan-dismiss - Fired when dismissed by user interaction
  */
 export class RowanAlert extends BaseElement {
-  static styleUrl = new URL("./alert.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["tone", "dismissible"];
   static upgradeProperties = ["tone", "dismissible", "messages"];

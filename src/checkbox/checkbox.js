@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./checkbox.styles.js";
 
 /**
  * Checkbox control with form association.
@@ -21,7 +22,7 @@ import { validityMessage } from "../lib/validity-messages.js";
 export class RowanCheckbox extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./checkbox.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "checked",
     "disabled",

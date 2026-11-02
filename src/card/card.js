@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./card.styles.js";
 
 /**
  * Surface container for grouped content.
@@ -21,7 +22,7 @@ import { define } from "../lib/define.js";
  * @cssprop --rowan-card-border
  */
 export class RowanCard extends BaseElement {
-  static styleUrl = new URL("./card.css", import.meta.url).href;
+  static styles = componentStyles;
 
   render() {
     if (this.renderRoot.firstElementChild) return;

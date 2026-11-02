@@ -1,3 +1,5 @@
+import componentStyles from "./map.styles.js";
+import maplibreStyles from "./maplibre-gl.styles.js";
 import { define } from "../lib/define.js";
 import {
   cloneMapAttribution,
@@ -11,15 +13,38 @@ import {
 
 let mapId = 0;
 
-// Vendored beside this module. Vite 5 does not rewrite import.meta.resolve(),
-// and a document-level import does not style the shadow tree.
+const supportsAdoptedStyleSheets =
+  typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
+const styleSheets = new Map();
+
+function adoptedSheet(css) {
+  let sheet = styleSheets.get(css);
+  if (!sheet) {
+    sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    styleSheets.set(css, sheet);
+  }
+  return sheet;
+}
+
+function useStyle(root, css) {
+  if (supportsAdoptedStyleSheets) {
+    const sheet = adoptedSheet(css);
+    if (!root.adoptedStyleSheets.includes(sheet)) {
+      root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
+    }
+    return;
+  }
+  const style = document.createElement("style");
+  style.textContent = css;
+  root.append(style);
+}
+
+// styleHref overrides the vendored MapLibre stylesheet with a URL. The default
+// is the embedded CSS string, which survives a bundler prebundle.
 function mapLibreCssHref(ctor) {
   if (typeof ctor?.styleHref === "string" && ctor.styleHref) return ctor.styleHref;
-  try {
-    return new URL("./maplibre-gl.css", import.meta.url).href;
-  } catch {
-    return "";
-  }
+  return "";
 }
 
 function normalizeText(value) {
@@ -287,9 +312,7 @@ export class RowanMapLibreMap extends HTMLElement {
   #ensureRoot() {
     if (this.#root) return;
 
-    const stylesheet = document.createElement("link");
-    stylesheet.rel = "stylesheet";
-    stylesheet.href = new URL("./map.css", import.meta.url).href;
+    useStyle(this.shadowRoot, componentStyles);
 
     const root = document.createElement("div");
     root.className = "control";
@@ -353,7 +376,6 @@ export class RowanMapLibreMap extends HTMLElement {
 
     alternatives.append(listSection, tableSection);
     root.append(heading, mapFrame, attribution, layers, alternatives, selectionStatus);
-    this.shadowRoot.append(stylesheet);
     if (!this.noProviderStyles) {
       const href = mapLibreCssHref(this.constructor);
       if (href) {
@@ -362,6 +384,8 @@ export class RowanMapLibreMap extends HTMLElement {
         providerStyles.dataset.maplibreStyles = "";
         providerStyles.href = href;
         this.shadowRoot.append(providerStyles);
+      } else {
+        useStyle(this.shadowRoot, maplibreStyles);
       }
     }
     this.shadowRoot.append(root);

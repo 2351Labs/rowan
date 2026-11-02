@@ -6,6 +6,7 @@ import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
 import { RowanSideNavItem } from "../side-nav-item/side-nav-item.js";
+import componentStyles from "./side-nav.styles.js";
 
 function isSideNavItem(value) {
   return value instanceof RowanSideNavItem;
@@ -22,7 +23,7 @@ function isSideNavItem(value) {
  * @event rowan-change - Fired when a user activates a different navigation item. Cancelable when the item has an in-app href; preventDefault to block navigation.
  */
 export class RowanSideNav extends BaseElement {
-  static styleUrl = new URL("./side-nav.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-side-nav-"];
   static componentTokenDeclarations = sideNavTokenDeclarations;
   static observedAttributes = ["label", "value"];

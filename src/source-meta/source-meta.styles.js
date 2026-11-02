@@ -1,0 +1,2 @@
+// Generated from src/source-meta/source-meta.css. Edit that file, then run: node scripts/sync-component-styles.mjs
+export default ":host{color:var(--rowan-color-muted,#424945);display:inline;font-family:var(--rowan-font-family,system-ui,sans-serif);font-size:var(--rowan-font-size-sm,.875rem);line-height:1.4} :host([hidden]){display:none} .meta{display:inline} .item[hidden]{display:none} .item:not([hidden]) + .item:not([hidden])::before{content:\"·\";margin-inline:.4em} .term{margin-inline-end:.3em}";

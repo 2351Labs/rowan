@@ -15,10 +15,10 @@ Gap score is `weight × (uncovered lines + uncovered branches)`. Form controls a
 
 | Metric     | Covered |  Total | Coverage |  Floor |
 | ---------- | ------: | -----: | -------: | -----: |
-| lines      |  53,139 | 55,390 |   95.93% | 95.05% |
-| statements |  53,139 | 55,390 |   95.93% | 95.05% |
-| functions  |   3,831 |  4,154 |   92.22% | 91.31% |
-| branches   |  12,038 | 13,361 |   90.09% | 88.89% |
+| lines      |  53,459 | 55,745 |   95.89% | 95.05% |
+| statements |  53,459 | 55,745 |   95.89% | 95.05% |
+| functions  |   3,835 |  4,158 |   92.23% | 91.31% |
+| branches   |  12,089 | 13,449 |   89.88% | 88.89% |
 
 ## Largest gaps
 
@@ -26,144 +26,144 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 
 | Component               | Category     | Gap score |                  Lines |               Branches | Functions |
 | ----------------------- | ------------ | --------: | ---------------------: | ---------------------: | --------: |
-| `rich-text-editor`      | Form         |     384.0 |  95.99% (56 uncovered) |  80.59% (72 uncovered) |    97.83% |
-| `table`                 | Table        |     270.5 | 94.32% (366 uncovered) | 91.39% (175 uncovered) |    95.51% |
-| `filter-builder`        | Form         |     231.0 |  95.52% (68 uncovered) |   98.09% (9 uncovered) |    98.95% |
-| `lib`                   | Support      |     213.0 | 94.10% (119 uncovered) |  96.77% (23 uncovered) |    96.30% |
-| `context-menu`          | Overlay      |     195.0 |  93.55% (33 uncovered) |  77.62% (32 uncovered) |   100.00% |
-| `row-details-panel`     | Data display |     186.0 |  93.09% (59 uncovered) |  82.47% (34 uncovered) |    81.43% |
-| `slider`                | Form         |     171.0 |  95.87% (28 uncovered) |  82.63% (29 uncovered) |    95.65% |
-| `listbox`               | Form         |     165.0 |  95.45% (26 uncovered) |  84.07% (29 uncovered) |   100.00% |
-| `date-range-picker`     | Form         |     162.0 |  94.40% (32 uncovered) |  83.58% (22 uncovered) |    97.87% |
-| `multi-select-combobox` | Form         |     159.0 |  97.33% (18 uncovered) |  80.34% (35 uncovered) |    98.15% |
-| `calendar`              | Form         |     156.0 |  96.50% (36 uncovered) |  94.59% (16 uncovered) |   100.00% |
-| `combobox`              | Form         |     132.0 |  95.74% (23 uncovered) |  84.67% (21 uncovered) |    97.73% |
-| `popover`               | Overlay      |     117.0 |  92.35% (39 uncovered) |  100.00% (0 uncovered) |   100.00% |
-| `color-picker`          | Form         |     114.0 |  97.79% (13 uncovered) |  82.64% (25 uncovered) |    97.87% |
-| `file-upload`           | Form         |     111.0 |   98.91% (6 uncovered) |  76.69% (31 uncovered) |    97.78% |
-| `number-field`          | Form         |     111.0 |  97.26% (16 uncovered) |  85.00% (21 uncovered) |   100.00% |
-| `segmented-control`     | Form         |     111.0 |  96.72% (12 uncovered) |  78.26% (25 uncovered) |   100.00% |
-| `textarea`              | Form         |     105.0 |  91.50% (29 uncovered) |   90.63% (6 uncovered) |    84.85% |
-| `rating`                | Form         |     102.0 |  97.97% (12 uncovered) |  85.33% (22 uncovered) |    98.21% |
-| `tree`                  | Navigation   |      97.5 |  96.87% (14 uncovered) |  83.77% (25 uncovered) |   100.00% |
-| `form-wizard`           | Form         |      96.0 |  97.27% (21 uncovered) |  94.66% (11 uncovered) |   100.00% |
-| `split-pane`            | Navigation   |      95.0 |  96.08% (15 uncovered) |  74.16% (23 uncovered) |    88.89% |
-| `command-palette`       | Overlay      |      93.0 |   98.71% (8 uncovered) |  84.46% (23 uncovered) |    96.00% |
-| `toaster`               | Overlay      |      93.0 |  97.22% (13 uncovered) |  85.94% (18 uncovered) |   100.00% |
-| `date-picker`           | Form         |      90.0 |  92.04% (27 uncovered) |   96.25% (3 uncovered) |    87.50% |
+| `rich-text-editor`      | Form         |     384.0 |  96.00% (56 uncovered) |  80.65% (72 uncovered) |    97.83% |
+| `table`                 | Table        |     275.5 | 94.24% (373 uncovered) | 91.32% (178 uncovered) |    95.54% |
+| `filter-builder`        | Form         |     231.0 |  95.53% (68 uncovered) |   98.09% (9 uncovered) |    98.95% |
+| `lib`                   | Support      |     222.0 | 93.90% (124 uncovered) |  96.62% (24 uncovered) |    96.32% |
+| `context-menu`          | Overlay      |     219.0 |  92.62% (38 uncovered) |  73.88% (35 uncovered) |   100.00% |
+| `row-details-panel`     | Data display |     186.0 |  93.12% (59 uncovered) |  82.56% (34 uncovered) |    81.43% |
+| `slider`                | Form         |     171.0 |  95.89% (28 uncovered) |  82.74% (29 uncovered) |    95.65% |
+| `listbox`               | Form         |     165.0 |  95.48% (26 uncovered) |  84.15% (29 uncovered) |   100.00% |
+| `date-range-picker`     | Form         |     162.0 |  94.43% (32 uncovered) |  83.70% (22 uncovered) |    97.87% |
+| `multi-select-combobox` | Form         |     159.0 |  97.34% (18 uncovered) |  80.45% (35 uncovered) |    98.15% |
+| `calendar`              | Form         |     156.0 |  96.51% (36 uncovered) |  94.61% (16 uncovered) |   100.00% |
+| `combobox`              | Form         |     132.0 |  95.76% (23 uncovered) |  84.78% (21 uncovered) |    97.73% |
+| `popover`               | Overlay      |     132.0 |  91.42% (44 uncovered) |  100.00% (0 uncovered) |   100.00% |
+| `color-picker`          | Form         |     114.0 |  97.80% (13 uncovered) |  82.76% (25 uncovered) |    97.87% |
+| `file-upload`           | Form         |     111.0 |   98.92% (6 uncovered) |  76.87% (31 uncovered) |    97.78% |
+| `number-field`          | Form         |     111.0 |  97.28% (16 uncovered) |  85.11% (21 uncovered) |   100.00% |
+| `segmented-control`     | Form         |     111.0 |  96.75% (12 uncovered) |  78.45% (25 uncovered) |   100.00% |
+| `textarea`              | Form         |     105.0 |  91.57% (29 uncovered) |   90.77% (6 uncovered) |    84.85% |
+| `rating`                | Form         |     102.0 |  97.98% (12 uncovered) |  85.43% (22 uncovered) |    98.21% |
+| `tree`                  | Navigation   |      97.5 |  96.89% (14 uncovered) |  83.87% (25 uncovered) |   100.00% |
+| `form-wizard`           | Form         |      96.0 |  97.28% (21 uncovered) |  94.69% (11 uncovered) |   100.00% |
+| `split-pane`            | Navigation   |      95.0 |  96.11% (15 uncovered) |  74.44% (23 uncovered) |    88.89% |
+| `command-palette`       | Overlay      |      93.0 |   98.72% (8 uncovered) |  84.56% (23 uncovered) |    96.00% |
+| `toaster`               | Overlay      |      93.0 |  97.24% (13 uncovered) |  86.05% (18 uncovered) |   100.00% |
+| `date-picker`           | Form         |      90.0 |  92.11% (27 uncovered) |   96.30% (3 uncovered) |    87.50% |
 
 ## Per component
 
 | Component               | Category     | Files |                  Lines |             Statements |             Functions |               Branches |
 | ----------------------- | ------------ | ----: | ---------------------: | ---------------------: | --------------------: | ---------------------: |
-| `accordion`             | Navigation   |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `alert`                 | Data display |     1 |   96.64% (4 uncovered) |   96.64% (4 uncovered) |  81.82% (2 uncovered) |   95.83% (1 uncovered) |
-| `app-layout`            | Navigation   |     1 |   98.27% (3 uncovered) |   98.27% (3 uncovered) |  92.86% (1 uncovered) |   92.59% (2 uncovered) |
-| `area-chart`            | Chart        |     1 |  96.54% (31 uncovered) |  96.54% (31 uncovered) |  87.30% (8 uncovered) |   94.52% (8 uncovered) |
-| `avatar`                | Data display |     1 |   96.51% (6 uncovered) |   96.51% (6 uncovered) |  88.89% (2 uncovered) |  100.00% (0 uncovered) |
-| `badge`                 | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `bar-chart`             | Chart        |     1 |  97.98% (14 uncovered) |  97.98% (14 uncovered) |  92.86% (4 uncovered) |   97.12% (3 uncovered) |
-| `box-plot-chart`        | Chart        |     2 |  97.55% (25 uncovered) |  97.55% (25 uncovered) |  88.24% (8 uncovered) |  86.59% (24 uncovered) |
-| `breadcrumb`            | Navigation   |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `bulk-actions-bar`      | Data display |     1 |  93.50% (28 uncovered) |  93.50% (28 uncovered) |  86.49% (5 uncovered) |  89.36% (10 uncovered) |
-| `bullet-chart`          | Chart        |     1 |  96.24% (21 uncovered) |  96.24% (21 uncovered) |  84.78% (7 uncovered) |  100.00% (0 uncovered) |
-| `button`                | Form         |     1 |   97.66% (4 uncovered) |   97.66% (4 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `calendar`              | Form         |     1 |  96.50% (36 uncovered) |  96.50% (36 uncovered) | 100.00% (0 uncovered) |  94.59% (16 uncovered) |
-| `card`                  | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   75.00% (1 uncovered) |
-| `carousel`              | Navigation   |     1 |   97.42% (9 uncovered) |   97.42% (9 uncovered) | 100.00% (0 uncovered) |  81.82% (12 uncovered) |
-| `chart`                 | Chart        |     8 | 91.69% (164 uncovered) | 91.69% (164 uncovered) |  95.61% (5 uncovered) |  96.40% (23 uncovered) |
-| `checkbox`              | Form         |     1 |  94.27% (15 uncovered) |  94.27% (15 uncovered) |  92.59% (2 uncovered) |  100.00% (0 uncovered) |
-| `chip`                  | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `color-picker`          | Form         |     1 |  97.79% (13 uncovered) |  97.79% (13 uncovered) |  97.87% (1 uncovered) |  82.64% (25 uncovered) |
-| `column-sparkline`      | Chart        |     1 |  93.72% (37 uncovered) |  93.72% (37 uncovered) | 78.00% (11 uncovered) |  90.68% (11 uncovered) |
-| `combo-chart`           | Chart        |     3 |  97.63% (22 uncovered) |  97.63% (22 uncovered) |  87.69% (8 uncovered) |  77.37% (43 uncovered) |
-| `combobox`              | Form         |     1 |  95.74% (23 uncovered) |  95.74% (23 uncovered) |  97.73% (1 uncovered) |  84.67% (21 uncovered) |
-| `command-item`          | Overlay      |     1 |   97.53% (7 uncovered) |   97.53% (7 uncovered) |  95.83% (1 uncovered) |   96.36% (2 uncovered) |
-| `command-palette`       | Overlay      |     1 |   98.71% (8 uncovered) |   98.71% (8 uncovered) |  96.00% (2 uncovered) |  84.46% (23 uncovered) |
-| `confirm-dialog`        | Overlay      |     1 |  91.81% (19 uncovered) |  91.81% (19 uncovered) |  75.00% (6 uncovered) |   87.10% (4 uncovered) |
-| `context-menu`          | Overlay      |     1 |  93.55% (33 uncovered) |  93.55% (33 uncovered) | 100.00% (0 uncovered) |  77.62% (32 uncovered) |
+| `accordion`             | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `alert`                 | Data display |     2 |   96.72% (4 uncovered) |   96.72% (4 uncovered) |  81.82% (2 uncovered) |   96.00% (1 uncovered) |
+| `app-layout`            | Navigation   |     2 |   98.30% (3 uncovered) |   98.30% (3 uncovered) |  92.86% (1 uncovered) |   92.86% (2 uncovered) |
+| `area-chart`            | Chart        |     2 |  96.55% (31 uncovered) |  96.55% (31 uncovered) |  87.30% (8 uncovered) |   94.56% (8 uncovered) |
+| `avatar`                | Data display |     2 |   96.57% (6 uncovered) |   96.57% (6 uncovered) |  88.89% (2 uncovered) |  100.00% (0 uncovered) |
+| `badge`                 | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `bar-chart`             | Chart        |     2 |  97.99% (14 uncovered) |  97.99% (14 uncovered) |  92.86% (4 uncovered) |   97.14% (3 uncovered) |
+| `box-plot-chart`        | Chart        |     3 |  97.56% (25 uncovered) |  97.56% (25 uncovered) |  88.24% (8 uncovered) |  86.67% (24 uncovered) |
+| `breadcrumb`            | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `bulk-actions-bar`      | Data display |     2 |  93.55% (28 uncovered) |  93.55% (28 uncovered) |  86.49% (5 uncovered) |  89.47% (10 uncovered) |
+| `bullet-chart`          | Chart        |     2 |  96.26% (21 uncovered) |  96.26% (21 uncovered) |  84.78% (7 uncovered) |  86.49% (15 uncovered) |
+| `button`                | Form         |     2 |   97.70% (4 uncovered) |   97.70% (4 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `calendar`              | Form         |     2 |  96.51% (36 uncovered) |  96.51% (36 uncovered) | 100.00% (0 uncovered) |  94.61% (16 uncovered) |
+| `card`                  | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   80.00% (1 uncovered) |
+| `carousel`              | Navigation   |     2 |   97.44% (9 uncovered) |   97.44% (9 uncovered) | 100.00% (0 uncovered) |  82.09% (12 uncovered) |
+| `chart`                 | Chart        |     8 | 91.69% (164 uncovered) | 91.69% (164 uncovered) |  95.61% (5 uncovered) |  96.09% (25 uncovered) |
+| `checkbox`              | Form         |     2 |  94.34% (15 uncovered) |  94.34% (15 uncovered) |  92.59% (2 uncovered) |  100.00% (0 uncovered) |
+| `chip`                  | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `color-picker`          | Form         |     2 |  97.80% (13 uncovered) |  97.80% (13 uncovered) |  97.87% (1 uncovered) |  82.76% (25 uncovered) |
+| `column-sparkline`      | Chart        |     2 |  93.75% (37 uncovered) |  93.75% (37 uncovered) | 78.00% (11 uncovered) |  90.76% (11 uncovered) |
+| `combo-chart`           | Chart        |     4 |  97.64% (22 uncovered) |  97.64% (22 uncovered) |  87.69% (8 uncovered) |  77.49% (43 uncovered) |
+| `combobox`              | Form         |     2 |  95.76% (23 uncovered) |  95.76% (23 uncovered) |  97.73% (1 uncovered) |  84.78% (21 uncovered) |
+| `command-item`          | Overlay      |     2 |   97.55% (7 uncovered) |   97.55% (7 uncovered) |  95.83% (1 uncovered) |   96.43% (2 uncovered) |
+| `command-palette`       | Overlay      |     2 |   98.72% (8 uncovered) |   98.72% (8 uncovered) |  96.00% (2 uncovered) |  84.56% (23 uncovered) |
+| `confirm-dialog`        | Overlay      |     2 |  91.91% (19 uncovered) |  91.91% (19 uncovered) |  75.00% (6 uncovered) |   87.50% (4 uncovered) |
+| `context-menu`          | Overlay      |     2 |  92.62% (38 uncovered) |  92.62% (38 uncovered) | 100.00% (0 uncovered) |  73.88% (35 uncovered) |
 | `dashboard-filters`     | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   87.50% (4 uncovered) |
-| `data-state`            | Data display |     1 |   98.54% (2 uncovered) |   98.54% (2 uncovered) |  88.89% (1 uncovered) |   90.48% (2 uncovered) |
-| `date-picker`           | Form         |     1 |  92.04% (27 uncovered) |  92.04% (27 uncovered) |  87.50% (4 uncovered) |   96.25% (3 uncovered) |
-| `date-range-picker`     | Form         |     1 |  94.40% (32 uncovered) |  94.40% (32 uncovered) |  97.87% (1 uncovered) |  83.58% (22 uncovered) |
-| `dialog`                | Overlay      |     1 |   97.16% (8 uncovered) |   97.16% (8 uncovered) |  86.36% (3 uncovered) |   96.05% (3 uncovered) |
-| `divider`               | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   95.65% (1 uncovered) |
-| `donut-chart`           | Chart        |     1 |  95.06% (32 uncovered) |  95.06% (32 uncovered) |  83.02% (9 uncovered) |  86.92% (14 uncovered) |
-| `drawer`                | Overlay      |     1 |   98.80% (3 uncovered) |   98.80% (3 uncovered) |  95.00% (1 uncovered) |   88.89% (6 uncovered) |
-| `dropdown`              | Overlay      |     1 |  97.03% (11 uncovered) |  97.03% (11 uncovered) | 100.00% (0 uncovered) |   96.06% (5 uncovered) |
-| `dropzone`              | Form         |     1 |  94.40% (15 uncovered) |  94.40% (15 uncovered) |  90.91% (2 uncovered) |   92.31% (4 uncovered) |
-| `empty-state`           | Data display |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `file-item`             | Form         |     1 |  96.17% (13 uncovered) |  96.17% (13 uncovered) |  96.15% (1 uncovered) |  80.33% (12 uncovered) |
-| `file-upload`           | Form         |     1 |   98.91% (6 uncovered) |   98.91% (6 uncovered) |  97.78% (1 uncovered) |  76.69% (31 uncovered) |
-| `filter-builder`        | Form         |     2 |  95.52% (68 uncovered) |  95.52% (68 uncovered) |  98.95% (1 uncovered) |   98.09% (9 uncovered) |
-| `form-field`            | Form         |     1 |  97.82% (12 uncovered) |  97.82% (12 uncovered) | 100.00% (0 uncovered) |   94.37% (8 uncovered) |
-| `form-layout`           | Form         |     1 |   99.74% (1 uncovered) |   99.74% (1 uncovered) | 100.00% (0 uncovered) |  88.14% (14 uncovered) |
-| `form-wizard`           | Form         |     1 |  97.27% (21 uncovered) |  97.27% (21 uncovered) | 100.00% (0 uncovered) |  94.66% (11 uncovered) |
-| `funnel-chart`          | Chart        |     2 |  95.44% (32 uncovered) |  95.44% (32 uncovered) | 82.76% (10 uncovered) |  85.83% (17 uncovered) |
-| `gauge-chart`           | Chart        |     1 |  94.97% (28 uncovered) |  94.97% (28 uncovered) | 74.42% (11 uncovered) |   96.10% (3 uncovered) |
-| `heatmap-chart`         | Chart        |     2 |  97.79% (20 uncovered) |  97.79% (20 uncovered) |  88.73% (8 uncovered) |  91.28% (17 uncovered) |
+| `data-state`            | Data display |     2 |   98.57% (2 uncovered) |   98.57% (2 uncovered) |  88.89% (1 uncovered) |   90.91% (2 uncovered) |
+| `date-picker`           | Form         |     2 |  92.11% (27 uncovered) |  92.11% (27 uncovered) |  87.50% (4 uncovered) |   96.30% (3 uncovered) |
+| `date-range-picker`     | Form         |     2 |  94.43% (32 uncovered) |  94.43% (32 uncovered) |  97.87% (1 uncovered) |  83.70% (22 uncovered) |
+| `dialog`                | Overlay      |     2 |   97.19% (8 uncovered) |   97.19% (8 uncovered) |  86.36% (3 uncovered) |   96.10% (3 uncovered) |
+| `divider`               | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   95.83% (1 uncovered) |
+| `donut-chart`           | Chart        |     2 |  95.08% (32 uncovered) |  95.08% (32 uncovered) |  83.02% (9 uncovered) |  87.04% (14 uncovered) |
+| `drawer`                | Overlay      |     2 |   98.82% (3 uncovered) |   98.82% (3 uncovered) |  95.00% (1 uncovered) |   89.09% (6 uncovered) |
+| `dropdown`              | Overlay      |     2 |  95.71% (16 uncovered) |  95.71% (16 uncovered) | 100.00% (0 uncovered) |   95.97% (5 uncovered) |
+| `dropzone`              | Form         |     2 |  94.46% (15 uncovered) |  94.46% (15 uncovered) |  90.91% (2 uncovered) |   92.45% (4 uncovered) |
+| `empty-state`           | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `file-item`             | Form         |     2 |  96.20% (13 uncovered) |  96.20% (13 uncovered) |  96.15% (1 uncovered) |  80.65% (12 uncovered) |
+| `file-upload`           | Form         |     2 |   98.92% (6 uncovered) |   98.92% (6 uncovered) |  97.78% (1 uncovered) |  76.87% (31 uncovered) |
+| `filter-builder`        | Form         |     3 |  95.53% (68 uncovered) |  95.53% (68 uncovered) |  98.95% (1 uncovered) |   98.09% (9 uncovered) |
+| `form-field`            | Form         |     2 |  97.83% (12 uncovered) |  97.83% (12 uncovered) | 100.00% (0 uncovered) |   94.41% (8 uncovered) |
+| `form-layout`           | Form         |     2 |   97.64% (9 uncovered) |   97.64% (9 uncovered) | 100.00% (0 uncovered) |  83.93% (18 uncovered) |
+| `form-wizard`           | Form         |     2 |  97.28% (21 uncovered) |  97.28% (21 uncovered) | 100.00% (0 uncovered) |  94.69% (11 uncovered) |
+| `funnel-chart`          | Chart        |     3 |  95.46% (32 uncovered) |  95.46% (32 uncovered) | 82.76% (10 uncovered) |  85.95% (17 uncovered) |
+| `gauge-chart`           | Chart        |     2 |  95.00% (28 uncovered) |  95.00% (28 uncovered) | 74.42% (11 uncovered) |   96.15% (3 uncovered) |
+| `heatmap-chart`         | Chart        |     3 |  97.80% (20 uncovered) |  97.80% (20 uncovered) |  88.73% (8 uncovered) |  91.33% (17 uncovered) |
 | `histogram`             | Chart        |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   73.33% (8 uncovered) |
-| `icon-button`           | Form         |     1 |   96.69% (6 uncovered) |   96.69% (6 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `image`                 | Data display |     1 |  94.51% (14 uncovered) |  94.51% (14 uncovered) |  86.96% (3 uncovered) |  76.47% (12 uncovered) |
-| `kpi-card`              | Data display |     1 |  93.53% (24 uncovered) |  93.53% (24 uncovered) | 66.67% (11 uncovered) |   89.16% (9 uncovered) |
-| `lib`                   | Support      |    20 | 94.10% (119 uncovered) | 94.10% (119 uncovered) |  96.30% (6 uncovered) |  96.77% (23 uncovered) |
-| `link`                  | Navigation   |     1 |   93.75% (6 uncovered) |   93.75% (6 uncovered) |  90.91% (1 uncovered) |   89.47% (2 uncovered) |
-| `listbox`               | Form         |     1 |  95.45% (26 uncovered) |  95.45% (26 uncovered) | 100.00% (0 uncovered) |  84.07% (29 uncovered) |
-| `menu`                  | Overlay      |     1 |  94.30% (11 uncovered) |  94.30% (11 uncovered) | 100.00% (0 uncovered) |  81.36% (11 uncovered) |
-| `menu-item`             | Overlay      |     1 |   97.78% (2 uncovered) |   97.78% (2 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `multi-select-combobox` | Form         |     1 |  97.33% (18 uncovered) |  97.33% (18 uncovered) |  98.15% (1 uncovered) |  80.34% (35 uncovered) |
-| `number-field`          | Form         |     1 |  97.26% (16 uncovered) |  97.26% (16 uncovered) | 100.00% (0 uncovered) |  85.00% (21 uncovered) |
-| `option`                | Form         |     1 |   98.31% (3 uncovered) |   98.31% (3 uncovered) | 100.00% (0 uncovered) |   98.36% (1 uncovered) |
+| `icon-button`           | Form         |     2 |   96.74% (6 uncovered) |   96.74% (6 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `image`                 | Data display |     2 |  94.57% (14 uncovered) |  94.57% (14 uncovered) |  86.96% (3 uncovered) |  76.92% (12 uncovered) |
+| `kpi-card`              | Data display |     2 |  93.58% (24 uncovered) |  93.58% (24 uncovered) | 66.67% (11 uncovered) |   89.29% (9 uncovered) |
+| `lib`                   | Support      |    20 | 93.90% (124 uncovered) | 93.90% (124 uncovered) |  96.32% (6 uncovered) |  96.62% (24 uncovered) |
+| `link`                  | Navigation   |     2 |   93.94% (6 uncovered) |   93.94% (6 uncovered) |  90.91% (1 uncovered) |   90.00% (2 uncovered) |
+| `listbox`               | Form         |     2 |  95.48% (26 uncovered) |  95.48% (26 uncovered) | 100.00% (0 uncovered) |  84.15% (29 uncovered) |
+| `menu`                  | Overlay      |     2 |  94.39% (11 uncovered) |  94.39% (11 uncovered) | 100.00% (0 uncovered) |  81.67% (11 uncovered) |
+| `menu-item`             | Overlay      |     2 |   97.85% (2 uncovered) |   97.85% (2 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `multi-select-combobox` | Form         |     2 |  97.34% (18 uncovered) |  97.34% (18 uncovered) |  98.15% (1 uncovered) |  80.45% (35 uncovered) |
+| `number-field`          | Form         |     2 |  97.28% (16 uncovered) |  97.28% (16 uncovered) | 100.00% (0 uncovered) |  85.11% (21 uncovered) |
+| `option`                | Form         |     2 |   98.33% (3 uncovered) |   98.33% (3 uncovered) | 100.00% (0 uncovered) |   98.39% (1 uncovered) |
 | `package`               | Other        |     0 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `pagination`            | Navigation   |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   88.89% (3 uncovered) |
-| `popover`               | Overlay      |     1 |  92.35% (39 uncovered) |  92.35% (39 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `progress`              | Data display |     1 |   97.58% (4 uncovered) |   97.58% (4 uncovered) |  86.67% (2 uncovered) |  100.00% (0 uncovered) |
-| `radar-chart`           | Chart        |     2 |  96.30% (32 uncovered) |  96.30% (32 uncovered) | 84.38% (10 uncovered) |  91.03% (13 uncovered) |
-| `radio`                 | Form         |     1 |  95.27% (15 uncovered) |  95.27% (15 uncovered) |  93.75% (2 uncovered) |   96.84% (3 uncovered) |
-| `radio-group`           | Form         |     1 |  94.29% (14 uncovered) |  94.29% (14 uncovered) |  92.00% (2 uncovered) |   89.86% (7 uncovered) |
-| `range-chart`           | Chart        |     2 |  96.14% (38 uncovered) |  96.14% (38 uncovered) |  88.57% (8 uncovered) |  83.71% (29 uncovered) |
-| `rating`                | Form         |     1 |  97.97% (12 uncovered) |  97.97% (12 uncovered) |  98.21% (1 uncovered) |  85.33% (22 uncovered) |
+| `pagination`            | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   89.29% (3 uncovered) |
+| `popover`               | Overlay      |     2 |  91.42% (44 uncovered) |  91.42% (44 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `progress`              | Data display |     2 |   97.62% (4 uncovered) |   97.62% (4 uncovered) |  86.67% (2 uncovered) |  100.00% (0 uncovered) |
+| `radar-chart`           | Chart        |     3 |  96.31% (32 uncovered) |  96.31% (32 uncovered) | 84.38% (10 uncovered) |  91.10% (13 uncovered) |
+| `radio`                 | Form         |     2 |  95.31% (15 uncovered) |  95.31% (15 uncovered) |  93.75% (2 uncovered) |   96.88% (3 uncovered) |
+| `radio-group`           | Form         |     2 |  94.35% (14 uncovered) |  94.35% (14 uncovered) |  92.00% (2 uncovered) |   90.00% (7 uncovered) |
+| `range-chart`           | Chart        |     3 |  96.15% (38 uncovered) |  96.15% (38 uncovered) |  88.57% (8 uncovered) |  83.80% (29 uncovered) |
+| `rating`                | Form         |     2 |  97.98% (12 uncovered) |  97.98% (12 uncovered) |  98.21% (1 uncovered) |  85.43% (22 uncovered) |
 | `react`                 | Support      |     0 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `rich-text-editor`      | Form         |     2 |  95.99% (56 uncovered) |  95.99% (56 uncovered) |  97.83% (2 uncovered) |  80.59% (72 uncovered) |
-| `row-details-panel`     | Data display |     1 |  93.09% (59 uncovered) |  93.09% (59 uncovered) | 81.43% (13 uncovered) |  82.47% (34 uncovered) |
-| `scatter-chart`         | Chart        |     2 |  97.29% (23 uncovered) |  97.29% (23 uncovered) |  87.50% (8 uncovered) |  84.08% (25 uncovered) |
-| `segmented-control`     | Form         |     1 |  96.72% (12 uncovered) |  96.72% (12 uncovered) | 100.00% (0 uncovered) |  78.26% (25 uncovered) |
-| `select`                | Form         |     1 |  93.75% (21 uncovered) |  93.75% (21 uncovered) |  90.63% (3 uncovered) |   92.50% (6 uncovered) |
-| `side-nav`              | Navigation   |     1 |  93.04% (22 uncovered) |  93.04% (22 uncovered) | 100.00% (0 uncovered) |   98.26% (2 uncovered) |
-| `side-nav-item`         | Navigation   |     1 |  95.94% (14 uncovered) |  95.94% (14 uncovered) |  96.97% (1 uncovered) |  89.74% (12 uncovered) |
-| `side-nav-section`      | Navigation   |     1 |   98.80% (2 uncovered) |   98.80% (2 uncovered) |  92.86% (1 uncovered) |   85.29% (5 uncovered) |
-| `skeleton`              | Data display |     1 |   94.25% (5 uncovered) |   94.25% (5 uncovered) |  83.33% (2 uncovered) |   88.89% (2 uncovered) |
-| `slider`                | Form         |     1 |  95.87% (28 uncovered) |  95.87% (28 uncovered) |  95.65% (3 uncovered) |  82.63% (29 uncovered) |
-| `source-meta`           | Data display |     1 |   98.35% (2 uncovered) |   98.35% (2 uncovered) |  91.67% (1 uncovered) |   95.83% (1 uncovered) |
-| `sparkline`             | Chart        |     1 |  97.00% (21 uncovered) |  97.00% (21 uncovered) |  85.71% (8 uncovered) |  100.00% (0 uncovered) |
-| `spinner`               | Data display |     1 |   98.18% (2 uncovered) |   98.18% (2 uncovered) |  91.67% (1 uncovered) |   88.00% (3 uncovered) |
-| `split-pane`            | Navigation   |     1 |  96.08% (15 uncovered) |  96.08% (15 uncovered) |  88.89% (4 uncovered) |  74.16% (23 uncovered) |
-| `stacked-area-chart`    | Chart        |     1 |  95.80% (33 uncovered) |  95.80% (33 uncovered) | 83.05% (10 uncovered) |  85.59% (16 uncovered) |
-| `stacked-bar-chart`     | Chart        |     1 |  93.97% (49 uncovered) |  93.97% (49 uncovered) | 83.33% (10 uncovered) |  88.24% (14 uncovered) |
-| `status-indicator`      | Data display |     1 |   97.83% (3 uncovered) |   97.83% (3 uncovered) |  93.75% (1 uncovered) |   94.74% (2 uncovered) |
-| `stepper`               | Navigation   |     1 |  96.84% (11 uncovered) |  96.84% (11 uncovered) | 100.00% (0 uncovered) |   91.40% (8 uncovered) |
-| `switch`                | Form         |     1 |  91.53% (20 uncovered) |  91.53% (20 uncovered) |  88.00% (3 uncovered) |  100.00% (0 uncovered) |
-| `tab`                   | Navigation   |     1 |   98.31% (2 uncovered) |   98.31% (2 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `tab-panel`             | Navigation   |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   96.77% (1 uncovered) |
-| `table`                 | Table        |     8 | 94.32% (366 uncovered) | 94.32% (366 uncovered) | 95.51% (19 uncovered) | 91.39% (175 uncovered) |
+| `rich-text-editor`      | Form         |     3 |  96.00% (56 uncovered) |  96.00% (56 uncovered) |  97.83% (2 uncovered) |  80.65% (72 uncovered) |
+| `row-details-panel`     | Data display |     2 |  93.12% (59 uncovered) |  93.12% (59 uncovered) | 81.43% (13 uncovered) |  82.56% (34 uncovered) |
+| `scatter-chart`         | Chart        |     3 |  97.30% (23 uncovered) |  97.30% (23 uncovered) |  87.50% (8 uncovered) |  84.18% (25 uncovered) |
+| `segmented-control`     | Form         |     2 |  96.75% (12 uncovered) |  96.75% (12 uncovered) | 100.00% (0 uncovered) |  78.45% (25 uncovered) |
+| `select`                | Form         |     2 |  93.81% (21 uncovered) |  93.81% (21 uncovered) |  90.63% (3 uncovered) |   92.59% (6 uncovered) |
+| `side-nav`              | Navigation   |     2 |  93.10% (22 uncovered) |  93.10% (22 uncovered) | 100.00% (0 uncovered) |   98.28% (2 uncovered) |
+| `side-nav-item`         | Navigation   |     2 |  95.98% (14 uncovered) |  95.98% (14 uncovered) |  96.97% (1 uncovered) |  89.83% (12 uncovered) |
+| `side-nav-section`      | Navigation   |     2 |   98.82% (2 uncovered) |   98.82% (2 uncovered) |  92.86% (1 uncovered) |   85.71% (5 uncovered) |
+| `skeleton`              | Data display |     2 |   94.44% (5 uncovered) |   94.44% (5 uncovered) |  83.33% (2 uncovered) |   89.47% (2 uncovered) |
+| `slider`                | Form         |     2 |  95.89% (28 uncovered) |  95.89% (28 uncovered) |  95.65% (3 uncovered) |  82.74% (29 uncovered) |
+| `source-meta`           | Data display |     2 |   98.39% (2 uncovered) |   98.39% (2 uncovered) |  91.67% (1 uncovered) |   96.00% (1 uncovered) |
+| `sparkline`             | Chart        |     2 |  97.01% (21 uncovered) |  97.01% (21 uncovered) |  85.71% (8 uncovered) |   95.80% (6 uncovered) |
+| `spinner`               | Data display |     2 |   98.23% (2 uncovered) |   98.23% (2 uncovered) |  91.67% (1 uncovered) |   88.46% (3 uncovered) |
+| `split-pane`            | Navigation   |     2 |  96.11% (15 uncovered) |  96.11% (15 uncovered) |  88.89% (4 uncovered) |  74.44% (23 uncovered) |
+| `stacked-area-chart`    | Chart        |     2 |  95.81% (33 uncovered) |  95.81% (33 uncovered) | 83.05% (10 uncovered) |  85.71% (16 uncovered) |
+| `stacked-bar-chart`     | Chart        |     2 |  93.99% (49 uncovered) |  93.99% (49 uncovered) | 83.33% (10 uncovered) |  88.33% (14 uncovered) |
+| `status-indicator`      | Data display |     2 |   97.87% (3 uncovered) |   97.87% (3 uncovered) |  93.75% (1 uncovered) |   94.87% (2 uncovered) |
+| `stepper`               | Navigation   |     2 |  96.87% (11 uncovered) |  96.87% (11 uncovered) | 100.00% (0 uncovered) |   91.49% (8 uncovered) |
+| `switch`                | Form         |     2 |  91.63% (20 uncovered) |  91.63% (20 uncovered) |  88.00% (3 uncovered) |  100.00% (0 uncovered) |
+| `tab`                   | Navigation   |     2 |   98.35% (2 uncovered) |   98.35% (2 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
+| `tab-panel`             | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   96.88% (1 uncovered) |
+| `table`                 | Table        |    10 | 94.24% (373 uncovered) | 94.24% (373 uncovered) | 95.54% (19 uncovered) | 91.32% (178 uncovered) |
 | `table-csv`             | Table        |     1 |  89.90% (10 uncovered) |  89.90% (10 uncovered) | 100.00% (0 uncovered) |  74.00% (13 uncovered) |
 | `table-quick-find`      | Table        |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   94.59% (2 uncovered) |
-| `table-toolbar`         | Table        |     1 |  95.48% (20 uncovered) |  95.48% (20 uncovered) |  88.57% (4 uncovered) |   94.55% (6 uncovered) |
+| `table-toolbar`         | Table        |     2 |  95.51% (20 uncovered) |  95.51% (20 uncovered) |  88.57% (4 uncovered) |   94.59% (6 uncovered) |
 | `table-view-state`      | Table        |     1 |  95.52% (12 uncovered) |  95.52% (12 uncovered) | 100.00% (0 uncovered) |  85.86% (14 uncovered) |
-| `tabs`                  | Navigation   |     1 |   98.51% (4 uncovered) |   98.51% (4 uncovered) | 100.00% (0 uncovered) |  84.21% (12 uncovered) |
-| `text-field`            | Form         |     1 |  97.07% (14 uncovered) |  97.07% (14 uncovered) |  93.02% (3 uncovered) |   96.52% (4 uncovered) |
-| `textarea`              | Form         |     1 |  91.50% (29 uncovered) |  91.50% (29 uncovered) |  84.85% (5 uncovered) |   90.63% (6 uncovered) |
-| `time-picker`           | Form         |     1 |  96.61% (13 uncovered) |  96.61% (13 uncovered) | 100.00% (0 uncovered) |  87.13% (13 uncovered) |
-| `toast`                 | Overlay      |     1 |   96.30% (6 uncovered) |   96.30% (6 uncovered) |  85.71% (2 uncovered) |   83.33% (5 uncovered) |
-| `toaster`               | Overlay      |     1 |  97.22% (13 uncovered) |  97.22% (13 uncovered) | 100.00% (0 uncovered) |  85.94% (18 uncovered) |
-| `tokens`                | Support      |    31 |   99.76% (6 uncovered) |   99.76% (6 uncovered) | 26.47% (25 uncovered) |   95.77% (3 uncovered) |
-| `tooltip`               | Overlay      |     1 |  95.19% (10 uncovered) |  95.19% (10 uncovered) | 100.00% (0 uncovered) |  81.36% (11 uncovered) |
-| `tree`                  | Navigation   |     1 |  96.87% (14 uncovered) |  96.87% (14 uncovered) | 100.00% (0 uncovered) |  83.77% (25 uncovered) |
-| `tree-item`             | Navigation   |     1 |   99.03% (2 uncovered) |   99.03% (2 uncovered) | 100.00% (0 uncovered) |   98.59% (1 uncovered) |
-| `trend-chart`           | Chart        |     2 |  97.34% (22 uncovered) |  97.34% (22 uncovered) |  85.00% (9 uncovered) |  91.11% (12 uncovered) |
-| `validation-summary`    | Form         |     1 |  94.94% (18 uncovered) |  94.94% (18 uncovered) |  96.00% (1 uncovered) |   97.59% (2 uncovered) |
-| `virtual-list`          | Data display |     1 |  94.71% (20 uncovered) |  94.71% (20 uncovered) |  92.86% (2 uncovered) |  79.07% (18 uncovered) |
-| `waterfall-chart`       | Chart        |     2 |  97.74% (20 uncovered) |  97.74% (20 uncovered) |  88.06% (8 uncovered) |  84.36% (28 uncovered) |
+| `tabs`                  | Navigation   |     2 |   98.53% (4 uncovered) |   98.53% (4 uncovered) | 100.00% (0 uncovered) |  84.42% (12 uncovered) |
+| `text-field`            | Form         |     2 |  97.09% (14 uncovered) |  97.09% (14 uncovered) |  93.02% (3 uncovered) |   96.55% (4 uncovered) |
+| `textarea`              | Form         |     2 |  91.57% (29 uncovered) |  91.57% (29 uncovered) |  84.85% (5 uncovered) |   90.77% (6 uncovered) |
+| `time-picker`           | Form         |     2 |  96.63% (13 uncovered) |  96.63% (13 uncovered) | 100.00% (0 uncovered) |  87.25% (13 uncovered) |
+| `toast`                 | Overlay      |     2 |   96.36% (6 uncovered) |   96.36% (6 uncovered) |  85.71% (2 uncovered) |   83.87% (5 uncovered) |
+| `toaster`               | Overlay      |     2 |  97.24% (13 uncovered) |  97.24% (13 uncovered) | 100.00% (0 uncovered) |  86.05% (18 uncovered) |
+| `tokens`                | Support      |    32 |   99.76% (6 uncovered) |   99.76% (6 uncovered) | 26.47% (25 uncovered) |   94.44% (4 uncovered) |
+| `tooltip`               | Overlay      |     2 |  95.26% (10 uncovered) |  95.26% (10 uncovered) | 100.00% (0 uncovered) |  81.67% (11 uncovered) |
+| `tree`                  | Navigation   |     2 |  96.89% (14 uncovered) |  96.89% (14 uncovered) | 100.00% (0 uncovered) |  83.87% (25 uncovered) |
+| `tree-item`             | Navigation   |     2 |   99.05% (2 uncovered) |   99.05% (2 uncovered) | 100.00% (0 uncovered) |   98.61% (1 uncovered) |
+| `trend-chart`           | Chart        |     3 |  97.35% (22 uncovered) |  97.35% (22 uncovered) |  85.00% (9 uncovered) |  91.18% (12 uncovered) |
+| `validation-summary`    | Form         |     2 |  94.99% (18 uncovered) |  94.99% (18 uncovered) |  96.00% (1 uncovered) |   97.62% (2 uncovered) |
+| `virtual-list`          | Data display |     2 |  94.75% (20 uncovered) |  94.75% (20 uncovered) |  92.86% (2 uncovered) |  76.74% (20 uncovered) |
+| `waterfall-chart`       | Chart        |     3 |  97.75% (20 uncovered) |  97.75% (20 uncovered) |  88.06% (8 uncovered) |  84.44% (28 uncovered) |
 
 ## Source files not loaded
 

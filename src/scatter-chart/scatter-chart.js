@@ -19,6 +19,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { chartSeriesColor, formatChartValue } from "../chart/model.js";
+import componentStyles from "./scatter-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -142,7 +143,7 @@ function scatterRadius(size, sizeDomain, sizeRange) {
 export class RowanScatterChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./scatter-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-scatter-chart-"];
   static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [
