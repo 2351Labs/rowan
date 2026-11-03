@@ -404,6 +404,24 @@ async function main() {
 
     await runCommand(
       "node",
+      ["scripts/generate-llms.mjs", "--check"],
+      "Verify llms.txt is current",
+    );
+
+    await runCommand(
+      "node",
+      ["packages/mcp/scripts/build-catalog.mjs", "--check"],
+      "Verify MCP catalog is current",
+    );
+
+    await runCommand(
+      "node",
+      ["--test", "test/generate-llms.test.mjs", "test/mcp-tools.test.mjs"],
+      "AI context unit tests",
+    );
+
+    await runCommand(
+      "node",
       ["scripts/check-component-docs-coverage.mjs"],
       "Verify component docs coverage",
     );
@@ -423,6 +441,12 @@ async function main() {
       "npm",
       ["pack", "--dry-run", "--workspace=@rowan-ui/maplibre"],
       "Pack maplibre (dry-run)",
+    );
+
+    await runCommand(
+      "npm",
+      ["pack", "--dry-run", "--workspace=@rowan-ui/mcp"],
+      "Pack mcp (dry-run)",
     );
 
     // BROWSER-COMPATIBILITY JOB (mirrors .github/workflows/ci.yml browser-compatibility)
@@ -511,6 +535,8 @@ function assemblePagesDryRun() {
       const docsIndex = join(deployDir, "index.html");
       const storybookIndex = join(deployDir, "storybook", "index.html");
       const adminIndex = join(deployDir, "admin", "index.html");
+      const llmsTxt = join(deployDir, "llms.txt");
+      const llmsFull = join(deployDir, "llms-full.txt");
       if (
         !failed &&
         (!existsSync(docsIndex) || !existsSync(storybookIndex) || !existsSync(adminIndex))
@@ -520,11 +546,16 @@ function assemblePagesDryRun() {
         console.error(`   Storybook: ${storybookIndex}`);
         console.error(`   Admin: ${adminIndex}`);
         failed = true;
+      } else if (!failed && (!existsSync(llmsTxt) || !existsSync(llmsFull))) {
+        console.error("❌ Assembled Pages output is missing llms.txt or llms-full.txt");
+        failed = true;
       } else if (!failed) {
         console.log(`✓ Pages deployment assembled in ${deployDir}`);
         console.log(`  - Documentation: ${docsIndex}`);
         console.log(`  - Storybook: ${storybookIndex}`);
         console.log(`  - Admin: ${adminIndex}`);
+        console.log(`  - llms.txt: ${llmsTxt}`);
+        console.log(`  - llms-full.txt: ${llmsFull}`);
       }
     }
   } catch (error) {

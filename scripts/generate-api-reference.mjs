@@ -4,7 +4,7 @@
  * public component is missing a complete reference.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { COMPONENT_EXAMPLE_BY_TAG } from "../documentation/component-examples.js";
@@ -572,6 +572,16 @@ function serialize(components) {
   return `${JSON.stringify({ components }, null, 2)}\n`;
 }
 
+function isDirectRun() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
 function main() {
   const check = process.argv.includes("--check");
   const components = collect();
@@ -604,4 +614,8 @@ function main() {
   console.log(`Wrote ${components.length} component API references to documentation/generated/api-reference.json`);
 }
 
-main();
+export { SOURCES, collect as collectComponents };
+
+if (isDirectRun()) {
+  main();
+}

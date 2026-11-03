@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish core, icons, and maplibre
+    name: Publish core, icons, maplibre, and mcp
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -52,6 +52,17 @@ jobs:
             echo "skip @rowan-ui/maplibre@${version} (already on registry)"
           else
             npm publish --access public --provenance --workspace=@rowan-ui/maplibre
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @rowan-ui/mcp
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./packages/mcp/package.json').version")
+          if npm view "@rowan-ui/mcp@${version}" version >/dev/null 2>&1; then
+            echo "skip @rowan-ui/mcp@${version} (already on registry)"
+          else
+            npm publish --access public --provenance --workspace=@rowan-ui/mcp
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

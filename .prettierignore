@@ -3,3 +3,6 @@ storybook-static/
 documentation/**/documentation-static-check/
 tmp/
 packages/maplibre/src/map/maplibre-gl.css
+llms.txt
+llms-full.txt
+packages/mcp/data/catalog.json

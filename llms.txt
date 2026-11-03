@@ -1,0 +1,898 @@
+# Rowan
+
+> Rowan 0.23.1 is a vanilla Web Components design system: custom elements, Shadow DOM, and CSS tokens, with no framework runtime. The host owns data.
+
+Documentation: https://2351labs.github.io/rowan/
+Compact context: https://2351labs.github.io/rowan/llms.txt
+Full context: https://2351labs.github.io/rowan/llms-full.txt
+MCP server: `npx -y @rowan-ui/mcp` (`@rowan-ui/mcp@0.23.1`)
+
+## Install
+
+```bash
+npm install @rowan-ui/core@0.23.1
+```
+
+`@rowan-ui/icons` is the optional icon set. `@rowan-ui/maplibre` is the optional MapLibre map.
+
+```bash
+npm install @rowan-ui/icons@0.23.1
+npm install @rowan-ui/maplibre@0.23.1
+```
+
+The host keeps rows, locale, and routing. Components do not request them.
+
+## Imports
+
+Import `@rowan-ui/core/tokens` and a theme, then import each component from its package subpath. The subpath is the tag without the `rowan-` prefix: `<rowan-button>` is `@rowan-ui/core/button`, and that module registers the element. `import "@rowan-ui/core"` registers the full core catalog.
+
+```js
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/button";
+
+document.documentElement.dataset.theme = "light";
+```
+
+React wrappers are generated per component. `RowanButton` comes from `@rowan-ui/core/react/button` and maps `onRowanClick` to `rowan-click`. Vue, Angular, and Svelte use the custom element and the same subpath import.
+
+Subpaths that differ from `@rowan-ui/core/<slug>`:
+
+- `rowan-icon` imports `@rowan-ui/icons/element`. Each glyph is its own module. `import "@rowan-ui/icons/elements/<name>"` registers `<rowan-icon>` and that name. `@rowan-ui/icons/element` registers the class only.
+- `rowan-maplibre-map` imports `@rowan-ui/maplibre/map`. Install the `maplibre-gl` peer next to `@rowan-ui/maplibre`. The map registers from `@rowan-ui/maplibre/map`.
+
+## Theming
+
+Rowan themes are CSS custom properties on `:root` or a `[data-theme]` scope. Primitive tokens feed semantic tokens, and component hooks follow the semantic layer. There is no JavaScript theme provider.
+
+```js
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/tokens/dark";
+
+document.documentElement.dataset.theme = "dark";
+```
+
+- Import the base tokens and one shipped theme, then set data-theme on the scope that should change.
+- Product themes override semantic tokens (--rowan-color-bg, --rowan-color-fg, --rowan-color-accent, and the rest of that layer).
+- Shipped theme files re-declare component aliases so a nested [data-theme] scope resolves those aliases again.
+- CSS remains the runtime source of truth. @rowan-ui/core/tokens.json is a DTCG handoff for design tools.
+
+### Shipped themes
+
+- `light`: import `@rowan-ui/core/tokens/light` and set `data-theme="light"`.
+- `dark`: import `@rowan-ui/core/tokens/dark` and set `data-theme="dark"`.
+- `lagoon`: import `@rowan-ui/core/tokens/lagoon` and set `data-theme="lagoon"`.
+- `ember`: import `@rowan-ui/core/tokens/ember` and set `data-theme="ember"`.
+- `slate`: import `@rowan-ui/core/tokens/slate` and set `data-theme="slate"`.
+- `midnight`: import `@rowan-ui/core/tokens/midnight` and set `data-theme="midnight"`.
+
+### Semantic tokens
+
+- `--rowan-color-accent`: `var(--rowan-color-forest-700)`
+- `--rowan-color-accent-contrast`: `var(--rowan-color-bg)`
+- `--rowan-color-bg`: `var(--rowan-color-sand-50)`
+- `--rowan-color-border`: `#d8dcd5`
+- `--rowan-color-danger`: `var(--rowan-color-danger-600)`
+- `--rowan-color-fg`: `var(--rowan-color-ink-900)`
+- `--rowan-color-muted`: `var(--rowan-color-ink-700)`
+- `--rowan-color-success`: `#2f7a4d`
+- `--rowan-color-surface`: `var(--rowan-color-bg)`
+- `--rowan-color-warning`: `#9b7018`
+
+Chart plots can opt into a separate palette: import `@rowan-ui/core/tokens/charts-vibrant` and set `data-rowan-charts="vibrant"`. Buttons and navigation stay on the Rowan theme. The palette applies only inside the region that sets the attribute.
+
+Design-tool handoff: `@rowan-ui/core/tokens.json`.
+
+Component hooks such as `--rowan-button-bg` follow the semantic layer. The full primitive and component lists are in https://2351labs.github.io/rowan/llms-full.txt.
+
+## Components
+
+100 custom elements. Each block is the public API summary (attributes, properties, events, slots, and CSS parts).
+
+- [rowan-accordion](https://2351labs.github.io/rowan/#accordion): Expandable disclosure section. Import `@rowan-ui/core/accordion`. React `RowanAccordion` from `@rowan-ui/core/react/accordion`.
+
+  Attributes: `open` boolean default false; `summary` string default Details
+  Properties: `externalLabelText`; `open` default false; `summary` default Details
+  Events: `rowan-change`
+  Slots: `(default)`; `summary`
+  Parts: `panel`; `trigger`
+
+- [rowan-alert](https://2351labs.github.io/rowan/#alert): Status message surface with optional dismissal. Import `@rowan-ui/core/alert`. React `RowanAlert` from `@rowan-ui/core/react/alert`.
+
+  Attributes: `dismissible` boolean default false; `tone` "info"|"success"|"warning"|"danger" default info
+  Properties: `dismissible` default false; `externalLabelText`; `messages` RowanAlertMessages; `tone` "info" | "success" | "warning" | "danger" default info
+  Events: `rowan-dismiss`
+  Slots: `(default)`
+  Parts: `alert`; `dismiss`
+
+- [rowan-app-layout](https://2351labs.github.io/rowan/#app-layout): Responsive application shell for header, navigation, and main content. Import `@rowan-ui/core/app-layout`. React `RowanAppLayout` from `@rowan-ui/core/react/app-layout`.
+
+  Attributes: `navigation-label` string default Navigation; `navigation-open` boolean default false
+  Properties: `externalLabelText`; `messages` RowanAppLayoutMessages; `navigationLabel` default Navigation; `navigationOpen` default false
+  Events: `rowan-change`
+  Slots: `(default)`; `header`; `navigation`
+  Parts: `backdrop`; `content`; `header`; `layout`; `navigation`; `navigation-toggle`
+
+- [rowan-area-chart](https://2351labs.github.io/rowan/#area-chart): Filled multi-series area chart. Same data contract as the line chart. Null values break both the line and the fill. Import `@rowan-ui/core/area-chart`. React `RowanAreaChart` from `@rowan-ui/core/react/area-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanTrendChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanAreaChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanTrendChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanTrendChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `area`; `chart`; `control`; `description`; `detail`; `hover`; `label`; `legend`; `legend-item`; `legend-swatch`; `line`; `plot`; `point`; `reference-line`; `summary`; `table`
+
+- [rowan-avatar](https://2351labs.github.io/rowan/#avatar): Circular user avatar with image fallback. Import `@rowan-ui/core/avatar`. React `RowanAvatar` from `@rowan-ui/core/react/avatar`.
+
+  Attributes: `alt` string; `locale` string; `name` string; `size` "sm"|"md"|"lg" default md; `src` string
+  Properties: `alt`; `externalLabelText`; `locale`; `messages` RowanAvatarMessages; `name`; `size` "sm" | "md" | "lg" default md; `src`
+  Events: none
+  Slots: none
+  Parts: `avatar`; `image`; `initials`
+
+- [rowan-badge](https://2351labs.github.io/rowan/#badge): Compact label for status and metadata. Import `@rowan-ui/core/badge`. React `RowanBadge` from `@rowan-ui/core/react/badge`.
+
+  Attributes: `size` "sm"|"md"|"lg" default md; `tone` "info"|"success"|"warning"|"danger" default info
+  Properties: `externalLabelText`; `size` "sm" | "md" | "lg" default md; `tone` "info" | "success" | "warning" | "danger" default info
+  Events: none
+  Slots: `(default)`
+  Parts: `badge`
+
+- [rowan-bar-chart](https://2351labs.github.io/rowan/#bar-chart): Frozen small categorical bar chart. Native SVG, no animation. Import `@rowan-ui/core/bar-chart`. React `RowanBarChart` from `@rowan-ui/core/react/bar-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanBarChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanBarChartMessages; `noMotion`; `orientation` "vertical" | "horizontal" default vertical; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `bar`; `chart`; `control`; `description`; `hover`; `label`; `legend`; `plot`; `table`
+
+- [rowan-box-plot-chart](https://2351labs.github.io/rowan/#box-plot-chart): Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data. Own series model — not categorical `series.values`. Import `@rowan-ui/core/box-plot-chart`. React `RowanBoxPlotChart` from `@rowan-ui/core/react/box-plot-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanBoxPlotChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanBoxPlotChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanBoxPlotChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `box`; `control`; `hover`; `median`; `outlier`; `plot`; `table`; `whisker`
+
+- [rowan-breadcrumb](https://2351labs.github.io/rowan/#breadcrumb): Breadcrumb navigation wrapper. Import `@rowan-ui/core/breadcrumb`. React `RowanBreadcrumb` from `@rowan-ui/core/react/breadcrumb`.
+
+  Attributes: none
+  Properties: `externalLabelText`; `messages` RowanBreadcrumbMessages
+  Events: none
+  Slots: `(default)`
+  Parts: `nav`
+
+- [rowan-bulk-actions-bar](https://2351labs.github.io/rowan/#bulk-actions-bar): Contextual bulk actions for selected rows in a Rowan data table. Import `@rowan-ui/core/bulk-actions-bar`. React `RowanBulkActionsBar` from `@rowan-ui/core/react/bulk-actions-bar`.
+
+  Attributes: `clear-label` string; `disabled` boolean default false; `for-table` string; `label` string; `selection-label` string
+  Properties: `actions`; `clearLabel`; `disabled` default false; `externalLabelText`; `forTable`; `label`; `messages` RowanBulkActionsBarMessages; `selected`; `selectedCount`; `selectedRows`; `selectionLabel`; `table`
+  Events: `rowan-bulk-action`; `rowan-clear-selection`
+  Slots: `(default)`; `end`; `label`
+  Parts: `actions`; `bar`; `clear-button`; `configured-actions`; `end`; `selection-text`; `summary`
+
+- [rowan-bullet-chart](https://2351labs.github.io/rowan/#bullet-chart): Compact qualitative comparison after Stephen Few's bullet graph spec. Import `@rowan-ui/core/bullet-chart`. React `RowanBulletChart` from `@rowan-ui/core/react/bullet-chart`.
+
+  Attributes: `encoding` "ink"|"accent"|"status"|"tone" default ink; `hidden-series` string; `intent` "higher"|"lower"; `label` string; `locale` string; `no-motion` boolean default false; `scale` boolean default false
+  Properties: `encoding` "ink" | "accent" | "status" | "tone" default ink; `externalLabelText`; `hiddenSeries` string[]; `intent` "higher" | "lower"; `label`; `locale`; `messages` RowanBulletChartMessages; `noMotion`; `ranges` RowanBulletChartRange[]; `scale`; `target` number | null; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `value` number | null
+  Events: `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`
+  Slots: `tooltip`
+  Parts: `actual`; `chart`; `hover`; `plot`; `range`; `table`; `target`; `tick`
+
+- [rowan-button](https://2351labs.github.io/rowan/#button): Primary action control. Import `@rowan-ui/core/button`. React `RowanButton` from `@rowan-ui/core/react/button`.
+
+  Attributes: `disabled` boolean default false; `loading` boolean default false; `size` "sm"|"md"|"lg" default md; `type` "button"|"submit"|"reset" default button; `variant` "primary"|"secondary"|"ghost"|"danger" default primary
+  Properties: `disabled` default false; `externalLabelText`; `loading` default false; `size` "sm" | "md" | "lg" default md; `type` "button" | "submit" | "reset" default button; `variant` "primary" | "secondary" | "ghost" | "danger" default primary
+  Events: `rowan-click`
+  Slots: `(default)`; `prefix`; `suffix`
+  Parts: `button`; `prefix`; `spinner`; `suffix`
+
+- [rowan-calendar](https://2351labs.github.io/rowan/#calendar): Calendar grid for date selection with keyboard navigation. Import `@rowan-ui/core/calendar`. React `RowanCalendar` from `@rowan-ui/core/react/calendar`.
+
+  Attributes: `disabled` boolean default false; `end` string; `invalid` boolean default false; `label` string; `locale` string; `max` string; `min` string; `month` string; `name` string; `name-end` string; `name-start` string; `required` boolean default false; `selection-mode` "single"|"range" default single; `start` string; `value` string
+  Properties: `disabled` default false; `end`; `externalLabelText`; `invalid` default false; `label`; `locale`; `max`; `messages` RowanCalendarMessages; `min`; `month`; `name`; `nameEnd`; `nameStart`; `required` default false; `selectionMode` "single" | "range" default single; `start`; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `calendar`; `day`; `grid`; `header`; `month-label`
+
+- [rowan-card](https://2351labs.github.io/rowan/#card): Surface container for grouped content. Import `@rowan-ui/core/card`. React `RowanCard` from `@rowan-ui/core/react/card`.
+
+  Attributes: none
+  Properties: `externalLabelText`
+  Events: none
+  Slots: `(default)`; `actions`; `footer`; `header`; `media`; `title`
+  Parts: `actions`; `body`; `card`; `footer`; `header`; `media`; `title`
+
+- [rowan-carousel](https://2351labs.github.io/rowan/#carousel): Controlled sequence of slotted content panels. Import `@rowan-ui/core/carousel`. React `RowanCarousel` from `@rowan-ui/core/react/carousel`.
+
+  Attributes: `active-index` number default 0; `label` string default Carousel
+  Properties: `activeIndex` default 0; `externalLabelText`; `label` default Carousel; `messages` RowanCarouselMessages
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `carousel`; `controls`; `next-button`; `previous-button`; `status`; `viewport`
+
+- [rowan-checkbox](https://2351labs.github.io/rowan/#checkbox): Checkbox control with form association. Import `@rowan-ui/core/checkbox`. React `RowanCheckbox` from `@rowan-ui/core/react/checkbox`.
+
+  Attributes: `checked` boolean default false; `disabled` boolean default false; `indeterminate` boolean default false; `label` string; `name` string; `required` boolean default false; `value` string default on
+  Properties: `checked` default false; `disabled` default false; `externalLabelText`; `indeterminate` default false; `label`; `name`; `required` default false; `value` default on
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `control`; `input`
+
+- [rowan-chip](https://2351labs.github.io/rowan/#chip): Compact pill for lightweight metadata. Import `@rowan-ui/core/chip`. React `RowanChip` from `@rowan-ui/core/react/chip`.
+
+  Attributes: `size` "sm"|"md"|"lg" default md; `tone` "info"|"success"|"warning"|"danger" default info
+  Properties: `externalLabelText`; `size` "sm" | "md" | "lg" default md; `tone` "info" | "success" | "warning" | "danger" default info
+  Events: none
+  Slots: `(default)`; `prefix`; `suffix`
+  Parts: `chip`
+
+- [rowan-color-picker](https://2351labs.github.io/rowan/#color-picker): Accessible semantic color selection with approved swatches and alpha-enabled custom entry. Import `@rowan-ui/core/color-picker`. React `RowanColorPicker` from `@rowan-ui/core/react/color-picker`.
+
+  Attributes: `description` string; `disabled` boolean default false; `invalid` boolean default false; `label` string; `name` string; `required` boolean default false; `value` string
+  Properties: `description`; `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `messages` RowanColorPickerMessages; `name`; `palette` Array<string | RowanColorPickerPaletteEntry>; `required` default false; `value`
+  Events: `rowan-change`
+  Slots: `description`; `label`
+  Parts: `alpha-input`; `alpha-value`; `color-input`; `control`; `custom-color`; `description`; `label`; `swatch`; `swatch-color`; `swatches`
+
+- [rowan-column-sparkline](https://2351labs.github.io/rowan/#column-sparkline): Frozen compact one-series columns for KPI tiles. Not a density of `rowan-bar-chart`. Not a `variant` of `rowan-sparkline`. Import `@rowan-ui/core/column-sparkline`. React `RowanColumnSparkline` from `@rowan-ui/core/react/column-sparkline`.
+
+  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `brush` boolean default false; `hidden-series` string; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral
+  Properties: `aboveTone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `belowTone` "neutral" | "info" | "success" | "warning" | "danger" default success; `externalLabelText`; `hiddenSeries` string[]; `label`; `labels` string[]; `locale`; `messages` RowanColumnSparklineMessages; `noMotion`; `target` number | null; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `values` Array<number | null>
+  Events: `rowan-brush`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `tooltip`
+  Parts: `chart`; `column`; `hover`; `plot`; `table`; `target`
+
+- [rowan-combo-chart](https://2351labs.github.io/rowan/#combo-chart): Categorical combo: bars, lines, and areas on a shared category axis. Optional `axis: "secondary"` for a second value scale (Pareto cumulative %). Bar, area, and trend charts stay separate hosts. Import `@rowan-ui/core/combo-chart`. React `RowanComboChart` from `@rowan-ui/core/react/combo-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` object; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanComboChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `area`; `bar`; `control`; `hover`; `line`; `plot`; `table`
+
+- [rowan-combobox](https://2351labs.github.io/rowan/#combobox): Filterable text entry with a listbox of suggestions. Focus stays in the input and the highlighted option is reported with `aria-activedescendant`, matching the APG combobox pattern. Import `@rowan-ui/core/combobox`. React `RowanCombobox` from `@rowan-ui/core/react/combobox`.
+
+  Attributes: `disabled` boolean default false; `label` string; `locale` string; `name` string; `open` boolean default false; `placeholder` string; `required` boolean default false; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `label`; `locale`; `messages` RowanComboboxMessages; `name`; `open` default false; `options` RowanComboboxOption[]; `placeholder`; `required` default false; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `control`; `empty`; `input`; `label`; `list`; `panel`
+
+- [rowan-command-item](https://2351labs.github.io/rowan/#command-item): Action entry used by a rowan-command-palette. Import `@rowan-ui/core/command-item`. React `RowanCommandItem` from `@rowan-ui/core/react/command-item`.
+
+  Attributes: `description` string; `disabled` boolean default false; `group` string; `keywords` string; `label` string; `shortcut` string; `tabindex`; `value` string
+  Properties: `description`; `disabled` default false; `externalLabelText`; `group`; `keywords`; `label`; `searchText`; `shortcut`; `value`
+  Events: none
+  Slots: `(default)`; `description`; `prefix`; `shortcut`
+  Parts: `description`; `group`; `item`; `label`; `shortcut`
+
+- [rowan-command-palette](https://2351labs.github.io/rowan/#command-palette): Keyboard-first command surface for filtering and activating command items. Import `@rowan-ui/core/command-palette`. React `RowanCommandPalette` from `@rowan-ui/core/react/command-palette`.
+
+  Attributes: `empty-label` string; `hotkey` string; `label` string; `locale` string; `open` boolean default false; `placeholder` string; `query` string
+  Properties: `emptyLabel`; `externalLabelText`; `hotkey`; `label`; `locale`; `messages` RowanCommandPaletteMessages; `open` default false; `placeholder`; `query`
+  Events: `rowan-close`; `rowan-command`
+  Slots: `(default)`; `empty`
+  Parts: `close`; `empty`; `input`; `list`; `overlay`; `panel`
+
+- [rowan-confirm-dialog](https://2351labs.github.io/rowan/#confirm-dialog): Focused dialog for confirming consequential actions. Import `@rowan-ui/core/confirm-dialog`. React `RowanConfirmDialog` from `@rowan-ui/core/react/confirm-dialog`.
+
+  Attributes: `cancel-label` string; `confirm-disabled` boolean default false; `confirm-label` string; `confirm-variant` "primary"|"danger" default primary; `label` string; `open` boolean default false
+  Properties: `cancelLabel`; `confirmDisabled` default false; `confirmLabel`; `confirmVariant` "primary" | "danger" default primary; `externalLabelText`; `label`; `messages` RowanConfirmDialogMessages; `open` default false
+  Events: `rowan-cancel`; `rowan-close`; `rowan-confirm`
+  Slots: `(default)`; `actions`; `title`
+  Parts: `actions`; `cancel`; `confirm`; `dialog`
+
+- [rowan-context-menu](https://2351labs.github.io/rowan/#context-menu): Contextual action menu bound to an element by property or identifier. Import `@rowan-ui/core/context-menu`. React `RowanContextMenu` from `@rowan-ui/core/react/context-menu`.
+
+  Attributes: `for` string; `label` string; `open` boolean default false
+  Properties: `externalLabelText`; `forTarget`; `label`; `messages` RowanContextMenuMessages; `open` default false; `target` HTMLElement | null
+  Events: `rowan-change`; `rowan-close`
+  Slots: `(default)`
+  Parts: `backdrop`; `menu`; `overlay`; `panel`
+
+- [rowan-data-state](https://2351labs.github.io/rowan/#data-state): Region wrapper for ready, loading, empty, and error chrome. Table and KPI keep their own loading. Does not fetch data. Import `@rowan-ui/core/data-state`. React `RowanDataState` from `@rowan-ui/core/react/data-state`.
+
+  Attributes: `state` "ready"|"loading"|"empty"|"error" default ready
+  Properties: `externalLabelText`; `messages` RowanDataStateMessages; `state` "ready" | "loading" | "empty" | "error" default ready
+  Events: none
+  Slots: `(default)`; `actions`; `empty`; `error`; `loading`
+  Parts: `actions`; `empty`; `error`; `loading`; `ready`
+
+- [rowan-date-picker](https://2351labs.github.io/rowan/#date-picker): Date input with form association and range validation. Import `@rowan-ui/core/date-picker`. React `RowanDatePicker` from `@rowan-ui/core/react/date-picker`.
+
+  Attributes: `disabled` boolean default false; `invalid` boolean default false; `label` string; `max` string; `min` string; `name` string; `required` boolean default false; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `max`; `min`; `name`; `required` default false; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `input`
+
+- [rowan-date-range-picker](https://2351labs.github.io/rowan/#date-range-picker): Date range input with form association and ordered range validation. Import `@rowan-ui/core/date-range-picker`. React `RowanDateRangePicker` from `@rowan-ui/core/react/date-range-picker`.
+
+  Attributes: `disabled` boolean default false; `end` string; `invalid` boolean default false; `label` string; `max` string; `messages`; `min` string; `name` string; `name-end` string; `name-start` string; `required` boolean default false; `start` string
+  Properties: `disabled` default false; `end`; `externalLabelText`; `invalid` default false; `label`; `max`; `messages` RowanDateRangePickerMessages; `min`; `name`; `nameEnd`; `nameStart`; `required` default false; `start`; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `clear-button`; `control`; `end-input`; `start-input`
+
+- [rowan-dialog](https://2351labs.github.io/rowan/#dialog): Modal dialog surface. Import `@rowan-ui/core/dialog`. React `RowanDialog` from `@rowan-ui/core/react/dialog`.
+
+  Attributes: `alert` boolean default false; `open` boolean default false
+  Properties: `alert` default false; `externalLabelText`; `messages` RowanDialogMessages; `open` default false
+  Events: `rowan-close`
+  Slots: `(default)`; `actions`; `title`
+  Parts: `close`; `overlay`; `panel`
+
+- [rowan-divider](https://2351labs.github.io/rowan/#divider): Visual separator line. Import `@rowan-ui/core/divider`. React `RowanDivider` from `@rowan-ui/core/react/divider`.
+
+  Attributes: `orientation` "horizontal"|"vertical" default horizontal
+  Properties: `externalLabelText`; `orientation` "horizontal" | "vertical" default horizontal
+  Events: none
+  Slots: none
+  Parts: `divider`
+
+- [rowan-donut-chart](https://2351labs.github.io/rowan/#donut-chart): Frozen parts-of-a-whole chart. Uses the first series. Negative values are treated as no-data, not slices. Import `@rowan-ui/core/donut-chart`. React `RowanDonutChart` from `@rowan-ui/core/react/donut-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "donut"|"pie" default donut
+  Properties: `config` RowanDonutChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanDonutChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `variant` "donut" | "pie" default donut
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `control`; `hover`; `label`; `legend`; `plot`; `slice`; `table`; `total`
+
+- [rowan-drawer](https://2351labs.github.io/rowan/#drawer): Side panel drawer. Import `@rowan-ui/core/drawer`. React `RowanDrawer` from `@rowan-ui/core/react/drawer`.
+
+  Attributes: `open` boolean default false; `side` "start"|"end" default start
+  Properties: `externalLabelText`; `messages` RowanDrawerMessages; `open` default false; `side` "start" | "end" default start
+  Events: `rowan-change`
+  Slots: `(default)`; `title`
+  Parts: `close`; `overlay`; `panel`; `title`
+
+- [rowan-dropdown](https://2351labs.github.io/rowan/#dropdown): Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab. Other focusable panel content is tabbed through; Tab at the edge closes. Import `@rowan-ui/core/dropdown`. React `RowanDropdown` from `@rowan-ui/core/react/dropdown`.
+
+  Attributes: `label` string default Options; `open` boolean default false
+  Properties: `externalLabelText`; `label` default Options; `open` default false
+  Events: `rowan-change`
+  Slots: `(default)`; `trigger`
+  Parts: `panel`; `trigger`
+
+- [rowan-dropzone](https://2351labs.github.io/rowan/#dropzone): Drag-and-drop file selection surface with picker fallback. Import `@rowan-ui/core/dropzone`. React `RowanDropzone` from `@rowan-ui/core/react/dropzone`.
+
+  Attributes: `accept` string; `description` string; `disabled` boolean default false; `drag-active` boolean default false; `label` string; `multiple` boolean default false
+  Properties: `accept`; `description`; `disabled` default false; `dragActive` default false; `externalLabelText`; `label`; `messages` RowanDropzoneMessages; `multiple` default false
+  Events: `rowan-files-add`
+  Slots: none
+  Parts: `description`; `input`; `label`; `surface`
+
+- [rowan-empty-state](https://2351labs.github.io/rowan/#empty-state): Empty state message block. Import `@rowan-ui/core/empty-state`. React `RowanEmptyState` from `@rowan-ui/core/react/empty-state`.
+
+  Attributes: none
+  Properties: `externalLabelText`
+  Events: none
+  Slots: `(default)`; `actions`; `icon`; `title`
+  Parts: `actions`; `body`; `container`; `icon`; `title`
+
+- [rowan-file-item](https://2351labs.github.io/rowan/#file-item): Upload queue item showing file metadata, state, and actions. Import `@rowan-ui/core/file-item`. React `RowanFileItem` from `@rowan-ui/core/react/file-item`.
+
+  Attributes: `disabled` boolean default false; `file-id` string; `filename` string; `filesize` number default 0; `locale` string; `progress` number default 0; `status` "queued"|"uploading"|"success"|"failed" default queued
+  Properties: `disabled` default false; `externalLabelText`; `fileId`; `filename`; `filesize` default 0; `locale`; `messages` RowanFileItemMessages; `progress` default 0; `status` "queued" | "uploading" | "success" | "failed" default queued
+  Events: `rowan-cancel`; `rowan-remove`; `rowan-retry`
+  Slots: none
+  Parts: `actions`; `details`; `item`; `name`; `progress`; `status`
+
+- [rowan-file-upload](https://2351labs.github.io/rowan/#file-upload): File upload composer with dropzone and queue item rendering. Import `@rowan-ui/core/file-upload`. React `RowanFileUpload` from `@rowan-ui/core/react/file-upload`.
+
+  Attributes: `accept` string; `disabled` boolean default false; `label` string; `locale` string; `max-files` number default 0; `multiple` boolean default false; `name` string; `required` boolean default false
+  Properties: `accept`; `disabled` default false; `externalLabelText`; `files`; `label`; `locale`; `maxFiles` default 0; `messages` RowanFileUploadMessages; `multiple` default false; `name`; `required` default false
+  Events: `rowan-file-cancel`; `rowan-file-remove`; `rowan-file-retry`; `rowan-files-add`
+  Slots: none
+  Parts: `dropzone`; `empty`; `file-list`; `upload`
+
+- [rowan-filter-builder](https://2351labs.github.io/rowan/#filter-builder): Configurable filter editor that composes with a Rowan data table. Import `@rowan-ui/core/filter-builder`. React `RowanFilterBuilder` from `@rowan-ui/core/react/filter-builder`.
+
+  Attributes: `add-label` string; `appearance` "panel"|"toolbar" default panel; `clear-label` string; `disabled` boolean default false; `for-table` string; `label` string
+  Properties: `addLabel`; `appearance` "panel" | "toolbar" default panel; `clearLabel`; `disabled` default false; `externalLabelText`; `fields` RowanFilterField[]; `filters` Array<RowanFilter | RowanFilterGroup>; `forTable`; `label`; `messages` RowanFilterBuilderMessages; `table`
+  Events: `rowan-filter-change`
+  Slots: `actions`
+  Parts: `add-button`; `add-group-button`; `builder`; `chip`; `chip-remove`; `clear-button`; `field-select`; `filter`; `filters`; `group`; `header`; `operator-select`; `value-control`
+
+- [rowan-form-field](https://2351labs.github.io/rowan/#form-field): Accessible label, support text, and error composition for a form control. Import `@rowan-ui/core/form-field`. React `RowanFormField` from `@rowan-ui/core/react/form-field`.
+
+  Attributes: `description` string; `error` string; `for` string; `hint` string; `invalid` boolean default false; `label` string; `label-position` "top"|"start" default top; `required` boolean default false
+  Properties: `description`; `error`; `externalLabelText`; `hint`; `htmlFor`; `invalid` default false; `label`; `labelPosition` default top; `messages` RowanFormFieldMessages; `required` default false
+  Events: none
+  Slots: `(default)`; `actions`; `description`; `error`; `hint`; `label`
+  Parts: `actions`; `control`; `description`; `error`; `field`; `hint`; `label`; `label-row`; `required-indicator`; `support`
+
+- [rowan-form-layout](https://2351labs.github.io/rowan/#form-layout): Responsive field grid with direct-child spans and coordinated label alignment. Import `@rowan-ui/core/form-layout`. React `RowanFormLayout` from `@rowan-ui/core/react/form-layout`.
+
+  Attributes: `columns` number default 2; `gap` string; `label-align` "start"|"end" default start; `label-position` "top"|"start" default top; `label-width` string
+  Properties: `columns` default 2; `externalLabelText`; `gap`; `labelAlign` default start; `labelPosition` default top; `labelWidth`
+  Events: none
+  Slots: `(default)`
+  Parts: `layout`
+
+- [rowan-form-wizard](https://2351labs.github.io/rowan/#form-wizard): Guided multi-step form workflow with guarded validation and progress. Import `@rowan-ui/core/form-wizard`. React `RowanFormWizard` from `@rowan-ui/core/react/form-wizard`.
+
+  Attributes: `complete-label` string; `current-step` number default 1; `disabled` boolean default false; `label` string; `next-label` string; `orientation` "horizontal"|"vertical" default horizontal; `previous-label` string; `steps` string
+  Properties: `completeLabel`; `currentStep` default 1; `disabled` default false; `externalLabelText`; `label`; `messages` RowanFormWizardMessages; `nextLabel`; `orientation` default horizontal; `previousLabel`; `steps`
+  Events: `rowan-complete`; `rowan-invalid`; `rowan-step-change`
+  Slots: `(default)`; `step-*`
+  Parts: `actions`; `next-button`; `panel`; `panels`; `previous-button`; `progress`; `stepper`; `validation-summary`; `wizard`
+
+- [rowan-funnel-chart](https://2351labs.github.io/rowan/#funnel-chart): One-series stage chart. Does not auto-sort. Negatives and null are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers the last stage to a point. Import `@rowan-ui/core/funnel-chart`. React `RowanFunnelChart` from `@rowan-ui/core/react/funnel-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "funnel"|"cone"|"pyramid" default funnel
+  Properties: `config` RowanFunnelChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanFunnelChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `variant` "funnel" | "cone" | "pyramid" default funnel
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `control`; `hover`; `plot`; `stage`; `table`
+
+- [rowan-gauge-chart](https://2351labs.github.io/rowan/#gauge-chart): Compact speedometer gauge: ranges, min/max, actual, and optional target. Separate host from bullet and donut charts. Import `@rowan-ui/core/gauge-chart`. React `RowanGaugeChart` from `@rowan-ui/core/react/gauge-chart`.
+
+  Attributes: `brush` boolean default false; `hidden-series` string; `label` string; `large-series` number; `locale` string; `max` number default 100; `min` number default 0; `no-motion` boolean default false; `sync-group` string
+  Properties: `externalLabelText`; `hiddenSeries` string[]; `label`; `locale`; `max` default 100; `messages` RowanGaugeChartMessages; `min` default 0; `noMotion`; `ranges` RowanGaugeChartRange[]; `target` number | null; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `value` number | null
+  Events: `rowan-brush`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `tooltip`
+  Parts: `chart`; `hover`; `hub`; `needle`; `plot`; `range`; `readout`; `table`; `target`; `tick-label`; `track`
+
+- [rowan-heatmap-chart](https://2351labs.github.io/rowan/#heatmap-chart): Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points. Import `@rowan-ui/core/heatmap-chart`. React `RowanHeatmapChart` from `@rowan-ui/core/react/heatmap-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string
+  Properties: `columns` string[]; `config` RowanHeatmapChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `locale`; `messages` RowanHeatmapChartMessages; `noMotion`; `points` RowanHeatmapChartPoint[]; `rows` string[]; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `values` Array<Array<number | null>>
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `cell`; `control`; `hover`; `plot`; `table`
+
+- [rowan-icon](https://2351labs.github.io/rowan/#icon): Declarative SVG icon registered by an individual `@rowan-ui/icons/elements/*` import. Import `@rowan-ui/icons/element`. React `RowanIcon` from `@rowan-ui/icons/react/icon`. Each glyph is its own module. `import "@rowan-ui/icons/elements/<name>"` registers `<rowan-icon>` and that name. `@rowan-ui/icons/element` registers the class only.
+
+  Attributes: `label` string; `name` string; `size` string; `stroke-width` string; `tone` "none"|"info"|"success"|"warning"|"danger"
+  Properties: `label`; `name`; `size`; `strokeWidth`; `tone` "none" | "info" | "success" | "warning" | "danger"
+  Events: none
+  Slots: none
+  Parts: `icon`
+
+- [rowan-icon-button](https://2351labs.github.io/rowan/#icon-button): Icon-only action control. Import `@rowan-ui/core/icon-button`. React `RowanIconButton` from `@rowan-ui/core/react/icon-button`.
+
+  Attributes: `disabled` boolean default false; `icon` string; `label` string; `size` "sm"|"md"|"lg" default md; `type` "button"|"submit"|"reset" default button; `variant` "primary"|"secondary"|"ghost"|"danger" default ghost
+  Properties: `disabled` default false; `externalLabelText`; `icon`; `label`; `size` "sm" | "md" | "lg" default md; `type` "button" | "submit" | "reset" default button; `variant` "primary" | "secondary" | "ghost" | "danger" default ghost
+  Events: `rowan-click`
+  Slots: `(default)`
+  Parts: `button`; `icon`
+
+- [rowan-image](https://2351labs.github.io/rowan/#image): Image display. Overlay and caption are slots. Optional href is a real link around the image, not around overlay actions. Import `@rowan-ui/core/image`. React `RowanImage` from `@rowan-ui/core/react/image`.
+
+  Attributes: `alt` string; `fit` "cover"|"contain" default cover; `href` string; `loading` "lazy"|"eager" default lazy; `src` string
+  Properties: `alt`; `externalLabelText`; `fit` "cover" | "contain" default cover; `href`; `loading` "lazy" | "eager" default lazy; `src`
+  Events: none
+  Slots: `caption`; `fallback`; `overlay`
+  Parts: `caption`; `control`; `fallback`; `frame`; `image`; `overlay`
+
+- [rowan-kpi-card](https://2351labs.github.io/rowan/#kpi-card): Frozen dashboard stat tile. Value and delta stay property-only. Inline-size container: compact below 10rem, roomy from 22rem. A slotted gauge sits immediately beside the metrics except below 10rem. Does not change chart kind or reformat the value. Import `@rowan-ui/core/kpi-card`. React `RowanKpiCard` from `@rowan-ui/core/react/kpi-card`.
+
+  Attributes: `delta-label` string; `hidden-series` string; `label` string; `loading` boolean default false; `locale` string; `no-motion` boolean default false; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral
+  Properties: `delta` number | null; `deltaLabel`; `externalLabelText`; `hiddenSeries` string[]; `label`; `loading` default false; `locale`; `messages` RowanKpiCardMessages; `noMotion`; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `value` number | string | null
+  Events: `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`
+  Slots: `(default)`; `chart`; `icon`; `tooltip`
+  Parts: `body`; `card`; `chart`; `delta`; `description`; `icon`; `label`; `value`
+
+- [rowan-link](https://2351labs.github.io/rowan/#link): Text navigation link. Import `@rowan-ui/core/link`. React `RowanLink` from `@rowan-ui/core/react/link`.
+
+  Attributes: `disabled` boolean default false; `external` boolean default false; `href` string; `target` string
+  Properties: `disabled` default false; `external` default false; `externalLabelText`; `href`; `target`
+  Events: `rowan-click`
+  Slots: `(default)`
+  Parts: `link`
+
+- [rowan-listbox](https://2351labs.github.io/rowan/#listbox): Accessible single- or multi-selection list control. Import `@rowan-ui/core/listbox`. React `RowanListbox` from `@rowan-ui/core/react/listbox`.
+
+  Attributes: `disabled` boolean default false; `label` string; `name` string; `required` boolean default false; `selection` "single"|"multiple" default single; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `label`; `name`; `required` default false; `selected` string[]; `selectedOptions` RowanOption[]; `selection` "single" | "multiple" default single; `value`
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `listbox`
+
+- [rowan-maplibre-map](https://2351labs.github.io/rowan/#maplibre-map): Optional MapLibre map with application-owned styles and accessible location alternatives. Import `@rowan-ui/maplibre/map`. React `RowanMapLibreMap` from `@rowan-ui/maplibre/react/map`. Install the `maplibre-gl` peer next to `@rowan-ui/maplibre`. The map registers from `@rowan-ui/maplibre/map`.
+
+  Attributes: `description` string; `label` string; `no-provider-styles` boolean default false
+  Properties: `attribution` RowanMapAttributionInput; `description`; `label`; `layers` Array<RowanMapLayer>; `locations` Array<RowanMapLocation>; `maplibre` object | null; `mapStyle` string | Record<string, unknown> | null; `noProviderStyles`
+  Events: `rowan-layer-change`; `rowan-location-activate`
+  Slots: none
+  Parts: `attribution`; `control`; `description`; `label`; `layers`; `list`; `map`; `marker`; `table`
+
+- [rowan-menu](https://2351labs.github.io/rowan/#menu): Menu container for action lists. Import `@rowan-ui/core/menu`. React `RowanMenu` from `@rowan-ui/core/react/menu`.
+
+  Attributes: none
+  Properties: `externalLabelText`
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `menu`
+
+- [rowan-menu-item](https://2351labs.github.io/rowan/#menu-item): Selectable menu item. Import `@rowan-ui/core/menu-item`. React `RowanMenuItem` from `@rowan-ui/core/react/menu-item`.
+
+  Attributes: `disabled` boolean default false; `tabindex`; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `value`
+  Events: none
+  Slots: `(default)`
+  Parts: `item`
+
+- [rowan-multi-select-combobox](https://2351labs.github.io/rowan/#multi-select-combobox): Filterable multi-select control with removable selected values. Import `@rowan-ui/core/multi-select-combobox`. React `RowanMultiSelectCombobox` from `@rowan-ui/core/react/multi-select-combobox`.
+
+  Attributes: `disabled` boolean default false; `label` string; `locale` string; `name` string; `open` boolean default false; `placeholder` string; `query` string; `required` boolean default false
+  Properties: `disabled` default false; `externalLabelText`; `label`; `locale`; `messages` RowanMultiSelectComboboxMessages; `name`; `open` default false; `options` Array<string | { value: string, label?: string, disabled?: boolean }>; `placeholder`; `query`; `required` default false; `selected` string[]; `selectedOptions`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `chip`; `chips`; `control`; `empty`; `input`; `listbox`
+
+- [rowan-number-field](https://2351labs.github.io/rowan/#number-field): Numeric input with form association, range validation, and step controls. Import `@rowan-ui/core/number-field`. React `RowanNumberField` from `@rowan-ui/core/react/number-field`.
+
+  Attributes: `disabled` boolean default false; `invalid` boolean default false; `label` string; `max` string; `messages`; `min` string; `name` string; `placeholder` string; `required` boolean default false; `step` number default 1; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `max`; `messages` RowanNumberFieldMessages; `min`; `name`; `placeholder`; `required` default false; `step` default 1; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `control`; `decrement-button`; `increment-button`; `input`
+
+- [rowan-option](https://2351labs.github.io/rowan/#option): Selectable item for rowan-listbox. Import `@rowan-ui/core/option`. React `RowanOption` from `@rowan-ui/core/react/option`.
+
+  Attributes: `disabled` boolean default false; `label` string; `selected` boolean default false; `tabindex`; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `label`; `selected` default false; `value`
+  Events: none
+  Slots: `(default)`; `prefix`; `suffix`
+  Parts: `label`; `option`
+
+- [rowan-pagination](https://2351labs.github.io/rowan/#pagination): Pagination controls. Import `@rowan-ui/core/pagination`. React `RowanPagination` from `@rowan-ui/core/react/pagination`.
+
+  Attributes: `page` number default 1; `total-pages` number default 1
+  Properties: `externalLabelText`; `messages` RowanPaginationMessages; `page` default 1; `totalPages` default 1
+  Events: `rowan-page-change`
+  Slots: `(default)`
+  Parts: `container`
+
+- [rowan-popover](https://2351labs.github.io/rowan/#popover): Inline popover surface. Import `@rowan-ui/core/popover`. React `RowanPopover` from `@rowan-ui/core/react/popover`.
+
+  Attributes: `label` string; `open` boolean default false; `trigger` "click"|"manual" default click
+  Properties: `externalLabelText`; `label`; `messages` RowanPopoverMessages; `open` default false; `trigger` "click" | "manual" default click
+  Events: `rowan-change`
+  Slots: `(default)`; `trigger`
+  Parts: `panel`; `trigger`
+
+- [rowan-progress](https://2351labs.github.io/rowan/#progress): Determinate progress indicator. Import `@rowan-ui/core/progress`. React `RowanProgress` from `@rowan-ui/core/react/progress`.
+
+  Attributes: `hide-meta` boolean default false; `label` string; `locale` string; `max` number default 100; `value` number default 0
+  Properties: `externalLabelText`; `hideMeta` default false; `label`; `locale`; `max` default 100; `messages` RowanProgressMessages; `value` default 0
+  Events: none
+  Slots: none
+  Parts: `bar`; `meta`; `progress`
+
+- [rowan-radar-chart](https://2351labs.github.io/rowan/#radar-chart): Polar comparison. Categories are axes around the ring. `geometry` is `line` (default) or `area`. Null is no-data and breaks the ring; the host does not treat a gap as zero. Categorical `series`. Nightingale and radial bars are not this host. Import `@rowan-ui/core/radar-chart`. React `RowanRadarChart` from `@rowan-ui/core/react/radar-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `geometry` "line"|"area" default line; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string
+  Properties: `config` RowanRadarChartConfig; `description`; `externalLabelText`; `geometry` "line" | "area" default line; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanRadarChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `area`; `control`; `hover`; `line`; `plot`; `point`; `table`
+
+- [rowan-radio](https://2351labs.github.io/rowan/#radio): Radio control with form association. Import `@rowan-ui/core/radio`. React `RowanRadio` from `@rowan-ui/core/react/radio`.
+
+  Attributes: `checked` boolean default false; `disabled` boolean default false; `label` string; `name` string; `required` boolean default false; `value` string default on
+  Properties: `checked` default false; `disabled` default false; `externalLabelText`; `label`; `name`; `required` default false; `value` default on
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `control`; `input`
+
+- [rowan-radio-group](https://2351labs.github.io/rowan/#radio-group): Group controller for radio options. Import `@rowan-ui/core/radio-group`. React `RowanRadioGroup` from `@rowan-ui/core/react/radio-group`.
+
+  Attributes: `disabled` boolean default false; `name` string; `required` boolean default false; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `name`; `required` default false; `value`
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `group`
+
+- [rowan-range-chart](https://2351labs.github.io/rowan/#range-chart): Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default) or `area`. Null low or high is no-data. Own series model — not categorical `series.values`. Import `@rowan-ui/core/range-chart`. React `RowanRangeChart` from `@rowan-ui/core/react/range-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "bar"|"area" default bar; `zoom` boolean default false
+  Properties: `config` RowanRangeChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanRangeChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanRangeChartValueFormatter | null; `variant` "bar" | "area" default bar
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `area`; `bar`; `control`; `hover`; `plot`; `table`
+
+- [rowan-rating](https://2351labs.github.io/rowan/#rating): Bounded form-associated rating input. Import `@rowan-ui/core/rating`. React `RowanRating` from `@rowan-ui/core/react/rating`.
+
+  Attributes: `description` string; `disabled` boolean default false; `invalid` boolean default false; `label` string; `locale` string; `max` number default 5; `min` number default 1; `name` string; `required` boolean default false; `step` number default 1; `value` number
+  Properties: `description`; `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `locale`; `max` number default 5; `messages` RowanRatingMessages; `min` number default 1; `name`; `required` default false; `step` number default 1; `value` number | ""
+  Events: `rowan-change`
+  Slots: `description`; `label`
+  Parts: `clear`; `control`; `description`; `label`; `rating`; `star`; `value`
+
+- [rowan-rich-text-editor](https://2351labs.github.io/rowan/#rich-text-editor): Constrained form-associated authoring control with a property-only document value. The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered lists, plus bold, italic, underline, and allowlisted links. Values are normalized to a safe document object; HTML is never accepted as an API value. Images are not document nodes. Rich clipboard data is inserted as plain text. Import `@rowan-ui/core/rich-text-editor`. React `RowanRichTextEditor` from `@rowan-ui/core/react/rich-text-editor`.
+
+  Attributes: `description` string; `disabled` boolean default false; `invalid` boolean default false; `label` string; `mode` "rich"|"plain" default rich; `name` string; `placeholder` string; `required` boolean default false
+  Properties: `description`; `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `messages` RowanRichTextEditorMessages; `mode` default rich; `name`; `placeholder`; `required` default false; `text` string; `value` RowanRichTextDocument
+  Events: `rowan-change`
+  Slots: `description`; `label`
+  Parts: `control`; `description`; `editor`; `format-button`; `label`; `plain-text`; `toolbar`
+
+- [rowan-row-details-panel](https://2351labs.github.io/rowan/#row-details-panel): Side-panel detail view for a selected Rowan data-table row. Import `@rowan-ui/core/row-details-panel`. React `RowanRowDetailsPanel` from `@rowan-ui/core/react/row-details-panel`.
+
+  Attributes: `close-label` string default Close details; `for-table` string; `label` string default Row details; `locale` string; `open` boolean default false; `row-id` string; `side` "start"|"end" default end; `size` "sm"|"md"|"lg" default md
+  Properties: `closeLabel` default Close details; `externalLabelText`; `fields`; `forTable`; `label` default Row details; `locale`; `messages` RowanRowDetailsPanelMessages; `open` default false; `row`; `rowId`; `rowIds` string[]; `side` default end; `size` "sm" | "md" | "lg" default md; `table`
+  Events: `rowan-close`; `rowan-navigate`
+  Slots: `(default)`; `actions`; `empty`; `pager`; `title`
+  Parts: `actions`; `body`; `close`; `empty`; `field`; `fields`; `header`; `overlay`; `pager`; `panel`; `title`
+
+- [rowan-scatter-chart](https://2351labs.github.io/rowan/#scatter-chart): Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or y is no-data. Import `@rowan-ui/core/scatter-chart`. React `RowanScatterChart` from `@rowan-ui/core/react/scatter-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanScatterChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `locale`; `messages` RowanScatterChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanScatterChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `control`; `hover`; `plot`; `point`; `table`
+
+- [rowan-segmented-control](https://2351labs.github.io/rowan/#segmented-control): Compact mutually exclusive mode control. Import `@rowan-ui/core/segmented-control`. React `RowanSegmentedControl` from `@rowan-ui/core/react/segmented-control`.
+
+  Attributes: `disabled` boolean default false; `label` string; `name` string; `required` boolean default false; `size` "sm"|"md"|"lg" default md; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `label`; `name`; `options` Array<string | { value: string, label?: string, disabled?: boolean }>; `required` default false; `selectedOption`; `size` "sm" | "md" | "lg" default md; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `button`; `control`; `label`
+
+- [rowan-select](https://2351labs.github.io/rowan/#select): Select control with form association. Import `@rowan-ui/core/select`. React `RowanSelect` from `@rowan-ui/core/react/select`.
+
+  Attributes: `disabled` boolean default false; `label` string; `name` string; `placeholder` string; `required` boolean default false; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `label`; `name`; `options` RowanSelectOption[]; `placeholder`; `required` default false; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `select`
+
+- [rowan-side-nav](https://2351labs.github.io/rowan/#side-nav): Application navigation controller for rowan-side-nav-item children. Import `@rowan-ui/core/side-nav`. React `RowanSideNav` from `@rowan-ui/core/react/side-nav`.
+
+  Attributes: `label` string; `value` string
+  Properties: `activeItem` RowanSideNavItem | null; `externalLabelText`; `label`; `value`
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `nav`
+
+- [rowan-side-nav-item](https://2351labs.github.io/rowan/#side-nav-item): Link item managed by rowan-side-nav. Import `@rowan-ui/core/side-nav-item`. React `RowanSideNavItem` from `@rowan-ui/core/react/side-nav-item`.
+
+  Attributes: `active` boolean default false; `count` number; `count-label` string; `disabled` boolean default false; `external` boolean default false; `href` string; `label` string; `tabindex`; `target` string; `tone` "none"|"info"|"success"|"warning"|"danger" default none; `value` string
+  Properties: `active` default false; `count` number | null; `countLabel`; `disabled` default false; `external` default false; `externalLabelText`; `href`; `label`; `target`; `tone` "none" | "info" | "success" | "warning" | "danger" default none; `value`
+  Events: none
+  Slots: `(default)`; `prefix`; `suffix`
+  Parts: `item`; `label`; `status`; `status-count`; `status-dot`
+
+- [rowan-side-nav-section](https://2351labs.github.io/rowan/#side-nav-section): Labeled group of destinations inside rowan-side-nav. Opt-in `collapsible` adds a disclosure control. `collapsed` defaults false (open). The parent nav still has one `value`; this host is not a destination. Import `@rowan-ui/core/side-nav-section`. React `RowanSideNavSection` from `@rowan-ui/core/react/side-nav-section`.
+
+  Attributes: `collapsed` boolean default false; `collapsible` boolean default false; `label` string
+  Properties: `collapsed` default false; `collapsible` default false; `expanded` boolean; `externalLabelText`; `label`
+  Events: `rowan-toggle`
+  Slots: `(default)`
+  Parts: `items`; `label`; `section`; `trigger`
+
+- [rowan-skeleton](https://2351labs.github.io/rowan/#skeleton): Loading placeholder block. Import `@rowan-ui/core/skeleton`. React `RowanSkeleton` from `@rowan-ui/core/react/skeleton`.
+
+  Attributes: `animated` boolean default false; `height` string; `shape` "text"|"rect"|"circle" default text; `width` string
+  Properties: `animated` default false; `externalLabelText`; `height`; `shape` "text" | "rect" | "circle" default text; `width`
+  Events: none
+  Slots: none
+  Parts: `skeleton`
+
+- [rowan-slider](https://2351labs.github.io/rowan/#slider): Numeric slider with single-value and ordered range modes. Import `@rowan-ui/core/slider`. React `RowanSlider` from `@rowan-ui/core/react/slider`.
+
+  Attributes: `disabled` boolean default false; `end` number; `invalid` boolean default false; `label` string; `locale` string; `max` number default 100; `min` number default 0; `name` string; `name-end` string; `name-start` string; `range` boolean default false; `required` boolean default false; `start` number; `step` number default 1; `value` number
+  Properties: `disabled` default false; `end`; `externalLabelText`; `formatValue`; `invalid` default false; `label`; `locale`; `max` default 100; `messages` RowanSliderMessages; `min` default 0; `name`; `nameEnd`; `nameStart`; `range` default false; `required` default false; `start`; `step` default 1; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `end-input`; `input`; `range`; `slider`; `start-input`; `track`; `value`
+
+- [rowan-source-meta](https://2351labs.github.io/rowan/#source-meta): Provenance line for KPI description, chart description, or table caption. Does not add fields to those frozen hosts. Import `@rowan-ui/core/source-meta`. React `RowanSourceMeta` from `@rowan-ui/core/react/source-meta`.
+
+  Attributes: `as-of` string; `source` string
+  Properties: `asOf`; `externalLabelText`; `messages` RowanSourceMetaMessages; `source`
+  Events: none
+  Slots: `as-of`; `source`
+  Parts: `as-of`; `meta`; `source`
+
+- [rowan-sparkline](https://2351labs.github.io/rowan/#sparkline): Frozen compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`. Additive `variant="area"` fills to the baseline (or to `target` when set). Import `@rowan-ui/core/sparkline`. React `RowanSparkline` from `@rowan-ui/core/react/sparkline`.
+
+  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default warning; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `hidden-series` string; `label` string; `locale` string; `no-motion` boolean default false; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `variant` "line"|"area" default neutral
+  Properties: `aboveTone` "neutral" | "info" | "success" | "warning" | "danger" default warning; `belowTone` "neutral" | "info" | "success" | "warning" | "danger" default success; `externalLabelText`; `hiddenSeries` string[]; `label`; `labels` string[]; `locale`; `messages` RowanSparklineMessages; `noMotion`; `target` number | null; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `values` Array<number | null>; `variant` "line" | "area" default neutral
+  Events: `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`
+  Slots: `tooltip`
+  Parts: `area`; `chart`; `hover`; `hover-point`; `line`; `plot`; `table`; `target`
+
+- [rowan-spinner](https://2351labs.github.io/rowan/#spinner): Inline loading indicator. Import `@rowan-ui/core/spinner`. React `RowanSpinner` from `@rowan-ui/core/react/spinner`.
+
+  Attributes: `label` string; `size` "sm"|"md"|"lg" default md
+  Properties: `externalLabelText`; `label`; `messages` RowanSpinnerMessages; `size` "sm" | "md" | "lg" default md
+  Events: none
+  Slots: none
+  Parts: `spinner`
+
+- [rowan-split-pane](https://2351labs.github.io/rowan/#split-pane): Resizable two-pane workspace layout. Import `@rowan-ui/core/split-pane`. React `RowanSplitPane` from `@rowan-ui/core/react/split-pane`.
+
+  Attributes: `disabled` boolean default false; `locale` string; `max` number default 100; `min` number default 0; `orientation` "horizontal"|"vertical" default horizontal; `position` number; `snap-threshold` number; `step` number
+  Properties: `disabled` default false; `externalLabelText`; `locale`; `max` number default 100; `messages` RowanSplitPaneMessages; `min` number default 0; `orientation` default horizontal; `position` number; `snapPoints` number[]; `snapThreshold` number; `step` number
+  Events: `rowan-resize`
+  Slots: `end`; `start`
+  Parts: `end`; `layout`; `separator`; `start`
+
+- [rowan-stacked-area-chart](https://2351labs.github.io/rowan/#stacked-area-chart): Stacked categorical area chart. Positive values stack from zero. Null and negatives are no-data. Import `@rowan-ui/core/stacked-area-chart`. React `RowanStackedAreaChart` from `@rowan-ui/core/react/stacked-area-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanStackedAreaChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanStackedAreaChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanChartSeries>; `stackMode` "absolute" | "normalized" default absolute; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `area`; `chart`; `control`; `description`; `detail`; `hover`; `label`; `legend`; `line`; `plot`; `reference-line`; `summary`; `table`
+
+- [rowan-stacked-bar-chart](https://2351labs.github.io/rowan/#stacked-bar-chart): Stacked categorical bar chart. Positive values stack from zero. Null and negatives are no-data. Import `@rowan-ui/core/stacked-bar-chart`. React `RowanStackedBarChart` from `@rowan-ui/core/react/stacked-bar-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanStackedBarChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanStackedBarChartMessages; `noMotion`; `orientation` "vertical" | "horizontal" default vertical; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanChartSeries>; `stackMode` "absolute" | "normalized" default absolute; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `bar`; `chart`; `control`; `description`; `detail`; `hover`; `label`; `legend`; `plot`; `reference-line`; `summary`; `table`
+
+- [rowan-status-indicator](https://2351labs.github.io/rowan/#status-indicator): Concise semantic status marker with an optional visible label. Import `@rowan-ui/core/status-indicator`. React `RowanStatusIndicator` from `@rowan-ui/core/react/status-indicator`.
+
+  Attributes: `label` string; `pulse` boolean default false; `size` "sm"|"md"|"lg" default md; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral
+  Properties: `externalLabelText`; `label`; `pulse` default false; `size` "sm" | "md" | "lg" default md; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral
+  Events: none
+  Slots: `(default)`
+  Parts: `indicator`; `label`; `status`
+
+- [rowan-stepper](https://2351labs.github.io/rowan/#stepper): Progress step tracker for multi-step workflows. Import `@rowan-ui/core/stepper`. React `RowanStepper` from `@rowan-ui/core/react/stepper`.
+
+  Attributes: `current-step` number default 1; `disabled` boolean default false; `orientation` "horizontal"|"vertical" default horizontal; `steps` string
+  Properties: `currentStep` default 1; `disabled` default false; `externalLabelText`; `messages` RowanStepperMessages; `orientation` default horizontal; `steps`
+  Events: `rowan-step-change`
+  Slots: none
+  Parts: `list`; `marker`; `step`; `step-button`; `stepper`
+
+- [rowan-switch](https://2351labs.github.io/rowan/#switch): Toggle switch control with form association. Import `@rowan-ui/core/switch`. React `RowanSwitch` from `@rowan-ui/core/react/switch`.
+
+  Attributes: `checked` boolean default false; `disabled` boolean default false; `label` string; `name` string; `required` boolean default false; `value` string default on
+  Properties: `checked` default false; `disabled` default false; `externalLabelText`; `label`; `name`; `required` default false; `value` default on
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `control`; `input`
+
+- [rowan-tab](https://2351labs.github.io/rowan/#tab): Single tab button. Import `@rowan-ui/core/tab`. React `RowanTab` from `@rowan-ui/core/react/tab`.
+
+  Attributes: `active` boolean default false; `value` string
+  Properties: `active` default false; `externalLabelText`; `value`
+  Events: none
+  Slots: `(default)`
+  Parts: `tab`
+
+- [rowan-tab-panel](https://2351labs.github.io/rowan/#tab-panel): Content panel for a tab. Import `@rowan-ui/core/tab-panel`. React `RowanTabPanel` from `@rowan-ui/core/react/tab-panel`.
+
+  Attributes: `active` boolean default false; `value` string
+  Properties: `active` default false; `externalLabelText`; `value`
+  Events: none
+  Slots: `(default)`
+  Parts: `panel`
+
+- [rowan-table](https://2351labs.github.io/rowan/#table): Config-driven data table. Import `@rowan-ui/core/table`. React `RowanTable` from `@rowan-ui/core/react/table`.
+
+  Attributes: `caption` string; `caption-visually-hidden` boolean default false; `data-mode` "client"|"server"; `density` "sm"|"md"|"lg" default md; `edit-mode` "cell"|"row"; `loading` boolean default false; `locale` string; `reorderable-columns` boolean default false; `resizable-columns` boolean default false; `selectable` "none"|"single"|"multiple" default none; `sort` string; `sticky-header` boolean default false; `virtual-item-size` number; `virtual-overscan` number; `virtualized` boolean default false
+  Properties: `caption`; `captionVisuallyHidden` default false; `columns` Array<object>; `config` object; `dataMode`; `dataSource` object | null; `density` RowanTableDensity default md; `editMode`; `externalLabelText`; `filters` Array<object>; `groupBy` RowanTableGroupBy | null; `itemKey` string; `loading` default false; `locale`; `messages` RowanTableMessages; `page` RowanTablePage | null; `reorderableColumns` default false; `resizableColumns` default false; `rowActivate` "dblclick" | "none"; `rows` Array<object>; `selectable` RowanTableSelectable default none; `selected` Array<string>; `selectedRows` RowanTableRow[]; `sort` RowanTableSort | RowanTableSort[] | null; `stickyHeader` default false; `tree` object | null; `virtualItemSize` number; `virtualized` boolean default false; `virtualOverscan` number
+  Events: `rowan-cell-action`; `rowan-cell-bind`; `rowan-cell-change`; `rowan-column-filter`; `rowan-column-reorder`; `rowan-column-resize`; `rowan-copy`; `rowan-data-error`; `rowan-data-load`; `rowan-data-request`; `rowan-edit-cancel`; `rowan-edit-commit`; `rowan-edit-start`; `rowan-edit-validate`; `rowan-export`; `rowan-group-toggle`; `rowan-page-change`; `rowan-paste`; `rowan-paste-result`; `rowan-row-activate`; `rowan-row-edit-cancel`; `rowan-row-edit-commit`; `rowan-select`; `rowan-sort`; `rowan-sort-change`; `rowan-tree-toggle`
+  Slots: `caption`; `empty`; `footer`; `toolbar`
+  Parts: `caption`; `spacer`; `table`; `tbody`; `td`; `th`; `thead`; `toolbar`; `tr`; `viewport`
+
+- [rowan-table-toolbar](https://2351labs.github.io/rowan/#table-toolbar): Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown` that follows the linked table's `columns` whenever they are assigned or replaced, before or after this element upgrades or connects, and when a column menu hides or shows a column. Import `@rowan-ui/core/table-toolbar`. React `RowanTableToolbar` from `@rowan-ui/core/react/table-toolbar`.
+
+  Attributes: `column-picker` boolean default false; `for-table` string; `label` string default Table controls; `selection-label` string default selected
+  Properties: `columnPicker` default false; `externalLabelText`; `forTable`; `label` default Table controls; `messages` RowanTableToolbarMessages; `selected`; `selectedCount`; `selectedRows`; `selectionLabel` default selected; `table`
+  Events: none
+  Slots: `(default)`; `end`; `selection`; `start`
+  Parts: `column-picker`; `column-picker-menu`; `content`; `end`; `selection`; `selection-text`; `start`; `toolbar`
+
+- [rowan-tabs](https://2351labs.github.io/rowan/#tabs): Tabs controller for tab and tab-panel children. Import `@rowan-ui/core/tabs`. React `RowanTabs` from `@rowan-ui/core/react/tabs`.
+
+  Attributes: `value` string
+  Properties: `externalLabelText`; `value`
+  Events: `rowan-change`
+  Slots: `(default)`
+  Parts: `tabs`
+
+- [rowan-text-field](https://2351labs.github.io/rowan/#text-field): Single-line text input with form association. Import `@rowan-ui/core/text-field`. React `RowanTextField` from `@rowan-ui/core/react/text-field`.
+
+  Attributes: `autocomplete`; `disabled` boolean default false; `invalid` boolean default false; `label` string; `name` string; `pattern` string; `placeholder` string; `required` boolean default false; `type` "text"|"email"|"password"|"search"|"url"|"tel" default text; `value` string
+  Properties: `autocomplete`; `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `name`; `pattern`; `placeholder`; `required` default false; `type` "text" | "email" | "password" | "search" | "url" | "tel" default text; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `input`
+
+- [rowan-textarea](https://2351labs.github.io/rowan/#textarea): Multi-line text input with form association. Import `@rowan-ui/core/textarea`. React `RowanTextarea` from `@rowan-ui/core/react/textarea`.
+
+  Attributes: `disabled` boolean default false; `invalid` boolean default false; `label` string; `name` string; `placeholder` string; `required` boolean default false; `rows` number default 4; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `name`; `placeholder`; `required` default false; `rows` default 4; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `input`
+
+- [rowan-time-picker](https://2351labs.github.io/rowan/#time-picker): Time input with form association and range validation. Import `@rowan-ui/core/time-picker`. React `RowanTimePicker` from `@rowan-ui/core/react/time-picker`.
+
+  Attributes: `disabled` boolean default false; `invalid` boolean default false; `label` string; `max` string; `min` string; `name` string; `required` boolean default false; `step` number default 60; `value` string
+  Properties: `disabled` default false; `externalLabelText`; `invalid` default false; `label`; `max`; `min`; `name`; `required` default false; `step` default 60; `value`
+  Events: `rowan-change`
+  Slots: none
+  Parts: `input`
+
+- [rowan-toast](https://2351labs.github.io/rowan/#toast): Compact status notification with optional dismiss control. Import `@rowan-ui/core/toast`. React `RowanToast` from `@rowan-ui/core/react/toast`.
+
+  Attributes: `dismissible` boolean default false; `tone` "info"|"success"|"warning"|"danger" default info
+  Properties: `dismissible` default false; `externalLabelText`; `messages` RowanToastMessages; `tone` "info" | "success" | "warning" | "danger" default info
+  Events: `rowan-dismiss`
+  Slots: `(default)`; `actions`; `title`
+  Parts: `close`; `toast`
+
+- [rowan-toaster](https://2351labs.github.io/rowan/#toaster): Toast queue manager with mobile-first placement and auto-dismiss handling. Import `@rowan-ui/core/toaster`. React `RowanToaster` from `@rowan-ui/core/react/toaster`.
+
+  Attributes: `duration` number; `max-visible` number; `placement` "top-start"|"top-end"|"bottom-start"|"bottom-end"|"bottom-center" default manual
+  Properties: `duration`; `externalLabelText`; `maxVisible`; `placement` RowanToasterPlacement default manual
+  Events: `rowan-toast-dismiss`; `rowan-toast-show`
+  Slots: none
+  Parts: `stack`
+
+- [rowan-tooltip](https://2351labs.github.io/rowan/#tooltip): Lightweight tooltip text. Import `@rowan-ui/core/tooltip`. React `RowanTooltip` from `@rowan-ui/core/react/tooltip`.
+
+  Attributes: `open` boolean default false; `text` string
+  Properties: `externalLabelText`; `open` default false; `text`
+  Events: none
+  Slots: `(default)`
+  Parts: `tooltip`; `trigger`
+
+- [rowan-tree](https://2351labs.github.io/rowan/#tree): Hierarchical navigation controller for rowan-tree-item nodes. Import `@rowan-ui/core/tree`. React `RowanTree` from `@rowan-ui/core/react/tree`.
+
+  Attributes: `label` string; `selection` "none"|"single"|"multiple" default single
+  Properties: `externalLabelText`; `label`; `selected` string[]; `selectedItems` HTMLElement[]; `selection` RowanTreeSelection default single
+  Events: `rowan-change`; `rowan-toggle`
+  Slots: `(default)`
+  Parts: `tree`
+
+- [rowan-tree-item](https://2351labs.github.io/rowan/#tree-item): Individual node within a hierarchical tree. Import `@rowan-ui/core/tree-item`. React `RowanTreeItem` from `@rowan-ui/core/react/tree-item`.
+
+  Attributes: `disabled` boolean default false; `expanded` boolean default false; `level` number; `selected` boolean default false; `tabindex`; `value` string
+  Properties: `disabled` default false; `expanded` default false; `externalLabelText`; `hasChildren`; `level`; `selected` default false; `value`
+  Events: none
+  Slots: `(default)`; `children`; `prefix`
+  Parts: `children`; `item`; `label`; `toggle`
+
+- [rowan-trend-chart](https://2351labs.github.io/rowan/#trend-chart): Frozen small multi-series line chart for operational data sets. Native SVG, no animation, and an equivalent semantic table. Other geometries are separate hosts. Import `@rowan-ui/core/trend-chart`. React `RowanTrendChart` from `@rowan-ui/core/react/trend-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` RowanTrendChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanTrendChartMessages; `noMotion`; `series` Array<RowanTrendChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanTrendChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `chart`; `control`; `description`; `detail`; `label`; `legend`; `legend-item`; `legend-swatch`; `plot`; `point`; `summary`; `table`
+
+- [rowan-validation-summary](https://2351labs.github.io/rowan/#validation-summary): Renders a navigable summary of validation errors. Import `@rowan-ui/core/validation-summary`. React `RowanValidationSummary` from `@rowan-ui/core/react/validation-summary`.
+
+  Attributes: `disabled` boolean default false; `for-form` string; `heading` string; `show-empty` boolean default false
+  Properties: `disabled` default false; `errors`; `externalLabelText`; `forForm`; `heading`; `messages` RowanValidationSummaryMessages; `showEmpty` default false
+  Events: `rowan-jump`
+  Slots: `empty`; `heading`
+  Parts: `empty`; `error-button`; `heading`; `item`; `list`; `summary`
+
+- [rowan-virtual-list](https://2351labs.github.io/rowan/#virtual-list): Virtualized, keyed collection for large property-driven item sets. Import `@rowan-ui/core/virtual-list`. React `RowanVirtualList` from `@rowan-ui/core/react/virtual-list`.
+
+  Attributes: `item-size` number; `overscan` number
+  Properties: `externalLabelText`; `itemKey` string | ((item: unknown, index: number) => string | number); `items` Array<unknown>; `itemSize` number; `overscan` number; `renderItem` ((item: unknown, index: number, itemEl: HTMLElement) => Node | string | void) | null
+  Events: none
+  Slots: none
+  Parts: `content`; `item`; `items`; `viewport`
+
+- [rowan-waterfall-chart](https://2351labs.github.io/rowan/#waterfall-chart): Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }` from zero; the host does not invent them. Null is no-data. Import `@rowan-ui/core/waterfall-chart`. React `RowanWaterfallChart` from `@rowan-ui/core/react/waterfall-chart`.
+
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Properties: `config` object; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanWaterfallChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
+  Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
+  Slots: `description`; `label`; `tooltip`
+  Parts: `bar`; `control`; `hover`; `plot`; `table`
+
+## Optional
+
+- [Documentation](https://2351labs.github.io/rowan/): guides and per-component pages
+- [Storybook](https://2351labs.github.io/rowan/storybook/): interactive examples
+- [llms-full.txt](https://2351labs.github.io/rowan/llms-full.txt): descriptions, methods, CSS properties, tokens, and copy-paste examples
+- [Use Rowan with AI tools](https://2351labs.github.io/rowan/#ai-tools): Cursor, Claude Code, and VS Code setup

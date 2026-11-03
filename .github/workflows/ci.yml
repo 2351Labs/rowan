@@ -77,6 +77,12 @@ jobs:
         run: node scripts/check-docs-version.mjs
       - name: Verify API reference is current
         run: node scripts/generate-api-reference.mjs --check
+      - name: Verify llms.txt is current
+        run: node scripts/generate-llms.mjs --check
+      - name: Verify MCP catalog is current
+        run: node packages/mcp/scripts/build-catalog.mjs --check
+      - name: AI context unit tests
+        run: node --test test/generate-llms.test.mjs test/mcp-tools.test.mjs
       - name: Verify all components have API references
         run: node scripts/check-component-docs-coverage.mjs
       - name: Check Storybook story coverage
@@ -84,6 +90,7 @@ jobs:
       - run: npm pack --dry-run
       - run: npm pack --dry-run --workspace=@rowan-ui/icons
       - run: npm pack --dry-run --workspace=@rowan-ui/maplibre
+      - run: npm pack --dry-run --workspace=@rowan-ui/mcp
 
   browser-compatibility:
     name: Browser (${{ matrix.browser }})

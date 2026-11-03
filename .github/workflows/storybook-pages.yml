@@ -90,6 +90,12 @@ jobs:
           ls -lh pages-deploy/storybook/index.html
           echo "  - Admin: pages-deploy/admin/index.html"
           ls -lh pages-deploy/admin/index.html
+          if [ ! -f pages-deploy/llms.txt ] || [ ! -f pages-deploy/llms-full.txt ]; then
+            echo "❌ llms.txt or llms-full.txt missing from the docs site root"
+            exit 1
+          fi
+          echo "  - llms.txt: pages-deploy/llms.txt"
+          ls -lh pages-deploy/llms.txt pages-deploy/llms-full.txt
 
       - uses: actions/upload-pages-artifact@v3
         with:

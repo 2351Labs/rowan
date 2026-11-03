@@ -75,7 +75,8 @@ The local CI runner (`npm run ci:local`) mirrors `.github/workflows/ci.yml` exac
 - Storybook build
 - Documentation version consistency
 - Component API coverage
-- npm pack dry-run (core, icons, maplibre)
+- npm pack dry-run (core, icons, maplibre, mcp)
+- llms.txt, llms-full.txt, and MCP catalog staleness
 - Pages assembly verification
 
 ### Generated Artifacts
@@ -93,6 +94,14 @@ This updates:
 - Same for `packages/icons/` and `packages/maplibre/`
 
 **Commit these changes with your code changes.** The CI fails if generated artifacts are out of sync.
+
+When component APIs, token CSS, or docs and story examples change, also regenerate the AI context:
+
+```bash
+npm run ai:context
+```
+
+This updates `llms.txt`, `llms-full.txt`, and `packages/mcp/data/catalog.json`. CI fails when they are stale.
 
 ### Size Budgets
 

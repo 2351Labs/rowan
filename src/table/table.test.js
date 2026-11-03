@@ -448,7 +448,12 @@ describe("rowan-table", () => {
     wrapper.append(table);
     document.body.append(wrapper);
     await nextMicrotask();
-    await nextFrame();
+    await waitForStyles(table);
+    await waitFor(
+      () =>
+        getComputedStyle(table.shadowRoot.querySelector('td[data-column-id="name"]')).boxShadow !==
+        "none",
+    );
 
     const name = table.shadowRoot.querySelector('td[data-column-id="name"]');
     const status = table.shadowRoot.querySelector('td[data-column-id="status"]');

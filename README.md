@@ -69,6 +69,15 @@ table.config = {
 <rowan-table></rowan-table> <rowan-button>Save</rowan-button>
 ```
 
+### AI tools
+
+`llms.txt` and `llms-full.txt` are generated from the Custom Elements Manifest for agents that read a site or this package.
+
+- https://2351labs.github.io/rowan/llms.txt
+- https://2351labs.github.io/rowan/llms-full.txt
+
+`npx -y @rowan-ui/mcp` answers the same questions over stdio. [Use Rowan with AI tools](https://2351labs.github.io/rowan/#ai-tools) has the Cursor, Claude Code, and VS Code configuration.
+
 ### Bundlers
 
 Each component's CSS is a string inside its JavaScript module. The element adopts that string as a constructable stylesheet (`adoptedStyleSheets`). Vite, esbuild, webpack, and Rspack can prebundle the module. There is no `new URL("./component.css", import.meta.url)` for the bundler to rewrite, and you do not need `optimizeDeps.exclude`. The admin template and starters install `@rowan-ui/*@^0.23.0` and use that default Vite config.
