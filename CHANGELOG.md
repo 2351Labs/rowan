@@ -6,6 +6,15 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- Chart accessibility conformance report for every Rowan chart. The documentation page and `docs/CHART_ACCESSIBILITY.md` are generated from the chart audit (`scripts/audit-chart-a11y.mjs`). Each chart is scored Supports, Partially supports, or Does not support for the measured WCAG 2.2 A and AA criteria, with keyboard tables and screen-reader notes taken from the DOM. The CI check fails when the report drifts from a fresh run.
+
+### Fixed
+
+- Chart focus indicators. The shared chart rule used `--rowan-focus-ring` (a box-shadow) as an outline color, so the outline was dropped wherever tokens were loaded. Trend and area charts also set `outline: none` and a 32% opacity ring on point and summary focus. Focus now uses a solid accent outline, and `Highlight` under `forced-colors`.
+- Hidden-series legend buttons no longer fade the whole label to 45% opacity. The label stays at text contrast and uses a line-through; only the swatch fades.
+
 ## 0.23.0 - 2026-11-03
 
 ### Added

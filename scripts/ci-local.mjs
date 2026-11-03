@@ -354,6 +354,12 @@ async function main() {
 
     await runCommand(
       "node",
+      ["scripts/audit-chart-a11y.mjs", "--check"],
+      "Verify chart accessibility report",
+    );
+
+    await runCommand(
+      "node",
       ["scripts/check-storybook-pages-base.mjs"],
       "Storybook Pages base",
     );

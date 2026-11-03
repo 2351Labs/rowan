@@ -48,6 +48,7 @@ import { createSavedTableView } from "./workflows/saved-table-view.js";
 import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 import { API_REFERENCES, renderApiReference } from "./api-reference-view.js";
 import { GUIDE_PAGES } from "./guides.js";
+import { CHART_ACCESSIBILITY_PAGE } from "./chart-accessibility.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -5584,6 +5585,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       <section class="doc-section" data-doc-section id="quality-accessibility-status">
         <h2>Accessibility status</h2>
         <p>Public keyboard, form, ARIA, and host-level axe tests run in the main suite; Storybook also runs its a11y addon. The addon deliberately skips the shadow-input <code>label</code> false positive for FACE controls: Rowan names the host through ElementInternals, and adding a second internal label would duplicate the accessible name.</p>
+        <p>Chart components have a separate <a href="#chart-accessibility">conformance report</a>. It scores the WCAG 2.2 A and AA criteria the chart audit measured, and it labels manual checks with what was checked.</p>
       </section>
     `,
   },
@@ -5614,7 +5616,7 @@ function appendMissingComponentPages(pages) {
 }
 
 appendMissingComponentPages(DOC_PAGES);
-DOC_PAGES.push(...GUIDE_PAGES);
+DOC_PAGES.push(...GUIDE_PAGES, CHART_ACCESSIBILITY_PAGE);
 
 function getComponentNavigationLabel(page) {
   return page.title.replace(/^Rowan\s+/, "");
@@ -5687,7 +5689,10 @@ const NAV_SECTIONS = [
     id: "quality",
     label: "Quality",
     defaultOpen: false,
-    items: [{ pageId: "quality", label: "Accessibility and Verification" }],
+    items: [
+      { pageId: "quality", label: "Accessibility and Verification" },
+      { pageId: "chart-accessibility", label: "Chart accessibility" },
+    ],
   },
 ];
 

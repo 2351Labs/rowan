@@ -49,6 +49,8 @@ jobs:
           STORYBOOK_BASE: /rowan/storybook/
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+      - name: Verify chart accessibility report
+        run: node scripts/audit-chart-a11y.mjs --check
       - name: Storybook Pages base
         run: node scripts/check-storybook-pages-base.mjs
       - name: Storybook smoke test
