@@ -22,8 +22,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: documentation-pages
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && format('documentation-pages-pr-{0}', github.event.pull_request.number) || 'documentation-pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

@@ -1,15 +1,10 @@
 import "./image.js";
 import "../badge/badge.js";
+import "../button/button.js";
+import "../dialog/dialog.js";
+import { SAMPLE_MEDIA } from "../../documentation/sample-media.js";
 
-const SAMPLE_SRC =
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
-      <rect width="640" height="360" fill="#1d432f"/>
-      <circle cx="420" cy="120" r="48" fill="#f8f7f2" fill-opacity="0.18"/>
-      <rect x="48" y="220" width="220" height="16" rx="8" fill="#f8f7f2" fill-opacity="0.55"/>
-    </svg>`,
-  );
+const SAMPLE_SRC = SAMPLE_MEDIA.northYard;
 
 export default {
   title: "Components/Data Display/Image",
@@ -68,6 +63,56 @@ export const Fallback = {
     fallback.textContent = "Still unavailable";
     el.append(fallback);
     return el;
+  },
+};
+
+export const Contain = {
+  name: "Contain fit",
+  render: () => {
+    const el = document.createElement("rowan-image");
+    el.src = SAMPLE_MEDIA.southDock;
+    el.alt = "South dock and the river gate";
+    el.fit = "contain";
+    el.loading = "eager";
+    const caption = document.createElement("span");
+    caption.slot = "caption";
+    caption.textContent = "South dock · contain";
+    el.append(caption);
+    return el;
+  },
+};
+
+export const Lightbox = {
+  name: "Lightbox",
+  render: () => {
+    const root = document.createElement("div");
+    const trigger = document.createElement("rowan-button");
+    trigger.variant = "secondary";
+    trigger.textContent = "Open lightbox";
+
+    const dialog = document.createElement("rowan-dialog");
+    const title = document.createElement("span");
+    title.slot = "title";
+    title.textContent = "North yard";
+    const still = document.createElement("rowan-image");
+    still.src = SAMPLE_MEDIA.northYard;
+    still.alt = "North yard loading docks at dusk";
+    still.fit = "contain";
+    still.loading = "eager";
+    const close = document.createElement("rowan-button");
+    close.slot = "actions";
+    close.variant = "secondary";
+    close.textContent = "Close";
+    dialog.append(title, still, close);
+
+    trigger.addEventListener("rowan-click", () => {
+      dialog.open = true;
+    });
+    close.addEventListener("rowan-click", () => {
+      dialog.open = false;
+    });
+    root.append(trigger, dialog);
+    return root;
   },
 };
 

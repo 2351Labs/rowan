@@ -4,9 +4,10 @@
  * public component is missing a complete reference.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { COMPONENT_EXAMPLE_BY_TAG } from "../documentation/component-examples.js";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = join(rootDir, "documentation/generated/api-reference.json");
@@ -191,7 +192,90 @@ function detailShape(description) {
   return match ? match[1].trim() : "";
 }
 
-function usageExample(entry) {
+function isRejectedPlaceholder(html, entry) {
+  const compact = String(html || "").replace(/\s+/g, " ").trim();
+  const tag = entry.tagName;
+  const title = String(entry.title || "");
+  if (new RegExp(`^<${tag}\\s*>\\s*</${tag}>$`).test(compact)) return true;
+  const single = compact.match(new RegExp(`^<${tag}(\\s[^>]*)?>([\\s\\S]*)</${tag}>$`));
+  if (!single) return false;
+  const inner = single[2].trim();
+  if (inner.includes("<")) return false;
+  if (inner && inner.toLowerCase() === title.toLowerCase()) return true;
+  if (!inner) {
+    const hasDefaultSlot = (entry.slots || []).some((slot) => slot.name === "(default)");
+    if (!single[1]?.trim() || hasDefaultSlot) return true;
+  }
+  return false;
+}
+
+function staticSnippets(source, tagName) {
+  const found = [];
+  for (const match of String(source || "").matchAll(/`([^`]*?)`/g)) {
+    const text = match[1].trim();
+    if (!text.includes(`<${tagName}`)) continue;
+    if (text.includes("${") || text.includes("compose ")) continue;
+    if (text.length < 20 || text.length > 1800) continue;
+    found.push(text);
+  }
+  return found;
+}
+
+function scoreSnippet(html, entry) {
+  if (isRejectedPlaceholder(html, entry)) return -1;
+  const firstTag = html.match(/<([\w-]+)/);
+  const occurrences = html.split(`<${entry.tagName}`).length - 1;
+  if (occurrences < 1) return -1;
+  let score = occurrences * 220;
+  if (firstTag?.[1] === entry.tagName) score += 360;
+  if (html.includes("slot=")) score += 40;
+  score -= Math.max(0, html.length - 700) / 8;
+  return score;
+}
+
+function bestSnippet(source, entry) {
+  let best = "";
+  let bestScore = 0;
+  for (const snippet of staticSnippets(source, entry.tagName)) {
+    const score = scoreSnippet(snippet, entry);
+    if (score > bestScore) {
+      best = snippet;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
+function storySource(entry) {
+  const slug = entry.tagName.replace(/^rowan-/, "");
+  const candidates = [
+    join(rootDir, "src", slug, `${slug}.stories.js`),
+    join(rootDir, "packages/icons/src/icons.stories.js"),
+    join(rootDir, "packages/maplibre/src/map/map.stories.js"),
+  ];
+  return candidates
+    .filter((path) => existsSync(path))
+    .map((path) => readFileSync(path, "utf8"))
+    .join("\n");
+}
+
+function resolveUsage(entry, appSource) {
+  const curated = COMPONENT_EXAMPLE_BY_TAG.get(entry.tagName)?.usage?.trim();
+  if (curated && !isRejectedPlaceholder(curated, entry)) return curated;
+  const fromDocs = bestSnippet(appSource, entry);
+  if (fromDocs) return fromDocs;
+  const fromStory = bestSnippet(storySource(entry), entry);
+  if (fromStory) return fromStory;
+  const generated = heuristicUsage(entry);
+  if (isRejectedPlaceholder(generated, entry)) {
+    throw new Error(
+      `${entry.tagName}: refusing an empty placeholder. Add a usage string to documentation/component-examples.js`,
+    );
+  }
+  return generated;
+}
+
+function heuristicUsage(entry) {
   const attrs = [];
   for (const attribute of entry.attributes) {
     if (attrs.length >= 2) break;
@@ -373,7 +457,7 @@ function publicMethods(declaration) {
     .sort((left, right) => left.name.localeCompare(right.name));
 }
 
-function buildComponent(declaration, modulePath, packageRoot, reactDir) {
+function buildComponent(declaration, modulePath, packageRoot, reactDir, appSource) {
   const sourcePath = join(packageRoot, modulePath);
   let source = "";
   try {
@@ -424,11 +508,22 @@ function buildComponent(declaration, modulePath, packageRoot, reactDir) {
     },
     usage: "",
   };
-  entry.usage = usageExample(entry);
+  try {
+    entry.usage = resolveUsage(entry, appSource);
+  } catch (error) {
+    entry.usage = "";
+    entry.usageError = error.message;
+  }
   return entry;
 }
 
 function collect() {
+  let appSource = "";
+  try {
+    appSource = readFileSync(join(rootDir, "documentation/app.js"), "utf8");
+  } catch {
+    appSource = "";
+  }
   const byTag = new Map();
   for (const source of SOURCES) {
     const manifest = readJson(join(rootDir, source.manifest));
@@ -439,7 +534,7 @@ function collect() {
         if (byTag.has(declaration.tagName)) continue;
         byTag.set(
           declaration.tagName,
-          buildComponent(declaration, moduleEntry.path, source.packageRoot, source.reactDir),
+          buildComponent(declaration, moduleEntry.path, source.packageRoot, source.reactDir, appSource),
         );
       }
     }
@@ -450,9 +545,11 @@ function collect() {
 function assertComplete(components) {
   const problems = [];
   for (const component of components) {
+    if (component.usageError) problems.push(component.usageError);
     if (!component.tagName || !component.description || !component.usage) {
       problems.push(`${component.tagName || "(missing)"}: missing description or usage`);
     }
+    delete component.usageError;
     for (const key of [
       "attributes",
       "properties",

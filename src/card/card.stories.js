@@ -1,5 +1,6 @@
 import "./card.js";
 import "../button/button.js";
+import { SAMPLE_MEDIA } from "../../documentation/sample-media.js";
 
 export default {
   title: "Components/Data Display/Card",
@@ -36,12 +37,13 @@ export const MediaHeader = {
     const card = document.createElement("rowan-card");
     const media = document.createElement("img");
     media.slot = "media";
-    media.alt = "Cedar grove overlook";
-    media.src =
-      "data:image/svg+xml," +
-      encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200"><rect width="640" height="200" fill="#1d432f"/></svg>',
-      );
+    media.alt = "North yard loading docks at dusk";
+    media.src = SAMPLE_MEDIA.northYard;
+    media.style.display = "block";
+    media.style.width = "100%";
+    media.style.height = "9rem";
+    media.style.objectFit = "cover";
+    media.style.borderRadius = "0.5rem";
     const header = document.createElement("p");
     header.slot = "header";
     header.textContent = "Trail note";

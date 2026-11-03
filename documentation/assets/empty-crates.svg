@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Open crates and a blank clipboard">
+  <title>No saved trails</title>
+  <rect x="18" y="58" width="52" height="36" rx="3" stroke="currentColor" stroke-width="3"/>
+  <path d="M18 70 H70" stroke="currentColor" stroke-width="3"/>
+  <path d="M30 58 V46 H58 V58" stroke="currentColor" stroke-width="3"/>
+  <rect x="58" y="72" width="52" height="34" rx="3" stroke="currentColor" stroke-width="3"/>
+  <path d="M58 84 H110" stroke="currentColor" stroke-width="3"/>
+  <rect x="78" y="28" width="28" height="36" rx="3" stroke="currentColor" stroke-width="3"/>
+  <path d="M84 40 H100" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M84 48 H96" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="92" cy="30" r="3" fill="currentColor"/>
+</svg>

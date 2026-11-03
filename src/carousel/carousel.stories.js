@@ -1,5 +1,6 @@
 import "./carousel.js";
 import "../badge/badge.js";
+import { SAMPLE_MEDIA } from "../../documentation/sample-media.js";
 import { createEventScriptParameters } from "../storybook/event-script.js";
 
 const RELEASE_PANELS = [
@@ -29,7 +30,7 @@ const RELEASE_PANELS = [
   },
 ];
 
-function createPanel({ eyebrow, title, description, tone, status }) {
+function createPanel({ eyebrow, title, description, tone, status, image = false }) {
   const panel = document.createElement("article");
   panel.style.background = "var(--rowan-color-bg, #f8f7f2)";
   panel.style.display = "grid";
@@ -67,6 +68,18 @@ function createPanel({ eyebrow, title, description, tone, status }) {
   badge.textContent = status;
   badge.style.justifySelf = "start";
 
+  if (image) {
+    const photo = document.createElement("img");
+    photo.src = SAMPLE_MEDIA.northYard;
+    photo.alt = "North yard loading docks before the release window";
+    photo.style.borderRadius = "0.5rem";
+    photo.style.display = "block";
+    photo.style.height = "8rem";
+    photo.style.objectFit = "cover";
+    photo.style.width = "100%";
+    panel.append(photo);
+  }
+
   panel.append(heading, body, badge);
   return panel;
 }
@@ -76,9 +89,9 @@ function createCarousel({ activeIndex = 0, label = "Release readiness highlights
   carousel.activeIndex = activeIndex;
   carousel.label = label;
 
-  for (const panel of RELEASE_PANELS) {
-    carousel.append(createPanel(panel));
-  }
+  RELEASE_PANELS.forEach((panel, index) => {
+    carousel.append(createPanel({ ...panel, image: index === 0 }));
+  });
 
   return carousel;
 }
