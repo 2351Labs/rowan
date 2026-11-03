@@ -167,6 +167,10 @@
       "types": "./src/dashboard-filters/dashboard-filters.d.ts",
       "default": "./src/dashboard-filters/dashboard-filters.js"
     },
+    "./dashboard": {
+      "types": "./src/dashboard/dashboard.d.ts",
+      "default": "./src/dashboard/dashboard.js"
+    },
     "./data-state": {
       "types": "./src/data-state/data-state.d.ts",
       "default": "./src/data-state/data-state.js"
@@ -469,6 +473,10 @@
     "./react": {
       "types": "./src/react/index.d.ts",
       "default": "./src/react/index.js"
+    },
+    "./react/dashboard": {
+      "types": "./src/react/dashboard.d.ts",
+      "default": "./src/react/dashboard.js"
     },
     "./react/wrapper-props": {
       "types": "./src/react/wrapper-props.d.ts"

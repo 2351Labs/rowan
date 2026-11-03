@@ -21,6 +21,7 @@ export type { RowanComboboxMessages } from "../types/combobox/combobox.js";
 export type { RowanCommandPaletteMessages } from "../types/command-palette/command-palette.js";
 export type { RowanConfirmDialogMessages } from "../types/confirm-dialog/confirm-dialog.js";
 export type { RowanContextMenuMessages } from "../types/context-menu/context-menu.js";
+export type { RowanDashboardMessages } from "../types/dashboard/dashboard.js";
 export type { RowanDataStateMessages } from "../types/data-state/data-state.js";
 export type { RowanDateRangePickerMessages } from "../types/date-range-picker/date-range-picker.js";
 export type { RowanDialogMessages } from "../types/dialog/dialog.js";

@@ -8944,6 +8944,65 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/dashboard/dashboard.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createDashboard",
+          "parameters": [
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "RowanDashboardOptions"
+              }
+            }
+          ],
+          "description": "One filter tree for a dashboard.\n\nThe tree stays in sync with a filter builder, field controls, chart\npoint/slice/bar clicks, the query string, active-filter chips, and one\n`rowan-table`. Client tables get filtered rows. `data-mode=\"server\"` sends\nthe tree to `getRows`. Chart series stay on the host.\n\nLoad it from `@rowan-ui/core/dashboard`. This module does not import chart\nor table implementations.\n\n`rowan-dashboard-change` fires on `root` with `{ filters, source }`.\n`source` is `api`, `chart`, `control`, `filter`, `chip`, `url`, or `clear`.\n`rowan-dashboard-clear` fires as well when the tree becomes empty.\nClicks toggle: the same point again clears that field. Point buttons stay\nthe chart's keyboard controls.",
+          "return": {
+            "type": {
+              "text": "RowanDashboard"
+            }
+          }
+        },
+        {
+          "kind": "variable",
+          "name": "operator"
+        },
+        {
+          "kind": "variable",
+          "name": "value"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createDashboard",
+          "declaration": {
+            "name": "createDashboard",
+            "module": "src/dashboard/dashboard.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/dashboard/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createDashboard",
+          "declaration": {
+            "name": "createDashboard",
+            "module": "./dashboard.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/data-state/data-state.js",
       "declarations": [
         {
@@ -15295,6 +15354,14 @@
           "declaration": {
             "name": "createDashboardFilters",
             "module": "./dashboard-filters/dashboard-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createDashboard",
+          "declaration": {
+            "name": "createDashboard",
+            "module": "./dashboard/dashboard.js"
           }
         },
         {

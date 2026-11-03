@@ -9,6 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - Chart accessibility conformance report for every Rowan chart. The documentation page and `docs/CHART_ACCESSIBILITY.md` are generated from the chart audit (`scripts/audit-chart-a11y.mjs`). Each chart is scored Supports, Partially supports, or Does not support for the measured WCAG 2.2 A and AA criteria, with keyboard tables and screen-reader notes taken from the DOM. The CI check fails when the report drifts from a fresh run.
+- `createDashboard()` in `@rowan-ui/core/dashboard`: one filter tree for a filter builder, field controls, chart point/slice/bar clicks, the query string (back and forward), active-filter chips, and `rowan-table` in client or `data-mode="server"`. Click a point again to clear it. `rowan-dashboard-change` and `rowan-dashboard-clear` fire on the root. React imports the same function from `@rowan-ui/core/react/dashboard`. The module is its own entry, so table and chart bundles stay the same.
 
 ### Fixed
 

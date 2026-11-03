@@ -38,6 +38,7 @@ const DOC_CHART_PAGES = [
   "radar-chart",
   "trend-chart",
   "dashboard-drill-down",
+  "dashboard",
 ];
 
 const CONTENT_TYPES = {
@@ -132,7 +133,9 @@ async function runDocsChartSmoke() {
     await new Promise((done) => server.close(done));
   }
 
-  console.log(`\n\n${DOC_CHART_PAGES.length - failures.length} passed, ${failures.length} failed\n`);
+  console.log(
+    `\n\n${DOC_CHART_PAGES.length - failures.length} passed, ${failures.length} failed\n`,
+  );
 
   if (failures.length > 0) {
     for (const failure of failures) {

@@ -54,6 +54,10 @@ const budgets = {
   // Measured about 5.2 KB. Ceiling is 6 KB.
   "chart-interaction": 6 * 1024,
 
+  // Dashboard kit. Measured 10.83 KB, including chips and applyFilters.
+  // Charts and the table are not in this graph. Ceiling is 12 KB.
+  dashboard: 12 * 1024,
+
   // Common scenarios
   "three-controls": 10 * 1024, // button + checkbox + switch
   "form-controls": 12 * 1024, // button + text-field + checkbox + select + textarea
@@ -238,6 +242,11 @@ async function main() {
       code = `
         import * as chartInteraction from "../src/chart/ix.js";
         globalThis.__chartInteraction = chartInteraction;
+      `;
+    } else if (name === "dashboard") {
+      code = `
+        import { createDashboard } from "@rowan-ui/core/dashboard";
+        globalThis.__dashboard = createDashboard;
       `;
     } else {
       code = `import "@rowan-ui/core/${name}";`;
