@@ -109,6 +109,8 @@ const ROWAN_EVENT_HANDLES = [
   "rowan-location-activate",
   "rowan-layer-change",
   "rowan-filter-change",
+  "rowan-dashboard-change",
+  "rowan-dashboard-clear",
   "rowan-command",
   "rowan-toggle",
   "rowan-resize",

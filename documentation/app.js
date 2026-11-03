@@ -41,6 +41,7 @@ import {
   matchesDocumentationNavigationItem,
 } from "./taxonomy.js";
 import { createDashboardDrillDown } from "./workflows/dashboard-drill-down.js";
+import { createDashboardKitDemo, DASHBOARD_KIT_EXAMPLE } from "./workflows/dashboard-kit.js";
 import { createInvestigationQueue } from "./workflows/investigation-queue.js";
 import { createRecordEditor } from "./workflows/record-editor.js";
 import { createResourceList } from "./workflows/resource-list.js";
@@ -5486,6 +5487,66 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     afterRender: setupDashboardDrillDownDemo,
   },
   {
+    id: "dashboard",
+    group: "Workflows",
+    title: "Dashboard",
+    summary:
+      "One createDashboard() call keeps a filter builder, chart clicks, chips, the query string, and a table on the same filter tree.",
+    tags: ["workflow", "dashboard", "filters", "charts", "table"],
+    keywords: [
+      "dashboard",
+      "cross filter",
+      "createDashboard",
+      "query string",
+      "chips",
+      "server table",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="dashboard-demo">
+        <h2>Harbor orders</h2>
+        <p>Activate a week or a channel, then activate it again to clear that choice. The builder, the chips, and the order table follow one tree. Chart series stay on the full range so the next click is still there. This page prints the query it would write and leaves the address bar alone.</p>
+        <div id="docs-dashboard-kit" class="docs-workflow-canvas"></div>
+      </section>
+
+      <section class="doc-section" data-doc-section id="dashboard-example">
+        <h2>HTML</h2>
+        <p><code>createDashboard({ root, url: true })</code> discovers the builder, the charts marked with <code>data-dashboard-field</code>, and the table. Import <code>@rowan-ui/core/dashboard</code>. Charts and the table stay on their own entries.</p>
+        ${codeBlock(DASHBOARD_KIT_EXAMPLE, "html")}
+      </section>
+
+      <section class="doc-section" data-doc-section id="dashboard-options">
+        <h2>Options</h2>
+        <ul>
+          <li><code>filters</code> is a <code>rowan-filter-builder</code> or the initial tree. <code>controls</code> are elements that emit a value for one field. A <code>data-dashboard-field</code> on a control inside <code>root</code> is picked up too.</li>
+          <li><code>charts</code> toggle an equals filter. <code>value</code> is <code>label</code> (default), <code>seriesId</code>, <code>seriesLabel</code>, or a function of the point detail. The same point again clears that field. The chart's point button is the keyboard control.</li>
+          <li><code>url: true</code> writes query key <code>df</code> and pushes history. <code>{ param, history: "replace", window }</code> changes the key, replaces instead of pushing, or targets another window. Back and forward restore the tree. Other query keys are left in place. A link with <code>df</code> wins over the initial tree.</li>
+          <li><code>table</code> in client mode filters <code>rows</code> (or the rows on the table at creation). <code>data-mode="server"</code> assigns <code>filters</code> for <code>getRows</code> and keeps quick <code>{ id, value }</code> filters.</li>
+          <li><code>chips: true</code> (the default when <code>root</code> is set) prepends a chip for each top-level filter, including a group. Pass an element to place them yourself. <code>chips: false</code> skips them.</li>
+          <li><code>set</code>, <code>toggle</code>, <code>clear</code>, <code>replace</code>, <code>snapshot</code>, <code>search</code>, <code>subscribe</code>, <code>setRows</code>, and <code>destroy</code> are the imperative surface.</li>
+          <li><code>rowan-dashboard-change</code> detail is <code>{ filters, source }</code>. <code>source</code> is <code>api</code>, <code>chart</code>, <code>control</code>, <code>filter</code>, <code>chip</code>, <code>url</code>, or <code>clear</code>. <code>rowan-dashboard-clear</code> also fires when the tree becomes empty.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" data-doc-section id="dashboard-react">
+        <h2>React</h2>
+        <p>The React entry re-exports the same function. Generated wrappers stay the element adapters.</p>
+        ${codeBlock(
+          `import { createDashboard } from "@rowan-ui/core/react/dashboard";
+import { RowanBarChart, RowanTable } from "@rowan-ui/core/react/components";
+
+createDashboard({
+  root: boardRef.current,
+  charts: [{ element: chartRef.current, field: "week" }],
+  table: tableRef.current,
+  url: true,
+});`,
+          "tsx",
+        )}
+      </section>
+    `,
+    afterRender: setupDashboardKitDemo,
+  },
+  {
     id: "saved-table-view",
     group: "Workflows",
     title: "Saved Table View",
@@ -5672,6 +5733,7 @@ const NAV_SECTIONS = [
       { pageId: "resource-list", label: "Resource List" },
       { pageId: "record-editor", label: "Record Editor" },
       { pageId: "dashboard-drill-down", label: "Dashboard Drill-down" },
+      { pageId: "dashboard", label: "Dashboard" },
       { pageId: "saved-table-view", label: "Saved Table View" },
     ],
   },
@@ -6935,6 +6997,13 @@ function setupDashboardDrillDownDemo() {
   if (!(host instanceof HTMLElement)) return;
 
   host.replaceChildren(createDashboardDrillDown());
+}
+
+function setupDashboardKitDemo() {
+  const host = mainEl.querySelector("#docs-dashboard-kit");
+  if (!(host instanceof HTMLElement)) return;
+
+  host.replaceChildren(createDashboardKitDemo());
 }
 
 function setupSavedTableViewDemo() {

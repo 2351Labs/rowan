@@ -30,9 +30,9 @@ export class RowanTextField extends BaseElement {
   set label(value: string);
   get label(): string;
   /** @param {"text" | "email" | "password" | "search" | "url" | "tel"} value */
-  set type(value: "search" | "text" | "email" | "tel" | "url" | "password");
+  set type(value: "search" | "text" | "url" | "email" | "tel" | "password");
   /** @returns {"text" | "email" | "password" | "search" | "url" | "tel"} */
-  get type(): "search" | "text" | "email" | "tel" | "url" | "password";
+  get type(): "search" | "text" | "url" | "email" | "tel" | "password";
   set pattern(value: string);
   get pattern(): string;
   set autocomplete(value: string);

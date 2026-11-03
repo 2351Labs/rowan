@@ -120,6 +120,7 @@ const CATEGORIES = {
       "source-meta",
       "virtual-list",
       "dashboard-filters",
+      "dashboard",
       "bulk-actions-bar",
       "row-details-panel",
       "divider",

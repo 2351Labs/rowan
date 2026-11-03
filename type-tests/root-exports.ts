@@ -1,4 +1,5 @@
 import {
+  createDashboard as createRootDashboard,
   formatCurrency,
   formatDate,
   formatNumber,
@@ -14,6 +15,12 @@ import {
   RowanTree,
   RowanTreeItem,
 } from "@rowan-ui/core";
+import {
+  createDashboard,
+  type RowanDashboard,
+  type RowanDashboardOptions,
+} from "@rowan-ui/core/dashboard";
+import { createDashboard as createReactDashboard } from "@rowan-ui/core/react/dashboard";
 type Assert<T extends true> = T;
 type RootExports = typeof import("@rowan-ui/core");
 type BaseElementIsInternal = Assert<"BaseElement" extends keyof RootExports ? false : true>;
@@ -51,6 +58,16 @@ import "@rowan-ui/core/tokens/ember";
 import "@rowan-ui/core/tokens/lagoon";
 import "@rowan-ui/core/tokens/light";
 
+const dashboardOptions: RowanDashboardOptions = {
+  url: { param: "df", history: "replace" },
+  chips: true,
+  filters: [{ field: "week", operator: "equals", value: "Sep 7" }],
+};
+const dashboard: RowanDashboard = createDashboard(dashboardOptions);
+const reactDashboard: RowanDashboard = createReactDashboard(dashboardOptions);
+const rootDashboard: RowanDashboard = createRootDashboard(dashboardOptions);
+dashboard.set("channel", "Web");
+const dashboardQuery: string = reactDashboard.search();
 const rootButton: RowanButton = document.createElement("rowan-button");
 const rootCarousel: RowanCarousel = document.createElement("rowan-carousel");
 const rootCommandItem: RowanCommandItem = document.createElement("rowan-command-item");
@@ -97,6 +114,9 @@ const rootRichText: string = rootRichTextEditor.text;
 
 void [
   null as unknown as BaseElementIsInternal,
+  dashboard,
+  dashboardQuery,
+  rootDashboard,
   formattedCurrency,
   formattedDate,
   formattedNumber,
