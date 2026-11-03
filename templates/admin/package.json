@@ -11,9 +11,9 @@
     "smoke": "node ./e2e/smoke.mjs"
   },
   "dependencies": {
-    "@rowan-ui/core": "^0.22.0",
-    "@rowan-ui/icons": "^0.22.0",
-    "@rowan-ui/maplibre": "^0.22.0",
+    "@rowan-ui/core": "^0.22.0 || ^0.23.0",
+    "@rowan-ui/icons": "^0.22.0 || ^0.23.0",
+    "@rowan-ui/maplibre": "^0.22.0 || ^0.23.0",
     "maplibre-gl": "^5.24.0"
   },
   "devDependencies": {

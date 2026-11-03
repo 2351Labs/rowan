@@ -259,6 +259,17 @@ column-sparkline LTR/nested-theme fills ship here. Nested filter groups and
 table-view-state version `2` stay experimental. Inline table editing is not a
 public API. Publish after this catalog commit is on `main`: tag `v0.22.0`.
 
+## 0.23.0 cut
+
+Version in `package.json` is `0.23.0` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Table column resize and reorder, inline editing, server data,
+clipboard, CSV and Excel export, paste, the column menu, multi-sort, and tree
+data ship here. Chart legend toggle, zoom, pan, sync groups, brush, and
+large-series mode ship here. Component CSS is embedded in generated
+`*.styles.js` modules and applied with `adoptedStyleSheets`. Nested filter
+groups and table-view-state version `2` stay experimental. Publish after this
+catalog commit is on `main`: tag `v0.23.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

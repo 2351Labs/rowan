@@ -10,14 +10,20 @@ async function waitForStyles(element) {
       styleLink.addEventListener("load", resolve, { once: true });
       styleLink.addEventListener("error", reject, { once: true });
     });
-    return;
   }
 
-  // Adopted styles are already on the shadow root, but WebKit does not
-  // include them in computed style until the next frame.
-  if (!styleLink) {
+  // The constructable sheet is adopted immediately. WebKit leaves it out of
+  // computed style for at least one frame, and a single frame is not enough
+  // when several skeletons connect together. Wait for the gradient these
+  // tests read.
+  for (let frame = 0; frame < 60; frame += 1) {
+    const node = element.shadowRoot?.querySelector(".skeleton");
+    const image = node ? getComputedStyle(node).backgroundImage : "";
+    if (image && image !== "none") return;
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
+
+  throw new Error("Skeleton shimmer styles did not apply within 60 animation frames.");
 }
 
 async function loadStylesheet(path) {
