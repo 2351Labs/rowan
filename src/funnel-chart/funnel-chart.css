@@ -22,9 +22,15 @@
 }
 
 .axis-pointer {
+  display: none;
   pointer-events: none;
   stroke: var(--rowan-color-muted, #5c6560);
   stroke-width: 1;
+}
+
+.chart:hover .axis-pointer,
+.chart:focus-within .axis-pointer {
+  display: block;
 }
 
 .zoom-brush,
@@ -220,20 +226,22 @@ summary:focus-visible {
 }
 
 .y-axis {
-  align-items: center;
   color: var(--rowan-color-muted);
-  display: grid;
   font-size: var(--rowan-font-size-xs, 0.75rem);
-  grid-template-rows: repeat(var(--stage-count, 1), minmax(0, 1fr));
-  text-align: end;
+  min-block-size: 0;
+  position: relative;
 }
 
-.y-axis span {
-  display: block;
+.y-axis .axis-y-tick {
+  inset-inline: 0;
+  line-height: 1.2;
   max-inline-size: 100%;
-  min-inline-size: 0;
   overflow: hidden;
+  position: absolute;
+  text-align: end;
   text-overflow: ellipsis;
+  top: var(--tick-y);
+  transform: translateY(-50%);
   white-space: nowrap;
 }
 

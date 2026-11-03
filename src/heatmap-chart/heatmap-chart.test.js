@@ -29,6 +29,32 @@ describe("rowan-heatmap-chart", () => {
     document.body.innerHTML = "";
   });
 
+  it("places separate column labels under the plot", async () => {
+    const chart = await renderChart({
+      rows: ["North"],
+      columns: ["Mon", "Tue", "Wed"],
+      values: [[1, 2, 3]],
+    });
+    chart.style.inlineSize = "480px";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const frame = chart.shadowRoot.querySelector(".plot-frame").getBoundingClientRect();
+    const ticks = [...chart.shadowRoot.querySelectorAll(".x-axis .axis-x-tick")];
+    expect(ticks.map((tick) => tick.textContent)).to.deep.equal(["Mon", "Tue", "Wed"]);
+    const axis = chart.shadowRoot.querySelector(".x-axis").getBoundingClientRect();
+    expect(axis.top).to.be.at.least(frame.bottom - 1);
+    let previousRight = -Infinity;
+    for (const tick of ticks) {
+      const box = tick.getBoundingClientRect();
+      expect(box.width).to.be.greaterThan(0);
+      expect(box.left).to.be.greaterThan(previousRight);
+      previousRight = box.right - 1;
+    }
+    const row = chart.shadowRoot.querySelector(".y-axis .axis-y-tick").getBoundingClientRect();
+    const cell = chart.shadowRoot.querySelector("rect.cell").getBoundingClientRect();
+    expect(Math.abs(row.top + row.height / 2 - (cell.top + cell.height / 2))).to.be.below(3);
+  });
+
   it("draws a matrix, skips null cells, and does not reflect values", async () => {
     const chart = await renderChart({
       rows: ["North", "South"],

@@ -29,6 +29,7 @@ import {
   normalizeReferenceLines,
   resolveChartLabels,
 } from "../chart/model.js";
+import { scaleCoordinate, tickPercent, zeroBaselineDomain } from "../chart/scale.js";
 import { cloneComboSeriesInput, comboAxisDomain, normalizeComboSeries } from "./model.js";
 import { createParetoData } from "./pareto.js";
 import componentStyles from "./combo-chart.styles.js";
@@ -45,7 +46,7 @@ export { createParetoData };
 const SVG_NAMESPACE_WIDTH = 1000;
 const SVG_NAMESPACE_HEIGHT = 400;
 const PLOT_LEFT = 18;
-const PLOT_RIGHT = 48;
+const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -136,7 +137,14 @@ export class RowanComboChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-combo-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -159,8 +167,10 @@ export class RowanComboChart extends BaseElement {
   #labelSlot = null;
   #descriptionFallback = null;
   #descriptionSlot = null;
+  #plotLayout = null;
   #plot = null;
   #xAxis = null;
+  #yAxis = null;
   #yAxisSecondary = null;
   #legend = null;
   #pointControls = null;
@@ -300,7 +310,6 @@ export class RowanComboChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -327,8 +336,6 @@ export class RowanComboChart extends BaseElement {
     this.reflectBoolean("no-motion", Boolean(value));
   }
 
-
-
   render() {
     if (!this.#control) {
       this.renderRoot.innerHTML = `
@@ -338,12 +345,15 @@ export class RowanComboChart extends BaseElement {
             <div class="description" part="description"><slot name="description"><span class="description-fallback"></span></slot></div>
           </div>
           <figure class="chart" part="chart">
-            <div class="plot-wrap">
-              <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
+            <div class="plot-layout">
+              <div class="y-axis" aria-hidden="true"></div>
+              <div class="plot-wrap">
+                <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
+                <div class="point-controls" dir="ltr"></div>
+              </div>
               <div class="y-axis-secondary" aria-hidden="true"></div>
-              <div class="point-controls" dir="ltr"></div>
+              <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <div class="x-axis" aria-hidden="true"></div>
             <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
@@ -360,8 +370,10 @@ export class RowanComboChart extends BaseElement {
       this.#labelSlot = this.renderRoot.querySelector('slot[name="label"]');
       this.#descriptionFallback = this.renderRoot.querySelector(".description-fallback");
       this.#descriptionSlot = this.renderRoot.querySelector('slot[name="description"]');
+      this.#plotLayout = this.renderRoot.querySelector(".plot-layout");
       this.#plot = this.renderRoot.querySelector(".plot");
       this.#xAxis = this.renderRoot.querySelector(".x-axis");
+      this.#yAxis = this.renderRoot.querySelector(".y-axis");
       this.#yAxisSecondary = this.renderRoot.querySelector(".y-axis-secondary");
       this.#legend = this.renderRoot.querySelector(".legend");
       this.#pointControls = this.renderRoot.querySelector(".point-controls");
@@ -433,9 +445,11 @@ export class RowanComboChart extends BaseElement {
     const labels = resolveChartLabels(this.#series, this.#labels, (index) =>
       this.#pointLabel(index),
     );
-    const primary = expandDomainWithReferenceLines(
-      comboAxisDomain(this.#series, "primary"),
-      this.#referenceLines.filter((line) => line.axis !== "secondary"),
+    const primary = zeroBaselineDomain(
+      expandDomainWithReferenceLines(
+        comboAxisDomain(this.#series, "primary"),
+        this.#referenceLines.filter((line) => line.axis !== "secondary"),
+      ),
     );
     const secondary = expandDomainWithReferenceLines(
       comboAxisDomain(this.#series, "secondary"),
@@ -447,6 +461,7 @@ export class RowanComboChart extends BaseElement {
     }
     this.#renderPlot(primary, secondary);
     this.#renderAxis(labels);
+    this.#renderPrimaryAxis(primary);
     this.#renderSecondaryAxis(secondary);
     this.#renderLegend();
     this.#renderPointControls();
@@ -639,20 +654,38 @@ export class RowanComboChart extends BaseElement {
     this.#xAxis.style.setProperty("--category-count", String(Math.max(labels.length, 1)));
   }
 
-  #renderSecondaryAxis(domain) {
-    const hasSecondary = this.#series.some((series) => series.axis === "secondary");
-    this.#yAxisSecondary.hidden = !hasSecondary;
-    this.#yAxisSecondary.replaceChildren();
-    if (!hasSecondary) return;
+  #plotHeight() {
+    return SVG_NAMESPACE_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
+  }
 
-    const ticks = [domain.max, (domain.max + domain.min) / 2, domain.min];
-    const fragment = document.createDocumentFragment();
+  #appendValueTicks(container, domain, ticks) {
+    container.replaceChildren();
     for (const tick of ticks) {
       const item = document.createElement("span");
+      item.className = "axis-y-tick";
       item.textContent = this.#formatValue(tick, { tick: true });
-      fragment.append(item);
+      const y = scaleCoordinate(tick, domain, PLOT_TOP, this.#plotHeight(), "y");
+      item.style.setProperty("--tick-y", tickPercent(y, SVG_NAMESPACE_HEIGHT));
+      container.append(item);
     }
-    this.#yAxisSecondary.append(fragment);
+  }
+
+  #renderPrimaryAxis(domain) {
+    const ticks = [...(domain.ticks ?? [domain.max, domain.min])].reverse();
+    this.#appendValueTicks(this.#yAxis, domain, ticks);
+  }
+
+  #renderSecondaryAxis(domain) {
+    const hasSecondary = this.#series.some((series) => series.axis === "secondary");
+    this.#plotLayout.classList.toggle("has-secondary", hasSecondary);
+    this.#yAxisSecondary.hidden = !hasSecondary;
+    if (!hasSecondary) {
+      this.#yAxisSecondary.replaceChildren();
+      return;
+    }
+    const mid = (domain.max + domain.min) / 2;
+    const ticks = domain.ticks ?? [domain.max, mid, domain.min];
+    this.#appendValueTicks(this.#yAxisSecondary, domain, ticks);
   }
 
   #renderLegend() {
@@ -728,7 +761,7 @@ export class RowanComboChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

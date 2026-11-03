@@ -22,9 +22,15 @@
 }
 
 .axis-pointer {
+  display: none;
   pointer-events: none;
   stroke: var(--rowan-color-muted, #5c6560);
   stroke-width: 1;
+}
+
+.chart:hover .axis-pointer,
+.chart:focus-within .axis-pointer {
+  display: block;
 }
 
 .zoom-brush,
@@ -287,12 +293,10 @@ summary:focus-visible {
 }
 
 .y-axis {
-  align-items: center;
   color: var(--_trend-chart-muted-fg);
-  display: grid;
   font-size: var(--rowan-font-size-xs, 0.75rem);
-  grid-template-rows: repeat(5, minmax(0, 1fr));
   min-inline-size: 0;
+  position: relative;
 }
 
 .axis-y-label,
@@ -303,7 +307,11 @@ summary:focus-visible {
 }
 
 .axis-y-label {
+  inset-inline: 0;
+  position: absolute;
   text-align: end;
+  top: var(--tick-y);
+  transform: translateY(-50%);
 }
 
 .x-axis {

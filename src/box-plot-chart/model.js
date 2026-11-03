@@ -1,4 +1,5 @@
 import { finiteOrNull } from "../chart/model.js";
+import { niceLinearDomain } from "../chart/scale.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
@@ -51,12 +52,7 @@ function normalizeColor(value) {
 }
 
 function padDomain(values) {
-  if (!values.length) return { min: 0, max: 1 };
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  if (min !== max) return { min, max };
-  const padding = Math.max(1, Math.abs(min) * 0.1);
-  return { min: min - padding, max: max + padding };
+  return niceLinearDomain(values, { padRatio: 0.08 });
 }
 
 function normalizeOutliers(value) {

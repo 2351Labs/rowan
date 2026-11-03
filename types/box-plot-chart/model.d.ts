@@ -32,6 +32,7 @@ export function boxPlotIncluded(point: any): boolean;
 export function boxPlotDomain(series: any): {
   min: number;
   max: number;
+  ticks: number[];
 };
 /**
  * Normalized five-number summary passed to a value formatter.

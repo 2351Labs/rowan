@@ -18,6 +18,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- `rowan-scatter-chart` keeps points inside a padded nice scale. X ticks are separate labels under the plot, y ticks line up with those values, and bubble size maps onto a visible radius range. Heatmap column labels sit under the plot. Range, box plot, funnel, trend, and area labels use the same plot alignment.
+- `rowan-combo-chart` draws the primary value scale on the left and aligns both scales with the plot. Series colors use distinct palette steps. The hover crosshair clears when the pointer or focus leaves, including a chart in the same sync group.
 - Chart focus indicators. The shared chart rule used `--rowan-focus-ring` (a box-shadow) as an outline color, so the outline was dropped wherever tokens were loaded. Trend and area charts also set `outline: none` and a 32% opacity ring on point and summary focus. Focus now uses a solid accent outline, and `Highlight` under `forced-colors`.
 - Hidden-series legend buttons no longer fade the whole label to 45% opacity. The label stays at text contrast and uses a line-through; only the swatch fades.
 

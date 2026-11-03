@@ -38,6 +38,31 @@ describe("rowan-range-chart", () => {
     document.body.innerHTML = "";
   });
 
+  it("keeps ranges inside a padded domain and aligns y ticks with the frame", async () => {
+    const chart = await renderChart({ locale: "en-US" });
+    chart.style.inlineSize = "480px";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const frame = chart.shadowRoot.querySelector(".plot-frame").getBoundingClientRect();
+    const bars = [...chart.shadowRoot.querySelectorAll("rect.bar")];
+    expect(bars.length).to.be.above(0);
+    for (const bar of bars) {
+      const box = bar.getBoundingClientRect();
+      expect(box.top).to.be.greaterThan(frame.top + 1);
+      expect(box.bottom).to.be.lessThan(frame.bottom - 1);
+    }
+    const ticks = [...chart.shadowRoot.querySelectorAll(".y-axis .axis-y-tick")];
+    expect(ticks.length).to.be.at.least(3);
+    const centerY = (element) => {
+      const box = element.getBoundingClientRect();
+      return box.top + box.height / 2;
+    };
+    const ordered = [...ticks].sort((left, right) => centerY(left) - centerY(right));
+    expect(Math.abs(centerY(ordered[0]) - frame.top)).to.be.below(3);
+    expect(Math.abs(centerY(ordered.at(-1)) - frame.bottom)).to.be.below(3);
+    expect(Number(ordered[0].textContent)).to.be.above(Number(ordered.at(-1).textContent));
+  });
+
   it("skips null low or high and does not reflect series", async () => {
     const chart = await renderChart();
     expect(chart.variant).to.equal("bar");

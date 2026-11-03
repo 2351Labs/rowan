@@ -33,6 +33,7 @@ import {
   formatChartValue,
   normalizeChartLabels,
 } from "../chart/model.js";
+import { scaleCoordinate, tickPercent } from "../chart/scale.js";
 import {
   boxPlotDomain,
   boxPlotIncluded,
@@ -161,7 +162,14 @@ export class RowanBoxPlotChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-box-plot-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -313,7 +321,6 @@ export class RowanBoxPlotChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -339,8 +346,6 @@ export class RowanBoxPlotChart extends BaseElement {
   set noMotion(value) {
     this.reflectBoolean("no-motion", Boolean(value));
   }
-
-
 
   render() {
     if (!this.#control) {
@@ -654,11 +659,15 @@ export class RowanBoxPlotChart extends BaseElement {
   }
 
   #renderAxes(labels, domain) {
-    const ticks = [domain.max, (domain.max + domain.min) / 2, domain.min];
+    const ticks = domain.ticks ?? [domain.max, (domain.max + domain.min) / 2, domain.min];
+    const plot = this.#plotBox();
     this.#yAxis.replaceChildren();
-    for (const tick of ticks) {
+    for (const tick of [...ticks].reverse()) {
       const item = document.createElement("span");
+      item.className = "axis-y-tick";
       item.textContent = this.#formatValue(tick, { tick: true });
+      const y = scaleCoordinate(tick, domain, plot.top, plot.height, "y");
+      item.style.setProperty("--tick-y", tickPercent(y, SVG_NAMESPACE_HEIGHT));
       this.#yAxis.append(item);
     }
     this.#xAxis.replaceChildren();
@@ -742,7 +751,7 @@ export class RowanBoxPlotChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

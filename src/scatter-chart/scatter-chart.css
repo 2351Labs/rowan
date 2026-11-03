@@ -22,9 +22,15 @@
 }
 
 .axis-pointer {
+  display: none;
   pointer-events: none;
   stroke: var(--rowan-color-muted, #5c6560);
   stroke-width: 1;
+}
+
+.chart:hover .axis-pointer,
+.chart:focus-within .axis-pointer {
+  display: block;
 }
 
 .zoom-brush,
@@ -216,19 +222,34 @@ summary:focus-visible {
 .plot-layout {
   column-gap: var(--rowan-space-2);
   display: grid;
-  grid-template-columns: minmax(2.5rem, 4rem) minmax(0, 1fr);
+  grid-template-areas:
+    "y plot"
+    ". x";
+  grid-template-columns: minmax(2.75rem, 4.5rem) minmax(0, 1fr);
 }
 
 .y-axis {
-  align-items: center;
   color: var(--rowan-color-muted);
-  display: grid;
   font-size: var(--rowan-font-size-xs, 0.75rem);
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-area: y;
+  min-block-size: 0;
+  position: relative;
+}
+
+.axis-y-tick {
+  inset-inline: 0;
+  line-height: 1.2;
+  overflow: hidden;
+  position: absolute;
   text-align: end;
+  text-overflow: ellipsis;
+  top: var(--tick-y);
+  transform: translateY(-50%);
+  white-space: nowrap;
 }
 
 .plot-wrap {
+  grid-area: plot;
   position: relative;
 }
 
@@ -250,13 +271,30 @@ summary:focus-visible {
   stroke-width: 1;
 }
 
+.grid-line {
+  pointer-events: none;
+  stroke: var(--rowan-scatter-chart-axis, var(--rowan-color-border));
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
 .x-axis {
+  block-size: 1.25rem;
   color: var(--rowan-color-muted);
-  display: grid;
   font-size: var(--rowan-font-size-xs, 0.75rem);
-  grid-column: 2;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-area: x;
+  min-inline-size: 0;
+  position: relative;
+}
+
+.axis-x-tick {
+  left: var(--tick-x);
+  line-height: 1.2;
+  position: absolute;
   text-align: center;
+  top: 0.15rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 .legend {

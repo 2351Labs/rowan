@@ -27,12 +27,15 @@ import {
   visibleEntries,
   applySeriesVisibility,
 } from "../chart/api.js";
+import { scaleCoordinate, tickPercent } from "../chart/scale.js";
 import {
   cloneScatterSeries,
   cloneScatterSeriesInput,
   normalizeScatterSeries,
   resolveScatterPointLabel,
+  SCATTER_MAX_RADIUS,
   scatterDomains,
+  scatterRadius,
 } from "./model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
@@ -41,8 +44,6 @@ const PLOT_LEFT = 48;
 const PLOT_RIGHT = 18;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 28;
-const MIN_RADIUS = 4;
-const MAX_RADIUS = 18;
 const DEFAULT_MESSAGES = Object.freeze({
   chart: "Scatter chart",
   dataTable: "Data table",
@@ -67,12 +68,6 @@ function isObject(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
-}
-
-function scatterRadius(size, sizeDomain, sizeRange) {
-  if (size === null || !sizeDomain) return 5;
-  const radius = MIN_RADIUS + ((size - sizeDomain.min) / sizeRange) * (MAX_RADIUS - MIN_RADIUS);
-  return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, radius));
 }
 
 /**
@@ -145,7 +140,14 @@ export class RowanScatterChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-scatter-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -280,7 +282,6 @@ export class RowanScatterChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -307,8 +308,6 @@ export class RowanScatterChart extends BaseElement {
     this.reflectBoolean("no-motion", Boolean(value));
   }
 
-
-
   render() {
     if (!this.#control) {
       this.renderRoot.innerHTML = `
@@ -324,8 +323,8 @@ export class RowanScatterChart extends BaseElement {
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
                 <div class="point-controls" dir="ltr"></div>
               </div>
+              <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <div class="x-axis" aria-hidden="true"></div>
             <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
@@ -404,14 +403,20 @@ export class RowanScatterChart extends BaseElement {
   }
 
   #renderChart() {
-    const domains = scatterDomains(this.#series);
     const plot = this.#plotBox();
+    const inset = (span) => SCATTER_MAX_RADIUS / Math.max(1, span);
+    const domains = scatterDomains(this.#series, {
+      xPadRatio: Math.max(0.08, inset(plot.width)),
+      yPadRatio: Math.max(0.1, inset(plot.height)),
+      xInsetRatio: inset(plot.width),
+      yInsetRatio: inset(plot.height),
+    });
     this.#entries = this.#createEntries(domains, plot);
     if (!this.#entries.some((entry) => entry.key === this.#activePointKey)) {
       this.#activePointKey = "";
     }
-    this.#renderPlot(plot);
-    this.#renderAxes(domains);
+    this.#renderPlot(plot, domains);
+    this.#renderAxes(domains, plot);
     this.#renderLegend();
     this.#renderPointControls();
     const hasSize = this.#entries.some((entry) => entry.size !== null);
@@ -441,9 +446,6 @@ export class RowanScatterChart extends BaseElement {
   }
 
   #createEntries(domains, plot) {
-    const xRange = domains.x.max - domains.x.min || 1;
-    const yRange = domains.y.max - domains.y.min || 1;
-    const sizeRange = domains.size ? domains.size.max - domains.size.min || 1 : 1;
     const entries = [];
 
     this.#series.forEach((series, seriesIndex) => {
@@ -452,9 +454,9 @@ export class RowanScatterChart extends BaseElement {
         const label = resolveScatterPointLabel(point, index, (pointIndex) =>
           this.#pointLabel(pointIndex),
         );
-        const x = plot.left + ((point.x - domains.x.min) / xRange) * plot.width;
-        const y = plot.top + ((domains.y.max - point.y) / yRange) * plot.height;
-        const radius = scatterRadius(point.size, domains.size, sizeRange);
+        const x = scaleCoordinate(point.x, domains.x, plot.left, plot.width, "x");
+        const y = scaleCoordinate(point.y, domains.y, plot.top, plot.height, "y");
+        const radius = scatterRadius(point.size, domains.size);
         const context = {
           series,
           index,
@@ -481,7 +483,7 @@ export class RowanScatterChart extends BaseElement {
     return entries;
   }
 
-  #renderPlot(plot) {
+  #renderPlot(plot, domains) {
     const fragment = document.createDocumentFragment();
     const title = createSvgElement("title");
     title.textContent = this.#chartName();
@@ -494,6 +496,7 @@ export class RowanScatterChart extends BaseElement {
     axis.setAttribute("width", String(plot.width));
     axis.setAttribute("height", String(plot.height));
     fragment.append(axis);
+    this.#appendGrid(fragment, plot, domains);
 
     for (const entry of this.#entries) {
       const mark = createSvgElement("circle");
@@ -509,18 +512,48 @@ export class RowanScatterChart extends BaseElement {
     this.#plot.replaceChildren(fragment);
   }
 
-  #renderAxes(domains) {
-    const ticks = (domain) => [domain.max, (domain.max + domain.min) / 2, domain.min];
+  #appendGrid(fragment, plot, domains) {
+    const right = plot.left + plot.width;
+    const bottom = plot.top + plot.height;
+    for (const tick of domains.y.ticks) {
+      const y = scaleCoordinate(tick, domains.y, plot.top, plot.height, "y");
+      const line = createSvgElement("line");
+      line.setAttribute("class", "grid-line");
+      line.setAttribute("x1", String(plot.left));
+      line.setAttribute("x2", String(right));
+      line.setAttribute("y1", String(y));
+      line.setAttribute("y2", String(y));
+      fragment.append(line);
+    }
+    for (const tick of domains.x.ticks) {
+      const x = scaleCoordinate(tick, domains.x, plot.left, plot.width, "x");
+      const line = createSvgElement("line");
+      line.setAttribute("class", "grid-line");
+      line.setAttribute("x1", String(x));
+      line.setAttribute("x2", String(x));
+      line.setAttribute("y1", String(plot.top));
+      line.setAttribute("y2", String(bottom));
+      fragment.append(line);
+    }
+  }
+
+  #renderAxes(domains, plot) {
     this.#yAxis.replaceChildren();
-    for (const tick of ticks(domains.y)) {
+    for (const tick of [...domains.y.ticks].reverse()) {
       const item = document.createElement("span");
+      item.className = "axis-y-tick";
       item.textContent = this.#formatValue(tick, { tick: true });
+      const y = scaleCoordinate(tick, domains.y, plot.top, plot.height, "y");
+      item.style.setProperty("--tick-y", tickPercent(y, SVG_NAMESPACE_HEIGHT));
       this.#yAxis.append(item);
     }
     this.#xAxis.replaceChildren();
-    for (const tick of [...ticks(domains.x)].reverse()) {
+    for (const tick of domains.x.ticks) {
       const item = document.createElement("span");
+      item.className = "axis-x-tick";
       item.textContent = this.#formatValue(tick, { tick: true });
+      const x = scaleCoordinate(tick, domains.x, plot.left, plot.width, "x");
+      item.style.setProperty("--tick-x", tickPercent(x, SVG_NAMESPACE_WIDTH));
       this.#xAxis.append(item);
     }
   }
@@ -589,7 +622,7 @@ export class RowanScatterChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

@@ -22,9 +22,15 @@
 }
 
 .axis-pointer {
+  display: none;
   pointer-events: none;
   stroke: var(--rowan-color-muted, #5c6560);
   stroke-width: 1;
+}
+
+.chart:hover .axis-pointer,
+.chart:focus-within .axis-pointer {
+  display: block;
 }
 
 .zoom-brush,
