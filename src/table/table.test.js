@@ -45,6 +45,65 @@ async function waitForStyles(element) {
   throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
 }
 
+// WebKit applies scrollTop only after the virtual viewport has a frame of
+// layout. Keep assigning it until the value sticks, then let the caller poll
+// for the row that offset should show.
+async function stickVirtualScroll(table, scrollTop, frames = 90) {
+  await waitForStyles(table);
+  const viewport = table.shadowRoot.querySelector(".table-scroll");
+  // Keep the browser from moving scrollTop when the virtual spacers change.
+  viewport.style.overflowAnchor = "none";
+  for (let frame = 0; frame < frames; frame += 1) {
+    if (viewport && viewport.scrollHeight > viewport.clientHeight + 1) {
+      viewport.scrollTop = scrollTop;
+      viewport.dispatchEvent(new Event("scroll"));
+      // The scroll handler renders on a microtask. Confirm the value survived that render.
+      await nextMicrotask();
+      const maxScroll = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+      const target = Math.min(scrollTop, maxScroll);
+      if (viewport.scrollTop >= Math.max(0, target - 1)) {
+        await nextFrame();
+        if (viewport.scrollTop >= Math.max(0, target - 1)) return viewport;
+      }
+    }
+    await nextFrame();
+  }
+  throw new Error(
+    `scrollTop ${scrollTop} did not stick (got ${viewport?.scrollTop}, scrollHeight ${viewport?.scrollHeight}, clientHeight ${viewport?.clientHeight})`,
+  );
+}
+
+// Find a row by scrolling until it is mounted. Row pixel size is measured
+// after layout, so a fixed offset does not stay on the same index.
+async function scrollUntilRowId(table, rowId) {
+  await waitForStyles(table);
+  const viewport = table.shadowRoot.querySelector(".table-scroll");
+  viewport.style.overflowAnchor = "none";
+  await waitFor(() => {
+    const maxScroll = viewport.scrollHeight - viewport.clientHeight;
+    return maxScroll > 1 && table.shadowRoot.querySelector("tbody tr[data-row-id]");
+  });
+  const targetIndex = Number(String(rowId).replace(/^row-/, ""));
+  let low = 0;
+  let high = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+  let found = null;
+  for (let step = 0; step < 16; step += 1) {
+    const mid = Math.round((low + high) / 2);
+    viewport.scrollTop = mid;
+    viewport.dispatchEvent(new Event("scroll"));
+    await nextMicrotask();
+    await nextFrame();
+    found = table.shadowRoot.querySelector(`tbody tr[data-row-id="${rowId}"]`);
+    if (found) return { viewport, row: found };
+    const firstId = table.shadowRoot.querySelector("tbody tr[data-row-id]")?.dataset.rowId ?? "";
+    const firstIndex = Number(firstId.replace(/^row-/, ""));
+    if (Number.isFinite(firstIndex) && firstIndex > targetIndex) high = mid - 1;
+    else low = mid + 1;
+    if (low > high) break;
+  }
+  return { viewport, row: found };
+}
+
 function createConfig() {
   return {
     rowId: "id",
@@ -1527,33 +1586,26 @@ describe("rowan-table", () => {
     };
 
     document.body.append(table);
-    await nextMicrotask();
-    await nextMicrotask();
-    await waitForStyles(table);
-
-    const viewport = table.shadowRoot.querySelector(".table-scroll");
-    // WebKit drops scrollTop until the virtual viewport has a frame of layout.
+    const viewport = await stickVirtualScroll(table, 300);
     await waitFor(() => {
-      viewport.scrollTop = 300;
-      return viewport.scrollTop > 0;
+      const top = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+      return Boolean(top) && viewport.scrollTop >= 300;
     });
-    viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
-    await nextMicrotask();
-
-    const scrollBefore = viewport.scrollTop;
-    expect(scrollBefore).to.be.above(0);
+    const topId = table.shadowRoot.querySelector("tbody tr[data-row-id]").dataset.rowId;
+    expect(viewport.scrollTop).to.be.above(0);
 
     table.rows = rows.map((row) => ({ ...row, name: `${row.name} (updated)` }));
-    await nextMicrotask();
-    await nextMicrotask();
-
-    expect(viewport.scrollTop).to.equal(scrollBefore);
+    await waitFor(() => {
+      const top = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+      return top?.dataset.rowId === topId && top.textContent.includes("(updated)");
+    });
 
     const renderedRows = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
     expect(renderedRows.length).to.be.above(0);
+    expect(renderedRows[0].dataset.rowId).to.equal(topId);
     // Proves the body actually re-rendered, so the preserved scroll position means something.
     expect(renderedRows[0].textContent).to.contain("(updated)");
+    expect(viewport.scrollTop).to.be.above(0);
 
     table.remove();
   });
@@ -1575,19 +1627,14 @@ describe("rowan-table", () => {
     };
 
     document.body.append(table);
-    await nextMicrotask();
-    await nextMicrotask();
-
-    const viewport = table.shadowRoot.querySelector(".table-scroll");
-    viewport.scrollTop = 900;
-    viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
-    await nextMicrotask();
+    const viewport = await stickVirtualScroll(table, 900);
+    expect(viewport.scrollTop).to.be.above(0);
 
     // Filtering down to fewer rows than the old scroll offset must not blank the viewport.
     table.rows = rows.slice(0, 3);
-    await nextMicrotask();
-    await nextMicrotask();
+    await waitFor(
+      () => table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length === 3,
+    );
 
     const rendered = table.shadowRoot.querySelectorAll("tbody tr[data-row-id]");
     expect(rendered.length).to.equal(3);
@@ -1613,15 +1660,11 @@ describe("rowan-table", () => {
     };
 
     document.body.append(table);
-    await nextMicrotask();
-    await nextMicrotask();
-    await waitForStyles(table);
-
-    const viewport = table.shadowRoot.querySelector(".table-scroll");
-    viewport.scrollTop = 400;
-    viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
-    await nextMicrotask();
+    const viewport = await stickVirtualScroll(table, 400);
+    await waitFor(() => {
+      const top = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+      return Boolean(top) && top.dataset.rowId !== "1" && viewport.scrollTop >= 400;
+    });
 
     const topRowBefore = table.shadowRoot.querySelector("tbody tr[data-row-id]").dataset.rowId;
     const scrollBefore = viewport.scrollTop;
@@ -1632,8 +1675,10 @@ describe("rowan-table", () => {
       { id: "new-2", name: "Inserted 2" },
       ...rows,
     ];
-    await nextMicrotask();
-    await nextMicrotask();
+    await waitFor(() => {
+      const top = table.shadowRoot.querySelector("tbody tr[data-row-id]");
+      return top?.dataset.rowId === topRowBefore && viewport.scrollTop > scrollBefore;
+    });
 
     const topRowAfter = table.shadowRoot.querySelector("tbody tr[data-row-id]").dataset.rowId;
     expect(topRowAfter).to.equal(topRowBefore);
@@ -1762,11 +1807,7 @@ describe("rowan-table", () => {
     expect(initialRows.length).to.be.lessThan(rows.length);
     expect(table.shadowRoot.querySelectorAll("tbody .virtual-spacer").length).to.equal(2);
 
-    viewport.scrollTop = 800;
-    viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
-
-    const row = table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]');
+    const { row } = await scrollUntilRowId(table, "row-40");
     expect(row).to.not.equal(null);
 
     row.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: " " }));
@@ -1799,17 +1840,16 @@ describe("rowan-table", () => {
     await nextFrame();
     await nextMicrotask();
 
-    viewport.scrollTop = 800;
-    viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
-
-    const rowForty = table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]');
+    const scrolled = await scrollUntilRowId(table, "row-40");
+    const rowForty = scrolled.row;
     expect(rowForty).to.not.equal(null);
     expect(rowForty.dataset.virtualKey).to.equal("row-40");
 
-    viewport.scrollTop = 820;
+    viewport.scrollTop = scrolled.viewport.scrollTop + 8;
     viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
+    await waitFor(
+      () => table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]') === rowForty,
+    );
 
     expect(table.shadowRoot.querySelector('tbody tr[data-row-id="row-40"]')).to.equal(rowForty);
 
@@ -1819,7 +1859,9 @@ describe("rowan-table", () => {
 
     viewport.scrollTop = 0;
     viewport.dispatchEvent(new Event("scroll"));
-    await nextMicrotask();
+    await waitFor(
+      () => table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length < 10,
+    );
 
     expect(table.shadowRoot.querySelectorAll("tbody tr[data-row-id]").length).to.be.lessThan(10);
   });
@@ -1850,9 +1892,8 @@ describe("rowan-table", () => {
       await nextFrame();
       await nextMicrotask();
 
-      viewport.scrollTop = 800;
-      viewport.dispatchEvent(new Event("scroll"));
-      await nextMicrotask();
+      await stickVirtualScroll(table, 800);
+      await waitFor(() => table.shadowRoot.querySelector("tbody tr[data-row-id]"));
 
       const initialMountedRows = [...table.shadowRoot.querySelectorAll("tbody tr[data-row-id]")];
       const targetRow = initialMountedRows.at(-1);
@@ -1867,7 +1908,10 @@ describe("rowan-table", () => {
 
       viewport.scrollTop = 810;
       viewport.dispatchEvent(new Event("scroll"));
-      await nextMicrotask();
+      await waitFor(
+        () =>
+          table.shadowRoot.querySelector(`tbody tr[data-row-id="${targetRowId}"]`) === targetRow,
+      );
 
       const mountedRows = [...table.shadowRoot.querySelectorAll("tbody tr[data-row-id]")];
       expect(mountedRows.length, `${rowCount} rows should retain a bounded window`).to.be.lessThan(

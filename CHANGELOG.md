@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.23.1 - 2026-11-03
+
 ### Added
 
 - Chart series cues. By default, a second series or slice uses a distinct dash, and forced-colors maps marks to system colors while legend swatches keep a visible fill and border. Set `cues="off"` to draw with color only.
@@ -15,6 +17,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Changed
 
+- Getting-started docs pin `@rowan-ui/core@0.23.1`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
 - The Vite, React, and Vue starters and the admin template depend on `@rowan-ui/*@^0.23.0` and no longer set `optimizeDeps.exclude`. The Harbor donut is interactive. The orders toolbar shows its column picker when columns are assigned.
 
 ### Fixed
