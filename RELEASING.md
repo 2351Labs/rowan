@@ -270,6 +270,15 @@ large-series mode ship here. Component CSS is embedded in generated
 groups and table-view-state version `2` stay experimental. Publish after this
 catalog commit is on `main`: tag `v0.23.0`.
 
+## 0.23.1 cut
+
+Version in `package.json` is `0.23.1` for core, icons, and MapLibre. Do **not**
+call this `1.0`. Cartesian scale, tick, and combo-axis fixes ship here, along
+with component docs demos and the starter cleanup that drops
+`optimizeDeps.exclude`. Nested filter groups and table-view-state version `2`
+stay experimental. Publish after this catalog commit is on `main`: tag
+`v0.23.1`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

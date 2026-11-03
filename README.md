@@ -32,7 +32,7 @@ That is the brief for this library.
 
 The mark is an R with a single berry in the counter. The letter is the product. The berry is the reminder: keep the accent small.
 
-**Current version:** `0.23.0` · **Status:** Pre-1.0 (most components are Stable)
+**Current version:** `0.23.1` · **Status:** Pre-1.0 (most components are Stable)
 
 ## Quick Start
 
@@ -276,7 +276,7 @@ Automated testing runs on Chromium, Firefox, and WebKit.
 
 ## Status
 
-Rowan is at **version 0.23.0**. Most components are **Stable** (frozen public API), with a small number of experimental features:
+Rowan is at **version 0.23.1**. Most components are **Stable** (frozen public API), with a small number of experimental features:
 
 - **Stable** (107 components): Attributes, properties, events, and slots will not change in breaking ways
 - **Experimental** (2 features): Nested filter-builder groups and table-view-state version 2
