@@ -218,6 +218,16 @@ export const Loading = {
   },
 };
 
+export const SeriesCuesOff = {
+  name: "Series cues off",
+  parameters: Playground.parameters,
+  render: (args) => {
+    const chart = createBarChart(args);
+    chart.setAttribute("cues", "off");
+    return chart;
+  },
+};
+
 export const VibrantPalette = {
   name: "Vibrant palette",
   parameters: Playground.parameters,

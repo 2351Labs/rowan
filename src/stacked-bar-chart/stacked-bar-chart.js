@@ -715,12 +715,13 @@ export class RowanStackedBarChart extends BaseElement {
         button.className = "point-button";
         button.type = "button";
         button.dataset.pointKey = entry.key;
-        button.style.setProperty("--point-x", `${(entry.x / SVG_NAMESPACE_WIDTH) * 100}%`);
-        button.style.setProperty("--point-y", `${(entry.barY / SVG_NAMESPACE_HEIGHT) * 100}%`);
-        button.style.setProperty("--point-width", `${(entry.width / SVG_NAMESPACE_WIDTH) * 100}%`);
         button.style.setProperty(
-          "--point-height",
-          `${(entry.height / SVG_NAMESPACE_HEIGHT) * 100}%`,
+          "--point-x",
+          `${((entry.x + entry.width / 2) / SVG_NAMESPACE_WIDTH) * 100}%`,
+        );
+        button.style.setProperty(
+          "--point-y",
+          `${((entry.barY + entry.height / 2) / SVG_NAMESPACE_HEIGHT) * 100}%`,
         );
         button.setAttribute(
           "aria-label",

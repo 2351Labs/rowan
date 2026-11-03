@@ -23,6 +23,7 @@ function elementHidden(hidden, el) {
 export function applySeriesVisibility(root, ids) {
   if (!root) return;
   const host = root.parentNode.host;
+  if (host) host.__cuesReady = import("./cues.js").then((m) => m.applySeriesCues(host));
   if (host && !host.__z) {
     const queued = [];
     const remember = (event) => queued.push(event);

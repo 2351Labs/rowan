@@ -139,7 +139,7 @@ function bandPath(t0, t1) {
  
  * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
  * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
- * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {string[]} hiddenSeries - `needle` hides the needle, `target` hides the target tick, and a range tone hides that band. The data table still lists them.
  * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
  * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
@@ -366,9 +366,20 @@ export class RowanGaugeChart extends BaseElement {
       band.setAttribute("class", "range");
       band.setAttribute("part", "range");
       band.setAttribute("data-tone", range.tone);
+      band.dataset.seriesId = range.tone;
       band.setAttribute("stroke-width", String(BAND));
       band.setAttribute("d", d);
       fragment.append(band);
+      const mid = (this.#t(range.from, scale) + this.#t(range.to, scale)) / 2;
+      const [lx, ly] = point(INNER - 14, mid);
+      const rangeLabel = createSvgElement("text");
+      rangeLabel.setAttribute("class", "range-label");
+      rangeLabel.setAttribute("part", "range-label");
+      rangeLabel.setAttribute("x", lx.toFixed(2));
+      rangeLabel.setAttribute("y", ly.toFixed(2));
+      rangeLabel.setAttribute("text-anchor", "middle");
+      rangeLabel.textContent = range.label || "";
+      fragment.append(rangeLabel);
     }
 
     for (const t of TICKS) {
@@ -408,6 +419,7 @@ export class RowanGaugeChart extends BaseElement {
       const mark = createSvgElement("line");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
+      mark.dataset.seriesId = "target";
       mark.setAttribute("x1", x1.toFixed(2));
       mark.setAttribute("x2", x2.toFixed(2));
       mark.setAttribute("y1", y1.toFixed(2));
@@ -420,6 +432,7 @@ export class RowanGaugeChart extends BaseElement {
       const needle = createSvgElement("line");
       needle.setAttribute("class", "needle");
       needle.setAttribute("part", "needle");
+      needle.dataset.seriesId = "needle";
       needle.setAttribute("x1", String(CX));
       needle.setAttribute("y1", String(CY));
       needle.setAttribute("x2", nx.toFixed(2));

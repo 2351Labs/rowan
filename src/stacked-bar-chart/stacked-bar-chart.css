@@ -112,6 +112,18 @@
   opacity: 0.45;
 }
 
+.legend-swatch {
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+  .legend-swatch {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+}
+
 .legend-button:focus-visible,
 .plot:focus-visible,
 summary:focus-visible {
@@ -343,12 +355,14 @@ summary:focus-visible {
 .point-button {
   background: transparent;
   border: 0;
-  block-size: var(--point-height);
-  inline-size: var(--point-width);
+  block-size: 24px;
+  inline-size: 24px;
   inset-block-start: var(--point-y);
   inset-inline-start: var(--point-x);
+  padding: 0;
   pointer-events: auto;
   position: absolute;
+  transform: translate(-50%, -50%);
 }
 
 .point-button:focus-visible {

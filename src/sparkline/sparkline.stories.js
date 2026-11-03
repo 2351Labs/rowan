@@ -165,6 +165,19 @@ export const NegativeValues = {
   },
 };
 
+export const SeriesHidden = {
+  name: "Series hidden",
+  render: () => {
+    const chart = createSparkline({
+      label: "Open incidents versus target",
+      values: sparklineValues.users,
+      target: 14,
+    });
+    chart.hiddenSeries = ["series"];
+    return chart;
+  },
+};
+
 export const Empty = {
   name: "Empty state",
   render: () => {

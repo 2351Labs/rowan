@@ -29,7 +29,7 @@
  
  * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
  * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
- * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {string[]} hiddenSeries - `actual` hides the bar, `target` hides the target, and a range tone (`danger`, `warning`, `success`, `info`, `neutral`) hides that band. The data table still lists them.
  * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
  * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
@@ -77,6 +77,7 @@ export class RowanBulletChart extends BaseElement {
   get tooltipFormatter(): any;
   set noMotion(value: boolean);
   get noMotion(): boolean;
+  __cuesReady: Promise<void> | undefined;
   #private;
 }
 export type RowanBulletChartRange = {

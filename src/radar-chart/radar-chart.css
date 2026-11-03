@@ -112,6 +112,18 @@
   opacity: 0.45;
 }
 
+.legend-swatch {
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+  .legend-swatch {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+}
+
 .legend-button:focus-visible,
 .plot:focus-visible,
 summary:focus-visible {

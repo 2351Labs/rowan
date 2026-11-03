@@ -169,6 +169,7 @@ describe("rowan-stacked-bar-chart", () => {
       chart,
       pointSelector: "rect.bar",
       pointKey: "incoming::0",
+      alignment: "center",
     });
   });
 

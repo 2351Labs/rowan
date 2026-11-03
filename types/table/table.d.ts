@@ -156,9 +156,9 @@ export class RowanTable extends BaseElement {
   /** @returns {RowanTableGroupBy | null} */
   get groupBy(): RowanTableGroupBy | null;
   /** @param {"dblclick" | "none"} value */
-  set rowActivate(value: "dblclick" | "none");
+  set rowActivate(value: "none" | "dblclick");
   /** @returns {"dblclick" | "none"} */
-  get rowActivate(): "dblclick" | "none";
+  get rowActivate(): "none" | "dblclick";
   /** @returns {RowanTableRow[]} */
   get selectedRows(): Record<string, unknown>[];
   selectAll(): void;
@@ -528,7 +528,7 @@ export type RowanTableConfig = {
   virtualItemSize?: number | undefined;
   virtualOverscan?: number | undefined;
   groupBy?: string | RowanTableGroupBy | null | undefined;
-  rowActivate?: "dblclick" | "none" | undefined;
+  rowActivate?: "none" | "dblclick" | undefined;
 };
 export type RowanTableGroupBy = {
   id: string;

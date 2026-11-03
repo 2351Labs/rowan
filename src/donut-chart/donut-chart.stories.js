@@ -69,6 +69,16 @@ export const Pie = {
   render: (args) => createDonutChart(args),
 };
 
+export const SeriesCuesOff = {
+  name: "Series cues off",
+  parameters: Playground.parameters,
+  render: (args) => {
+    const chart = createDonutChart(args);
+    chart.setAttribute("cues", "off");
+    return chart;
+  },
+};
+
 export const VibrantPalette = {
   name: "Vibrant palette",
   parameters: Playground.parameters,

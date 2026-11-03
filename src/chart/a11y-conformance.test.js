@@ -92,6 +92,9 @@ describe("chart accessibility conformance", function () {
       expect(focus.visible, JSON.stringify(focus)).to.equal(true);
       if (Number.isFinite(focus.ratio)) expect(focus.ratio).to.be.at.least(3);
       expect(states["hidden-series"].hidden.attribute).to.equal(spec.hideId);
+      if (["sparkline", "column-sparkline", "bullet-chart", "gauge-chart"].includes(spec.id)) {
+        expect(states["hidden-series"].hidden.hiddenMarks, spec.id).to.be.above(0);
+      }
     });
   }
 });

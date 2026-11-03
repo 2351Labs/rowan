@@ -9,6 +9,7 @@ import {
   bindChartHover,
   createChartHoverBubble,
   formatHoverLines,
+  markHiddenSeries,
   readHiddenSeries,
   readTooltipFormatter,
   writeHiddenSeries,
@@ -152,7 +153,7 @@ function formatTick(value, locale) {
  
  * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
  * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
- * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {string[]} hiddenSeries - `actual` hides the bar, `target` hides the target, and a range tone (`danger`, `warning`, `success`, `info`, `neutral`) hides that band. The data table still lists them.
  * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
  * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
@@ -344,6 +345,8 @@ export class RowanBulletChart extends BaseElement {
     this.#renderPlot();
     this.#renderTable();
     this.#applyDefaultA11y();
+    markHiddenSeries(this.renderRoot, readHiddenSeries(this));
+    this.__cuesReady = import("../chart/cues.js").then((m) => m.applySeriesCues(this));
   }
 
   #domain() {
@@ -409,6 +412,7 @@ export class RowanBulletChart extends BaseElement {
       band.setAttribute("class", "range");
       band.setAttribute("part", "range");
       band.setAttribute("data-tone", range.tone);
+      band.dataset.seriesId = range.tone;
       band.setAttribute("data-intensity", String(range.intensity));
       band.setAttribute("data-status", range.status);
       band.style.setProperty("--range-ink", `${range.intensity}%`);
@@ -446,6 +450,7 @@ export class RowanBulletChart extends BaseElement {
       const mark = createSvgElement("line");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
+      mark.dataset.seriesId = "target";
       mark.setAttribute("x1", x);
       mark.setAttribute("x2", x);
       mark.setAttribute("y1", TARGET_Y1.toFixed(2));
@@ -459,6 +464,7 @@ export class RowanBulletChart extends BaseElement {
       const bar = createSvgElement("rect");
       bar.setAttribute("class", "actual");
       bar.setAttribute("part", "actual");
+      bar.dataset.seriesId = "actual";
       bar.setAttribute("x", Math.min(start, end).toFixed(2));
       bar.setAttribute("y", ACTUAL_Y.toFixed(2));
       bar.setAttribute("width", Math.max(Math.abs(end - start), 0.8).toFixed(2));

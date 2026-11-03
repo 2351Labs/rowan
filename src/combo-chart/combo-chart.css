@@ -112,6 +112,18 @@
   opacity: 0.45;
 }
 
+.legend-swatch {
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+  .legend-swatch {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+}
+
 .legend-button:focus-visible,
 .plot:focus-visible,
 summary:focus-visible {
@@ -303,8 +315,8 @@ summary:focus-visible {
 }
 
 .line-point {
-  stroke: var(--rowan-combo-chart-bg, var(--rowan-color-bg));
-  stroke-width: 1.5;
+  stroke: var(--rowan-combo-chart-fg, var(--rowan-color-fg));
+  stroke-width: 2;
 }
 
 .reference-line-hit {

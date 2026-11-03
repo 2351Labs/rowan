@@ -119,7 +119,7 @@ function dashedTargetPath(y, plotWidthPx) {
  
  * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
  * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
- * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {string[]} hiddenSeries - `series` hides the columns. `target` hides the target. The data table still lists them.
  * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
  * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
@@ -430,6 +430,7 @@ export class RowanColumnSparkline extends BaseElement {
       mark.setAttribute("class", "column");
       mark.setAttribute("part", "column");
       mark.dataset.index = String(column.index);
+      mark.dataset.seriesId = "series";
       mark.setAttribute("x", column.x.toFixed(2));
       mark.setAttribute("y", column.y.toFixed(2));
       mark.setAttribute("width", column.width.toFixed(2));
@@ -445,6 +446,7 @@ export class RowanColumnSparkline extends BaseElement {
       const mark = createSvgElement("path");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
+      mark.dataset.seriesId = "target";
       mark.dataset.y = targetY.toFixed(2);
       mark.setAttribute("d", dashedTargetPath(targetY, this.#plot.getBoundingClientRect().width));
       fragment.append(mark);

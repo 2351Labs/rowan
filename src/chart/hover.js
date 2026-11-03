@@ -20,6 +20,14 @@ export function readHiddenSeries(host) {
   return (host.getAttribute("hidden-series") || "").split(/[\s,]+/).filter(Boolean);
 }
 
+export function markHiddenSeries(root, ids) {
+  if (!root) return;
+  const hidden = new Set(ids);
+  for (const el of root.querySelectorAll("[data-series-id]")) {
+    el.classList.toggle("is-series-hidden", hidden.has(el.dataset.seriesId || ""));
+  }
+}
+
 export function writeHiddenSeries(host, value) {
   const next = (Array.isArray(value) ? value : String(value ?? "").split(/[\s,]+/))
     .map((id) => String(id).trim())

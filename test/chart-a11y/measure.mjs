@@ -9,6 +9,7 @@ export async function settle(chart) {
   await Promise.resolve();
   if (chart.__z) await chart.__z;
   if (chart.__k) await chart.__k;
+  if (chart.__cuesReady) await chart.__cuesReady;
   await new Promise((resolve) => requestAnimationFrame(resolve));
   await Promise.resolve();
 }
@@ -101,10 +102,11 @@ function seriesGroup(element, multiTone) {
 
 function shapeSignature(element) {
   const style = getComputedStyle(element);
-  const dash = element.getAttribute("stroke-dasharray") || style.strokeDasharray || "none";
-  const dashed = dash && dash !== "none" && dash !== "0" ? "dash" : "solid";
+  const dash = (element.getAttribute("stroke-dasharray") || style.strokeDasharray || "none")
+    .replace(/\s+/g, " ")
+    .trim();
   const kind = element.getAttribute("class")?.split(/\s+/)[0] || element.localName;
-  return `${element.localName}:${kind}:${dashed}`;
+  return `${element.localName}:${kind}:${dash && dash !== "none" && dash !== "0px" ? dash : "solid"}`;
 }
 
 function nonColorOf(root) {
@@ -114,16 +116,21 @@ function nonColorOf(root) {
         (element) => !element.classList.contains("zero-line") && !element.classList.contains("axis-pointer"),
       )
     : [];
-  const tones = new Set(marks.map((element) => element.dataset.tone).filter(Boolean));
+  const labeled = new Set(
+    [...(svg?.querySelectorAll("text[data-point-key]") || [])].map((node) => node.dataset.pointKey),
+  );
+  const cueMarks = marks.filter((element) => !element.dataset.pointKey || !labeled.has(element.dataset.pointKey));
+  const toneSource = cueMarks;
+  const tones = new Set(toneSource.map((element) => element.dataset.tone).filter(Boolean));
   const multiTone = tones.size > 1;
   const groups = new Map();
-  for (const element of marks) {
+  for (const element of toneSource) {
     const key = seriesGroup(element, multiTone);
     if (!groups.has(key)) groups.set(key, new Set());
     groups.get(key).add(shapeSignature(element));
   }
   const colorsByShape = new Map();
-  for (const element of marks) {
+  for (const element of toneSource) {
     const signature = shapeSignature(element);
     const style = getComputedStyle(element);
     const paint =
@@ -136,6 +143,7 @@ function nonColorOf(root) {
   const colorOnly = [...colorsByShape.values()].some((colors) => [...colors].filter((color) => color && color !== "none").length > 1);
   const channels = [];
   if (colorsByShape.size > 1 && !colorOnly) channels.push("shape-or-dash");
+  if (labeled.size && cueMarks.length < marks.length) channels.push("on-mark text");
   if (multiTone) {
     const centers = new Map();
     for (const element of marks) {
@@ -175,10 +183,45 @@ function contrastOf(root) {
     if (!paint) continue;
     const background = opaqueBackground(element);
     if (!background) continue;
-    const ratio = roundRatio(contrastRatio(composite(paint.color, background), background));
+    const style = getComputedStyle(element);
+    const fillPaint = parseCssColor(style.fill);
+    const strokePaint = parseCssColor(style.stroke);
+    const fillRatio =
+      fillPaint && style.fill !== "none"
+        ? roundRatio(
+            contrastRatio(
+              composite(
+                {
+                  ...fillPaint,
+                  a: (fillPaint.a ?? 1) * (Number(style.fillOpacity) || 1) * (Number(style.opacity) || 1),
+                },
+                background,
+              ),
+              background,
+            ),
+          )
+        : null;
+    const strokeWidth = Number.parseFloat(style.strokeWidth) || 0;
+    const strokeRatio =
+      strokePaint && style.stroke !== "none" && strokeWidth >= 1
+        ? roundRatio(
+            contrastRatio(
+              composite(
+                {
+                  ...strokePaint,
+                  a: (strokePaint.a ?? 1) * (Number(style.strokeOpacity) || 1) * (Number(style.opacity) || 1),
+                },
+                background,
+              ),
+              background,
+            ),
+          )
+        : null;
+    const useEdge = Number.isFinite(strokeRatio) && strokeRatio >= 3 && (!Number.isFinite(fillRatio) || fillRatio < 3);
+    const ratio = useEdge ? strokeRatio : Number.isFinite(fillRatio) ? fillRatio : paint ? roundRatio(contrastRatio(composite(paint.color, background), background)) : strokeRatio;
     const own = element.getAttribute("class")?.split(/\s+/).find(Boolean);
     const parent = element.parentElement?.getAttribute("class")?.split(/\s+/).find(Boolean);
-    const kind = `${own || parent || element.localName} ${paint.kind}`;
+    const kind = `${own || parent || element.localName} ${useEdge ? "stroke" : paint.kind}`;
     const signature = `${kind}:${ratio}`;
     if (seen.has(signature)) continue;
     seen.add(signature);
