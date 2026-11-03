@@ -112,6 +112,18 @@
   opacity: 0.45;
 }
 
+.legend-swatch {
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+  .legend-swatch {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+}
+
 .legend-button:focus-visible,
 .plot:focus-visible,
 summary:focus-visible {
@@ -272,6 +284,15 @@ summary:focus-visible {
 
 .cell {
   fill: var(--rowan-heatmap-chart-fill, var(--rowan-chart-info, var(--rowan-color-accent)));
+  stroke: var(--rowan-heatmap-chart-fill, var(--rowan-chart-info, var(--rowan-color-accent)));
+  stroke-width: 3;
+}
+
+.cell-value {
+  fill: var(--rowan-heatmap-chart-fg, var(--rowan-color-fg));
+  font-size: 18px;
+  font-weight: 600;
+  pointer-events: none;
 }
 
 .x-axis {

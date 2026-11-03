@@ -9,6 +9,7 @@ import {
   createChartHoverBubble,
   formatHoverLines,
   nearestPointByClientX,
+  markHiddenSeries,
   readHiddenSeries,
   readTooltipFormatter,
   writeHiddenSeries,
@@ -114,6 +115,7 @@ function createBandPath({ className, part, d, tone, band, clipId, filled }) {
   if (!filled) path.setAttribute("fill", "none");
   path.setAttribute("d", d);
   if (tone) path.dataset.tone = tone;
+  path.dataset.seriesId = "series";
   if (band) path.dataset.band = band;
   if (clipId) path.setAttribute("clip-path", `url(#${clipId})`);
   return path;
@@ -192,7 +194,7 @@ function dashedTargetPath(y, plotWidthPx) {
  
  * @attr {string} hidden-series - Space-separated series or slice ids hidden from the plot.
  * @attr {boolean} no-motion - Disables chart motion, including under prefers-reduced-motion.
- * @property {string[]} hiddenSeries - Ids hidden from the plot. The data table still lists them.
+ * @property {string[]} hiddenSeries - `series` hides the line. `target` hides the target. The data table still lists them.
  * @property {((context: { text: string, event: Event, host: HTMLElement }) => string) | null} tooltipFormatter - Custom tooltip text. Property-only.
  * @slot tooltip - Custom tooltip content, used when tooltipFormatter is unset.
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
@@ -437,6 +439,8 @@ export class RowanSparkline extends BaseElement {
     this.#renderPlot(points);
     this.#renderTable();
     this.#applyDefaultA11y();
+    markHiddenSeries(this.renderRoot, readHiddenSeries(this));
+    this.__cuesReady = import("../chart/cues.js").then((m) => m.applySeriesCues(this));
   }
 
   #domain() {
@@ -523,6 +527,7 @@ export class RowanSparkline extends BaseElement {
       const mark = createSvgElement("path");
       mark.setAttribute("class", "target");
       mark.setAttribute("part", "target");
+      mark.dataset.seriesId = "target";
       mark.dataset.y = targetY.toFixed(2);
       mark.setAttribute("d", dashedTargetPath(targetY, this.#plot.getBoundingClientRect().width));
       fragment.append(mark);

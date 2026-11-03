@@ -1963,7 +1963,7 @@
           "default": "",
           "reflects": true,
           "readonly": false,
-          "description": "Ids hidden from the plot. The data table still lists them."
+          "description": "`actual` hides the bar, `target` hides the target, and a range tone (`danger`, `warning`, `success`, `info`, `neutral`) hides that band. The data table still lists them."
         },
         {
           "name": "intent",
@@ -3533,7 +3533,7 @@
           "default": "",
           "reflects": true,
           "readonly": false,
-          "description": "Ids hidden from the plot. The data table still lists them."
+          "description": "`series` hides the columns. `target` hides the target. The data table still lists them."
         },
         {
           "name": "label",
@@ -8462,7 +8462,7 @@
           "default": "",
           "reflects": true,
           "readonly": false,
-          "description": "Ids hidden from the plot. The data table still lists them."
+          "description": "`needle` hides the needle, `target` hides the target tick, and a range tone hides that band. The data table still lists them."
         },
         {
           "name": "label",
@@ -14957,7 +14957,7 @@
           "default": "",
           "reflects": true,
           "readonly": false,
-          "description": "Ids hidden from the plot. The data table still lists them."
+          "description": "`series` hides the line. `target` hides the target. The data table still lists them."
         },
         {
           "name": "label",

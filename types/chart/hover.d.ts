@@ -5,6 +5,7 @@
 export function formatHoverLines(lines: string[]): string;
 export function createChartHoverBubble(): HTMLDivElement;
 export function readHiddenSeries(host: any): any;
+export function markHiddenSeries(root: any, ids: any): void;
 export function writeHiddenSeries(host: any, value: any): void;
 export function readTooltipFormatter(host: any): any;
 export function writeTooltipFormatter(host: any, value: any): void;

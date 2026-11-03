@@ -2856,7 +2856,8 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       </section>
       <section class="doc-section" data-doc-section id="chart-interaction-legend">
         <h2>Legends</h2>
-        <p><code>hidden-series</code> is a space-separated list of ids (also <code>hiddenSeries</code> as an array). Marks and point buttons whose id matches are hidden. The data table still lists them. After the chart renders, legend rows become buttons: click, Enter, or Space toggles a series and emits cancelable <code>rowan-series-toggle</code> (<code>seriesId</code>, <code>hiddenSeries</code>). Hovering a legend button dims the other series.</p>
+        <p><code>hidden-series</code> is a space-separated list of ids (also <code>hiddenSeries</code> as an array). Marks and point buttons whose id matches are hidden. The data table still lists them. Sparkline and column sparkline use <code>series</code> and <code>target</code>. Bullet uses <code>actual</code>, <code>target</code>, and range tones. Gauge uses <code>needle</code>, <code>target</code>, and range tones. After the chart renders, legend rows become buttons: click, Enter, or Space toggles a series and emits cancelable <code>rowan-series-toggle</code> (<code>seriesId</code>, <code>hiddenSeries</code>). Hovering a legend button dims the other series.</p>
+        <p>Set <code>cues="off"</code> to draw series in color only. By default, later series and slices use a distinct dash so color is not the only cue. In forced colors, marks use system colors and the same dashes, and legend swatches keep their fill with a system-color border.</p>
       </section>
       <section class="doc-section" data-doc-section id="chart-interaction-selection">
         <h2>Selection and keyboard</h2>

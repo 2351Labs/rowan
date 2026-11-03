@@ -3051,7 +3051,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "Ids hidden from the plot. The data table still lists them."
+              "description": "`actual` hides the bar, `target` hides the target, and a range tone (`danger`, `warning`, `success`, `info`, `neutral`) hides that band. The data table still lists them."
             },
             {
               "kind": "field",
@@ -4463,6 +4463,31 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/cues.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "applySeriesCues",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "applySeriesCues",
+          "declaration": {
+            "name": "applySeriesCues",
+            "module": "src/chart/cues.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/dom.js",
       "declarations": [
         {
@@ -4759,6 +4784,18 @@
         },
         {
           "kind": "function",
+          "name": "markHiddenSeries",
+          "parameters": [
+            {
+              "name": "root"
+            },
+            {
+              "name": "ids"
+            }
+          ]
+        },
+        {
+          "kind": "function",
           "name": "writeHiddenSeries",
           "parameters": [
             {
@@ -4915,6 +4952,14 @@
           "name": "readHiddenSeries",
           "declaration": {
             "name": "readHiddenSeries",
+            "module": "src/chart/hover.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "markHiddenSeries",
+          "declaration": {
+            "name": "markHiddenSeries",
             "module": "src/chart/hover.js"
           }
         },
@@ -7019,7 +7064,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "Ids hidden from the plot. The data table still lists them."
+              "description": "`series` hides the columns. `target` hides the target. The data table still lists them."
             },
             {
               "kind": "field",
@@ -14060,7 +14105,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "Ids hidden from the plot. The data table still lists them."
+              "description": "`needle` hides the needle, `target` hides the target tick, and a range tone hides that band. The data table still lists them."
             },
             {
               "kind": "field",
@@ -26742,7 +26787,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "Ids hidden from the plot. The data table still lists them."
+              "description": "`series` hides the line. `target` hides the target. The data table still lists them."
             },
             {
               "kind": "field",

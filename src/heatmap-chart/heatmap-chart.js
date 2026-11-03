@@ -557,6 +557,15 @@ export class RowanHeatmapChart extends BaseElement {
       cell.setAttribute("height", String(entry.height));
       cell.setAttribute("fill-opacity", String(entry.opacity));
       fragment.append(cell);
+      const valueText = createSvgElement("text");
+      valueText.setAttribute("class", "cell-value");
+      valueText.dataset.pointKey = entry.key;
+      valueText.setAttribute("x", String(entry.plotX + entry.width / 2));
+      valueText.setAttribute("y", String(entry.plotY + entry.height / 2));
+      valueText.setAttribute("text-anchor", "middle");
+      valueText.setAttribute("dominant-baseline", "middle");
+      valueText.textContent = entry.formattedValue;
+      fragment.append(valueText);
     }
     this.#plot.replaceChildren(fragment);
   }
