@@ -15,10 +15,10 @@ Gap score is `weight × (uncovered lines + uncovered branches)`. Form controls a
 
 | Metric     | Covered |  Total | Coverage |  Floor |
 | ---------- | ------: | -----: | -------: | -----: |
-| lines      |  53,459 | 55,745 |   95.89% | 95.05% |
-| statements |  53,459 | 55,745 |   95.89% | 95.05% |
-| functions  |   3,835 |  4,158 |   92.23% | 91.31% |
-| branches   |  12,089 | 13,449 |   89.88% | 88.89% |
+| lines      |  53,595 | 55,745 |   96.14% | 95.05% |
+| statements |  53,595 | 55,745 |   96.14% | 95.05% |
+| functions  |   3,868 |  4,158 |   93.02% | 91.31% |
+| branches   |  12,272 | 13,564 |   90.47% | 88.89% |
 
 ## Largest gaps
 
@@ -59,24 +59,24 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `accordion`             | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `alert`                 | Data display |     2 |   96.72% (4 uncovered) |   96.72% (4 uncovered) |  81.82% (2 uncovered) |   96.00% (1 uncovered) |
 | `app-layout`            | Navigation   |     2 |   98.30% (3 uncovered) |   98.30% (3 uncovered) |  92.86% (1 uncovered) |   92.86% (2 uncovered) |
-| `area-chart`            | Chart        |     2 |  96.55% (31 uncovered) |  96.55% (31 uncovered) |  87.30% (8 uncovered) |   94.56% (8 uncovered) |
+| `area-chart`            | Chart        |     2 |  97.10% (26 uncovered) |  97.10% (26 uncovered) |  88.89% (7 uncovered) |   94.74% (8 uncovered) |
 | `avatar`                | Data display |     2 |   96.57% (6 uncovered) |   96.57% (6 uncovered) |  88.89% (2 uncovered) |  100.00% (0 uncovered) |
 | `badge`                 | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
-| `bar-chart`             | Chart        |     2 |  97.99% (14 uncovered) |  97.99% (14 uncovered) |  92.86% (4 uncovered) |   97.14% (3 uncovered) |
-| `box-plot-chart`        | Chart        |     3 |  97.56% (25 uncovered) |  97.56% (25 uncovered) |  88.24% (8 uncovered) |  86.67% (24 uncovered) |
+| `bar-chart`             | Chart        |     2 |  98.42% (11 uncovered) |  98.42% (11 uncovered) |  92.86% (4 uncovered) |   97.20% (3 uncovered) |
+| `box-plot-chart`        | Chart        |     3 |  98.24% (18 uncovered) |  98.24% (18 uncovered) |  91.18% (6 uncovered) |  89.19% (20 uncovered) |
 | `breadcrumb`            | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `bulk-actions-bar`      | Data display |     2 |  93.55% (28 uncovered) |  93.55% (28 uncovered) |  86.49% (5 uncovered) |  89.47% (10 uncovered) |
-| `bullet-chart`          | Chart        |     2 |  96.26% (21 uncovered) |  96.26% (21 uncovered) |  84.78% (7 uncovered) |  86.49% (15 uncovered) |
+| `bullet-chart`          | Chart        |     2 |  96.61% (19 uncovered) |  96.61% (19 uncovered) |  86.96% (6 uncovered) |  86.61% (15 uncovered) |
 | `button`                | Form         |     2 |   97.70% (4 uncovered) |   97.70% (4 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `calendar`              | Form         |     2 |  96.51% (36 uncovered) |  96.51% (36 uncovered) | 100.00% (0 uncovered) |  94.61% (16 uncovered) |
 | `card`                  | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   80.00% (1 uncovered) |
 | `carousel`              | Navigation   |     2 |   97.44% (9 uncovered) |   97.44% (9 uncovered) | 100.00% (0 uncovered) |  82.09% (12 uncovered) |
-| `chart`                 | Chart        |     8 | 91.69% (164 uncovered) | 91.69% (164 uncovered) |  95.61% (5 uncovered) |  96.09% (25 uncovered) |
+| `chart`                 | Chart        |     8 | 92.65% (145 uncovered) | 92.65% (145 uncovered) |  97.37% (3 uncovered) |  96.26% (25 uncovered) |
 | `checkbox`              | Form         |     2 |  94.34% (15 uncovered) |  94.34% (15 uncovered) |  92.59% (2 uncovered) |  100.00% (0 uncovered) |
 | `chip`                  | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `color-picker`          | Form         |     2 |  97.80% (13 uncovered) |  97.80% (13 uncovered) |  97.87% (1 uncovered) |  82.76% (25 uncovered) |
-| `column-sparkline`      | Chart        |     2 |  93.75% (37 uncovered) |  93.75% (37 uncovered) | 78.00% (11 uncovered) |  90.76% (11 uncovered) |
-| `combo-chart`           | Chart        |     4 |  97.64% (22 uncovered) |  97.64% (22 uncovered) |  87.69% (8 uncovered) |  77.49% (43 uncovered) |
+| `column-sparkline`      | Chart        |     2 |  96.45% (21 uncovered) |  96.45% (21 uncovered) |  84.00% (8 uncovered) |  91.20% (11 uncovered) |
+| `combo-chart`           | Chart        |     4 |  98.17% (17 uncovered) |  98.17% (17 uncovered) |  89.23% (7 uncovered) |  89.50% (21 uncovered) |
 | `combobox`              | Form         |     2 |  95.76% (23 uncovered) |  95.76% (23 uncovered) |  97.73% (1 uncovered) |  84.78% (21 uncovered) |
 | `command-item`          | Overlay      |     2 |   97.55% (7 uncovered) |   97.55% (7 uncovered) |  95.83% (1 uncovered) |   96.43% (2 uncovered) |
 | `command-palette`       | Overlay      |     2 |   98.72% (8 uncovered) |   98.72% (8 uncovered) |  96.00% (2 uncovered) |  84.56% (23 uncovered) |
@@ -88,7 +88,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `date-range-picker`     | Form         |     2 |  94.43% (32 uncovered) |  94.43% (32 uncovered) |  97.87% (1 uncovered) |  83.70% (22 uncovered) |
 | `dialog`                | Overlay      |     2 |   97.19% (8 uncovered) |   97.19% (8 uncovered) |  86.36% (3 uncovered) |   96.10% (3 uncovered) |
 | `divider`               | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   95.83% (1 uncovered) |
-| `donut-chart`           | Chart        |     2 |  95.08% (32 uncovered) |  95.08% (32 uncovered) |  83.02% (9 uncovered) |  87.04% (14 uncovered) |
+| `donut-chart`           | Chart        |     2 |  95.85% (27 uncovered) |  95.85% (27 uncovered) |  84.91% (8 uncovered) |  91.07% (10 uncovered) |
 | `drawer`                | Overlay      |     2 |   98.82% (3 uncovered) |   98.82% (3 uncovered) |  95.00% (1 uncovered) |   89.09% (6 uncovered) |
 | `dropdown`              | Overlay      |     2 |  95.71% (16 uncovered) |  95.71% (16 uncovered) | 100.00% (0 uncovered) |   95.97% (5 uncovered) |
 | `dropzone`              | Form         |     2 |  94.46% (15 uncovered) |  94.46% (15 uncovered) |  90.91% (2 uncovered) |   92.45% (4 uncovered) |
@@ -99,9 +99,9 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `form-field`            | Form         |     2 |  97.83% (12 uncovered) |  97.83% (12 uncovered) | 100.00% (0 uncovered) |   94.41% (8 uncovered) |
 | `form-layout`           | Form         |     2 |   97.64% (9 uncovered) |   97.64% (9 uncovered) | 100.00% (0 uncovered) |  83.93% (18 uncovered) |
 | `form-wizard`           | Form         |     2 |  97.28% (21 uncovered) |  97.28% (21 uncovered) | 100.00% (0 uncovered) |  94.69% (11 uncovered) |
-| `funnel-chart`          | Chart        |     3 |  95.46% (32 uncovered) |  95.46% (32 uncovered) | 82.76% (10 uncovered) |  85.95% (17 uncovered) |
-| `gauge-chart`           | Chart        |     2 |  95.00% (28 uncovered) |  95.00% (28 uncovered) | 74.42% (11 uncovered) |   96.15% (3 uncovered) |
-| `heatmap-chart`         | Chart        |     3 |  97.80% (20 uncovered) |  97.80% (20 uncovered) |  88.73% (8 uncovered) |  91.33% (17 uncovered) |
+| `funnel-chart`          | Chart        |     3 |  96.45% (25 uncovered) |  96.45% (25 uncovered) |  86.21% (8 uncovered) |  91.20% (11 uncovered) |
+| `gauge-chart`           | Chart        |     2 |  97.86% (12 uncovered) |  97.86% (12 uncovered) |  86.05% (6 uncovered) |   96.55% (3 uncovered) |
+| `heatmap-chart`         | Chart        |     3 |  98.57% (13 uncovered) |  98.57% (13 uncovered) |  91.55% (6 uncovered) |  94.50% (11 uncovered) |
 | `histogram`             | Chart        |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   73.33% (8 uncovered) |
 | `icon-button`           | Form         |     2 |   96.74% (6 uncovered) |   96.74% (6 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `image`                 | Data display |     2 |  94.57% (14 uncovered) |  94.57% (14 uncovered) |  86.96% (3 uncovered) |  76.92% (12 uncovered) |
@@ -118,15 +118,15 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `pagination`            | Navigation   |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |   89.29% (3 uncovered) |
 | `popover`               | Overlay      |     2 |  91.42% (44 uncovered) |  91.42% (44 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `progress`              | Data display |     2 |   97.62% (4 uncovered) |   97.62% (4 uncovered) |  86.67% (2 uncovered) |  100.00% (0 uncovered) |
-| `radar-chart`           | Chart        |     3 |  96.31% (32 uncovered) |  96.31% (32 uncovered) | 84.38% (10 uncovered) |  91.10% (13 uncovered) |
+| `radar-chart`           | Chart        |     3 |  97.12% (25 uncovered) |  97.12% (25 uncovered) |  87.50% (8 uncovered) |   94.08% (9 uncovered) |
 | `radio`                 | Form         |     2 |  95.31% (15 uncovered) |  95.31% (15 uncovered) |  93.75% (2 uncovered) |   96.88% (3 uncovered) |
 | `radio-group`           | Form         |     2 |  94.35% (14 uncovered) |  94.35% (14 uncovered) |  92.00% (2 uncovered) |   90.00% (7 uncovered) |
-| `range-chart`           | Chart        |     3 |  96.15% (38 uncovered) |  96.15% (38 uncovered) |  88.57% (8 uncovered) |  83.80% (29 uncovered) |
+| `range-chart`           | Chart        |     3 |  96.86% (31 uncovered) |  96.86% (31 uncovered) |  91.43% (6 uncovered) |  86.34% (25 uncovered) |
 | `rating`                | Form         |     2 |  97.98% (12 uncovered) |  97.98% (12 uncovered) |  98.21% (1 uncovered) |  85.43% (22 uncovered) |
 | `react`                 | Support      |     0 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `rich-text-editor`      | Form         |     3 |  96.00% (56 uncovered) |  96.00% (56 uncovered) |  97.83% (2 uncovered) |  80.65% (72 uncovered) |
 | `row-details-panel`     | Data display |     2 |  93.12% (59 uncovered) |  93.12% (59 uncovered) | 81.43% (13 uncovered) |  82.56% (34 uncovered) |
-| `scatter-chart`         | Chart        |     3 |  97.30% (23 uncovered) |  97.30% (23 uncovered) |  87.50% (8 uncovered) |  84.18% (25 uncovered) |
+| `scatter-chart`         | Chart        |     3 |  98.12% (16 uncovered) |  98.12% (16 uncovered) |  90.63% (6 uncovered) |  87.20% (21 uncovered) |
 | `segmented-control`     | Form         |     2 |  96.75% (12 uncovered) |  96.75% (12 uncovered) | 100.00% (0 uncovered) |  78.45% (25 uncovered) |
 | `select`                | Form         |     2 |  93.81% (21 uncovered) |  93.81% (21 uncovered) |  90.63% (3 uncovered) |   92.59% (6 uncovered) |
 | `side-nav`              | Navigation   |     2 |  93.10% (22 uncovered) |  93.10% (22 uncovered) | 100.00% (0 uncovered) |   98.28% (2 uncovered) |
@@ -135,11 +135,11 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `skeleton`              | Data display |     2 |   94.44% (5 uncovered) |   94.44% (5 uncovered) |  83.33% (2 uncovered) |   89.47% (2 uncovered) |
 | `slider`                | Form         |     2 |  95.89% (28 uncovered) |  95.89% (28 uncovered) |  95.65% (3 uncovered) |  82.74% (29 uncovered) |
 | `source-meta`           | Data display |     2 |   98.39% (2 uncovered) |   98.39% (2 uncovered) |  91.67% (1 uncovered) |   96.00% (1 uncovered) |
-| `sparkline`             | Chart        |     2 |  97.01% (21 uncovered) |  97.01% (21 uncovered) |  85.71% (8 uncovered) |   95.80% (6 uncovered) |
+| `sparkline`             | Chart        |     2 |  97.30% (19 uncovered) |  97.30% (19 uncovered) |  87.50% (7 uncovered) |   95.83% (6 uncovered) |
 | `spinner`               | Data display |     2 |   98.23% (2 uncovered) |   98.23% (2 uncovered) |  91.67% (1 uncovered) |   88.46% (3 uncovered) |
 | `split-pane`            | Navigation   |     2 |  96.11% (15 uncovered) |  96.11% (15 uncovered) |  88.89% (4 uncovered) |  74.44% (23 uncovered) |
-| `stacked-area-chart`    | Chart        |     2 |  95.81% (33 uncovered) |  95.81% (33 uncovered) | 83.05% (10 uncovered) |  85.71% (16 uncovered) |
-| `stacked-bar-chart`     | Chart        |     2 |  93.99% (49 uncovered) |  93.99% (49 uncovered) | 83.33% (10 uncovered) |  88.33% (14 uncovered) |
+| `stacked-area-chart`    | Chart        |     2 |  96.45% (28 uncovered) |  96.45% (28 uncovered) |  84.75% (9 uncovered) |  89.66% (12 uncovered) |
+| `stacked-bar-chart`     | Chart        |     2 |  94.60% (44 uncovered) |  94.60% (44 uncovered) |  85.00% (9 uncovered) |  91.87% (10 uncovered) |
 | `status-indicator`      | Data display |     2 |   97.87% (3 uncovered) |   97.87% (3 uncovered) |  93.75% (1 uncovered) |   94.87% (2 uncovered) |
 | `stepper`               | Navigation   |     2 |  96.87% (11 uncovered) |  96.87% (11 uncovered) | 100.00% (0 uncovered) |   91.49% (8 uncovered) |
 | `switch`                | Form         |     2 |  91.63% (20 uncovered) |  91.63% (20 uncovered) |  88.00% (3 uncovered) |  100.00% (0 uncovered) |
@@ -160,10 +160,10 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `tooltip`               | Overlay      |     2 |  95.26% (10 uncovered) |  95.26% (10 uncovered) | 100.00% (0 uncovered) |  81.67% (11 uncovered) |
 | `tree`                  | Navigation   |     2 |  96.89% (14 uncovered) |  96.89% (14 uncovered) | 100.00% (0 uncovered) |  83.87% (25 uncovered) |
 | `tree-item`             | Navigation   |     2 |   99.05% (2 uncovered) |   99.05% (2 uncovered) | 100.00% (0 uncovered) |   98.61% (1 uncovered) |
-| `trend-chart`           | Chart        |     3 |  97.35% (22 uncovered) |  97.35% (22 uncovered) |  85.00% (9 uncovered) |  91.18% (12 uncovered) |
+| `trend-chart`           | Chart        |     3 |  97.83% (18 uncovered) |  97.83% (18 uncovered) |  88.33% (7 uncovered) |  92.91% (10 uncovered) |
 | `validation-summary`    | Form         |     2 |  94.99% (18 uncovered) |  94.99% (18 uncovered) |  96.00% (1 uncovered) |   97.62% (2 uncovered) |
 | `virtual-list`          | Data display |     2 |  94.75% (20 uncovered) |  94.75% (20 uncovered) |  92.86% (2 uncovered) |  76.74% (20 uncovered) |
-| `waterfall-chart`       | Chart        |     3 |  97.75% (20 uncovered) |  97.75% (20 uncovered) |  88.06% (8 uncovered) |  84.44% (28 uncovered) |
+| `waterfall-chart`       | Chart        |     3 |  98.53% (13 uncovered) |  98.53% (13 uncovered) |  91.04% (6 uncovered) |  87.23% (24 uncovered) |
 
 ## Source files not loaded
 

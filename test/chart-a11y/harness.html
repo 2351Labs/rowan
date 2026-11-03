@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chart accessibility audit</title>
+    <link rel="stylesheet" href="/src/tokens/tokens.css" />
+    <link rel="stylesheet" href="/src/tokens/themes/light.css" />
+    <link rel="stylesheet" href="/src/tokens/themes/dark.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: var(--rowan-color-bg, #f8f7f2);
+        color: var(--rowan-color-fg, #1f2421);
+      }
+
+      #before {
+        margin: 0.5rem;
+      }
+
+      #mount {
+        padding: 0.5rem 0.5rem 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="before" type="button">Before chart</button>
+    <div id="mount"></div>
+    <script type="module" src="./harness.mjs"></script>
+  </body>
+</html>

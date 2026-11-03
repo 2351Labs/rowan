@@ -99,12 +99,17 @@
 }
 
 .legend-button[aria-pressed="false"] {
+  text-decoration: line-through;
+}
+
+.legend-button[aria-pressed="false"] .legend-swatch {
   opacity: 0.45;
 }
 
 .legend-button:focus-visible,
-.plot:focus-visible {
-  outline: 2px solid var(--rowan-focus-ring, var(--rowan-color-accent));
+.plot:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--rowan-color-accent, CanvasText);
   outline-offset: 2px;
 }
 
@@ -148,6 +153,16 @@
   transition: none !important;
 }
 
+@media (forced-colors: active) {
+  .legend-button:focus-visible,
+  .plot:focus-visible,
+  .point-button:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+}
+
 /* SVG viewBox x is physical. Overlay hit targets must not follow host RTL.
    Host stylesheets also set this: Firefox does not always apply @import from a shadow <link>. */
 .point-controls {
@@ -167,7 +182,6 @@
     --rowan-trend-chart-grid,
     color-mix(in srgb, var(--rowan-color-border, #d8dcd5) 72%, transparent)
   );
-  --_trend-chart-focus-ring: var(--rowan-trend-chart-focus-ring, var(--rowan-focus-ring));
   --_trend-chart-radius: var(--rowan-trend-chart-radius, var(--rowan-radius-md, 0.5rem));
   --_trend-chart-font-family: var(--rowan-trend-chart-font-family, var(--rowan-font-family));
   --_trend-chart-point-hover-bg: var(
@@ -413,8 +427,8 @@
 }
 
 .point-button:focus-visible {
-  box-shadow: var(--_trend-chart-focus-ring);
-  outline: none;
+  outline: 2px solid var(--rowan-color-accent, CanvasText);
+  outline-offset: 2px;
 }
 
 .detail[hidden],
@@ -438,8 +452,8 @@
 }
 
 .summary > summary:focus-visible {
-  box-shadow: var(--_trend-chart-focus-ring);
-  outline: none;
+  outline: 2px solid var(--rowan-color-accent, CanvasText);
+  outline-offset: 2px;
 }
 
 .table-scroll {
