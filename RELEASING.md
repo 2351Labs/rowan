@@ -279,19 +279,29 @@ with component docs demos and the starter cleanup that drops
 stay experimental. Publish after this catalog commit is on `main`: tag
 `v0.23.1`.
 
+## 0.23.2 cut
+
+Version in `package.json` is `0.23.2` for core, icons, MapLibre, and MCP. Do
+**not** call this `1.0`. `@rowan-ui/mcp`, `llms.txt`, and `llms-full.txt` ship
+here. MCP peers on core `^0.23.0`. Nested filter groups and table-view-state
+version `2` stay experimental. Publish after this catalog commit is on `main`:
+tag `v0.23.2`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
 2. Create an annotated version tag after the release commit is merged.
 3. The publish workflow publishes `@rowan-ui/core`, then `@rowan-ui/icons`, then
-   `@rowan-ui/maplibre`. It skips a version that is already on the registry. Do
-   not use `npm publish --workspaces` (that would include test fixtures).
+   `@rowan-ui/maplibre`, then `@rowan-ui/mcp`, each at its own `package.json`
+   version. It skips a version that is already on the registry. Do not use
+   `npm publish --workspaces` (that would include test fixtures and starters).
    To publish a single package from a machine:
 
    ```sh
    npm publish --access public
    npm publish --access public --workspace=@rowan-ui/icons
    npm publish --access public --workspace=@rowan-ui/maplibre
+   npm publish --access public --workspace=@rowan-ui/mcp
    ```
 
 4. Verify the npm package contains `LICENSE`, `README.md`, `src/`, and `types/`; packages with third-party assets must also include their source notice, and packages defining custom elements must include `custom-elements.json`. The tarball must not include `*.test.js`, `*.stories.js`, or `src/storybook/`.

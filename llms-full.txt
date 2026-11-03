@@ -1,23 +1,23 @@
 # Rowan
 
-> Rowan 0.23.1 is a vanilla Web Components design system: custom elements, Shadow DOM, and CSS tokens, with no framework runtime. The host owns data.
+> Rowan 0.23.2 is a vanilla Web Components design system: custom elements, Shadow DOM, and CSS tokens, with no framework runtime. The host owns data.
 
 Documentation: https://2351labs.github.io/rowan/
 Compact context: https://2351labs.github.io/rowan/llms.txt
 Full context: https://2351labs.github.io/rowan/llms-full.txt
-MCP server: `npx -y @rowan-ui/mcp` (`@rowan-ui/mcp@0.23.1`)
+MCP server: `npx -y @rowan-ui/mcp` (`@rowan-ui/mcp@0.23.2`)
 
 ## Install
 
 ```bash
-npm install @rowan-ui/core@0.23.1
+npm install @rowan-ui/core@0.23.2
 ```
 
 `@rowan-ui/icons` is the optional icon set. `@rowan-ui/maplibre` is the optional MapLibre map.
 
 ```bash
-npm install @rowan-ui/icons@0.23.1
-npm install @rowan-ui/maplibre@0.23.1
+npm install @rowan-ui/icons@0.23.2
+npm install @rowan-ui/maplibre@0.23.2
 ```
 
 The host keeps rows, locale, and routing. Components do not request them.
@@ -870,7 +870,7 @@ Design-tool handoff: `@rowan-ui/core/tokens.json`.
 
 Expandable disclosure section.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/accordion`
 - React: `RowanAccordion` from `@rowan-ui/core/react/accordion`
 - Docs: https://2351labs.github.io/rowan/#accordion
@@ -1000,7 +1000,7 @@ export function Example() {
 
 Status message surface with optional dismissal.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/alert`
 - React: `RowanAlert` from `@rowan-ui/core/react/alert`
 - Docs: https://2351labs.github.io/rowan/#alert
@@ -1106,7 +1106,7 @@ export function Example() {
 
 Responsive application shell for header, navigation, and main content.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/app-layout`
 - React: `RowanAppLayout` from `@rowan-ui/core/react/app-layout`
 - Docs: https://2351labs.github.io/rowan/#app-layout
@@ -1246,7 +1246,7 @@ export function Example() {
 
 Filled multi-series area chart. Same data contract as the line chart. Null values break both the line and the fill.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/area-chart`
 - React: `RowanAreaChart` from `@rowan-ui/core/react/area-chart`
 - Docs: https://2351labs.github.io/rowan/#area-chart
@@ -1379,7 +1379,7 @@ export function Example() {
 
 Circular user avatar with image fallback.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/avatar`
 - React: `RowanAvatar` from `@rowan-ui/core/react/avatar`
 - Docs: https://2351labs.github.io/rowan/#avatar
@@ -1500,7 +1500,7 @@ export function Example() {
 
 Compact label for status and metadata.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/badge`
 - React: `RowanBadge` from `@rowan-ui/core/react/badge`
 - Docs: https://2351labs.github.io/rowan/#badge
@@ -1609,7 +1609,7 @@ export function Example() {
 
 Frozen small categorical bar chart. Native SVG, no animation.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/bar-chart`
 - React: `RowanBarChart` from `@rowan-ui/core/react/bar-chart`
 - Docs: https://2351labs.github.io/rowan/#bar-chart
@@ -1736,7 +1736,7 @@ export function Example() {
 
 Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data. Own series model — not categorical `series.values`.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/box-plot-chart`
 - React: `RowanBoxPlotChart` from `@rowan-ui/core/react/box-plot-chart`
 - Docs: https://2351labs.github.io/rowan/#box-plot-chart
@@ -1860,7 +1860,7 @@ export function Example() {
 
 Breadcrumb navigation wrapper.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/breadcrumb`
 - React: `RowanBreadcrumb` from `@rowan-ui/core/react/breadcrumb`
 - Docs: https://2351labs.github.io/rowan/#breadcrumb
@@ -1996,7 +1996,7 @@ export function Example() {
 
 Contextual bulk actions for selected rows in a Rowan data table.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/bulk-actions-bar`
 - React: `RowanBulkActionsBar` from `@rowan-ui/core/react/bulk-actions-bar`
 - Docs: https://2351labs.github.io/rowan/#bulk-actions-bar
@@ -2161,7 +2161,7 @@ export function Example() {
 
 Compact qualitative comparison after Stephen Few's bullet graph spec.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/bullet-chart`
 - React: `RowanBulletChart` from `@rowan-ui/core/react/bullet-chart`
 - Docs: https://2351labs.github.io/rowan/#bullet-chart
@@ -2338,7 +2338,7 @@ export function Example() {
 
 Primary action control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/button`
 - React: `RowanButton` from `@rowan-ui/core/react/button`
 - Docs: https://2351labs.github.io/rowan/#button
@@ -2473,7 +2473,7 @@ return <rowan-button disabled={false}>Save</rowan-button>;
 
 Calendar grid for date selection with keyboard navigation.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/calendar`
 - React: `RowanCalendar` from `@rowan-ui/core/react/calendar`
 - Docs: https://2351labs.github.io/rowan/#calendar
@@ -2627,7 +2627,7 @@ export function Example() {
 
 Surface container for grouped content.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/card`
 - React: `RowanCard` from `@rowan-ui/core/react/card`
 - Docs: https://2351labs.github.io/rowan/#card
@@ -2746,7 +2746,7 @@ export function Example() {
 
 Controlled sequence of slotted content panels.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/carousel`
 - React: `RowanCarousel` from `@rowan-ui/core/react/carousel`
 - Docs: https://2351labs.github.io/rowan/#carousel
@@ -2922,7 +2922,7 @@ export function Example() {
 
 Checkbox control with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/checkbox`
 - React: `RowanCheckbox` from `@rowan-ui/core/react/checkbox`
 - Docs: https://2351labs.github.io/rowan/#checkbox
@@ -3068,7 +3068,7 @@ export function Example() {
 
 Compact pill for lightweight metadata.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/chip`
 - React: `RowanChip` from `@rowan-ui/core/react/chip`
 - Docs: https://2351labs.github.io/rowan/#chip
@@ -3194,7 +3194,7 @@ export function Example() {
 
 Accessible semantic color selection with approved swatches and alpha-enabled custom entry.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/color-picker`
 - React: `RowanColorPicker` from `@rowan-ui/core/react/color-picker`
 - Docs: https://2351labs.github.io/rowan/#color-picker
@@ -3375,7 +3375,7 @@ export function Example() {
 
 Frozen compact one-series columns for KPI tiles. Not a density of `rowan-bar-chart`. Not a `variant` of `rowan-sparkline`.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/column-sparkline`
 - React: `RowanColumnSparkline` from `@rowan-ui/core/react/column-sparkline`
 - Docs: https://2351labs.github.io/rowan/#column-sparkline
@@ -3545,7 +3545,7 @@ export function Example() {
 
 Categorical combo: bars, lines, and areas on a shared category axis. Optional `axis: "secondary"` for a second value scale (Pareto cumulative %). Bar, area, and trend charts stay separate hosts.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/combo-chart`
 - React: `RowanComboChart` from `@rowan-ui/core/react/combo-chart`
 - Docs: https://2351labs.github.io/rowan/#combo-chart
@@ -3669,7 +3669,7 @@ export function Example() {
 
 Filterable text entry with a listbox of suggestions. Focus stays in the input and the highlighted option is reported with `aria-activedescendant`, matching the APG combobox pattern.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/combobox`
 - React: `RowanCombobox` from `@rowan-ui/core/react/combobox`
 - Docs: https://2351labs.github.io/rowan/#combobox
@@ -3806,7 +3806,7 @@ export function Example() {
 
 Action entry used by a rowan-command-palette.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/command-item`
 - React: `RowanCommandItem` from `@rowan-ui/core/react/command-item`
 - Docs: https://2351labs.github.io/rowan/#command-item
@@ -3954,7 +3954,7 @@ export function Example() {
 
 Keyboard-first command surface for filtering and activating command items.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/command-palette`
 - React: `RowanCommandPalette` from `@rowan-ui/core/react/command-palette`
 - Docs: https://2351labs.github.io/rowan/#command-palette
@@ -4174,7 +4174,7 @@ export function Example() {
 
 Focused dialog for confirming consequential actions.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/confirm-dialog`
 - React: `RowanConfirmDialog` from `@rowan-ui/core/react/confirm-dialog`
 - Docs: https://2351labs.github.io/rowan/#confirm-dialog
@@ -4341,7 +4341,7 @@ export function Example() {
 
 Contextual action menu bound to an element by property or identifier.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/context-menu`
 - React: `RowanContextMenu` from `@rowan-ui/core/react/context-menu`
 - Docs: https://2351labs.github.io/rowan/#context-menu
@@ -4496,7 +4496,7 @@ export function Example() {
 
 Region wrapper for ready, loading, empty, and error chrome. Table and KPI keep their own loading. Does not fetch data.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/data-state`
 - React: `RowanDataState` from `@rowan-ui/core/react/data-state`
 - Docs: https://2351labs.github.io/rowan/#data-state
@@ -4611,7 +4611,7 @@ export function Example() {
 
 Date input with form association and range validation.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/date-picker`
 - React: `RowanDatePicker` from `@rowan-ui/core/react/date-picker`
 - Docs: https://2351labs.github.io/rowan/#date-picker
@@ -4738,7 +4738,7 @@ export function Example() {
 
 Date range input with form association and ordered range validation.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/date-range-picker`
 - React: `RowanDateRangePicker` from `@rowan-ui/core/react/date-range-picker`
 - Docs: https://2351labs.github.io/rowan/#date-range-picker
@@ -4880,7 +4880,7 @@ export function Example() {
 
 Modal dialog surface.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/dialog`
 - React: `RowanDialog` from `@rowan-ui/core/react/dialog`
 - Docs: https://2351labs.github.io/rowan/#dialog
@@ -5010,7 +5010,7 @@ export function Example() {
 
 Visual separator line.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/divider`
 - React: `RowanDivider` from `@rowan-ui/core/react/divider`
 - Docs: https://2351labs.github.io/rowan/#divider
@@ -5137,7 +5137,7 @@ export function Example() {
 
 Frozen parts-of-a-whole chart. Uses the first series. Negative values are treated as no-data, not slices.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/donut-chart`
 - React: `RowanDonutChart` from `@rowan-ui/core/react/donut-chart`
 - Docs: https://2351labs.github.io/rowan/#donut-chart
@@ -5261,7 +5261,7 @@ export function Example() {
 
 Side panel drawer.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/drawer`
 - React: `RowanDrawer` from `@rowan-ui/core/react/drawer`
 - Docs: https://2351labs.github.io/rowan/#drawer
@@ -5377,7 +5377,7 @@ export function Example() {
 
 Triggered dropdown surface. Menu content (`rowan-menu-item`) closes on Tab. Other focusable panel content is tabbed through; Tab at the edge closes.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/dropdown`
 - React: `RowanDropdown` from `@rowan-ui/core/react/dropdown`
 - Docs: https://2351labs.github.io/rowan/#dropdown
@@ -5478,7 +5478,7 @@ export function Example() {
 
 Drag-and-drop file selection surface with picker fallback.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/dropzone`
 - React: `RowanDropzone` from `@rowan-ui/core/react/dropzone`
 - Docs: https://2351labs.github.io/rowan/#dropzone
@@ -5600,7 +5600,7 @@ export function Example() {
 
 Empty state message block.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/empty-state`
 - React: `RowanEmptyState` from `@rowan-ui/core/react/empty-state`
 - Docs: https://2351labs.github.io/rowan/#empty-state
@@ -5698,7 +5698,7 @@ export function Example() {
 
 Upload queue item showing file metadata, state, and actions.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/file-item`
 - React: `RowanFileItem` from `@rowan-ui/core/react/file-item`
 - Docs: https://2351labs.github.io/rowan/#file-item
@@ -5827,7 +5827,7 @@ export function Example() {
 
 File upload composer with dropzone and queue item rendering.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/file-upload`
 - React: `RowanFileUpload` from `@rowan-ui/core/react/file-upload`
 - Docs: https://2351labs.github.io/rowan/#file-upload
@@ -5955,7 +5955,7 @@ export function Example() {
 
 Configurable filter editor that composes with a Rowan data table.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/filter-builder`
 - React: `RowanFilterBuilder` from `@rowan-ui/core/react/filter-builder`
 - Docs: https://2351labs.github.io/rowan/#filter-builder
@@ -6131,7 +6131,7 @@ export function Example() {
 
 Accessible label, support text, and error composition for a form control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/form-field`
 - React: `RowanFormField` from `@rowan-ui/core/react/form-field`
 - Docs: https://2351labs.github.io/rowan/#form-field
@@ -6272,7 +6272,7 @@ export function Example() {
 
 Responsive field grid with direct-child spans and coordinated label alignment.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/form-layout`
 - React: `RowanFormLayout` from `@rowan-ui/core/react/form-layout`
 - Docs: https://2351labs.github.io/rowan/#form-layout
@@ -6395,7 +6395,7 @@ export function Example() {
 
 Guided multi-step form workflow with guarded validation and progress.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/form-wizard`
 - React: `RowanFormWizard` from `@rowan-ui/core/react/form-wizard`
 - Docs: https://2351labs.github.io/rowan/#form-wizard
@@ -6580,7 +6580,7 @@ export function Example() {
 
 One-series stage chart. Does not auto-sort. Negatives and null are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers the last stage to a point.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/funnel-chart`
 - React: `RowanFunnelChart` from `@rowan-ui/core/react/funnel-chart`
 - Docs: https://2351labs.github.io/rowan/#funnel-chart
@@ -6701,7 +6701,7 @@ export function Example() {
 
 Compact speedometer gauge: ranges, min/max, actual, and optional target. Separate host from bullet and donut charts.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/gauge-chart`
 - React: `RowanGaugeChart` from `@rowan-ui/core/react/gauge-chart`
 - Docs: https://2351labs.github.io/rowan/#gauge-chart
@@ -6888,7 +6888,7 @@ export function Example() {
 
 Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/heatmap-chart`
 - React: `RowanHeatmapChart` from `@rowan-ui/core/react/heatmap-chart`
 - Docs: https://2351labs.github.io/rowan/#heatmap-chart
@@ -7009,7 +7009,7 @@ export function Example() {
 
 Declarative SVG icon registered by an individual `@rowan-ui/icons/elements/*` import.
 
-- Package: `@rowan-ui/icons@0.23.1`
+- Package: `@rowan-ui/icons@0.23.2`
 - Import: `@rowan-ui/icons/element`
 - React: `RowanIcon` from `@rowan-ui/icons/react/icon`
 - Docs: https://2351labs.github.io/rowan/#icon
@@ -7127,7 +7127,7 @@ document.body.innerHTML = `
 
 Icon-only action control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/icon-button`
 - React: `RowanIconButton` from `@rowan-ui/core/react/icon-button`
 - Docs: https://2351labs.github.io/rowan/#icon-button
@@ -7275,7 +7275,7 @@ document.body.innerHTML = `
 
 Image display. Overlay and caption are slots. Optional href is a real link around the image, not around overlay actions.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/image`
 - React: `RowanImage` from `@rowan-ui/core/react/image`
 - Docs: https://2351labs.github.io/rowan/#image
@@ -7407,7 +7407,7 @@ export function Example() {
 
 Frozen dashboard stat tile. Value and delta stay property-only. Inline-size container: compact below 10rem, roomy from 22rem. A slotted gauge sits immediately beside the metrics except below 10rem. Does not change chart kind or reformat the value.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/kpi-card`
 - React: `RowanKpiCard` from `@rowan-ui/core/react/kpi-card`
 - Docs: https://2351labs.github.io/rowan/#kpi-card
@@ -7587,7 +7587,7 @@ export function Example() {
 
 Text navigation link.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/link`
 - React: `RowanLink` from `@rowan-ui/core/react/link`
 - Docs: https://2351labs.github.io/rowan/#link
@@ -7699,7 +7699,7 @@ export function Example() {
 
 Accessible single- or multi-selection list control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/listbox`
 - React: `RowanListbox` from `@rowan-ui/core/react/listbox`
 - Docs: https://2351labs.github.io/rowan/#listbox
@@ -7855,7 +7855,7 @@ export function Example() {
 
 Optional MapLibre map with application-owned styles and accessible location alternatives.
 
-- Package: `@rowan-ui/maplibre@0.23.1`
+- Package: `@rowan-ui/maplibre@0.23.2`
 - Import: `@rowan-ui/maplibre/map`
 - React: `RowanMapLibreMap` from `@rowan-ui/maplibre/react/map`
 - Docs: https://2351labs.github.io/rowan/#maplibre-map
@@ -8075,7 +8075,7 @@ export function Example() {
 
 Menu container for action lists.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/menu`
 - React: `RowanMenu` from `@rowan-ui/core/react/menu`
 - Docs: https://2351labs.github.io/rowan/#menu
@@ -8167,7 +8167,7 @@ export function Example() {
 
 Selectable menu item.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/menu-item`
 - React: `RowanMenuItem` from `@rowan-ui/core/react/menu-item`
 - Docs: https://2351labs.github.io/rowan/#menu-item
@@ -8262,7 +8262,7 @@ export function Example() {
 
 Filterable multi-select control with removable selected values.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/multi-select-combobox`
 - React: `RowanMultiSelectCombobox` from `@rowan-ui/core/react/multi-select-combobox`
 - Docs: https://2351labs.github.io/rowan/#multi-select-combobox
@@ -8442,7 +8442,7 @@ export function Example() {
 
 Numeric input with form association, range validation, and step controls.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/number-field`
 - React: `RowanNumberField` from `@rowan-ui/core/react/number-field`
 - Docs: https://2351labs.github.io/rowan/#number-field
@@ -8579,7 +8579,7 @@ export function Example() {
 
 Selectable item for rowan-listbox.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/option`
 - React: `RowanOption` from `@rowan-ui/core/react/option`
 - Docs: https://2351labs.github.io/rowan/#option
@@ -8706,7 +8706,7 @@ export function Example() {
 
 Pagination controls.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/pagination`
 - React: `RowanPagination` from `@rowan-ui/core/react/pagination`
 - Docs: https://2351labs.github.io/rowan/#pagination
@@ -8808,7 +8808,7 @@ export function Example() {
 
 Inline popover surface.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/popover`
 - React: `RowanPopover` from `@rowan-ui/core/react/popover`
 - Docs: https://2351labs.github.io/rowan/#popover
@@ -8908,7 +8908,7 @@ export function Example() {
 
 Determinate progress indicator.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/progress`
 - React: `RowanProgress` from `@rowan-ui/core/react/progress`
 - Docs: https://2351labs.github.io/rowan/#progress
@@ -9016,7 +9016,7 @@ export function Example() {
 
 Polar comparison. Categories are axes around the ring. `geometry` is `line` (default) or `area`. Null is no-data and breaks the ring; the host does not treat a gap as zero. Categorical `series`. Nightingale and radial bars are not this host.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/radar-chart`
 - React: `RowanRadarChart` from `@rowan-ui/core/react/radar-chart`
 - Docs: https://2351labs.github.io/rowan/#radar-chart
@@ -9139,7 +9139,7 @@ export function Example() {
 
 Radio control with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/radio`
 - React: `RowanRadio` from `@rowan-ui/core/react/radio`
 - Docs: https://2351labs.github.io/rowan/#radio
@@ -9256,7 +9256,7 @@ export function Example() {
 
 Group controller for radio options.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/radio-group`
 - React: `RowanRadioGroup` from `@rowan-ui/core/react/radio-group`
 - Docs: https://2351labs.github.io/rowan/#radio-group
@@ -9357,7 +9357,7 @@ export function Example() {
 
 Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default) or `area`. Null low or high is no-data. Own series model — not categorical `series.values`.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/range-chart`
 - React: `RowanRangeChart` from `@rowan-ui/core/react/range-chart`
 - Docs: https://2351labs.github.io/rowan/#range-chart
@@ -9481,7 +9481,7 @@ export function Example() {
 
 Bounded form-associated rating input.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/rating`
 - React: `RowanRating` from `@rowan-ui/core/react/rating`
 - Docs: https://2351labs.github.io/rowan/#rating
@@ -9653,7 +9653,7 @@ export function Example() {
 
 Constrained form-associated authoring control with a property-only document value. The rich mode supports paragraphs, headings (levels 1–3), ordered and unordered lists, plus bold, italic, underline, and allowlisted links. Values are normalized to a safe document object; HTML is never accepted as an API value. Images are not document nodes. Rich clipboard data is inserted as plain text.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/rich-text-editor`
 - React: `RowanRichTextEditor` from `@rowan-ui/core/react/rich-text-editor`
 - Docs: https://2351labs.github.io/rowan/#rich-text-editor
@@ -9879,7 +9879,7 @@ export function Example() {
 
 Side-panel detail view for a selected Rowan data-table row.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/row-details-panel`
 - React: `RowanRowDetailsPanel` from `@rowan-ui/core/react/row-details-panel`
 - Docs: https://2351labs.github.io/rowan/#row-details-panel
@@ -10102,7 +10102,7 @@ export function Example() {
 
 Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or y is no-data.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/scatter-chart`
 - React: `RowanScatterChart` from `@rowan-ui/core/react/scatter-chart`
 - Docs: https://2351labs.github.io/rowan/#scatter-chart
@@ -10222,7 +10222,7 @@ export function Example() {
 
 Compact mutually exclusive mode control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/segmented-control`
 - React: `RowanSegmentedControl` from `@rowan-ui/core/react/segmented-control`
 - Docs: https://2351labs.github.io/rowan/#segmented-control
@@ -10378,7 +10378,7 @@ export function Example() {
 
 Select control with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/select`
 - React: `RowanSelect` from `@rowan-ui/core/react/select`
 - Docs: https://2351labs.github.io/rowan/#select
@@ -10514,7 +10514,7 @@ export function Example() {
 
 Application navigation controller for rowan-side-nav-item children.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/side-nav`
 - React: `RowanSideNav` from `@rowan-ui/core/react/side-nav`
 - Docs: https://2351labs.github.io/rowan/#side-nav
@@ -10660,7 +10660,7 @@ export function Example() {
 
 Link item managed by rowan-side-nav.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/side-nav-item`
 - React: `RowanSideNavItem` from `@rowan-ui/core/react/side-nav-item`
 - Docs: https://2351labs.github.io/rowan/#side-nav-item
@@ -10786,7 +10786,7 @@ export function Example() {
 
 Labeled group of destinations inside rowan-side-nav. Opt-in `collapsible` adds a disclosure control. `collapsed` defaults false (open). The parent nav still has one `value`; this host is not a destination.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/side-nav-section`
 - React: `RowanSideNavSection` from `@rowan-ui/core/react/side-nav-section`
 - Docs: https://2351labs.github.io/rowan/#side-nav-section
@@ -10921,7 +10921,7 @@ export function Example() {
 
 Loading placeholder block.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/skeleton`
 - React: `RowanSkeleton` from `@rowan-ui/core/react/skeleton`
 - Docs: https://2351labs.github.io/rowan/#skeleton
@@ -11037,7 +11037,7 @@ export function Example() {
 
 Numeric slider with single-value and ordered range modes.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/slider`
 - React: `RowanSlider` from `@rowan-ui/core/react/slider`
 - Docs: https://2351labs.github.io/rowan/#slider
@@ -11198,7 +11198,7 @@ export function Example() {
 
 Provenance line for KPI description, chart description, or table caption. Does not add fields to those frozen hosts.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/source-meta`
 - React: `RowanSourceMeta` from `@rowan-ui/core/react/source-meta`
 - Docs: https://2351labs.github.io/rowan/#source-meta
@@ -11319,7 +11319,7 @@ export function Example() {
 
 Frozen compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`. Additive `variant="area"` fills to the baseline (or to `target` when set).
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/sparkline`
 - React: `RowanSparkline` from `@rowan-ui/core/react/sparkline`
 - Docs: https://2351labs.github.io/rowan/#sparkline
@@ -11492,7 +11492,7 @@ export function Example() {
 
 Inline loading indicator.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/spinner`
 - React: `RowanSpinner` from `@rowan-ui/core/react/spinner`
 - Docs: https://2351labs.github.io/rowan/#spinner
@@ -11600,7 +11600,7 @@ export function Example() {
 
 Resizable two-pane workspace layout.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/split-pane`
 - React: `RowanSplitPane` from `@rowan-ui/core/react/split-pane`
 - Docs: https://2351labs.github.io/rowan/#split-pane
@@ -11759,7 +11759,7 @@ export function Example() {
 
 Stacked categorical area chart. Positive values stack from zero. Null and negatives are no-data.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/stacked-area-chart`
 - React: `RowanStackedAreaChart` from `@rowan-ui/core/react/stacked-area-chart`
 - Docs: https://2351labs.github.io/rowan/#stacked-area-chart
@@ -11891,7 +11891,7 @@ export function Example() {
 
 Stacked categorical bar chart. Positive values stack from zero. Null and negatives are no-data.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/stacked-bar-chart`
 - React: `RowanStackedBarChart` from `@rowan-ui/core/react/stacked-bar-chart`
 - Docs: https://2351labs.github.io/rowan/#stacked-bar-chart
@@ -12024,7 +12024,7 @@ export function Example() {
 
 Concise semantic status marker with an optional visible label.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/status-indicator`
 - React: `RowanStatusIndicator` from `@rowan-ui/core/react/status-indicator`
 - Docs: https://2351labs.github.io/rowan/#status-indicator
@@ -12141,7 +12141,7 @@ export function Example() {
 
 Progress step tracker for multi-step workflows.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/stepper`
 - React: `RowanStepper` from `@rowan-ui/core/react/stepper`
 - Docs: https://2351labs.github.io/rowan/#stepper
@@ -12256,7 +12256,7 @@ export function Example() {
 
 Toggle switch control with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/switch`
 - React: `RowanSwitch` from `@rowan-ui/core/react/switch`
 - Docs: https://2351labs.github.io/rowan/#switch
@@ -12380,7 +12380,7 @@ export function Example() {
 
 Single tab button.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tab`
 - React: `RowanTab` from `@rowan-ui/core/react/tab`
 - Docs: https://2351labs.github.io/rowan/#tab
@@ -12478,7 +12478,7 @@ export function Example() {
 
 Content panel for a tab.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tab-panel`
 - React: `RowanTabPanel` from `@rowan-ui/core/react/tab-panel`
 - Docs: https://2351labs.github.io/rowan/#tab-panel
@@ -12576,7 +12576,7 @@ export function Example() {
 
 Config-driven data table.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/table`
 - React: `RowanTable` from `@rowan-ui/core/react/table`
 - Docs: https://2351labs.github.io/rowan/#table
@@ -12843,7 +12843,7 @@ export function Example() {
 
 Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown` that follows the linked table's `columns` whenever they are assigned or replaced, before or after this element upgrades or connects, and when a column menu hides or shows a column.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/table-toolbar`
 - React: `RowanTableToolbar` from `@rowan-ui/core/react/table-toolbar`
 - Docs: https://2351labs.github.io/rowan/#table-toolbar
@@ -13003,7 +13003,7 @@ export function Example() {
 
 Tabs controller for tab and tab-panel children.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tabs`
 - React: `RowanTabs` from `@rowan-ui/core/react/tabs`
 - Docs: https://2351labs.github.io/rowan/#tabs
@@ -13100,7 +13100,7 @@ export function Example() {
 
 Single-line text input with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/text-field`
 - React: `RowanTextField` from `@rowan-ui/core/react/text-field`
 - Docs: https://2351labs.github.io/rowan/#text-field
@@ -13221,7 +13221,7 @@ export function Example() {
 
 Multi-line text input with form association.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/textarea`
 - React: `RowanTextarea` from `@rowan-ui/core/react/textarea`
 - Docs: https://2351labs.github.io/rowan/#textarea
@@ -13337,7 +13337,7 @@ export function Example() {
 
 Time input with form association and range validation.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/time-picker`
 - React: `RowanTimePicker` from `@rowan-ui/core/react/time-picker`
 - Docs: https://2351labs.github.io/rowan/#time-picker
@@ -13467,7 +13467,7 @@ export function Example() {
 
 Compact status notification with optional dismiss control.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/toast`
 - React: `RowanToast` from `@rowan-ui/core/react/toast`
 - Docs: https://2351labs.github.io/rowan/#toast
@@ -13578,7 +13578,7 @@ export function Example() {
 
 Toast queue manager with mobile-first placement and auto-dismiss handling.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/toaster`
 - React: `RowanToaster` from `@rowan-ui/core/react/toaster`
 - Docs: https://2351labs.github.io/rowan/#toaster
@@ -13672,7 +13672,7 @@ export function Example() {
 
 Lightweight tooltip text.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tooltip`
 - React: `RowanTooltip` from `@rowan-ui/core/react/tooltip`
 - Docs: https://2351labs.github.io/rowan/#tooltip
@@ -13763,7 +13763,7 @@ export function Example() {
 
 Hierarchical navigation controller for rowan-tree-item nodes.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tree`
 - React: `RowanTree` from `@rowan-ui/core/react/tree`
 - Docs: https://2351labs.github.io/rowan/#tree
@@ -13922,7 +13922,7 @@ export function Example() {
 
 Individual node within a hierarchical tree.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/tree-item`
 - React: `RowanTreeItem` from `@rowan-ui/core/react/tree-item`
 - Docs: https://2351labs.github.io/rowan/#tree-item
@@ -14056,7 +14056,7 @@ export function Example() {
 
 Frozen small multi-series line chart for operational data sets. Native SVG, no animation, and an equivalent semantic table. Other geometries are separate hosts.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/trend-chart`
 - React: `RowanTrendChart` from `@rowan-ui/core/react/trend-chart`
 - Docs: https://2351labs.github.io/rowan/#trend-chart
@@ -14251,7 +14251,7 @@ export function Example() {
 
 Renders a navigable summary of validation errors.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/validation-summary`
 - React: `RowanValidationSummary` from `@rowan-ui/core/react/validation-summary`
 - Docs: https://2351labs.github.io/rowan/#validation-summary
@@ -14393,7 +14393,7 @@ export function Example() {
 
 Virtualized, keyed collection for large property-driven item sets.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/virtual-list`
 - React: `RowanVirtualList` from `@rowan-ui/core/react/virtual-list`
 - Docs: https://2351labs.github.io/rowan/#virtual-list
@@ -14545,7 +14545,7 @@ export function Example() {
 
 Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }` from zero; the host does not invent them. Null is no-data.
 
-- Package: `@rowan-ui/core@0.23.1`
+- Package: `@rowan-ui/core@0.23.2`
 - Import: `@rowan-ui/core/waterfall-chart`
 - React: `RowanWaterfallChart` from `@rowan-ui/core/react/waterfall-chart`
 - Docs: https://2351labs.github.io/rowan/#waterfall-chart

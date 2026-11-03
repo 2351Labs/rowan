@@ -336,8 +336,8 @@ async function smokePackedDefaultVite(sandbox, context) {
 
   const dir = join(sandbox, "packed-vite");
   mkdirSync(join(dir, "src"), { recursive: true });
-  const corePack = join(packDir, "rowan-ui-core-0.23.1.tgz");
-  const iconPack = join(packDir, "rowan-ui-icons-0.23.1.tgz");
+  const corePack = join(packDir, "rowan-ui-core-0.23.2.tgz");
+  const iconPack = join(packDir, "rowan-ui-icons-0.23.2.tgz");
   writeFileSync(
     join(dir, "package.json"),
     JSON.stringify(

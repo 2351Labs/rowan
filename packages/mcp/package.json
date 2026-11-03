@@ -1,6 +1,6 @@
 {
   "name": "@rowan-ui/mcp",
-  "version": "0.23.1",
+  "version": "0.23.2",
   "description": "Stdio MCP server for Rowan Web Components. Component APIs, examples, and tokens are bundled in the package.",
   "license": "MIT",
   "author": "2351Labs",
