@@ -53,6 +53,7 @@ import { COMPONENT_EXAMPLE_BY_TAG } from "./component-examples.js";
 import { COMPONENT_EXAMPLE_PAGES } from "./component-example-pages.js";
 import { GUIDE_PAGES } from "./guides.js";
 import { hydrateSampleMedia } from "./sample-media.js";
+import { AI_TOOLS_PAGE } from "./ai-tools.js";
 
 const DEFAULT_PAGE_ID = "getting-started";
 const THEME_STORAGE_KEY = "rowan-docs-theme";
@@ -1281,6 +1282,7 @@ const DOC_PAGES = [
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
         </rowan-alert>
+        <p>Coding agents can read <a href="https://2351labs.github.io/rowan/llms.txt">llms.txt</a> or use the <a href="#ai-tools">MCP server</a>.</p>
         <p>The <a href="#starters">admin template and the Vite, React, and Vue dashboards</a> open in StackBlitz. Each one installs <code>@rowan-ui/core</code> from npm.</p>
         <p>Component CSS is a string in the JavaScript module and is applied with <code>adoptedStyleSheets</code>. Vite, esbuild, webpack, and Rspack do not need <code>optimizeDeps.exclude</code>. The starters and the admin template install <code>@rowan-ui/*@^0.23.0</code> and use that default config. Constructable stylesheets are not <code>&lt;style&gt;</code> elements: current Chromium applies them under <code>style-src 'self'</code> and <code>style-src 'none'</code>. Browsers without <code>adoptedStyleSheets</code> fall back to a shadow style element, which needs <code>style-src 'unsafe-inline'</code>.</p>
       </section>
@@ -4867,6 +4869,7 @@ function appendMissingComponentPages(pages) {
   }
 }
 
+DOC_PAGES.push(AI_TOOLS_PAGE);
 appendMissingComponentPages(DOC_PAGES);
 DOC_PAGES.push(...GUIDE_PAGES, CHART_ACCESSIBILITY_PAGE);
 
@@ -4881,6 +4884,7 @@ const NAV_SECTIONS = [
     defaultOpen: true,
     items: [
       { pageId: "getting-started", label: "What is Rowan?" },
+      { pageId: "ai-tools", label: "AI tools" },
       { pageId: "react", label: "React" },
       { pageId: "vue", label: "Vue" },
       { pageId: "angular", label: "Angular" },

@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Added
+
+- AI context for coding tools. `llms.txt` and `llms-full.txt` are generated from the Custom Elements Manifest, token CSS, and docs/story excerpts. They are served at the documentation site root and included in `@rowan-ui/core`. `@rowan-ui/mcp` is a stdio MCP server (`list_components`, `get_component`, `search_components`, `get_example`, `get_theming`) whose catalog is bundled in the package. The documentation page "Use Rowan with AI tools" has Cursor, Claude Code, and VS Code setup.
+
 ## 0.23.1 - 2026-11-03
 
 ### Added

@@ -1,0 +1,62 @@
+{
+  "name": "@rowan-ui/mcp",
+  "version": "0.23.1",
+  "description": "Stdio MCP server for Rowan Web Components. Component APIs, examples, and tokens are bundled in the package.",
+  "license": "MIT",
+  "author": "2351Labs",
+  "homepage": "https://2351labs.github.io/rowan/#ai-tools",
+  "bugs": {
+    "url": "https://github.com/2351Labs/rowan/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2351Labs/rowan.git",
+    "directory": "packages/mcp"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "mcp",
+    "rowan",
+    "web-components",
+    "custom-elements",
+    "ai"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "rowan-mcp": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./catalog.json": "./data/catalog.json"
+  },
+  "files": [
+    "src/index.js",
+    "src/server.js",
+    "src/tools.js",
+    "data/catalog.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "3.25.76"
+  },
+  "peerDependencies": {
+    "@rowan-ui/core": "^0.23.0"
+  },
+  "peerDependenciesMeta": {
+    "@rowan-ui/core": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "start": "node ./src/index.js",
+    "build-catalog": "node ./scripts/build-catalog.mjs"
+  }
+}

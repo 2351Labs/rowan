@@ -3,3 +3,4 @@ storybook-static
 **/documentation-static-check/**
 templates/admin/dist
 starters/*/dist
+test-fixtures/astro/dist
