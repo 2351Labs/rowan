@@ -236,28 +236,9 @@
   inline-size: 0.75rem;
 }
 
-.point-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--rowan-space-2);
-}
-
-.point-controls[hidden] {
-  display: none;
-}
-
-.point-controls button {
-  background: transparent;
-  border: 1px solid var(--rowan-color-border);
-  border-radius: var(--rowan-radius-sm);
-  color: inherit;
-  font: inherit;
-  font-size: var(--rowan-font-size-sm);
-  padding: 0.15rem 0.4rem;
-}
-
-.point-controls button:focus-visible {
-  outline: 2px solid var(--rowan-focus-ring, var(--rowan-color-accent));
+.legend-button:disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 .detail {

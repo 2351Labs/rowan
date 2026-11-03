@@ -4,6 +4,7 @@ import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import {
   isRowanTable,
   observeTableAvailability,
+  observeTableColumns,
   observeTableSelection,
   readTableSelection,
   resolveRowanTable,
@@ -40,12 +41,12 @@ const DEFAULT_MESSAGES = Object.freeze({
  */
 
 /**
- * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown`.
+ * Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown` that follows the linked table's `columns` whenever they are assigned or replaced, before or after this element upgrades or connects, and when a column menu hides or shows a column.
  * @tag rowan-table-toolbar
  * @attr {string} for-table
  * @attr {string} label
  * @attr {string} selection-label
- * @attr {boolean} column-picker
+ * @attr {boolean} column-picker - Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements.
  * @property {RowanTableToolbarMessages} messages - Property-only built-in message overrides.
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
@@ -80,6 +81,7 @@ export class RowanTableToolbar extends BaseElement {
   #tableOverride = null;
   #boundTable = null;
   #tableCleanup = null;
+  #columnCleanup = null;
   #tableAvailabilityCleanup = null;
   #selected = [];
   #selectedRows = [];
@@ -369,6 +371,9 @@ export class RowanTableToolbar extends BaseElement {
         this.requestRender();
       }
     });
+    this.#columnCleanup = observeTableColumns(nextTable, () => {
+      this.requestRender();
+    });
 
     this.#readTableSelection();
   }
@@ -376,6 +381,8 @@ export class RowanTableToolbar extends BaseElement {
   #unbindTable() {
     this.#tableCleanup?.();
     this.#tableCleanup = null;
+    this.#columnCleanup?.();
+    this.#columnCleanup = null;
     this.#tableAvailabilityCleanup?.();
     this.#tableAvailabilityCleanup = null;
     this.#boundTable = null;

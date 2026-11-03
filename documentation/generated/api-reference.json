@@ -5928,7 +5928,7 @@
           "type": "boolean",
           "default": "false",
           "reflects": true,
-          "description": ""
+          "description": "Each legend item is the slice button for pointer and keyboard activation. No second control list is drawn."
         },
         {
           "name": "label",
@@ -17621,7 +17621,7 @@
       "tagName": "rowan-table-toolbar",
       "className": "RowanTableToolbar",
       "title": "Table Toolbar",
-      "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance=\"toolbar\"` chips stay on the first row. `column-picker` is a `rowan-dropdown`.",
+      "description": "Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance=\"toolbar\"` chips stay on the first row. `column-picker` is a `rowan-dropdown` that follows the linked table's `columns` whenever they are assigned or replaced, before or after this element upgrades or connects, and when a column menu hides or shows a column.",
       "modulePath": "src/table-toolbar/table-toolbar.js",
       "attributes": [
         {
@@ -17629,7 +17629,7 @@
           "type": "boolean",
           "default": "false",
           "reflects": true,
-          "description": ""
+          "description": "Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements."
         },
         {
           "name": "for-table",

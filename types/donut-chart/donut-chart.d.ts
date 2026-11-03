@@ -4,7 +4,7 @@
  * @tag rowan-donut-chart
  * @attr {string} label
  * @attr {string} description
- * @attr {boolean} interactive
+ * @attr {boolean} interactive - Each legend item is the slice button for pointer and keyboard activation. No second control list is drawn.
  * @attr {"donut"|"pie"} variant - `pie` fills the hole. Default `donut`. Total stays in the matching table.
  * @attr {string} locale
  * @property {Array<import("../chart/model.js").RowanChartSeries>} series - First series is drawn. Arrays are property-only.

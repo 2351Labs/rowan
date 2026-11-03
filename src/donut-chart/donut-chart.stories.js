@@ -41,9 +41,25 @@ export default {
 
 export const Playground = {
   parameters: createEventScriptParameters({
-    steps: ["Activate a slice control, then open the data table."],
+    steps: [
+      "Activate a slice from the legend. Arrow, Home, and End move between slices. Enter or Space activates.",
+      "The legend is the only slice control. Open the data table to read every value.",
+    ],
     events: ["rowan-point-activate"],
   }),
+  render: (args) => createDonutChart(args),
+};
+
+export const ReadOnly = {
+  name: "Read only",
+  args: { interactive: false },
+  parameters: {
+    docs: {
+      description: {
+        story: "Without interactive, the legend is text. Slice buttons are not drawn beside it.",
+      },
+    },
+  },
   render: (args) => createDonutChart(args),
 };
 

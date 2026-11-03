@@ -433,4 +433,167 @@ describe("rowan-table-toolbar", () => {
     expect(builderBox.top).to.be.greaterThan(titleBox.bottom - 1);
     expect(barBox.top).to.be.greaterThan(builderBox.bottom - 1);
   });
+
+  function columnPicker(toolbar) {
+    return toolbar.shadowRoot.querySelector(".column-picker");
+  }
+
+  function columnInput(toolbar, id) {
+    return toolbar.shadowRoot.querySelector(`input[data-column-id="${id}"]`);
+  }
+
+  async function openColumnMenu(table, columnId) {
+    const button = table.renderRoot.querySelector(`th[data-column-id="${columnId}"] .col-menu`);
+    expect(button).to.not.equal(null);
+    button.click();
+    for (let frame = 0; frame < 45; frame += 1) {
+      const panel = table.renderRoot.querySelector(".col-menu-panel");
+      if (panel) return panel;
+      await nextFrame();
+    }
+    throw new Error(`Column menu for ${columnId} did not open.`);
+  }
+
+  it("shows the column picker when columns already exist before the toolbar connects", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "early-orders";
+    table.columns = [
+      { id: "name", header: "Name" },
+      { id: "team", header: "Team", hidden: true },
+    ];
+    table.rows = [{ id: "order-1", name: "Maple", team: "North" }];
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.columnPicker = true;
+    toolbar.forTable = "early-orders";
+
+    document.body.append(table, toolbar);
+    await settle();
+
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+    expect(columnInput(toolbar, "name").checked).to.equal(true);
+    expect(columnInput(toolbar, "team").checked).to.equal(false);
+  });
+
+  it("shows and replaces columns assigned after the toolbar first renders", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "late-orders";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.columnPicker = true;
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+
+    expect(columnPicker(toolbar).hidden).to.equal(true);
+
+    table.columns = [
+      { id: "name", header: "Name" },
+      { id: "team", header: "Team" },
+    ];
+    table.rows = [{ id: "order-1", name: "Maple", team: "North" }];
+    await settle();
+
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+    expect(toolbar.shadowRoot.querySelectorAll("input[data-column-id]")).to.have.length(2);
+    expect(columnInput(toolbar, "team").checked).to.equal(true);
+
+    table.columns = [
+      { id: "order", header: "Order" },
+      { id: "status", header: "Status", hidden: true },
+    ];
+    await settle();
+
+    expect(columnInput(toolbar, "name")).to.equal(null);
+    expect(columnInput(toolbar, "order").checked).to.equal(true);
+    expect(columnInput(toolbar, "status").checked).to.equal(false);
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+  });
+
+  it("follows columns on a table linked with for-table", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "linked-orders";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.columnPicker = true;
+    toolbar.forTable = "linked-orders";
+    document.body.append(toolbar, table);
+    await settle();
+
+    expect(toolbar.table).to.equal(table);
+    expect(columnPicker(toolbar).hidden).to.equal(true);
+
+    table.columns = [
+      { id: "name", header: "Name" },
+      { id: "team", header: "Team" },
+    ];
+    await settle();
+
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+    expect(columnInput(toolbar, "name")).to.not.equal(null);
+    expect(columnInput(toolbar, "team")).to.not.equal(null);
+  });
+
+  it("applies columns that were shadowed until the setter runs", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "upgrade-orders";
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.columnPicker = true;
+    toolbar.forTable = "upgrade-orders";
+    document.body.append(table, toolbar);
+    await settle();
+    expect(columnPicker(toolbar).hidden).to.equal(true);
+
+    Object.defineProperty(table, "columns", {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: [
+        { id: "name", header: "Name" },
+        { id: "team", header: "Team" },
+      ],
+    });
+    await settle();
+    expect(columnPicker(toolbar).hidden).to.equal(true);
+
+    const value = table.columns;
+    delete table.columns;
+    table.columns = value;
+    await settle();
+
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+    expect(toolbar.shadowRoot.querySelectorAll("input[data-column-id]")).to.have.length(2);
+  });
+
+  it("tracks hide and show from the table column menu", async () => {
+    const table = document.createElement("rowan-table");
+    table.columns = [
+      { id: "name", header: "Name" },
+      { id: "team", header: "Team" },
+      { id: "role", header: "Role", hidden: true },
+    ];
+    table.rows = [{ id: "order-1", name: "Maple", team: "North", role: "Buyer" }];
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.columnPicker = true;
+    table.append(toolbar);
+    document.body.append(table);
+    await settle();
+
+    expect(columnInput(toolbar, "role").checked).to.equal(false);
+
+    const hiding = await openColumnMenu(table, "team");
+    hiding.querySelector('[data-action="hide"]').click();
+    await settle();
+
+    expect(table.columns.find((column) => column.id === "team").hidden).to.equal(true);
+    expect(columnInput(toolbar, "team").checked).to.equal(false);
+    expect(columnPicker(toolbar).hidden).to.equal(false);
+
+    const showing = await openColumnMenu(table, "name");
+    showing.querySelector('[data-action="show:team"]').click();
+    await settle();
+
+    expect(table.columns.find((column) => column.id === "team").hidden).to.equal(false);
+    expect(columnInput(toolbar, "team").checked).to.equal(true);
+    expect(columnInput(toolbar, "role").checked).to.equal(false);
+  });
 });
