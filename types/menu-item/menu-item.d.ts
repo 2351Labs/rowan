@@ -7,6 +7,7 @@
  * @csspart item
  */
 export class RowanMenuItem extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

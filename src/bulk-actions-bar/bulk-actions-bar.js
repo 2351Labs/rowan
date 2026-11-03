@@ -11,6 +11,7 @@ import {
 } from "../lib/table-selection.js";
 
 import "../button/button.js";
+import componentStyles from "./bulk-actions-bar.styles.js";
 
 const BUTTON_VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -91,7 +92,7 @@ function normalizeActions(value) {
 export class RowanBulkActionsBar extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./bulk-actions-bar.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["for-table", "label", "selection-label", "clear-label", "disabled"];
   static upgradeProperties = [
     "table",

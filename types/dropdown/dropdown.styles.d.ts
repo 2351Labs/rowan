@@ -1,0 +1,2 @@
+declare const _default: ":host{display:inline-block;position:relative} :host([hidden]){display:none} .trigger{display:inline-flex;max-inline-size:100%} .fallback-trigger[hidden]{display:none} .panel{background:var(--rowan-color-bg,#fff);border:var(--rowan-border-width) solid var(--rowan-color-border);border-radius:var(--rowan-radius-md);color:inherit;height:fit-content;inset:unset;margin:0;min-width:12rem;overflow:visible;position:fixed;width:max-content;z-index:30}";
+export default _default;

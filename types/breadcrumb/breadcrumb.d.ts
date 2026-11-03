@@ -7,6 +7,7 @@
  * @csspart nav
  */
 export class RowanBreadcrumb extends BaseElement {
+  static styles: string;
   /** @param {RowanBreadcrumbMessages | null | undefined} value */
   set messages(value: RowanBreadcrumbMessages | null | undefined);
   /** @returns {RowanBreadcrumbMessages} */

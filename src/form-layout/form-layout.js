@@ -1,6 +1,7 @@
 import { declarations as formLayoutTokenDeclarations } from "../tokens/parts/form-layout.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./form-layout.styles.js";
 
 function normalizeColumns(value) {
   const numeric = Number(value);
@@ -37,7 +38,7 @@ function normalizeLength(value, fallback) {
  * @cssprop --rowan-form-layout-min-column-width
  */
 export class RowanFormLayout extends BaseElement {
-  static styleUrl = new URL("./form-layout.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-form-layout-"];
   static componentTokenDeclarations = formLayoutTokenDeclarations;
   static observedAttributes = ["columns", "gap", "label-position", "label-align", "label-width"];

@@ -17,6 +17,7 @@ export class RowanRadio extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set checked(value: boolean);
   get checked(): boolean;
   set disabled(value: boolean);

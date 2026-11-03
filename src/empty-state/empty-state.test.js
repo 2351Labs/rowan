@@ -5,7 +5,7 @@ const nextMicrotask = () => Promise.resolve();
 
 async function waitForStyles(element) {
   const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (stylesheet.sheet) return;
+  if (!stylesheet || stylesheet.sheet) return;
 
   await new Promise((resolve, reject) => {
     stylesheet.addEventListener("load", resolve, { once: true });

@@ -38,6 +38,7 @@
  * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanBulletChart extends BaseElement {
+  static styles: string;
   set label(value: string);
   get label(): string;
   set locale(value: string);

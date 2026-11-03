@@ -13,6 +13,7 @@
  * @event rowan-dismiss - Fired when dismissed by user interaction
  */
 export class RowanToast extends BaseElement {
+  static styles: string;
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value: "info" | "success" | "warning" | "danger");
   /** @returns {"info" | "success" | "warning" | "danger"} */

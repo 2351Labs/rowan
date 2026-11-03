@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { RowanTab } from "../tab/tab.js";
 import { RowanTabPanel } from "../tab-panel/tab-panel.js";
+import componentStyles from "./tabs.styles.js";
 
 function isTab(value) {
   return value instanceof RowanTab;
@@ -23,7 +24,7 @@ function isTabPanel(value) {
  * @event rowan-change - Fired when a user activates a different tab
  */
 export class RowanTabs extends BaseElement {
-  static styleUrl = new URL("./tabs.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["value"];
   static upgradeProperties = ["value"];

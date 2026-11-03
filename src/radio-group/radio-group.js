@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
 
 import "../radio/radio.js";
+import componentStyles from "./radio-group.styles.js";
 
 /**
  * Group controller for radio options.
@@ -18,7 +19,7 @@ import "../radio/radio.js";
  */
 export class RowanRadioGroup extends BaseElement {
   static formAssociated = true;
-  static styleUrl = new URL("./radio-group.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["value", "name", "disabled", "required"];
   static upgradeProperties = ["value", "name", "disabled", "required"];

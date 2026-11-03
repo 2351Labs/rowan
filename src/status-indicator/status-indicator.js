@@ -2,6 +2,7 @@ import { declarations as statusIndicatorTokenDeclarations } from "../tokens/part
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import componentStyles from "./status-indicator.styles.js";
 
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
 const SIZES = new Set(["sm", "md", "lg"]);
@@ -33,7 +34,7 @@ function normalizeText(value) {
  * @cssprop --rowan-status-indicator-gap
  */
 export class RowanStatusIndicator extends BaseElement {
-  static styleUrl = new URL("./status-indicator.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["tone", "size", "label", "pulse"];
   static upgradeProperties = ["tone", "size", "label", "pulse"];

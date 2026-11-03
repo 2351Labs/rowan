@@ -14,6 +14,7 @@
  * @event rowan-change - Fired when the user closes the drawer
  */
 export class RowanDrawer extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

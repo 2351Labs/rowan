@@ -35,6 +35,7 @@ export class RowanFilterBuilder extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   /** @param {"panel" | "toolbar"} value */
   set appearance(value: "toolbar" | "panel");

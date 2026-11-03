@@ -4,6 +4,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./rich-text-editor.styles.js";
 import {
   cloneDocument,
   documentFromEditingSurface,
@@ -126,7 +127,7 @@ export class RowanRichTextEditor extends BaseElement {
   static formAssociated = true;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./rich-text-editor.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-rich-text-editor-"];
   static componentTokenDeclarations = richTextEditorTokenDeclarations;
   static observedAttributes = [

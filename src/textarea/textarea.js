@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./textarea.styles.js";
 
 let textAreaId = 0;
 
@@ -23,7 +24,7 @@ let textAreaId = 0;
 export class RowanTextarea extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./textarea.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

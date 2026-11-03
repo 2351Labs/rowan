@@ -29,6 +29,7 @@ import {
   resolveChartLabels,
 } from "../chart/model.js";
 import { funnelPath, funnelStages, funnelTrapezoids } from "./model.js";
+import componentStyles from "./funnel-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -127,7 +128,7 @@ function normalizeText(value) {
 export class RowanFunnelChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./funnel-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-funnel-chart-"];
   static observedAttributes = ["label", "description", "interactive", "variant", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

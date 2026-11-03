@@ -15,6 +15,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
+import componentStyles from "./sparkline.styles.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const TONES = new Set(["neutral", "info", "success", "warning", "danger"]);
@@ -200,7 +201,7 @@ function dashedTargetPath(y, plotWidthPx) {
  * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanSparkline extends BaseElement {
-  static styleUrl = new URL("./sparkline.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "tone", "variant", "above-tone", "below-tone", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

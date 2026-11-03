@@ -4,6 +4,7 @@ import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
+import componentStyles from "./side-nav-section.styles.js";
 
 /**
  * Labeled group of destinations inside rowan-side-nav.
@@ -25,7 +26,7 @@ import { keys } from "../lib/keys.js";
  * @event rowan-toggle - Fired when a user expands or collapses a collapsible section
  */
 export class RowanSideNavSection extends BaseElement {
-  static styleUrl = new URL("./side-nav-section.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static componentTokenPrefixes = ["--rowan-side-nav-section-"];
   static componentTokenDeclarations = sideNavSectionTokenDeclarations;

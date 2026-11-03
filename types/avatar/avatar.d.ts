@@ -16,6 +16,7 @@
  * @csspart initials
  */
 export class RowanAvatar extends BaseElement {
+  static styles: string;
   set name(value: string);
   get name(): string;
   set src(value: string);

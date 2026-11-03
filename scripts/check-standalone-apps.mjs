@@ -9,10 +9,14 @@
  * `new URL("./component.css", import.meta.url)` to a CSS file it never emits,
  * so shadow styles 404 and the page renders unstyled. Each app excludes those
  * packages from optimizeDeps. This script fails if that regresses.
+ *
+ * It also packs this repo and installs those tarballs into a Vite app with
+ * the default config (no optimizeDeps.exclude). Embedded component CSS must
+ * style that app in dev and in the production preview.
  */
 
 import { spawn } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -163,6 +167,15 @@ function collectReport() {
   } catch {
     rules = 0;
   }
+  if (!rules && spark?.shadowRoot) {
+    for (const sheet of spark.shadowRoot.adoptedStyleSheets || []) {
+      try {
+        rules += sheet.cssRules.length;
+      } catch {
+        // Ignore cross-origin sheets.
+      }
+    }
+  }
   const plot = spark?.shadowRoot?.querySelector(".plot");
   const plotHeight = plot ? plot.getBoundingClientRect().height : 0;
   const mark = spark?.shadowRoot?.querySelector(".line, .area");
@@ -172,8 +185,8 @@ function collectReport() {
   details.sparkRules = rules;
   details.plotHeight = plotHeight;
   details.sparkPaint = paintColor ?? "";
-  if (!link || rules < 5 || link.href.includes("/.vite/deps/")) {
-    problems.push(`sparkline stylesheet did not apply (${link?.href || "no link"}, ${rules} rules)`);
+  if (rules < 5 || (link?.href || "").includes("/.vite/deps/")) {
+    problems.push(`sparkline stylesheet did not apply (${link?.href || "adopted"}, ${rules} rules)`);
   }
   if (plotHeight < 12 || plotHeight > 64) problems.push(`sparkline plot height is ${plotHeight}`);
   if (!mark || !paintColor || paintColor === "none" || paintColor === "rgb(0, 0, 0)") {
@@ -297,6 +310,118 @@ async function exercise(project, dir, context, index) {
   }
 }
 
+async function smokePackedDefaultVite(sandbox, context) {
+  const packDir = join(sandbox, "packs");
+  mkdirSync(packDir, { recursive: true });
+  console.log("\n▶ packed library: npm pack");
+  await run("npm", ["pack", "--pack-destination", packDir], repoRoot);
+  await run("npm", ["pack", "--pack-destination", packDir, "--workspace=@rowan-ui/icons"], repoRoot);
+
+  const dir = join(sandbox, "packed-vite");
+  mkdirSync(join(dir, "src"), { recursive: true });
+  const corePack = join(packDir, "rowan-ui-core-0.22.0.tgz");
+  const iconPack = join(packDir, "rowan-ui-icons-0.22.0.tgz");
+  writeFileSync(
+    join(dir, "package.json"),
+    JSON.stringify(
+      {
+        name: "rowan-default-vite",
+        private: true,
+        type: "module",
+        dependencies: {
+          "@rowan-ui/core": `file:${corePack}`,
+          "@rowan-ui/icons": `file:${iconPack}`,
+        },
+        devDependencies: { vite: "^5.4.10" },
+      },
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
+    join(dir, "vite.config.js"),
+    `import { defineConfig } from "vite";
+export default defineConfig({
+  server: { host: "127.0.0.1", port: 49240, strictPort: true },
+  preview: { host: "127.0.0.1", port: 49241, strictPort: true },
+});
+`,
+  );
+  writeFileSync(
+    join(dir, "index.html"),
+    `<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><title>Packed Rowan</title></head>
+  <body>
+    <style>
+      body { background: var(--rowan-color-bg); color: var(--rowan-color-fg); font-family: var(--rowan-font-family, sans-serif); margin: 0; }
+    </style>
+    <div id="app"></div><script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+`,
+  );
+  writeFileSync(
+    join(dir, "src", "main.js"),
+    `import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import "@rowan-ui/core/app-layout";
+import "@rowan-ui/core/button";
+import "@rowan-ui/core/sparkline";
+import "@rowan-ui/core/trend-chart";
+import "@rowan-ui/icons/elements/sun";
+
+document.documentElement.dataset.theme = "light";
+const app = document.querySelector("#app");
+const layout = document.createElement("rowan-app-layout");
+const nav = document.createElement("div");
+nav.slot = "navigation";
+const icon = document.createElement("rowan-icon");
+icon.name = "sun";
+nav.append(icon);
+const main = document.createElement("div");
+const button = document.createElement("rowan-button");
+button.textContent = "Save";
+const spark = document.createElement("rowan-sparkline");
+spark.label = "Weekly revenue";
+spark.variant = "area";
+spark.tone = "success";
+spark.values = [4, 8, 6, 9, 7, 11];
+const trend = document.createElement("rowan-trend-chart");
+trend.label = "Revenue";
+trend.labels = ["Mon", "Tue", "Wed", "Thu"];
+trend.series = [{ id: "web", label: "Web", values: [3, 5, 4, 8] }];
+main.append(button, spark, trend);
+layout.append(nav, main);
+app.append(layout);
+app.dataset.ready = "true";
+`,
+  );
+
+  if (readFileSync(join(dir, "vite.config.js"), "utf8").includes("optimizeDeps")) {
+    throw new Error("packed Vite app must use the default config");
+  }
+
+  console.log("Installing packed tarballs");
+  await run("npm", ["install", "--no-audit", "--no-fund"], dir);
+  const sparklineSource = readFileSync(
+    join(dir, "node_modules", "@rowan-ui", "core", "src", "sparkline", "sparkline.js"),
+    "utf8",
+  );
+  if (!sparklineSource.includes("static styles = componentStyles")) {
+    throw new Error("packed @rowan-ui/core still loads sparkline CSS from a URL");
+  }
+  if (sparklineSource.includes("styleUrl")) {
+    throw new Error("packed sparkline.js still sets styleUrl");
+  }
+  const resolved = realpathSync(join(dir, "node_modules", "@rowan-ui", "core", "package.json"));
+  if (resolved.startsWith(`${repoRoot}${sep}`)) {
+    throw new Error(`packed core resolved into the workspace: ${resolved}`);
+  }
+
+  await exercise({ name: "packed-vite" }, dir, context, 20);
+}
+
 async function main() {
   const sandbox = realpathSync(mkdtempSync(join(tmpdir(), "rowan-standalone-")));
   if (sandbox === repoRoot || sandbox.startsWith(`${repoRoot}${sep}`)) {
@@ -333,6 +458,7 @@ async function main() {
       for (const [index, project] of installed.entries()) {
         await exercise(project, project.dir, context, index);
       }
+      await smokePackedDefaultVite(sandbox, context);
     } finally {
       await context.close();
     }

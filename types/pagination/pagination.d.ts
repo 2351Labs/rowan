@@ -16,6 +16,7 @@
  * @event rowan-page-change - Fired when the page changes. `detail.index` is 0-based; `detail.page` is 1-based.
  */
 export class RowanPagination extends BaseElement {
+  static styles: string;
   set page(value: number);
   get page(): number;
   set totalPages(value: number);

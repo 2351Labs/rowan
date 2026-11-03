@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { normalizeCalendarDate } from "../lib/calendar-date.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./date-range-picker.styles.js";
 
 let dateRangePickerId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -69,7 +70,7 @@ function parseRangeState(state) {
 export class RowanDateRangePicker extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./date-range-picker.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "name-start",

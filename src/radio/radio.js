@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./radio.styles.js";
 
 /**
  * Radio control with form association.
@@ -20,7 +21,7 @@ import { validityMessage } from "../lib/validity-messages.js";
 export class RowanRadio extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./radio.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["checked", "disabled", "required", "name", "value", "label"];
   static upgradeProperties = ["checked", "disabled", "required", "name", "value", "label"];
 

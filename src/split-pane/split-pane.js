@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./split-pane.styles.js";
 
 const DEFAULT_POSITION = 50;
 const DEFAULT_STEP = 5;
@@ -69,7 +70,7 @@ function normalizeSnapPoints(value) {
 export class RowanSplitPane extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./split-pane.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-split-pane-"];
   static componentTokenDeclarations = splitPaneTokenDeclarations;
   static observedAttributes = [

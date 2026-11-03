@@ -22,6 +22,7 @@
  * @cssprop --rowan-image-aspect
  */
 export class RowanImage extends BaseElement {
+  static styles: string;
   static componentTokenDeclarations: string[][];
   set src(value: string);
   get src(): string;

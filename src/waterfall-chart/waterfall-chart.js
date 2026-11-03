@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./waterfall-chart.styles.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -141,7 +142,7 @@ function waterfallTone(entry) {
 export class RowanWaterfallChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./waterfall-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-waterfall-chart-"];
   static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

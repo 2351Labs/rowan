@@ -1,7 +1,12 @@
+import componentStyles from "./element.styles.js";
+
 const ICON_FACTORIES = new Map();
 const CONNECTED_ICONS = new Set();
 const ICON_REFRESHERS = new WeakMap();
-const STYLE_URL = new URL("./element.css", import.meta.url).href;
+const supportsAdoptedStyleSheets =
+  typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
+const iconStyleSheet = supportsAdoptedStyleSheets ? new CSSStyleSheet() : null;
+if (iconStyleSheet) iconStyleSheet.replaceSync(componentStyles);
 
 function normalizeString(value) {
   return String(value ?? "").trim();
@@ -64,12 +69,16 @@ export class RowanIcon extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
 
-    const stylesheet = document.createElement("link");
-    stylesheet.setAttribute("rel", "stylesheet");
-    stylesheet.setAttribute("href", STYLE_URL);
+    if (iconStyleSheet) {
+      this.shadowRoot.adoptedStyleSheets = [iconStyleSheet];
+    } else {
+      const stylesheet = document.createElement("style");
+      stylesheet.textContent = componentStyles;
+      this.shadowRoot.append(stylesheet);
+    }
 
     this.#iconContainer = document.createElement("span");
-    this.shadowRoot.append(stylesheet, this.#iconContainer);
+    this.shadowRoot.append(this.#iconContainer);
     ICON_REFRESHERS.set(this, () => this.#render());
 
     for (const property of ["name", "size", "strokeWidth", "label", "tone"]) {

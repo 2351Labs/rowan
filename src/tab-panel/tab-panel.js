@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./tab-panel.styles.js";
 
 /**
  * Content panel for a tab.
@@ -10,7 +11,7 @@ import { define } from "../lib/define.js";
  * @csspart panel
  */
 export class RowanTabPanel extends BaseElement {
-  static styleUrl = new URL("./tab-panel.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["value", "active", "aria-hidden", "aria-labelledby"];
   static upgradeProperties = ["value", "active"];

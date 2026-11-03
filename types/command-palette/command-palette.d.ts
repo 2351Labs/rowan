@@ -30,6 +30,7 @@
  * @event rowan-close - Fired when a user dismisses the palette
  */
 export class RowanCommandPalette extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

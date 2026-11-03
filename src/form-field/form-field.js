@@ -2,6 +2,7 @@ import { declarations as formFieldTokenDeclarations } from "../tokens/parts/form
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./form-field.styles.js";
 
 let formFieldId = 0;
 const DEFAULT_MESSAGES = Object.freeze({ required: "Required" });
@@ -61,7 +62,7 @@ function contentText(slot, fallback) {
  */
 export class RowanFormField extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./form-field.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-form-field-"];
   static componentTokenDeclarations = formFieldTokenDeclarations;
   static observedAttributes = [

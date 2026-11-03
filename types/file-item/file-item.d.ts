@@ -33,6 +33,7 @@
  * @event rowan-cancel - Fired when cancel action is clicked for uploading files
  */
 export class RowanFileItem extends BaseElement {
+  static styles: string;
   set fileId(value: string);
   get fileId(): string;
   set filename(value: string);

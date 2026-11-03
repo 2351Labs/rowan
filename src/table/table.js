@@ -17,10 +17,37 @@ import "../icon-button/icon-button.js";
 import "../avatar/avatar.js";
 import "../chip/chip.js";
 import "../progress/progress.js";
-import "../sparkline/sparkline.js";
-import "../bullet-chart/bullet-chart.js";
 import "../empty-state/empty-state.js";
 import { clearColumnWidths, columnWidth } from "./column-widths.js";
+
+// Sparkline and bullet cells are optional. Their modules (and CSS) load when a
+// column uses them, so the table's initial graph stays within its size budget.
+const OPTIONAL_CELL_MODULES = {
+  sparkline: () => import("../sparkline/sparkline.js"),
+  bullet: () => import("../bullet-chart/bullet-chart.js"),
+};
+const optionalCellLoads = new Map();
+
+function ensureOptionalCells(table, columns) {
+  const types = new Set(
+    (Array.isArray(columns) ? columns : []).map((column) => column?.type).filter(Boolean),
+  );
+  for (const [type, load] of Object.entries(OPTIONAL_CELL_MODULES)) {
+    if (!types.has(type)) continue;
+    let pending = optionalCellLoads.get(type);
+    if (!pending) {
+      pending = load().catch((error) => {
+        optionalCellLoads.delete(type);
+        throw error;
+      });
+      optionalCellLoads.set(type, pending);
+    }
+    void pending.then(() => {
+      if (table.isConnected) table.requestRender();
+    });
+  }
+}
+import componentStyles from "./table.styles.js";
 
 const CELL_TYPES = new Set([
   "text",
@@ -386,7 +413,7 @@ function isDevelopmentEnvironment() {
  * @event rowan-tree-toggle - Fired when a tree row expands or collapses. `detail` is `{ rowId, expanded, row }`.
  */
 export class RowanTable extends BaseElement {
-  static styleUrl = new URL("./table.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-table-"];
   static componentTokenDeclarations = tableTokenDeclarations;
   static observedAttributes = [
@@ -604,6 +631,7 @@ export class RowanTable extends BaseElement {
     this.virtualized = Boolean(next.virtualized);
     this.virtualItemSize = next.virtualItemSize;
     this.virtualOverscan = next.virtualOverscan;
+    ensureOptionalCells(this, this.#state.columns);
     if (next.tree) this.tree = next.tree;
     else this.requestRender();
   }
@@ -618,6 +646,7 @@ export class RowanTable extends BaseElement {
     this.#state.columns = Array.isArray(value) ? value : [];
     this.#bodyNeedsRender = true;
     this.#resetConfigurationWarnings();
+    ensureOptionalCells(this, this.#state.columns);
     this.requestRender();
   }
 

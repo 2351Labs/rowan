@@ -1,0 +1,2 @@
+// Generated from src/divider/divider.css. Edit that file, then run: node scripts/sync-component-styles.mjs
+export default ":host{display:block} :host([hidden]){display:none} .divider{background:var(--rowan-divider-color,var(--rowan-color-border));display:block;height:var(--rowan-border-width);width:100%} :host([orientation=\"vertical\"]){display:inline-block;height:100%} :host([orientation=\"vertical\"]) .divider{height:100%;width:var(--rowan-border-width)}";

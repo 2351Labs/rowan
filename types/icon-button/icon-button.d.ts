@@ -18,6 +18,7 @@
  * @event rowan-click - Fired on activation (not when disabled)
  */
 export class RowanIconButton extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

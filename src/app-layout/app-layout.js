@@ -4,6 +4,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./app-layout.styles.js";
 
 let appLayoutNavigationId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -33,7 +34,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @event rowan-change - Fired when a user opens or closes compact navigation.
  */
 export class RowanAppLayout extends BaseElement {
-  static styleUrl = new URL("./app-layout.css", import.meta.url).href;
+  static styles = componentStyles;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static componentTokenPrefixes = ["--rowan-app-layout-"];
   static componentTokenDeclarations = appLayoutTokenDeclarations;

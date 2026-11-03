@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./radar-chart.styles.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -134,7 +135,7 @@ function normalizeText(value) {
 export class RowanRadarChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./radar-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-radar-chart-"];
   static observedAttributes = ["label", "description", "interactive", "geometry", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

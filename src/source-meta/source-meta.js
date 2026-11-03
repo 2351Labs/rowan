@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./source-meta.styles.js";
 
 const DEFAULT_MESSAGES = Object.freeze({ asOf: "As of" });
 
@@ -34,7 +35,7 @@ function hasAssignedContent(slot) {
  * @csspart as-of
  */
 export class RowanSourceMeta extends BaseElement {
-  static styleUrl = new URL("./source-meta.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["source", "as-of"];
   static upgradeProperties = ["source", "asOf", "messages"];
 

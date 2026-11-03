@@ -7,6 +7,7 @@
  * @csspart tab
  */
 export class RowanTab extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

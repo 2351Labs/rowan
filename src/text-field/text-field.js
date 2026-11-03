@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./text-field.styles.js";
 
 let textFieldId = 0;
 
@@ -52,7 +53,7 @@ function validityStateToFlags(validity) {
 export class RowanTextField extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./text-field.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "value",

@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./dialog.styles.js";
 import {
   dismissConsumedThisTurn,
   isTopmostOverlay,
@@ -34,7 +35,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @event rowan-close - Fired when the user dismisses the dialog
  */
 export class RowanDialog extends BaseElement {
-  static styleUrl = new URL("./dialog.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["open", "alert"];

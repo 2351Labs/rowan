@@ -32,6 +32,7 @@ export class RowanCombobox extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set open(value: boolean);
   get open(): boolean;
   /** @param {RowanComboboxOption[]} value */

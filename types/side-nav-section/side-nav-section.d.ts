@@ -18,6 +18,7 @@
  * @event rowan-toggle - Fired when a user expands or collapses a collapsible section
  */
 export class RowanSideNavSection extends BaseElement {
+  static styles: string;
   static componentTokenDeclarations: string[][];
   set label(value: string);
   get label(): string;

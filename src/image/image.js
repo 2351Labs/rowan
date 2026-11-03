@@ -3,6 +3,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
+import componentStyles from "./image.styles.js";
 
 const FITS = new Set(["cover", "contain"]);
 const LOADINGS = new Set(["lazy", "eager"]);
@@ -32,7 +33,7 @@ const LOADINGS = new Set(["lazy", "eager"]);
  */
 export class RowanImage extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./image.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-image-"];
   static componentTokenDeclarations = imageTokenDeclarations;
   static observedAttributes = ["src", "alt", "href", "fit", "loading"];

@@ -2,6 +2,7 @@ import { declarations as virtualListTokenDeclarations } from "../tokens/parts/vi
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { VirtualCollection } from "../lib/virtual-collection.js";
+import componentStyles from "./virtual-list.styles.js";
 
 const DEFAULT_ITEM_SIZE = 40;
 const DEFAULT_OVERSCAN = 3;
@@ -36,7 +37,7 @@ function nonNegativeInteger(value, fallback) {
  */
 export class RowanVirtualList extends BaseElement {
   static useElementInternals = true;
-  static styleUrl = new URL("./virtual-list.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-virtual-list-"];
   static componentTokenDeclarations = virtualListTokenDeclarations;
   static observedAttributes = ["item-size", "overscan"];

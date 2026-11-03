@@ -4,6 +4,7 @@ import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { triggerAssociatedFormAction } from "../lib/form.js";
+import componentStyles from "./button.styles.js";
 
 const VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
 const SIZES = new Set(["sm", "md", "lg"]);
@@ -37,7 +38,7 @@ const TYPES = new Set(["button", "submit", "reset"]);
  * @event rowan-click - Fired on activation (not when disabled)
  */
 export class RowanButton extends BaseElement {
-  static styleUrl = new URL("./button.css", import.meta.url).href;
+  static styles = componentStyles;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = [
     "variant",

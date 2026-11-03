@@ -166,7 +166,9 @@ describe("rowan-form-layout", () => {
     expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(2);
 
     layout.style.inlineSize = "48rem";
-    layout.shadowRoot.querySelector('link[rel="stylesheet"]').dispatchEvent(new Event("load"));
+    const link = layout.shadowRoot.querySelector('link[rel="stylesheet"]');
+    if (link) link.dispatchEvent(new Event("load"));
+    else await settleResponsiveLayout();
 
     expect(getComputedStyle(grid).gridTemplateColumns.split(/\s+/)).to.have.length(1);
   });

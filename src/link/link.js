@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { sanitizeNavigationHref } from "../lib/url.js";
+import componentStyles from "./link.styles.js";
 
 /**
  * Text navigation link.
@@ -15,7 +16,7 @@ import { sanitizeNavigationHref } from "../lib/url.js";
  * @event rowan-click - Fired when activated (not when disabled)
  */
 export class RowanLink extends BaseElement {
-  static styleUrl = new URL("./link.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["href", "target", "external", "disabled"];
   static upgradeProperties = ["href", "target", "external", "disabled"];
 

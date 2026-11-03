@@ -13,6 +13,7 @@ import {
   writeTooltipFormatter,
 } from "../chart/hover.js";
 import { finiteOrNull } from "../chart/model.js";
+import componentStyles from "./gauge-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -152,7 +153,7 @@ function bandPath(t0, t1) {
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanGaugeChart extends BaseElement {
-  static styleUrl = new URL("./gauge-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["label", "min", "max", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

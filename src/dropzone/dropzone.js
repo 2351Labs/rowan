@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
 import { partitionAcceptedFiles } from "../lib/file-accept.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./dropzone.styles.js";
 
 let dropzoneId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -43,7 +44,7 @@ function normalizeFileArray(files) {
 export class RowanDropzone extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./dropzone.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "label",
     "description",

@@ -7,6 +7,7 @@ import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { renderChartTable, withRestoredPointFocus, emitPointActivate } from "../chart/dom.js";
 import { cloneChartSeriesInput as cloneTrendSeriesInput } from "../chart/model.js";
+import componentStyles from "./trend-chart.styles.js";
 import {
   bindChartHover,
   createChartHoverBubble,
@@ -135,7 +136,7 @@ function createSvgElement(name) {
 export class RowanTrendChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./trend-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-trend-chart-"];
   static componentTokenDeclarations = trendChartTokenDeclarations;
   static observedAttributes = [

@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
+import componentStyles from "./drawer.styles.js";
 
 const SIDES = new Set(["start", "end"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -30,7 +31,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @event rowan-change - Fired when the user closes the drawer
  */
 export class RowanDrawer extends BaseElement {
-  static styleUrl = new URL("./drawer.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["open", "side"];

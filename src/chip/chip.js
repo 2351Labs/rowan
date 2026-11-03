@@ -2,6 +2,7 @@ import { declarations as chipTokenDeclarations } from "../tokens/parts/chip.js";
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
+import componentStyles from "./chip.styles.js";
 
 const TONES = new Set(["info", "success", "warning", "danger"]);
 const SIZES = new Set(["sm", "md", "lg"]);
@@ -23,7 +24,7 @@ const SIZES = new Set(["sm", "md", "lg"]);
  * @cssprop --rowan-chip-danger-bg
  */
 export class RowanChip extends BaseElement {
-  static styleUrl = new URL("./chip.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["tone", "size"];
   static upgradeProperties = ["tone", "size"];
   static componentTokenPrefixes = ["--rowan-chip-"];

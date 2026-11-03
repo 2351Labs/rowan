@@ -10,6 +10,7 @@
  * @event rowan-change - Fired when open state changes
  */
 export class RowanAccordion extends BaseElement {
+  static styles: string;
   static shadowRootOptions: {
     mode: string;
     delegatesFocus: boolean;

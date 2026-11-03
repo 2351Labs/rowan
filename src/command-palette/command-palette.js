@@ -7,6 +7,7 @@ import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { collectFocusableElements } from "../lib/focus.js";
 import { pushOverlay, removeOverlay } from "../lib/overlay-stack.js";
 import { RowanCommandItem } from "../command-item/command-item.js";
+import componentStyles from "./command-palette.styles.js";
 
 let commandPaletteId = 0;
 const DEFAULT_MESSAGES = Object.freeze({
@@ -109,7 +110,7 @@ function isCommandItem(value) {
  * @event rowan-close - Fired when a user dismisses the palette
  */
 export class RowanCommandPalette extends BaseElement {
-  static styleUrl = new URL("./command-palette.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = [

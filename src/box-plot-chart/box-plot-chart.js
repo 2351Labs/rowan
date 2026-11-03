@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./box-plot-chart.styles.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -158,7 +159,7 @@ function normalizeText(value) {
 export class RowanBoxPlotChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./box-plot-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-box-plot-chart-"];
   static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

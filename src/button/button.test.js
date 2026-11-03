@@ -5,10 +5,18 @@ const nextMicrotask = () => Promise.resolve();
 
 async function waitForComponentStyles(element, expectedBackground = "") {
   const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  const button = element.shadowRoot.querySelector("button");
-  if (!stylesheet || !button) return;
 
   const hasLoadedRules = () => {
+    if (!stylesheet) {
+      return [...(element.shadowRoot.adoptedStyleSheets || [])].some((sheet) => {
+        try {
+          return sheet.cssRules.length > 0;
+        } catch (_error) {
+          return false;
+        }
+      });
+    }
+
     try {
       return Boolean(stylesheet.sheet?.cssRules.length);
     } catch (_error) {
@@ -16,14 +24,19 @@ async function waitForComponentStyles(element, expectedBackground = "") {
     }
   };
 
+  // WebKit applies adopted styles on the next frame. Reading computed style
+  // before that frame resolves user-agent button styles and starts the
+  // background transition, so wait for a frame before the first read.
   for (let frame = 0; frame < 60; frame += 1) {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    const button = element.shadowRoot.querySelector("button");
+    if (!button || !hasLoadedRules()) continue;
+
     const styles = getComputedStyle(button);
     const backgroundMatches = !expectedBackground || styles.backgroundColor === expectedBackground;
-    if (hasLoadedRules() && styles.display === "inline-flex" && backgroundMatches) {
+    if (styles.display === "inline-flex" && backgroundMatches) {
       return;
     }
-
-    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
   throw new Error("Button styles did not apply within 60 animation frames.");

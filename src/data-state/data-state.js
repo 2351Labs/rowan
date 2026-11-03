@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./data-state.styles.js";
 
 const STATES = new Set(["ready", "loading", "empty", "error"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -35,7 +36,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @csspart actions
  */
 export class RowanDataState extends BaseElement {
-  static styleUrl = new URL("./data-state.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["state"];
   static upgradeProperties = ["state", "messages"];

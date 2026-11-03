@@ -20,19 +20,25 @@ async function waitFor(predicate, frames = 45) {
 }
 
 async function waitForStyles(element) {
-  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
+  const hasAppliedStyles = () => {
+    const root = element.shadowRoot;
+    if (!root) return false;
+    const link = root.querySelector('link[rel="stylesheet"]');
+    if (link?.sheet?.cssRules?.length) return true;
+    return [...(root.adoptedStyleSheets || [])].some((sheet) => {
+      try {
+        return sheet.cssRules.length > 0;
+      } catch {
+        return false;
+      }
+    });
   };
 
   for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
+    if (hasAppliedStyles()) {
+      await nextFrame();
+      return;
+    }
     await nextFrame();
   }
 
@@ -459,6 +465,7 @@ describe("rowan-table", () => {
     };
     document.body.append(table);
     await nextMicrotask();
+    await waitForStyles(table);
 
     const caption = table.shadowRoot.querySelector("caption");
     expect(caption.hidden).to.equal(false);
@@ -751,6 +758,7 @@ describe("rowan-table", () => {
   });
 
   it("renders sparkline cells from a number array and optional tone", async () => {
+    await import("../sparkline/sparkline.js");
     const table = document.createElement("rowan-table");
     table.config = {
       rowId: "id",
@@ -773,6 +781,7 @@ describe("rowan-table", () => {
   });
 
   it("renders bullet cells from a payload or column ranges", async () => {
+    await import("../bullet-chart/bullet-chart.js");
     const table = document.createElement("rowan-table");
     const ranges = [
       { from: 0, to: 50, label: "Low", tone: "danger" },
@@ -818,6 +827,7 @@ describe("rowan-table", () => {
   });
 
   it("keeps bullet cells in the virtualized row window", async () => {
+    await import("../bullet-chart/bullet-chart.js");
     const rows = Array.from({ length: 40 }, (_, index) => ({
       id: String(index + 1),
       name: `Yard ${index + 1}`,
@@ -1519,6 +1529,7 @@ describe("rowan-table", () => {
     document.body.append(table);
     await nextMicrotask();
     await nextMicrotask();
+    await waitForStyles(table);
 
     const viewport = table.shadowRoot.querySelector(".table-scroll");
     viewport.scrollTop = 300;
@@ -1600,6 +1611,7 @@ describe("rowan-table", () => {
     document.body.append(table);
     await nextMicrotask();
     await nextMicrotask();
+    await waitForStyles(table);
 
     const viewport = table.shadowRoot.querySelector(".table-scroll");
     viewport.scrollTop = 400;

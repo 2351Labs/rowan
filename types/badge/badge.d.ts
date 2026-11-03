@@ -7,6 +7,7 @@
  * @csspart badge
  */
 export class RowanBadge extends BaseElement {
+  static styles: string;
   /** @param {"info" | "success" | "warning" | "danger"} value */
   set tone(value: "info" | "success" | "warning" | "danger");
   /** @returns {"info" | "success" | "warning" | "danger"} */

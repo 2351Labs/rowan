@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { normalizeEnum, reflectEnum, rewriteEnumAttribute } from "../lib/enum.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./toast.styles.js";
 
 const TONE_VALUES = new Set(["info", "success", "warning", "danger"]);
 const DEFAULT_MESSAGES = Object.freeze({
@@ -26,7 +27,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @event rowan-dismiss - Fired when dismissed by user interaction
  */
 export class RowanToast extends BaseElement {
-  static styleUrl = new URL("./toast.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["tone", "dismissible"];
   static upgradeProperties = ["tone", "dismissible", "messages"];

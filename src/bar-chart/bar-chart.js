@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./bar-chart.styles.js";
 import {
   createSvgElement,
   emitPointActivate,
@@ -133,7 +134,7 @@ function normalizeText(value) {
 export class RowanBarChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./bar-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-bar-chart-"];
   static observedAttributes = ["label", "description", "interactive", "orientation", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./spinner.styles.js";
 
 const SIZES = new Set(["sm", "md", "lg"]);
 const DEFAULT_MESSAGES = Object.freeze({ loading: "Loading" });
@@ -26,7 +27,7 @@ function normalizeSize(value) {
  * @csspart spinner
  */
 export class RowanSpinner extends BaseElement {
-  static styleUrl = new URL("./spinner.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["size", "label"];
   static upgradeProperties = ["size", "label", "messages"];

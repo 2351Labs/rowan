@@ -2,6 +2,7 @@ import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { resolveLocale, upperCaseForLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./avatar.styles.js";
 
 const SIZES = new Set(["sm", "md", "lg"]);
 const DEFAULT_MESSAGES = Object.freeze({ avatar: "Avatar" });
@@ -32,7 +33,7 @@ function normalizeSize(value) {
  * @csspart initials
  */
 export class RowanAvatar extends BaseElement {
-  static styleUrl = new URL("./avatar.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["name", "src", "alt", "size", "locale"];
   static upgradeProperties = ["name", "src", "alt", "size", "locale", "messages"];
 

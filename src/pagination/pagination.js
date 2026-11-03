@@ -4,6 +4,7 @@ import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 
 import "../button/button.js";
+import componentStyles from "./pagination.styles.js";
 
 function positiveInteger(value) {
   const numeric = Number(value);
@@ -36,7 +37,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @event rowan-page-change - Fired when the page changes. `detail.index` is 0-based; `detail.page` is 1-based.
  */
 export class RowanPagination extends BaseElement {
-  static styleUrl = new URL("./pagination.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["page", "total-pages"];
   static upgradeProperties = ["page", "totalPages", "messages"];
 

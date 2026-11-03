@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./stepper.styles.js";
 
 const DEFAULT_MESSAGES = Object.freeze({
   stepLabel: "Step {step}",
@@ -77,7 +78,7 @@ function parseStepsAttribute(value, fallbackLabel) {
 export class RowanStepper extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./stepper.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["current-step", "orientation", "steps", "disabled"];
   static upgradeProperties = ["currentStep", "orientation", "steps", "disabled", "messages"];
 

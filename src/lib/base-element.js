@@ -9,11 +9,14 @@ import {
   reflectStringAttribute,
 } from "./reflect.js";
 import { tokenPropertiesRegistered } from "../tokens/foundation.js";
-import {
-  componentTokensFromDeclarations,
-  loadComponentTokens,
-  peekComponentTokens,
-} from "../tokens/load-component-tokens.js";
+import { componentTokensFromDeclarations } from "../tokens/component-token-css.js";
+
+let tokenLoaderPromise = null;
+
+function importTokenLoader() {
+  tokenLoaderPromise ??= import("../tokens/load-component-tokens.js");
+  return tokenLoaderPromise;
+}
 
 const supportsAdoptedStyleSheets =
   typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
@@ -381,6 +384,14 @@ export class BaseElement extends HTMLElement {
     if (supportsAdoptedStyleSheets) {
       if (hasInlineStyles && this.#componentSheet) {
         this.#componentSheet.replaceSync(normalizedCss);
+        // Adopt immediately. Token refresh may still be loading the legacy sheet,
+        // and a consumer must not paint a frame with an empty shadow stylesheet.
+        if (!this.shadowRoot.adoptedStyleSheets.includes(this.#componentSheet)) {
+          this.shadowRoot.adoptedStyleSheets = [
+            ...this.shadowRoot.adoptedStyleSheets,
+            this.#componentSheet,
+          ];
+        }
       }
     } else {
       if (hasInlineStyles) {
@@ -441,13 +452,17 @@ export class BaseElement extends HTMLElement {
       return;
     }
 
-    const ready = peekComponentTokens(prefixes);
-    if (ready) {
-      apply(ready);
-      return;
-    }
-
-    void loadComponentTokens(prefixes).then(apply);
+    // The part registry lists every component. Controls that ship
+    // `componentTokenDeclarations` never load it. Others fetch it on connect.
+    void importTokenLoader().then(({ peekComponentTokens, loadComponentTokens }) => {
+      if (applyId !== this.#tokenApplyId) return;
+      const ready = peekComponentTokens(prefixes);
+      if (ready) {
+        apply(ready);
+        return;
+      }
+      void loadComponentTokens(prefixes).then(apply);
+    });
   }
 
   #applyResolvedTokenStyles({ componentCss, componentNames, legacyCss, legacySheet, useLegacy }) {

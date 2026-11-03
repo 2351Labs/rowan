@@ -5,6 +5,7 @@ import { horizontalArrowKeyOffset } from "../lib/direction.js";
 import { emit } from "../lib/events.js";
 import { keys } from "../lib/keys.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./segmented-control.styles.js";
 
 const SIZES = new Set(["sm", "md", "lg"]);
 
@@ -36,7 +37,7 @@ function normalizeText(value) {
 export class RowanSegmentedControl extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./segmented-control.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-segmented-control-"];
   static componentTokenDeclarations = segmentedControlTokenDeclarations;
   static observedAttributes = ["name", "value", "label", "size", "disabled", "required"];

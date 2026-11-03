@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./menu-item.styles.js";
 
 /**
  * Selectable menu item.
@@ -10,7 +11,7 @@ import { define } from "../lib/define.js";
  * @csspart item
  */
 export class RowanMenuItem extends BaseElement {
-  static styleUrl = new URL("./menu-item.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["value", "disabled", "tabindex"];

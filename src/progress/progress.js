@@ -3,6 +3,7 @@ import { define } from "../lib/define.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./progress.styles.js";
 
 const DEFAULT_MESSAGES = Object.freeze({
   labeledValueText: "{label} {value}%",
@@ -31,7 +32,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @csspart meta
  */
 export class RowanProgress extends BaseElement {
-  static styleUrl = new URL("./progress.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static observedAttributes = ["value", "max", "label", "hide-meta", "locale"];
   static upgradeProperties = ["value", "max", "label", "hideMeta", "locale", "messages"];

@@ -10,6 +10,7 @@
  * @event rowan-change - Fired when selected value changes
  */
 export class RowanRadioGroup extends BaseElement {
+  static styles: string;
   set value(value: string);
   get value(): string;
   set name(value: string);

@@ -14,6 +14,7 @@ import {
 } from "../lib/table-selection.js";
 
 import "../icon-button/icon-button.js";
+import componentStyles from "./row-details-panel.styles.js";
 
 let rowDetailsPanelId = 0;
 
@@ -153,7 +154,7 @@ function formatDisplayValue(value, locale, notSet) {
 export class RowanRowDetailsPanel extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./row-details-panel.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "open",
     "side",

@@ -6,6 +6,7 @@ import { normalizeCalendarDate } from "../lib/calendar-date.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { validityMessage } from "../lib/validity-messages.js";
+import componentStyles from "./calendar.styles.js";
 
 let calendarId = 0;
 
@@ -196,7 +197,7 @@ function dateFormatter(locale, options) {
 export class RowanCalendar extends BaseElement {
   static formAssociated = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./calendar.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = [
     "name",
     "name-start",

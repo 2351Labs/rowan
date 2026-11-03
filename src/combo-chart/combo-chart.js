@@ -31,6 +31,7 @@ import {
 } from "../chart/model.js";
 import { cloneComboSeriesInput, comboAxisDomain, normalizeComboSeries } from "./model.js";
 import { createParetoData } from "./pareto.js";
+import componentStyles from "./combo-chart.styles.js";
 import {
   readHiddenSeries,
   writeHiddenSeries,
@@ -133,7 +134,7 @@ function yForValue(value, domain, plotHeight) {
 export class RowanComboChart extends BaseElement {
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
-  static styleUrl = new URL("./combo-chart.css", import.meta.url).href;
+  static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-combo-chart-"];
   static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
   static upgradeProperties = [

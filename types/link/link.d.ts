@@ -10,6 +10,7 @@
  * @event rowan-click - Fired when activated (not when disabled)
  */
 export class RowanLink extends BaseElement {
+  static styles: string;
   set href(value: string);
   get href(): string;
   set target(value: string);

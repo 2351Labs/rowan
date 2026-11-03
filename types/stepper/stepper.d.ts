@@ -19,6 +19,7 @@ export class RowanStepper extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set currentStep(value: number);
   get currentStep(): number;
   set orientation(value: "vertical" | "horizontal");

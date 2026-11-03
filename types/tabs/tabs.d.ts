@@ -7,6 +7,7 @@
  * @event rowan-change - Fired when a user activates a different tab
  */
 export class RowanTabs extends BaseElement {
+  static styles: string;
   set value(value: string);
   get value(): string;
   #private;

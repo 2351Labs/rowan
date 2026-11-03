@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import componentStyles from "./breadcrumb.styles.js";
 
 const DEFAULT_MESSAGES = Object.freeze({
   navigationLabel: "Breadcrumb",
@@ -16,7 +17,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @csspart nav
  */
 export class RowanBreadcrumb extends BaseElement {
-  static styleUrl = new URL("./breadcrumb.css", import.meta.url).href;
+  static styles = componentStyles;
   static upgradeProperties = ["messages"];
 
   #messages = {};

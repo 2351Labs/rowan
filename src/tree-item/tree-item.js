@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./tree-item.styles.js";
 
 /**
  * Individual node within a hierarchical tree.
@@ -22,7 +23,7 @@ import { define } from "../lib/define.js";
  * @cssprop --rowan-tree-item-children-border
  */
 export class RowanTreeItem extends BaseElement {
-  static styleUrl = new URL("./tree-item.css", import.meta.url).href;
+  static styles = componentStyles;
   static useElementInternals = true;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["value", "expanded", "selected", "disabled", "level", "tabindex"];

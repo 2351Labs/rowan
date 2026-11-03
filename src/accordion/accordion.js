@@ -1,6 +1,7 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
 import { emit } from "../lib/events.js";
+import componentStyles from "./accordion.styles.js";
 
 /**
  * Expandable disclosure section.
@@ -14,7 +15,7 @@ import { emit } from "../lib/events.js";
  * @event rowan-change - Fired when open state changes
  */
 export class RowanAccordion extends BaseElement {
-  static styleUrl = new URL("./accordion.css", import.meta.url).href;
+  static styles = componentStyles;
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static observedAttributes = ["open", "summary"];
   static upgradeProperties = ["open", "summary"];

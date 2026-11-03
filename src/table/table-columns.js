@@ -1,3 +1,4 @@
+import componentStyles from "./table-columns.styles.js";
 import { emit } from "../lib/events.js";
 import { resolveMessage } from "../lib/messages.js";
 import { isTopmostOverlay, noteDismissibleClose, pushDismissible, removeDismissible } from "../lib/overlay-stack.js";
@@ -151,13 +152,22 @@ function focusItem(panel, index) {
   next.focus();
 }
 
+const supportsColumnStyles =
+  typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype;
+const columnMenuSheet = supportsColumnStyles ? new CSSStyleSheet() : null;
+if (columnMenuSheet) columnMenuSheet.replaceSync(componentStyles);
+
 function ensureStyle(root) {
-  if (root.querySelector("link[data-column-menu]")) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = new URL("./table-columns.css", import.meta.url).href;
-  link.dataset.columnMenu = "";
-  root.append(link);
+  if (columnMenuSheet) {
+    if (root.adoptedStyleSheets?.includes(columnMenuSheet)) return;
+    root.adoptedStyleSheets = [...(root.adoptedStyleSheets || []), columnMenuSheet];
+    return;
+  }
+  if (root.querySelector("style[data-column-menu]")) return;
+  const style = document.createElement("style");
+  style.dataset.columnMenu = "";
+  style.textContent = componentStyles;
+  root.append(style);
 }
 
 function place(panel, anchor) {

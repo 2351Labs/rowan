@@ -1,5 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
+import componentStyles from "./badge.styles.js";
 
 const TONES = new Set(["info", "success", "warning", "danger"]);
 const SIZES = new Set(["sm", "md", "lg"]);
@@ -27,7 +28,7 @@ function normalizeSize(value) {
  * @csspart badge
  */
 export class RowanBadge extends BaseElement {
-  static styleUrl = new URL("./badge.css", import.meta.url).href;
+  static styles = componentStyles;
   static observedAttributes = ["tone", "size"];
   static upgradeProperties = ["tone", "size"];
 

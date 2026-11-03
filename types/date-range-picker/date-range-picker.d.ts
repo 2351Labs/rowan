@@ -33,6 +33,7 @@ export class RowanDateRangePicker extends BaseElement {
     mode: string;
     delegatesFocus: boolean;
   };
+  static styles: string;
   set name(value: string);
   get name(): string;
   set nameStart(value: string);
