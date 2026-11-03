@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="South dock and river gate in the morning">
+  <title>South dock</title>
+  <defs>
+    <linearGradient id="morning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8eb4c9"/>
+      <stop offset="1" stop-color="#f3e2c4"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f7590"/>
+      <stop offset="1" stop-color="#1d4c63"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#morning)"/>
+  <circle cx="96" cy="72" r="26" fill="#fff4d2"/>
+  <path d="M0 168 C140 150 220 176 340 160 C460 144 540 158 640 140 L640 210 L0 210 Z" fill="#355445"/>
+  <rect y="198" width="640" height="70" fill="#5e6a5a"/>
+  <rect y="250" width="640" height="110" fill="url(#water)"/>
+  <path d="M0 268 H640" stroke="#d5ecf4" stroke-width="2" opacity="0.35"/>
+  <path d="M0 292 H640" stroke="#d5ecf4" stroke-width="2" opacity="0.25"/>
+  <path d="M0 318 H640" stroke="#d5ecf4" stroke-width="2" opacity="0.2"/>
+  <g>
+    <rect x="70" y="118" width="210" height="92" fill="#d7cbb6" stroke="#6d5c49"/>
+    <path d="M62 118 H288 L274 96 H78 Z" fill="#8d4632"/>
+    <rect x="92" y="140" width="28" height="22" fill="#f4e7c4"/>
+    <rect x="132" y="140" width="28" height="22" fill="#f4e7c4"/>
+    <rect x="172" y="140" width="28" height="22" fill="#c9d7e0"/>
+    <rect x="214" y="156" width="42" height="54" fill="#2c3330"/>
+  </g>
+  <g stroke="#3a4348" stroke-width="6" fill="none">
+    <path d="M360 86 V210"/>
+    <path d="M360 110 H470"/>
+    <path d="M470 110 V168"/>
+  </g>
+  <rect x="392" y="150" width="54" height="28" rx="3" fill="#c4552a"/>
+  <g>
+    <path d="M150 250 L210 236 H470 L520 250 L470 286 H210 Z" fill="#8d6a43" stroke="#5c4328"/>
+    <rect x="250" y="248" width="70" height="22" fill="#c9c2b2"/>
+    <rect x="336" y="244" width="54" height="26" fill="#6e8f72"/>
+    <circle cx="230" cy="278" r="4" fill="#f4efe4"/>
+    <circle cx="430" cy="274" r="4" fill="#f4efe4"/>
+  </g>
+  <g fill="#243028">
+    <rect x="40" y="228" width="8" height="28"/>
+    <rect x="24" y="228" width="120" height="6"/>
+    <rect x="520" y="228" width="8" height="28"/>
+    <rect x="504" y="228" width="100" height="6"/>
+  </g>
+  <g fill="#2f6a4d">
+    <circle cx="34" cy="150" r="16"/>
+    <rect x="30" y="150" width="7" height="20" fill="#5a3b28"/>
+  </g>
+</svg>

@@ -1,5 +1,6 @@
 import "./empty-state.js";
 import "../button/button.js";
+import { SAMPLE_MEDIA } from "../../documentation/sample-media.js";
 
 export default {
   title: "Components/Actions & Feedback/Empty State",
@@ -21,9 +22,12 @@ export const Playground = {
   render: ({ title, body, actionLabel }) => {
     const el = document.createElement("rowan-empty-state");
 
-    const icon = document.createElement("span");
+    const icon = document.createElement("img");
     icon.slot = "icon";
-    icon.textContent = "◌";
+    icon.alt = "";
+    icon.src = SAMPLE_MEDIA.emptyCrates;
+    icon.width = 72;
+    icon.height = 72;
 
     const titleEl = document.createElement("span");
     titleEl.slot = "title";

@@ -1,108 +1,41 @@
 #!/usr/bin/env node
 /**
- * Add documentation pages for all components missing from documentation/app.js
+ * Fail when a public component has no docs page and no curated example.
+ * This script used to inject `<rowan-card></rowan-card>` placeholders.
+ * Add a real entry to documentation/component-examples.js instead.
  */
 
-import { readFileSync, writeFileSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { COMPONENT_EXAMPLE_BY_TAG } from "../documentation/component-examples.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const rootDir = join(__dirname, "..");
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+const cem = JSON.parse(readFileSync(join(rootDir, "custom-elements.json"), "utf8"));
+const appSource = readFileSync(join(rootDir, "documentation/app.js"), "utf8");
 
-// Read custom-elements.json to get all components
-const cem = JSON.parse(readFileSync(join(rootDir, "custom-elements.json"), "utf-8"));
-const allComponents = cem.modules
-  .flatMap((m) => m.declarations?.filter((d) => d.customElement) || [])
-  .map((d) => ({ tag: d.tagName, name: d.name, summary: d.summary || "" }))
-  .filter((c) => c.tag && c.tag.startsWith("rowan-"))
-  .sort((a, b) => a.tag.localeCompare(b.tag));
+const tags = cem.modules
+  .flatMap((moduleEntry) => moduleEntry.declarations?.filter((declaration) => declaration.customElement) || [])
+  .map((declaration) => declaration.tagName)
+  .filter((tag) => tag?.startsWith("rowan-"));
 
-// Read current documentation
-const docPath = join(rootDir, "documentation/app.js");
-let docContent = readFileSync(docPath, "utf-8");
-
-// Find which components already have API references
-const documented = [...docContent.matchAll(/renderApiReference\(["']([^"']+)["']\)/g)]
-  .map((m) => m[1])
-  .filter((v, i, a) => a.indexOf(v) === i);
-
-const missing = allComponents.filter((c) => !documented.includes(c.tag));
-
-console.log(`Total components: ${allComponents.length}`);
-console.log(`Already documented: ${documented.length}`);
-console.log(`Missing documentation: ${missing.length}`);
-
-if (missing.length === 0) {
-  console.log("All components are documented!");
-  process.exit(0);
+const missing = [];
+for (const tag of tags) {
+  const curated = COMPONENT_EXAMPLE_BY_TAG.has(tag);
+  const referenced = curated || appSource.includes(tag);
+  const bareDemo = appSource.includes(`<${tag}></${tag}>`);
+  if (bareDemo) missing.push(`${tag}: app.js still contains an empty <${tag}></${tag}> demo`);
+  if (!referenced) missing.push(`${tag}: add a curated example before generating a docs page`);
 }
 
-console.log("\nAdding pages for:");
-missing.forEach((c) => console.log(`  - ${c.tag}`));
-
-// Helper to generate a minimal component page
-function generateComponentPage(component) {
-  const { tag, summary } = component;
-  const title = tag
-    .replace("rowan-", "")
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-
-  return `  {
-    id: "${tag.replace("rowan-", "")}",
-    group: "Components",
-    title: "Rowan ${title}",
-    summary: "${summary || `${title} component for composable UI patterns.`}",
-    tags: ["component"],
-    keywords: ["${tag}", "${title.toLowerCase()}"],
-    content: () => \`
-      <section class="doc-section" data-doc-section id="${tag}-usage">
-        <h2>${title} usage</h2>
-        <p>${summary || `Use ${tag} to compose ${title.toLowerCase()} patterns in your application.`}</p>
-        <div class="demo-row">
-          <${tag}></${tag}>
-        </div>
-      </section>
-
-      <section class="doc-section" data-doc-section id="${tag}-snippet">
-        <h2>Basic example</h2>
-        \${codeBlock(\`<${tag}></${tag}>\`, "html")}
-      </section>
-
-      \${renderApiReference("${tag}")}
-    \`,
-  }`;
+if (appSource.includes("compose ") && appSource.includes("patterns in your application")) {
+  missing.push("app.js still contains generated placeholder copy");
 }
 
-// Find the last component page insertion point (before workflow pages)
-// Look for the row-details-panel afterRender line, which is the last component page
-const lastComponentMarker = "afterRender: setupRowDetailsPanelDemo,";
-const lastComponentIndex = docContent.indexOf(lastComponentMarker);
-if (lastComponentIndex === -1) {
-  console.error("Could not find last component page marker");
+if (missing.length > 0) {
+  console.error("Refusing to emit empty component docs:");
+  for (const problem of missing) console.error(`- ${problem}`);
   process.exit(1);
 }
 
-// Find the closing brace of that component page (the },  after the marker)
-const componentSectionEnd = docContent.indexOf("  },", lastComponentIndex);
-if (componentSectionEnd === -1) {
-  console.error("Could not find component section end");
-  process.exit(1);
-}
-
-// Generate new pages
-const newPages = missing.map(generateComponentPage).join(",\n");
-
-// Insert new pages
-const before = docContent.slice(0, componentSectionEnd + 4);
-const after = docContent.slice(componentSectionEnd + 4);
-const updated = before + newPages + ",\n" + after;
-
-// Write updated documentation
-writeFileSync(docPath, updated, "utf-8");
-
-console.log(`\n✓ Added ${missing.length} component pages to documentation/app.js`);
-console.log("✓ All components now have API reference sections");
+console.log(`Component docs examples cover ${tags.length} core elements with no empty placeholders.`);

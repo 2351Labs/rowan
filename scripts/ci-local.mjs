@@ -368,6 +368,8 @@ async function main() {
 
     await runCommand("node", ["test/docs-chart-smoke.spec.mjs"], "Documentation chart smoke test");
 
+    await runCommand("node", ["test/docs-demo-smoke.spec.mjs"], "Documentation demo smoke test");
+
     await runCommand(
       "npm",
       ["run", "build", "--workspace=@rowan-ui/admin-template"],
