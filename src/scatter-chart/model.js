@@ -1,4 +1,5 @@
 import { finiteOrNull } from "../chart/model.js";
+import { expandDomainForInset, niceLinearDomain } from "../chart/scale.js";
 
 const HEX_COLOR_PATTERN = /^#[\da-f]{3,8}$/i;
 const TOKEN_COLOR_PATTERN = /^var\(--rowan-[\w-]+\)$/;
@@ -47,13 +48,31 @@ function normalizeColor(value) {
   return HEX_COLOR_PATTERN.test(color) || TOKEN_COLOR_PATTERN.test(color) ? color : "";
 }
 
-function padDomain(values) {
-  if (!values.length) return { min: 0, max: 1 };
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  if (min !== max) return { min, max };
-  const padding = Math.max(1, Math.abs(min) * 0.1);
-  return { min: min - padding, max: max + padding };
+/** Smallest bubble in viewBox units. Large enough to stay visible when the plot scales down. */
+export const SCATTER_MIN_RADIUS = 12;
+/** Largest bubble in viewBox units. */
+export const SCATTER_MAX_RADIUS = 36;
+/** Radius when a point has no size encoding. */
+export const SCATTER_POINT_RADIUS = 16;
+
+/**
+ * Map a size onto the bubble radius range. The ends of the size extent are
+ * the min and max radius; a missing size stays a plain scatter mark.
+ * @param {number | null} size
+ * @param {{ min: number, max: number } | null} sizeDomain
+ */
+export function scatterRadius(size, sizeDomain) {
+  if (size === null || !sizeDomain) return SCATTER_POINT_RADIUS;
+  const span = sizeDomain.max - sizeDomain.min;
+  if (!(span > 0)) return (SCATTER_MIN_RADIUS + SCATTER_MAX_RADIUS) / 2;
+  const t = (size - sizeDomain.min) / span;
+  const radius = SCATTER_MIN_RADIUS + t * (SCATTER_MAX_RADIUS - SCATTER_MIN_RADIUS);
+  return Math.min(SCATTER_MAX_RADIUS, Math.max(SCATTER_MIN_RADIUS, radius));
+}
+
+function sizeExtent(values) {
+  if (!values.length) return null;
+  return { min: Math.min(...values), max: Math.max(...values) };
 }
 
 function fallbackPointLabel(index, resolveFallback) {
@@ -170,7 +189,11 @@ export function resolveScatterPointLabel(point, index, resolveFallbackLabel) {
   return point?.label || fallbackPointLabel(index, resolveFallbackLabel);
 }
 
-export function scatterDomains(series) {
+/**
+ * @param {Array<{ points: Array<{ x: number | null, y: number | null, size: number | null }> }>} series
+ * @param {{ xPadRatio?: number, yPadRatio?: number, xInsetRatio?: number, yInsetRatio?: number }} [options]
+ */
+export function scatterDomains(series, options = {}) {
   const xs = [];
   const ys = [];
   const sizes = [];
@@ -182,9 +205,17 @@ export function scatterDomains(series) {
       if (point.size !== null) sizes.push(point.size);
     }
   }
+  const xPadRatio = options.xPadRatio ?? 0.08;
+  const yPadRatio = options.yPadRatio ?? 0.12;
+  let x = niceLinearDomain(xs, { padRatio: xPadRatio });
+  let y = niceLinearDomain(ys, { padRatio: yPadRatio });
+  if (xs.length) {
+    x = expandDomainForInset(x, Math.min(...xs), Math.max(...xs), options.xInsetRatio ?? 0);
+    y = expandDomainForInset(y, Math.min(...ys), Math.max(...ys), options.yInsetRatio ?? 0);
+  }
   return {
-    x: padDomain(xs),
-    y: padDomain(ys),
-    size: sizes.length ? padDomain(sizes) : null,
+    x,
+    y,
+    size: sizeExtent(sizes),
   };
 }

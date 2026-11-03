@@ -32,6 +32,7 @@ export function rangePointIncluded(point: any): boolean;
 export function rangeDomain(series: any): {
   min: number;
   max: number;
+  ticks: number[];
 };
 /**
  * Normalized range point passed to a value formatter.

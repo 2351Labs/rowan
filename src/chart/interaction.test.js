@@ -172,7 +172,9 @@ describe("chart interaction", () => {
   it("turns legend rows into toggle buttons after the lazy module loads", async () => {
     const chart = await barChart();
     await interactionReady(chart);
-    const button = chart.shadowRoot.querySelector('button.legend-button[data-series-id="incoming"]');
+    const button = chart.shadowRoot.querySelector(
+      'button.legend-button[data-series-id="incoming"]',
+    );
     expect(button, "legend button").to.exist;
     const toggles = [];
     chart.addEventListener("rowan-series-toggle", (event) => toggles.push(event.detail));
@@ -182,9 +184,9 @@ describe("chart interaction", () => {
     expect(toggles[0].seriesId).to.equal("incoming");
     expect(chart.hiddenSeries).to.deep.equal(["incoming"]);
     expect(
-      chart.shadowRoot.querySelector('rect.bar[data-point-key="incoming::0"]').classList.contains(
-        "is-series-hidden",
-      ),
+      chart.shadowRoot
+        .querySelector('rect.bar[data-point-key="incoming::0"]')
+        .classList.contains("is-series-hidden"),
     ).to.equal(true);
   });
 
@@ -207,6 +209,8 @@ describe("chart interaction", () => {
     const left = Number.parseFloat(hover.style.left);
     expect(left).to.be.at.least(8);
     expect(chart.shadowRoot.querySelector(".axis-pointer")).to.exist;
+    chart.dispatchEvent(new PointerEvent("pointerleave"));
+    expect(chart.shadowRoot.querySelector(".axis-pointer")).to.equal(null);
   });
 
   it("zooms from the wheel and resets the view box", async () => {
@@ -217,7 +221,15 @@ describe("chart interaction", () => {
     const before = plot.getAttribute("viewBox");
     const zooms = [];
     chart.addEventListener("rowan-zoom", (event) => zooms.push(event.detail));
-    plot.dispatchEvent(new WheelEvent("wheel", { bubbles: true, cancelable: true, clientX: 40, clientY: 40, deltaY: -100 }));
+    plot.dispatchEvent(
+      new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        clientX: 40,
+        clientY: 40,
+        deltaY: -100,
+      }),
+    );
     expect(zooms.length).to.be.at.least(1);
     expect(plot.getAttribute("viewBox")).to.not.equal(before);
     const reset = chart.shadowRoot.querySelector(".zoom-reset");
@@ -313,7 +325,9 @@ describe("chart interaction", () => {
       {
         id: "signal",
         label: "Signal",
-        values: Array.from({ length: count }, (_, index) => Math.round(40 + 20 * Math.sin(index / 6))),
+        values: Array.from({ length: count }, (_, index) =>
+          Math.round(40 + 20 * Math.sin(index / 6)),
+        ),
       },
     ];
     chart.setAttribute("large-series", "24");
@@ -334,7 +348,9 @@ describe("chart interaction", () => {
       stylesheet.href = href;
       document.head.append(stylesheet);
       if (!stylesheet.sheet) {
-        await new Promise((resolve) => stylesheet.addEventListener("load", resolve, { once: true }));
+        await new Promise((resolve) =>
+          stylesheet.addEventListener("load", resolve, { once: true }),
+        );
       }
     }
     const chart = await barChart();
@@ -429,7 +445,9 @@ describe("chart interaction", () => {
     await nextMicrotask();
     await nextMicrotask();
     const plot = chart.shadowRoot.querySelector(".plot");
-    plot.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 30, clientY: 10 }));
+    plot.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 30, clientY: 10 }),
+    );
     expect(chart.shadowRoot.querySelector(".hover").hidden).to.equal(false);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("5");
     expect(chart.shadowRoot.querySelector(".detail")).to.exist;

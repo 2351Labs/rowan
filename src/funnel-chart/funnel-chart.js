@@ -130,7 +130,15 @@ export class RowanFunnelChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-funnel-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "variant", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "variant",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -300,7 +308,6 @@ export class RowanFunnelChart extends BaseElement {
     this.#valueFormatter = typeof value === "function" ? value : null;
     this.requestRender();
   }
-
 
   /** @returns {string[]} */
   get hiddenSeries() {
@@ -510,11 +517,13 @@ export class RowanFunnelChart extends BaseElement {
   #renderAxis() {
     const ordered = [...this.#entries].sort((left, right) => left.plotY - right.plotY);
     this.#yAxis.replaceChildren();
-    this.#yAxis.style.setProperty("--stage-count", String(Math.max(ordered.length, 1)));
     for (const entry of ordered) {
       const item = document.createElement("span");
+      item.className = "axis-y-tick";
       item.textContent = entry.label;
       item.title = entry.label;
+      const y = entry.plotY + entry.height / 2;
+      item.style.setProperty("--tick-y", `${(y / SVG_NAMESPACE_HEIGHT) * 100}%`);
       this.#yAxis.append(item);
     }
   }
@@ -586,7 +595,7 @@ export class RowanFunnelChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

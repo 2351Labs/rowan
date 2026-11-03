@@ -922,7 +922,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -1061,7 +1061,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -1214,7 +1214,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -1362,7 +1362,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -1501,7 +1501,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               }
             ],
@@ -3661,8 +3661,8 @@
               },
               {
                 "source": "axis",
-                "ratio": 15.76,
-                "fontSize": 14,
+                "ratio": 9.25,
+                "fontSize": 12,
                 "passes": true
               }
             ]
@@ -3802,8 +3802,8 @@
               },
               {
                 "source": "axis",
-                "ratio": 15.76,
-                "fontSize": 14,
+                "ratio": 9.25,
+                "fontSize": 12,
                 "passes": true
               }
             ]
@@ -3957,8 +3957,8 @@
               },
               {
                 "source": "axis",
-                "ratio": 15.76,
-                "fontSize": 14,
+                "ratio": 9.25,
+                "fontSize": 12,
                 "passes": true
               }
             ]
@@ -4108,7 +4108,7 @@
               {
                 "source": "axis",
                 "ratio": 21,
-                "fontSize": 14,
+                "fontSize": 12,
                 "passes": true
               }
             ]
@@ -4248,8 +4248,8 @@
               },
               {
                 "source": "axis",
-                "ratio": 14.11,
-                "fontSize": 14,
+                "ratio": 9.36,
+                "fontSize": 12,
                 "passes": true
               }
             ]
@@ -4362,12 +4362,12 @@
               },
               {
                 "kind": "slice fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "slice fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -4501,12 +4501,12 @@
               },
               {
                 "kind": "slice fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "slice fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -4641,12 +4641,12 @@
               },
               {
                 "kind": "slice fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "slice fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -4767,12 +4767,12 @@
               },
               {
                 "kind": "slice fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "slice fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -4906,13 +4906,13 @@
               },
               {
                 "kind": "slice fill",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               },
               {
                 "kind": "slice fill",
-                "ratio": 7.03,
-                "passes": true
+                "ratio": 1.76,
+                "passes": false
               }
             ],
             "texts": [
@@ -5057,12 +5057,12 @@
               },
               {
                 "kind": "stage fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "stage fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -5202,12 +5202,12 @@
               },
               {
                 "kind": "stage fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "stage fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -5361,12 +5361,12 @@
               },
               {
                 "kind": "stage fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "stage fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -5506,12 +5506,12 @@
               },
               {
                 "kind": "stage fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
                 "kind": "stage fill",
-                "ratio": 4.44,
+                "ratio": 9.25,
                 "passes": true
               }
             ],
@@ -5651,13 +5651,13 @@
               },
               {
                 "kind": "stage fill",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               },
               {
                 "kind": "stage fill",
-                "ratio": 7.03,
-                "passes": true
+                "ratio": 1.76,
+                "passes": false
               }
             ],
             "texts": [
@@ -7254,7 +7254,7 @@
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -7264,7 +7264,7 @@
               },
               {
                 "kind": "point fill",
-                "ratio": 4.74,
+                "ratio": 5.4,
                 "passes": true
               }
             ],
@@ -7416,7 +7416,7 @@
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -7426,7 +7426,7 @@
               },
               {
                 "kind": "point fill",
-                "ratio": 4.74,
+                "ratio": 5.4,
                 "passes": true
               }
             ],
@@ -7592,7 +7592,7 @@
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -7602,7 +7602,7 @@
               },
               {
                 "kind": "point fill",
-                "ratio": 4.74,
+                "ratio": 5.4,
                 "passes": true
               }
             ],
@@ -7763,7 +7763,7 @@
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -7773,7 +7773,7 @@
               },
               {
                 "kind": "point fill",
-                "ratio": 4.74,
+                "ratio": 5.4,
                 "passes": true
               }
             ],
@@ -7925,7 +7925,7 @@
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               },
               {
@@ -7935,7 +7935,7 @@
               },
               {
                 "kind": "point fill",
-                "ratio": 6.18,
+                "ratio": 5.41,
                 "passes": true
               }
             ],
@@ -8791,7 +8791,7 @@
             "axisAriaHidden": true
           },
           "nonColor": {
-            "groupCount": 3,
+            "groupCount": 4,
             "multiTone": false,
             "colorOnly": true,
             "channels": [],
@@ -8805,13 +8805,18 @@
                 "passes": false
               },
               {
+                "kind": "grid-line stroke",
+                "ratio": 1.25,
+                "passes": false
+              },
+              {
                 "kind": "point fill",
                 "ratio": 7.08,
                 "passes": true
               },
               {
                 "kind": "point fill",
-                "ratio": 3.9,
+                "ratio": 4.49,
                 "passes": true
               }
             ],
@@ -8935,7 +8940,7 @@
             "axisAriaHidden": true
           },
           "nonColor": {
-            "groupCount": 3,
+            "groupCount": 4,
             "multiTone": false,
             "colorOnly": true,
             "channels": [],
@@ -8949,13 +8954,18 @@
                 "passes": false
               },
               {
+                "kind": "grid-line stroke",
+                "ratio": 1.25,
+                "passes": false
+              },
+              {
                 "kind": "point fill",
                 "ratio": 7.08,
                 "passes": true
               },
               {
                 "kind": "point fill",
-                "ratio": 3.9,
+                "ratio": 4.49,
                 "passes": true
               }
             ],
@@ -9093,7 +9103,7 @@
             "axisAriaHidden": true
           },
           "nonColor": {
-            "groupCount": 3,
+            "groupCount": 4,
             "multiTone": false,
             "colorOnly": true,
             "channels": [],
@@ -9107,13 +9117,18 @@
                 "passes": false
               },
               {
+                "kind": "grid-line stroke",
+                "ratio": 1.25,
+                "passes": false
+              },
+              {
                 "kind": "point fill",
                 "ratio": 7.08,
                 "passes": true
               },
               {
                 "kind": "point fill",
-                "ratio": 3.9,
+                "ratio": 4.49,
                 "passes": true
               }
             ],
@@ -9246,7 +9261,7 @@
             "axisAriaHidden": true
           },
           "nonColor": {
-            "groupCount": 3,
+            "groupCount": 4,
             "multiTone": false,
             "colorOnly": true,
             "channels": [],
@@ -9260,13 +9275,18 @@
                 "passes": false
               },
               {
+                "kind": "grid-line stroke",
+                "ratio": 1.25,
+                "passes": false
+              },
+              {
                 "kind": "point fill",
                 "ratio": 7.08,
                 "passes": true
               },
               {
                 "kind": "point fill",
-                "ratio": 3.9,
+                "ratio": 4.49,
                 "passes": true
               }
             ],
@@ -9390,7 +9410,7 @@
             "axisAriaHidden": true
           },
           "nonColor": {
-            "groupCount": 3,
+            "groupCount": 4,
             "multiTone": false,
             "colorOnly": true,
             "channels": [],
@@ -9404,13 +9424,18 @@
                 "passes": false
               },
               {
+                "kind": "grid-line stroke",
+                "ratio": 1.27,
+                "passes": false
+              },
+              {
                 "kind": "point fill",
                 "ratio": 5.92,
                 "passes": true
               },
               {
                 "kind": "point fill",
-                "ratio": 5.23,
+                "ratio": 4.6,
                 "passes": true
               }
             ],
@@ -10123,12 +10148,12 @@
               },
               {
                 "kind": "series-area fill",
-                "ratio": 1.64,
+                "ratio": 1.75,
                 "passes": false
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -10138,7 +10163,7 @@
               },
               {
                 "kind": "point-marker fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -10291,12 +10316,12 @@
               },
               {
                 "kind": "series-area fill",
-                "ratio": 1.64,
+                "ratio": 1.75,
                 "passes": false
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -10306,7 +10331,7 @@
               },
               {
                 "kind": "point-marker fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -10464,12 +10489,12 @@
               },
               {
                 "kind": "series-area fill",
-                "ratio": 1.64,
+                "ratio": 1.75,
                 "passes": false
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -10479,7 +10504,7 @@
               },
               {
                 "kind": "point-marker fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -10632,12 +10657,12 @@
               },
               {
                 "kind": "series-area fill",
-                "ratio": 1.64,
+                "ratio": 1.75,
                 "passes": false
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               },
               {
@@ -10647,7 +10672,7 @@
               },
               {
                 "kind": "point-marker fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -10791,12 +10816,12 @@
               },
               {
                 "kind": "series-area fill",
-                "ratio": 1.98,
+                "ratio": 1.83,
                 "passes": false
               },
               {
                 "kind": "series-line stroke",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               },
               {
@@ -10806,7 +10831,7 @@
               },
               {
                 "kind": "point-marker fill",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               }
             ],
@@ -10957,7 +10982,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -11105,7 +11130,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -11258,7 +11283,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -11406,7 +11431,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 5.23,
+                "ratio": 5.89,
                 "passes": true
               }
             ],
@@ -11545,7 +11570,7 @@
               },
               {
                 "kind": "bar fill",
-                "ratio": 6.69,
+                "ratio": 5.85,
                 "passes": true
               }
             ],

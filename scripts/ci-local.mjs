@@ -358,17 +358,15 @@ async function main() {
       "Verify chart accessibility report",
     );
 
-    await runCommand(
-      "node",
-      ["scripts/check-storybook-pages-base.mjs"],
-      "Storybook Pages base",
-    );
+    await runCommand("node", ["scripts/check-storybook-pages-base.mjs"], "Storybook Pages base");
 
     await runCommand("node", ["test/storybook-smoke.spec.mjs"], "Storybook smoke test");
 
     await runCommand("node", ["test/docs-chart-smoke.spec.mjs"], "Documentation chart smoke test");
 
     await runCommand("node", ["test/docs-demo-smoke.spec.mjs"], "Documentation demo smoke test");
+
+    await runCommand("node", ["test/chart-axis-sanity.spec.mjs"], "Cartesian axis sanity");
 
     await runCommand(
       "npm",
@@ -394,18 +392,14 @@ async function main() {
       "Build Vue starter",
     );
 
-    await runCommand(
-      "node",
-      ["scripts/check-standalone-apps.mjs"],
-      "Standalone registry smoke",
-    );
+    await runCommand("node", ["scripts/check-standalone-apps.mjs"], "Standalone registry smoke");
 
     await runCommand("node", ["scripts/check-docs-version.mjs"], "Verify documentation version");
 
     await runCommand(
       "node",
       ["scripts/generate-api-reference.mjs", "--check"],
-      "Verify API reference is current"
+      "Verify API reference is current",
     );
 
     await runCommand(

@@ -546,11 +546,14 @@ export class RowanTrendChart extends BaseElement {
 
   #renderAxes(labels, domain) {
     const yAxis = document.createDocumentFragment();
+    const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
     for (let tick = 0; tick <= 4; tick += 1) {
       const value = domain.max - (tick / 4) * (domain.max - domain.min);
       const label = document.createElement("span");
       label.className = "axis-y-label";
       label.textContent = this.#formatValue(value, { tick: true });
+      const y = PLOT_TOP + (tick / 4) * plotHeight;
+      label.style.setProperty("--tick-y", `${(y / VIEWBOX_HEIGHT) * 100}%`);
       yAxis.append(label);
     }
     this.#yAxis.replaceChildren(yAxis);

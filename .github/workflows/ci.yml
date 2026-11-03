@@ -59,6 +59,8 @@ jobs:
         run: node test/docs-chart-smoke.spec.mjs
       - name: Documentation demo smoke test
         run: node test/docs-demo-smoke.spec.mjs
+      - name: Cartesian axis sanity
+        run: node test/chart-axis-sanity.spec.mjs
       - name: Build admin template
         run: npm run build --workspace=@rowan-ui/admin-template
       - name: Admin template smoke test

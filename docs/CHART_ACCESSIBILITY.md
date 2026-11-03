@@ -26,8 +26,8 @@ Graphical contrast is the mark's computed fill or stroke, composited with its op
 | rowan-bullet-chart | Supports | Supports | Partially supports | Supports | Supports | Supports | Supports | Supports | Supports | none |
 | rowan-column-sparkline | Supports | Supports | Supports | Supports | Supports | Supports | Supports | Supports | Supports | none |
 | rowan-combo-chart | Supports | Supports | Supports | Supports | Partially supports | Supports | Supports | Supports | Supports | none |
-| rowan-donut-chart | Supports | Supports | Partially supports | Supports | Supports | Supports | Supports | Supports | Supports | none |
-| rowan-funnel-chart | Supports | Supports | Partially supports | Supports | Supports | Supports | Supports | Supports | Supports | none |
+| rowan-donut-chart | Supports | Supports | Partially supports | Supports | Partially supports | Supports | Supports | Supports | Supports | none |
+| rowan-funnel-chart | Supports | Supports | Partially supports | Supports | Partially supports | Supports | Supports | Supports | Supports | none |
 | rowan-gauge-chart | Supports | Supports | Partially supports | Supports | Partially supports | Supports | Supports | Supports | Supports | none |
 | rowan-heatmap-chart | Supports | Supports | Partially supports | Supports | Partially supports | Supports | Supports | Supports | Supports | none |
 | rowan-radar-chart | Supports | Supports | Partially supports | Supports | Supports | Supports | Supports | Supports | Supports | none |
@@ -62,7 +62,9 @@ Graphical contrast is the mark's computed fill or stroke, composited with its op
 - **rowan-bullet-chart 1.4.1 Use of Color:** Partially supports. Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value.
 - **rowan-combo-chart 1.4.11 Non-text Contrast:** Partially supports. Marks under 3:1: line-point stroke 1.07:1 in default; line-point stroke 1.12:1 in dark; line-point stroke 1.07:1 in forced-colors.  The data table presents the same fixture values in text.
 - **rowan-donut-chart 1.4.1 Use of Color:** Partially supports. Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value.
+- **rowan-donut-chart 1.4.11 Non-text Contrast:** Partially supports. Marks under 3:1: slice fill 1.76:1 in dark.  The data table presents the same fixture values in text.
 - **rowan-funnel-chart 1.4.1 Use of Color:** Partially supports. Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value.
+- **rowan-funnel-chart 1.4.11 Non-text Contrast:** Partially supports. Marks under 3:1: stage fill 1.76:1 in dark.  The data table presents the same fixture values in text.
 - **rowan-gauge-chart 1.4.1 Use of Color:** Partially supports. Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value.
 - **rowan-gauge-chart 1.4.11 Non-text Contrast:** Partially supports. Marks under 3:1: range stroke 2.55:1 in default; range stroke 2.83:1 in default; range stroke 2.66:1 in forced-colors; range stroke 2.94:1 in forced-colors.  The data table presents the same fixture values in text.
 - **rowan-heatmap-chart 1.4.1 Use of Color:** Partially supports. Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value.
@@ -190,7 +192,7 @@ Bar chart
 | 1.3.1 Info and Relationships | A | Supports | 6 header cells set scope. Caption: "Weekly throughput data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.23:1 (bar fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. |
+| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.85:1 (bar fill, dark). Lowest focus-indicator ratio 7.65:1 across 9 samples. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to incoming::0. End landed on resolved::2. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button Incoming, Mon, 4. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Supports | Axe target-size reported no violations. The measured controls were at least 24 CSS pixels or had 24px spacing. |
@@ -269,11 +271,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 5.23:1 | 15.76:1 |
-| interactive | none | none | visible | 5.23:1 | 15.76:1 |
-| hidden-series | none | none | visible | 5.23:1 | 15.76:1 |
-| forced-colors | none | none | visible | 5.23:1 | 13.99:1 |
-| dark | none | none | visible | 6.69:1 | 14.11:1 |
+| default | none | none | visible | 5.89:1 | 15.76:1 |
+| interactive | none | none | visible | 5.89:1 | 15.76:1 |
+| hidden-series | none | none | visible | 5.89:1 | 15.76:1 |
+| forced-colors | none | none | visible | 5.89:1 | 13.99:1 |
+| dark | none | none | visible | 5.85:1 | 14.11:1 |
 
 Hidden-series "incoming" set the attribute to "incoming" and marked 6 plot marks hidden.
 
@@ -541,7 +543,7 @@ Combo chart
 | 1.1.1 Non-text Content | A | Supports | Accessible name "Defects and share" (group). Table caption "Defects and share data table". Every fixture needle was in the table. With hidden-series set to "count", the table still included the hidden fixture text. |
 | 1.3.1 Info and Relationships | A | Supports | 6 header cells set scope. Caption: "Defects and share data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Supports | Measured non-color channel: shape-or-dash. |
-| 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
+| 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 9.25:1 on axis (default). Small text threshold is 4.5:1. |
 | 1.4.11 Non-text Contrast | AA | Partially supports | Marks under 3:1: line-point stroke 1.07:1 in default; line-point stroke 1.12:1 in dark; line-point stroke 1.07:1 in forced-colors.  The data table presents the same fixture values in text. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to count::0. End landed on share::2. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button Count, Mon, 10. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
@@ -621,11 +623,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 1.07:1 | 15.76:1 |
-| interactive | none | none | visible | 1.07:1 | 15.76:1 |
-| hidden-series | none | none | visible | 1.07:1 | 15.76:1 |
+| default | none | none | visible | 1.07:1 | 9.25:1 |
+| interactive | none | none | visible | 1.07:1 | 9.25:1 |
+| hidden-series | none | none | visible | 1.07:1 | 9.25:1 |
 | forced-colors | none | none | visible | 1.07:1 | 13.99:1 |
-| dark | none | none | visible | 1.12:1 | 14.11:1 |
+| dark | none | none | visible | 1.12:1 | 9.36:1 |
 
 Hidden-series "count" set the attribute to "count" and marked 6 plot marks hidden.
 
@@ -641,7 +643,7 @@ Donut chart
 | 1.3.1 Info and Relationships | A | Supports | 5 header cells set scope. Caption: "Incident sources data table". The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 15 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 4.44:1 (slice fill, default). Lowest focus-indicator ratio 7.65:1 across 8 samples. |
+| 1.4.11 Non-text Contrast | AA | Partially supports | Marks under 3:1: slice fill 1.76:1 in dark.  The data table presents the same fixture values in text. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to sources::0. End landed on sources::2. No separate legend toggle was present after the lazy legend module loaded. Tab from the control before the chart landed on button.legend-button App, 12. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Supports | Axe target-size reported no violations. The measured controls were at least 24 CSS pixels or had 24px spacing. |
@@ -709,11 +711,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 4.44:1 | 15.76:1 |
-| interactive | none | none | visible | 4.44:1 | 15.76:1 |
-| hidden-series | none | none | visible | 4.44:1 | 15.76:1 |
-| forced-colors | none | none | visible | 4.44:1 | 13.99:1 |
-| dark | none | none | visible | 6.69:1 | 14.11:1 |
+| default | none | none | visible | 5.89:1 | 15.76:1 |
+| interactive | none | none | visible | 5.89:1 | 15.76:1 |
+| hidden-series | none | none | visible | 5.89:1 | 15.76:1 |
+| forced-colors | none | none | visible | 5.89:1 | 13.99:1 |
+| dark | none | none | visible | 1.76:1 | 14.11:1 |
 
 Hidden-series "sources" set the attribute to "sources" and marked 3 plot marks hidden.
 
@@ -729,7 +731,7 @@ Funnel chart
 | 1.3.1 Info and Relationships | A | Supports | 5 header cells set scope. Caption: "Conversion data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 9.25:1 on axis (default). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 4.44:1 (stage fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. |
+| 1.4.11 Non-text Contrast | AA | Partially supports | Marks under 3:1: stage fill 1.76:1 in dark.  The data table presents the same fixture values in text. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to flow::0. End landed on flow::2. Legend buttons: 3, named 3. Tab from the control before the chart landed on button.point-button Leads, 100. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Supports | Axe target-size reported no violations. The measured controls were at least 24 CSS pixels or had 24px spacing. |
@@ -802,11 +804,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 4.44:1 | 9.25:1 |
-| interactive | none | none | visible | 4.44:1 | 9.25:1 |
-| hidden-series | none | none | visible | 4.44:1 | 9.25:1 |
-| forced-colors | none | none | visible | 4.44:1 | 13.99:1 |
-| dark | none | none | visible | 6.69:1 | 9.36:1 |
+| default | none | none | visible | 5.89:1 | 9.25:1 |
+| interactive | none | none | visible | 5.89:1 | 9.25:1 |
+| hidden-series | none | none | visible | 5.89:1 | 9.25:1 |
+| forced-colors | none | none | visible | 5.89:1 | 13.99:1 |
+| dark | none | none | visible | 1.76:1 | 9.36:1 |
 
 Hidden-series "flow" set the attribute to "flow" and marked 6 plot marks hidden.
 
@@ -1000,7 +1002,7 @@ Radar chart
 | 1.3.1 Info and Relationships | A | Supports | 6 header cells set scope. Caption: "Yard profile data table". The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 15 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 4.74:1 (point fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. Axis furniture below 3:1 is not the data mark: grid stroke 1.39:1 in default; spoke stroke 1.39:1 in default; grid stroke 1.43:1 in dark. |
+| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.4:1 (point fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. Axis furniture below 3:1 is not the data mark: grid stroke 1.39:1 in default; spoke stroke 1.39:1 in default; grid stroke 1.43:1 in dark. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to north::0. End landed on south::2. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button North, Fill, 80. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Supports | Axe target-size reported no violations. The measured controls were at least 24 CSS pixels or had 24px spacing. |
@@ -1196,7 +1198,7 @@ Scatter chart
 | 1.3.1 Info and Relationships | A | Supports | 4 header cells set scope. Caption: "Fill versus dwell data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 9.25:1 on axis (default). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 3.9:1 (point fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. Axis furniture below 3:1 is not the data mark: plot-frame stroke 1.39:1 in default; plot-frame stroke 1.43:1 in dark; plot-frame stroke 1.39:1 in forced-colors. |
+| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 4.49:1 (point fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. Axis furniture below 3:1 is not the data mark: plot-frame stroke 1.39:1 in default; grid-line stroke 1.25:1 in default; plot-frame stroke 1.43:1 in dark. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to a::0. End landed on b::1. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button Lane A, P1, x=1, y=4. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Supports | Axe target-size reported no violations. The measured controls were at least 24 CSS pixels or had 24px spacing. |
@@ -1278,11 +1280,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 1.39:1 | 9.25:1 |
-| interactive | none | none | visible | 1.39:1 | 9.25:1 |
-| hidden-series | none | none | visible | 1.39:1 | 9.25:1 |
-| forced-colors | none | none | visible | 1.39:1 | 13.99:1 |
-| dark | none | none | visible | 1.43:1 | 9.36:1 |
+| default | none | none | visible | 1.25:1 | 9.25:1 |
+| interactive | none | none | visible | 1.25:1 | 9.25:1 |
+| hidden-series | none | none | visible | 1.25:1 | 9.25:1 |
+| forced-colors | none | none | visible | 1.25:1 | 13.99:1 |
+| dark | none | none | visible | 1.27:1 | 9.36:1 |
 
 Hidden-series "a" set the attribute to "a" and marked 4 plot marks hidden.
 
@@ -1372,7 +1374,7 @@ Stacked area chart
 | 1.3.1 Info and Relationships | A | Supports | 6 header cells set scope. Caption: "Stacked flow data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.23:1 (series-line stroke, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. Area fills are tints below 3:1 (1.94:1 in default, 1.64:1 in default). The series line stroke in that state meets 3:1 and is the boundary. |
+| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.85:1 (series-line stroke, dark). Lowest focus-indicator ratio 7.65:1 across 9 samples. Area fills are tints below 3:1 (1.94:1 in default, 1.75:1 in default). The series line stroke in that state meets 3:1 and is the boundary. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to incoming::0. End landed on resolved::2. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button Incoming, Mon, 4. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Does not support | Axe target-size flagged undersized controls: interactive: #chart,button[aria-label="Incoming, Mon, 4"]. Point buttons are sized to the mark so the hit target stays aligned with the geometry. Growing every target to 24px would change that alignment, so it is left as a known issue. Keyboard activation and the data table still expose each value. |
@@ -1451,11 +1453,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 1.64:1 | 15.76:1 |
-| interactive | target-size | none | visible | 1.64:1 | 15.76:1 |
-| hidden-series | none | none | visible | 1.64:1 | 15.76:1 |
-| forced-colors | none | none | visible | 1.64:1 | 13.99:1 |
-| dark | none | none | visible | 1.98:1 | 14.11:1 |
+| default | none | none | visible | 1.75:1 | 15.76:1 |
+| interactive | target-size | none | visible | 1.75:1 | 15.76:1 |
+| hidden-series | none | none | visible | 1.75:1 | 15.76:1 |
+| forced-colors | none | none | visible | 1.75:1 | 13.99:1 |
+| dark | none | none | visible | 1.83:1 | 14.11:1 |
 
 Hidden-series "incoming" set the attribute to "incoming" and marked 8 plot marks hidden.
 
@@ -1471,7 +1473,7 @@ Stacked bar chart
 | 1.3.1 Info and Relationships | A | Supports | 6 header cells set scope. Caption: "Stacked throughput data table". The category or value axis is aria-hidden; the table carries those labels. The table is in a disclosure that is open in the fixture. |
 | 1.4.1 Use of Color | A | Partially supports | Marks that share a shape use more than one color. No dash, shape, position, or on-mark text was measured as a second channel for those marks. Legend text, when present, and the data table name each series or value. |
 | 1.4.3 Contrast (Minimum) | AA | Supports | Measured 18 text samples in default, dark, and forced-colors. Lowest ratio 13.99:1 on summary (forced-colors). Small text threshold is 4.5:1. |
-| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.23:1 (bar fill, default). Lowest focus-indicator ratio 7.65:1 across 9 samples. |
+| 1.4.11 Non-text Contrast | AA | Supports | Lowest data mark 5.85:1 (bar fill, dark). Lowest focus-indicator ratio 7.65:1 across 9 samples. |
 | 2.1.1 Keyboard | A | Supports | Arrow, Home, End, Enter, and Space were dispatched on the point buttons. Home returned to incoming::0. End landed on resolved::2. Legend buttons: 2, named 2. Tab from the control before the chart landed on button.point-button Incoming, Mon, 4. |
 | 2.4.7 Focus Visible | AA | Supports | Visible focus indicator on point (interactive, solid 2px); legend (interactive, solid 2px); summary (interactive, solid 2px); legend (default, solid 2px); summary (default, solid 2px); legend (dark, solid 2px); summary (dark, solid 2px); legend (forced-colors, solid 2px); summary (forced-colors, solid 2px). |
 | 2.5.8 Target Size (Minimum) | AA | Does not support | Axe target-size flagged undersized controls: interactive: #chart,button[aria-label="Resolved, Mon, 2"]. Point buttons are sized to the mark so the hit target stays aligned with the geometry. Growing every target to 24px would change that alignment, so it is left as a known issue. Keyboard activation and the data table still expose each value. |
@@ -1550,11 +1552,11 @@ Chromium accessibility tree excerpt for the interactive fixture:
 
 | State | Axe violations | Table needles missing | Focus | Lowest mark | Lowest text |
 | --- | --- | --- | --- | --- | --- |
-| default | none | none | visible | 5.23:1 | 15.76:1 |
-| interactive | target-size | none | visible | 5.23:1 | 15.76:1 |
-| hidden-series | none | none | visible | 5.23:1 | 15.76:1 |
-| forced-colors | none | none | visible | 5.23:1 | 13.99:1 |
-| dark | none | none | visible | 6.69:1 | 14.11:1 |
+| default | none | none | visible | 5.89:1 | 15.76:1 |
+| interactive | target-size | none | visible | 5.89:1 | 15.76:1 |
+| hidden-series | none | none | visible | 5.89:1 | 15.76:1 |
+| forced-colors | none | none | visible | 5.89:1 | 13.99:1 |
+| dark | none | none | visible | 5.85:1 | 14.11:1 |
 
 Hidden-series "incoming" set the attribute to "incoming" and marked 6 plot marks hidden.
 

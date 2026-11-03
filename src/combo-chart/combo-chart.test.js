@@ -45,6 +45,84 @@ describe("rowan-combo-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Count");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("No data");
     expect(chart.shadowRoot.querySelector(".y-axis-secondary").hidden).to.equal(false);
+    expect(chart.shadowRoot.querySelectorAll("circle.line-point")).to.have.length(3);
+    expect(chart.shadowRoot.querySelector(".y-axis").textContent).to.not.equal("");
+  });
+
+  it("draws both scales for throughput mix and keeps nulls off the plot", async () => {
+    const chart = await renderChart({
+      locale: "en-US",
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      series: [
+        {
+          id: "volume",
+          label: "Volume",
+          geometry: "bar",
+          values: [180, 210, null, 240, 198],
+        },
+        {
+          id: "fill",
+          label: "Fill rate",
+          geometry: "line",
+          axis: "secondary",
+          values: [72, 81, 64, 88, 76],
+        },
+      ],
+    });
+    chart.style.inlineSize = "520px";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const root = chart.shadowRoot;
+    expect(root.querySelectorAll("rect.bar")).to.have.length(4);
+    expect(root.querySelectorAll("circle.line-point")).to.have.length(5);
+    expect(root.querySelector("svg.plot > .axis-pointer")).to.equal(null);
+
+    const primary = [...root.querySelectorAll(".y-axis .axis-y-tick")];
+    const secondary = [...root.querySelectorAll(".y-axis-secondary .axis-y-tick")];
+    const categories = [...root.querySelectorAll(".x-axis span")];
+    expect(primary.map((tick) => tick.textContent)).to.deep.equal(["300", "200", "100", "0"]);
+    expect(secondary.map((tick) => tick.textContent)).to.deep.equal(["100", "50", "0"]);
+    expect(categories.map((tick) => tick.textContent)).to.deep.equal([
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+    ]);
+
+    const centerY = (element) => {
+      const box = element.getBoundingClientRect();
+      return box.top + box.height / 2;
+    };
+    const frameTop = root.querySelector("svg.plot").getBoundingClientRect();
+    const zero = root.querySelector(".zero-line").getBoundingClientRect();
+    const zeroY = zero.top + zero.height / 2;
+    expect(Math.abs(centerY(primary.at(-1)) - zeroY)).to.be.below(3);
+    expect(Math.abs(centerY(secondary.at(-1)) - zeroY)).to.be.below(3);
+    expect(centerY(primary[0])).to.be.below(centerY(primary.at(-1)));
+    expect(Math.abs(centerY(secondary[0]) - frameTop.top)).to.be.above(0);
+
+    const lineAt = (value) => {
+      const top = centerY(secondary[0]);
+      const bottom = centerY(secondary.at(-1));
+      return top + ((100 - value) / 100) * (bottom - top);
+    };
+    const friday = root.querySelector('circle.line-point[data-point-key="fill::4"]');
+    const fridayBox = friday.getBoundingClientRect();
+    expect(Math.abs(fridayBox.top + fridayBox.height / 2 - lineAt(76))).to.be.below(3);
+
+    const barFill = root.querySelector("rect.bar").style.fill;
+    const lineStroke = root.querySelector("polyline.line").style.stroke;
+    expect(barFill).to.include("series-1");
+    expect(lineStroke).to.include("series-2");
+    expect(barFill).to.not.equal(lineStroke);
+
+    let previous = -Infinity;
+    for (const tick of categories) {
+      const box = tick.getBoundingClientRect();
+      expect(box.left).to.be.greaterThan(previous);
+      previous = box.right - 1;
+    }
   });
 
   it("builds sorted Pareto series with a cumulative percent line", () => {

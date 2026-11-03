@@ -61,8 +61,8 @@ describe("rowan-scatter-chart", () => {
     const radii = [...chart.shadowRoot.querySelectorAll("circle.point")].map((mark) =>
       Number(mark.getAttribute("r")),
     );
-    expect(radii[0]).to.equal(4);
-    expect(radii[1]).to.equal(18);
+    expect(radii[0]).to.equal(12);
+    expect(radii[1]).to.equal(36);
     expect(radii[1]).to.be.above(radii[0]);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Size");
   });
@@ -83,9 +83,9 @@ describe("rowan-scatter-chart", () => {
     const radii = [...chart.shadowRoot.querySelectorAll("circle.point")].map((mark) =>
       Number(mark.getAttribute("r")),
     );
-    expect(radii[0]).to.equal(5);
-    expect(radii[1]).to.be.at.least(4);
-    expect(radii[1]).to.be.at.most(18);
+    expect(radii[0]).to.equal(16);
+    expect(radii[1]).to.be.at.least(12);
+    expect(radii[1]).to.be.at.most(36);
   });
 
   it("emits rowan-point-activate from an interactive point only", async () => {
@@ -245,5 +245,75 @@ describe("rowan-scatter-chart", () => {
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("NordKategorie 1");
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("Point 1");
     expect(activations).to.deep.equal([]);
+  });
+
+  it("places padded bubbles inside the plot and separates x ticks", async () => {
+    const chart = await renderChart({
+      label: "Dwell vs fill",
+      locale: "en-US",
+      series: [
+        {
+          id: "north",
+          label: "North",
+          points: [
+            { x: 12, y: 64, size: 8, label: "Dock 1" },
+            { x: 18, y: 72, size: 14, label: "Dock 2" },
+          ],
+        },
+      ],
+    });
+    chart.style.inlineSize = "420px";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const root = chart.shadowRoot;
+    const frame = root.querySelector(".plot-frame").getBoundingClientRect();
+    const circles = [...root.querySelectorAll("circle.point")];
+    expect(circles).to.have.length(2);
+    for (const circle of circles) {
+      const box = circle.getBoundingClientRect();
+      expect(box.left).to.be.greaterThan(frame.left + 1);
+      expect(box.right).to.be.lessThan(frame.right - 1);
+      expect(box.top).to.be.greaterThan(frame.top + 1);
+      expect(box.bottom).to.be.lessThan(frame.bottom - 1);
+      expect(box.width).to.be.at.least(6);
+    }
+
+    const radii = circles.map((circle) => Number(circle.getAttribute("r")));
+    expect(radii[0]).to.equal(12);
+    expect(radii[1]).to.equal(36);
+    expect(radii[1] / radii[0]).to.be.above(2);
+
+    const xTicks = [...root.querySelectorAll(".x-axis .axis-x-tick")];
+    expect(xTicks.map((tick) => tick.textContent)).to.deep.equal(["10", "15", "20"]);
+    expect(xTicks.every((tick) => tick.childNodes.length === 1)).to.equal(true);
+    const xAxis = root.querySelector(".x-axis").getBoundingClientRect();
+    expect(xAxis.top).to.be.at.least(frame.bottom - 1);
+    let previousRight = -Infinity;
+    for (const tick of xTicks) {
+      const box = tick.getBoundingClientRect();
+      expect(box.left).to.be.greaterThan(previousRight);
+      previousRight = box.right - 1;
+      expect(box.top).to.be.at.least(frame.bottom - 1);
+    }
+    expect(root.querySelector(".x-axis").textContent).to.not.equal("121518");
+
+    const yTicks = [...root.querySelectorAll(".y-axis .axis-y-tick")];
+    expect(yTicks.map((tick) => tick.textContent)).to.deep.equal(["75", "70", "65", "60"]);
+    const centerY = (element) => {
+      const box = element.getBoundingClientRect();
+      return box.top + box.height / 2;
+    };
+    const topTick = yTicks[0];
+    const bottomTick = yTicks.at(-1);
+    const topValue = Number(topTick.textContent);
+    const bottomValue = Number(bottomTick.textContent);
+    const dock1 = circles[0].getBoundingClientRect();
+    const pointY = dock1.top + dock1.height / 2;
+    const expectedY =
+      centerY(topTick) +
+      ((topValue - 64) / (topValue - bottomValue)) * (centerY(bottomTick) - centerY(topTick));
+    expect(Math.abs(pointY - expectedY)).to.be.below(2);
+    expect(Math.abs(centerY(topTick) - frame.top)).to.be.below(2);
+    expect(Math.abs(centerY(bottomTick) - frame.bottom)).to.be.below(2);
   });
 });

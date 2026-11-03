@@ -66,6 +66,60 @@ export const VibrantPalette = {
   render: (args) => withVibrantChartPalette(createScatter(args)),
 };
 
+export const DwellSample = {
+  name: "Dwell vs fill sample",
+  render: () => {
+    const chart = document.createElement("rowan-scatter-chart");
+    chart.label = "Dwell vs fill";
+    chart.description = "North docks. Bubble size is pallet count.";
+    chart.interactive = true;
+    chart.series = [
+      {
+        id: "north",
+        label: "North",
+        points: [
+          { x: 12, y: 64, size: 8, label: "Dock 1" },
+          { x: 18, y: 72, size: 14, label: "Dock 2" },
+        ],
+      },
+    ];
+    return chart;
+  },
+};
+
+export const BubbleSizing = {
+  name: "Bubble sizing",
+  render: () => {
+    const chart = document.createElement("rowan-scatter-chart");
+    chart.label = "Dwell vs fill";
+    chart.description = "Pallet count sets the radius. Both docks stay inside the axes.";
+    chart.interactive = true;
+    chart.series = [
+      {
+        id: "north",
+        label: "North",
+        points: [
+          { x: 12, y: 64, size: 8, label: "Dock 1" },
+          { x: 15, y: 68, size: 11, label: "Dock 3" },
+          { x: 18, y: 72, size: 14, label: "Dock 2" },
+          { x: 21, y: 61, size: 4, label: "Dock 4" },
+          { x: 9, y: 76, size: 22, label: "Dock 5" },
+        ],
+      },
+      {
+        id: "south",
+        label: "South",
+        points: [
+          { x: 16, y: 70, size: 18, label: "Dock 6" },
+          { x: 13, y: 66, size: 6, label: "Dock 7" },
+          { x: 19, y: 74, size: null, label: "Dock 8" },
+        ],
+      },
+    ];
+    return chart;
+  },
+};
+
 const chartFixtures = coverageStories["rowan-scatter-chart"];
 export const FixtureCatalog = chartFixtures.catalog;
 export const FixtureSparse = chartFixtures.sparse;

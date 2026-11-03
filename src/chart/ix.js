@@ -118,7 +118,11 @@ function mountZoom(host) {
   const apply = (next) => {
     view = next;
     svg.setAttribute("viewBox", `${view.x} ${view.y} ${view.width} ${view.height}`);
-    const changed = view.x !== origin.x || view.y !== origin.y || view.width !== origin.width || view.height !== origin.height;
+    const changed =
+      view.x !== origin.x ||
+      view.y !== origin.y ||
+      view.width !== origin.width ||
+      view.height !== origin.height;
     reset.hidden = !changed;
     emitZoom(host, view);
   };
@@ -129,7 +133,9 @@ function mountZoom(host) {
     const px = Math.min(Math.max((clientX - box.left) / box.width, 0), 1);
     const py = Math.min(Math.max((clientY - box.top) / box.height, 0), 1);
     const width = Math.min(origin.width, Math.max(origin.width / 40, view.width * factor));
-    const height = bothAxes ? Math.min(origin.height, Math.max(origin.height / 40, view.height * factor)) : origin.height;
+    const height = bothAxes
+      ? Math.min(origin.height, Math.max(origin.height / 40, view.height * factor))
+      : origin.height;
     let x = view.x + px * view.width - px * width;
     let y = bothAxes ? view.y + py * view.height - py * height : origin.y;
     x = Math.min(Math.max(x, origin.x), origin.x + origin.width - width);
@@ -138,11 +144,15 @@ function mountZoom(host) {
   };
 
   reset.addEventListener("click", () => apply({ ...origin }));
-  svg.addEventListener("wheel", (event) => {
-    if (!host.hasAttribute("zoom")) return;
-    event.preventDefault();
-    zoomAt(event.clientX, event.clientY, event.deltaY > 0 ? 1.12 : 0.88);
-  }, { passive: false });
+  svg.addEventListener(
+    "wheel",
+    (event) => {
+      if (!host.hasAttribute("zoom")) return;
+      event.preventDefault();
+      zoomAt(event.clientX, event.clientY, event.deltaY > 0 ? 1.12 : 0.88);
+    },
+    { passive: false },
+  );
 
   const pointers = new Map();
   let drag = null;
@@ -239,7 +249,9 @@ function replay(host, event, toggle) {
     const node = event.composedPath?.()[0];
     const legend = host.renderRoot.querySelector(".legend");
     const id =
-      node instanceof Element && legend?.contains(node) ? node.closest("[data-series-id]")?.dataset.seriesId : "";
+      node instanceof Element && legend?.contains(node)
+        ? node.closest("[data-series-id]")?.dataset.seriesId
+        : "";
     if (id) toggle(id);
   }
   if (type === "wheel") {
@@ -253,7 +265,8 @@ function replay(host, event, toggle) {
       }),
     );
   }
-  if (type === "pointermove" || type === "pointerenter" || type === "focusin") enhanceTooltip(host, event);
+  if (type === "pointermove" || type === "pointerenter" || type === "focusin")
+    enhanceTooltip(host, event);
 }
 
 export function run(host, queued = []) {
@@ -276,6 +289,15 @@ export function run(host, queued = []) {
   }
   host.renderRoot.addEventListener("pointermove", (event) => enhanceTooltip(host, event));
   host.renderRoot.addEventListener("focusin", (event) => enhanceTooltip(host, event));
+  const clearPointer = () => {
+    plotOf(host)?.querySelector(":scope > .axis-pointer")?.remove();
+    const group = host.getAttribute("sync-group");
+    if (!group) return;
+    for (const other of document.querySelectorAll(`[sync-group="${group}"]`)) {
+      if (other !== host) other.renderRoot?.querySelector("svg.plot > .axis-pointer")?.remove();
+    }
+  };
+  host.addEventListener("pointerleave", clearPointer);
   mountResize(host);
   mountZoom(host);
   if (!motionOff(host)) host.renderRoot.querySelector(".chart")?.setAttribute("data-animate", "");

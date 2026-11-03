@@ -152,7 +152,14 @@ export class RowanHeatmapChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-heatmap-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -326,7 +333,6 @@ export class RowanHeatmapChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -368,8 +374,8 @@ export class RowanHeatmapChart extends BaseElement {
                 <svg class="plot" part="plot" viewBox="0 0 ${SVG_NAMESPACE_WIDTH} ${SVG_NAMESPACE_HEIGHT}"></svg>
                 <div class="point-controls" dir="ltr"></div>
               </div>
+              <div class="x-axis" aria-hidden="true"></div>
             </div>
-            <div class="x-axis" aria-hidden="true"></div>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
@@ -466,7 +472,7 @@ export class RowanHeatmapChart extends BaseElement {
       this.#activePointKey = "";
     }
     this.#renderPlot(plot);
-    this.#renderAxes(heatmap);
+    this.#renderAxes(heatmap, plot);
     this.#renderPointControls();
     renderMatrixChartTable(this.#summaryTable, {
       caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
@@ -555,23 +561,31 @@ export class RowanHeatmapChart extends BaseElement {
     this.#plot.replaceChildren(fragment);
   }
 
-  #renderAxes(heatmap) {
+  #renderAxes(heatmap, plot) {
+    const rowCount = Math.max(heatmap.rows.length, 1);
+    const columnCount = Math.max(heatmap.columns.length, 1);
+    const cellHeight = plot.height / rowCount;
+    const cellWidth = plot.width / columnCount;
     this.#yAxis.replaceChildren();
-    this.#yAxis.style.setProperty("--row-count", String(Math.max(heatmap.rows.length, 1)));
-    for (const row of heatmap.rows) {
+    heatmap.rows.forEach((row, index) => {
       const item = document.createElement("span");
+      item.className = "axis-y-tick";
       item.textContent = row;
       item.title = row;
+      const y = plot.top + (index + 0.5) * cellHeight;
+      item.style.setProperty("--tick-y", `${(y / SVG_NAMESPACE_HEIGHT) * 100}%`);
       this.#yAxis.append(item);
-    }
+    });
     this.#xAxis.replaceChildren();
-    this.#xAxis.style.setProperty("--column-count", String(Math.max(heatmap.columns.length, 1)));
-    for (const column of heatmap.columns) {
+    heatmap.columns.forEach((column, index) => {
       const item = document.createElement("span");
+      item.className = "axis-x-tick";
       item.textContent = column;
       item.title = column;
+      const x = plot.left + (index + 0.5) * cellWidth;
+      item.style.setProperty("--tick-x", `${(x / SVG_NAMESPACE_WIDTH) * 100}%`);
       this.#xAxis.append(item);
-    }
+    });
   }
 
   #renderPointControls() {
@@ -620,7 +634,7 @@ export class RowanHeatmapChart extends BaseElement {
     }
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);

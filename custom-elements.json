@@ -5521,7 +5521,7 @@
           "type": {
             "text": "array"
           },
-          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-chart-info, var(--rowan-color-accent)))\", \"var(--rowan-chart-series-2, var(--rowan-chart-success, var(--rowan-color-success)))\", \"var(--rowan-chart-series-3, var(--rowan-chart-warning, var(--rowan-color-warning)))\", \"var(--rowan-chart-series-4, var(--rowan-chart-danger, var(--rowan-color-danger)))\", ]"
+          "default": "[ \"var(--rowan-chart-series-1, var(--rowan-trend-chart-series-1, var(--rowan-color-accent)))\", \"var(--rowan-chart-series-2, var(--rowan-trend-chart-series-2, var(--rowan-color-danger)))\", \"var(--rowan-chart-series-3, var(--rowan-trend-chart-series-3, var(--rowan-color-ink-700)))\", \"var(--rowan-chart-series-4, var(--rowan-trend-chart-series-4, var(--rowan-color-forest-500)))\", ]"
         },
         {
           "kind": "function",
@@ -5778,6 +5778,225 @@
           "declaration": {
             "name": "expandDomainWithReferenceLines",
             "module": "src/chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/scale.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "roundTick",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "step",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "niceLinearDomain",
+          "parameters": [
+            {
+              "name": "values",
+              "type": {
+                "text": "number[]"
+              }
+            },
+            {
+              "name": "{ tickTarget = 4, padRatio = 0.08 }",
+              "default": "{}"
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "{ tickTarget?: number, padRatio?: number }"
+              }
+            }
+          ],
+          "return": {
+            "type": {
+              "text": "{ min: number, max: number, ticks: number[] }"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "expandDomainForInset",
+          "parameters": [
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number, ticks: number[] }"
+              }
+            },
+            {
+              "name": "dataMin",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "dataMax",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "insetRatio",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Grow a nice domain until every data extreme is at least `insetRatio` of the\nspan in from the ends. Bubble radius uses this so a mark is not clipped."
+        },
+        {
+          "kind": "function",
+          "name": "zeroBaselineDomain",
+          "parameters": [
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "{ tickTarget = 4 }",
+              "default": "{}"
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "{ tickTarget?: number }"
+              }
+            }
+          ],
+          "description": "Keep a zero baseline and lift the far end onto a 1-2-5 step past the data,\nso a bar or line is not flush with the frame.",
+          "return": {
+            "type": {
+              "text": "{ min: number, max: number, ticks: number[] }"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "scaleCoordinate",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "domain",
+              "type": {
+                "text": "{ min: number, max: number }"
+              }
+            },
+            {
+              "name": "origin",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "span",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "axis",
+              "default": "\"x\"",
+              "optional": true,
+              "type": {
+                "text": "\"x\" | \"y\""
+              }
+            }
+          ],
+          "description": "ViewBox coordinate for a value. `y` puts the domain max at `origin`."
+        },
+        {
+          "kind": "function",
+          "name": "tickPercent",
+          "parameters": [
+            {
+              "name": "coordinate",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "viewSpan",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "roundTick",
+          "declaration": {
+            "name": "roundTick",
+            "module": "src/chart/scale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "niceLinearDomain",
+          "declaration": {
+            "name": "niceLinearDomain",
+            "module": "src/chart/scale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "expandDomainForInset",
+          "declaration": {
+            "name": "expandDomainForInset",
+            "module": "src/chart/scale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zeroBaselineDomain",
+          "declaration": {
+            "name": "zeroBaselineDomain",
+            "module": "src/chart/scale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "scaleCoordinate",
+          "declaration": {
+            "name": "scaleCoordinate",
+            "module": "src/chart/scale.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "tickPercent",
+          "declaration": {
+            "name": "tickPercent",
+            "module": "src/chart/scale.js"
           }
         }
       ]
@@ -23709,6 +23928,52 @@
       "path": "src/scatter-chart/model.js",
       "declarations": [
         {
+          "kind": "variable",
+          "name": "SCATTER_MIN_RADIUS",
+          "type": {
+            "text": "number"
+          },
+          "default": "12",
+          "description": "Smallest bubble in viewBox units. Large enough to stay visible when the plot scales down."
+        },
+        {
+          "kind": "variable",
+          "name": "SCATTER_MAX_RADIUS",
+          "type": {
+            "text": "number"
+          },
+          "default": "36",
+          "description": "Largest bubble in viewBox units."
+        },
+        {
+          "kind": "variable",
+          "name": "SCATTER_POINT_RADIUS",
+          "type": {
+            "text": "number"
+          },
+          "default": "16",
+          "description": "Radius when a point has no size encoding."
+        },
+        {
+          "kind": "function",
+          "name": "scatterRadius",
+          "parameters": [
+            {
+              "name": "size",
+              "type": {
+                "text": "number | null"
+              }
+            },
+            {
+              "name": "sizeDomain",
+              "type": {
+                "text": "{ min: number, max: number } | null"
+              }
+            }
+          ],
+          "description": "Map a size onto the bubble radius range. The ends of the size extent are\nthe min and max radius; a missing size stays a plain scatter mark."
+        },
+        {
           "kind": "function",
           "name": "cloneScatterSeriesInput",
           "parameters": [
@@ -23771,12 +24036,55 @@
           "name": "scatterDomains",
           "parameters": [
             {
-              "name": "series"
+              "name": "series",
+              "type": {
+                "text": "Array<{ points: Array<{ x: number | null, y: number | null, size: number | null }> }>"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{ xPadRatio?: number, yPadRatio?: number, xInsetRatio?: number, yInsetRatio?: number }"
+              }
             }
           ]
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "SCATTER_MIN_RADIUS",
+          "declaration": {
+            "name": "SCATTER_MIN_RADIUS",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SCATTER_MAX_RADIUS",
+          "declaration": {
+            "name": "SCATTER_MAX_RADIUS",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SCATTER_POINT_RADIUS",
+          "declaration": {
+            "name": "SCATTER_POINT_RADIUS",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "scatterRadius",
+          "declaration": {
+            "name": "scatterRadius",
+            "module": "src/scatter-chart/model.js"
+          }
+        },
         {
           "kind": "js",
           "name": "cloneScatterSeriesInput",

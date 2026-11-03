@@ -7,7 +7,7 @@ import { monthlyRevenue, salesAndMargin } from "../../stories/fixtures/chart-dat
 
 function createCombo({
   label = "Throughput mix",
-  description = "Bars on the left scale, line on the right.",
+  description = "Volume on the left scale, fill rate on the right.",
   interactive = true,
 } = {}) {
   const chart = document.createElement("rowan-combo-chart");
@@ -20,14 +20,14 @@ function createCombo({
       id: "volume",
       label: "Volume",
       geometry: "bar",
-      values: [18, 24, 12, 20, 16],
+      values: [180, 210, 164, 240, 198],
     },
     {
       id: "fill",
-      label: "Fill %",
+      label: "Fill rate",
       geometry: "line",
       axis: "secondary",
-      values: [72, 80, 64, 88, 76],
+      values: [72, 81, 64, 88, 76],
     },
   ];
   return chart;
@@ -39,7 +39,7 @@ export default {
   tags: ["autodocs"],
   args: {
     label: "Throughput mix",
-    description: "Bars on the left scale, line on the right.",
+    description: "Volume on the left scale, fill rate on the right.",
     interactive: true,
   },
   argTypes: {
@@ -215,9 +215,7 @@ export const Pareto = {
     });
     chart.labels = data.labels;
     chart.series = data.series;
-    chart.referenceLines = [
-      { value: 80, label: "80%", tone: "warning", axis: "secondary" },
-    ];
+    chart.referenceLines = [{ value: 80, label: "80%", tone: "warning", axis: "secondary" }];
     return chart;
   },
 };

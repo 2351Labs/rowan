@@ -1,8 +1,6 @@
 import { BaseElement } from "../lib/base-element.js";
 import { define } from "../lib/define.js";
-import {
-  emit,
-} from "../lib/events.js";
+import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
@@ -147,7 +145,14 @@ export class RowanAreaChart extends BaseElement {
   static shadowRootOptions = { mode: "open", delegatesFocus: true };
   static styles = componentStyles;
   static componentTokenPrefixes = ["--rowan-area-chart-"];
-  static observedAttributes = ["label", "description", "interactive", "locale", "hidden-series", "no-motion"];
+  static observedAttributes = [
+    "label",
+    "description",
+    "interactive",
+    "locale",
+    "hidden-series",
+    "no-motion",
+  ];
   static upgradeProperties = [
     "label",
     "description",
@@ -327,7 +332,6 @@ export class RowanAreaChart extends BaseElement {
     this.requestRender();
   }
 
-
   /** @returns {string[]} */
   get hiddenSeries() {
     return readHiddenSeries(this);
@@ -353,8 +357,6 @@ export class RowanAreaChart extends BaseElement {
   set noMotion(value) {
     this.reflectBoolean("no-motion", Boolean(value));
   }
-
-
 
   render() {
     if (!this.#control) {
@@ -603,12 +605,15 @@ export class RowanAreaChart extends BaseElement {
 
   #renderAxes(labels, domain) {
     const yAxis = document.createDocumentFragment();
+    const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
     for (let tick = 0; tick <= 4; tick += 1) {
       const value = domain.max - (tick / 4) * (domain.max - domain.min);
       const label = document.createElement("span");
       label.className = "axis-y-label";
       label.textContent = this.#formatValue(value, { tick: true });
       label.title = label.textContent;
+      const y = PLOT_TOP + (tick / 4) * plotHeight;
+      label.style.setProperty("--tick-y", `${(y / VIEWBOX_HEIGHT) * 100}%`);
       yAxis.append(label);
     }
     this.#yAxis.replaceChildren(yAxis);
@@ -753,7 +758,7 @@ export class RowanAreaChart extends BaseElement {
     if (entry) this.#setActivePoint(entry);
   }
 
-#handlePointKeydown(event) {
+  #handlePointKeydown(event) {
     navigatePointKey(event, visibleEntries(this, this.#entries), (entry, activate) => {
       if (activate) {
         this.#activatePoint(entry);
