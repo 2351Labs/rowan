@@ -1,23 +1,23 @@
 # Rowan
 
-> Rowan 0.23.1 is a vanilla Web Components design system: custom elements, Shadow DOM, and CSS tokens, with no framework runtime. The host owns data.
+> Rowan 0.23.2 is a vanilla Web Components design system: custom elements, Shadow DOM, and CSS tokens, with no framework runtime. The host owns data.
 
 Documentation: https://2351labs.github.io/rowan/
 Compact context: https://2351labs.github.io/rowan/llms.txt
 Full context: https://2351labs.github.io/rowan/llms-full.txt
-MCP server: `npx -y @rowan-ui/mcp` (`@rowan-ui/mcp@0.23.1`)
+MCP server: `npx -y @rowan-ui/mcp` (`@rowan-ui/mcp@0.23.2`)
 
 ## Install
 
 ```bash
-npm install @rowan-ui/core@0.23.1
+npm install @rowan-ui/core@0.23.2
 ```
 
 `@rowan-ui/icons` is the optional icon set. `@rowan-ui/maplibre` is the optional MapLibre map.
 
 ```bash
-npm install @rowan-ui/icons@0.23.1
-npm install @rowan-ui/maplibre@0.23.1
+npm install @rowan-ui/icons@0.23.2
+npm install @rowan-ui/maplibre@0.23.2
 ```
 
 The host keeps rows, locale, and routing. Components do not request them.

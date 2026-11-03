@@ -1,14 +1,20 @@
 # Changelog
 
-User-visible changes to `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre`.
+User-visible changes to `@rowan-ui/core`, `@rowan-ui/icons`, `@rowan-ui/maplibre`, and `@rowan-ui/mcp`.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## 0.23.2 - 2026-11-03
+
 ### Added
 
 - AI context for coding tools. `llms.txt` and `llms-full.txt` are generated from the Custom Elements Manifest, token CSS, and docs/story excerpts. They are served at the documentation site root and included in `@rowan-ui/core`. `@rowan-ui/mcp` is a stdio MCP server (`list_components`, `get_component`, `search_components`, `get_example`, `get_theming`) whose catalog is bundled in the package. The documentation page "Use Rowan with AI tools" has Cursor, Claude Code, and VS Code setup.
+
+### Changed
+
+- Getting-started docs pin `@rowan-ui/core@0.23.2`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
 
 ## 0.23.1 - 2026-11-03
 
