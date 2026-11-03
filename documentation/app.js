@@ -1282,7 +1282,7 @@ const DOC_PAGES = [
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
         </rowan-alert>
         <p>The <a href="#starters">admin template and the Vite, React, and Vue dashboards</a> open in StackBlitz. Each one installs <code>@rowan-ui/core</code> from npm.</p>
-        <p>Component CSS is a string in the JavaScript module and is applied with <code>adoptedStyleSheets</code>. Vite, esbuild, webpack, and Rspack do not need <code>optimizeDeps.exclude</code>. <code>@rowan-ui/core@0.22.0</code> still uses a shadow stylesheet URL, so the starters keep that exclude until 0.23.0 is on npm. Constructable stylesheets are not <code>&lt;style&gt;</code> elements: current Chromium applies them under <code>style-src 'self'</code> and <code>style-src 'none'</code>. Browsers without <code>adoptedStyleSheets</code> fall back to a shadow style element, which needs <code>style-src 'unsafe-inline'</code>.</p>
+        <p>Component CSS is a string in the JavaScript module and is applied with <code>adoptedStyleSheets</code>. Vite, esbuild, webpack, and Rspack do not need <code>optimizeDeps.exclude</code>. The starters and the admin template install <code>@rowan-ui/*@^0.23.0</code> and use that default config. Constructable stylesheets are not <code>&lt;style&gt;</code> elements: current Chromium applies them under <code>style-src 'self'</code> and <code>style-src 'none'</code>. Browsers without <code>adoptedStyleSheets</code> fall back to a shadow style element, which needs <code>style-src 'unsafe-inline'</code>.</p>
       </section>
 
       <section class="doc-section" data-doc-section id="start-first-screen">

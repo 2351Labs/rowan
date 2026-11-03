@@ -12,6 +12,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Chart accessibility conformance report for every Rowan chart. The documentation page and `docs/CHART_ACCESSIBILITY.md` are generated from the chart audit (`scripts/audit-chart-a11y.mjs`). Each chart is scored Supports, Partially supports, or Does not support for the measured WCAG 2.2 A and AA criteria, with keyboard tables and screen-reader notes taken from the DOM. The CI check fails when the report drifts from a fresh run.
 - `createDashboard()` in `@rowan-ui/core/dashboard`: one filter tree for a filter builder, field controls, chart point/slice/bar clicks, the query string (back and forward), active-filter chips, and `rowan-table` in client or `data-mode="server"`. Click a point again to clear it. `rowan-dashboard-change` and `rowan-dashboard-clear` fire on the root. React imports the same function from `@rowan-ui/core/react/dashboard`. The module is its own entry, so table and chart bundles stay the same.
 
+### Changed
+
+- The Vite, React, and Vue starters and the admin template depend on `@rowan-ui/*@^0.23.0` and no longer set `optimizeDeps.exclude`. The Harbor donut is interactive. The orders toolbar shows its column picker when columns are assigned.
+
 ### Fixed
 
 - Chart focus indicators. The shared chart rule used `--rowan-focus-ring` (a box-shadow) as an outline color, so the outline was dropped wherever tokens were loaded. Trend and area charts also set `outline: none` and a 32% opacity ring on point and summary focus. Focus now uses a solid accent outline, and `Highlight` under `forced-colors`.

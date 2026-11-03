@@ -4,15 +4,15 @@
  * them against the npm registry, which is what StackBlitz does.
  *
  * Inside this repo, npm workspaces link @rowan-ui/* to the local sources, and
- * Vite does not prebundle those links. A copied folder resolves the published
- * packages. Vite then prebundles them and rewrites
- * `new URL("./component.css", import.meta.url)` to a CSS file it never emits,
- * so shadow styles 404 and the page renders unstyled. Each app excludes those
- * packages from optimizeDeps. This script fails if that regresses.
+ * Vite does not prebundle those links. A copied folder installs published
+ * `@rowan-ui/*@^0.23.0` with Vite's default config (no optimizeDeps.exclude).
+ * Component CSS is embedded in the module, so the prebundle still paints.
+ * This script fails if a config excludes those packages, if the registry
+ * install is older than 0.23.0, or if dev or preview renders unstyled.
  *
  * It also packs this repo and installs those tarballs into a Vite app with
- * the default config (no optimizeDeps.exclude). Embedded component CSS must
- * style that app in dev and in the production preview.
+ * the default config. Embedded component CSS must style that app in dev and
+ * in the production preview.
  */
 
 import { spawn } from "node:child_process";
@@ -108,9 +108,22 @@ function copyProject(source, dest) {
   });
 }
 
+function atLeast(version, minimum) {
+  const parse = (value) => value.split(".").map((part) => Number.parseInt(part, 10) || 0);
+  const left = parse(version);
+  const right = parse(minimum);
+  for (let index = 0; index < 3; index += 1) {
+    if (left[index] > right[index]) return true;
+    if (left[index] < right[index]) return false;
+  }
+  return true;
+}
+
 function assertRegistryInstall(dir) {
+  const app = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+  const names = Object.keys(app.dependencies || {}).filter((name) => name.startsWith("@rowan-ui/"));
   const versions = {};
-  for (const name of ["@rowan-ui/core", "@rowan-ui/icons"]) {
+  for (const name of names) {
     const manifest = join(dir, "node_modules", name, "package.json");
     if (!existsSync(manifest)) {
       throw new Error(`${dir} did not install ${name}`);
@@ -119,7 +132,11 @@ function assertRegistryInstall(dir) {
     if (resolved === repoRoot || resolved.startsWith(`${repoRoot}${sep}`)) {
       throw new Error(`${name} resolved to the workspace at ${resolved}`);
     }
-    versions[name] = JSON.parse(readFileSync(resolved, "utf8")).version;
+    const version = JSON.parse(readFileSync(resolved, "utf8")).version;
+    if (!atLeast(version, "0.23.0")) {
+      throw new Error(`${dir} resolved ${name}@${version}; expected >= 0.23.0`);
+    }
+    versions[name] = version;
   }
   return versions;
 }
@@ -445,6 +462,10 @@ async function main() {
     );
 
     for (const project of installed) {
+      const config = readFileSync(join(project.dir, "vite.config.js"), "utf8");
+      if (config.includes("optimizeDeps")) {
+        throw new Error(`${project.name} vite.config.js must use Vite's default prebundle`);
+      }
       const versions = assertRegistryInstall(project.dir);
       console.log(`${project.name} resolved ${JSON.stringify(versions)}`);
     }
