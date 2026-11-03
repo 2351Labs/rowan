@@ -147,11 +147,11 @@ const bars = el("rowan-stacked-bar-chart", {
   interactive: true,
   locale: "en-US",
 });
-// Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
 const donut = el("rowan-donut-chart", {
   className: "chart-donut",
   label: DONUT.label,
   description: DONUT.description,
+  interactive: true,
   locale: "en-US",
 });
 const side = el("rowan-card", { className: "chart-side" });
@@ -305,9 +305,6 @@ async function bindDashboard() {
   table.columns = COLUMNS;
   table.rows = ORDERS;
   table.page = firstPage();
-  // Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
-  toolbar.columnPicker = false;
-  toolbar.columnPicker = true;
 }
 
 function paintOrders() {

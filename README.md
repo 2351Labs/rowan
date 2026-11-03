@@ -71,9 +71,7 @@ table.config = {
 
 ### Bundlers
 
-Each component's CSS is a string inside its JavaScript module. The element adopts that string as a constructable stylesheet (`adoptedStyleSheets`). Vite, esbuild, webpack, and Rspack can prebundle the module. There is no `new URL("./component.css", import.meta.url)` for the bundler to rewrite, and you do not need `optimizeDeps.exclude`.
-
-`@rowan-ui/core@0.22.0` still points a shadow `<link>` at that URL. The admin template and starters keep `optimizeDeps.exclude` so StackBlitz, which installs 0.22.0 until 0.23.0 is on npm, stays styled. Remove the exclude after you depend on 0.23.0.
+Each component's CSS is a string inside its JavaScript module. The element adopts that string as a constructable stylesheet (`adoptedStyleSheets`). Vite, esbuild, webpack, and Rspack can prebundle the module. There is no `new URL("./component.css", import.meta.url)` for the bundler to rewrite, and you do not need `optimizeDeps.exclude`. The admin template and starters install `@rowan-ui/*@^0.23.0` and use that default Vite config.
 
 The `.css` files remain in the package next to each component if you want to read or import them yourself. Chart stylesheets inline the shared hover and point-control rules, so those files have no runtime `@import`.
 

@@ -17,4 +17,4 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5175/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-vite` uses the local workspace copy of `@rowan-ui/core`. StackBlitz installs published `@rowan-ui/core@0.22.0`, which still loads CSS from a stylesheet URL. `vite.config.js` keeps the packages out of Vite's prebundle so that release stays styled. Remove the exclude after a release that embeds component CSS in the JavaScript module.
+Open http://127.0.0.1:5175/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-vite` uses the local workspace copy of `@rowan-ui/core`. StackBlitz installs published `@rowan-ui/core@^0.23.0`. Component CSS is embedded in the JavaScript module, so Vite can prebundle it.

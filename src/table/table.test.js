@@ -1532,7 +1532,11 @@ describe("rowan-table", () => {
     await waitForStyles(table);
 
     const viewport = table.shadowRoot.querySelector(".table-scroll");
-    viewport.scrollTop = 300;
+    // WebKit drops scrollTop until the virtual viewport has a frame of layout.
+    await waitFor(() => {
+      viewport.scrollTop = 300;
+      return viewport.scrollTop > 0;
+    });
     viewport.dispatchEvent(new Event("scroll"));
     await nextMicrotask();
     await nextMicrotask();

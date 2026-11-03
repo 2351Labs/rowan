@@ -4,7 +4,7 @@ Lumen is a sample wholesale operations console built with Rowan custom elements.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/templates/admin)
 
-StackBlitz installs the published `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre` packages and runs `npm run dev`. The dependency range is `^0.22.0 || ^0.23.0`, which resolves to published 0.22.0 until 0.23.0 is on npm. That release still loads component CSS from `new URL("./component.css", import.meta.url)`, which Vite's prebundle rewrites to a missing file. `vite.config.js` keeps those packages out of the prebundle so 0.22.0 stays styled. The commands below, run from a checkout of this repository, use the local workspace copies.
+StackBlitz installs the published `@rowan-ui/core`, `@rowan-ui/icons`, and `@rowan-ui/maplibre` packages (`^0.23.0`) and runs `npm run dev`. Component CSS is embedded in the JavaScript module, so Vite can prebundle it. The commands below, run from a checkout of this repository, use the local workspace copies.
 
 The shell uses `rowan-app-layout`, `rowan-side-nav`, and a command palette (`Ctrl+K` or `⌘K`). Light and dark themes swap Rowan token sheets.
 
@@ -95,9 +95,9 @@ Copying the template out of this repo: point the dependencies at published versi
 ```json
 {
   "dependencies": {
-    "@rowan-ui/core": "^0.22.0 || ^0.23.0",
-    "@rowan-ui/icons": "^0.22.0 || ^0.23.0",
-    "@rowan-ui/maplibre": "^0.22.0 || ^0.23.0",
+    "@rowan-ui/core": "^0.23.0",
+    "@rowan-ui/icons": "^0.23.0",
+    "@rowan-ui/maplibre": "^0.23.0",
     "maplibre-gl": "^5.24.0"
   },
   "devDependencies": {

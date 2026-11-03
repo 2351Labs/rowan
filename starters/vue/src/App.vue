@@ -117,12 +117,6 @@ onMounted(async () => {
   gaugeEl.value.target = FULFILLMENT.target;
   gaugeEl.value.ranges = FULFILLMENT.ranges;
   tableEl.value.columns = COLUMNS;
-  // Workaround for @rowan-ui/core <= 0.22.0; remove after the next release.
-  const toolbar = document.querySelector("rowan-table-toolbar");
-  if (toolbar) {
-    toolbar.columnPicker = false;
-    toolbar.columnPicker = true;
-  }
   paintOrders();
   paintTheme(theme.value);
   markReady(document);
@@ -269,12 +263,12 @@ function onNav(event) {
           interactive
           locale="en-US"
         ></rowan-stacked-bar-chart>
-        <!-- Workaround for @rowan-ui/core <= 0.22.0; remove after the next release -->
         <rowan-donut-chart
           ref="donutEl"
           class="chart-donut"
           :label="DONUT.label"
           :description="DONUT.description"
+          interactive
           locale="en-US"
         ></rowan-donut-chart>
         <rowan-card class="chart-side">
