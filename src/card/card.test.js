@@ -1,17 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "./card.js";
 
 const nextMicrotask = () => Promise.resolve();
-
-async function waitForStyles(element) {
-  const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet || stylesheet.sheet) return;
-
-  await new Promise((resolve, reject) => {
-    stylesheet.addEventListener("load", resolve, { once: true });
-    stylesheet.addEventListener("error", reject, { once: true });
-  });
-}
 
 async function loadStylesheet(path) {
   const stylesheet = document.createElement("link");

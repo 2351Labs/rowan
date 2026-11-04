@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./dropdown.js";
 import "../icon-button/icon-button.js";
 import "../dialog/dialog.js";
@@ -15,23 +16,7 @@ const settle = async () => {
 };
 
 async function waitForDropdownStyles(dropdown) {
-  const stylesheet = dropdown.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
-    await nextFrame();
-  }
-
-  throw new Error("Dropdown styles did not apply within 60 animation frames.");
+  await stylesApplied(dropdown);
 }
 
 async function waitForClampedPanel(panel, trigger) {
@@ -194,6 +179,7 @@ describe("rowan-dropdown", () => {
     const trigger = dropdown.shadowRoot.querySelector("rowan-button");
     trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
     await settle();
+    await waitForDropdownStyles(dropdown);
 
     const panel = dropdown.shadowRoot.querySelector(".panel");
     const panelRect = panel.getBoundingClientRect();
@@ -340,6 +326,7 @@ describe("rowan-dropdown", () => {
     const trigger = dropdown.shadowRoot.querySelector("rowan-button");
     trigger.dispatchEvent(new CustomEvent("rowan-click", { bubbles: true, composed: true }));
     await settle();
+    await waitForDropdownStyles(dropdown);
 
     const panel = dropdown.shadowRoot.querySelector(".panel");
     const panelRect = panel.getBoundingClientRect();

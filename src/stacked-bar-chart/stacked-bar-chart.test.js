@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import {
   assertPointControlAlignment,
   assertPointControlKeyboardNavigation,
@@ -204,6 +205,7 @@ describe("rowan-stacked-bar-chart", () => {
     chart.referenceLines = [{ value: 5, label: "Capacity", tone: "warning" }];
     await nextMicrotask();
     await nextMicrotask();
+    await stylesApplied(chart);
 
     expect(
       getComputedStyle(chart.shadowRoot.querySelector(".point-controls")).pointerEvents,

@@ -16,52 +16,15 @@ import "../switch/switch.js";
 import "../table-toolbar/table-toolbar.js";
 import "../filter-builder/filter-builder.js";
 import "../column-sparkline/column-sparkline.js";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import { componentTokenCssFor } from "./sheet.js";
 
 const nextTask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
-// Waits for the shadow tree to exist and for style recalc to land, not just for the link.
-function hasAppliedStyles(element) {
-  const root = element.shadowRoot;
-  if (!root) return false;
-  const link = root.querySelector('link[rel="stylesheet"]');
-  if (link?.sheet?.cssRules?.length) return true;
-  return [...(root.adoptedStyleSheets || [])].some((sheet) => {
-    try {
-      return sheet.cssRules.length > 0;
-    } catch {
-      return false;
-    }
-  });
-}
-
-async function waitForStyles(element) {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
-    const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
-
-    if (hasAppliedStyles(element) || stylesheet?.sheet) {
-      await nextFrame();
-      return;
-    }
-
-    if (stylesheet) {
-      await new Promise((resolve, reject) => {
-        stylesheet.addEventListener("load", resolve, { once: true });
-        stylesheet.addEventListener("error", reject, { once: true });
-      });
-      await nextFrame();
-      return;
-    }
-
-    await nextFrame();
-  }
-
-  throw new Error(`stylesheet never loaded for <${element.localName}>`);
-}
-
 // Waits for the value the assertion reads, rather than for a proxy like the link's sheet.
 async function paintedFill(element, selector) {
+  await waitForStyles(element);
   for (let attempt = 0; attempt < 120; attempt += 1) {
     const { fill } = getComputedStyle(element.shadowRoot.querySelector(selector));
 
@@ -76,6 +39,7 @@ async function paintedFill(element, selector) {
 }
 
 async function paintedBackground(element, selector) {
+  await waitForStyles(element);
   for (let attempt = 0; attempt < 120; attempt += 1) {
     const { backgroundColor } = getComputedStyle(element.shadowRoot.querySelector(selector));
 

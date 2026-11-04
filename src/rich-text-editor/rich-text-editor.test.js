@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./rich-text-editor.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -285,6 +286,7 @@ describe("rowan-rich-text-editor", () => {
     expect(popover.getAttribute("role")).to.equal("dialog");
     expect(popover.getAttribute("aria-label")).to.equal("Link URL");
     expect(editor.querySelector("style[data-rowan-rich-text-surface]")).to.not.equal(null);
+    await stylesApplied(editor);
     expect(getComputedStyle(surfaceFor(editor).querySelector("h2")).fontWeight).to.equal("600");
     expect(getComputedStyle(surfaceFor(editor).querySelector("a")).color).to.equal(
       "rgb(29, 67, 47)",

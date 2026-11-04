@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./tooltip.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -149,6 +150,7 @@ describe("rowan-tooltip", () => {
 
     tooltip.open = true;
     await settle();
+    await stylesApplied(tooltip);
 
     const bubble = tooltip.shadowRoot.querySelector(".tooltip");
     const bubbleRect = bubble.getBoundingClientRect();

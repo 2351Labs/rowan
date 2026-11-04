@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "../bulk-actions-bar/bulk-actions-bar.js";
 import "../checkbox/checkbox.js";
 import "../filter-builder/filter-builder.js";
@@ -9,26 +10,6 @@ import "./table-toolbar.js";
 
 const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
-
-async function waitForStyles(element) {
-  const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
-    await nextFrame();
-  }
-
-  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
-}
 
 async function settle() {
   await nextMicrotask();
@@ -162,6 +143,7 @@ describe("rowan-table-toolbar", () => {
     await settle();
 
     expect(toolbar.selected).to.deep.equal([]);
+    await waitForStyles(toolbar);
     const selection = toolbar.shadowRoot.querySelector('[part="selection"]');
     expect(selection.hidden).to.equal(true);
     expect(getComputedStyle(selection).display).to.equal("none");

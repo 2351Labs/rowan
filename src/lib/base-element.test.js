@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import { BaseElement } from "./base-element.js";
 
 const nextTask = () => new Promise((resolve) => setTimeout(resolve));
@@ -141,12 +142,14 @@ describe("BaseElement", () => {
     const element = document.createElement(STATIC_STYLE_TEST_TAG);
     document.body.append(element);
     await nextTask();
+    await stylesApplied(element);
 
     expect(
       getComputedStyle(element).getPropertyValue("--rowan-base-element-test-color").trim(),
     ).to.equal("rebeccapurple");
 
     element.setComponentStyles(":host { --rowan-base-element-test-color: seagreen; }");
+    await stylesApplied(element);
 
     expect(
       getComputedStyle(element).getPropertyValue("--rowan-base-element-test-color").trim(),
@@ -174,6 +177,7 @@ describe("BaseElement", () => {
       const element = document.createElement(STYLE_FALLBACK_TEST_TAG);
       document.body.append(element);
       await nextTask();
+      await stylesApplied(element);
 
       expect(
         Array.from(element.shadowRoot.querySelectorAll("style")).some((style) =>
@@ -185,6 +189,7 @@ describe("BaseElement", () => {
       ).to.equal("rebeccapurple");
 
       element.setComponentStyles(":host { --rowan-base-element-test-color: seagreen; }");
+      await stylesApplied(element);
 
       expect(
         getComputedStyle(element).getPropertyValue("--rowan-base-element-test-color").trim(),
@@ -216,6 +221,8 @@ describe("BaseElement", () => {
     hostElement.style.setProperty("--rowan-button-bg", "rgb(40, 80, 60)");
     document.body.append(wrapper, hostElement);
     await nextTask();
+    await waitForTokenColor(wrappedElement, "rgb(30, 60, 45)");
+    await waitForTokenColor(hostElement, "rgb(40, 80, 60)");
 
     const standaloneElement = document.createElement(TOKEN_FALLBACK_TEST_TAG);
     document.body.append(standaloneElement);

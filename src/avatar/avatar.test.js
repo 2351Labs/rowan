@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./avatar.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -48,6 +49,7 @@ describe("rowan-avatar", () => {
     el.alt = "Portrait of Ada Lovelace";
     el.size = "lg";
     await nextMicrotask();
+    await stylesApplied(el);
 
     expect(image.hidden).to.equal(true);
     expect(initials.hidden).to.equal(false);

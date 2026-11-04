@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./app-layout.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -25,11 +26,7 @@ describe("rowan-app-layout", () => {
     layout.append(header, navigation, content);
     document.body.append(layout);
     await nextMicrotask();
-    const stylesheet = layout.shadowRoot.querySelector('link[rel="stylesheet"]');
-    if (stylesheet && !stylesheet.sheet) {
-      await new Promise((resolve) => stylesheet.addEventListener("load", resolve, { once: true }));
-    }
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await stylesApplied(layout);
 
     const hostBox = layout.getBoundingClientRect();
     const navBox = layout.shadowRoot.querySelector(".navigation").getBoundingClientRect();
@@ -122,6 +119,7 @@ describe("rowan-app-layout", () => {
       const layout = document.createElement("rowan-app-layout");
       document.body.append(layout);
       await nextMicrotask();
+      await stylesApplied(layout);
 
       const navigation = layout.shadowRoot.querySelector(".navigation");
       const backdrop = layout.shadowRoot.querySelector(".backdrop");

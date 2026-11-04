@@ -1,30 +1,12 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./column-sparkline.js";
 
 const nextMicrotask = () => Promise.resolve();
 
 async function waitForColumnStyles(chart) {
-  const stylesheet = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
-  const column = chart.shadowRoot.querySelector("rect.column");
-  if (!stylesheet || !column) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules() && getComputedStyle(column).fillOpacity !== "") {
-      return;
-    }
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
-
-  throw new Error("Column sparkline styles did not apply within 60 animation frames.");
+  await stylesApplied(chart);
 }
 
 async function renderChart(options = {}) {
@@ -77,6 +59,7 @@ describe("rowan-column-sparkline", () => {
     expect(columns[0].dataset.index).to.equal("0");
     expect(columns[1].dataset.index).to.equal("2");
     expect(Number(columns[1].getAttribute("x"))).to.be.above(Number(columns[0].getAttribute("x")));
+    await waitForColumnStyles(chart);
     expect(getComputedStyle(columns[0]).animationName).to.equal("none");
   });
 
@@ -169,6 +152,7 @@ describe("rowan-column-sparkline", () => {
       labels: ["Mon", "Wed"],
     });
     chart.style.inlineSize = "200px";
+    await waitForColumnStyles(chart);
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
@@ -197,6 +181,7 @@ describe("rowan-column-sparkline", () => {
       labels: ["Mon", "Wed"],
     });
     chart.style.inlineSize = "200px";
+    await waitForColumnStyles(chart);
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
@@ -228,6 +213,7 @@ describe("rowan-column-sparkline", () => {
       labels: ["Mon", "Wed"],
     });
     chart.style.inlineSize = "200px";
+    await waitForColumnStyles(chart);
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
     const showHover = () => {
@@ -341,6 +327,7 @@ describe("rowan-column-sparkline", () => {
       belowTone: "info",
     });
     chart.style.inlineSize = "200px";
+    await waitForColumnStyles(chart);
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");

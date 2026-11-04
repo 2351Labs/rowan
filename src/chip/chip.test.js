@@ -1,24 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "./chip.js";
 
 const nextMicrotask = () => Promise.resolve();
-
-async function waitForStyles(element) {
-  const styleLink = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (styleLink && !styleLink.sheet) {
-    await new Promise((resolve, reject) => {
-      styleLink.addEventListener("load", resolve, { once: true });
-      styleLink.addEventListener("error", reject, { once: true });
-    });
-    return;
-  }
-
-  // Adopted styles are already on the shadow root, but WebKit does not
-  // include them in computed style until the next frame.
-  if (!styleLink) {
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
-}
 
 async function loadStylesheet(path) {
   const stylesheet = document.createElement("link");

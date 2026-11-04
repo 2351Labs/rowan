@@ -37,6 +37,9 @@ function enhanceTooltip(host, event) {
   const bubble = bubbleOf(host);
   if (!bubble || bubble.hidden) return;
   clampBubble(bubble);
+  // A reference-line hover already wrote its own label. Nearest-point text
+  // would replace "Capacity" with the stacked series under the pointer.
+  if (event.target instanceof Element && event.target.closest("[data-ref-line]")) return;
   if (typeof host.tooltipFormatter === "function") return;
   if (host.querySelector("[slot='tooltip']")?.textContent?.trim()) return;
   const svg = plotOf(host);

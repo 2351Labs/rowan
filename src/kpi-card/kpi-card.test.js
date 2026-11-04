@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "../gauge-chart/gauge-chart.js";
 import "./kpi-card.js";
 
@@ -7,23 +8,7 @@ const nextMicrotask = () => Promise.resolve();
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 async function waitForCardStyles(card) {
-  const stylesheet = card.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
-    await nextFrame();
-  }
-
-  throw new Error("KPI card styles did not apply within 60 animation frames.");
+  await stylesApplied(card);
 }
 
 async function renderCard(options = {}) {
@@ -264,7 +249,9 @@ describe("rowan-kpi-card", () => {
     await waitForCardStyles(compact);
     for (const card of Object.values(cards)) {
       await waitForCardStyles(card);
+      await stylesApplied(card.querySelector("rowan-gauge-chart"));
     }
+    await stylesApplied(compact.querySelector("rowan-gauge-chart"));
     await nextFrame();
     await nextFrame();
 

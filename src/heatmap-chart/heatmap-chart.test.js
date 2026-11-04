@@ -4,6 +4,7 @@ import {
   assertPointControlKeyboardNavigation,
   assertPointControlLifecycle,
 } from "../../test/chart-interactions.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./heatmap-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -21,6 +22,7 @@ async function renderChart(options = {}) {
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
+  await stylesApplied(chart);
   return chart;
 }
 

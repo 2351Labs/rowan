@@ -1,30 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "./skeleton.js";
 
 const nextMicrotask = () => Promise.resolve();
-
-async function waitForStyles(element) {
-  const styleLink = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (styleLink && !styleLink.sheet) {
-    await new Promise((resolve, reject) => {
-      styleLink.addEventListener("load", resolve, { once: true });
-      styleLink.addEventListener("error", reject, { once: true });
-    });
-  }
-
-  // The constructable sheet is adopted immediately. WebKit leaves it out of
-  // computed style for at least one frame, and a single frame is not enough
-  // when several skeletons connect together. Wait for the gradient these
-  // tests read.
-  for (let frame = 0; frame < 60; frame += 1) {
-    const node = element.shadowRoot?.querySelector(".skeleton");
-    const image = node ? getComputedStyle(node).backgroundImage : "";
-    if (image && image !== "none") return;
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
-
-  throw new Error("Skeleton shimmer styles did not apply within 60 animation frames.");
-}
 
 async function loadStylesheet(path) {
   const stylesheet = document.createElement("link");

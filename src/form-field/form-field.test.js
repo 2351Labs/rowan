@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "../text-field/text-field.js";
 import "./form-field.js";
 
@@ -105,6 +106,7 @@ describe("rowan-form-field", () => {
     field.append(control);
     document.body.append(field);
     await nextMicrotask();
+    await stylesApplied(field);
 
     const indicator = field.shadowRoot.querySelector('[part="required-indicator"]');
     expect(indicator.hidden).to.equal(false);

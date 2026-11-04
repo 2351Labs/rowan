@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../../test/styles-applied.js";
 import "../../../src/icon-button/icon-button.js";
 import { createIcon } from "@rowan-ui/icons";
 import { registerIcon, RowanIcon } from "@rowan-ui/icons/element";
@@ -155,14 +156,7 @@ describe("rowan-icon", () => {
     icon.strokeWidth = 1.5;
     document.body.append(icon);
     await nextMicrotask();
-
-    const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
-    if (stylesheet && !stylesheet.sheet) {
-      await new Promise((resolve, reject) => {
-        stylesheet.addEventListener("load", resolve, { once: true });
-        stylesheet.addEventListener("error", reject, { once: true });
-      });
-    }
+    await stylesApplied(icon);
 
     expect(icon.getAttribute("tone")).to.equal("danger");
     expect(icon.shadowRoot.querySelector("svg")?.getAttribute("stroke")).to.equal("currentColor");
@@ -211,13 +205,7 @@ describe("rowan-icon", () => {
         surface.append(icon);
         document.body.append(surface);
         await nextMicrotask();
-        const stylesheet = icon.shadowRoot.querySelector('link[rel="stylesheet"]');
-        if (stylesheet && !stylesheet.sheet) {
-          await new Promise((resolve, reject) => {
-            stylesheet.addEventListener("load", resolve, { once: true });
-            stylesheet.addEventListener("error", reject, { once: true });
-          });
-        }
+        await stylesApplied(icon);
         expect(
           contrast(getComputedStyle(icon).color, palette.background),
           `${palette.name} ${tone}`,

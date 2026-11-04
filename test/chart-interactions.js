@@ -1,16 +1,10 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "./styles-applied.js";
 
 const nextMicrotask = () => Promise.resolve();
 
 async function waitForComponentStyles(chart) {
-  const styleLink = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!(styleLink instanceof HTMLLinkElement) || styleLink.sheet) return;
-
-  await new Promise((resolve) => {
-    styleLink.addEventListener("error", resolve, { once: true });
-    styleLink.addEventListener("load", resolve, { once: true });
-    if (styleLink.sheet) resolve();
-  });
+  await stylesApplied(chart);
 }
 
 async function settleChartRender(chart) {
@@ -30,6 +24,7 @@ export async function assertPointControlAlignment({
     chart.style.inlineSize = "400px";
     await settleChartRender(chart);
 
+    await stylesApplied(chart);
     const controls = chart.shadowRoot.querySelector(".point-controls");
     expect(controls.getAttribute("dir")).to.equal("ltr");
     expect(getComputedStyle(controls).direction).to.equal("ltr");

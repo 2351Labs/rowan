@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./dialog.js";
 import "../text-field/text-field.js";
 import "../button/button.js";
@@ -11,24 +12,6 @@ const settle = async () => {
   await wait();
   await wait();
 };
-
-async function waitForStyleLink(shadowRoot) {
-  const link = shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!link) return;
-
-  if (link.sheet) return;
-
-  await new Promise((resolve) => {
-    const onLoad = () => {
-      link.removeEventListener("load", onLoad);
-      link.removeEventListener("error", onLoad);
-      resolve();
-    };
-
-    link.addEventListener("load", onLoad, { once: true });
-    link.addEventListener("error", onLoad, { once: true });
-  });
-}
 
 describe("rowan-dialog focus containment", () => {
   afterEach(() => {
@@ -251,7 +234,7 @@ describe("rowan-dialog", () => {
     const dialog = document.createElement("rowan-dialog");
     document.body.append(dialog);
     await wait();
-    await waitForStyleLink(dialog.shadowRoot);
+    await stylesApplied(dialog);
 
     dialog.open = true;
     await wait();
