@@ -4936,11 +4936,7 @@ const NAV_SECTIONS = [
     id: "choose-rowan",
     label: "Choose Rowan",
     defaultOpen: true,
-    items: [
-      { pageId: "starters", label: "Starters" },
-      { pageId: "mit-features", label: "Free in Rowan" },
-      { pageId: "library-comparison", label: "Rowan and others" },
-    ],
+    items: [{ pageId: "starters", label: "Starters" }],
   },
   {
     id: "quality",
@@ -6447,18 +6443,36 @@ function wireQuickstartDialog() {
   });
 }
 
-function initialize() {
+function requestedPageId(hash) {
+  const value = String(hash ?? "")
+    .replace(/^#/, "")
+    .trim();
+  const separatorIndex = value.indexOf(":");
+  return (separatorIndex >= 0 ? value.slice(0, separatorIndex) : value).trim();
+}
+
+function syncHashToRoute() {
+  const requested = requestedPageId(window.location.hash);
+  if (requested && PAGES_BY_ID.has(requested)) return;
+
   const route = getRoute();
   const canonicalHash = formatDocumentationRoute(route.pageId, route.sectionId);
   if (window.location.hash !== canonicalHash) {
     history.replaceState(null, "", canonicalHash);
   }
+}
+
+function initialize() {
+  syncHashToRoute();
 
   wireSearch();
   wireThemeToggle();
   wireQuickstartDialog();
 
-  window.addEventListener("hashchange", renderCurrentPage);
+  window.addEventListener("hashchange", () => {
+    syncHashToRoute();
+    renderCurrentPage();
+  });
   renderCurrentPage();
 }
 

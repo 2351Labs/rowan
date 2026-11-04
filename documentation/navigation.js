@@ -1,3 +1,9 @@
+const RETIRED_DOCUMENTATION_PAGES = new Set(["mit-features", "library-comparison"]);
+
+export function isRetiredDocumentationPage(pageId) {
+  return RETIRED_DOCUMENTATION_PAGES.has(String(pageId ?? "").trim());
+}
+
 export function parseDocumentationRoute(hash, pageIds, fallbackPageId) {
   const value = String(hash ?? "")
     .replace(/^#/, "")
@@ -6,7 +12,7 @@ export function parseDocumentationRoute(hash, pageIds, fallbackPageId) {
   const requestedPageId = (separatorIndex >= 0 ? value.slice(0, separatorIndex) : value).trim();
   const requestedSectionId = separatorIndex >= 0 ? value.slice(separatorIndex + 1).trim() : "";
 
-  if (!pageIds.has(requestedPageId)) {
+  if (isRetiredDocumentationPage(requestedPageId) || !pageIds.has(requestedPageId)) {
     return { pageId: fallbackPageId, sectionId: "" };
   }
 

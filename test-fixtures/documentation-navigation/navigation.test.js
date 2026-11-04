@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 import {
   formatDocumentationRoute,
+  isRetiredDocumentationPage,
   parseDocumentationRoute,
 } from "../../documentation/navigation.js";
 import {
@@ -30,6 +31,25 @@ describe("documentation navigation routes", () => {
       pageId: "getting-started",
       sectionId: "",
     });
+  });
+
+  it("sends retired comparison pages to getting started", () => {
+    const pages = new Set([...pageIds, "mit-features", "library-comparison"]);
+    const retiredHashes = [
+      "#mit-features",
+      "#mit-features:mit-table",
+      "#library-comparison",
+      "#library-comparison:compare-table",
+    ];
+    for (const hash of retiredHashes) {
+      expect(parseDocumentationRoute(hash, pages, "getting-started")).to.deep.equal({
+        pageId: "getting-started",
+        sectionId: "",
+      });
+    }
+    expect(isRetiredDocumentationPage("mit-features")).to.equal(true);
+    expect(isRetiredDocumentationPage("library-comparison")).to.equal(true);
+    expect(formatDocumentationRoute("getting-started")).to.equal("#getting-started");
   });
 
   it("gives unknown component routes one Other navigation home", () => {

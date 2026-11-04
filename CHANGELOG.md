@@ -10,6 +10,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Interactive charts keep a reference-line tooltip. Hovering a reference line no longer replaces its label with the nearest stacked point.
 
+### Removed
+
+- Docs pages "Free in Rowan" (`#mit-features`) and "Rowan and others" (`#library-comparison`). Those addresses open Getting Started.
+
 ## 0.23.2 - 2026-11-03
 
 ### Added
