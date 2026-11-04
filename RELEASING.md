@@ -287,6 +287,15 @@ here. MCP peers on core `^0.23.0`. Nested filter groups and table-view-state
 version `2` stay experimental. Publish after this catalog commit is on `main`:
 tag `v0.23.2`.
 
+## 0.23.3 cut
+
+Version in `package.json` is `0.23.3` for core, icons, MapLibre, and MCP. Do
+**not** call this `1.0`. Interactive charts keep a reference-line tooltip
+instead of the nearest stacked point. Docs pages "Free in Rowan" and "Rowan
+and others" are removed. MCP peers on core `^0.23.0`. Nested filter groups
+and table-view-state version `2` stay experimental. Publish after this
+catalog commit is on `main`: tag `v0.23.3`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

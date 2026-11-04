@@ -21,7 +21,7 @@ const catalog = loadCatalog();
 describe("MCP tool handlers", () => {
   it("loads the bundled catalog and resolves button by tag, slug, class, and import", () => {
     assert.equal(catalog.components.length > 0, true);
-    assert.equal(catalog.mcpVersion, "0.23.2");
+    assert.equal(catalog.mcpVersion, "0.23.3");
     for (const query of ["rowan-button", "button", "RowanButton", "@rowan-ui/core/button"]) {
       const resolved = resolveComponent(catalog, query);
       assert.equal(resolved.status, "one", query);
@@ -130,7 +130,7 @@ describe("MCP tool handlers", () => {
       .join("\n");
     assert.doesNotMatch(sources, /\bfetch\s*\(|node:https|node:http|XMLHttpRequest|https\.request/);
     const pkg = JSON.parse(readFileSync(join(rootDir, "packages/mcp/package.json"), "utf8"));
-    assert.equal(pkg.version, "0.23.2");
+    assert.equal(pkg.version, "0.23.3");
     assert.equal(pkg.peerDependencies["@rowan-ui/core"], "^0.23.0");
     assert.equal(pkg.dependencies["@modelcontextprotocol/sdk"] != null, true);
     assert.ok(pkg.files.includes("data/catalog.json"));
