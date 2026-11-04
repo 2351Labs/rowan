@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./context-menu.js";
 import "../dialog/dialog.js";
 
@@ -11,23 +12,7 @@ const settle = async () => {
 };
 
 async function waitForContextMenuStyles(menu) {
-  const stylesheet = menu.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
-    await nextFrame();
-  }
-
-  throw new Error("Context menu styles did not apply within 60 animation frames.");
+  await stylesApplied(menu);
 }
 
 async function waitForViewportClamp(panel, originX) {

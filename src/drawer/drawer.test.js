@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./drawer.js";
 import { isTopmostOverlay } from "../lib/overlay-stack.js";
 
@@ -19,6 +20,7 @@ describe("rowan-drawer", () => {
     const drawer = document.createElement("rowan-drawer");
     document.body.append(drawer);
     await nextMicrotask();
+    await stylesApplied(drawer);
 
     const overlay = drawer.shadowRoot.querySelector("dialog");
     expect(overlay.open).to.equal(false);

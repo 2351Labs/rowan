@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 
 import "../table/table.js";
 import "./row-details-panel.js";
@@ -39,6 +40,7 @@ describe("rowan-row-details-panel", () => {
 
     panel.open = true;
     await settle();
+    await stylesApplied(panel);
 
     const overlay = panel.shadowRoot.querySelector("dialog");
     const drawer = panel.shadowRoot.querySelector(".panel");
@@ -207,6 +209,7 @@ describe("rowan-row-details-panel", () => {
     expect(panel.size).to.equal("md");
     panel.size = "lg";
     await settle();
+    await stylesApplied(panel);
     expect(panel.getAttribute("size")).to.equal("lg");
     expect(getComputedStyle(panel).getPropertyValue("--rowan-row-details-panel-width")).to.include(
       "42rem",

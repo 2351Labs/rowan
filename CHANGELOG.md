@@ -6,6 +6,10 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+### Fixed
+
+- Interactive charts keep a reference-line tooltip. Hovering a reference line no longer replaces its label with the nearest stacked point.
+
 ## 0.23.2 - 2026-11-03
 
 ### Added

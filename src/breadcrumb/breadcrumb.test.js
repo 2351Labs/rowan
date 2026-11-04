@@ -1,17 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "./breadcrumb.js";
 
 const nextMicrotask = () => Promise.resolve();
-
-async function waitForStyles(element) {
-  const stylesheet = element.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet || stylesheet.sheet) return;
-
-  await new Promise((resolve, reject) => {
-    stylesheet.addEventListener("load", resolve, { once: true });
-    stylesheet.addEventListener("error", reject, { once: true });
-  });
-}
 
 describe("rowan-breadcrumb", () => {
   afterEach(() => {

@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./popover.js";
 import "../button/button.js";
 import "../dialog/dialog.js";
@@ -13,23 +14,7 @@ const settle = async () => {
 };
 
 async function waitForPopoverStyles(popover) {
-  const stylesheet = popover.shadowRoot.querySelector('link[rel="stylesheet"]');
-  if (!stylesheet) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules()) return;
-    await nextFrame();
-  }
-
-  throw new Error("Popover styles did not apply within 60 animation frames.");
+  await stylesApplied(popover);
 }
 
 async function waitForClampedPanel(panel, trigger) {
@@ -251,6 +236,7 @@ describe("rowan-popover", () => {
 
     trigger.click();
     await settle();
+    await waitForPopoverStyles(popover);
 
     const panel = popover.shadowRoot.querySelector(".panel");
     const panelRect = panel.getBoundingClientRect();

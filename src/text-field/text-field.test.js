@@ -1,46 +1,8 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "./text-field.js";
 
 const nextMicrotask = () => Promise.resolve();
-const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
-
-function hasAppliedStyles(element) {
-  const root = element.shadowRoot;
-  if (!root) return false;
-  const link = root.querySelector('link[rel="stylesheet"]');
-  if (link?.sheet?.cssRules?.length) return true;
-  return [...(root.adoptedStyleSheets || [])].some((sheet) => {
-    try {
-      return sheet.cssRules.length > 0;
-    } catch {
-      return false;
-    }
-  });
-}
-
-async function waitForStyles(element) {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
-    const stylesheet = element.shadowRoot?.querySelector('link[rel="stylesheet"]');
-
-    if (hasAppliedStyles(element) || stylesheet?.sheet) {
-      await nextFrame();
-      return;
-    }
-
-    if (stylesheet) {
-      await new Promise((resolve, reject) => {
-        stylesheet.addEventListener("load", resolve, { once: true });
-        stylesheet.addEventListener("error", reject, { once: true });
-      });
-      await nextFrame();
-      return;
-    }
-
-    await nextFrame();
-  }
-
-  throw new Error("stylesheet never loaded for <rowan-text-field>");
-}
 
 describe("rowan-text-field", () => {
   afterEach(() => {

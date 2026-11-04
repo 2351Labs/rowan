@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "axe-core";
 import { prefersReducedMotion, readHiddenSeries, writeHiddenSeries } from "./api.js";
 import { bindSeriesLegend, syncSeriesLegend } from "./legend.js";
@@ -22,6 +23,7 @@ async function barChart() {
   document.body.append(chart);
   await nextMicrotask();
   await nextMicrotask();
+  await stylesApplied(chart);
   return chart;
 }
 
@@ -157,10 +159,7 @@ describe("chart interaction", () => {
     bar.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 40, clientY: 40 }));
     expect(chart.shadowRoot.querySelector(".hover").textContent).to.equal("Custom tip");
 
-    const link = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
-    if (link && !link.sheet) {
-      await new Promise((resolve) => link.addEventListener("load", resolve, { once: true }));
-    }
+    await stylesApplied(chart);
     expect(getComputedStyle(bar).transitionDuration).to.equal("0s");
   });
 
@@ -373,6 +372,7 @@ describe("chart interaction", () => {
     chart.setAttribute("zoom", "");
     document.body.append(chart);
     await nextMicrotask();
+    await stylesApplied(chart);
     const bar = chart.shadowRoot.querySelector('rect.bar[data-point-key="incoming::0"]');
     const box = bar.getBoundingClientRect();
     bar.dispatchEvent(

@@ -1,4 +1,5 @@
 import { expect } from "@esm-bundle/chai";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "../form-field/form-field.js";
 import "../text-field/text-field.js";
 import "./form-layout.js";
@@ -9,6 +10,11 @@ const nextTask = () => new Promise((resolve) => setTimeout(resolve));
 
 async function settleResponsiveLayout() {
   await nextMicrotask();
+  const layout = document.querySelector("rowan-form-layout");
+  if (layout) await stylesApplied(layout);
+  for (const field of document.querySelectorAll("rowan-form-field, rowan-text-field")) {
+    await stylesApplied(field);
+  }
   await nextTask();
   await nextFrame();
 }

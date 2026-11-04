@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied as waitForStyles } from "../../test/styles-applied.js";
 import "../badge/badge.js";
 import "../button/button.js";
 import "../checkbox/checkbox.js";
@@ -17,32 +18,6 @@ async function waitFor(predicate, frames = 45) {
     if (predicate()) return;
     await nextFrame();
   }
-}
-
-async function waitForStyles(element) {
-  const hasAppliedStyles = () => {
-    const root = element.shadowRoot;
-    if (!root) return false;
-    const link = root.querySelector('link[rel="stylesheet"]');
-    if (link?.sheet?.cssRules?.length) return true;
-    return [...(root.adoptedStyleSheets || [])].some((sheet) => {
-      try {
-        return sheet.cssRules.length > 0;
-      } catch {
-        return false;
-      }
-    });
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasAppliedStyles()) {
-      await nextFrame();
-      return;
-    }
-    await nextFrame();
-  }
-
-  throw new Error(`Styles did not apply within 60 animation frames for <${element.localName}>.`);
 }
 
 // WebKit applies scrollTop only after the virtual viewport has a frame of
@@ -1734,6 +1709,7 @@ describe("rowan-table", () => {
     };
     document.body.append(table);
     await nextMicrotask();
+    await waitForStyles(table);
 
     const pagination = table.shadowRoot.querySelector(".pagination");
     expect(pagination.hidden).to.equal(true);

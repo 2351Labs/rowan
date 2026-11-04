@@ -1,30 +1,12 @@
 import { expect } from "@esm-bundle/chai";
 import { reconnectHost } from "../../test/host-lifecycle.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./sparkline.js";
 
 const nextMicrotask = () => Promise.resolve();
 
 async function waitForSparklineStyles(chart) {
-  const stylesheet = chart.shadowRoot.querySelector('link[rel="stylesheet"]');
-  const line = chart.shadowRoot.querySelector("path.line");
-  if (!stylesheet || !line) return;
-
-  const hasLoadedRules = () => {
-    try {
-      return Boolean(stylesheet.sheet?.cssRules.length);
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  for (let frame = 0; frame < 60; frame += 1) {
-    if (hasLoadedRules() && getComputedStyle(line).vectorEffect === "non-scaling-stroke") {
-      return;
-    }
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
-
-  throw new Error("Sparkline styles did not apply within 60 animation frames.");
+  await stylesApplied(chart);
 }
 
 async function renderSparkline(options = {}) {
@@ -80,6 +62,7 @@ describe("rowan-sparkline", () => {
       .map((command) => command[0]);
 
     expect(commands).to.deep.equal(["M", "M"]);
+    await waitForSparklineStyles(chart);
     expect(getComputedStyle(path).animationName).to.equal("none");
   });
 
@@ -156,6 +139,7 @@ describe("rowan-sparkline", () => {
       labels: ["Mon", "Wed"],
     });
     chart.style.inlineSize = "200px";
+    await waitForSparklineStyles(chart);
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
@@ -184,6 +168,7 @@ describe("rowan-sparkline", () => {
       labels: ["Mon", "Wed"],
     });
     chart.style.inlineSize = "200px";
+    await waitForSparklineStyles(chart);
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
     const showHover = () => {
@@ -319,6 +304,7 @@ describe("rowan-sparkline", () => {
       belowTone: "info",
     });
     chart.style.inlineSize = "200px";
+    await waitForSparklineStyles(chart);
 
     const plot = chart.shadowRoot.querySelector(".plot");
     const hover = chart.shadowRoot.querySelector(".hover");
