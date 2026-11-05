@@ -144,7 +144,7 @@ Admin apps need one rail with labeled groups and a way to clear selection (no du
 
 ## Release — npm 0.5.0
 
-**Status:** `@rowan-ui/core@0.23.2` is on npm. Git is `0.23.3`. Tag `v0.23.3` after this lands on `main`.
+**Status:** `@rowan-ui/core@0.23.3` is on npm. Git is `0.23.4`. Tag `v0.23.4` after this lands on `main`.
 
 - [x] README, Storybook Home, and docs install `@rowan-ui/core @rowan-ui/icons`.
 - [x] Package metadata (`repository`, `publishConfig.access`) on core and icons.

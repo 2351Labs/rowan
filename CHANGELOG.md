@@ -6,6 +6,16 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.23.4 - 2026-11-05
+
+### Changed
+
+- Getting-started docs pin `@rowan-ui/core@0.23.4`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
+
+### Fixed
+
+- `rowan-bullet-chart` tick labels keep a uniform scale on wide and narrow hosts. The plot still fills the box. Ranges, the bar, and the target still span the host width.
+
 ## 0.23.3 - 2026-11-04
 
 ### Changed

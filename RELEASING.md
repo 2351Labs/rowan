@@ -296,6 +296,14 @@ and others" are removed. MCP peers on core `^0.23.0`. Nested filter groups
 and table-view-state version `2` stay experimental. Publish after this
 catalog commit is on `main`: tag `v0.23.3`.
 
+## 0.23.4 cut
+
+Version in `package.json` is `0.23.4` for core, icons, MapLibre, and MCP. Do
+**not** call this `1.0`. `rowan-bullet-chart` tick labels keep a uniform
+scale on wide and narrow hosts. MCP peers on core `^0.23.0`. Nested filter
+groups and table-view-state version `2` stay experimental. Publish after
+this catalog commit is on `main`: tag `v0.23.4`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.
