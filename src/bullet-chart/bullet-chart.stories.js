@@ -101,6 +101,71 @@ export const NoScale = {
   render: () => createBullet({ scale: false }),
 };
 
+export const ScaleLabels = {
+  name: "Scale labels on wide and narrow hosts",
+  render: () => {
+    const board = document.createElement("div");
+    board.style.display = "grid";
+    board.style.gap = "1.25rem";
+    board.style.justifyItems = "start";
+
+    const samples = [
+      {
+        caption: "Wide host, 640px — quarterly fill rate",
+        inlineSize: "640px",
+        chart: createBullet({
+          label: "North America fill rate",
+          value: 82,
+          target: 90,
+        }),
+      },
+      {
+        caption: "Narrow host, 8rem — same scale",
+        inlineSize: "8rem",
+        chart: createBullet({
+          label: "Regional fill rate",
+          value: 82,
+          target: 90,
+        }),
+      },
+      {
+        caption: "Custom height — average response time",
+        inlineSize: "36rem",
+        height: "4.5rem",
+        chart: createBullet({
+          label: "Avg response time",
+          value: kpiValues.responseTime,
+          target: 200,
+          intent: "lower",
+          ranges: [
+            { from: 0, to: 200, label: "Excellent", tone: "success" },
+            { from: 200, to: 400, label: "Good", tone: "info" },
+            { from: 400, to: 600, label: "Slow", tone: "warning" },
+            { from: 600, to: 1000, label: "Very slow", tone: "danger" },
+          ],
+        }),
+      },
+    ];
+
+    for (const sample of samples) {
+      const figure = document.createElement("figure");
+      figure.style.margin = "0";
+      const caption = document.createElement("figcaption");
+      caption.textContent = sample.caption;
+      caption.style.font = "0.75rem/1.4 system-ui, sans-serif";
+      caption.style.marginBlockEnd = "0.35rem";
+      sample.chart.style.inlineSize = sample.inlineSize;
+      if (sample.height) {
+        sample.chart.style.setProperty("--rowan-bullet-chart-height", sample.height);
+      }
+      figure.append(caption, sample.chart);
+      board.append(figure);
+    }
+
+    return board;
+  },
+};
+
 export const ServerUptime = {
   name: "Server uptime (realistic data)",
   render: () =>

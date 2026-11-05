@@ -185,6 +185,7 @@ export class RowanBulletChart extends BaseElement {
   #plot = null;
   #table = null;
   #hover = null;
+  #resizeObserver = null;
   #value = null;
   #target = null;
   #ranges = [];
@@ -340,6 +341,7 @@ export class RowanBulletChart extends BaseElement {
         bubble: this.#hover,
         textForEvent: () => this.#hoverText(),
       });
+      this.#observePlotSize();
     }
 
     this.#renderPlot();
@@ -425,22 +427,24 @@ export class RowanBulletChart extends BaseElement {
 
     if (this.scale) {
       for (const tickValue of this.#ticks(domain)) {
-        const x = this.#x(tickValue, domain).toFixed(2);
+        const x = this.#x(tickValue, domain);
         const tick = createSvgElement("line");
         tick.setAttribute("class", "tick");
         tick.setAttribute("part", "tick");
-        tick.setAttribute("x1", x);
-        tick.setAttribute("x2", x);
-        tick.setAttribute("y1", String(SCALE_Y));
-        tick.setAttribute("y2", (SCALE_Y + TICK_LEN).toFixed(2));
+        tick.setAttribute("x1", "0");
+        tick.setAttribute("x2", "0");
+        tick.setAttribute("y1", "0");
+        tick.setAttribute("y2", TICK_LEN.toFixed(2));
+        this.#anchorScaled(tick, x, SCALE_Y);
         fragment.append(tick);
 
         const label = createSvgElement("text");
         label.setAttribute("class", "tick-label");
         label.setAttribute("part", "tick-label");
-        label.setAttribute("x", x);
-        label.setAttribute("y", LABEL_Y.toFixed(2));
+        label.setAttribute("x", "0");
+        label.setAttribute("y", "0");
         label.textContent = formatTick(tickValue, this.locale);
+        this.#anchorScaled(label, x, LABEL_Y);
         fragment.append(label);
       }
     }
@@ -473,6 +477,43 @@ export class RowanBulletChart extends BaseElement {
     }
 
     this.#plot.replaceChildren(fragment);
+    this.#syncPlotScale();
+  }
+
+  // The plot stretches (preserveAspectRatio="none"). Counter-scale ticks and
+  // labels so digits keep the aspect they have at a uniform viewBox scale.
+  // kx = (renderedHeight * 100) / (renderedWidth * 28), applied as
+  // translate(x y) scale(kx 1) with the mark's own x and y at 0.
+  #anchorScaled(node, x, y) {
+    const xText = x.toFixed(2);
+    const yText = y.toFixed(2);
+    node.dataset.plotX = xText;
+    node.dataset.plotY = yText;
+    node.setAttribute("transform", `translate(${xText} ${yText}) scale(1 1)`);
+  }
+
+  #observePlotSize() {
+    if (typeof ResizeObserver === "undefined" || this.#resizeObserver || !this.#plot) return;
+    this.#resizeObserver = new ResizeObserver(() => this.#syncPlotScale());
+    this.observe(this.#resizeObserver, () => {
+      if (this.#plot) this.#resizeObserver.observe(this.#plot);
+    });
+    this.#resizeObserver.observe(this.#plot);
+  }
+
+  #syncPlotScale() {
+    if (!this.#plot) return;
+    const box = this.#plot.getBoundingClientRect();
+    if (!(box.width > 0) || !(box.height > 0)) return;
+
+    const scale = ((box.height * VIEWBOX_WIDTH) / (box.width * VIEWBOX_HEIGHT)).toFixed(4);
+    for (const node of this.#plot.querySelectorAll(".tick, .tick-label")) {
+      const x = node.dataset.plotX;
+      const y = node.dataset.plotY;
+      if (x == null || y == null) continue;
+      const transform = `translate(${x} ${y}) scale(${scale} 1)`;
+      if (node.getAttribute("transform") !== transform) node.setAttribute("transform", transform);
+    }
   }
 
   #hoverText() {
