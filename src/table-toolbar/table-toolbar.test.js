@@ -598,6 +598,12 @@ describe("rowan-table-toolbar", () => {
     expect(control).to.exist;
     expect(control.table).to.equal(table);
     expect(control.storageKey).to.equal("orders");
+    toolbar.table = null;
+    toolbar.forTable = "missing-orders";
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+    expect(control.table).to.equal(null);
+    expect(control.forTable).to.equal("missing-orders");
     expect(toolbar.shadowRoot.querySelector('[part="saved-views"]')).to.equal(
       control.parentElement,
     );

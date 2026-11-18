@@ -301,12 +301,10 @@ export class RowanTableToolbar extends BaseElement {
         control = document.createElement("rowan-saved-views");
         this.#savedViewsHost.append(control);
       }
-      if (this.table) control.table = this.table;
+      control.table = this.table ?? null;
       const key = this.forTable || this.table?.id || "";
-      if (key) {
-        control.forTable = key;
-        control.storageKey = key;
-      }
+      control.forTable = key;
+      control.storageKey = key;
     });
   }
 

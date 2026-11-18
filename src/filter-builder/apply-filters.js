@@ -285,21 +285,52 @@ export function cloneFilterNode(node) {
   return { ...node };
 }
 
+function overflowEntry(depth) {
+  return { node: null, index: FILTER_MAX_NODES + 1, depth, children: null, overflow: true };
+}
+
 function indexFilterTree(list) {
   let count = 0;
   const visit = (node, depth) => {
-    count += 1;
-    const indexed = { node, index: count, depth, children: null };
-    if (isFilterGroup(node)) {
-      indexed.children = node.filters.map((child) => visit(child, depth + 1));
+    if (count >= FILTER_MAX_NODES || (isFilterGroup(node) && depth > FILTER_GROUP_MAX_DEPTH)) {
+      return overflowEntry(depth);
     }
+    count += 1;
+    const indexed = { node, index: count, depth, children: null, overflow: false };
+    if (!isFilterGroup(node)) return indexed;
+
+    const children = [];
+    for (const child of node.filters) {
+      if (
+        count >= FILTER_MAX_NODES ||
+        (isFilterGroup(child) && depth + 1 > FILTER_GROUP_MAX_DEPTH)
+      ) {
+        children.push(overflowEntry(depth + 1));
+        break;
+      }
+      const next = visit(child, depth + 1);
+      children.push(next);
+      if (next.overflow) break;
+    }
+    indexed.children = children;
     return indexed;
   };
-  return list.map((node) => visit(node, isFilterGroup(node) ? 1 : 0));
+
+  const indexed = [];
+  for (const node of list) {
+    if (count >= FILTER_MAX_NODES) {
+      indexed.push(overflowEntry(1));
+      break;
+    }
+    const next = visit(node, isFilterGroup(node) ? 1 : 0);
+    indexed.push(next);
+    if (next.overflow) break;
+  }
+  return indexed;
 }
 
 function matchesIndexed(row, indexed, fields) {
-  if (indexed.index > FILTER_MAX_NODES) return false;
+  if (indexed.overflow || indexed.index > FILTER_MAX_NODES) return false;
 
   if (isFilterGroup(indexed.node)) {
     if (indexed.depth > FILTER_GROUP_MAX_DEPTH) return false;

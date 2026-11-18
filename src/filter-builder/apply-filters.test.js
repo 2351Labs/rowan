@@ -228,6 +228,17 @@ describe("applyFilters", () => {
       { field: "role", operator: "equals", value: "Admin" },
     ];
     expect(applyFilters(rows, shortCircuit, fields)).to.deep.equal([]);
+
+    let chained = { field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < 4000; depth += 1) chained = { join: "and", filters: [chained] };
+    expect(applyFilters(rows, [chained], fields)).to.deep.equal([]);
+
+    const wide = Array.from({ length: 4000 }, () => ({
+      field: "role",
+      operator: "equals",
+      value: "Admin",
+    }));
+    expect(applyFilters(rows, wide, fields)).to.deep.equal([]);
   });
 
   it("validates shape, fields, depth, and size without filtering rows", () => {

@@ -6,14 +6,16 @@
 export function createMemorySavedViewStorage(
   initial?: RowanSavedView[] | undefined,
 ): RowanSavedViewStorage;
-/**
- * `localStorage` adapter. `load` returns an empty list when storage is missing or corrupt.
- * @param {Pick<Storage, "getItem" | "setItem"> | null} [backend]
- * @returns {RowanSavedViewStorage}
- */
-export function createLocalStorageSavedViewStorage(
-  backend?: Pick<Storage, "getItem" | "setItem"> | null | undefined,
-): RowanSavedViewStorage;
+export function createLocalStorageSavedViewStorage(backend: any): {
+  load(key: any): {
+    id: string;
+    name: string;
+    state: any;
+    isDefault: boolean;
+    updatedAt: number;
+  }[];
+  save(key: any, views: any): void;
+};
 /**
  * Named saved views for one table. The store normalizes every state to table-view-state v2.
  * Pass `storage` to persist on a server. The default adapter is `localStorage`.
@@ -41,57 +43,10 @@ export function createSavedViewStore(options: { key: string; storage?: RowanSave
           state?: object;
         }
       | undefined,
-  ): Promise<{
-    ok: any;
-    code: any;
-    view: {
-      id: any;
-      name: any;
-      state: any;
-      isDefault: boolean;
-      updatedAt: any;
-    } | null;
-    views: any;
-  }>;
-  rename(
-    id: any,
-    name: any,
-  ): Promise<{
-    ok: any;
-    code: any;
-    view: {
-      id: any;
-      name: any;
-      state: any;
-      isDefault: boolean;
-      updatedAt: any;
-    } | null;
-    views: any;
-  }>;
-  delete(id: any): Promise<{
-    ok: any;
-    code: any;
-    view: {
-      id: any;
-      name: any;
-      state: any;
-      isDefault: boolean;
-      updatedAt: any;
-    } | null;
-    views: any;
-  }>;
-  setDefault(id: any): Promise<{
-    ok: any;
-    code: any;
-    view: {
-      id: any;
-      name: any;
-      state: any;
-      isDefault: boolean;
-      updatedAt: any;
-    } | null;
-    views: any;
-  }>;
+  ): Promise<void>;
+  rename(id: any, name: any): Promise<void>;
+  delete(id: any): Promise<void>;
+  setDefault(id: any): Promise<void>;
   subscribe(listener: any): () => void;
 };
 /**
@@ -235,6 +190,7 @@ export type RowanSavedViewsMessages = {
   empty?: string | undefined;
   emptyName?: string | undefined;
   label?: string | undefined;
+  loadFailed?: string | undefined;
   nameLabel?: string | undefined;
   nameTooLong?: string | undefined;
   noTable?: string | undefined;

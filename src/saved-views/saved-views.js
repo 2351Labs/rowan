@@ -43,6 +43,7 @@ const DEFAULT_MESSAGES = Object.freeze({
   empty: "No saved views.",
   emptyName: "Enter a view name.",
   label: "Saved views",
+  loadFailed: "Saved views could not be loaded.",
   nameLabel: "View name",
   nameTooLong: "Use a name up to {max} characters.",
   noTable: "Connect a table before saving a view.",
@@ -93,6 +94,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @property {string} [empty]
  * @property {string} [emptyName]
  * @property {string} [label]
+ * @property {string} [loadFailed]
  * @property {string} [nameLabel]
  * @property {string} [nameTooLong]
  * @property {string} [noTable]
@@ -211,11 +213,20 @@ export function createMemorySavedViewStorage(initial = []) {
  * @param {Pick<Storage, "getItem" | "setItem"> | null} [backend]
  * @returns {RowanSavedViewStorage}
  */
+function browserStorage() {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 export function createLocalStorageSavedViewStorage(backend) {
-  const storage = backend === undefined ? globalThis.localStorage : backend;
+  const resolve = () => (backend === undefined ? browserStorage() : backend);
   return {
     load(key) {
       try {
+        const storage = resolve();
         const raw = storage?.getItem(String(key));
         if (!raw) return [];
         return normalizeStoredList(JSON.parse(raw));
@@ -224,6 +235,7 @@ export function createLocalStorageSavedViewStorage(backend) {
       }
     },
     save(key, views) {
+      const storage = resolve();
       storage?.setItem(String(key), JSON.stringify(normalizeStoredList(views)));
     },
   };
@@ -240,6 +252,16 @@ export function createSavedViewStore(options) {
   const listeners = new Set();
   let views = [];
   let loaded = false;
+  let tail = Promise.resolve();
+
+  function exclusive(task) {
+    const run = tail.then(task, task);
+    tail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
 
   async function read() {
     if (!loaded) {
@@ -273,81 +295,93 @@ export function createSavedViewStore(options) {
      * @param {{ id?: string, name?: string, state?: object }} [input]
      */
     async save(input = {}) {
-      const { id, name, state } = input;
-      const current = await read();
-      const nextName = normalizeText(name);
-      if (!nextName) return result(false, "empty-name", null, current);
-      if (nextName.length > SAVED_VIEW_NAME_MAX)
-        return result(false, "name-too-long", null, current);
+      return exclusive(async () => {
+        const { id, name, state } = input ?? {};
+        const current = await read();
+        const nextName = normalizeText(name);
+        if (!nextName) return result(false, "empty-name", null, current);
+        if (nextName.length > SAVED_VIEW_NAME_MAX)
+          return result(false, "name-too-long", null, current);
 
-      const requestedId = normalizeText(id);
-      const existing = requestedId ? current.find((view) => view.id === requestedId) : null;
-      if (requestedId && !existing) return result(false, "missing-view", null, current);
-      const nameKey = nextName.toLowerCase();
-      if (current.some((view) => view.name.toLowerCase() === nameKey && view.id !== existing?.id)) {
-        return result(false, "duplicate-name", null, current);
-      }
+        const requestedId = normalizeText(id);
+        const existing = requestedId ? current.find((view) => view.id === requestedId) : null;
+        if (requestedId && !existing) return result(false, "missing-view", null, current);
+        const nameKey = nextName.toLowerCase();
+        if (
+          current.some((view) => view.name.toLowerCase() === nameKey && view.id !== existing?.id)
+        ) {
+          return result(false, "duplicate-name", null, current);
+        }
 
-      const view = {
-        id: existing?.id ?? createId(),
-        name: nextName,
-        state: normalizeTableViewState(state),
-        isDefault: Boolean(existing?.isDefault),
-        updatedAt: Date.now(),
-      };
-      const next = existing
-        ? current.map((item) => (item.id === view.id ? view : item))
-        : [...current, view];
-      await write(next, "save");
-      return result(true, "", view, views);
+        const view = {
+          id: existing?.id ?? createId(),
+          name: nextName,
+          state: normalizeTableViewState(state),
+          isDefault: Boolean(existing?.isDefault),
+          updatedAt: Date.now(),
+        };
+        const next = existing
+          ? current.map((item) => (item.id === view.id ? view : item))
+          : [...current, view];
+        await write(next, "save");
+        return result(true, "", view, views);
+      });
     },
     async rename(id, name) {
-      const current = await read();
-      const existing = current.find((view) => view.id === normalizeText(id));
-      if (!existing) return result(false, "missing-view", null, current);
-      const nextName = normalizeText(name);
-      if (!nextName) return result(false, "empty-name", null, current);
-      if (nextName.length > SAVED_VIEW_NAME_MAX)
-        return result(false, "name-too-long", null, current);
-      const nameKey = nextName.toLowerCase();
-      if (current.some((view) => view.name.toLowerCase() === nameKey && view.id !== existing.id)) {
-        return result(false, "duplicate-name", null, current);
-      }
-      const view = {
-        ...existing,
-        name: nextName,
-        state: cloneView(existing).state,
-        updatedAt: Date.now(),
-      };
-      await write(
-        current.map((item) => (item.id === view.id ? view : item)),
-        "rename",
-      );
-      return result(true, "", view, views);
+      return exclusive(async () => {
+        const current = await read();
+        const existing = current.find((view) => view.id === normalizeText(id));
+        if (!existing) return result(false, "missing-view", null, current);
+        const nextName = normalizeText(name);
+        if (!nextName) return result(false, "empty-name", null, current);
+        if (nextName.length > SAVED_VIEW_NAME_MAX)
+          return result(false, "name-too-long", null, current);
+        const nameKey = nextName.toLowerCase();
+        if (
+          current.some((view) => view.name.toLowerCase() === nameKey && view.id !== existing.id)
+        ) {
+          return result(false, "duplicate-name", null, current);
+        }
+        const view = {
+          ...existing,
+          name: nextName,
+          state: cloneView(existing).state,
+          updatedAt: Date.now(),
+        };
+        await write(
+          current.map((item) => (item.id === view.id ? view : item)),
+          "rename",
+        );
+        return result(true, "", view, views);
+      });
     },
     async delete(id) {
-      const current = await read();
-      const existing = current.find((view) => view.id === normalizeText(id));
-      if (!existing) return result(false, "missing-view", null, current);
-      await write(
-        current.filter((view) => view.id !== existing.id),
-        "delete",
-      );
-      return result(true, "", existing, views);
+      return exclusive(async () => {
+        const current = await read();
+        const existing = current.find((view) => view.id === normalizeText(id));
+        if (!existing) return result(false, "missing-view", null, current);
+        await write(
+          current.filter((view) => view.id !== existing.id),
+          "delete",
+        );
+        return result(true, "", existing, views);
+      });
     },
     async setDefault(id) {
-      const current = await read();
-      const requested = normalizeText(id);
-      if (requested && !current.some((view) => view.id === requested)) {
-        return result(false, "missing-view", null, current);
-      }
-      const next = current.map((view) => ({
-        ...view,
-        isDefault: Boolean(requested) && view.id === requested,
-      }));
-      await write(next, "default");
-      const view = next.find((item) => item.id === requested) ?? null;
-      return result(true, "", view, views);
+      return exclusive(async () => {
+        const current = await read();
+        const requested = normalizeText(id);
+        if (requested && !current.some((view) => view.id === requested)) {
+          return result(false, "missing-view", null, current);
+        }
+        const next = current.map((view) => ({
+          ...view,
+          isDefault: Boolean(requested) && view.id === requested,
+        }));
+        await write(next, "default");
+        const view = next.find((item) => item.id === requested) ?? null;
+        return result(true, "", view, views);
+      });
     },
     subscribe(listener) {
       if (typeof listener !== "function") return () => {};
@@ -445,28 +479,43 @@ export function applyTableViewState(table, state) {
   table.sort = view.sort;
   table.density = view.density;
   table.groupBy = view.groupBy;
-  if (table.dataMode === "server" && view.page) {
-    const page = { ...view.page };
-    let retried = false;
-    const onRequest = (event) => {
-      if (event.detail?.page === page.index) {
-        table.removeEventListener("rowan-data-request", onRequest);
-        return;
-      }
-      if (retried) {
-        table.removeEventListener("rowan-data-request", onRequest);
-        return;
-      }
-      retried = true;
-      event.preventDefault();
-      table.page = page;
-      const source = table.dataSource;
-      table.dataSource = source;
-    };
-    table.addEventListener("rowan-data-request", onRequest);
-  }
+  scheduleServerPage(table, table.dataMode === "server" ? view.page : null);
   table.page = view.page;
   table.requestRender();
+}
+
+const serverPageRestores = new WeakMap();
+
+function scheduleServerPage(table, page) {
+  const previous = serverPageRestores.get(table);
+  if (previous) table.removeEventListener("rowan-data-request", previous);
+  if (!page || table.dataMode !== "server") {
+    serverPageRestores.delete(table);
+    return;
+  }
+
+  const saved = { ...page };
+  let retried = false;
+  const onRequest = (event) => {
+    if (serverPageRestores.get(table) !== onRequest) return;
+    if (event.detail?.page === saved.index) {
+      table.removeEventListener("rowan-data-request", onRequest);
+      serverPageRestores.delete(table);
+      return;
+    }
+    if (retried) {
+      table.removeEventListener("rowan-data-request", onRequest);
+      serverPageRestores.delete(table);
+      return;
+    }
+    retried = true;
+    event.preventDefault();
+    table.page = saved;
+    const source = table.dataSource;
+    table.dataSource = source;
+  };
+  serverPageRestores.set(table, onRequest);
+  table.addEventListener("rowan-data-request", onRequest);
 }
 
 /**
@@ -531,6 +580,10 @@ export class RowanSavedViews extends BaseElement {
   #renamingId = "";
   #pendingApply = null;
   #pendingFocus = null;
+  #loadedKey = "";
+  #urlClaimed = false;
+  #openedKeys = new Set();
+  #errorText = "";
   #onPopState = () => {
     this.#applyFromUrl();
   };
@@ -755,6 +808,7 @@ export class RowanSavedViews extends BaseElement {
     this.#list.hidden = this.#views.length === 0;
     this.#list.setAttribute("aria-label", this.label);
     this.#renderViews();
+    this.#showError(this.#errorText);
   }
 
   #storageKey() {
@@ -781,15 +835,27 @@ export class RowanSavedViews extends BaseElement {
 
   async #boot() {
     const token = ++this.#bootToken;
-    const store = this.#activeStore();
-    const views = await store.list();
-    if (token !== this.#bootToken || !this.isConnected) return;
+    const key = this.#storageKey();
+    let views = [];
+    try {
+      views = await this.#activeStore().list();
+    } catch {
+      if (token !== this.#bootToken || !this.isConnected) return;
+      this.#showError(this.#message("loadFailed"));
+      views = [];
+    }
+    if (token !== this.#bootToken || !this.isConnected || key !== this.#storageKey()) return;
     this.#views = views;
+    this.#loadedKey = key;
     this.requestRender();
     emit(this, "rowan-saved-views-change", { views: cloneViews(views), reason: "load" });
-    if (this.#booted) return;
-    this.#booted = true;
-    if (this.share === "on" && this.#claimSharedUrl()) return;
+    if (this.#urlClaimed) return;
+    if (this.share === "on" && this.#claimSharedUrl()) {
+      this.#urlClaimed = true;
+      return;
+    }
+    if (this.#openedKeys.has(key)) return;
+    this.#openedKeys.add(key);
     const fallback = views.find((view) => view.isDefault);
     if (fallback) this.#requestApply(fallback.state, fallback, "default");
   }
@@ -798,20 +864,32 @@ export class RowanSavedViews extends BaseElement {
     const next = resolveRowanTable(this, this.#tableOverride, this.forTable);
     if (next === this.#boundTable) {
       if (!next) this.#observeTable();
+      this.#reloadIfKeyChanged();
       return;
     }
+    const previousKey = this.#loadedKey;
     this.#boundTable = next;
+    if (this.#pendingApply?.source === "default" && this.#pendingApply.key !== this.#storageKey()) {
+      this.#pendingApply = null;
+    }
     if (!next) {
       this.#observeTable();
-      return;
+    } else {
+      this.#tableAvailabilityCleanup?.();
+      this.#tableAvailabilityCleanup = null;
+      if (this.#pendingApply && this.#pendingApply.key === previousKey) {
+        const pending = this.#pendingApply;
+        this.#pendingApply = null;
+        if (pending.source !== "default" || pending.key === this.#storageKey()) {
+          this.#requestApply(pending.state, pending.view, pending.source);
+        }
+      }
     }
-    this.#tableAvailabilityCleanup?.();
-    this.#tableAvailabilityCleanup = null;
-    if (this.#pendingApply) {
-      const pending = this.#pendingApply;
-      this.#pendingApply = null;
-      this.#requestApply(pending.state, pending.view, pending.source);
-    }
+    this.#reloadIfKeyChanged();
+  }
+
+  #reloadIfKeyChanged() {
+    if (this.#loadedKey && this.#storageKey() !== this.#loadedKey) void this.#boot();
   }
 
   #observeTable() {
@@ -835,9 +913,10 @@ export class RowanSavedViews extends BaseElement {
   }
 
   #showError(text) {
+    this.#errorText = text || "";
     if (!this.#error) return;
-    this.#error.hidden = !text;
-    this.#error.textContent = text;
+    this.#error.hidden = !this.#errorText;
+    this.#error.textContent = this.#errorText;
   }
 
   #codeMessage(code, name = "") {
@@ -897,7 +976,7 @@ export class RowanSavedViews extends BaseElement {
 
   #requestApply(state, view, source) {
     if (!this.#boundTable) {
-      this.#pendingApply = { state, view, source };
+      this.#pendingApply = { state, view, source, key: this.#storageKey() };
       this.#syncTable();
       return false;
     }

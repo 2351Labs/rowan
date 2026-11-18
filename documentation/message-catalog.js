@@ -398,6 +398,7 @@ export const ROWAN_MESSAGE_CATALOG = [
       "empty",
       "emptyName",
       "label",
+      "loadFailed",
       "missingView",
       "nameLabel",
       "nameTooLong",

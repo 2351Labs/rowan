@@ -127,6 +127,20 @@ describe("saved view store", () => {
     expect((await flaky.save({ name: "Held orders", state: {} })).ok).to.equal(true);
   });
 
+  it("keeps both saves when they overlap", async () => {
+    const store = createSavedViewStore({
+      key: "orders",
+      storage: createMemorySavedViewStorage(),
+    });
+    const [first, second] = await Promise.all([
+      store.save({ name: "Alpha", state: { density: "sm" } }),
+      store.save({ name: "Beta", state: { density: "lg" } }),
+    ]);
+    expect(first.ok).to.equal(true);
+    expect(second.ok).to.equal(true);
+    expect((await store.list()).map((view) => view.name).sort()).to.deep.equal(["Alpha", "Beta"]);
+  });
+
   it("round-trips through a localStorage adapter and drops unknown versions", async () => {
     const backend = new Map();
     const storage = createLocalStorageSavedViewStorage({
@@ -373,6 +387,11 @@ describe("rowan-saved-views", () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(seen.at(-1)).to.equal(2);
     expect(table.page.index).to.equal(2);
+
+    applyTableViewState(table, { page: { index: 0, size: 25 }, sort: { id: "order", dir: "asc" } });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(seen.at(-1)).to.equal(0);
+    expect(table.page.index).to.equal(0);
   });
 
   it("keeps a shared snapshot ahead of the default view", async () => {
@@ -467,6 +486,45 @@ describe("rowan-saved-views", () => {
     await settle();
     expect(views.shadowRoot.activeElement?.dataset.action).to.equal("confirm-delete");
     expect(views.shadowRoot.activeElement.textContent).to.equal("Confirm remove");
+  });
+
+  it("loads the table key after connecting and still applies a shared link when storage fails", async () => {
+    const storage = createMemorySavedViewStorage();
+    await createSavedViewStore({ key: "rowan-saved-views:orders", storage }).save({
+      name: "Held orders",
+      state: { density: "md" },
+    });
+    const early = document.createElement("rowan-saved-views");
+    early.share = "off";
+    early.storage = storage;
+    document.body.append(early);
+    await settle();
+    expect(early.views.map((view) => view.name)).to.not.include("Held orders");
+    const table = ordersTable();
+    early.table = table;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+    expect(early.views.map((view) => view.name)).to.include("Held orders");
+
+    const search = new URLSearchParams();
+    search.set("view", JSON.stringify({ version: 2, density: "sm" }));
+    const original = `${location.pathname}${location.search}`;
+    history.replaceState(null, "", `${location.pathname}?${search.toString()}`);
+    const blocked = document.createElement("rowan-saved-views");
+    blocked.share = "on";
+    blocked.storage = {
+      load() {
+        return Promise.reject(new Error("offline"));
+      },
+      save() {},
+    };
+    blocked.table = table;
+    document.body.append(blocked);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+    expect(table.density).to.equal("sm");
+    expect(blocked.shadowRoot.querySelector("[part='error']").hidden).to.equal(false);
+    history.replaceState(null, "", original);
   });
 });
 
