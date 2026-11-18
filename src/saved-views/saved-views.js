@@ -208,11 +208,6 @@ export function createMemorySavedViewStorage(initial = []) {
   };
 }
 
-/**
- * `localStorage` adapter. `load` returns an empty list when storage is missing or corrupt.
- * @param {Pick<Storage, "getItem" | "setItem"> | null} [backend]
- * @returns {RowanSavedViewStorage}
- */
 function browserStorage() {
   try {
     return globalThis.localStorage;
@@ -221,6 +216,11 @@ function browserStorage() {
   }
 }
 
+/**
+ * `localStorage` adapter. `load` returns an empty list when storage is missing or corrupt.
+ * @param {Pick<Storage, "getItem" | "setItem"> | null} [backend]
+ * @returns {RowanSavedViewStorage}
+ */
 export function createLocalStorageSavedViewStorage(backend) {
   const resolve = () => (backend === undefined ? browserStorage() : backend);
   return {
