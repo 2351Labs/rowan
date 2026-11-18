@@ -5982,7 +5982,7 @@ Configurable filter editor that composes with a Rowan data table.
 | disabled |  | false | yes |  |  |
 | externalLabelText |  |  |  | yes | Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary. |
 | fields | RowanFilterField[] |  |  |  | Filterable fields. Arrays are property-only. |
-| filters | Array<RowanFilter \| RowanFilterGroup> |  |  |  | Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only. |
+| filters | Array<RowanFilter \| RowanFilterGroup> |  |  |  | Top-level AND list. Group nodes `{ join, filters }` nest AND/OR up to four levels and 40 nodes. Deeper or extra nodes are dropped on assign. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only. |
 | forTable |  |  | yes |  |  |
 | label |  |  | yes |  |  |
 | messages | RowanFilterBuilderMessages |  |  |  | Property-only built-in message overrides. |
@@ -10098,6 +10098,151 @@ export function Example() {
 ```
 
 
+## rowan-saved-views
+
+Saved views for an operational table: name, list, rename, delete, default, apply, and share. Place it in `rowan-table-toolbar`, or set `saved-views` on the toolbar to mount this element. The menu loads with this module, not with the table's initial graph.
+
+- Package: `@rowan-ui/core@0.23.4`
+- Import: `@rowan-ui/core/saved-views`
+- React: `RowanSavedViews` from `@rowan-ui/core/react/saved-views`
+- Docs: https://2351labs.github.io/rowan/#saved-views
+- Module: `src/saved-views/saved-views.js`
+
+### Attributes
+
+| Name | Type | Default | Reflects | Description |
+| --- | --- | --- | --- | --- |
+| for-table | string |  | yes |  |
+| label | string |  | yes |  |
+| share | "on"\|"off" | on | yes | Read and write the view query param. Default `on`. |
+| share-param | string |  | yes | Query key for a shared view. Default `view`. |
+| storage-key | string |  | yes | Suffix of the storage key. The full key is `rowan-saved-views:` plus this value, the table id, or `default`. |
+
+### Properties
+
+| Name | Type | Default | Reflects | Readonly | Description |
+| --- | --- | --- | --- | --- | --- |
+| externalLabelText |  |  |  | yes | Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary. |
+| forTable |  |  | yes |  |  |
+| label |  |  | yes |  |  |
+| messages | RowanSavedViewsMessages |  |  |  | Property-only built-in message overrides. |
+| share | "on" \| "off" | on | yes |  |  |
+| shareParam |  |  | yes |  |  |
+| storage | RowanSavedViewStorage \| null |  |  |  | Property-only persistence adapter. Defaults to localStorage. |
+| storageKey |  |  | yes |  |  |
+| table | HTMLElement \| null |  |  |  |  |
+| views | RowanSavedView[] |  |  | yes | Property-only saved views. |
+
+### Events
+
+| Name | Detail | Description |
+| --- | --- | --- |
+| rowan-saved-view-apply |  | Cancelable. Fired before a view is written onto the table. |
+| rowan-saved-view-share |  | Fired after a share link is copied |
+| rowan-saved-views-change |  | Fired when the saved list loads or changes |
+
+### Slots
+
+| Name | Description |
+| --- | --- |
+| actions | Extra controls inside the views menu |
+
+### CSS parts
+
+| Name | Description |
+| --- | --- |
+| empty |  |
+| error |  |
+| list |  |
+| menu |  |
+| name-input |  |
+| panel |  |
+| root |  |
+| save-button |  |
+| save-form |  |
+| status |  |
+
+### CSS properties
+
+None.
+
+### Methods
+
+| Name | Description |
+| --- | --- |
+| apply(id) |  |
+| copyLink(id) | Copies a URL for one saved view, or for the current table when `id` is omitted. |
+| delete(id) |  |
+| rename(id, name) |  |
+| save(name) |  |
+| setDefault(id) | Marks one view as the default, or clears the default when `id` is empty. |
+
+### Examples
+
+### HTML
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Saved Views</title>
+    <script type="module">
+      import "@rowan-ui/core/tokens";
+      import "@rowan-ui/core/tokens/light";
+      import "@rowan-ui/core/saved-views";
+    </script>
+  </head>
+  <body>
+    <rowan-table id="open-orders">
+  <rowan-table-toolbar slot="toolbar" saved-views for-table="open-orders">
+    <rowan-filter-builder appearance="toolbar"></rowan-filter-builder>
+    <rowan-saved-views
+      slot="end"
+      for-table="open-orders"
+      storage-key="open-orders"
+      label="Saved views"
+      share="on"
+      share-param="view"
+    >
+      <span slot="actions">Shared with the floor team</span>
+    </rowan-saved-views>
+  </rowan-table-toolbar>
+</rowan-table>
+  </body>
+</html>
+```
+
+### React
+
+```tsx
+import "@rowan-ui/core/tokens";
+import "@rowan-ui/core/tokens/light";
+import { RowanSavedViews } from "@rowan-ui/core/react/saved-views";
+
+// RowanSavedViews maps onRowanSavedViewApply to the rowan-saved-view-apply event.
+export function Example() {
+  return (
+    <rowan-table id="open-orders">
+      <rowan-table-toolbar slot="toolbar" saved-views for-table="open-orders">
+        <rowan-filter-builder appearance="toolbar"></rowan-filter-builder>
+        <RowanSavedViews
+          slot="end"
+          for-table="open-orders"
+          storage-key="open-orders"
+          label="Saved views"
+          share="on"
+          share-param="view"
+        >
+          <span slot="actions">Shared with the floor team</span>
+        </RowanSavedViews>
+      </rowan-table-toolbar>
+    </rowan-table>
+  );
+}
+```
+
+
 ## rowan-scatter-chart
 
 Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or y is no-data.
@@ -12856,6 +13001,7 @@ Table operations surface for filters and density. Selection count hides when a b
 | column-picker | boolean | false | yes | Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements. |
 | for-table | string |  | yes |  |
 | label | string | Table controls | yes |  |
+| saved-views | boolean | false | yes | Mounts `rowan-saved-views` in the toolbar. The saved-views module loads the first time this is set. |
 | selection-label | string | selected | yes |  |
 
 ### Properties
@@ -12867,6 +13013,7 @@ Table operations surface for filters and density. Selection count hides when a b
 | forTable |  |  | yes |  |  |
 | label |  | Table controls | yes |  |  |
 | messages | RowanTableToolbarMessages |  |  |  | Property-only built-in message overrides. |
+| savedViews |  | false | yes |  |  |
 | selected |  |  |  | yes |  |
 | selectedCount |  |  |  | yes |  |
 | selectedRows |  |  |  | yes |  |
@@ -12894,6 +13041,7 @@ None.
 | column-picker-menu |  |
 | content |  |
 | end |  |
+| saved-views |  |
 | selection |  |
 | selection-text |  |
 | start |  |

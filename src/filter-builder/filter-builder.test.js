@@ -323,7 +323,7 @@ describe("rowan-filter-builder", () => {
     expect(events).to.deep.equal([]);
   });
 
-  it("adds an experimental OR group without changing parent-assigned filters until the user acts", async () => {
+  it("adds an OR group without changing parent-assigned filters until the user acts", async () => {
     const builder = document.createElement("rowan-filter-builder");
     builder.fields = [
       { id: "role", label: "Role", options: ["Admin", "Editor"] },
@@ -406,7 +406,7 @@ describe("rowan-filter-builder", () => {
     expect(builder.getAttribute("appearance")).to.equal("toolbar");
     expect(builder.shadowRoot.querySelector(".filters > [part='filter']")).to.equal(null);
     expect(builder.shadowRoot.querySelector(".filters > .chip-item")).to.exist;
-    expect(builder.shadowRoot.querySelector('[data-action="add-group"]').hidden).to.equal(true);
+    expect(builder.shadowRoot.querySelector('[data-action="add-group"]').hidden).to.equal(false);
     expect(builder.shadowRoot.querySelector("rowan-chip").textContent).to.equal("Role is Editor");
 
     builder.shadowRoot.querySelector('[data-action="remove"]').click();
@@ -498,7 +498,7 @@ describe("rowan-filter-builder", () => {
     ).to.equal("name");
   });
 
-  it("renders an experimental group as one toolbar chip", async () => {
+  it("renders a group as one toolbar chip", async () => {
     const builder = document.createElement("rowan-filter-builder");
     builder.appearance = "toolbar";
     builder.fields = [
@@ -676,5 +676,38 @@ describe("rowan-filter-builder", () => {
     builder.filters = [];
     await settle();
     expect(table.rows.map((row) => row.name)).to.deep.equal(["Ada", "Alan", "Grace"]);
+  });
+
+  it("adds a nested group up to the depth limit and drops anything deeper", async () => {
+    const builder = document.createElement("rowan-filter-builder");
+    builder.fields = [
+      { id: "role", label: "Role", options: ["Admin", "Editor"] },
+      { id: "name", label: "Name" },
+    ];
+    builder.filters = [
+      {
+        id: "outer",
+        join: "and",
+        filters: [{ id: "role-filter", field: "role", operator: "equals", value: "Admin" }],
+      },
+    ];
+    document.body.append(builder);
+    await settle();
+
+    builder.shadowRoot.querySelector('[data-action="add-group-in-group"]').click();
+    await settle();
+    expect(builder.filters[0].filters.some((node) => node.join === "or")).to.equal(true);
+
+    let node = { id: "leaf", field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < 5; depth += 1)
+      node = { id: `g${depth}`, join: "or", filters: [node] };
+    builder.filters = [node];
+    await settle();
+    const depthOf = (group) =>
+      group?.filters?.some((child) => child.join)
+        ? 1 + depthOf(group.filters.find((child) => child.join))
+        : 1;
+    expect(depthOf(builder.filters[0])).to.equal(4);
+    expect(builder.shadowRoot.querySelector('[part="group-limit"]')).to.exist;
   });
 });

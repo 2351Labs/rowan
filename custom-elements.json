@@ -12122,6 +12122,24 @@
       "path": "src/filter-builder/apply-filters.js",
       "declarations": [
         {
+          "kind": "variable",
+          "name": "FILTER_GROUP_MAX_DEPTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "4",
+          "description": "A group in the top-level list is depth 1. Deeper groups are rejected."
+        },
+        {
+          "kind": "variable",
+          "name": "FILTER_MAX_NODES",
+          "type": {
+            "text": "number"
+          },
+          "default": "40",
+          "description": "Leaves and groups share one cap so a payload cannot grow without bound."
+        },
+        {
           "kind": "function",
           "name": "isFilterGroup",
           "parameters": [
@@ -12132,10 +12150,35 @@
               }
             }
           ],
-          "description": "Experimental group node. Requires `join` of `and` or `or` and a `filters`\narray. A frozen leaf has `field` and is never a group, even if it also has\na `filters` array. Unofficial combinator objects without `join` stay leaves.",
+          "description": "Stable group node. Requires `join` of `and` or `or` and a `filters` array.\nA leaf has `field` and is never a group, even if it also has a `filters`\narray. Objects with a `filters` array but no `and`/`or` join stay leaves.",
           "return": {
             "type": {
               "text": "value is { join: \"and\" | \"or\", filters: object[], id?: string }"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "validateFilters",
+          "parameters": [
+            {
+              "name": "filters",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "fields",
+              "optional": true,
+              "type": {
+                "text": "Array<{ id: string, type?: string, operators?: string[] }>"
+              }
+            }
+          ],
+          "description": "Checks a filter tree against the stable group contract.\nPass `fields` to also reject unknown field ids and operators. Custom\noperators are valid when that field lists them. This does not run the\npredicates: `applyFilters` only implements the built-in operators.\nA non-array `filters` value is invalid here. `applyFilters` treats that\nsame value as no filters.",
+          "return": {
+            "type": {
+              "text": "{ valid: boolean, issues: RowanFilterIssue[] }"
             }
           }
         },
@@ -12150,7 +12193,7 @@
               }
             }
           ],
-          "description": "Deep-clones a leaf or experimental group. Does not validate.",
+          "description": "Deep-clones a leaf or group. Does not validate or enforce depth.",
           "return": {
             "type": {
               "text": "object"
@@ -12182,7 +12225,7 @@
               }
             }
           ],
-          "description": "Applies filters to rows. Top-level conjunction is AND (frozen). Group nodes\n`{ join: \"and\" | \"or\", filters: [...] }` are experimental. Unknown operators\ndo not match. An empty AND group matches; an empty OR group does not.",
+          "description": "Applies filters to rows. The top-level list is an implicit AND.\nGroup nodes `{ join: \"and\" | \"or\", filters: [...] }` are stable.\nGroups nest at most FILTER_GROUP_MAX_DEPTH levels, and the tree\nholds at most FILTER_MAX_NODES nodes. A deeper group does not\nmatch. Nodes past the cap do not match, so an over-large AND fails closed.\nUnknown operators do not match. An empty AND group matches; an empty OR\ngroup does not. A non-array filter list applies no filtering.",
           "return": {
             "type": {
               "text": "object[]"
@@ -12193,9 +12236,33 @@
       "exports": [
         {
           "kind": "js",
+          "name": "FILTER_GROUP_MAX_DEPTH",
+          "declaration": {
+            "name": "FILTER_GROUP_MAX_DEPTH",
+            "module": "src/filter-builder/apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FILTER_MAX_NODES",
+          "declaration": {
+            "name": "FILTER_MAX_NODES",
+            "module": "src/filter-builder/apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "isFilterGroup",
           "declaration": {
             "name": "isFilterGroup",
+            "module": "src/filter-builder/apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validateFilters",
+          "declaration": {
+            "name": "validateFilters",
             "module": "src/filter-builder/apply-filters.js"
           }
         },
@@ -12352,7 +12419,7 @@
               "type": {
                 "text": "Array<RowanFilter | RowanFilterGroup>"
               },
-              "description": "Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only."
+              "description": "Top-level AND list. Group nodes `{ join, filters }` nest AND/OR up to four levels and 40 nodes. Deeper or extra nodes are dropped on assign. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only."
             },
             {
               "kind": "field",
@@ -12561,6 +12628,22 @@
         },
         {
           "kind": "js",
+          "name": "FILTER_GROUP_MAX_DEPTH",
+          "declaration": {
+            "name": "FILTER_GROUP_MAX_DEPTH",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FILTER_MAX_NODES",
+          "declaration": {
+            "name": "FILTER_MAX_NODES",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "applyFilters",
           "declaration": {
             "name": "applyFilters",
@@ -12580,6 +12663,14 @@
           "name": "isFilterGroup",
           "declaration": {
             "name": "isFilterGroup",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validateFilters",
+          "declaration": {
+            "name": "validateFilters",
             "module": "./apply-filters.js"
           }
         }
@@ -12592,6 +12683,22 @@
       "exports": [
         {
           "kind": "js",
+          "name": "FILTER_GROUP_MAX_DEPTH",
+          "declaration": {
+            "name": "FILTER_GROUP_MAX_DEPTH",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FILTER_MAX_NODES",
+          "declaration": {
+            "name": "FILTER_MAX_NODES",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "applyFilters",
           "declaration": {
             "name": "applyFilters",
@@ -12611,6 +12718,14 @@
           "name": "isFilterGroup",
           "declaration": {
             "name": "isFilterGroup",
+            "module": "./apply-filters.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validateFilters",
+          "declaration": {
+            "name": "validateFilters",
             "module": "./apply-filters.js"
           }
         },
@@ -15630,6 +15745,22 @@
         },
         {
           "kind": "js",
+          "name": "FILTER_GROUP_MAX_DEPTH",
+          "declaration": {
+            "name": "FILTER_GROUP_MAX_DEPTH",
+            "module": "./filter-builder/filter-builder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FILTER_MAX_NODES",
+          "declaration": {
+            "name": "FILTER_MAX_NODES",
+            "module": "./filter-builder/filter-builder.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "applyFilters",
           "declaration": {
             "name": "applyFilters",
@@ -15657,6 +15788,14 @@
           "name": "RowanFilterBuilder",
           "declaration": {
             "name": "RowanFilterBuilder",
+            "module": "./filter-builder/filter-builder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "validateFilters",
+          "declaration": {
+            "name": "validateFilters",
             "module": "./filter-builder/filter-builder.js"
           }
         },
@@ -15710,6 +15849,14 @@
         },
         {
           "kind": "js",
+          "name": "readTableViewStateSearch",
+          "declaration": {
+            "name": "readTableViewStateSearch",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "restoreTableViewState",
           "declaration": {
             "name": "restoreTableViewState",
@@ -15721,6 +15868,14 @@
           "name": "serializeTableViewState",
           "declaration": {
             "name": "serializeTableViewState",
+            "module": "./table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeTableViewStateSearch",
+          "declaration": {
+            "name": "writeTableViewStateSearch",
             "module": "./table-view-state/table-view-state.js"
           }
         },
@@ -16234,6 +16389,70 @@
           "declaration": {
             "name": "RowanRowDetailsPanel",
             "module": "./row-details-panel/row-details-panel.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SAVED_VIEW_NAME_MAX",
+          "declaration": {
+            "name": "SAVED_VIEW_NAME_MAX",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanSavedViews",
+          "declaration": {
+            "name": "RowanSavedViews",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyTableViewState",
+          "declaration": {
+            "name": "applyTableViewState",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "captureTableViewState",
+          "declaration": {
+            "name": "captureTableViewState",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createLocalStorageSavedViewStorage",
+          "declaration": {
+            "name": "createLocalStorageSavedViewStorage",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMemorySavedViewStorage",
+          "declaration": {
+            "name": "createMemorySavedViewStorage",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createSavedViewStore",
+          "declaration": {
+            "name": "createSavedViewStore",
+            "module": "./saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findTableFilterBuilder",
+          "declaration": {
+            "name": "findTableFilterBuilder",
+            "module": "./saved-views/saved-views.js"
           }
         },
         {
@@ -23955,6 +24174,563 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/saved-views/saved-views.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "SAVED_VIEW_NAME_MAX",
+          "type": {
+            "text": "number"
+          },
+          "default": "80",
+          "description": "Maximum saved-view name length, after trimming and collapsing whitespace."
+        },
+        {
+          "kind": "function",
+          "name": "createMemorySavedViewStorage",
+          "parameters": [
+            {
+              "name": "initial",
+              "default": "[]",
+              "optional": true,
+              "type": {
+                "text": "RowanSavedView[]"
+              }
+            }
+          ],
+          "description": "In-memory storage adapter. Useful in tests and when the page has no `localStorage`.",
+          "return": {
+            "type": {
+              "text": "RowanSavedViewStorage"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "createLocalStorageSavedViewStorage",
+          "parameters": [
+            {
+              "name": "backend",
+              "optional": true,
+              "type": {
+                "text": "Pick<Storage, \"getItem\" | \"setItem\"> | null"
+              }
+            }
+          ],
+          "description": "`localStorage` adapter. `load` returns an empty list when storage is missing or corrupt.",
+          "return": {
+            "type": {
+              "text": "RowanSavedViewStorage"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "createSavedViewStore",
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "text": "{ key: string, storage?: RowanSavedViewStorage }"
+              }
+            }
+          ],
+          "description": "Named saved views for one table. The store normalizes every state to table-view-state v2.\nPass `storage` to persist on a server. The default adapter is `localStorage`."
+        },
+        {
+          "kind": "function",
+          "name": "findTableFilterBuilder",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              }
+            }
+          ],
+          "description": "Reads the filter builder inside a table, when one is slotted there.",
+          "return": {
+            "type": {
+              "text": "HTMLElement | null"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "captureTableViewState",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              }
+            }
+          ],
+          "description": "Captures the public table fields that table-view-state v2 stores.\nA linked filter builder supplies the filter tree. Quick find is not included.",
+          "return": {
+            "type": {
+              "text": "RowanTableViewState"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "applyTableViewState",
+          "parameters": [
+            {
+              "name": "table",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "state",
+              "type": {
+                "text": "RowanTableViewState"
+              }
+            }
+          ],
+          "description": "Assigns a version 2 view onto a table and its filter builder.\nPage is applied last because server sort and filter changes reset it.\nIn client mode the filter builder replaces `rows` with the filtered snapshot it owns.\nCancel `rowan-saved-view-apply` when the application owns that row list."
+        },
+        {
+          "kind": "class",
+          "description": "Saved views for an operational table: name, list, rename, delete, default, apply, and share.\nPlace it in `rowan-table-toolbar`, or set `saved-views` on the toolbar to mount this element.\nThe menu loads with this module, not with the table's initial graph.",
+          "name": "RowanSavedViews",
+          "cssParts": [
+            {
+              "name": "root"
+            },
+            {
+              "name": "menu"
+            },
+            {
+              "name": "panel"
+            },
+            {
+              "name": "save-form"
+            },
+            {
+              "name": "name-input"
+            },
+            {
+              "name": "save-button"
+            },
+            {
+              "name": "list"
+            },
+            {
+              "name": "empty"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "status"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Extra controls inside the views menu",
+              "name": "actions"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "table",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "forTable"
+            },
+            {
+              "kind": "field",
+              "name": "storageKey"
+            },
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "share",
+              "return": {
+                "type": {
+                  "text": "\"on\" | \"off\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"on\" | \"off\""
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "shareParam"
+            },
+            {
+              "kind": "field",
+              "name": "storage",
+              "return": {
+                "type": {
+                  "text": "RowanSavedViewStorage | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSavedViewStorage | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSavedViewStorage | null"
+              },
+              "description": "Property-only persistence adapter. Defaults to localStorage."
+            },
+            {
+              "kind": "field",
+              "name": "views",
+              "return": {
+                "type": {
+                  "text": "RowanSavedView[]"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "RowanSavedView[]"
+              },
+              "description": "Property-only saved views."
+            },
+            {
+              "kind": "field",
+              "name": "messages",
+              "return": {
+                "type": {
+                  "text": "RowanSavedViewsMessages"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "RowanSavedViewsMessages | null | undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "RowanSavedViewsMessages"
+              },
+              "description": "Property-only built-in message overrides."
+            },
+            {
+              "kind": "method",
+              "name": "save",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Promise<{ ok: boolean, code: string, view: RowanSavedView | null, views: RowanSavedView[] }>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "rename",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "delete",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setDefault",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ],
+              "description": "Marks one view as the default, or clears the default when `id` is empty."
+            },
+            {
+              "kind": "method",
+              "name": "apply",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "copyLink",
+              "parameters": [
+                {
+                  "name": "id",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Copies a URL for one saved view, or for the current table when `id` is omitted."
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "externalLabelText",
+              "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "BaseElement",
+                "module": "src/lib/base-element.js"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when the saved list loads or changes",
+              "name": "rowan-saved-views-change"
+            },
+            {
+              "description": "Cancelable. Fired before a view is written onto the table.",
+              "name": "rowan-saved-view-apply"
+            },
+            {
+              "description": "Fired after a share link is copied",
+              "name": "rowan-saved-view-share"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "for-table",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "storage-key",
+              "type": {
+                "text": "string"
+              },
+              "description": "Suffix of the storage key. The full key is `rowan-saved-views:` plus this value, the table id, or `default`."
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "share",
+              "type": {
+                "text": "\"on\"|\"off\""
+              },
+              "description": "Read and write the view query param. Default `on`."
+            },
+            {
+              "name": "share-param",
+              "type": {
+                "text": "string"
+              },
+              "description": "Query key for a shared view. Default `view`."
+            }
+          ],
+          "superclass": {
+            "name": "BaseElement",
+            "module": "/src/lib/base-element.js"
+          },
+          "tagName": "rowan-saved-views",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SAVED_VIEW_NAME_MAX",
+          "declaration": {
+            "name": "SAVED_VIEW_NAME_MAX",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMemorySavedViewStorage",
+          "declaration": {
+            "name": "createMemorySavedViewStorage",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createLocalStorageSavedViewStorage",
+          "declaration": {
+            "name": "createLocalStorageSavedViewStorage",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createSavedViewStore",
+          "declaration": {
+            "name": "createSavedViewStore",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findTableFilterBuilder",
+          "declaration": {
+            "name": "findTableFilterBuilder",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "captureTableViewState",
+          "declaration": {
+            "name": "captureTableViewState",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyTableViewState",
+          "declaration": {
+            "name": "applyTableViewState",
+            "module": "src/saved-views/saved-views.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RowanSavedViews",
+          "declaration": {
+            "name": "RowanSavedViews",
+            "module": "src/saved-views/saved-views.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/scatter-chart/index.js",
       "declarations": [],
       "exports": [
@@ -29779,6 +30555,9 @@
             },
             {
               "name": "column-picker-menu"
+            },
+            {
+              "name": "saved-views"
             }
           ],
           "slots": [
@@ -29819,6 +30598,10 @@
             {
               "kind": "field",
               "name": "columnPicker"
+            },
+            {
+              "kind": "field",
+              "name": "savedViews"
             },
             {
               "kind": "field",
@@ -29963,6 +30746,13 @@
                 "text": "boolean"
               },
               "description": "Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements."
+            },
+            {
+              "name": "saved-views",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Mounts `rowan-saved-views` in the toolbar. The saved-views module loads the first time this is set."
             }
           ],
           "superclass": {
@@ -30015,6 +30805,14 @@
         },
         {
           "kind": "js",
+          "name": "readTableViewStateSearch",
+          "declaration": {
+            "name": "readTableViewStateSearch",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "restoreTableViewState",
           "declaration": {
             "name": "restoreTableViewState",
@@ -30026,6 +30824,14 @@
           "name": "serializeTableViewState",
           "declaration": {
             "name": "serializeTableViewState",
+            "module": "./table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeTableViewStateSearch",
+          "declaration": {
+            "name": "writeTableViewStateSearch",
             "module": "./table-view-state.js"
           }
         }
@@ -30041,8 +30847,8 @@
           "type": {
             "text": "number"
           },
-          "default": "1",
-          "description": "Portable state for an operational table. All fields are property-only.\nA null `visibleColumns` value preserves the application's source column visibility."
+          "default": "2",
+          "description": "Stable table view snapshot. Version 1 input is migrated to this shape."
         },
         {
           "kind": "variable",
@@ -30057,10 +30863,6 @@
           "name": "operator"
         },
         {
-          "kind": "variable",
-          "name": "filters"
-        },
-        {
           "kind": "function",
           "name": "normalizeTableViewState",
           "parameters": [
@@ -30071,7 +30873,7 @@
               }
             }
           ],
-          "description": "Normalizes a property-only table view state into a JSON-safe plain object.",
+          "description": "Normalizes a property-only table view state into a JSON-safe version 2 object.\nVersion 1 input is migrated. Any other explicit version is rejected and\nbecomes the empty version 2 state. Filter groups deeper than the stable\nlimit, and nodes past the node cap, are dropped.",
           "return": {
             "type": {
               "text": "RowanTableViewState"
@@ -30113,7 +30915,7 @@
               }
             }
           ],
-          "description": "Creates a deterministic URI-component-safe representation of table view state.\nThe application owns writing it to a URL, storage, or a saved-view service.",
+          "description": "Creates a deterministic URI-component-safe representation of table view state.\nThe value is safe to place in a query string. `writeTableViewStateSearch`\nbuilds that query. Named saved views live in `@rowan-ui/core/saved-views`.",
           "return": {
             "type": {
               "text": "string"
@@ -30135,6 +30937,58 @@
           "return": {
             "type": {
               "text": "RowanTableViewState"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "writeTableViewStateSearch",
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "Partial<RowanTableViewState> | null | undefined"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "{ param?: string, search?: string }"
+              }
+            }
+          ],
+          "description": "Writes a version 2 snapshot into a query string. Existing params are kept.\nThe snapshot is raw JSON; `URLSearchParams` encodes it once.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "readTableViewStateSearch",
+          "parameters": [
+            {
+              "name": "search",
+              "type": {
+                "text": "string | null | undefined"
+              }
+            },
+            {
+              "name": "param",
+              "default": "\"view\"",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Reads a version 2 snapshot from a query string. Version 1 is migrated.\nA missing param, malformed JSON, or an unknown version returns `ok: false`\nand the empty state so a bad link does not wipe a table.",
+          "return": {
+            "type": {
+              "text": "{ ok: boolean, state: RowanTableViewState }"
             }
           }
         }
@@ -30177,6 +31031,22 @@
           "name": "restoreTableViewState",
           "declaration": {
             "name": "restoreTableViewState",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeTableViewStateSearch",
+          "declaration": {
+            "name": "writeTableViewStateSearch",
+            "module": "src/table-view-state/table-view-state.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "readTableViewStateSearch",
+          "declaration": {
+            "name": "readTableViewStateSearch",
             "module": "src/table-view-state/table-view-state.js"
           }
         }

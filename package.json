@@ -403,6 +403,10 @@
       "types": "./src/table-view-state/table-view-state.d.ts",
       "default": "./src/table-view-state/table-view-state.js"
     },
+    "./saved-views": {
+      "types": "./src/saved-views/saved-views.d.ts",
+      "default": "./src/saved-views/saved-views.js"
+    },
     "./table-toolbar": {
       "types": "./src/table-toolbar/table-toolbar.d.ts",
       "default": "./src/table-toolbar/table-toolbar.js"
@@ -642,6 +646,7 @@
     "./src/tab/tab.js",
     "./src/tab-panel/tab-panel.js",
     "./src/table/table.js",
+    "./src/saved-views/saved-views.js",
     "./src/table-toolbar/table-toolbar.js",
     "./src/tabs/tabs.js",
     "./src/tree/tree.js",

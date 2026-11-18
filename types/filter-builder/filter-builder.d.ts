@@ -26,7 +26,7 @@
  * @cssprop --rowan-filter-builder-border-width
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
- * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
+ * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR up to four levels and 40 nodes. Deeper or extra nodes are dropped on assign. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
  * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
@@ -74,6 +74,8 @@ export class RowanFilterBuilder extends BaseElement {
 export type RowanFilterBuilderMessages = {
   addGroupLabel?: string | undefined;
   addInGroupLabel?: string | undefined;
+  groupDepthLimit?: string | ((context: { max: string }) => string) | undefined;
+  nodeLimit?: string | ((context: { max: string }) => string) | undefined;
   addLabel?: string | undefined;
   booleanFalse?: string | undefined;
   booleanTrue?: string | undefined;
@@ -132,7 +134,7 @@ export type RowanFilterField = {
   placeholder?: string | undefined;
 };
 /**
- * Frozen predicate row. Nested combinator objects are not a public shape.
+ * Predicate leaf. A node with `field` is always a leaf. Groups are `RowanFilterGroup`.
  */
 export type RowanFilter = {
   id: string;
@@ -141,8 +143,8 @@ export type RowanFilter = {
   value: string;
 };
 /**
- * Experimental group. `join` is `and` or `or`. Children may be frozen leaves
- * or further groups. A node with `field` is always a leaf.
+ * Stable AND/OR group. `join` is `and` or `or`. Children may be leaves or
+ * further groups, up to four levels. A node with `field` is always a leaf.
  */
 export type RowanFilterGroup = {
   id: string;
@@ -150,4 +152,11 @@ export type RowanFilterGroup = {
   filters: Array<RowanFilter | RowanFilterGroup>;
 };
 import { BaseElement } from "../lib/base-element.js";
-export { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+export {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+  validateFilters,
+} from "./apply-filters.js";

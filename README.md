@@ -97,12 +97,12 @@ Each folder has its own `package.json` and installs `@rowan-ui/core` from npm wh
 [![Open the React starter in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/react)
 [![Open the Vue starter in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/2351Labs/rowan/tree/main/starters/vue)
 
-| Starter | What it is |
-| --- | --- |
-| [templates/admin](templates/admin/) | Operations console: shell, server tables, record page, map, auth |
-| [starters/vite](starters/vite/) | KPI cards, a trend chart, and a table. No framework |
-| [starters/react](starters/react/) | The same dashboard with the generated React wrappers |
-| [starters/vue](starters/vue/) | The same dashboard as Vue custom elements, with `compilerOptions.isCustomElement` |
+| Starter                             | What it is                                                                        |
+| ----------------------------------- | --------------------------------------------------------------------------------- |
+| [templates/admin](templates/admin/) | Operations console: shell, server tables, record page, map, auth                  |
+| [starters/vite](starters/vite/)     | KPI cards, a trend chart, and a table. No framework                               |
+| [starters/react](starters/react/)   | The same dashboard with the generated React wrappers                              |
+| [starters/vue](starters/vue/)       | The same dashboard as Vue custom elements, with `compilerOptions.isCustomElement` |
 
 ## Framework Integration
 
@@ -285,10 +285,10 @@ Automated testing runs on Chromium, Firefox, and WebKit.
 
 ## Status
 
-Rowan is at **version 0.23.4**. Most components are **Stable** (frozen public API), with a small number of experimental features:
+Rowan is at **version 0.23.4**. The public API is **Stable** (frozen), including nested filter groups and saved views:
 
-- **Stable** (107 components): Attributes, properties, events, and slots will not change in breaking ways
-- **Experimental** (2 features): Nested filter-builder groups and table-view-state version 2
+- **Stable**: attributes, properties, events, and slots will not change in breaking ways. Nested filter groups, table-view-state version 2, and saved views are part of that surface
+- **Experimental**: none in this release
 
 This is not `1.0` yet, but the stable surface is production-ready.
 

@@ -346,7 +346,8 @@ export const COMPONENT_EXAMPLES = [
     summary: "Horizontal or vertical rule between related content.",
     tags: ["layout"],
     keywords: ["rowan-divider", "divider", "separator"],
-    intro: "<code>orientation</code> is <code>horizontal</code> or <code>vertical</code>. Give a vertical divider a block size.",
+    intro:
+      "<code>orientation</code> is <code>horizontal</code> or <code>vertical</code>. Give a vertical divider a block size.",
     demo: `
       <div>
         <p>North yard is receiving until 18:00.</p>
@@ -557,7 +558,8 @@ export const COMPONENT_EXAMPLES = [
     summary: "Menu of actions. Selecting an item emits rowan-change.",
     tags: ["overlays", "menus"],
     keywords: ["rowan-menu", "menu", "menu item"],
-    intro: "Put <code>rowan-menu-item</code> elements in the default slot. The menu reports the chosen value on <code>rowan-change</code>.",
+    intro:
+      "Put <code>rowan-menu-item</code> elements in the default slot. The menu reports the chosen value on <code>rowan-change</code>.",
     demo: `
       <div class="docs-menu-frame">
         <rowan-menu data-docs-demo-host>
@@ -780,7 +782,8 @@ export const COMPONENT_EXAMPLES = [
     summary: "Inline spinner with an accessible label and three sizes.",
     tags: ["feedback", "loading"],
     keywords: ["rowan-spinner", "spinner", "loading"],
-    intro: "<code>label</code> is the accessible name. <code>size</code> is <code>sm</code>, <code>md</code>, or <code>lg</code>.",
+    intro:
+      "<code>label</code> is the accessible name. <code>size</code> is <code>sm</code>, <code>md</code>, or <code>lg</code>.",
     demo: `
       <div class="docs-demo-variants">
         <rowan-spinner data-docs-demo-host label="Loading trail counts"></rowan-spinner>
@@ -967,6 +970,27 @@ export const COMPONENT_EXAMPLES = [
   Guides
   <rowan-tree-item slot="children" value="getting-started" level="2">Getting started</rowan-tree-item>
 </rowan-tree-item>`,
+  },
+  {
+    id: "saved-views",
+    tagName: "rowan-saved-views",
+    title: "Saved Views",
+    page: false,
+    usage: `<rowan-table id="open-orders">
+  <rowan-table-toolbar slot="toolbar" saved-views for-table="open-orders">
+    <rowan-filter-builder appearance="toolbar"></rowan-filter-builder>
+    <rowan-saved-views
+      slot="end"
+      for-table="open-orders"
+      storage-key="open-orders"
+      label="Saved views"
+      share="on"
+      share-param="view"
+    >
+      <span slot="actions">Shared with the floor team</span>
+    </rowan-saved-views>
+  </rowan-table-toolbar>
+</rowan-table>`,
   },
   {
     id: "image",

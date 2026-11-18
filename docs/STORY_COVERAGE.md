@@ -20,7 +20,7 @@ Every category is enforced by `scripts/check-story-coverage.mjs`. A missing attr
 | `rowan-radar-chart` | 39% | 100% | — |
 | `rowan-range-chart` | 39% | 100% | — |
 | `rowan-scatter-chart` | 31% | 100% | — |
-| `rowan-sparkline` | 63% | 100% | — |
+| `rowan-sparkline` | 65% | 100% | — |
 | `rowan-stacked-area-chart` | 36% | 100% | — |
 | `rowan-stacked-bar-chart` | 42% | 100% | — |
 | `rowan-trend-chart` | 33% | 100% | — |
@@ -80,9 +80,10 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-filter-builder` | 100% | 100% | — |
 | `rowan-image` | 100% | 100% | — |
 | `rowan-row-details-panel` | 100% | 100% | — |
+| `rowan-saved-views` | 0% | 100% | — |
 | `rowan-source-meta` | 100% | 100% | — |
 | `rowan-table` | 100% | 100% | — |
-| `rowan-table-toolbar` | 100% | 100% | — |
+| `rowan-table-toolbar` | 89% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
 ## Forms & Input

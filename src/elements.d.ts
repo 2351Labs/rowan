@@ -62,6 +62,7 @@ import type { RowanRangeChart } from "../types/range-chart/range-chart.js";
 import type { RowanRating } from "../types/rating/rating.js";
 import type { RowanRichTextEditor } from "../types/rich-text-editor/rich-text-editor.js";
 import type { RowanRowDetailsPanel } from "../types/row-details-panel/row-details-panel.js";
+import type { RowanSavedViews } from "../types/saved-views/saved-views.js";
 import type { RowanScatterChart } from "../types/scatter-chart/scatter-chart.js";
 import type { RowanSelect } from "../types/select/select.js";
 import type { RowanSegmentedControl } from "../types/segmented-control/segmented-control.js";
@@ -163,6 +164,7 @@ declare global {
     "rowan-rating": RowanRating;
     "rowan-rich-text-editor": RowanRichTextEditor;
     "rowan-row-details-panel": RowanRowDetailsPanel;
+    "rowan-saved-views": RowanSavedViews;
     "rowan-scatter-chart": RowanScatterChart;
     "rowan-select": RowanSelect;
     "rowan-segmented-control": RowanSegmentedControl;

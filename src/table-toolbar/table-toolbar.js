@@ -48,6 +48,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @attr {string} label
  * @attr {string} selection-label
  * @attr {boolean} column-picker - Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements.
+ * @attr {boolean} saved-views - Mounts `rowan-saved-views` in the toolbar. The saved-views module loads the first time this is set.
  * @property {RowanTableToolbarMessages} messages - Property-only built-in message overrides.
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
@@ -61,6 +62,7 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @csspart end
  * @csspart column-picker
  * @csspart column-picker-menu
+ * @csspart saved-views
  * @cssprop --rowan-table-toolbar-bg
  * @cssprop --rowan-table-toolbar-border
  * @cssprop --rowan-table-toolbar-border-width
@@ -69,13 +71,20 @@ const DEFAULT_MESSAGES = Object.freeze({
 export class RowanTableToolbar extends BaseElement {
   static useElementInternals = true;
   static styles = componentStyles;
-  static observedAttributes = ["for-table", "label", "selection-label", "column-picker"];
+  static observedAttributes = [
+    "for-table",
+    "label",
+    "selection-label",
+    "column-picker",
+    "saved-views",
+  ];
   static upgradeProperties = [
     "table",
     "forTable",
     "label",
     "selectionLabel",
     "columnPicker",
+    "savedViews",
     "messages",
   ];
 
@@ -95,6 +104,8 @@ export class RowanTableToolbar extends BaseElement {
   #columnPickerMenu = null;
   #messages = {};
   #filterBuilderAppearanceObserver = null;
+  #savedViewsHost = null;
+  #savedViewsLoad = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -161,6 +172,14 @@ export class RowanTableToolbar extends BaseElement {
     this.reflectBoolean("column-picker", Boolean(value));
   }
 
+  get savedViews() {
+    return this.readBoolean("saved-views");
+  }
+
+  set savedViews(value) {
+    this.reflectBoolean("saved-views", Boolean(value));
+  }
+
   /** @returns {RowanTableToolbarMessages} */
   get messages() {
     return { ...this.#messages };
@@ -204,6 +223,7 @@ export class RowanTableToolbar extends BaseElement {
             <rowan-dropdown class="column-picker" part="column-picker" hidden>
               <div class="column-picker-menu" part="column-picker-menu" role="group"></div>
             </rowan-dropdown>
+            <div class="saved-views" part="saved-views"></div>
             <slot name="end"></slot>
           </div>
         </section>
@@ -216,6 +236,7 @@ export class RowanTableToolbar extends BaseElement {
       this.#selectionText = this.renderRoot.querySelector(".selection-text");
       this.#columnPicker = this.renderRoot.querySelector(".column-picker");
       this.#columnPickerMenu = this.renderRoot.querySelector(".column-picker-menu");
+      this.#savedViewsHost = this.renderRoot.querySelector(".saved-views");
       this.listen(this.#contentSlotEl, "slotchange", () => this.#syncFilterBuilderSlot());
     }
 
@@ -232,6 +253,7 @@ export class RowanTableToolbar extends BaseElement {
     );
     this.#toolbar.setAttribute("aria-label", this.label);
     this.#syncColumnPicker();
+    this.#syncSavedViews();
     this.#syncFilterBuilderSlot();
     this.#applyDefaultA11y();
   }
@@ -262,6 +284,30 @@ export class RowanTableToolbar extends BaseElement {
         attributeFilter: ["appearance"],
       });
     }
+  }
+
+  #syncSavedViews() {
+    if (!this.#savedViewsHost) return;
+    if (!this.savedViews) {
+      this.#savedViewsHost.replaceChildren();
+      return;
+    }
+
+    this.#savedViewsLoad ??= import("../saved-views/saved-views.js");
+    void this.#savedViewsLoad.then(() => {
+      if (!this.savedViews || !this.#savedViewsHost) return;
+      let control = this.#savedViewsHost.querySelector("rowan-saved-views");
+      if (!control) {
+        control = document.createElement("rowan-saved-views");
+        this.#savedViewsHost.append(control);
+      }
+      if (this.table) control.table = this.table;
+      const key = this.forTable || this.table?.id || "";
+      if (key) {
+        control.forTable = key;
+        control.storageKey = key;
+      }
+    });
   }
 
   #syncColumnPicker() {

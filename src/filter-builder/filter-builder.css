@@ -78,10 +78,21 @@
   gap: var(--rowan-filter-builder-control-gap);
 }
 
-.footer-actions {
+.footer-actions,
+.group-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--rowan-filter-builder-control-gap);
+}
+
+.group-filters .group {
+  margin-inline-start: var(--rowan-filter-builder-control-gap);
+}
+
+.group-limit {
+  color: var(--rowan-filter-builder-muted-fg);
+  font-size: var(--rowan-filter-builder-font-size);
+  margin: 0;
 }
 
 .group {

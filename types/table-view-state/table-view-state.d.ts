@@ -1,5 +1,8 @@
 /**
- * Normalizes a property-only table view state into a JSON-safe plain object.
+ * Normalizes a property-only table view state into a JSON-safe version 2 object.
+ * Version 1 input is migrated. Any other explicit version is rejected and
+ * becomes the empty version 2 state. Filter groups deeper than the stable
+ * limit, and nodes past the node cap, are dropped.
  *
  * @param {Partial<RowanTableViewState> | null | undefined} value
  * @returns {RowanTableViewState}
@@ -20,7 +23,8 @@ export function mergeTableViewState(
 ): RowanTableViewState;
 /**
  * Creates a deterministic URI-component-safe representation of table view state.
- * The application owns writing it to a URL, storage, or a saved-view service.
+ * The value is safe to place in a query string. `writeTableViewStateSearch`
+ * builds that query. Named saved views live in `@rowan-ui/core/saved-views`.
  *
  * @param {Partial<RowanTableViewState> | null | undefined} value
  * @returns {string}
@@ -38,19 +42,53 @@ export function serializeTableViewState(
 export function restoreTableViewState(
   snapshot: string | Partial<RowanTableViewState> | null | undefined,
 ): RowanTableViewState;
+/**
+ * Writes a version 2 snapshot into a query string. Existing params are kept.
+ * The snapshot is raw JSON; `URLSearchParams` encodes it once.
+ *
+ * @param {Partial<RowanTableViewState> | null | undefined} value
+ * @param {{ param?: string, search?: string }} [options]
+ * @returns {string}
+ */
+export function writeTableViewStateSearch(
+  value: Partial<RowanTableViewState> | null | undefined,
+  options?:
+    | {
+        param?: string | undefined;
+        search?: string | undefined;
+      }
+    | undefined,
+): string;
+/**
+ * Reads a version 2 snapshot from a query string. Version 1 is migrated.
+ * A missing param, malformed JSON, or an unknown version returns `ok: false`
+ * and the empty state so a bad link does not wipe a table.
+ *
+ * @param {string | null | undefined} search
+ * @param {string} [param]
+ * @returns {{ ok: boolean, state: RowanTableViewState }}
+ */
+export function readTableViewStateSearch(
+  search: string | null | undefined,
+  param?: string | undefined,
+): {
+  ok: boolean;
+  state: RowanTableViewState;
+};
 /** @typedef {{ id: string, dir: "asc" | "desc" }} RowanTableViewSort */
 /** @typedef {{ index: number, size: number, total?: number }} RowanTableViewPage */
 /** @typedef {{ id: string, subtotals: boolean, collapsed: boolean }} RowanTableViewGroupBy */
 /** @typedef {{ id?: string, field: string, operator: string, value: string }} RowanTableViewFilter */
 /**
- * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ * Stable group. Leaves stay `{ field, operator, value }`. Groups nest at most
+ * four levels. A node with `field` is always a leaf.
  * @typedef {{ id?: string, join: "and" | "or", filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup> }} RowanTableViewFilterGroup
  */
 /**
  * Portable state for an operational table. All fields are property-only.
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
- * @property {number} version
+ * @property {2} version Stable snapshot version. Input version `1` is migrated.
  * @property {RowanTableViewSort | RowanTableViewSort[] | null} sort
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
@@ -60,7 +98,8 @@ export function restoreTableViewState(
  * @property {"sm" | "md" | "lg"} density
  * @property {RowanTableViewGroupBy | null} groupBy
  */
-export const TABLE_VIEW_STATE_VERSION: 1;
+/** Stable table view snapshot. Version 1 input is migrated to this shape. */
+export const TABLE_VIEW_STATE_VERSION: 2;
 export type RowanTableViewSort = {
   id: string;
   dir: "asc" | "desc";
@@ -82,7 +121,8 @@ export type RowanTableViewFilter = {
   value: string;
 };
 /**
- * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ * Stable group. Leaves stay `{ field, operator, value }`. Groups nest at most
+ * four levels. A node with `field` is always a leaf.
  */
 export type RowanTableViewFilterGroup = {
   id?: string;
@@ -94,7 +134,10 @@ export type RowanTableViewFilterGroup = {
  * A null `visibleColumns` value preserves the application's source column visibility.
  */
 export type RowanTableViewState = {
-  version: number;
+  /**
+   * Stable snapshot version. Input version `1` is migrated.
+   */
+  version: 2;
   sort: RowanTableViewSort | RowanTableViewSort[] | null;
   page: RowanTableViewPage | null;
   filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup>;

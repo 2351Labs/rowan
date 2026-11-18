@@ -1,4 +1,8 @@
-import { isFilterGroup } from "../filter-builder/apply-filters.js";
+import {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
+  isFilterGroup,
+} from "../filter-builder/apply-filters.js";
 
 const DENSITIES = new Set(["sm", "md", "lg"]);
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
@@ -12,7 +16,8 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 /** @typedef {{ id?: string, field: string, operator: string, value: string }} RowanTableViewFilter */
 
 /**
- * Experimental group. Frozen leaves stay `{ field, operator, value }`.
+ * Stable group. Leaves stay `{ field, operator, value }`. Groups nest at most
+ * four levels. A node with `field` is always a leaf.
  * @typedef {{ id?: string, join: "and" | "or", filters: Array<RowanTableViewFilter | RowanTableViewFilterGroup> }} RowanTableViewFilterGroup
  */
 
@@ -20,7 +25,7 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * Portable state for an operational table. All fields are property-only.
  * A null `visibleColumns` value preserves the application's source column visibility.
  * @typedef {object} RowanTableViewState
- * @property {number} version
+ * @property {2} version Stable snapshot version. Input version `1` is migrated.
  * @property {RowanTableViewSort | RowanTableViewSort[] | null} sort
  * @property {RowanTableViewPage | null} page
  * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} filters
@@ -31,7 +36,10 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * @property {RowanTableViewGroupBy | null} groupBy
  */
 
-export const TABLE_VIEW_STATE_VERSION = 1;
+/** Stable table view snapshot. Version 1 input is migrated to this shape. */
+export const TABLE_VIEW_STATE_VERSION = 2;
+
+const KNOWN_VERSIONS = new Set([1, TABLE_VIEW_STATE_VERSION]);
 
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -111,9 +119,17 @@ function normalizeFilter(value) {
   return filter;
 }
 
-function normalizeFilterNode(value) {
+function normalizeFilterNode(value, depth, budget) {
+  if (budget.n >= FILTER_MAX_NODES) return null;
+
   if (isFilterGroup(value)) {
-    const filters = value.filters.map(normalizeFilterNode).filter(Boolean);
+    if (depth > FILTER_GROUP_MAX_DEPTH) return null;
+    budget.n += 1;
+    const filters = [];
+    for (const child of value.filters) {
+      const node = normalizeFilterNode(child, depth + 1, budget);
+      if (node) filters.push(node);
+    }
     const node = {
       join: normalizeText(value.join) === "or" ? "or" : "and",
       filters,
@@ -123,16 +139,41 @@ function normalizeFilterNode(value) {
     return node;
   }
 
-  return normalizeFilter(value);
+  const filter = normalizeFilter(value);
+  if (!filter) return null;
+  budget.n += 1;
+  return filter;
 }
 
 function normalizeFilters(value) {
   if (!Array.isArray(value)) return [];
-  return value.map(normalizeFilterNode).filter(Boolean);
+  const budget = { n: 0 };
+  const filters = [];
+  for (const item of value) {
+    const node = normalizeFilterNode(item, isFilterGroup(item) ? 1 : 0, budget);
+    if (node) filters.push(node);
+  }
+  return filters;
 }
 
-function filterListHasGroup(nodes) {
-  return nodes.some((node) => isFilterGroup(node));
+function emptyTableViewState() {
+  return {
+    version: TABLE_VIEW_STATE_VERSION,
+    sort: null,
+    page: null,
+    filters: [],
+    visibleColumns: null,
+    columnWidths: null,
+    columnOrder: null,
+    density: "md",
+    groupBy: null,
+  };
+}
+
+function parseSnapshotText(snapshot) {
+  const text = snapshot.trim();
+  if (text.startsWith("{")) return JSON.parse(text);
+  return JSON.parse(decodeURIComponent(text));
 }
 
 function normalizeVisibleColumns(value) {
@@ -203,20 +244,25 @@ function stateKeys(value) {
 }
 
 /**
- * Normalizes a property-only table view state into a JSON-safe plain object.
+ * Normalizes a property-only table view state into a JSON-safe version 2 object.
+ * Version 1 input is migrated. Any other explicit version is rejected and
+ * becomes the empty version 2 state. Filter groups deeper than the stable
+ * limit, and nodes past the node cap, are dropped.
  *
  * @param {Partial<RowanTableViewState> | null | undefined} value
  * @returns {RowanTableViewState}
  */
 export function normalizeTableViewState(value) {
   const source = isRecord(value) ? value : {};
-  const filters = normalizeFilters(source.filters);
+  if (Object.hasOwn(source, "version") && !KNOWN_VERSIONS.has(source.version)) {
+    return emptyTableViewState();
+  }
 
   return {
-    version: filterListHasGroup(filters) ? 2 : TABLE_VIEW_STATE_VERSION,
+    version: TABLE_VIEW_STATE_VERSION,
     sort: normalizeSort(source.sort),
     page: normalizePage(source.page),
-    filters,
+    filters: normalizeFilters(source.filters),
     visibleColumns: normalizeVisibleColumns(source.visibleColumns),
     columnWidths: normalizeColumnWidths(source.columnWidths),
     columnOrder: normalizeColumnOrder(source.columnOrder),
@@ -241,7 +287,8 @@ export function mergeTableViewState(base, patch) {
 
 /**
  * Creates a deterministic URI-component-safe representation of table view state.
- * The application owns writing it to a URL, storage, or a saved-view service.
+ * The value is safe to place in a query string. `writeTableViewStateSearch`
+ * builds that query. Named saved views live in `@rowan-ui/core/saved-views`.
  *
  * @param {Partial<RowanTableViewState> | null | undefined} value
  * @returns {string}
@@ -261,8 +308,60 @@ export function restoreTableViewState(snapshot) {
   if (typeof snapshot !== "string") return normalizeTableViewState(snapshot);
 
   try {
-    return normalizeTableViewState(JSON.parse(decodeURIComponent(snapshot)));
+    return normalizeTableViewState(parseSnapshotText(snapshot));
   } catch {
-    return normalizeTableViewState();
+    return emptyTableViewState();
   }
+}
+
+/**
+ * Writes a version 2 snapshot into a query string. Existing params are kept.
+ * The snapshot is raw JSON; `URLSearchParams` encodes it once.
+ *
+ * @param {Partial<RowanTableViewState> | null | undefined} value
+ * @param {{ param?: string, search?: string }} [options]
+ * @returns {string}
+ */
+export function writeTableViewStateSearch(value, options = {}) {
+  const param = normalizeText(options?.param) || "view";
+  const search = typeof options?.search === "string" ? options.search : "";
+  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  params.set(param, JSON.stringify(normalizeTableViewState(value)));
+  const text = params.toString();
+  return text ? `?${text}` : "";
+}
+
+/**
+ * Reads a version 2 snapshot from a query string. Version 1 is migrated.
+ * A missing param, malformed JSON, or an unknown version returns `ok: false`
+ * and the empty state so a bad link does not wipe a table.
+ *
+ * @param {string | null | undefined} search
+ * @param {string} [param]
+ * @returns {{ ok: boolean, state: RowanTableViewState }}
+ */
+export function readTableViewStateSearch(search, param = "view") {
+  const key = normalizeText(param) || "view";
+  const params = new URLSearchParams(String(search ?? "").replace(/^\?/, ""));
+  const empty = emptyTableViewState();
+  if (!params.has(key)) return { ok: false, state: empty };
+
+  const raw = params.get(key);
+  if (raw == null || raw.trim() === "") return { ok: false, state: empty };
+
+  let parsed;
+  try {
+    parsed = parseSnapshotText(raw);
+  } catch {
+    return { ok: false, state: empty };
+  }
+
+  if (
+    !isRecord(parsed) ||
+    (Object.hasOwn(parsed, "version") && !KNOWN_VERSIONS.has(parsed.version))
+  ) {
+    return { ok: false, state: empty };
+  }
+
+  return { ok: true, state: normalizeTableViewState(parsed) };
 }

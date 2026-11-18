@@ -88,7 +88,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 ## Components
 
-100 custom elements. Each block is the public API summary (attributes, properties, events, slots, and CSS parts).
+101 custom elements. Each block is the public API summary (attributes, properties, events, slots, and CSS parts).
 
 - [rowan-accordion](https://2351labs.github.io/rowan/#accordion): Expandable disclosure section. Import `@rowan-ui/core/accordion`. React `RowanAccordion` from `@rowan-ui/core/react/accordion`.
 
@@ -618,6 +618,14 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
   Slots: `(default)`; `actions`; `empty`; `pager`; `title`
   Parts: `actions`; `body`; `close`; `empty`; `field`; `fields`; `header`; `overlay`; `pager`; `panel`; `title`
 
+- [rowan-saved-views](https://2351labs.github.io/rowan/#saved-views): Saved views for an operational table: name, list, rename, delete, default, apply, and share. Place it in `rowan-table-toolbar`, or set `saved-views` on the toolbar to mount this element. The menu loads with this module, not with the table's initial graph. Import `@rowan-ui/core/saved-views`. React `RowanSavedViews` from `@rowan-ui/core/react/saved-views`.
+
+  Attributes: `for-table` string; `label` string; `share` "on"|"off" default on; `share-param` string; `storage-key` string
+  Properties: `externalLabelText`; `forTable`; `label`; `messages` RowanSavedViewsMessages; `share` "on" | "off" default on; `shareParam`; `storage` RowanSavedViewStorage | null; `storageKey`; `table` HTMLElement | null; `views` RowanSavedView[]
+  Events: `rowan-saved-view-apply`; `rowan-saved-view-share`; `rowan-saved-views-change`
+  Slots: `actions`
+  Parts: `empty`; `error`; `list`; `menu`; `name-input`; `panel`; `root`; `save-button`; `save-form`; `status`
+
 - [rowan-scatter-chart](https://2351labs.github.io/rowan/#scatter-chart): Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or y is no-data. Import `@rowan-ui/core/scatter-chart`. React `RowanScatterChart` from `@rowan-ui/core/react/scatter-chart`.
 
   Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
@@ -780,11 +788,11 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-table-toolbar](https://2351labs.github.io/rowan/#table-toolbar): Table operations surface for filters and density. Selection count hides when a bulk-actions-bar is on the same table. A nested `panel` filter-builder wraps to a full second row; `appearance="toolbar"` chips stay on the first row. `column-picker` is a `rowan-dropdown` that follows the linked table's `columns` whenever they are assigned or replaced, before or after this element upgrades or connects, and when a column menu hides or shows a column. Import `@rowan-ui/core/table-toolbar`. React `RowanTableToolbar` from `@rowan-ui/core/react/table-toolbar`.
 
-  Attributes: `column-picker` boolean default false; `for-table` string; `label` string default Table controls; `selection-label` string default selected
-  Properties: `columnPicker` default false; `externalLabelText`; `forTable`; `label` default Table controls; `messages` RowanTableToolbarMessages; `selected`; `selectedCount`; `selectedRows`; `selectionLabel` default selected; `table`
+  Attributes: `column-picker` boolean default false; `for-table` string; `label` string default Table controls; `saved-views` boolean default false; `selection-label` string default selected
+  Properties: `columnPicker` default false; `externalLabelText`; `forTable`; `label` default Table controls; `messages` RowanTableToolbarMessages; `savedViews` default false; `selected`; `selectedCount`; `selectedRows`; `selectionLabel` default selected; `table`
   Events: none
   Slots: `(default)`; `end`; `selection`; `start`
-  Parts: `column-picker`; `column-picker-menu`; `content`; `end`; `selection`; `selection-text`; `start`; `toolbar`
+  Parts: `column-picker`; `column-picker-menu`; `content`; `end`; `saved-views`; `selection`; `selection-text`; `start`; `toolbar`
 
 - [rowan-tabs](https://2351labs.github.io/rowan/#tabs): Tabs controller for tab and tab-panel children. Import `@rowan-ui/core/tabs`. React `RowanTabs` from `@rowan-ui/core/react/tabs`.
 

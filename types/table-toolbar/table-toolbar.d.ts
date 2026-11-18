@@ -11,6 +11,7 @@
  * @attr {string} label
  * @attr {string} selection-label
  * @attr {boolean} column-picker - Column visibility menu. Stays hidden until the linked table has columns, then tracks later replacements.
+ * @attr {boolean} saved-views - Mounts `rowan-saved-views` in the toolbar. The saved-views module loads the first time this is set.
  * @property {RowanTableToolbarMessages} messages - Property-only built-in message overrides.
  * @slot start - Leading filters or navigation controls
  * @slot selection - Additional content beside the selected-row status
@@ -24,6 +25,7 @@
  * @csspart end
  * @csspart column-picker
  * @csspart column-picker-menu
+ * @csspart saved-views
  * @cssprop --rowan-table-toolbar-bg
  * @cssprop --rowan-table-toolbar-border
  * @cssprop --rowan-table-toolbar-border-width
@@ -42,6 +44,8 @@ export class RowanTableToolbar extends BaseElement {
   get selectionLabel(): string;
   set columnPicker(value: boolean);
   get columnPicker(): boolean;
+  set savedViews(value: boolean);
+  get savedViews(): boolean;
   /** @param {RowanTableToolbarMessages | null | undefined} value */
   set messages(value: RowanTableToolbarMessages | null | undefined);
   /** @returns {RowanTableToolbarMessages} */

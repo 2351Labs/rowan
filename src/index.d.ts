@@ -62,3 +62,4 @@ export type { RowanToastMessages } from "../types/toast/toast.js";
 export type { RowanTrendChartMessages } from "../types/trend-chart/trend-chart.js";
 export type { RowanValidationSummaryMessages } from "../types/validation-summary/validation-summary.js";
 export type { RowanWaterfallChartMessages } from "../types/waterfall-chart/waterfall-chart.js";
+export type { RowanSavedViewsMessages } from "../types/saved-views/saved-views.js";

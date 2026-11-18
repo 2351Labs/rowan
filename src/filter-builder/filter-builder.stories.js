@@ -109,6 +109,7 @@ export const NestedGroups = {
   parameters: createEventScriptParameters({
     steps: [
       "Change the group conjunction from Match any to Match all.",
+      "Add a group inside this group. Groups nest at most four levels.",
       "Add a filter inside the group.",
       "Observe the table update through consumer-owned row state.",
     ],

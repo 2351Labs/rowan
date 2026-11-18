@@ -11323,7 +11323,7 @@
           "default": "",
           "reflects": false,
           "readonly": false,
-          "description": "Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only."
+          "description": "Top-level AND list. Group nodes `{ join, filters }` nest AND/OR up to four levels and 40 nodes. Deeper or extra nodes are dropped on assign. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only."
         },
         {
           "name": "forTable",
@@ -17733,6 +17733,289 @@
       }
     },
     {
+      "tagName": "rowan-saved-views",
+      "slug": "saved-views",
+      "className": "RowanSavedViews",
+      "title": "Saved Views",
+      "description": "Saved views for an operational table: name, list, rename, delete, default, apply, and share. Place it in `rowan-table-toolbar`, or set `saved-views` on the toolbar to mount this element. The menu loads with this module, not with the table's initial graph.",
+      "packageName": "@rowan-ui/core",
+      "packageVersion": "0.23.4",
+      "importPath": "@rowan-ui/core/saved-views",
+      "modulePath": "src/saved-views/saved-views.js",
+      "docsUrl": "https://2351labs.github.io/rowan/#saved-views",
+      "importNote": "",
+      "attributes": [
+        {
+          "name": "for-table",
+          "type": "string",
+          "default": "",
+          "reflects": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "reflects": true,
+          "description": ""
+        },
+        {
+          "name": "share",
+          "type": "\"on\"|\"off\"",
+          "default": "on",
+          "reflects": true,
+          "description": "Read and write the view query param. Default `on`."
+        },
+        {
+          "name": "share-param",
+          "type": "string",
+          "default": "",
+          "reflects": true,
+          "description": "Query key for a shared view. Default `view`."
+        },
+        {
+          "name": "storage-key",
+          "type": "string",
+          "default": "",
+          "reflects": true,
+          "description": "Suffix of the storage key. The full key is `rowan-saved-views:` plus this value, the table id, or `default`."
+        }
+      ],
+      "properties": [
+        {
+          "name": "externalLabelText",
+          "type": "",
+          "default": "",
+          "reflects": false,
+          "readonly": true,
+          "description": "Text of any `<label for>` bound to the host. `label`/`for` cannot cross a shadow boundary."
+        },
+        {
+          "name": "forTable",
+          "type": "",
+          "default": "",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "",
+          "default": "",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "messages",
+          "type": "RowanSavedViewsMessages",
+          "default": "",
+          "reflects": false,
+          "readonly": false,
+          "description": "Property-only built-in message overrides."
+        },
+        {
+          "name": "share",
+          "type": "\"on\" | \"off\"",
+          "default": "on",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "shareParam",
+          "type": "",
+          "default": "",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "storage",
+          "type": "RowanSavedViewStorage | null",
+          "default": "",
+          "reflects": false,
+          "readonly": false,
+          "description": "Property-only persistence adapter. Defaults to localStorage."
+        },
+        {
+          "name": "storageKey",
+          "type": "",
+          "default": "",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "table",
+          "type": "HTMLElement | null",
+          "default": "",
+          "reflects": false,
+          "readonly": false,
+          "description": ""
+        },
+        {
+          "name": "views",
+          "type": "RowanSavedView[]",
+          "default": "",
+          "reflects": false,
+          "readonly": true,
+          "description": "Property-only saved views."
+        }
+      ],
+      "events": [
+        {
+          "name": "rowan-saved-view-apply",
+          "description": "Cancelable. Fired before a view is written onto the table.",
+          "detail": ""
+        },
+        {
+          "name": "rowan-saved-view-share",
+          "description": "Fired after a share link is copied",
+          "detail": ""
+        },
+        {
+          "name": "rowan-saved-views-change",
+          "description": "Fired when the saved list loads or changes",
+          "detail": ""
+        }
+      ],
+      "slots": [
+        {
+          "name": "actions",
+          "description": "Extra controls inside the views menu"
+        }
+      ],
+      "cssParts": [
+        {
+          "name": "empty",
+          "description": ""
+        },
+        {
+          "name": "error",
+          "description": ""
+        },
+        {
+          "name": "list",
+          "description": ""
+        },
+        {
+          "name": "menu",
+          "description": ""
+        },
+        {
+          "name": "name-input",
+          "description": ""
+        },
+        {
+          "name": "panel",
+          "description": ""
+        },
+        {
+          "name": "root",
+          "description": ""
+        },
+        {
+          "name": "save-button",
+          "description": ""
+        },
+        {
+          "name": "save-form",
+          "description": ""
+        },
+        {
+          "name": "status",
+          "description": ""
+        }
+      ],
+      "cssProperties": [],
+      "methods": [
+        {
+          "name": "apply",
+          "parameters": [
+            "id"
+          ],
+          "inherited": "",
+          "description": ""
+        },
+        {
+          "name": "copyLink",
+          "parameters": [
+            "id"
+          ],
+          "inherited": "",
+          "description": "Copies a URL for one saved view, or for the current table when `id` is omitted."
+        },
+        {
+          "name": "delete",
+          "parameters": [
+            "id"
+          ],
+          "inherited": "",
+          "description": ""
+        },
+        {
+          "name": "rename",
+          "parameters": [
+            "id",
+            "name"
+          ],
+          "inherited": "",
+          "description": ""
+        },
+        {
+          "name": "save",
+          "parameters": [
+            "name"
+          ],
+          "inherited": "",
+          "description": ""
+        },
+        {
+          "name": "setDefault",
+          "parameters": [
+            "id"
+          ],
+          "inherited": "",
+          "description": "Marks one view as the default, or clears the default when `id` is empty."
+        }
+      ],
+      "usage": "<rowan-table id=\"open-orders\">\n  <rowan-table-toolbar slot=\"toolbar\" saved-views for-table=\"open-orders\">\n    <rowan-filter-builder appearance=\"toolbar\"></rowan-filter-builder>\n    <rowan-saved-views\n      slot=\"end\"\n      for-table=\"open-orders\"\n      storage-key=\"open-orders\"\n      label=\"Saved views\"\n      share=\"on\"\n      share-param=\"view\"\n    >\n      <span slot=\"actions\">Shared with the floor team</span>\n    </rowan-saved-views>\n  </rowan-table-toolbar>\n</rowan-table>",
+      "react": {
+        "component": "RowanSavedViews",
+        "importPath": "@rowan-ui/core/react/saved-views",
+        "props": [
+          "forTable",
+          "label",
+          "messages",
+          "share",
+          "shareParam",
+          "storage",
+          "storageKey",
+          "table"
+        ],
+        "eventProps": [
+          {
+            "name": "onRowanSavedViewApply",
+            "event": "rowan-saved-view-apply"
+          },
+          {
+            "name": "onRowanSavedViewsChange",
+            "event": "rowan-saved-views-change"
+          },
+          {
+            "name": "onRowanSavedViewShare",
+            "event": "rowan-saved-view-share"
+          }
+        ]
+      },
+      "examples": {
+        "html": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>Saved Views</title>\n    <script type=\"module\">\n      import \"@rowan-ui/core/tokens\";\n      import \"@rowan-ui/core/tokens/light\";\n      import \"@rowan-ui/core/saved-views\";\n    </script>\n  </head>\n  <body>\n    <rowan-table id=\"open-orders\">\n  <rowan-table-toolbar slot=\"toolbar\" saved-views for-table=\"open-orders\">\n    <rowan-filter-builder appearance=\"toolbar\"></rowan-filter-builder>\n    <rowan-saved-views\n      slot=\"end\"\n      for-table=\"open-orders\"\n      storage-key=\"open-orders\"\n      label=\"Saved views\"\n      share=\"on\"\n      share-param=\"view\"\n    >\n      <span slot=\"actions\">Shared with the floor team</span>\n    </rowan-saved-views>\n  </rowan-table-toolbar>\n</rowan-table>\n  </body>\n</html>",
+        "react": "import \"@rowan-ui/core/tokens\";\nimport \"@rowan-ui/core/tokens/light\";\nimport { RowanSavedViews } from \"@rowan-ui/core/react/saved-views\";\n\n// RowanSavedViews maps onRowanSavedViewApply to the rowan-saved-view-apply event.\nexport function Example() {\n  return (\n    <rowan-table id=\"open-orders\">\n      <rowan-table-toolbar slot=\"toolbar\" saved-views for-table=\"open-orders\">\n        <rowan-filter-builder appearance=\"toolbar\"></rowan-filter-builder>\n        <RowanSavedViews\n          slot=\"end\"\n          for-table=\"open-orders\"\n          storage-key=\"open-orders\"\n          label=\"Saved views\"\n          share=\"on\"\n          share-param=\"view\"\n        >\n          <span slot=\"actions\">Shared with the floor team</span>\n        </RowanSavedViews>\n      </rowan-table-toolbar>\n    </rowan-table>\n  );\n}",
+        "excerpts": []
+      }
+    },
+    {
       "tagName": "rowan-scatter-chart",
       "slug": "scatter-chart",
       "className": "RowanScatterChart",
@@ -22579,6 +22862,13 @@
           "description": ""
         },
         {
+          "name": "saved-views",
+          "type": "boolean",
+          "default": "false",
+          "reflects": true,
+          "description": "Mounts `rowan-saved-views` in the toolbar. The saved-views module loads the first time this is set."
+        },
+        {
           "name": "selection-label",
           "type": "string",
           "default": "selected",
@@ -22626,6 +22916,14 @@
           "reflects": false,
           "readonly": false,
           "description": "Property-only built-in message overrides."
+        },
+        {
+          "name": "savedViews",
+          "type": "",
+          "default": "false",
+          "reflects": true,
+          "readonly": false,
+          "description": ""
         },
         {
           "name": "selected",
@@ -22705,6 +23003,10 @@
           "description": ""
         },
         {
+          "name": "saved-views",
+          "description": ""
+        },
+        {
           "name": "selection",
           "description": ""
         },
@@ -22756,6 +23058,7 @@
           "forTable",
           "label",
           "messages",
+          "savedViews",
           "selectionLabel",
           "table"
         ],
