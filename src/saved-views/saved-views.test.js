@@ -87,6 +87,46 @@ describe("saved view store", () => {
     expect(reasons).to.deep.equal(["save", "rename", "default", "default", "delete"]);
   });
 
+  it("keeps each storage key separate and drops a write that fails to persist", async () => {
+    const storage = createMemorySavedViewStorage([
+      {
+        id: "view-seed",
+        name: "Seed",
+        isDefault: false,
+        updatedAt: 1,
+        state: { version: 2, density: "md" },
+      },
+    ]);
+    const orders = createSavedViewStore({ key: "orders", storage });
+    const plants = createSavedViewStore({ key: "plants", storage });
+    await orders.save({ name: "Held orders", state: { density: "sm" } });
+    expect((await plants.list()).map((view) => view.name)).to.deep.equal(["Seed"]);
+    expect((await orders.list()).map((view) => view.name)).to.include("Held orders");
+
+    let fail = true;
+    const flaky = createSavedViewStore({
+      key: "orders",
+      storage: {
+        load() {
+          return [];
+        },
+        save() {
+          if (fail) throw new Error("disk full");
+        },
+      },
+    });
+    let threw = false;
+    try {
+      await flaky.save({ name: "Held orders", state: {} });
+    } catch {
+      threw = true;
+    }
+    expect(threw).to.equal(true);
+    expect(await flaky.list()).to.deep.equal([]);
+    fail = false;
+    expect((await flaky.save({ name: "Held orders", state: {} })).ok).to.equal(true);
+  });
+
   it("round-trips through a localStorage adapter and drops unknown versions", async () => {
     const backend = new Map();
     const storage = createLocalStorageSavedViewStorage({
@@ -311,6 +351,122 @@ describe("rowan-saved-views", () => {
     applyTableViewState(table, captured);
     expect(table.columns.map((column) => column.id)).to.deep.equal(["owner", "order", "status"]);
     expect(table.columns.find((column) => column.id === "status").hidden).to.equal(true);
+  });
+
+  it("restores a server page after the data module resets it", async () => {
+    const table = ordersTable();
+    table.dataMode = "server";
+    const seen = [];
+    table.dataSource = {
+      debounce: 0,
+      async getRows({ page }) {
+        seen.push(page);
+        return { rows: [], total: 80 };
+      },
+    };
+    document.body.append(table);
+    applyTableViewState(table, {
+      page: { index: 2, size: 25 },
+      filters: [{ field: "status", operator: "equals", value: "Held" }],
+      sort: { id: "order", dir: "asc" },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(seen.at(-1)).to.equal(2);
+    expect(table.page.index).to.equal(2);
+  });
+
+  it("keeps a shared snapshot ahead of the default view", async () => {
+    const table = ordersTable();
+    const search = new URLSearchParams();
+    search.set("view", JSON.stringify({ version: 2, density: "sm" }));
+    const original = `${location.pathname}${location.search}`;
+    history.replaceState(null, "", `${location.pathname}?${search.toString()}`);
+
+    const views = document.createElement("rowan-saved-views");
+    views.share = "on";
+    views.storage = createMemorySavedViewStorage([
+      {
+        id: "view-default",
+        name: "Spacious",
+        isDefault: true,
+        updatedAt: 1,
+        state: { version: 2, density: "lg" },
+      },
+    ]);
+    views.addEventListener("rowan-saved-view-apply", (event) => {
+      if (event.detail.source === "url") event.preventDefault();
+    });
+    views.table = table;
+    document.body.append(table, views);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+    expect(table.density).to.equal("md");
+
+    history.replaceState(null, "", original);
+  });
+
+  it("applies a shared snapshot that arrives before the table", async () => {
+    const search = new URLSearchParams();
+    search.set("view", JSON.stringify({ version: 2, density: "sm" }));
+    const original = `${location.pathname}${location.search}`;
+    history.replaceState(null, "", `${location.pathname}?${search.toString()}`);
+
+    const views = document.createElement("rowan-saved-views");
+    views.share = "on";
+    views.forTable = "orders";
+    views.storage = createMemorySavedViewStorage([
+      {
+        id: "view-default",
+        name: "Spacious",
+        isDefault: true,
+        updatedAt: 1,
+        state: { version: 2, density: "lg" },
+      },
+    ]);
+    document.body.append(views);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+
+    const table = ordersTable();
+    document.body.append(table);
+    views.table = table;
+    await settle();
+    expect(table.density).to.equal("sm");
+
+    history.replaceState(null, "", original);
+  });
+
+  it("resubscribes after reconnect and keeps focus on confirm delete", async () => {
+    const table = ordersTable();
+    const views = document.createElement("rowan-saved-views");
+    views.share = "off";
+    views.storage = createMemorySavedViewStorage();
+    views.messages = { deleteAction: "Remove", confirmDeleteAction: "Confirm remove" };
+    views.table = table;
+    document.body.append(table, views);
+    await settle();
+    await views.save("Held orders");
+    await settle();
+
+    views.remove();
+    document.body.append(views);
+    await settle();
+    const reasons = [];
+    views.addEventListener("rowan-saved-views-change", (event) =>
+      reasons.push(event.detail.reason),
+    );
+    await views.rename(views.views[0].id, "Blocked orders");
+    expect(views.views[0].name).to.equal("Blocked orders");
+    expect(reasons).to.include("rename");
+    expect(views.shadowRoot.querySelector("[data-action='delete']").textContent).to.equal("Remove");
+
+    views.shadowRoot.querySelector("rowan-dropdown").open = true;
+    await settle();
+    views.shadowRoot.querySelector("[data-action='delete']").focus();
+    views.shadowRoot.querySelector("[data-action='delete']").click();
+    await settle();
+    expect(views.shadowRoot.activeElement?.dataset.action).to.equal("confirm-delete");
+    expect(views.shadowRoot.activeElement.textContent).to.equal("Confirm remove");
   });
 });
 

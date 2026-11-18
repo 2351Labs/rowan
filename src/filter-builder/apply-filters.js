@@ -285,29 +285,43 @@ export function cloneFilterNode(node) {
   return { ...node };
 }
 
-function matchesNode(row, node, fields, depth, budget) {
-  if (budget.n >= FILTER_MAX_NODES) return false;
-  budget.n += 1;
+function indexFilterTree(list) {
+  let count = 0;
+  const visit = (node, depth) => {
+    count += 1;
+    const indexed = { node, index: count, depth, children: null };
+    if (isFilterGroup(node)) {
+      indexed.children = node.filters.map((child) => visit(child, depth + 1));
+    }
+    return indexed;
+  };
+  return list.map((node) => visit(node, isFilterGroup(node) ? 1 : 0));
+}
 
-  if (isFilterGroup(node)) {
-    if (depth > FILTER_GROUP_MAX_DEPTH) return false;
-    const children = node.filters;
-    if (children.length === 0) return node.join !== "or";
+function matchesIndexed(row, indexed, fields) {
+  if (indexed.index > FILTER_MAX_NODES) return false;
 
-    return node.join === "or"
-      ? children.some((child) => matchesNode(row, child, fields, depth + 1, budget))
-      : children.every((child) => matchesNode(row, child, fields, depth + 1, budget));
+  if (isFilterGroup(indexed.node)) {
+    if (indexed.depth > FILTER_GROUP_MAX_DEPTH) return false;
+    const children = indexed.children;
+    if (children.length === 0) return indexed.node.join !== "or";
+
+    return indexed.node.join === "or"
+      ? children.some((child) => matchesIndexed(row, child, fields))
+      : children.every((child) => matchesIndexed(row, child, fields));
   }
 
-  return matchesFilter(row, node, fieldFor(fields, node.field));
+  return matchesFilter(row, indexed.node, fieldFor(fields, indexed.node.field));
 }
 
 /**
  * Applies filters to rows. The top-level list is an implicit AND.
  * Group nodes `{ join: "and" | "or", filters: [...] }` are stable.
  * Groups nest at most {@link FILTER_GROUP_MAX_DEPTH} levels, and the tree
- * holds at most {@link FILTER_MAX_NODES} nodes. A deeper group does not
- * match. Nodes past the cap do not match, so an over-large AND fails closed.
+ * holds at most {@link FILTER_MAX_NODES} nodes. Positions are numbered before
+ * any row is tested, so a short-circuit does not let a later node through.
+ * A deeper group does not match. Nodes past the cap do not match, so an
+ * over-large AND fails closed.
  * Unknown operators do not match. An empty AND group matches; an empty OR
  * group does not. A non-array filter list applies no filtering.
  * @param {object[]} rows
@@ -322,10 +336,6 @@ export function applyFilters(rows, filters, fields = []) {
   if (list.length === 0) return [...rows];
 
   const fieldList = Array.isArray(fields) ? fields : [];
-  return rows.filter((row) => {
-    const budget = { n: 0 };
-    return list.every((node) =>
-      matchesNode(row, node, fieldList, isFilterGroup(node) ? 1 : 0, budget),
-    );
-  });
+  const indexed = indexFilterTree(list);
+  return rows.filter((row) => indexed.every((node) => matchesIndexed(row, node, fieldList)));
 }

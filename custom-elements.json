@@ -12225,7 +12225,7 @@
               }
             }
           ],
-          "description": "Applies filters to rows. The top-level list is an implicit AND.\nGroup nodes `{ join: \"and\" | \"or\", filters: [...] }` are stable.\nGroups nest at most FILTER_GROUP_MAX_DEPTH levels, and the tree\nholds at most FILTER_MAX_NODES nodes. A deeper group does not\nmatch. Nodes past the cap do not match, so an over-large AND fails closed.\nUnknown operators do not match. An empty AND group matches; an empty OR\ngroup does not. A non-array filter list applies no filtering.",
+          "description": "Applies filters to rows. The top-level list is an implicit AND.\nGroup nodes `{ join: \"and\" | \"or\", filters: [...] }` are stable.\nGroups nest at most FILTER_GROUP_MAX_DEPTH levels, and the tree\nholds at most FILTER_MAX_NODES nodes. Positions are numbered before\nany row is tested, so a short-circuit does not let a later node through.\nA deeper group does not match. Nodes past the cap do not match, so an\nover-large AND fails closed.\nUnknown operators do not match. An empty AND group matches; an empty OR\ngroup does not. A non-array filter list applies no filtering.",
           "return": {
             "type": {
               "text": "object[]"
@@ -30869,7 +30869,7 @@
             {
               "name": "value",
               "type": {
-                "text": "Partial<RowanTableViewState> | null | undefined"
+                "text": "RowanTableViewStateInput | null | undefined"
               }
             }
           ],
@@ -30887,13 +30887,13 @@
             {
               "name": "base",
               "type": {
-                "text": "Partial<RowanTableViewState> | null | undefined"
+                "text": "RowanTableViewStateInput | null | undefined"
               }
             },
             {
               "name": "patch",
               "type": {
-                "text": "Partial<RowanTableViewState> | null | undefined"
+                "text": "RowanTableViewStateInput | null | undefined"
               }
             }
           ],
@@ -30911,7 +30911,7 @@
             {
               "name": "value",
               "type": {
-                "text": "Partial<RowanTableViewState> | null | undefined"
+                "text": "RowanTableViewStateInput | null | undefined"
               }
             }
           ],
@@ -30929,7 +30929,7 @@
             {
               "name": "snapshot",
               "type": {
-                "text": "string | Partial<RowanTableViewState> | null | undefined"
+                "text": "string | RowanTableViewStateInput | null | undefined"
               }
             }
           ],
@@ -30947,7 +30947,7 @@
             {
               "name": "value",
               "type": {
-                "text": "Partial<RowanTableViewState> | null | undefined"
+                "text": "RowanTableViewStateInput | null | undefined"
               }
             },
             {

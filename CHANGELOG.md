@@ -9,7 +9,7 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Added
 
 - `rowan-saved-views` saves, names, lists, renames, deletes, defaults, and applies a table view. The view is table-view-state version 2: filters (including nested groups), sort, page, visible columns, column order, column widths, density, and grouping. Storage is an adapter. The default adapter is `localStorage`; pass `storage` for a server. `rowan-saved-views-change`, cancelable `rowan-saved-view-apply`, and `rowan-saved-view-share` report the change. Share writes the version 2 snapshot to the `view` query parameter. Set `saved-views` on `rowan-table-toolbar` to mount the control. That module loads on first use, so the table's initial bundle stays the same.
-- `validateFilters`, `FILTER_GROUP_MAX_DEPTH` (4), and `FILTER_MAX_NODES` (40) in `@rowan-ui/core/filter-builder`. `readTableViewStateSearch` and `writeTableViewStateSearch` in `@rowan-ui/core/table-view-state`. `createSavedViewStore` in `@rowan-ui/core/saved-views`.
+- `validateFilters`, `FILTER_GROUP_MAX_DEPTH` (4), and `FILTER_MAX_NODES` (40) in `@rowan-ui/core/filter-builder`. `readTableViewStateSearch` and `writeTableViewStateSearch` in `@rowan-ui/core/table-view-state`. `createSavedViewStore` in `@rowan-ui/core/saved-views`. Snapshot helpers accept version 1 or 2 input and always return version 2.
 
 ### Changed
 

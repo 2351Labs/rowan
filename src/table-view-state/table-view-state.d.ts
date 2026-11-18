@@ -14,4 +14,5 @@ export type {
   RowanTableViewPage,
   RowanTableViewSort,
   RowanTableViewState,
+  RowanTableViewStateInput,
 } from "../../types/table-view-state/table-view-state.js";

@@ -36,6 +36,21 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
  * @property {RowanTableViewGroupBy | null} groupBy
  */
 
+/**
+ * Input accepted by the snapshot helpers. `version` may be 1 or 2.
+ * Version 1 is migrated. The value written back is always version 2.
+ * @typedef {object} RowanTableViewStateInput
+ * @property {1 | 2} [version]
+ * @property {RowanTableViewSort | RowanTableViewSort[] | null} [sort]
+ * @property {RowanTableViewPage | null} [page]
+ * @property {Array<RowanTableViewFilter | RowanTableViewFilterGroup>} [filters]
+ * @property {string[] | null} [visibleColumns]
+ * @property {Record<string, string> | null} [columnWidths]
+ * @property {string[] | null} [columnOrder]
+ * @property {"sm" | "md" | "lg"} [density]
+ * @property {RowanTableViewGroupBy | string | null} [groupBy]
+ */
+
 /** Stable table view snapshot. Version 1 input is migrated to this shape. */
 export const TABLE_VIEW_STATE_VERSION = 2;
 
@@ -249,7 +264,7 @@ function stateKeys(value) {
  * becomes the empty version 2 state. Filter groups deeper than the stable
  * limit, and nodes past the node cap, are dropped.
  *
- * @param {Partial<RowanTableViewState> | null | undefined} value
+ * @param {RowanTableViewStateInput | null | undefined} value
  * @returns {RowanTableViewState}
  */
 export function normalizeTableViewState(value) {
@@ -274,8 +289,8 @@ export function normalizeTableViewState(value) {
 /**
  * Merges a partial saved view into a base view without mutating either input.
  *
- * @param {Partial<RowanTableViewState> | null | undefined} base
- * @param {Partial<RowanTableViewState> | null | undefined} patch
+ * @param {RowanTableViewStateInput | null | undefined} base
+ * @param {RowanTableViewStateInput | null | undefined} patch
  * @returns {RowanTableViewState}
  */
 export function mergeTableViewState(base, patch) {
@@ -290,7 +305,7 @@ export function mergeTableViewState(base, patch) {
  * The value is safe to place in a query string. `writeTableViewStateSearch`
  * builds that query. Named saved views live in `@rowan-ui/core/saved-views`.
  *
- * @param {Partial<RowanTableViewState> | null | undefined} value
+ * @param {RowanTableViewStateInput | null | undefined} value
  * @returns {string}
  */
 export function serializeTableViewState(value) {
@@ -301,7 +316,7 @@ export function serializeTableViewState(value) {
  * Restores a normalized view state from a serialized snapshot or plain object.
  * This function is pure: assigning its result to a table or filter builder is host-owned.
  *
- * @param {string | Partial<RowanTableViewState> | null | undefined} snapshot
+ * @param {string | RowanTableViewStateInput | null | undefined} snapshot
  * @returns {RowanTableViewState}
  */
 export function restoreTableViewState(snapshot) {
@@ -318,7 +333,7 @@ export function restoreTableViewState(snapshot) {
  * Writes a version 2 snapshot into a query string. Existing params are kept.
  * The snapshot is raw JSON; `URLSearchParams` encodes it once.
  *
- * @param {Partial<RowanTableViewState> | null | undefined} value
+ * @param {RowanTableViewStateInput | null | undefined} value
  * @param {{ param?: string, search?: string }} [options]
  * @returns {string}
  */

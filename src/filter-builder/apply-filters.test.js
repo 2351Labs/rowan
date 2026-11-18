@@ -215,6 +215,19 @@ describe("applyFilters", () => {
     expect(
       applyFilters(rows, capped.slice(0, FILTER_MAX_NODES), fields).map((row) => row.id),
     ).to.deep.equal(["1"]);
+
+    const shortCircuit = [
+      {
+        join: "or",
+        filters: Array.from({ length: FILTER_MAX_NODES - 1 }, () => ({
+          field: "role",
+          operator: "equals",
+          value: "Admin",
+        })),
+      },
+      { field: "role", operator: "equals", value: "Admin" },
+    ];
+    expect(applyFilters(rows, shortCircuit, fields)).to.deep.equal([]);
   });
 
   it("validates shape, fields, depth, and size without filtering rows", () => {

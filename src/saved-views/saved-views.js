@@ -26,12 +26,16 @@ const SHARE_MODES = new Set(["on", "off"]);
 const DEFAULT_MESSAGES = Object.freeze({
   applied: "Applied {name}.",
   confirmDelete: "Confirm delete {name}",
+  confirmDeleteAction: "Confirm",
   copied: "Link copied.",
+  copyAction: "Link",
   copyFailed: "The link could not be copied.",
   applyLabel: "Apply {name}",
   copyLink: "Copy link",
   copyViewLink: "Copy link for {name}",
+  defaultAction: "Default",
   defaultBadge: "Default",
+  deleteAction: "Delete",
   defaultSet: "{name} is the default view.",
   delete: "Delete {name}",
   deleted: "Deleted {name}.",
@@ -44,6 +48,7 @@ const DEFAULT_MESSAGES = Object.freeze({
   noTable: "Connect a table before saving a view.",
   missingView: "That view is no longer available.",
   rename: "Rename {name}",
+  renameAction: "Rename",
   renamed: "Renamed to {name}.",
   save: "Save",
   saveFailed: "The view could not be saved.",
@@ -70,9 +75,14 @@ const DEFAULT_MESSAGES = Object.freeze({
  * @typedef {object} RowanSavedViewsMessages
  * @property {string} [applied]
  * @property {string} [confirmDelete]
+ * @property {string} [confirmDeleteAction]
  * @property {string} [applyLabel]
  * @property {string} [copied]
+ * @property {string} [copyAction]
  * @property {string} [copyFailed]
+ * @property {string} [defaultAction]
+ * @property {string} [deleteAction]
+ * @property {string} [renameAction]
  * @property {string} [copyLink]
  * @property {string} [copyViewLink]
  * @property {string} [defaultBadge]
@@ -183,13 +193,15 @@ function result(ok, code, view, views) {
  * @returns {RowanSavedViewStorage}
  */
 export function createMemorySavedViewStorage(initial = []) {
-  let views = normalizeStoredList(initial);
+  const lists = new Map();
   return {
-    load() {
-      return cloneViews(views);
+    load(key) {
+      const id = String(key);
+      if (!lists.has(id)) lists.set(id, normalizeStoredList(initial));
+      return cloneViews(lists.get(id));
     },
-    save(_key, next) {
-      views = normalizeStoredList(next);
+    save(key, next) {
+      lists.set(String(key), normalizeStoredList(next));
     },
   };
 }
@@ -238,8 +250,9 @@ export function createSavedViewStore(options) {
   }
 
   async function write(next, reason) {
-    views = normalizeStoredList(next);
-    await storage.save(key, views);
+    const staged = normalizeStoredList(next);
+    await storage.save(key, staged);
+    views = staged;
     const detail = { views: cloneViews(views), reason };
     for (const listener of listeners) listener(detail);
     return views;
@@ -256,7 +269,11 @@ export function createSavedViewStore(options) {
       const found = views.find((view) => view.id === normalizeText(id));
       return found ? cloneView(found) : null;
     },
-    async save({ id, name, state } = {}) {
+    /**
+     * @param {{ id?: string, name?: string, state?: object }} [input]
+     */
+    async save(input = {}) {
+      const { id, name, state } = input;
       const current = await read();
       const nextName = normalizeText(name);
       if (!nextName) return result(false, "empty-name", null, current);
@@ -428,15 +445,27 @@ export function applyTableViewState(table, state) {
   table.sort = view.sort;
   table.density = view.density;
   table.groupBy = view.groupBy;
-  table.page = view.page;
   if (table.dataMode === "server" && view.page) {
     const page = { ...view.page };
-    // Filter and sort changes reset the server request to page 0, then wait
-    // out the source debounce before getRows. Restore the saved page first.
-    setTimeout(() => {
-      if (table.isConnected) table.page = page;
-    }, 0);
+    let retried = false;
+    const onRequest = (event) => {
+      if (event.detail?.page === page.index) {
+        table.removeEventListener("rowan-data-request", onRequest);
+        return;
+      }
+      if (retried) {
+        table.removeEventListener("rowan-data-request", onRequest);
+        return;
+      }
+      retried = true;
+      event.preventDefault();
+      table.page = page;
+      const source = table.dataSource;
+      table.dataSource = source;
+    };
+    table.addEventListener("rowan-data-request", onRequest);
   }
+  table.page = view.page;
   table.requestRender();
 }
 
@@ -501,6 +530,7 @@ export class RowanSavedViews extends BaseElement {
   #confirmDeleteId = "";
   #renamingId = "";
   #pendingApply = null;
+  #pendingFocus = null;
   #onPopState = () => {
     this.#applyFromUrl();
   };
@@ -736,7 +766,10 @@ export class RowanSavedViews extends BaseElement {
     const storage = this.#storageAdapter ?? createLocalStorageSavedViewStorage();
     if (!this.#store || this.#store.key !== key || this.#store.storage !== storage) {
       this.#unsubscribe?.();
+      this.#unsubscribe = null;
       this.#store = createSavedViewStore({ key, storage });
+    }
+    if (!this.#unsubscribe) {
       this.#unsubscribe = this.#store.subscribe((detail) => {
         this.#views = detail.views;
         this.requestRender();
@@ -756,7 +789,7 @@ export class RowanSavedViews extends BaseElement {
     emit(this, "rowan-saved-views-change", { views: cloneViews(views), reason: "load" });
     if (this.#booted) return;
     this.#booted = true;
-    if (this.share === "on" && this.#applyFromUrl()) return;
+    if (this.share === "on" && this.#claimSharedUrl()) return;
     const fallback = views.find((view) => view.isDefault);
     if (fallback) this.#requestApply(fallback.state, fallback, "default");
   }
@@ -822,10 +855,16 @@ export class RowanSavedViews extends BaseElement {
       return result(false, "missing-view", null, this.#views);
     }
     this.#showError("");
-    const saved = await this.#activeStore().save({
-      name,
-      state: captureTableViewState(this.#boundTable),
-    });
+    let saved;
+    try {
+      saved = await this.#activeStore().save({
+        name,
+        state: captureTableViewState(this.#boundTable),
+      });
+    } catch {
+      this.#showError(this.#message("saveFailed"));
+      return result(false, "save-failed", null, this.#views);
+    }
     if (!saved.ok) {
       this.#showError(this.#codeMessage(saved.code, normalizeText(name)));
       return saved;
@@ -836,7 +875,13 @@ export class RowanSavedViews extends BaseElement {
   }
 
   async #mutate(run, reason) {
-    const saved = await run();
+    let saved;
+    try {
+      saved = await run();
+    } catch {
+      this.#showError(this.#message("saveFailed"));
+      return result(false, "save-failed", null, this.#views);
+    }
     if (!saved.ok) {
       this.#showError(this.#codeMessage(saved.code, saved.view?.name ?? ""));
       return saved;
@@ -869,11 +914,16 @@ export class RowanSavedViews extends BaseElement {
     return true;
   }
 
-  #applyFromUrl() {
+  #claimSharedUrl() {
     if (this.share !== "on") return false;
     const read = readTableViewStateSearch(location.search, this.shareParam);
     if (!read.ok) return false;
-    return this.#requestApply(read.state, null, "url");
+    this.#requestApply(read.state, null, "url");
+    return true;
+  }
+
+  #applyFromUrl() {
+    return this.#claimSharedUrl();
   }
 
   #shareUrl(state) {
@@ -925,6 +975,13 @@ export class RowanSavedViews extends BaseElement {
 
   #renderViews() {
     if (!this.#list) return;
+    const active = this.renderRoot.activeElement;
+    const preserve =
+      this.#pendingFocus ||
+      (active instanceof HTMLElement && active.dataset.viewId
+        ? { id: active.dataset.viewId, action: active.dataset.action || "apply" }
+        : null);
+    this.#pendingFocus = null;
     const activeId = this.#renamingId;
     this.#list.replaceChildren(
       ...this.#views.map((view) => {
@@ -979,7 +1036,17 @@ export class RowanSavedViews extends BaseElement {
     if (input instanceof HTMLInputElement) {
       input.focus();
       input.select();
+      return;
     }
+    if (!preserve) return;
+    const same = this.#list.querySelector(
+      `[data-view-id="${CSS.escape(preserve.id)}"] [data-action="${CSS.escape(preserve.action)}"]`,
+    );
+    const row = this.#list.querySelector(
+      `[data-view-id="${CSS.escape(preserve.id)}"] [data-action="apply"]`,
+    );
+    const next = same || row || this.#list.querySelector("[data-action='apply']");
+    if (next instanceof HTMLElement) next.focus();
   }
 
   #iconButton(action, view, messageKey, pressed = false) {
@@ -988,16 +1055,17 @@ export class RowanSavedViews extends BaseElement {
     button.className = "icon-action";
     button.dataset.action = action;
     button.dataset.viewId = view.id;
-    button.textContent =
+    const visibleKey =
       action === "rename"
-        ? "Rename"
+        ? "renameAction"
         : action === "default"
-          ? "Default"
+          ? "defaultAction"
           : action === "copy"
-            ? "Link"
+            ? "copyAction"
             : action === "confirm-delete"
-              ? "Confirm"
-              : "Delete";
+              ? "confirmDeleteAction"
+              : "deleteAction";
+    button.textContent = this.#message(visibleKey);
     button.setAttribute("aria-label", this.#message(messageKey, { name: view.name }));
     if (action === "default") button.setAttribute("aria-pressed", pressed ? "true" : "false");
     return button;
@@ -1016,6 +1084,7 @@ export class RowanSavedViews extends BaseElement {
     if (action === "rename") {
       this.#confirmDeleteId = "";
       this.#renamingId = id;
+      this.#pendingFocus = { id, action: "rename-input" };
       this.requestRender();
       return;
     }
@@ -1026,6 +1095,7 @@ export class RowanSavedViews extends BaseElement {
     }
     if (action === "delete") {
       this.#confirmDeleteId = id;
+      this.#pendingFocus = { id, action: "confirm-delete" };
       this.requestRender();
       return;
     }

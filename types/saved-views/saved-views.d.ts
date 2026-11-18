@@ -30,7 +30,18 @@ export function createSavedViewStore(options: { key: string; storage?: RowanSave
     isDefault: boolean;
     updatedAt: any;
   } | null>;
-  save({ id, name, state }?: { id: any; name: any; state: any }): Promise<{
+  /**
+   * @param {{ id?: string, name?: string, state?: object }} [input]
+   */
+  save(
+    input?:
+      | {
+          id?: string | undefined;
+          name?: string | undefined;
+          state?: object;
+        }
+      | undefined,
+  ): Promise<{
     ok: any;
     code: any;
     view: {
@@ -206,9 +217,14 @@ export type RowanSavedViewStorage = {
 export type RowanSavedViewsMessages = {
   applied?: string | undefined;
   confirmDelete?: string | undefined;
+  confirmDeleteAction?: string | undefined;
   applyLabel?: string | undefined;
   copied?: string | undefined;
+  copyAction?: string | undefined;
   copyFailed?: string | undefined;
+  defaultAction?: string | undefined;
+  deleteAction?: string | undefined;
+  renameAction?: string | undefined;
   copyLink?: string | undefined;
   copyViewLink?: string | undefined;
   defaultBadge?: string | undefined;
