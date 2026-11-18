@@ -2865,13 +2865,15 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       <section class="doc-section" data-doc-section id="chart-interaction-selection">
         <h2>Selection and keyboard</h2>
         <p>Choosing a point still emits <code>rowan-point-activate</code>. It then emits cancelable <code>rowan-point-click</code> and, if that was not canceled, cancelable <code>rowan-selection-change</code>. Detail includes <code>series</code> (<code>id</code>, <code>label</code>), <code>index</code>, <code>datum</code>, <code>value</code>, and <code>formattedValue</code>, plus the chart-specific fields that <code>rowan-point-activate</code> already carried.</p>
-        <p>Arrow keys move across points. Home and End jump to the ends. Enter or Space selects. The existing polite live region announces the focused datum. Each chart also exposes its data table, either in a disclosure or visually hidden (sparkline, column sparkline, bullet, gauge). Column sparkline, gauge, sparkline, and bullet plots are keyboard-operable. Sparkline and bullet load that keyboard support lazily and walk the real table rows.</p>
+        <p>Arrow keys move across points. Home and End jump to the ends. Enter or Space selects. The existing polite live region announces the focused datum. Synced charts draw the same crosshair without moving focus and without a second live announcement. Each chart also exposes its data table, either in a disclosure or visually hidden (sparkline, column sparkline, bullet, gauge). Column sparkline, gauge, sparkline, and bullet plots are keyboard-operable. Sparkline and bullet load that keyboard support lazily. A long sparkline announces from the real values, including when the table is paged.</p>
       </section>
       <section class="doc-section" data-doc-section id="chart-interaction-motion">
-        <h2>Motion, resize, and what is next</h2>
+        <h2>Motion, resize, synced crosshairs, and large series</h2>
         <p>New marks fade in. <code>no-motion</code> and <code>prefers-reduced-motion: reduce</code> disable that animation. A resize observer redraws the chart when its width changes. Legend, shared tooltip, zoom, resize, synced crosshair, brush, and large-series drawing load lazily the first time the chart renders an SVG. The part A tooltip works before that module arrives. A hover or wheel that happens while the module is still loading is replayed when it arrives, so the shared tooltip and wheel zoom still apply. A legend click in that same gap is not replayed.</p>
-        <p>The <code>zoom</code> attribute opts in to wheel zoom, pinch zoom, drag-to-zoom, shift-drag pan, a reset button, and <code>rowan-zoom</code> (<code>x</code>, <code>y</code>, <code>width</code>, <code>height</code> of the SVG view box). Supported on area, bar, trend, stacked area, stacked bar, combo, range, scatter, box plot, and waterfall. Scatter zooms both axes; the others zoom the x axis. Not available on donut, funnel, radar, heatmap, gauge, bullet, sparkline, column sparkline, or KPI card.</p>
-        <p><code>sync-group</code> shares the axis pointer across charts with the same name. <code>chart.syncHover(index)</code> moves that pointer, and <code>rowan-sync</code> reports <code>group</code>, <code>index</code>, and <code>label</code> so a dashboard filter session can store the category. <code>brush</code> selects an x range by dragging or Shift+Arrow, emits <code>rowan-brush</code> (<code>startIndex</code>, <code>endIndex</code>, labels), and clears on Escape. With <code>zoom</code> as well, the drag also zooms. <code>large-series</code> is a count threshold: above it, marks are downsampled with LTTB for drawing, and a long data table is paged without dropping rows.</p>
+        <p>The <code>zoom</code> attribute opts in to wheel zoom, pinch zoom, drag-to-zoom, shift-drag pan, a reset button, and <code>rowan-zoom</code> (<code>x</code>, <code>y</code>, <code>width</code>, <code>height</code> of the SVG view box). Supported on area, bar, trend, stacked area, stacked bar, combo, range, scatter, box plot, and waterfall. Scatter zooms both axes; the others zoom the x axis. Not available on donut, funnel, radar, heatmap, gauge, bullet, sparkline, column sparkline, or KPI card. On a large series, zoom and resize sample the visible window again.</p>
+        <p><code>sync-group</code> shares the crosshair and tooltip across charts with the same name, including charts in different shadow roots. Hover, keyboard focus, and <code>syncHover(index)</code> move the group to that category. <code>rowan-sync</code> reports <code>group</code>, <code>index</code>, and <code>label</code>. Only the focused chart's live region speaks; the others keep the tooltip visual. <code>createDashboard({ syncGroup })</code> sets the attribute on the dashboard's charts. <code>bindChartSync(session, group)</code> from <code>@rowan-ui/core/dashboard-filters</code> stores the category on the session. The listener is removed when the chart disconnects. <code>brush</code> selects an x range by dragging or Shift+Arrow, emits <code>rowan-brush</code> (<code>startIndex</code>, <code>endIndex</code>, labels), and clears on Escape. With <code>zoom</code> as well, the drag also zooms.</p>
+        <p><code>large-series</code> is the drawn-point budget for line, area, trend, stacked area, bar, stacked bar, combo, scatter, and sparkline. Omit it and the chart keeps about two points per pixel (at most 1,600). Set a number to choose the budget. <code>large-series="off"</code> draws every point. The sampler keeps the minimum and maximum in each horizontal bucket, so a spike stays on the line, and it runs again after resize or zoom. The first frame is a stride so the chart never builds a node per input point. Tooltips read the real value under the pointer. The data table lists the real values and pages them, 40 at a time, once a series is longer than 80 points.</p>
+        <div class="demo-row" id="docs-sync-row"></div>
       </section>
     `,
     afterRender: (mainEl) => {
@@ -2894,6 +2896,23 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
       };
       chart.addEventListener("rowan-series-toggle", (event) => push("series", event));
       chart.addEventListener("rowan-selection-change", (event) => push("select", event));
+      const row = mainEl.querySelector("#docs-sync-row");
+      if (!row) return;
+      const labels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      const specs = [
+        ["rowan-trend-chart", "Arrivals", [{ id: "gate", label: "Gate", values: [18, 22, 19, 25, 21] }]],
+        ["rowan-area-chart", "Queue", [{ id: "queue", label: "Queue", values: [6, 9, 8, 11, 7] }]],
+        ["rowan-bar-chart", "Exceptions", [{ id: "exceptions", label: "Exceptions", values: [1, 2, 1, 4, 2] }]],
+      ];
+      for (const [tag, label, series] of specs) {
+        const element = document.createElement(tag);
+        element.label = label;
+        element.interactive = true;
+        element.labels = labels;
+        element.series = series;
+        element.setAttribute("sync-group", "docs");
+        row.append(element);
+      }
     },
   },
   {

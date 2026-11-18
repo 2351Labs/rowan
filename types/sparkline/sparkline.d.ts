@@ -48,6 +48,7 @@
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the sparkline keeps about two points per pixel. The tooltip and data table use the real values. A long table is paged.
  * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanSparkline extends BaseElement {
@@ -98,6 +99,7 @@ export class RowanSparkline extends BaseElement {
   set noMotion(value: boolean);
   get noMotion(): boolean;
   __cuesReady: Promise<void> | undefined;
+  __z: Promise<any> | undefined;
   #private;
 }
 export type RowanSparklineMessages = {

@@ -22,8 +22,8 @@ export class RowanStepper extends BaseElement {
   static styles: string;
   set currentStep(value: number);
   get currentStep(): number;
-  set orientation(value: "vertical" | "horizontal");
-  get orientation(): "vertical" | "horizontal";
+  set orientation(value: "horizontal" | "vertical");
+  get orientation(): "horizontal" | "vertical";
   set steps(value: any);
   get steps(): any;
   /** @param {RowanStepperMessages | null | undefined} value */

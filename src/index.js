@@ -15,7 +15,7 @@ export { RowanAppLayout } from "./app-layout/app-layout.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
 export { RowanBoxPlotChart } from "./box-plot-chart/box-plot-chart.js";
 export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
-export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
+export { bindChartSync, createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export { createDashboard } from "./dashboard/dashboard.js";
 export {
   FILTER_GROUP_MAX_DEPTH,

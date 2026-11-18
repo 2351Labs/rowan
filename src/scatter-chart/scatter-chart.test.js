@@ -318,4 +318,41 @@ describe("rowan-scatter-chart", () => {
     expect(Math.abs(centerY(topTick) - frame.top)).to.be.below(2);
     expect(Math.abs(centerY(bottomTick) - frame.bottom)).to.be.below(2);
   });
+
+  it("keeps the full table when the plot is sampled and clears paging when the series shrinks", async () => {
+    const points = Array.from({ length: 50 }, (_, index) => ({
+      x: index,
+      y: index + 1,
+      label: `P${index}`,
+    }));
+    const chart = document.createElement("rowan-scatter-chart");
+    chart.label = "Sampled";
+    chart.setAttribute("large-series", "10");
+    chart.series = [{ id: "a", label: "Lane A", points }];
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await stylesApplied(chart);
+    expect(chart.shadowRoot.querySelectorAll("tbody tr")).to.have.length(50);
+    expect(chart.shadowRoot.querySelector("table").dataset.pageTotal).to.equal(undefined);
+
+    const many = Array.from({ length: 200 }, (_, index) => ({ x: index, y: index }));
+    chart.series = [{ id: "a", label: "Lane A", points: many }];
+    await nextMicrotask();
+    await nextMicrotask();
+    chart.shadowRoot.querySelector("table").__from = 160;
+    chart.series = [{ id: "a", label: "Lane A", points: many.slice(0, 100) }];
+    await nextMicrotask();
+    await nextMicrotask();
+    const table = chart.shadowRoot.querySelector("table");
+    expect(table.querySelectorAll("tbody tr")).to.have.length(20);
+    expect(table.dataset.pageStart).to.equal("80");
+    expect(table.textContent).to.include("Rows 81–100 of 100");
+
+    chart.series = [{ id: "a", label: "Lane A", points: many.slice(0, 10) }];
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelector("table").dataset.pageTotal).to.equal(undefined);
+    expect(chart.shadowRoot.querySelectorAll("tbody tr")).to.have.length(10);
+  });
 });

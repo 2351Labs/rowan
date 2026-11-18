@@ -9,6 +9,46 @@ function rowsOf(host) {
     .filter((row) => row.label);
 }
 
+function valueList(host) {
+  const list = host.__seriesRef;
+  if (!Array.isArray(list) || list.length <= 80) return null;
+  if (typeof list[0] === "number" || list[0] == null) return list;
+  return null;
+}
+
+function countOf(host) {
+  return valueList(host)?.length || rowsOf(host).length;
+}
+
+function textAt(host, index) {
+  const list = valueList(host);
+  if (list) {
+    const value = list[index];
+    const messages = host.messages || {};
+    const point = messages.point;
+    const indexText = String(index + 1);
+    const label =
+      host.__labelsRef?.[index] ||
+      (typeof point === "function"
+        ? String(point({ index: indexText }))
+        : typeof point === "string" && point
+          ? point.replaceAll("{index}", indexText)
+          : `Point ${indexText}`);
+    let shown = "No data";
+    if (value != null) {
+      try {
+        shown = new Intl.NumberFormat(host.locale || undefined).format(value);
+      } catch {
+        shown = String(value);
+      }
+    } else if (typeof messages.noData === "string" && messages.noData) {
+      shown = messages.noData;
+    }
+    return { label, value: shown };
+  }
+  return rowsOf(host)[index] || { label: "", value: "" };
+}
+
 export function install(host) {
   if (!NAMES.has(host?.localName) || host.__keys) return;
   const plot = host.renderRoot?.querySelector("svg.plot");
@@ -27,27 +67,29 @@ export function install(host) {
   }
   let index = 0;
   const announce = () => {
-    const items = rowsOf(host);
-    if (!items.length) return;
-    index = Math.min(Math.max(index, 0), items.length - 1);
-    live.textContent = `${items[index].label}: ${items[index].value}`;
+    const count = countOf(host);
+    if (!count) return;
+    index = Math.min(Math.max(index, 0), count - 1);
+    const item = textAt(host, index);
+    live.textContent = `${item.label}: ${item.value}`;
   };
   plot.addEventListener("focus", announce);
   plot.addEventListener("keydown", (event) => {
-    const items = rowsOf(host);
-    if (!items.length) return;
+    const count = countOf(host);
+    if (!count) return;
     const key = event.key;
-    if (key === "ArrowRight" || key === "ArrowDown") index = (index + 1) % items.length;
-    else if (key === "ArrowLeft" || key === "ArrowUp") index = (index - 1 + items.length) % items.length;
+    if (key === "ArrowRight" || key === "ArrowDown") index = (index + 1) % count;
+    else if (key === "ArrowLeft" || key === "ArrowUp") index = (index - 1 + count) % count;
     else if (key === "Home") index = 0;
-    else if (key === "End") index = items.length - 1;
+    else if (key === "End") index = count - 1;
     else if (key === "Enter" || key === " ") {
       event.preventDefault();
+      const item = textAt(host, index);
       host.dispatchEvent(
         new CustomEvent("rowan-point-activate", {
           bubbles: true,
           composed: true,
-          detail: { index, label: items[index].label, value: items[index].value },
+          detail: { index, label: item.label, value: item.value },
         }),
       );
       announce();

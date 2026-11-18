@@ -8,14 +8,13 @@ import {
   bindChartHover,
   createChartHoverBubble,
   formatHoverLines,
-  nearestPointByClientX,
   markHiddenSeries,
   readHiddenSeries,
   readTooltipFormatter,
   writeHiddenSeries,
   writeTooltipFormatter,
 } from "../chart/hover.js";
-import { finiteOrNull } from "../chart/model.js";
+import { drawIndexes, finiteOrNull, linked, rememberChart } from "../chart/model.js";
 import componentStyles from "./sparkline.styles.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -66,13 +65,13 @@ function createSvgElement(name) {
   return document.createElementNS(SVG_NAMESPACE, name);
 }
 
-function pathData(points) {
+function pathData(points, values) {
   let hasPrevious = false;
   let previousIndex = -1;
 
   return points
     .map((point) => {
-      const command = hasPrevious && point.index === previousIndex + 1 ? "L" : "M";
+      const command = hasPrevious && linked(values, previousIndex, point.index) ? "L" : "M";
       hasPrevious = true;
       previousIndex = point.index;
       return `${command}${point.x.toFixed(2)},${point.y.toFixed(2)}`;
@@ -80,13 +79,13 @@ function pathData(points) {
     .join(" ");
 }
 
-function contiguousSegments(points) {
+function contiguousSegments(points, values) {
   const segments = [];
   let current = [];
   let previousIndex = -2;
 
   for (const point of points) {
-    if (current.length && point.index !== previousIndex + 1) {
+    if (current.length && !linked(values, previousIndex, point.index)) {
       segments.push(current);
       current = [];
     }
@@ -98,12 +97,12 @@ function contiguousSegments(points) {
   return segments;
 }
 
-function areaPathData(points, baselineY) {
-  return contiguousSegments(points)
+function areaPathData(points, baselineY, values) {
+  return contiguousSegments(points, values)
     .map((segment) => {
       const first = segment[0];
       const last = segment.at(-1);
-      return `${pathData(segment)} L${last.x.toFixed(2)},${baselineY.toFixed(2)} L${first.x.toFixed(2)},${baselineY.toFixed(2)} Z`;
+      return `${pathData(segment, values)} L${last.x.toFixed(2)},${baselineY.toFixed(2)} L${first.x.toFixed(2)},${baselineY.toFixed(2)} Z`;
     })
     .join(" ");
 }
@@ -200,6 +199,7 @@ function dashedTargetPath(y, plotWidthPx) {
  * @event rowan-point-click - Cancelable. Detail: series, index, datum, value.
  * @event rowan-selection-change - Cancelable. Follows rowan-point-click when that event is not canceled.
  * @event rowan-series-toggle - Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the sparkline keeps about two points per pixel. The tooltip and data table use the real values. A long table is paged.
  * @event rowan-point-activate - Keyboard activation. Detail: index, label, value.
  */
 export class RowanSparkline extends BaseElement {
@@ -428,6 +428,7 @@ export class RowanSparkline extends BaseElement {
       this.#observePlotSize();
     }
 
+    rememberChart(this, this.#values, this.#labels, this.#values.length);
     const points = this.#plotPoints();
     if (this.#target !== null) {
       this.#plot.dataset.split = "";
@@ -440,14 +441,28 @@ export class RowanSparkline extends BaseElement {
     this.#renderTable();
     this.#applyDefaultA11y();
     markHiddenSeries(this.renderRoot, readHiddenSeries(this));
-    this.__cuesReady = import("../chart/cues.js").then((m) => m.applySeriesCues(this));
+    this.__cuesReady = import("../chart/cues.js").then((module) => module.applySeriesCues(this));
+    const needsInteraction =
+      this.hasAttribute("sync-group") ||
+      this.hasAttribute("zoom") ||
+      this.hasAttribute("large-series") ||
+      (Number.isFinite(this.__drawCap) && this.#values.length > this.__drawCap);
+    if (needsInteraction && !this.__z) this.__z = import("../chart/ix.js").then((module) => module.run(this));
   }
 
   #domain() {
-    const finite = this.#values.filter((item) => item !== null);
-    if (this.#target !== null) finite.push(this.#target);
-    const min = finite.length ? Math.min(...finite) : 0;
-    const max = finite.length ? Math.max(...finite) : 1;
+    let min = Infinity;
+    let max = -Infinity;
+    for (const value of this.#values) {
+      if (value == null) continue;
+      if (value < min) min = value;
+      if (value > max) max = value;
+    }
+    if (this.#target != null) {
+      if (this.#target < min) min = this.#target;
+      if (this.#target > max) max = this.#target;
+    }
+    if (min === Infinity) return { min: 0, max: 1, span: 1 };
     return { min, max, span: max === min ? 1 : max - min };
   }
 
@@ -459,9 +474,11 @@ export class RowanSparkline extends BaseElement {
     const values = this.#values;
     const domain = this.#domain();
     const lastIndex = Math.max(values.length - 1, 1);
+    const keep = drawIndexes(this, values.length);
 
     return values.flatMap((value, index) => {
       if (value === null) return [];
+      if (keep && !keep.has(index)) return [];
       return [
         {
           index,
@@ -482,13 +499,13 @@ export class RowanSparkline extends BaseElement {
       return;
     }
 
-    const d = pathData(points);
+    const d = pathData(points, this.#values);
     const filled = this.variant === "area";
     if (this.#target !== null) {
       const targetY = this.#yFor(this.#target, this.#domain());
       const aboveId = `${this.#clipId}-above`;
       const belowId = `${this.#clipId}-below`;
-      const fillD = filled ? areaPathData(points, targetY) : "";
+      const fillD = filled ? areaPathData(points, targetY, this.#values) : "";
 
       const defs = createSvgElement("defs");
       const aboveClip = createSvgElement("clipPath");
@@ -556,7 +573,7 @@ export class RowanSparkline extends BaseElement {
           createBandPath({
             className: "area",
             part: "area",
-            d: areaPathData(points, VIEWBOX_HEIGHT - PLOT_PAD),
+            d: areaPathData(points, VIEWBOX_HEIGHT - PLOT_PAD, this.#values),
             filled: true,
           }),
         );
@@ -597,7 +614,14 @@ export class RowanSparkline extends BaseElement {
   }
 
   #hoverText(event) {
-    const point = nearestPointByClientX(this.#plot, this.#plotPoints(), event.clientX);
+    const rect = this.#plot.getBoundingClientRect();
+    const view = this.#plot.viewBox?.baseVal;
+    const ratio = rect.width > 0 ? (event.clientX - rect.left) / rect.width : 1;
+    const viewX = view?.width ? view.x + ratio * view.width : ratio * VIEWBOX_WIDTH;
+    const span = VIEWBOX_WIDTH - PLOT_PAD * 2;
+    let index = Math.round(Math.min(1, Math.max(0, (viewX - PLOT_PAD) / span)) * Math.max(this.#values.length - 1, 0));
+    while (index > 0 && this.#values[index] == null) index -= 1;
+    const point = this.#pointAt(index);
     this.#syncHoverPoint(point);
     if (!point) return "";
     return formatHoverLines([
@@ -607,6 +631,19 @@ export class RowanSparkline extends BaseElement {
         ? ""
         : `${resolveMessage(this.#messages, DEFAULT_MESSAGES, "target")} ${this.#formatValue(this.#target)}`,
     ]);
+  }
+
+  #pointAt(index) {
+    const value = this.#values[index];
+    if (value == null || !Number.isFinite(value)) return null;
+    const domain = this.#domain();
+    const lastIndex = Math.max(this.#values.length - 1, 1);
+    return {
+      index,
+      value,
+      x: PLOT_PAD + (index / lastIndex) * (VIEWBOX_WIDTH - PLOT_PAD * 2),
+      y: this.#yFor(value, domain),
+    };
   }
 
   #bandTone(value) {
@@ -644,9 +681,28 @@ export class RowanSparkline extends BaseElement {
   #renderTable() {
     const caption = document.createElement("caption");
     caption.textContent = this.label || resolveMessage(this.#messages, DEFAULT_MESSAGES, "chart");
+    const total = this.#values.length;
+    const maxStart = total > 80 ? Math.floor(Math.max(0, total - 1) / 40) * 40 : 0;
+    const start =
+      total > 80 ? Math.min(Math.floor((this.#table.__from || 0) / 40) * 40, maxStart) : 0;
+    if (total > 80) this.#table.__from = start;
+    const end = total > 80 ? Math.min(total, start + 40) : total;
+    if (total > 80) {
+      caption.textContent = `${caption.textContent} Rows ${start + 1}–${end} of ${total}.`;
+      this.#table.dataset.pageStart = String(start);
+      this.#table.dataset.pageEnd = String(end);
+      this.#table.dataset.pageTotal = String(total);
+      this.#table.dataset.pageMode = "rows";
+    } else {
+      delete this.#table.dataset.pageStart;
+      delete this.#table.dataset.pageEnd;
+      delete this.#table.dataset.pageTotal;
+      delete this.#table.dataset.pageMode;
+    }
     const body = document.createElement("tbody");
 
-    this.#values.forEach((value, index) => {
+    for (let index = start; index < end; index += 1) {
+      const value = this.#values[index];
       const row = document.createElement("tr");
       const heading = document.createElement("th");
       heading.scope = "row";
@@ -658,7 +714,7 @@ export class RowanSparkline extends BaseElement {
           : this.#formatValue(value);
       row.append(heading, cell);
       body.append(row);
-    });
+    }
 
     if (this.#target !== null) {
       const row = document.createElement("tr");

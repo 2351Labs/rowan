@@ -151,10 +151,10 @@ function normalizeText(value) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanBoxPlotChart extends BaseElement {

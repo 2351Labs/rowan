@@ -4,6 +4,7 @@ import "axe-core";
 import { prefersReducedMotion, readHiddenSeries, writeHiddenSeries } from "./api.js";
 import { bindSeriesLegend, syncSeriesLegend } from "./legend.js";
 import { createChartHoverBubble, showChartHover } from "./hover.js";
+import { learnXMap, realTip } from "./ix-sync.js";
 import "../bar-chart/bar-chart.js";
 import "../area-chart/area-chart.js";
 import "../sparkline/sparkline.js";
@@ -51,6 +52,27 @@ describe("chart interaction", () => {
     });
     expect(prefersReducedMotion()).to.equal(true);
     window.matchMedia = original;
+  });
+
+  it("formats real tooltips with the chart locale and drops a stale category map", () => {
+    const host = {
+      locale: "de-DE",
+      __seriesRef: [{ label: "Incoming", values: [{ value: 1234.5 }] }],
+      __labelsRef: ["Mon"],
+    };
+    expect(realTip(host, 0)).to.include("1.234,5");
+    const chart = {
+      localName: "rowan-trend-chart",
+      __n: 4,
+      __xMapFull: { n: 2, i0: 0, x0: 0, i1: 1, x1: 10 },
+      renderRoot: { querySelector: () => null },
+    };
+    learnXMap(chart);
+    expect(chart.__xMapFull).to.equal(null);
+    chart.__n = 2;
+    chart.__xMapFull = { n: 2, i0: 0, x0: 0, i1: 1, x1: 10 };
+    learnXMap(chart);
+    expect(chart.__xMapFull.i1).to.equal(1);
   });
 
   it("shows a tooltip from showChartHover", () => {
@@ -290,7 +312,9 @@ describe("chart interaction", () => {
     north.syncHover(1);
     expect(seen[0].group).to.equal("ops");
     expect(seen[0].index).to.equal(1);
-    expect(south.shadowRoot.querySelector(".axis-pointer")).to.exist;
+    const pointer = south.shadowRoot.querySelector(".axis-pointer");
+    expect(pointer).to.exist;
+    expect(getComputedStyle(pointer).display).to.equal("block");
   });
 
   it("emits rowan-brush for a drag and clears it on Escape", async () => {
@@ -451,5 +475,129 @@ describe("chart interaction", () => {
     expect(chart.shadowRoot.querySelector(".hover").hidden).to.equal(false);
     expect(chart.shadowRoot.querySelector("table").textContent).to.include("5");
     expect(chart.shadowRoot.querySelector(".detail")).to.exist;
+  });
+
+  it("moves the crosshair from the keyboard and announces on the focused chart only", async () => {
+    const make = (values) => {
+      const chart = document.createElement("rowan-bar-chart");
+      chart.label = "Fill";
+      chart.interactive = true;
+      chart.labels = ["Mon", "Tue"];
+      chart.series = [{ id: "fill", label: "Fill", values }];
+      chart.setAttribute("sync-group", "ops");
+      document.body.append(chart);
+      return chart;
+    };
+    const north = make([4, 8]);
+    const south = make([2, 6]);
+    await nextMicrotask();
+    await nextMicrotask();
+    await interactionReady(north);
+    await interactionReady(south);
+    const button = north.shadowRoot.querySelector('button[data-point-key$="::1"]');
+    button.focus();
+    expect(south.shadowRoot.querySelector(".axis-pointer")).to.exist;
+    expect(north.shadowRoot.querySelector("output.detail").textContent).to.include("8");
+    expect(south.shadowRoot.querySelector("output.detail").textContent).to.equal("");
+    expect(south.shadowRoot.querySelector(".hover").getAttribute("aria-hidden")).to.equal("true");
+  });
+
+  it("syncs a chart inside another shadow root and drops it on disconnect", async () => {
+    const outer = document.createElement("div");
+    const root = outer.attachShadow({ mode: "open" });
+    const inside = document.createElement("rowan-bar-chart");
+    inside.label = "Inside";
+    inside.interactive = true;
+    inside.labels = ["Mon", "Tue"];
+    inside.series = [{ id: "fill", label: "Fill", values: [3, 5] }];
+    inside.setAttribute("sync-group", "ops");
+    root.append(inside);
+    const outside = document.createElement("rowan-bar-chart");
+    outside.label = "Outside";
+    outside.interactive = true;
+    outside.labels = ["Mon", "Tue"];
+    outside.series = [{ id: "fill", label: "Fill", values: [1, 2] }];
+    outside.setAttribute("sync-group", "ops");
+    document.body.append(outer, outside);
+    await nextMicrotask();
+    await nextMicrotask();
+    await interactionReady(inside);
+    await interactionReady(outside);
+    outside.syncHover(1);
+    expect(inside.shadowRoot.querySelector(".axis-pointer")).to.exist;
+    outside.remove();
+    inside.syncHover(0);
+    expect(outside.shadowRoot.querySelectorAll(".axis-pointer").length).to.equal(0);
+  });
+
+  it("keeps a real spike in the sample and pages the real table", async () => {
+    const chart = document.createElement("rowan-area-chart");
+    chart.label = "Signal";
+    chart.interactive = true;
+    const count = 200;
+    chart.labels = Array.from({ length: count }, (_, index) => `t${index}`);
+    const values = Array.from({ length: count }, (_, index) => Math.round(20 + 5 * Math.sin(index / 8)));
+    values[50] = 999;
+    chart.series = [{ id: "signal", label: "Signal", values }];
+    chart.setAttribute("large-series", "20");
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await interactionReady(chart);
+    if (chart.__refine) await chart.__refine;
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelectorAll("circle[data-point-key]").length).to.be.below(count);
+    expect(chart.shadowRoot.querySelector('[data-point-key="signal::50"]')).to.exist;
+    expect(chart.shadowRoot.querySelector(".table-pager").textContent).to.include(String(count));
+    chart.shadowRoot.querySelector("table").__from = 40;
+    chart.requestRender();
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelector("table").textContent).to.include("999");
+  });
+
+  it("draws every point when large-series is off", async () => {
+    const chart = document.createElement("rowan-area-chart");
+    chart.label = "Signal";
+    const count = 30;
+    chart.labels = Array.from({ length: count }, (_, index) => `t${index}`);
+    chart.series = [{ id: "signal", label: "Signal", values: Array.from({ length: count }, () => 4) }];
+    chart.setAttribute("large-series", "off");
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    expect(chart.shadowRoot.querySelectorAll("circle[data-point-key]").length).to.equal(count);
+  });
+
+  it("bounds render time for a 200k-point trend", async () => {
+    const { RowanTrendChart } = await import("../trend-chart/trend-chart.js");
+    void RowanTrendChart;
+    const count = 200000;
+    const chart = document.createElement("rowan-trend-chart");
+    chart.label = "Sensor";
+    chart.interactive = true;
+    chart.labels = Array.from({ length: count }, (_, index) => (index % 20000 === 0 ? `t${index}` : ""));
+    const values = new Array(count);
+    for (let index = 0; index < count; index += 1) {
+      values[index] = Math.round(40 + 15 * Math.sin(index / 50));
+    }
+    values[60000] = 200;
+    const started = performance.now();
+    chart.series = [{ id: "sensor", label: "Sensor", values }];
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    await interactionReady(chart);
+    if (chart.__refine) await chart.__refine;
+    await nextMicrotask();
+    await nextMicrotask();
+    const elapsed = performance.now() - started;
+    const marks = chart.shadowRoot.querySelectorAll("circle[data-point-key]").length;
+    expect(marks).to.be.above(10);
+    expect(marks).to.be.below(4000);
+    expect(chart.shadowRoot.querySelectorAll("td").length).to.be.below(80);
+    expect(elapsed).to.be.below(2500);
+    expect(chart.series[0].values[60000].value).to.equal(200);
   });
 });

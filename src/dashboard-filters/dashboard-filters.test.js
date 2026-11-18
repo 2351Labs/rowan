@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 
-import { createDashboardFilters } from "./dashboard-filters.js";
+import { createDashboardFilters, bindChartSync } from "./dashboard-filters.js";
 
 describe("createDashboardFilters", () => {
   it("sets, gets, and snapshots a shallow copy", () => {
@@ -69,5 +69,29 @@ describe("createDashboardFilters", () => {
     session.set("  ", "nope");
     session.set("", "nope");
     expect(session.snapshot()).to.deep.equal({});
+  });
+
+  it("stores one synced category for a group", () => {
+    const session = createDashboardFilters();
+    const stop = bindChartSync(session, "ops");
+    const seen = [];
+    session.subscribe((snapshot) => seen.push(snapshot.category));
+    const fire = (index) =>
+      document.dispatchEvent(
+        new CustomEvent("rowan-sync", {
+          detail: { group: "ops", index, label: index === 1 ? "Tue" : "Mon" },
+        }),
+      );
+    fire(1);
+    fire(1);
+    fire(0);
+    expect(session.get("category")).to.equal("Mon");
+    expect(seen).to.deep.equal(["Tue", "Mon"]);
+    session.clear("category");
+    fire(1);
+    expect(session.get("category")).to.equal("Tue");
+    stop();
+    fire(1);
+    expect(session.get("category")).to.equal("Tue");
   });
 });

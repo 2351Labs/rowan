@@ -233,16 +233,18 @@ export function resolveChartLabels(series, labels, resolveFallbackLabel) {
  * @returns {{ min: number, max: number }}
  */
 export function chartValueDomain(series) {
-  const values = series.flatMap((item) =>
-    item.values.map((point) => point.value).filter((point) => point !== null),
-  );
-
-  if (values.length === 0) return { min: 0, max: 1 };
-
-  const minimum = Math.min(...values);
-  const maximum = Math.max(...values);
+  let minimum = Infinity;
+  let maximum = -Infinity;
+  for (const item of series) {
+    for (const point of item.values) {
+      const value = point?.value;
+      if (value == null) continue;
+      if (value < minimum) minimum = value;
+      if (value > maximum) maximum = value;
+    }
+  }
+  if (minimum === Infinity) return { min: 0, max: 1 };
   if (minimum !== maximum) return { min: minimum, max: maximum };
-
   const padding = Math.max(1, Math.abs(minimum) * 0.1);
   return { min: minimum - padding, max: maximum + padding };
 }
@@ -449,7 +451,8 @@ export function areaBandPath(points) {
   let current = [];
 
   for (const point of points) {
-    if (current.length > 0 && point.index !== current.at(-1).index + 1) {
+    const previous = current.at(-1);
+    if (previous && point.index !== previous.index + 1 && !point.bridge) {
       segments.push(current);
       current = [];
     }
@@ -484,7 +487,7 @@ export function areaLinePath(points) {
 
   return points
     .map((point) => {
-      const command = hasPrevious && point.index === previousIndex + 1 ? "L" : "M";
+      const command = hasPrevious && (point.index === previousIndex + 1 || point.bridge) ? "L" : "M";
       hasPrevious = true;
       previousIndex = point.index;
       return `${command}${point.x.toFixed(2)},${point.yTop.toFixed(2)}`;
@@ -569,4 +572,48 @@ export function expandDomainWithReferenceLines(domain, lines) {
     if (line.value > max) max = line.value;
   }
   return { min, max };
+}
+
+export function linked(values, from, to) {
+  if (to === from + 1) return true;
+  if (!values || to <= from) return false;
+  for (let index = from + 1; index < to; index += 1) {
+    const point = values[index];
+    const value = typeof point === "number" ? point : point?.value ?? point?.y;
+    if (typeof value !== "number") return false;
+  }
+  return true;
+}
+
+export function rememberChart(host, series, labels, count) {
+  if (host.__seriesRef !== series) host.__drawToken = "";
+  if (host.__n !== count) host.__xMapFull = null;
+  host.__seriesRef = series;
+  host.__labelsRef = labels || null;
+  host.__n = count;
+}
+
+/** Indexes to draw, or null for the full series. The lazy sampler replaces the stride. */
+export function drawIndexes(host, count) {
+  const raw = host.getAttribute?.("large-series");
+  if (raw === "off" || raw === "0" || raw === "false" || raw === "none") return null;
+  const cap = (host.__drawCap = raw == null ? 1600 : +raw || 500);
+  if (count < 2 || !Number.isFinite(cap)) return null;
+  const end = Math.min(count - 1, host.__z1 ?? count - 1);
+  const start = Math.max(0, Math.min(end, host.__z0 || 0));
+  if (count <= cap && start === 0 && end === count - 1 && host.__x0 == null) return null;
+  const token = `${start}:${end}:${cap}:${host.__x0 ?? ""}:${host.__x1 ?? ""}`;
+  if (host.__refineSync) {
+    host.__refineSync(token);
+    if (host.__drawToken === token && host.__drawSet) return host.__drawSet;
+  } else if (host.__refineToken !== token) {
+    host.__refineToken = token;
+    const run = () => import("./sample.js").then((module) => module.refine(host, token));
+    host.__refine = host.__refine ? host.__refine.then(run, run) : run();
+  }
+  const set = new Set();
+  const span = Math.max(1, end - start);
+  const steps = Math.max(2, Math.min(cap, span + 1));
+  for (let step = 0; step < steps; step += 1) set.add(start + Math.round((step * span) / (steps - 1)));
+  return set;
 }

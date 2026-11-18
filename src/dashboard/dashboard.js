@@ -98,6 +98,7 @@ const DEFAULT_MESSAGES = {
  * @property {Array<{ id: string, label?: string, type?: string, options?: Array<string | { value?: string, label?: string }> }>} [fields]
  * @property {Array<Record<string, unknown>>} [rows] Client source rows. Defaults to the table rows at creation.
  * @property {boolean | HTMLElement} [chips] Active-filter chips. Defaults to true when `root` is set.
+ * @property {string} [syncGroup] Sets `sync-group` on collected charts so they share a crosshair.
  * @property {RowanDashboardMessages} [messages]
  */
 
@@ -173,6 +174,10 @@ export function createDashboard(options = {}) {
   }
 
   for (const chart of charts) {
+    if (typeof settings.syncGroup === "string" && settings.syncGroup.trim()) {
+      const group = settings.syncGroup.trim();
+      if (!chart.element.hasAttribute("sync-group")) chart.element.setAttribute("sync-group", group);
+    }
     listen(chart.element, "rowan-point-activate", (event) => {
       const detail = event.detail && typeof event.detail === "object" ? event.detail : {};
       const raw =

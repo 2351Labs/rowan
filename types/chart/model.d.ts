@@ -265,6 +265,10 @@ export function expandDomainWithReferenceLines(
   min: any;
   max: any;
 };
+export function linked(values: any, from: any, to: any): boolean;
+export function rememberChart(host: any, series: any, labels: any, count: any): void;
+/** Indexes to draw, or null for the full series. The lazy sampler replaces the stride. */
+export function drawIndexes(host: any, count: any): any;
 export const CHART_SERIES_COLORS: string[];
 /**
  * Shared series/point model for Rowan charts. `rowan-trend-chart` keeps its

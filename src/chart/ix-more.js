@@ -1,20 +1,42 @@
 const groups = new Map();
 
-function plot(host) {
+export function plot(host) {
   return host.renderRoot?.querySelector("svg.plot");
 }
 
-function marks(host) {
+export function openHover(bubble) {
+  if (!bubble) return;
+  bubble.hidden = false;
+  try {
+    if (typeof bubble.showPopover !== "function") return;
+    if (bubble.getAttribute("popover") !== "manual") bubble.setAttribute("popover", "manual");
+    if (!bubble.matches(":popover-open")) bubble.showPopover();
+  } catch {
+    bubble.hidden = false;
+  }
+}
+
+export function closeHover(bubble) {
+  if (!bubble) return;
+  bubble.hidden = true;
+  try {
+    if (typeof bubble.hidePopover === "function" && bubble.matches(":popover-open")) bubble.hidePopover();
+  } catch {
+    /* Popover is optional. */
+  }
+}
+
+export function marks(host) {
   return [...(plot(host)?.querySelectorAll("[data-point-key]") || [])];
 }
 
-function indexOf(mark) {
+export function indexOf(mark) {
   const key = mark?.dataset?.pointKey || "";
   const cut = key.lastIndexOf("::");
   return cut < 0 ? "" : key.slice(cut + 2);
 }
 
-function labelOf(host, index) {
+export function labelOf(host, index) {
   const button = [...host.renderRoot.querySelectorAll("button[data-point-key]")].find((item) =>
     (item.dataset.pointKey || "").endsWith(`::${index}`),
   );
@@ -25,52 +47,24 @@ function emit(host, type, detail) {
   host.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
 }
 
-function showIndex(host, index) {
-  const svg = plot(host);
-  const mark = marks(host).find((item) => indexOf(item) === String(index));
-  if (!svg || !mark) return;
-  const view = svg.viewBox?.baseVal;
-  if (!view?.width) return;
-  const box = svg.getBoundingClientRect();
-  const markBox = mark.getBoundingClientRect();
-  const raw = Number(mark.getAttribute("x") ?? mark.getAttribute("cx"));
-  const span = Number(mark.getAttribute("width") || 0);
-  const x =
-    box.width >= 1
-      ? view.x + ((markBox.left + markBox.width / 2 - box.left) / box.width) * view.width
-      : raw + span / 2;
-  if (!Number.isFinite(x)) return;
-  let line = svg.querySelector(":scope > .axis-pointer");
-  if (!line) {
-    line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("class", "axis-pointer");
-    svg.append(line);
-  }
-  line.setAttribute("x1", String(x));
-  line.setAttribute("x2", String(x));
-  line.setAttribute("y1", String(view.y));
-  line.setAttribute("y2", String(view.y + view.height));
-  const bubble = host.renderRoot.querySelector(".hover");
-  if (bubble) {
-    bubble.hidden = false;
-    bubble.textContent = labelOf(host, index);
-  }
-}
-
-function broadcast(host, index) {
+export function broadcast(host, index) {
   const name = host.getAttribute("sync-group");
   const set = members(host);
   if (!name || !set || host.__syncing) return;
-  const detail = { group: name, index: Number(index), label: labelOf(host, index) };
+  const detail = {
+    group: name,
+    index: Number(index),
+    label: host.__labelsRef?.[index] || labelOf(host, index),
+  };
   for (const other of [...set]) {
     other.__syncing = 1;
-    if (other !== host) showIndex(other, index);
+    if (other !== host) other.__showIndex?.(index);
     emit(other, "rowan-sync", detail);
     other.__syncing = 0;
   }
 }
 
-function members(host) {
+export function members(host) {
   const name = host.getAttribute("sync-group");
   for (const [key, set] of groups) if (key !== name) set.delete(host);
   if (!name) return null;
@@ -80,128 +74,53 @@ function members(host) {
   return set;
 }
 
-function lttb(points, threshold) {
-  if (points.length <= threshold) return points;
-  const sampled = [points[0]];
-  const bucket = (points.length - 2) / (threshold - 2);
-  let previous = 0;
-  for (let i = 0; i < threshold - 2; i += 1) {
-    const start = Math.floor((i + 1) * bucket) + 1;
-    const end = Math.min(points.length - 1, Math.floor((i + 2) * bucket) + 1);
-    let avgX = 0;
-    let avgY = 0;
-    for (let j = start; j < end; j += 1) {
-      avgX += points[j].x;
-      avgY += points[j].y;
-    }
-    const span = Math.max(1, end - start);
-    avgX /= span;
-    avgY /= span;
-    const from = Math.floor(i * bucket) + 1;
-    const to = Math.floor((i + 1) * bucket) + 1;
-    let best = from;
-    let area = -1;
-    for (let j = from; j < to && j < points.length; j += 1) {
-      const score = Math.abs(
-        (points[previous].x - avgX) * (points[j].y - points[previous].y) -
-          (points[previous].x - points[j].x) * (avgY - points[previous].y),
-      );
-      if (score > area) {
-        area = score;
-        best = j;
-      }
-    }
-    sampled.push(points[best]);
-    previous = best;
-  }
-  sampled.push(points.at(-1));
-  return sampled;
+function pageStatus(table) {
+  const noun = table.dataset.pageMode === "rows" ? "Rows" : "Columns";
+  return `${noun} ${Number(table.dataset.pageStart) + 1}–${table.dataset.pageEnd} of ${table.dataset.pageTotal}`;
 }
 
-function simplify(host) {
-  if (!host.hasAttribute("large-series")) return;
-  const threshold = Number(host.getAttribute("large-series")) || 500;
-  const nodes = marks(host);
-  if (nodes.length <= threshold) return;
-  const groupsBySeries = new Map();
-  for (const mark of nodes) {
-    const key = mark.dataset.pointKey || "";
-    const series = key.includes("::") ? key.slice(0, key.lastIndexOf("::")) : key;
-    if (!groupsBySeries.has(series)) groupsBySeries.set(series, []);
-    const box = mark.getBBox?.() || { x: 0, y: 0 };
-    groupsBySeries.get(series).push({ mark, x: box.x, y: box.y });
+function paginateTable(host) {
+  const table = host.renderRoot?.querySelector("table");
+  if (!table) return;
+  const total = Number(table.dataset.pageTotal || 0);
+  const existing = table.parentElement?.querySelector(":scope > .table-pager");
+  if (total <= 80) {
+    existing?.remove();
+    delete table.dataset.pager;
+    return;
   }
-  const perSeries = Math.max(2, Math.floor(threshold / groupsBySeries.size));
-  for (const points of groupsBySeries.values()) {
-    const keep = new Set(lttb(points, perSeries).map((point) => point.mark));
-    for (const point of points) if (!keep.has(point.mark)) point.mark.remove();
+  if (table.dataset.pager && existing) {
+    const status = existing.querySelector("span");
+    if (status) status.textContent = pageStatus(table);
+    const [previous, , next] = existing.querySelectorAll("button");
+    if (previous) previous.disabled = (table.__from || 0) <= 0;
+    if (next) next.disabled = Number(table.dataset.pageEnd || 0) >= total;
+    return;
   }
-  for (const path of host.renderRoot.querySelectorAll("path.series-line, path.series-area, path.line")) {
-    const commands = [...path.getAttribute("d")?.matchAll(/[ML]\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/g) || []];
-    if (commands.length <= perSeries) continue;
-    const points = commands.map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
-    const sampled = lttb(points, perSeries);
-    path.setAttribute("d", sampled.map((point, index) => `${index ? "L" : "M"}${point.x},${point.y}`).join(" "));
-  }
-}
-
-function pagerFor(table, total, paint) {
-  table.parentElement?.querySelector(":scope > .table-pager")?.remove();
+  existing?.remove();
+  table.dataset.pager = "1";
   const pager = document.createElement("div");
   pager.className = "table-pager";
-  const status = document.createElement("span");
-  status.setAttribute("aria-live", "polite");
   const previous = document.createElement("button");
   previous.type = "button";
   previous.textContent = "Previous";
+  const status = document.createElement("span");
+  status.setAttribute("aria-live", "polite");
   const next = document.createElement("button");
   next.type = "button";
   next.textContent = "Next";
   pager.append(previous, status, next);
   table.after(pager);
-  let page = 0;
-  const size = 40;
-  const draw = () => {
-    const start = page * size;
-    status.textContent = paint(start, Math.min(total, start + size), total);
-    previous.disabled = page === 0;
-    next.disabled = start + size >= total;
+  const turn = (delta) => {
+    const start = Math.max(0, (table.__from || 0) + delta);
+    table.__from = start;
+    host.requestRender?.();
   };
-  previous.addEventListener("click", () => {
-    page -= 1;
-    draw();
-  });
-  next.addEventListener("click", () => {
-    page += 1;
-    draw();
-  });
-  draw();
-}
-
-function paginateTable(host) {
-  const table = host.renderRoot?.querySelector("table");
-  const body = table?.tBodies?.[0];
-  const head = table?.tHead?.rows?.[0];
-  if (!body || !head) return;
-  const labels = [...head.cells].slice(1);
-  if (labels.length > 80) {
-    const rows = [...body.rows].map((row) => ({
-      label: row.cells[0],
-      cells: [...row.cells].slice(1),
-    }));
-    pagerFor(table, labels.length, (start, end, total) => {
-      head.replaceChildren(head.cells[0], ...labels.slice(start, end));
-      for (const row of rows) row.label.parentElement.replaceChildren(row.label, ...row.cells.slice(start, end));
-      return `Columns ${start + 1}–${end} of ${total}`;
-    });
-    return;
-  }
-  if (body.rows.length <= 80) return;
-  const all = [...body.rows];
-  pagerFor(table, all.length, (start, end, total) => {
-    body.replaceChildren(...all.slice(start, end));
-    return `Rows ${start + 1}–${end} of ${total}`;
-  });
+  previous.addEventListener("click", () => turn(-40));
+  next.addEventListener("click", () => turn(40));
+  status.textContent = pageStatus(table);
+  previous.disabled = (table.__from || 0) <= 0;
+  next.disabled = Number(table.dataset.pageEnd || 0) >= total;
 }
 
 function brushRange(host, x1, x2) {
@@ -292,37 +211,89 @@ function mountBrush(host) {
   });
 }
 
-function mountSync(host) {
-  host.syncHover = (index) => {
-    showIndex(host, index);
-    broadcast(host, index);
-  };
-  members(host);
-  host.renderRoot.addEventListener("pointermove", (event) => {
-    if (!host.getAttribute("sync-group") || host.__syncing) return;
-    const mark = event.target instanceof Element ? event.target.closest("[data-point-key]") : null;
-    const index = indexOf(mark);
-    if (index) broadcast(host, index);
+function trimMarks(host) {
+  if (host.__drawSet) return;
+  const cap = Number(host.getAttribute("large-series"));
+  if (!(cap > 0)) return;
+  const nodes = marks(host);
+  if (nodes.length <= cap) return;
+  const step = Math.ceil(nodes.length / cap);
+  nodes.forEach((node, index) => {
+    if (index % step && index !== nodes.length - 1) node.remove();
   });
 }
 
+function forget(host) {
+  for (const set of groups.values()) set.delete(host);
+  host.renderRoot?.querySelector("svg.plot > .axis-pointer")?.remove();
+  const bubble = host.renderRoot?.querySelector(".hover");
+  if (bubble) bubble.hidden = true;
+}
+
+function watchAttributes(host) {
+  if (host.__ixWatch) return;
+  const observer = new MutationObserver(() => {
+    members(host);
+    host.__drawToken = "";
+    host.__refined = false;
+    host.__xMapFull = null;
+    host.requestRender?.();
+  });
+  observer.observe(host, { attributes: true, attributeFilter: ["sync-group", "large-series"] });
+  host.__ixWatch = observer;
+  if (host.__ixClean) return;
+  host.__ixClean = 1;
+  host.addCleanup?.(() => {
+    forget(host);
+    host.__ixWatch?.disconnect();
+    host.__ixWatch = null;
+  }, { persist: true });
+}
+
+export function clearSync(host) {
+  const name = host.getAttribute?.("sync-group");
+  const set = name ? groups.get(name) : null;
+  for (const other of set ? [...set] : [host]) {
+    other.renderRoot?.querySelector("svg.plot > .axis-pointer")?.remove();
+    if (other === host) continue;
+    const bubble = other.renderRoot?.querySelector(".hover");
+    if (!bubble) continue;
+    closeHover(bubble);
+    bubble.removeAttribute("aria-hidden");
+  }
+}
+
+function mountSync(host) {
+  host.syncHover = (index) => {
+    host.__showIndex?.(index);
+    broadcast(host, index);
+  };
+  members(host);
+}
+
 export function installChartExtras(host) {
+  watchAttributes(host);
   mountSync(host);
   host.__onZoomBrush = (x1, x2) => {
     const range = brushRange(host, x1, x2);
     if (range) emit(host, "rowan-brush", range);
   };
   mountBrush(host);
-  simplify(host);
   paginateTable(host);
+  host.__learnXMap?.();
+  trimMarks(host);
   if (host.__ixWrapped) return;
   host.__ixWrapped = 1;
   const original = host.requestRender.bind(host);
   host.requestRender = () => {
     original();
     queueMicrotask(() => {
-      simplify(host);
+      if (!host.isConnected) return;
+      members(host);
+      host.__learnXMap?.();
       paginateTable(host);
+      trimMarks(host);
+      watchAttributes(host);
     });
   };
 }

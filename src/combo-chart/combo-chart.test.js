@@ -308,4 +308,25 @@ describe("rowan-combo-chart", () => {
     expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Kategorie 1Point 1");
     expect(activations).to.deep.equal([]);
   });
+
+  it("keeps one area fill when sampling skips continuous points", async () => {
+    const chart = document.createElement("rowan-combo-chart");
+    chart.label = "Load";
+    chart.setAttribute("large-series", "6");
+    chart.labels = Array.from({ length: 30 }, (_, index) => `P${index}`);
+    chart.series = [
+      {
+        id: "load",
+        label: "Load",
+        geometry: "area",
+        values: Array.from({ length: 30 }, (_, index) => index + 1),
+      },
+    ];
+    document.body.append(chart);
+    await nextMicrotask();
+    await nextMicrotask();
+    const path = chart.shadowRoot.querySelector("path.area")?.getAttribute("d") || "";
+    expect(path.match(/Z/g)?.length).to.equal(1);
+    expect(chart.shadowRoot.querySelectorAll(".x-axis span").length).to.be.below(12);
+  });
 });

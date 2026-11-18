@@ -32,6 +32,15 @@ export function renderChartTable(
   table,
   { caption, labels, series, formatValue, messages = {}, referenceLines = [] },
 ) {
+  const total = labels.length;
+  let start = 0;
+  if (total > 80) {
+    start = Math.min(((table.__from / 40) | 0) * 40, total - 40);
+    table.dataset.pageStart = String(start);
+    table.dataset.pageEnd = String(Math.min(total, start + 40));
+    table.dataset.pageTotal = String(total);
+    labels = labels.slice(start, start + 40);
+  } else if (table.dataset.pageTotal) table.__from = delete table.dataset.pageTotal && 0;
   const fragment = document.createDocumentFragment();
   const captionEl = document.createElement("caption");
   captionEl.className = "sr-only";
@@ -53,12 +62,13 @@ export function renderChartTable(
   for (const item of series) {
     const row = document.createElement("tr");
     row.append(createCell("th", item.label, "row"));
-    for (let index = 0; index < labels.length; index += 1) {
+    for (let offset = 0; offset < labels.length; offset += 1) {
+      const index = start + offset;
       const point = item.values[index];
       const text =
         point?.value === null || !point
           ? resolveMessage(messages, DEFAULT_TABLE_MESSAGES, "noData")
-          : formatValue(point.value, item, index, labels[index]);
+          : formatValue(point.value, item, index, labels[offset]);
       row.append(createCell("td", text));
     }
     body.append(row);

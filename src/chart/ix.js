@@ -1,5 +1,19 @@
 import { bindSeriesLegend, syncSeriesLegend } from "./legend.js";
-import { installChartExtras } from "./ix-more.js";
+import { clearSync, installChartExtras, openHover } from "./ix-more.js";
+
+function ensureCss(host) {
+  const root = host.renderRoot;
+  if (!root || root.querySelector("style[data-ix]")) return host.__ixCss || Promise.resolve();
+  const pending = import("./ix-css.js").then(({ css }) => {
+    if (!root.isConnected || root.querySelector("style[data-ix]")) return;
+    const style = document.createElement("style");
+    style.dataset.ix = "";
+    style.textContent = css;
+    root.prepend(style);
+  });
+  host.__ixCss = pending;
+  return pending;
+}
 
 function bubbleOf(host) {
   return host.renderRoot?.querySelector(".hover");
@@ -35,54 +49,38 @@ function motionOff(host) {
 
 function enhanceTooltip(host, event) {
   const bubble = bubbleOf(host);
-  if (!bubble || bubble.hidden) return;
-  clampBubble(bubble);
-  // A reference-line hover already wrote its own label. Nearest-point text
-  // would replace "Capacity" with the stacked series under the pointer.
+  if (!bubble) return;
+  bubble.removeAttribute("aria-hidden");
   if (event.target instanceof Element && event.target.closest("[data-ref-line]")) return;
   if (typeof host.tooltipFormatter === "function") return;
   if (host.querySelector("[slot='tooltip']")?.textContent?.trim()) return;
+  const described = host.__describe?.(host, event);
+  if (described?.text) {
+    bubble.textContent = described.text;
+    openHover(bubble);
+  }
+  if (bubble.hidden) return;
+  clampBubble(bubble);
   const svg = plotOf(host);
-  if (!svg || event.clientX == null) return;
-  const marks = [...svg.querySelectorAll("[data-point-key]")];
-  if (!marks.length) return;
-  let best = marks[0];
-  let bestDist = Infinity;
-  for (const mark of marks) {
-    const box = mark.getBoundingClientRect();
-    const dist = Math.abs(box.left + box.width / 2 - event.clientX);
-    if (dist < bestDist) {
-      best = mark;
-      bestDist = dist;
-    }
-  }
-  const key = best.dataset.pointKey || "";
-  const index = key.slice(key.lastIndexOf("::") + 2);
-  const aligned = marks.filter((mark) => (mark.dataset.pointKey || "").endsWith(`::${index}`));
-  if (aligned.length > 1) {
-    const buttons = [...host.renderRoot.querySelectorAll("button[data-point-key]")];
-    bubble.textContent = aligned
-      .map((mark) => {
-        const button = buttons.find((item) => item.dataset.pointKey === mark.dataset.pointKey);
-        return button?.getAttribute("aria-label") || mark.dataset.pointKey;
-      })
-      .join("\n");
-  }
-  const box = svg.getBoundingClientRect();
-  const view = svg.viewBox?.baseVal;
-  if (!view || box.width < 1) return;
-  const markBox = best.getBoundingClientRect();
-  const x = view.x + ((markBox.left + markBox.width / 2 - box.left) / box.width) * view.width;
+  const view = svg?.viewBox?.baseVal;
+  if (!svg || !view?.width || !Number.isFinite(described?.x)) return;
   let line = svg.querySelector(":scope > .axis-pointer");
   if (!line) {
     line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("class", "axis-pointer");
     svg.append(line);
   }
-  line.setAttribute("x1", String(x));
-  line.setAttribute("x2", String(x));
-  line.setAttribute("y1", String(view.y));
-  line.setAttribute("y2", String(view.y + view.height));
+  if (described?.horizontal) {
+    line.setAttribute("x1", String(view.x));
+    line.setAttribute("x2", String(view.x + view.width));
+    line.setAttribute("y1", String(described.y));
+    line.setAttribute("y2", String(described.y));
+  } else {
+    line.setAttribute("x1", String(described.x));
+    line.setAttribute("x2", String(described.x));
+    line.setAttribute("y1", String(view.y));
+    line.setAttribute("y2", String(view.y + view.height));
+  }
   clampBubble(bubble);
 }
 
@@ -128,6 +126,7 @@ function mountZoom(host) {
       view.height !== origin.height;
     reset.hidden = !changed;
     emitZoom(host, view);
+    if (host.__n > host.__drawCap) import("./sample.js").then((module) => module.zoomWindow(host, view, origin));
   };
 
   const zoomAt = (clientX, clientY, factor) => {
@@ -240,6 +239,9 @@ function mountResize(host) {
     const next = Math.round(records[0]?.contentRect?.width || 0);
     if (Math.abs(next - width) < 1) return;
     width = next;
+    host.__px = next;
+    host.__drawToken = "";
+    host.__refined = false;
     host.requestRender?.();
   });
   if (typeof host.observe === "function") host.observe(observer, () => observer.observe(host));
@@ -281,8 +283,9 @@ export function run(host, queued = []) {
     }
     return;
   }
-  if (host.__rowanIxMounted) return;
+  if (host.__rowanIxMounted) return host.__ixCss;
   host.__rowanIxMounted = 1;
+  ensureCss(host);
   const legend = host.renderRoot.querySelector(".legend");
   syncSeriesLegend(host, legend);
   const toggle = legend ? bindSeriesLegend(host, legend) : null;
@@ -292,20 +295,23 @@ export function run(host, queued = []) {
   }
   host.renderRoot.addEventListener("pointermove", (event) => enhanceTooltip(host, event));
   host.renderRoot.addEventListener("focusin", (event) => enhanceTooltip(host, event));
-  const clearPointer = () => {
-    plotOf(host)?.querySelector(":scope > .axis-pointer")?.remove();
-    const group = host.getAttribute("sync-group");
-    if (!group) return;
-    for (const other of document.querySelectorAll(`[sync-group="${group}"]`)) {
-      if (other !== host) other.renderRoot?.querySelector("svg.plot > .axis-pointer")?.remove();
-    }
-  };
+  const clearPointer = () => clearSync(host);
   host.addEventListener("pointerleave", clearPointer);
   mountResize(host);
   mountZoom(host);
   if (!motionOff(host)) host.renderRoot.querySelector(".chart")?.setAttribute("data-animate", "");
   installChartExtras(host);
-  for (const event of pending) replay(host, event, toggle);
+  const syncing = import("./ix-sync.js").then((module) => {
+    host.__describe = module.describePointer;
+    host.__showIndex = (index) => module.showIndex(host, index);
+    host.__learnXMap = () => module.learnXMap(host);
+    host.__learnXMap();
+    module.bindFollow(host);
+  });
+  host.__ixCss = Promise.all([ensureCss(host), syncing]).then(() => {
+    for (const event of pending) replay(host, event, toggle);
+  });
+  return host.__ixCss;
 }
 
 export { bindSeriesLegend, syncSeriesLegend };

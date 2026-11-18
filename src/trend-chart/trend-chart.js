@@ -6,7 +6,7 @@ import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
 import { renderChartTable, withRestoredPointFocus, emitPointActivate } from "../chart/dom.js";
-import { cloneChartSeriesInput as cloneTrendSeriesInput } from "../chart/model.js";
+import { cloneChartSeriesInput as cloneTrendSeriesInput, drawIndexes } from "../chart/model.js";
 import componentStyles from "./trend-chart.styles.js";
 import {
   bindChartHover,
@@ -127,10 +127,10 @@ function createSvgElement(name) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanTrendChart extends BaseElement {
@@ -357,7 +357,7 @@ export class RowanTrendChart extends BaseElement {
               <span></span>
               <div class="x-axis"></div>
             </div>
-            <ul class="legend" part="legend" aria-label="Series"></ul>
+            <ul class="legend" part="legend"></ul>
             <output class="detail" part="detail" aria-live="polite" hidden></output>
           </figure>
           <details class="summary" part="summary" open>
@@ -452,10 +452,24 @@ export class RowanTrendChart extends BaseElement {
     const plotWidth = VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT;
     const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
     const range = domain.max - domain.min || 1;
+    if (this.__seriesRef !== this.#series) this.__drawToken = "";
+    this.__seriesRef = this.#series;
+    this.__labelsRef = labels;
+    this.__n = labels.length;
+    const keep = drawIndexes(this, labels.length);
 
-    return this.#series.flatMap((series, seriesIndex) =>
-      series.values.flatMap((point, index) => {
-        if (point.value === null) return [];
+    return this.#series.flatMap((series, seriesIndex) => {
+      let previous = -1;
+      let gap = false;
+      return series.values.flatMap((point, index) => {
+        if (point.value === null) {
+          if (previous >= 0) gap = true;
+          return [];
+        }
+        if (keep && !keep.has(index)) return [];
+        const bridge = previous >= 0 && !gap && index !== previous + 1;
+        gap = false;
+        previous = index;
 
         const x =
           PLOT_LEFT + (pointCount === 1 ? plotWidth / 2 : (index / (pointCount - 1)) * plotWidth);
@@ -478,10 +492,11 @@ export class RowanTrendChart extends BaseElement {
             formattedValue,
             x,
             y,
+            bridge,
           },
         ];
-      }),
-    );
+      });
+    });
   }
 
   #renderPlot() {
@@ -725,7 +740,7 @@ export class RowanTrendChart extends BaseElement {
     return entries
       .map((entry, index) => {
         const previous = entries[index - 1];
-        const command = previous && entry.index === previous.index + 1 ? "L" : "M";
+        const command = previous && (entry.index === previous.index + 1 || entry.bridge) ? "L" : "M";
         return `${command}${entry.x.toFixed(2)},${entry.y.toFixed(2)}`;
       })
       .join(" ");

@@ -4,6 +4,7 @@ import {
   assertPointControlKeyboardNavigation,
   assertPointControlLifecycle,
 } from "../../test/chart-interactions.js";
+import { stylesApplied } from "../../test/styles-applied.js";
 import "./trend-chart.js";
 
 const nextMicrotask = () => Promise.resolve();
@@ -341,5 +342,45 @@ describe("rowan-trend-chart", () => {
 
     expect(chart.shadowRoot.querySelector(".x-axis").textContent).to.equal("Kategorie 1Point 1");
     expect(activations).to.deep.equal([]);
+  });
+
+  it("keeps round line caps and the narrow axis gap in the initial stylesheet", async () => {
+    const chart = await renderChart();
+    await stylesApplied(chart);
+    const line = chart.shadowRoot.querySelector(".series-line");
+    expect(getComputedStyle(line).strokeLinecap).to.equal("round");
+    expect(getComputedStyle(line).strokeLinejoin).to.equal("round");
+    const initial = [...chart.shadowRoot.adoptedStyleSheets]
+      .flatMap((sheet) => [...sheet.cssRules])
+      .map((rule) => rule.cssText)
+      .join(" ");
+    expect(initial).to.match(/stroke-linecap:\s*round/);
+    expect(initial).to.match(/max-width:\s*30rem/);
+    expect(initial).to.match(/column-gap:\s*var\(--rowan-space-1,\s*\.25rem\)/);
+  });
+
+  it("loads the active ring, point wash, and summary cursor with interaction", async () => {
+    const chart = await renderChart({ interactive: true });
+    await chart.__z;
+    await stylesApplied(chart);
+    const lazy = chart.shadowRoot.querySelector("style[data-ix]");
+    expect(lazy.textContent).to.include(".point-marker.is-active");
+    expect(lazy.textContent).to.include(".point-button:hover");
+    expect(lazy.textContent).to.include(".summary>summary");
+    expect(lazy.textContent).to.include("cursor:pointer");
+
+    const summary = chart.shadowRoot.querySelector("summary");
+    expect(getComputedStyle(summary).cursor).to.equal("pointer");
+
+    const button = chart.shadowRoot.querySelector("button.point-button");
+    button.setAttribute("aria-pressed", "true");
+    const wash = getComputedStyle(button).backgroundColor;
+    expect(wash).to.not.equal("rgba(0, 0, 0, 0)");
+    expect(wash).to.not.equal("transparent");
+
+    const marker = chart.shadowRoot.querySelector(".point-marker");
+    const resting = getComputedStyle(marker).stroke;
+    marker.classList.add("is-active");
+    expect(getComputedStyle(marker).stroke).to.not.equal(resting);
   });
 });

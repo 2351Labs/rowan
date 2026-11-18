@@ -116,7 +116,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-area-chart](https://2351labs.github.io/rowan/#area-chart): Filled multi-series area chart. Same data contract as the line chart. Null values break both the line and the fill. Import `@rowan-ui/core/area-chart`. React `RowanAreaChart` from `@rowan-ui/core/react/area-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanTrendChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanAreaChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanTrendChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanTrendChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -140,7 +140,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-bar-chart](https://2351labs.github.io/rowan/#bar-chart): Frozen small categorical bar chart. Native SVG, no animation. Import `@rowan-ui/core/bar-chart`. React `RowanBarChart` from `@rowan-ui/core/react/bar-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanBarChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanBarChartMessages; `noMotion`; `orientation` "vertical" | "horizontal" default vertical; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -148,7 +148,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-box-plot-chart](https://2351labs.github.io/rowan/#box-plot-chart): Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does not compute quartiles. Null in the five-number summary is no-data. Own series model — not categorical `series.values`. Import `@rowan-ui/core/box-plot-chart`. React `RowanBoxPlotChart` from `@rowan-ui/core/react/box-plot-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanBoxPlotChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanBoxPlotChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanBoxPlotChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -236,7 +236,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-column-sparkline](https://2351labs.github.io/rowan/#column-sparkline): Frozen compact one-series columns for KPI tiles. Not a density of `rowan-bar-chart`. Not a `variant` of `rowan-sparkline`. Import `@rowan-ui/core/column-sparkline`. React `RowanColumnSparkline` from `@rowan-ui/core/react/column-sparkline`.
 
-  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `brush` boolean default false; `hidden-series` string; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral
+  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `brush` boolean default false; `hidden-series` string; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral
   Properties: `aboveTone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `belowTone` "neutral" | "info" | "success" | "warning" | "danger" default success; `externalLabelText`; `hiddenSeries` string[]; `label`; `labels` string[]; `locale`; `messages` RowanColumnSparklineMessages; `noMotion`; `target` number | null; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `values` Array<number | null>
   Events: `rowan-brush`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `tooltip`
@@ -244,7 +244,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-combo-chart](https://2351labs.github.io/rowan/#combo-chart): Categorical combo: bars, lines, and areas on a shared category axis. Optional `axis: "secondary"` for a second value scale (Pareto cumulative %). Bar, area, and trend charts stay separate hosts. Import `@rowan-ui/core/combo-chart`. React `RowanComboChart` from `@rowan-ui/core/react/combo-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` object; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanComboChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -332,7 +332,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-donut-chart](https://2351labs.github.io/rowan/#donut-chart): Frozen parts-of-a-whole chart. Uses the first series. Negative values are treated as no-data, not slices. Import `@rowan-ui/core/donut-chart`. React `RowanDonutChart` from `@rowan-ui/core/react/donut-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "donut"|"pie" default donut
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "donut"|"pie" default donut
   Properties: `config` RowanDonutChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanDonutChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `variant` "donut" | "pie" default donut
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `description`; `label`; `tooltip`
@@ -420,7 +420,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-funnel-chart](https://2351labs.github.io/rowan/#funnel-chart): One-series stage chart. Does not auto-sort. Negatives and null are no-data. `pyramid` puts stage 0 at the bottom; `cone` tapers the last stage to a point. Import `@rowan-ui/core/funnel-chart`. React `RowanFunnelChart` from `@rowan-ui/core/react/funnel-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "funnel"|"cone"|"pyramid" default funnel
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "funnel"|"cone"|"pyramid" default funnel
   Properties: `config` RowanFunnelChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanFunnelChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `variant` "funnel" | "cone" | "pyramid" default funnel
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `description`; `label`; `tooltip`
@@ -428,7 +428,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-gauge-chart](https://2351labs.github.io/rowan/#gauge-chart): Compact speedometer gauge: ranges, min/max, actual, and optional target. Separate host from bullet and donut charts. Import `@rowan-ui/core/gauge-chart`. React `RowanGaugeChart` from `@rowan-ui/core/react/gauge-chart`.
 
-  Attributes: `brush` boolean default false; `hidden-series` string; `label` string; `large-series` number; `locale` string; `max` number default 100; `min` number default 0; `no-motion` boolean default false; `sync-group` string
+  Attributes: `brush` boolean default false; `hidden-series` string; `label` string; `large-series` string; `locale` string; `max` number default 100; `min` number default 0; `no-motion` boolean default false; `sync-group` string
   Properties: `externalLabelText`; `hiddenSeries` string[]; `label`; `locale`; `max` default 100; `messages` RowanGaugeChartMessages; `min` default 0; `noMotion`; `ranges` RowanGaugeChartRange[]; `target` number | null; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `value` number | null
   Events: `rowan-brush`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `tooltip`
@@ -436,7 +436,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-heatmap-chart](https://2351labs.github.io/rowan/#heatmap-chart): Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-data. Accepts a matrix or `{ x, y, value }` / `{ row, column, value }` points. Import `@rowan-ui/core/heatmap-chart`. React `RowanHeatmapChart` from `@rowan-ui/core/react/heatmap-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string
   Properties: `columns` string[]; `config` RowanHeatmapChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `locale`; `messages` RowanHeatmapChartMessages; `noMotion`; `points` RowanHeatmapChartPoint[]; `rows` string[]; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null; `values` Array<Array<number | null>>
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `description`; `label`; `tooltip`
@@ -564,7 +564,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-radar-chart](https://2351labs.github.io/rowan/#radar-chart): Polar comparison. Categories are axes around the ring. `geometry` is `line` (default) or `area`. Null is no-data and breaks the ring; the host does not treat a gap as zero. Categorical `series`. Nightingale and radial bars are not this host. Import `@rowan-ui/core/radar-chart`. React `RowanRadarChart` from `@rowan-ui/core/react/radar-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `geometry` "line"|"area" default line; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string
+  Attributes: `brush` boolean default false; `description` string; `geometry` "line"|"area" default line; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string
   Properties: `config` RowanRadarChartConfig; `description`; `externalLabelText`; `geometry` "line" | "area" default line; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanRadarChartMessages; `noMotion`; `series` Array<RowanChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`
   Slots: `description`; `label`; `tooltip`
@@ -588,7 +588,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-range-chart](https://2351labs.github.io/rowan/#range-chart): Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default) or `area`. Null low or high is no-data. Own series model — not categorical `series.values`. Import `@rowan-ui/core/range-chart`. React `RowanRangeChart` from `@rowan-ui/core/react/range-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "bar"|"area" default bar; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `variant` "bar"|"area" default bar; `zoom` boolean default false
   Properties: `config` RowanRangeChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanRangeChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanRangeChartValueFormatter | null; `variant` "bar" | "area" default bar
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -628,7 +628,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-scatter-chart](https://2351labs.github.io/rowan/#scatter-chart): Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or y is no-data. Import `@rowan-ui/core/scatter-chart`. React `RowanScatterChart` from `@rowan-ui/core/react/scatter-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanScatterChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `locale`; `messages` RowanScatterChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanScatterChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -700,7 +700,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-sparkline](https://2351labs.github.io/rowan/#sparkline): Frozen compact one-series line for KPI tiles. Not a density of `rowan-trend-chart`. Additive `variant="area"` fills to the baseline (or to `target` when set). Import `@rowan-ui/core/sparkline`. React `RowanSparkline` from `@rowan-ui/core/react/sparkline`.
 
-  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default warning; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `hidden-series` string; `label` string; `locale` string; `no-motion` boolean default false; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `variant` "line"|"area" default neutral
+  Attributes: `above-tone` "neutral"|"info"|"success"|"warning"|"danger" default warning; `below-tone` "neutral"|"info"|"success"|"warning"|"danger" default success; `hidden-series` string; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `tone` "neutral"|"info"|"success"|"warning"|"danger" default neutral; `variant` "line"|"area" default neutral
   Properties: `aboveTone` "neutral" | "info" | "success" | "warning" | "danger" default warning; `belowTone` "neutral" | "info" | "success" | "warning" | "danger" default success; `externalLabelText`; `hiddenSeries` string[]; `label`; `labels` string[]; `locale`; `messages` RowanSparklineMessages; `noMotion`; `target` number | null; `tone` "neutral" | "info" | "success" | "warning" | "danger" default neutral; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `values` Array<number | null>; `variant` "line" | "area" default neutral
   Events: `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`
   Slots: `tooltip`
@@ -724,7 +724,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-stacked-area-chart](https://2351labs.github.io/rowan/#stacked-area-chart): Stacked categorical area chart. Positive values stack from zero. Null and negatives are no-data. Import `@rowan-ui/core/stacked-area-chart`. React `RowanStackedAreaChart` from `@rowan-ui/core/react/stacked-area-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanStackedAreaChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanStackedAreaChartMessages; `noMotion`; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanChartSeries>; `stackMode` "absolute" | "normalized" default absolute; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -732,7 +732,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-stacked-bar-chart](https://2351labs.github.io/rowan/#stacked-bar-chart): Stacked categorical bar chart. Positive values stack from zero. Null and negatives are no-data. Import `@rowan-ui/core/stacked-bar-chart`. React `RowanStackedBarChart` from `@rowan-ui/core/react/stacked-bar-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `orientation` "vertical"|"horizontal" default vertical; `stack-mode` "absolute"|"normalized" default absolute; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanStackedBarChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanStackedBarChartMessages; `noMotion`; `orientation` "vertical" | "horizontal" default vertical; `referenceLines` RowanChartReferenceLine[]; `series` Array<RowanChartSeries>; `stackMode` "absolute" | "normalized" default absolute; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -868,7 +868,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-trend-chart](https://2351labs.github.io/rowan/#trend-chart): Frozen small multi-series line chart for operational data sets. Native SVG, no animation, and an equivalent semantic table. Other geometries are separate hosts. Import `@rowan-ui/core/trend-chart`. React `RowanTrendChart` from `@rowan-ui/core/react/trend-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` RowanTrendChartConfig; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanTrendChartMessages; `noMotion`; `series` Array<RowanTrendChartSeries>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanTrendChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`
@@ -892,7 +892,7 @@ Component hooks such as `--rowan-button-bg` follow the semantic layer. The full 
 
 - [rowan-waterfall-chart](https://2351labs.github.io/rowan/#waterfall-chart): Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }` from zero; the host does not invent them. Null is no-data. Import `@rowan-ui/core/waterfall-chart`. React `RowanWaterfallChart` from `@rowan-ui/core/react/waterfall-chart`.
 
-  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` number; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
+  Attributes: `brush` boolean default false; `description` string; `hidden-series` string; `interactive` boolean default false; `label` string; `large-series` string; `locale` string; `no-motion` boolean default false; `sync-group` string; `zoom` boolean default false
   Properties: `config` object; `description`; `externalLabelText`; `hiddenSeries` string[]; `interactive` default false; `label`; `labels` string[]; `locale`; `messages` RowanWaterfallChartMessages; `noMotion`; `series` Array<object>; `tooltipFormatter` ((context: { text: string, event: Event, host: HTMLElement }) => string) | null; `valueFormatter` RowanChartValueFormatter | null
   Events: `rowan-brush`; `rowan-point-activate`; `rowan-point-click`; `rowan-selection-change`; `rowan-series-toggle`; `rowan-sync`; `rowan-zoom`
   Slots: `description`; `label`; `tooltip`

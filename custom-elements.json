@@ -929,7 +929,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -987,7 +987,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -999,9 +999,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -1759,7 +1759,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -1824,7 +1824,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -1836,9 +1836,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -2178,7 +2178,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -2236,7 +2236,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -2248,9 +2248,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -4463,6 +4463,39 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/axis.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "paintCategoryAxis",
+          "parameters": [
+            {
+              "name": "axis"
+            },
+            {
+              "name": "labels"
+            },
+            {
+              "name": "horizontal",
+              "default": "false"
+            }
+          ],
+          "description": "Category ticks. Long axes keep a few labels at their original positions."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "paintCategoryAxis",
+          "declaration": {
+            "name": "paintCategoryAxis",
+            "module": "src/chart/axis.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/cues.js",
       "declarations": [
         {
@@ -5047,8 +5080,119 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/chart/ix-css.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "css",
+          "type": {
+            "text": "string"
+          },
+          "default": "\".axis-pointer{display:none;pointer-events:none;stroke:var(--rowan-color-muted,#5c6560);stroke-width:1}.chart:hover .axis-pointer,.chart:focus-within .axis-pointer,.axis-pointer.is-shown{display:block}.zoom-brush,.range-brush{fill:var(--rowan-color-accent,#1d432f);fill-opacity:.15;pointer-events:none;stroke:var(--rowan-color-accent,#1d432f)}.table-pager{align-items:center;display:flex;font-size:.75rem;gap:.5rem;margin-block-start:.4rem}.table-pager button{font:inherit}.zoom-reset{background:var(--rowan-color-bg,#fff);border:1px solid var(--rowan-color-border,#d8dcd5);border-radius:var(--rowan-radius-sm,.375rem);font:inherit;inset-block-start:.4rem;inset-inline-end:.4rem;padding:.15rem .4rem;position:absolute;z-index:2}.chart{position:relative}.chart[data-animate] .bar,.chart[data-animate] .point-marker,.chart[data-animate] .series-line,.chart[data-animate] .series-area,.chart[data-animate] .point,.chart[data-animate] .line-point{animation:rowan-chart-in 280ms ease}@keyframes rowan-chart-in{from{opacity:0}to{opacity:1}}.chart.is-legend-dim [data-point-key]:not(.is-legend-hot):not(.legend-button),.chart.is-legend-dim [data-series-id]:not(.is-legend-hot):not(.legend-button){opacity:.28}.legend-button{align-items:center;background:transparent;border:0;color:inherit;cursor:pointer;display:inline-flex;font:inherit;gap:var(--rowan-space-2,.5rem);padding:.1rem .2rem}.legend-button[aria-pressed=false]{text-decoration:line-through}.legend-button[aria-pressed=false] .legend-swatch{opacity:.45}.point-marker,.bar,.series-line,.series-area{transition:opacity 120ms linear}.point-marker.is-active{r:6;stroke:var(--rowan-trend-chart-active-point-ring,var(--rowan-color-fg,#1f2421));stroke-width:3}.point-button:hover,.point-button[aria-pressed=true]{background:var(--_trend-chart-point-hover-bg,var(--rowan-trend-chart-point-hover-bg,color-mix(in srgb,var(--rowan-color-accent,#1d432f) 12%,transparent)))}.point-button,.summary>summary{cursor:pointer}\""
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "css",
+          "declaration": {
+            "name": "css",
+            "module": "src/chart/ix-css.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/chart/ix-more.js",
       "declarations": [
+        {
+          "kind": "function",
+          "name": "plot",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "openHover",
+          "parameters": [
+            {
+              "name": "bubble"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "closeHover",
+          "parameters": [
+            {
+              "name": "bubble"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "marks",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "indexOf",
+          "parameters": [
+            {
+              "name": "mark"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "labelOf",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "index"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "broadcast",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "index"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "members",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "clearSync",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
         {
           "kind": "function",
           "name": "installChartExtras",
@@ -5062,10 +5206,184 @@
       "exports": [
         {
           "kind": "js",
+          "name": "plot",
+          "declaration": {
+            "name": "plot",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "openHover",
+          "declaration": {
+            "name": "openHover",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "closeHover",
+          "declaration": {
+            "name": "closeHover",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "marks",
+          "declaration": {
+            "name": "marks",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "indexOf",
+          "declaration": {
+            "name": "indexOf",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "labelOf",
+          "declaration": {
+            "name": "labelOf",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "broadcast",
+          "declaration": {
+            "name": "broadcast",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "members",
+          "declaration": {
+            "name": "members",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "clearSync",
+          "declaration": {
+            "name": "clearSync",
+            "module": "src/chart/ix-more.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "installChartExtras",
           "declaration": {
             "name": "installChartExtras",
             "module": "src/chart/ix-more.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/ix-sync.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "realTip",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "index"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "describePointer",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "showIndex",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "index"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "learnXMap",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "bindFollow",
+          "parameters": [
+            {
+              "name": "host"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "realTip",
+          "declaration": {
+            "name": "realTip",
+            "module": "src/chart/ix-sync.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "describePointer",
+          "declaration": {
+            "name": "describePointer",
+            "module": "src/chart/ix-sync.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "showIndex",
+          "declaration": {
+            "name": "showIndex",
+            "module": "src/chart/ix-sync.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "learnXMap",
+          "declaration": {
+            "name": "learnXMap",
+            "module": "src/chart/ix-sync.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindFollow",
+          "declaration": {
+            "name": "bindFollow",
+            "module": "src/chart/ix-sync.js"
           }
         }
       ]
@@ -5630,6 +5948,52 @@
               "name": "lines"
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "linked",
+          "parameters": [
+            {
+              "name": "values"
+            },
+            {
+              "name": "from"
+            },
+            {
+              "name": "to"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "rememberChart",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "series"
+            },
+            {
+              "name": "labels"
+            },
+            {
+              "name": "count"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "drawIndexes",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "count"
+            }
+          ],
+          "description": "Indexes to draw, or null for the full series. The lazy sampler replaces the stride."
         }
       ],
       "exports": [
@@ -5823,6 +6187,141 @@
           "declaration": {
             "name": "expandDomainWithReferenceLines",
             "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "linked",
+          "declaration": {
+            "name": "linked",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rememberChart",
+          "declaration": {
+            "name": "rememberChart",
+            "module": "src/chart/model.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "drawIndexes",
+          "declaration": {
+            "name": "drawIndexes",
+            "module": "src/chart/model.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chart/sample.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "bucketIndexes",
+          "parameters": [
+            {
+              "name": "columns",
+              "type": {
+                "text": "Array<Array<number | null>>"
+              }
+            },
+            {
+              "name": "start",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "end",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "cap",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Indexes whose y is the min or max of a bucket. Endpoints stay."
+        },
+        {
+          "kind": "function",
+          "name": "zoomWindow",
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "view"
+            },
+            {
+              "name": "origin"
+            },
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "paint",
+              "optional": true,
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "description": "Replace the stride with min/max buckets. `paint` redraws when the caller is\nnot already inside render."
+        },
+        {
+          "kind": "function",
+          "name": "refine",
+          "parameters": [
+            {
+              "name": "host"
+            },
+            {
+              "name": "token"
+            },
+            {
+              "name": "paint",
+              "default": "true"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "bucketIndexes",
+          "declaration": {
+            "name": "bucketIndexes",
+            "module": "src/chart/sample.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zoomWindow",
+          "declaration": {
+            "name": "zoomWindow",
+            "module": "src/chart/sample.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "refine",
+          "declaration": {
+            "name": "refine",
+            "module": "src/chart/sample.js"
           }
         }
       ]
@@ -7161,7 +7660,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -7222,7 +7721,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -7234,9 +7733,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -7542,7 +8041,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -7600,7 +8099,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -7612,9 +8111,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -9178,6 +9677,40 @@
               "text": "RowanDashboardFilters"
             }
           }
+        },
+        {
+          "kind": "function",
+          "name": "bindChartSync",
+          "parameters": [
+            {
+              "name": "session",
+              "type": {
+                "text": "RowanDashboardFilters"
+              }
+            },
+            {
+              "name": "group",
+              "description": "`sync-group` name.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "description": "Session key. Default `category`.",
+              "optional": true,
+              "type": {
+                "text": "{ key?: string }"
+              }
+            }
+          ],
+          "description": "Write the shared crosshair category into a filter session.\nListens once on `document`, so charts inside shadow roots are included.\nRepeated `rowan-sync` events for the same index update the session once.",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          }
         }
       ],
       "exports": [
@@ -9188,6 +9721,14 @@
             "name": "createDashboardFilters",
             "module": "src/dashboard-filters/dashboard-filters.js"
           }
+        },
+        {
+          "kind": "js",
+          "name": "bindChartSync",
+          "declaration": {
+            "name": "bindChartSync",
+            "module": "src/dashboard-filters/dashboard-filters.js"
+          }
         }
       ]
     },
@@ -9196,6 +9737,14 @@
       "path": "src/dashboard-filters/index.js",
       "declarations": [],
       "exports": [
+        {
+          "kind": "js",
+          "name": "bindChartSync",
+          "declaration": {
+            "name": "bindChartSync",
+            "module": "./dashboard-filters.js"
+          }
+        },
         {
           "kind": "js",
           "name": "createDashboardFilters",
@@ -10723,7 +11272,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -10782,7 +11331,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -10794,9 +11343,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -13849,7 +14398,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -13907,7 +14456,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -13919,9 +14468,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -14326,7 +14875,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -14377,7 +14926,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -14389,9 +14938,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -14751,7 +15300,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -14802,7 +15351,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -14814,9 +15363,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -15725,6 +16274,14 @@
           "declaration": {
             "name": "RowanBulletChart",
             "module": "./bullet-chart/bullet-chart.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bindChartSync",
+          "declaration": {
+            "name": "bindChartSync",
+            "module": "./dashboard-filters/dashboard-filters.js"
           }
         },
         {
@@ -21624,7 +22181,7 @@
               "name": "rowan-series-toggle"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -21682,7 +22239,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -21694,9 +22251,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -22651,7 +23208,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -22716,7 +23273,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -22728,9 +23285,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -25211,7 +25768,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -25269,7 +25826,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -25281,9 +25838,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -27720,6 +28277,13 @@
                 "text": "boolean"
               },
               "description": "Disables chart motion, including under prefers-reduced-motion."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the sparkline keeps about two points per pixel. The tooltip and data table use the real values. A long table is paged.",
+              "name": "large-series"
             }
           ],
           "superclass": {
@@ -28644,7 +29208,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -28709,7 +29273,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -28721,9 +29285,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -29130,7 +29694,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -29202,7 +29766,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -29214,9 +29778,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -35564,7 +36128,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -35622,7 +36186,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -35634,9 +36198,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],
@@ -36594,7 +37158,7 @@
               "name": "rowan-zoom"
             },
             {
-              "description": "Shared hover. Detail: group, index, label.",
+              "description": "Shared crosshair. Detail: group, index, label.",
               "name": "rowan-sync"
             },
             {
@@ -36652,7 +37216,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Share the axis pointer with charts that use the same group name.",
+              "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.",
               "name": "sync-group"
             },
             {
@@ -36664,9 +37228,9 @@
             },
             {
               "type": {
-                "text": "number"
+                "text": "string"
               },
-              "description": "Downsample drawn marks above this count. The data table keeps every row.",
+              "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.",
               "name": "large-series"
             }
           ],

@@ -1261,10 +1261,10 @@ Filled multi-series area chart. Same data contract as the line chart. Null value
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -1295,7 +1295,7 @@ Filled multi-series area chart. Same data contract as the line chart. Null value
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -1624,11 +1624,11 @@ Frozen small categorical bar chart. Native SVG, no animation.
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
 | orientation | "vertical"\|"horizontal" | vertical | yes | Category axis. Default `vertical`. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -1659,7 +1659,7 @@ Frozen small categorical bar chart. Native SVG, no animation.
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -1751,10 +1751,10 @@ Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does 
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -1784,7 +1784,7 @@ Box plot. Per-category `{ min, q1, median, q3, max, outliers? }`. The host does 
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -3390,10 +3390,10 @@ Frozen compact one-series columns for KPI tiles. Not a density of `rowan-bar-cha
 | brush | boolean | false | yes | Drag, or Shift+Arrow, to select an x range. Escape clears it. |
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | tone | "neutral"\|"info"\|"success"\|"warning"\|"danger" | neutral | yes |  |
 
 ### Properties
@@ -3422,7 +3422,7 @@ Frozen compact one-series columns for KPI tiles. Not a density of `rowan-bar-cha
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -3560,10 +3560,10 @@ Categorical combo: bars, lines, and areas on a shared category axis. Optional `a
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -3594,7 +3594,7 @@ Categorical combo: bars, lines, and areas on a shared category axis. Optional `a
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -5152,10 +5152,10 @@ Frozen parts-of-a-whole chart. Uses the first series. Negative values are treate
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes | Each legend item is the slice button for pointer and keyboard activation. No second control list is drawn. |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | variant | "donut"\|"pie" | donut | yes | `pie` fills the hole. Default `donut`. Total stays in the matching table. |
 
 ### Properties
@@ -5186,7 +5186,7 @@ Frozen parts-of-a-whole chart. Uses the first series. Negative values are treate
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -6595,10 +6595,10 @@ One-series stage chart. Does not auto-sort. Negatives and null are no-data. `pyr
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | variant | "funnel"\|"cone"\|"pyramid" | funnel | yes | Default `funnel`. |
 
 ### Properties
@@ -6629,7 +6629,7 @@ One-series stage chart. Does not auto-sort. Negatives and null are no-data. `pyr
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -6714,12 +6714,12 @@ Compact speedometer gauge: ranges, min/max, actual, and optional target. Separat
 | brush | boolean | false | yes | Drag, or Shift+Arrow, to select an x range. Escape clears it. |
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | max | number | 100 | yes |  |
 | min | number | 0 | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 
 ### Properties
 
@@ -6746,7 +6746,7 @@ Compact speedometer gauge: ranges, min/max, actual, and optional target. Separat
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -6903,10 +6903,10 @@ Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-d
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 
 ### Properties
 
@@ -6937,7 +6937,7 @@ Categorical heatmap. Single-hue intensity via fill-opacity. Null is empty / no-d
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -9032,10 +9032,10 @@ Polar comparison. Categories are axes around the ring. `geometry` is `line` (def
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 
 ### Properties
 
@@ -9065,7 +9065,7 @@ Polar comparison. Categories are axes around the ring. `geometry` is `line` (def
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 
 ### Slots
 
@@ -9372,10 +9372,10 @@ Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default) or
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | variant | "bar"\|"area" | bar | yes | Default `bar`. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
@@ -9407,7 +9407,7 @@ Categorical range. Per-category `{ low, high }`. `variant` is `bar` (default) or
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -10262,10 +10262,10 @@ Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -10294,7 +10294,7 @@ Scatter / bubble chart. Bubble is a `size` encoding, not a second tag. Null x or
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -11478,6 +11478,7 @@ Frozen compact one-series line for KPI tiles. Not a density of `rowan-trend-char
 | below-tone | "neutral"\|"info"\|"success"\|"warning"\|"danger" | success | yes | Stroke at or below target. Used when `target` is set. |
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | label | string |  | yes |  |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the sparkline keeps about two points per pixel. The tooltip and data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
 | tone | "neutral"\|"info"\|"success"\|"warning"\|"danger" | neutral | yes |  |
@@ -11919,11 +11920,11 @@ Stacked categorical area chart. Positive values stack from zero. Null and negati
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
 | stack-mode | "absolute"\|"normalized" | absolute | yes | `normalized` scales each category to 100. Default `absolute`. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -11955,7 +11956,7 @@ Stacked categorical area chart. Positive values stack from zero. Null and negati
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -12051,12 +12052,12 @@ Stacked categorical bar chart. Positive values stack from zero. Null and negativ
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
 | orientation | "vertical"\|"horizontal" | vertical | yes | Category axis. Default `vertical`. |
 | stack-mode | "absolute"\|"normalized" | absolute | yes | `normalized` scales each category to 100. Default `absolute`. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -12089,7 +12090,7 @@ Stacked categorical bar chart. Positive values stack from zero. Null and negativ
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -14219,10 +14220,10 @@ Frozen small multi-series line chart for operational data sets. Native SVG, no a
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -14252,7 +14253,7 @@ Frozen small multi-series line chart for operational data sets. Native SVG, no a
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots
@@ -14708,10 +14709,10 @@ Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }` fr
 | hidden-series | string |  | yes | Space-separated series or slice ids hidden from the plot. |
 | interactive | boolean | false | yes |  |
 | label | string |  | yes |  |
-| large-series | number |  |  | Downsample drawn marks above this count. The data table keeps every row. |
+| large-series | string |  |  | Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged. |
 | locale | string |  | yes |  |
 | no-motion | boolean | false | yes | Disables chart motion, including under prefers-reduced-motion. |
-| sync-group | string |  |  | Share the axis pointer with charts that use the same group name. |
+| sync-group | string |  |  | Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region. |
 | zoom | boolean | false | yes | Opt-in plot zoom and pan. |
 
 ### Properties
@@ -14741,7 +14742,7 @@ Waterfall. Signed deltas from a running total. Totals are `{ type: "total" }` fr
 | rowan-point-click | series, index, datum, value. | Cancelable. Detail: series, index, datum, value. |
 | rowan-selection-change |  | Cancelable. Follows rowan-point-click when that event is not canceled. |
 | rowan-series-toggle | seriesId, hiddenSeries. | Cancelable. Legend visibility toggle. Detail: seriesId, hiddenSeries. |
-| rowan-sync | group, index, label. | Shared hover. Detail: group, index, label. |
+| rowan-sync | group, index, label. | Shared crosshair. Detail: group, index, label. |
 | rowan-zoom | x, y, width, height. | Fired when the zoom window changes. Detail: x, y, width, height. |
 
 ### Slots

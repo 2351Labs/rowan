@@ -97,3 +97,27 @@ export function createDashboardFilters(initial = {}) {
     snapshot,
   };
 }
+
+/**
+ * Write the shared crosshair category into a filter session.
+ * Listens once on `document`, so charts inside shadow roots are included.
+ * Repeated `rowan-sync` events for the same index update the session once.
+ *
+ * @param {RowanDashboardFilters} session
+ * @param {string} group `sync-group` name.
+ * @param {{ key?: string }} [options] Session key. Default `category`.
+ * @returns {() => void} Removes the listener.
+ */
+export function bindChartSync(session, group, options = {}) {
+  const name = String(group ?? "").trim();
+  const key = String(options.key || "category");
+  if (!name || !session || typeof session.set !== "function") return () => {};
+  const handler = (event) => {
+    const detail = event.detail;
+    if (!detail || detail.group !== name) return;
+    if (typeof session.get === "function" && session.get(key) === detail.label) return;
+    session.set(key, detail.label);
+  };
+  document.addEventListener("rowan-sync", handler);
+  return () => document.removeEventListener("rowan-sync", handler);
+}
