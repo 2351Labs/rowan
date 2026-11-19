@@ -15,10 +15,10 @@ Gap score is `weight × (uncovered lines + uncovered branches)`. Form controls a
 
 | Metric     | Covered |  Total | Coverage |  Floor |
 | ---------- | ------: | -----: | -------: | -----: |
-| lines      |  56,613 | 58,882 |   96.14% | 95.05% |
-| statements |  56,613 | 58,882 |   96.14% | 95.05% |
-| functions  |   4,056 |  4,347 |   93.30% | 91.31% |
-| branches   |  13,326 | 14,724 |   90.50% | 88.89% |
+| lines      |  56,677 | 58,947 |   96.14% | 95.05% |
+| statements |  56,677 | 58,947 |   96.14% | 95.05% |
+| functions  |   4,059 |  4,350 |   93.31% | 91.31% |
+| branches   |  13,341 | 14,741 |   90.50% | 88.89% |
 
 ## Largest gaps
 
@@ -28,7 +28,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | ----------------------- | ------------ | --------: | ---------------------: | ---------------------: | --------: |
 | `rich-text-editor`      | Form         |     384.0 |  96.00% (56 uncovered) |  80.65% (72 uncovered) |    97.83% |
 | `table`                 | Table        |     273.5 | 94.31% (369 uncovered) | 91.36% (178 uncovered) |    96.01% |
-| `filter-builder`        | Form         |     270.0 |  95.63% (80 uncovered) |  98.27% (10 uncovered) |    99.07% |
+| `filter-builder`        | Form         |     264.0 |  95.80% (78 uncovered) |  98.28% (10 uncovered) |    99.08% |
 | `lib`                   | Support      |     222.0 | 93.90% (124 uncovered) |  96.65% (24 uncovered) |    96.32% |
 | `context-menu`          | Overlay      |     219.0 |  92.62% (38 uncovered) |  73.88% (35 uncovered) |   100.00% |
 | `dashboard`             | Data display |     194.0 |  97.96% (19 uncovered) |  82.27% (78 uncovered) |   100.00% |
@@ -96,7 +96,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `empty-state`           | Data display |     2 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `file-item`             | Form         |     2 |  96.20% (13 uncovered) |  96.20% (13 uncovered) |  96.15% (1 uncovered) |  80.65% (12 uncovered) |
 | `file-upload`           | Form         |     2 |   98.92% (6 uncovered) |   98.92% (6 uncovered) |  97.78% (1 uncovered) |  76.87% (31 uncovered) |
-| `filter-builder`        | Form         |     3 |  95.63% (80 uncovered) |  95.63% (80 uncovered) |  99.07% (1 uncovered) |  98.27% (10 uncovered) |
+| `filter-builder`        | Form         |     3 |  95.80% (78 uncovered) |  95.80% (78 uncovered) |  99.08% (1 uncovered) |  98.28% (10 uncovered) |
 | `form-field`            | Form         |     2 |  97.83% (12 uncovered) |  97.83% (12 uncovered) | 100.00% (0 uncovered) |   94.41% (8 uncovered) |
 | `form-layout`           | Form         |     2 |   97.64% (9 uncovered) |   97.64% (9 uncovered) | 100.00% (0 uncovered) |  83.93% (18 uncovered) |
 | `form-wizard`           | Form         |     2 |  97.28% (21 uncovered) |  97.28% (21 uncovered) | 100.00% (0 uncovered) |  94.69% (11 uncovered) |
@@ -127,7 +127,7 @@ Ranked by gap score. Use this list to choose the next behavior tests.
 | `react`                 | Support      |     1 |  100.00% (0 uncovered) |  100.00% (0 uncovered) | 100.00% (0 uncovered) |  100.00% (0 uncovered) |
 | `rich-text-editor`      | Form         |     3 |  96.00% (56 uncovered) |  96.00% (56 uncovered) |  97.83% (2 uncovered) |  80.65% (72 uncovered) |
 | `row-details-panel`     | Data display |     2 |  93.12% (59 uncovered) |  93.12% (59 uncovered) | 81.43% (13 uncovered) |  82.56% (34 uncovered) |
-| `saved-views`           | Table        |     2 |  93.57% (79 uncovered) |  93.57% (79 uncovered) |  96.47% (3 uncovered) |  93.58% (24 uncovered) |
+| `saved-views`           | Table        |     2 |  93.52% (82 uncovered) |  93.52% (82 uncovered) |  96.55% (3 uncovered) |  93.28% (26 uncovered) |
 | `scatter-chart`         | Chart        |     3 |  98.25% (16 uncovered) |  98.25% (16 uncovered) |  90.77% (6 uncovered) |  86.67% (22 uncovered) |
 | `segmented-control`     | Form         |     2 |  96.75% (12 uncovered) |  96.75% (12 uncovered) | 100.00% (0 uncovered) |  78.45% (25 uncovered) |
 | `select`                | Form         |     2 |  93.81% (21 uncovered) |  93.81% (21 uncovered) |  90.63% (3 uncovered) |   92.59% (6 uncovered) |
