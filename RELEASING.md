@@ -304,6 +304,16 @@ scale on wide and narrow hosts. MCP peers on core `^0.23.0`. Nested filter
 groups and table-view-state version `2` stay experimental. Publish after
 this catalog commit is on `main`: tag `v0.23.4`.
 
+## 0.24.0 cut
+
+Version in `package.json` is `0.24.0` for core, icons, MapLibre, and MCP. Do
+**not** call this `1.0`. Nested AND/OR filter groups and table-view-state
+version 2 are stable. Version 1 snapshots still restore. `rowan-saved-views`
+saves, applies, and shares a table view. Chart `sync-group` crosshairs and
+large-series min/max downsampling ship here. Icons, MapLibre, and MCP peer on
+core `^0.24.0`. Starter and admin ranges are `^0.23.0 || ^0.24.0` until 0.24.0
+is on npm. Publish after this catalog commit is on `main`: tag `v0.24.0`.
+
 ## Publish
 
 1. Confirm the CI quality and browser-matrix workflows passed for the release commit.

@@ -5,7 +5,7 @@
  *
  * Inside this repo, npm workspaces link @rowan-ui/* to the local sources, and
  * Vite does not prebundle those links. A copied folder installs published
- * `@rowan-ui/*@^0.23.0` with Vite's default config (no optimizeDeps.exclude).
+ * `@rowan-ui/*@^0.23.0 || ^0.24.0` with Vite's default config (no optimizeDeps.exclude).
  * Component CSS is embedded in the module, so the prebundle still paints.
  * This script fails if a config excludes those packages, if the registry
  * install is older than 0.23.0, or if dev or preview renders unstyled.
@@ -336,8 +336,8 @@ async function smokePackedDefaultVite(sandbox, context) {
 
   const dir = join(sandbox, "packed-vite");
   mkdirSync(join(dir, "src"), { recursive: true });
-  const corePack = join(packDir, "rowan-ui-core-0.23.4.tgz");
-  const iconPack = join(packDir, "rowan-ui-icons-0.23.4.tgz");
+  const corePack = join(packDir, "rowan-ui-core-0.24.0.tgz");
+  const iconPack = join(packDir, "rowan-ui-icons-0.24.0.tgz");
   writeFileSync(
     join(dir, "package.json"),
     JSON.stringify(
