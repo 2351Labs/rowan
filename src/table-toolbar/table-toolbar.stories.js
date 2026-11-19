@@ -113,6 +113,28 @@ export const WithBulkActions = {
   },
 };
 
+export const SavedViews = {
+  name: "Saved views",
+  parameters: createEventScriptParameters({
+    steps: [
+      "Open Saved views in the toolbar.",
+      "Name a view and save the current columns, sort, and filters.",
+      "Use ArrowDown and ArrowUp to move between saved views, then apply one.",
+    ],
+    events: ["rowan-saved-views-change", "rowan-saved-view-apply"],
+  }),
+  render: () => {
+    const table = createTable();
+    table.id = "team-orders";
+    const toolbar = createToolbar({ label: "Team table controls", selectionLabel: "selected" });
+    toolbar.savedViews = true;
+    toolbar.setAttribute("saved-views", "");
+    toolbar.forTable = "team-orders";
+    table.append(toolbar);
+    return table;
+  },
+};
+
 export const ColumnsReplacedLater = {
   name: "Columns replaced later",
   parameters: createEventScriptParameters({

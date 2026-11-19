@@ -62,6 +62,7 @@ export { RowanRangeChart } from "./range-chart.js";
 export { RowanRating } from "./rating.js";
 export { RowanRichTextEditor } from "./rich-text-editor.js";
 export { RowanRowDetailsPanel } from "./row-details-panel.js";
+export { RowanSavedViews } from "./saved-views.js";
 export { RowanScatterChart } from "./scatter-chart.js";
 export { RowanSegmentedControl } from "./segmented-control.js";
 export { RowanSelect } from "./select.js";

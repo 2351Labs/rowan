@@ -18,10 +18,13 @@ export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
 export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export { createDashboard } from "./dashboard/dashboard.js";
 export {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
   applyFilters,
   cloneFilterNode,
   isFilterGroup,
   RowanFilterBuilder,
+  validateFilters,
 } from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
 export { applyQuickFind } from "./table-quick-find/table-quick-find.js";
@@ -29,8 +32,10 @@ export {
   TABLE_VIEW_STATE_VERSION,
   mergeTableViewState,
   normalizeTableViewState,
+  readTableViewStateSearch,
   restoreTableViewState,
   serializeTableViewState,
+  writeTableViewStateSearch,
 } from "./table-view-state/table-view-state.js";
 export { RowanButton } from "./button/button.js";
 export { RowanCard } from "./card/card.js";
@@ -95,6 +100,16 @@ export { RowanRadioGroup } from "./radio-group/radio-group.js";
 export { RowanRating } from "./rating/rating.js";
 export { RowanRichTextEditor } from "./rich-text-editor/rich-text-editor.js";
 export { RowanRowDetailsPanel } from "./row-details-panel/row-details-panel.js";
+export {
+  SAVED_VIEW_NAME_MAX,
+  RowanSavedViews,
+  applyTableViewState,
+  captureTableViewState,
+  createLocalStorageSavedViewStorage,
+  createMemorySavedViewStorage,
+  createSavedViewStore,
+  findTableFilterBuilder,
+} from "./saved-views/saved-views.js";
 export { RowanSkeleton } from "./skeleton/skeleton.js";
 export { RowanSelect } from "./select/select.js";
 export { RowanSegmentedControl } from "./segmented-control/segmented-control.js";

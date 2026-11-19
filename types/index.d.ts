@@ -103,20 +103,35 @@ export { RowanTooltip } from "./tooltip/tooltip.js";
 export { RowanValidationSummary } from "./validation-summary/validation-summary.js";
 export { RowanVirtualList } from "./virtual-list/virtual-list.js";
 export {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
   applyFilters,
   cloneFilterNode,
   isFilterGroup,
   RowanFilterBuilder,
+  validateFilters,
 } from "./filter-builder/filter-builder.js";
 export { createTableCsv, visibleColumns } from "./table-csv/table-csv.js";
 export {
   TABLE_VIEW_STATE_VERSION,
   mergeTableViewState,
   normalizeTableViewState,
+  readTableViewStateSearch,
   restoreTableViewState,
   serializeTableViewState,
+  writeTableViewStateSearch,
 } from "./table-view-state/table-view-state.js";
 export { RowanComboChart, createParetoData } from "./combo-chart/combo-chart.js";
+export {
+  SAVED_VIEW_NAME_MAX,
+  RowanSavedViews,
+  applyTableViewState,
+  captureTableViewState,
+  createLocalStorageSavedViewStorage,
+  createMemorySavedViewStorage,
+  createSavedViewStore,
+  findTableFilterBuilder,
+} from "./saved-views/saved-views.js";
 export {
   readBooleanAttribute,
   readNumberAttribute,

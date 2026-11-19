@@ -1,6 +1,13 @@
 import { expect } from "@esm-bundle/chai";
 
-import { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+import {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+  validateFilters,
+} from "./apply-filters.js";
 
 const rows = [
   { id: "1", name: "Ada", age: 36, role: "Admin", joined: "2020-01-15", active: true },
@@ -60,7 +67,7 @@ describe("applyFilters", () => {
     ).to.deep.equal([]);
   });
 
-  it("applies experimental OR groups inside the frozen top-level AND list", () => {
+  it("applies OR groups inside the top-level AND list", () => {
     expect(
       applyFilters(
         rows,
@@ -184,5 +191,94 @@ describe("applyFilters", () => {
         fields,
       ).map((row) => row.id),
     ).to.deep.equal(["1"]);
+  });
+
+  it("rejects groups past the stable depth and node limits", () => {
+    let deep = { field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < FILTER_GROUP_MAX_DEPTH + 1; depth += 1) {
+      deep = { join: "or", filters: [deep] };
+    }
+    expect(applyFilters(rows, [deep], fields)).to.deep.equal([]);
+
+    let allowed = { field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < FILTER_GROUP_MAX_DEPTH; depth += 1) {
+      allowed = { join: "or", filters: [allowed] };
+    }
+    expect(applyFilters(rows, [allowed], fields).map((row) => row.id)).to.deep.equal(["1"]);
+
+    const capped = Array.from({ length: FILTER_MAX_NODES + 1 }, () => ({
+      field: "role",
+      operator: "equals",
+      value: "Admin",
+    }));
+    expect(applyFilters(rows, capped, fields)).to.deep.equal([]);
+    expect(
+      applyFilters(rows, capped.slice(0, FILTER_MAX_NODES), fields).map((row) => row.id),
+    ).to.deep.equal(["1"]);
+
+    const shortCircuit = [
+      {
+        join: "or",
+        filters: Array.from({ length: FILTER_MAX_NODES - 1 }, () => ({
+          field: "role",
+          operator: "equals",
+          value: "Admin",
+        })),
+      },
+      { field: "role", operator: "equals", value: "Admin" },
+    ];
+    expect(applyFilters(rows, shortCircuit, fields)).to.deep.equal([]);
+
+    let chained = { field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < 4000; depth += 1) chained = { join: "and", filters: [chained] };
+    expect(applyFilters(rows, [chained], fields)).to.deep.equal([]);
+
+    const wide = Array.from({ length: 4000 }, () => ({
+      field: "role",
+      operator: "equals",
+      value: "Admin",
+    }));
+    expect(applyFilters(rows, wide, fields)).to.deep.equal([]);
+  });
+
+  it("validates shape, fields, depth, and size without filtering rows", () => {
+    expect(validateFilters(null).valid).to.equal(false);
+    expect(validateFilters(null).issues[0].code).to.equal("invalid-node");
+
+    const checked = validateFilters(
+      [
+        { field: "role", operator: "contains", value: "Admin" },
+        { join: "xor", filters: [] },
+        { join: "and", filters: [{ operator: "equals", value: "x" }] },
+      ],
+      fields,
+    );
+    expect(checked.valid).to.equal(false);
+    expect(checked.issues.map((issue) => issue.code)).to.include.members([
+      "unknown-operator",
+      "invalid-join",
+      "missing-field",
+    ]);
+
+    let deep = { field: "role", operator: "equals", value: "Admin" };
+    for (let depth = 0; depth < FILTER_GROUP_MAX_DEPTH + 1; depth += 1) {
+      deep = { id: `g${depth}`, join: "and", filters: [deep] };
+    }
+    const depthIssues = validateFilters([deep], fields);
+    expect(depthIssues.valid).to.equal(false);
+    expect(depthIssues.issues.some((issue) => issue.code === "max-depth")).to.equal(true);
+
+    const wide = validateFilters(
+      Array.from({ length: FILTER_MAX_NODES + 1 }, () => ({
+        field: "role",
+        operator: "equals",
+        value: "Admin",
+      })),
+      fields,
+    );
+    expect(wide.issues.some((issue) => issue.code === "max-nodes")).to.equal(true);
+    expect(
+      validateFilters([{ field: "role", operator: "equals", value: "Admin" }], fields).valid,
+    ).to.equal(true);
   });
 });

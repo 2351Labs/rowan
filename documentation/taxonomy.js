@@ -116,6 +116,7 @@ const COMPONENT_CATEGORY_DEFINITIONS = [
       "radar-chart",
       "range-chart",
       "row-details-panel",
+      "saved-views",
       "scatter-chart",
       "source-meta",
       "sparkline",

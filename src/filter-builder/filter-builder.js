@@ -10,7 +10,13 @@ import {
 } from "../lib/table-selection.js";
 import "../chip/chip.js";
 import "../popover/popover.js";
-import { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+import {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+} from "./apply-filters.js";
 import componentStyles from "./filter-builder.styles.js";
 
 const FIELD_TYPES = new Set(["text", "number", "date", "boolean", "select"]);
@@ -68,6 +74,8 @@ const OPERATOR_LABELS = {
 const DEFAULT_MESSAGES = Object.freeze({
   addGroupLabel: "Add group",
   addInGroupLabel: "Add filter",
+  groupDepthLimit: "Groups nest at most {max} levels.",
+  nodeLimit: "A filter list holds at most {max} conditions.",
   addLabel: "Add filter",
   booleanFalse: "False",
   booleanTrue: "True",
@@ -173,6 +181,8 @@ function cloneFilter(filter) {
  * @typedef {object} RowanFilterBuilderMessages
  * @property {string} [addGroupLabel]
  * @property {string} [addInGroupLabel]
+ * @property {string | ((context: { max: string }) => string)} [groupDepthLimit]
+ * @property {string | ((context: { max: string }) => string)} [nodeLimit]
  * @property {string} [addLabel]
  * @property {string} [booleanFalse]
  * @property {string} [booleanTrue]
@@ -223,7 +233,7 @@ function cloneFilter(filter) {
  */
 
 /**
- * Frozen predicate row. Nested combinator objects are not a public shape.
+ * Predicate leaf. A node with `field` is always a leaf. Groups are `RowanFilterGroup`.
  * @typedef {object} RowanFilter
  * @property {string} id
  * @property {string} field
@@ -232,8 +242,8 @@ function cloneFilter(filter) {
  */
 
 /**
- * Experimental group. `join` is `and` or `or`. Children may be frozen leaves
- * or further groups. A node with `field` is always a leaf.
+ * Stable AND/OR group. `join` is `and` or `or`. Children may be leaves or
+ * further groups, up to four levels. A node with `field` is always a leaf.
  * @typedef {object} RowanFilterGroup
  * @property {string} id
  * @property {"and" | "or"} join
@@ -281,7 +291,7 @@ function isFilterableColumn(column) {
  * @cssprop --rowan-filter-builder-border-width
  * @cssprop --rowan-filter-builder-control-bg
  * @property {RowanFilterField[]} fields - Filterable fields. Arrays are property-only.
- * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
+ * @property {Array<RowanFilter | RowanFilterGroup>} filters - Top-level AND list. Group nodes `{ join, filters }` nest AND/OR up to four levels and 40 nodes. Deeper or extra nodes are dropped on assign. With `for-table`, server mode sends this tree to `getRows` and client mode applies it to the rows. Arrays are property-only.
  * @property {RowanFilterBuilderMessages} messages - Property-only built-in message overrides.
  * @event rowan-filter-change - Fired when the user adds, updates, removes, or clears a filter
  */
@@ -460,7 +470,7 @@ export class RowanFilterBuilder extends BaseElement {
   addFilter(value = {}) {
     const fields = this.#resolvedFields();
     const field = this.#fieldForId(normalizeText(value.field), fields) ?? fields[0];
-    if (!field) return null;
+    if (!field || !this.#canAddNodes(1)) return null;
 
     const filter = this.#normalizeFilter(value, this.#filters.length, this.#usedIds(), field);
     this.#filters = [...this.#filters, filter];
@@ -542,9 +552,16 @@ export class RowanFilterBuilder extends BaseElement {
     );
     this.#clearButton.textContent = this.clearLabel;
     this.#emptyState.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "empty");
-    this.#addButton.disabled = this.disabled || fields.length === 0;
-    this.#addGroupButton.disabled = this.disabled || fields.length === 0;
-    this.#addGroupButton.hidden = this.appearance === "toolbar";
+    const room = FILTER_MAX_NODES - this.#nodeCount();
+    const nodeLimit =
+      room < 3
+        ? resolveMessage(this.#messages, DEFAULT_MESSAGES, "nodeLimit", {
+            max: String(FILTER_MAX_NODES),
+          })
+        : "";
+    this.#addButton.disabled = this.disabled || fields.length === 0 || room < 1;
+    this.#addGroupButton.disabled = this.disabled || fields.length === 0 || room < 3;
+    this.#addGroupButton.title = nodeLimit;
     this.#clearButton.disabled = this.disabled || this.#filters.length === 0;
     this.#clearButton.hidden = this.#filters.length === 0;
     this.#emptyState.hidden = this.appearance === "toolbar" || this.#filters.length > 0;
@@ -636,25 +653,52 @@ export class RowanFilterBuilder extends BaseElement {
     return ids;
   }
 
+  #nodeCount(nodes = this.#filters) {
+    let count = 0;
+    const visit = (list) => {
+      for (const node of list) {
+        count += 1;
+        if (isFilterGroup(node)) visit(node.filters);
+      }
+    };
+    visit(nodes);
+    return count;
+  }
+
+  #groupDepth(id, nodes = this.#filters, depth = 1) {
+    for (const node of nodes) {
+      if (!isFilterGroup(node)) continue;
+      if (node.id === id) return depth;
+      const nested = this.#groupDepth(id, node.filters, depth + 1);
+      if (nested) return nested;
+    }
+    return 0;
+  }
+
   #normalizeFilters(value) {
     const source = Array.isArray(value) ? value : [];
     const ids = new Set();
+    const budget = { n: 0 };
 
     return source.reduce((filters, item, index) => {
-      const node = this.#normalizeNode(item, index, ids);
+      const node = this.#normalizeNode(item, index, ids, 1, budget);
       if (!node) return filters;
       filters.push(node);
       return filters;
     }, []);
   }
 
-  #normalizeNode(value, index, ids) {
+  #normalizeNode(value, index, ids, depth, budget) {
+    if (budget.n >= FILTER_MAX_NODES) return null;
+
     if (isFilterGroup(value)) {
+      if (depth > FILTER_GROUP_MAX_DEPTH) return null;
+      budget.n += 1;
       const children = Array.isArray(value.filters) ? value.filters : [];
       const id = this.#uniqueId(normalizeText(value.id) || `group-${index + 1}`, ids);
       ids.add(id);
       const filters = children.reduce((list, child, childIndex) => {
-        const node = this.#normalizeNode(child, childIndex, ids);
+        const node = this.#normalizeNode(child, childIndex, ids, depth + 1, budget);
         if (node) list.push(node);
         return list;
       }, []);
@@ -668,6 +712,7 @@ export class RowanFilterBuilder extends BaseElement {
     const fallbackField = this.#resolvedFields()[0] ?? null;
     const filter = this.#normalizeFilter(value, index, ids, fallbackField);
     if (!filter.field) return null;
+    budget.n += 1;
     ids.add(filter.id);
     return filter;
   }
@@ -745,7 +790,9 @@ export class RowanFilterBuilder extends BaseElement {
       }
 
       this.#filtersContainer.append(
-        isFilterGroup(node) ? this.#createGroup(node, fields) : this.#createFilterRow(node, fields),
+        isFilterGroup(node)
+          ? this.#createGroup(node, fields, {}, 1)
+          : this.#createFilterRow(node, fields),
       );
     });
 
@@ -794,7 +841,7 @@ export class RowanFilterBuilder extends BaseElement {
     trigger.append(chip);
 
     const editor = isGroup
-      ? this.#createGroup(node, fields, { showRemove: false })
+      ? this.#createGroup(node, fields, { showRemove: false }, 1)
       : this.#createFilterRow(node, fields, { showRemove: false });
     editor.classList.add("editor");
     popover.append(trigger, editor);
@@ -859,7 +906,7 @@ export class RowanFilterBuilder extends BaseElement {
     return option?.label ?? filter.value;
   }
 
-  #createGroup(group, fields, options = {}) {
+  #createGroup(group, fields, options = {}, depth = 1) {
     const card = document.createElement("div");
     card.className = "group";
     card.part = "group";
@@ -910,19 +957,50 @@ export class RowanFilterBuilder extends BaseElement {
     children.setAttribute("role", "list");
     group.filters.forEach((node) => {
       children.append(
-        isFilterGroup(node) ? this.#createGroup(node, fields) : this.#createFilterRow(node, fields),
+        isFilterGroup(node)
+          ? this.#createGroup(node, fields, {}, depth + 1)
+          : this.#createFilterRow(node, fields),
       );
     });
+
+    const room = FILTER_MAX_NODES - this.#nodeCount();
+    const actions = document.createElement("div");
+    actions.className = "group-actions";
 
     const addInGroup = document.createElement("button");
     addInGroup.className = "add-button";
     addInGroup.type = "button";
     addInGroup.dataset.action = "add-in-group";
     addInGroup.dataset.filterId = group.id;
-    addInGroup.disabled = this.disabled || fields.length === 0;
+    addInGroup.disabled = this.disabled || fields.length === 0 || room < 1;
     addInGroup.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "addInGroupLabel");
+    actions.append(addInGroup);
 
-    card.append(header, children, addInGroup);
+    if (depth < FILTER_GROUP_MAX_DEPTH) {
+      const addGroup = document.createElement("button");
+      addGroup.className = "add-button";
+      addGroup.type = "button";
+      addGroup.dataset.action = "add-group-in-group";
+      addGroup.dataset.filterId = group.id;
+      addGroup.disabled = this.disabled || fields.length === 0 || room < 3;
+      addGroup.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "addGroupLabel");
+      if (room < 3) {
+        addGroup.title = resolveMessage(this.#messages, DEFAULT_MESSAGES, "nodeLimit", {
+          max: String(FILTER_MAX_NODES),
+        });
+      }
+      actions.append(addGroup);
+    } else {
+      const limit = document.createElement("p");
+      limit.className = "group-limit";
+      limit.part = "group-limit";
+      limit.textContent = resolveMessage(this.#messages, DEFAULT_MESSAGES, "groupDepthLimit", {
+        max: String(FILTER_GROUP_MAX_DEPTH),
+      });
+      actions.append(limit);
+    }
+
+    card.append(header, children, actions);
     return card;
   }
 
@@ -1117,6 +1195,8 @@ export class RowanFilterBuilder extends BaseElement {
       this.#commitAddedGroup();
     } else if (action === "add-in-group") {
       this.#commitAddedFilterInGroup(control.dataset.filterId ?? "");
+    } else if (action === "add-group-in-group") {
+      this.#commitAddedGroupInGroup(control.dataset.filterId ?? "");
     } else if (action === "remove") {
       this.#commitRemovedFilter(control.dataset.filterId ?? "");
     } else if (action === "clear") {
@@ -1183,7 +1263,7 @@ export class RowanFilterBuilder extends BaseElement {
   #commitAddedFilter() {
     const fields = this.#resolvedFields();
     const field = fields[0];
-    if (!field) return;
+    if (!field || !this.#canAddNodes(1)) return;
 
     const filter = this.#normalizeFilter(
       { field: field.id },
@@ -1195,7 +1275,34 @@ export class RowanFilterBuilder extends BaseElement {
     this.#commitUserFilters([...this.#filters, filter], "add", filter);
   }
 
+  #canAddNodes(extra) {
+    return this.#nodeCount() + extra <= FILTER_MAX_NODES;
+  }
+
   #commitAddedGroup() {
+    const fields = this.#resolvedFields();
+    const field = fields[0];
+    if (!field || !this.#canAddNodes(3)) return;
+
+    const ids = this.#usedIds();
+    const first = this.#normalizeFilter({ field: field.id }, 0, ids, field);
+    ids.add(first.id);
+    const second = this.#normalizeFilter({ field: field.id }, 1, ids, field);
+    ids.add(second.id);
+    const group = {
+      id: this.#uniqueId("group-1", ids),
+      join: "or",
+      filters: [first, second],
+    };
+    if (this.appearance === "toolbar") this.#editingFilterId = group.id;
+    this.#commitUserFilters([...this.#filters, group], "add", group);
+  }
+
+  #commitAddedGroupInGroup(groupId) {
+    const parent = this.#findNode(this.#filters, groupId);
+    if (!isFilterGroup(parent) || !this.#canAddNodes(3)) return;
+    if (this.#groupDepth(groupId) >= FILTER_GROUP_MAX_DEPTH) return;
+
     const fields = this.#resolvedFields();
     const field = fields[0];
     if (!field) return;
@@ -1210,12 +1317,13 @@ export class RowanFilterBuilder extends BaseElement {
       join: "or",
       filters: [first, second],
     };
-    this.#commitUserFilters([...this.#filters, group], "add", group);
+    const next = { ...parent, filters: [...parent.filters, group] };
+    this.#commitUserFilters(this.#replaceNode(this.#filters, groupId, next), "add", group);
   }
 
   #commitAddedFilterInGroup(groupId) {
     const group = this.#findNode(this.#filters, groupId);
-    if (!isFilterGroup(group)) return;
+    if (!isFilterGroup(group) || !this.#canAddNodes(1)) return;
 
     const fields = this.#resolvedFields();
     const field = fields[0];
@@ -1339,4 +1447,11 @@ export class RowanFilterBuilder extends BaseElement {
 
 define("rowan-filter-builder", RowanFilterBuilder);
 
-export { applyFilters, cloneFilterNode, isFilterGroup } from "./apply-filters.js";
+export {
+  FILTER_GROUP_MAX_DEPTH,
+  FILTER_MAX_NODES,
+  applyFilters,
+  cloneFilterNode,
+  isFilterGroup,
+  validateFilters,
+} from "./apply-filters.js";

@@ -130,7 +130,14 @@ const CATEGORIES = {
   table: {
     weight: 0.5,
     label: "Table",
-    components: ["table", "table-csv", "table-quick-find", "table-toolbar", "table-view-state"],
+    components: [
+      "table",
+      "table-csv",
+      "table-quick-find",
+      "table-toolbar",
+      "table-view-state",
+      "saved-views",
+    ],
   },
   chart: {
     weight: 0.4,

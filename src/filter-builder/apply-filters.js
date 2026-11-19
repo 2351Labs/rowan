@@ -110,10 +110,50 @@ function matchesFilter(row, filter, field) {
   return false;
 }
 
+/** A group in the top-level list is depth 1. Deeper groups are rejected. */
+export const FILTER_GROUP_MAX_DEPTH = 4;
+
+/** Leaves and groups share one cap so a payload cannot grow without bound. */
+export const FILTER_MAX_NODES = 40;
+
+const BUILTIN_OPERATORS = {
+  text: [
+    "contains",
+    "equals",
+    "not-equals",
+    "starts-with",
+    "ends-with",
+    "is-empty",
+    "is-not-empty",
+  ],
+  number: [
+    "equals",
+    "not-equals",
+    "greater-than",
+    "greater-than-or-equal",
+    "less-than",
+    "less-than-or-equal",
+    "is-empty",
+    "is-not-empty",
+  ],
+  date: [
+    "equals",
+    "not-equals",
+    "greater-than",
+    "greater-than-or-equal",
+    "less-than",
+    "less-than-or-equal",
+    "is-empty",
+    "is-not-empty",
+  ],
+  boolean: ["equals", "not-equals"],
+  select: ["equals", "not-equals", "is-empty", "is-not-empty"],
+};
+
 /**
- * Experimental group node. Requires `join` of `and` or `or` and a `filters`
- * array. A frozen leaf has `field` and is never a group, even if it also has
- * a `filters` array. Unofficial combinator objects without `join` stay leaves.
+ * Stable group node. Requires `join` of `and` or `or` and a `filters` array.
+ * A leaf has `field` and is never a group, even if it also has a `filters`
+ * array. Objects with a `filters` array but no `and`/`or` join stay leaves.
  * @param {unknown} value
  * @returns {value is { join: "and" | "or", filters: object[], id?: string }}
  */
@@ -127,7 +167,108 @@ export function isFilterGroup(value) {
 }
 
 /**
- * Deep-clones a leaf or experimental group. Does not validate.
+ * @typedef {object} RowanFilterIssue
+ * @property {string} path
+ * @property {"invalid-node" | "invalid-join" | "missing-field" | "missing-operator" | "unknown-field" | "unknown-operator" | "max-depth" | "max-nodes"} code
+ * @property {string} message
+ */
+
+function issue(path, code, message) {
+  return { path, code, message };
+}
+
+function fieldIndex(fields) {
+  if (!Array.isArray(fields) || fields.length === 0) return null;
+  const map = new Map();
+  for (const field of fields) {
+    if (!isRecord(field)) continue;
+    const id = normalizeText(field.id);
+    if (id) map.set(id, field);
+  }
+  return map.size > 0 ? map : null;
+}
+
+function operatorsForField(field) {
+  if (Array.isArray(field?.operators) && field.operators.length > 0) {
+    return field.operators.map(normalizeText).filter(Boolean);
+  }
+  const type = FIELD_TYPES.has(field?.type) ? field.type : "text";
+  return BUILTIN_OPERATORS[type];
+}
+
+/**
+ * Checks a filter tree against the stable group contract.
+ * Pass `fields` to also reject unknown field ids and operators. Custom
+ * operators are valid when that field lists them. This does not run the
+ * predicates: `applyFilters` only implements the built-in operators.
+ * A non-array `filters` value is invalid here. `applyFilters` treats that
+ * same value as no filters.
+ * @param {unknown} filters
+ * @param {Array<{ id: string, type?: string, operators?: string[] }>} [fields]
+ * @returns {{ valid: boolean, issues: RowanFilterIssue[] }}
+ */
+export function validateFilters(filters, fields) {
+  const issues = [];
+  const known = fieldIndex(fields);
+  let count = 0;
+
+  const visit = (node, path, depth) => {
+    count += 1;
+    if (count > FILTER_MAX_NODES) {
+      issues.push(
+        issue(path, "max-nodes", `Filter trees accept at most ${FILTER_MAX_NODES} nodes.`),
+      );
+      return;
+    }
+
+    if (!isRecord(node)) {
+      issues.push(issue(path, "invalid-node", "A filter node must be an object."));
+      return;
+    }
+
+    if (isFilterGroup(node)) {
+      if (depth > FILTER_GROUP_MAX_DEPTH) {
+        issues.push(
+          issue(path, "max-depth", `Filter groups nest at most ${FILTER_GROUP_MAX_DEPTH} levels.`),
+        );
+        return;
+      }
+      node.filters.forEach((child, index) => visit(child, `${path}.filters[${index}]`, depth + 1));
+      return;
+    }
+
+    if (Array.isArray(node.filters) && !normalizeText(node.field)) {
+      issues.push(issue(path, "invalid-join", 'A group join must be "and" or "or".'));
+      return;
+    }
+
+    const fieldId = normalizeText(node.field);
+    const operator = normalizeText(node.operator);
+    if (!fieldId) issues.push(issue(path, "missing-field", "A filter leaf needs a field."));
+    if (!operator) issues.push(issue(path, "missing-operator", "A filter leaf needs an operator."));
+
+    if (!known || !fieldId) return;
+    const field = known.get(fieldId);
+    if (!field) {
+      issues.push(issue(path, "unknown-field", `Unknown field "${fieldId}".`));
+      return;
+    }
+    if (operator && !operatorsForField(field).includes(operator)) {
+      issues.push(issue(path, "unknown-operator", `Unknown operator "${operator}".`));
+    }
+  };
+
+  if (!Array.isArray(filters)) {
+    issues.push(issue("", "invalid-node", "Filters must be an array."));
+    return { valid: false, issues };
+  }
+
+  filters.forEach((node, index) => visit(node, `[${index}]`, isFilterGroup(node) ? 1 : 0));
+  return { valid: issues.length === 0, issues };
+}
+
+/**
+ * Deep-clones a leaf or group. Does not validate or enforce depth.
  * @param {object} node
  * @returns {object}
  */
@@ -144,23 +285,76 @@ export function cloneFilterNode(node) {
   return { ...node };
 }
 
-function matchesNode(row, node, fields) {
-  if (isFilterGroup(node)) {
-    const children = node.filters;
-    if (children.length === 0) return node.join !== "or";
+function overflowEntry(depth) {
+  return { node: null, index: FILTER_MAX_NODES + 1, depth, children: null, overflow: true };
+}
 
-    return node.join === "or"
-      ? children.some((child) => matchesNode(row, child, fields))
-      : children.every((child) => matchesNode(row, child, fields));
+function indexFilterTree(list) {
+  let count = 0;
+  const visit = (node, depth) => {
+    if (count >= FILTER_MAX_NODES || (isFilterGroup(node) && depth > FILTER_GROUP_MAX_DEPTH)) {
+      return overflowEntry(depth);
+    }
+    count += 1;
+    const indexed = { node, index: count, depth, children: null, overflow: false };
+    if (!isFilterGroup(node)) return indexed;
+
+    const children = [];
+    for (const child of node.filters) {
+      if (
+        count >= FILTER_MAX_NODES ||
+        (isFilterGroup(child) && depth + 1 > FILTER_GROUP_MAX_DEPTH)
+      ) {
+        children.push(overflowEntry(depth + 1));
+        break;
+      }
+      const next = visit(child, depth + 1);
+      children.push(next);
+      if (next.overflow) break;
+    }
+    indexed.children = children;
+    return indexed;
+  };
+
+  const indexed = [];
+  for (const node of list) {
+    if (count >= FILTER_MAX_NODES) {
+      indexed.push(overflowEntry(1));
+      break;
+    }
+    const next = visit(node, isFilterGroup(node) ? 1 : 0);
+    indexed.push(next);
+    if (next.overflow) break;
+  }
+  return indexed;
+}
+
+function matchesIndexed(row, indexed, fields) {
+  if (indexed.overflow || indexed.index > FILTER_MAX_NODES) return false;
+
+  if (isFilterGroup(indexed.node)) {
+    if (indexed.depth > FILTER_GROUP_MAX_DEPTH) return false;
+    const children = indexed.children;
+    if (children.length === 0) return indexed.node.join !== "or";
+
+    return indexed.node.join === "or"
+      ? children.some((child) => matchesIndexed(row, child, fields))
+      : children.every((child) => matchesIndexed(row, child, fields));
   }
 
-  return matchesFilter(row, node, fieldFor(fields, node.field));
+  return matchesFilter(row, indexed.node, fieldFor(fields, indexed.node.field));
 }
 
 /**
- * Applies filters to rows. Top-level conjunction is AND (frozen). Group nodes
- * `{ join: "and" | "or", filters: [...] }` are experimental. Unknown operators
- * do not match. An empty AND group matches; an empty OR group does not.
+ * Applies filters to rows. The top-level list is an implicit AND.
+ * Group nodes `{ join: "and" | "or", filters: [...] }` are stable.
+ * Groups nest at most {@link FILTER_GROUP_MAX_DEPTH} levels, and the tree
+ * holds at most {@link FILTER_MAX_NODES} nodes. Positions are numbered before
+ * any row is tested, so a short-circuit does not let a later node through.
+ * A deeper group does not match. Nodes past the cap do not match, so an
+ * over-large AND fails closed.
+ * Unknown operators do not match. An empty AND group matches; an empty OR
+ * group does not. A non-array filter list applies no filtering.
  * @param {object[]} rows
  * @param {Array<object>} filters
  * @param {Array<{ id: string, type?: string, accessor?: string | ((row: object) => unknown) }>} [fields]
@@ -173,5 +367,6 @@ export function applyFilters(rows, filters, fields = []) {
   if (list.length === 0) return [...rows];
 
   const fieldList = Array.isArray(fields) ? fields : [];
-  return rows.filter((row) => list.every((node) => matchesNode(row, node, fieldList)));
+  const indexed = indexFilterTree(list);
+  return rows.filter((row) => indexed.every((node) => matchesIndexed(row, node, fieldList)));
 }

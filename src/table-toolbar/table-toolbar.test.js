@@ -578,4 +578,34 @@ describe("rowan-table-toolbar", () => {
     expect(columnInput(toolbar, "team").checked).to.equal(true);
     expect(columnInput(toolbar, "role").checked).to.equal(false);
   });
+
+  it("loads saved views into the toolbar without keeping them in the table graph", async () => {
+    const table = document.createElement("rowan-table");
+    table.id = "orders";
+    table.columns = [{ id: "order", header: "Order" }];
+    table.rows = [{ id: "SO-1042", order: "SO-1042" }];
+    const toolbar = document.createElement("rowan-table-toolbar");
+    toolbar.slot = "toolbar";
+    toolbar.savedViews = true;
+    toolbar.forTable = "orders";
+    table.append(toolbar);
+    document.body.append(table);
+    await customElements.whenDefined("rowan-saved-views");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+
+    const control = toolbar.shadowRoot.querySelector("rowan-saved-views");
+    expect(control).to.exist;
+    expect(control.table).to.equal(table);
+    expect(control.storageKey).to.equal("orders");
+    toolbar.table = null;
+    toolbar.forTable = "missing-orders";
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await settle();
+    expect(control.table).to.equal(null);
+    expect(control.forTable).to.equal("missing-orders");
+    expect(toolbar.shadowRoot.querySelector('[part="saved-views"]')).to.equal(
+      control.parentElement,
+    );
+  });
 });

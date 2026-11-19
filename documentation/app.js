@@ -46,6 +46,7 @@ import { createInvestigationQueue } from "./workflows/investigation-queue.js";
 import { createRecordEditor } from "./workflows/record-editor.js";
 import { createResourceList } from "./workflows/resource-list.js";
 import { createSavedTableView } from "./workflows/saved-table-view.js";
+import { createMemorySavedViewStorage } from "../src/saved-views/saved-views.js";
 import { ROWAN_MESSAGE_CATALOG } from "./message-catalog.js";
 import { API_REFERENCES, renderApiReference } from "./api-reference-view.js";
 import { CHART_ACCESSIBILITY_PAGE } from "./chart-accessibility.js";
@@ -1277,7 +1278,7 @@ const DOC_PAGES = [
 
       <section class="doc-section" data-doc-section id="start-install">
         <h2>Install and register</h2>
-        <p>Pin <code>@rowan-ui/core@${ROWAN_VERSION}</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable. Nested filter groups and table-view-state version 2 stay experimental.</p>
+        <p>Pin <code>@rowan-ui/core@${ROWAN_VERSION}</code>. Add <code>@rowan-ui/icons</code> next to it when you need icon-button names, slotted SVGs, or <code>rowan-icon</code>. Import the full catalog for app-level installs or cherry-pick specific components for focused bundles. Table virtualization, filter-builder, nested filter groups, table-view-state version 2, saved views, KPI, sparkline, column-sparkline, bar, donut, area, stacked-bar, combo, scatter, heatmap, funnel, waterfall, range, box-plot, radar, bullet, gauge, image, data-state, and source-meta are Stable.</p>
         ${codeBlock(QUICKSTART_SNIPPET)}
         <rowan-alert tone="info">
           Rowan component modules are unbundled. Your app build pipeline handles optimization. Hosts do not fetch; keep rows, locale, and routing in the application.
@@ -2131,12 +2132,12 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
         <div class="info-grid">
           <rowan-card>
             <p slot="title"><strong>Stable</strong></p>
-            <p>Public API is frozen. Safe to use in production. Covers ${SUPPORTED_COMPONENTS.length - 2} of ${SUPPORTED_COMPONENTS.length} components.</p>
+            <p>Public API is frozen. Safe to use in production. Covers all ${SUPPORTED_COMPONENTS.length} components.</p>
             <rowan-badge tone="success">Stable</rowan-badge>
           </rowan-card>
           <rowan-card>
             <p slot="title"><strong>Experimental</strong></p>
-            <p>API may change before stabilization. Currently: nested filter-builder groups and table-view-state version 2.</p>
+            <p>No experimental features in this release. Nested filter groups, table-view-state version 2, and saved views are stable.</p>
             <rowan-badge tone="warning">Experimental</rowan-badge>
           </rowan-card>
         </div>
@@ -4414,6 +4415,63 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     afterRender: setupTableToolbarDemo,
   },
   {
+    id: "saved-views",
+    group: "Components",
+    title: "Rowan Saved Views",
+    summary:
+      "Name, restore, and share a table view. Filters, including nested groups, travel with sort, columns, density, and grouping.",
+    tags: ["table", "saved views", "filters"],
+    keywords: [
+      "saved views",
+      "table view state",
+      "localStorage",
+      "share",
+      "rowan-saved-view-apply",
+    ],
+    content: () => `
+      <section class="doc-section" data-doc-section id="saved-views-overview">
+        <h2>Save an operations view</h2>
+        <p>Put <code>rowan-saved-views</code> in the table toolbar, or set <code>saved-views</code> on <code>rowan-table-toolbar</code>. The control loads in its own module. Open Saved views, name the current filters, sort, columns, density, and grouping, then apply it later. One view can be the default. Copy link puts a version 2 snapshot in the <code>view</code> query parameter. Arrow keys move between views. Delete asks for confirmation. The list is announced to assistive technology.</p>
+        <div class="table-shell">
+          <rowan-table id="docs-saved-views-demo" caption="Open orders" caption-visually-hidden>
+            <rowan-table-toolbar slot="toolbar" label="Order views" for-table="docs-saved-views-demo">
+              <rowan-filter-builder id="docs-saved-views-filters" appearance="toolbar"></rowan-filter-builder>
+              <rowan-saved-views id="docs-saved-views" slot="end" for-table="docs-saved-views-demo" storage-key="docs-open-orders" label="Saved views" share="on" share-param="view"></rowan-saved-views>
+            </rowan-table-toolbar>
+          </rowan-table>
+        </div>
+        <pre id="saved-views-events" class="table-events"></pre>
+      </section>
+      <section class="doc-section" data-doc-section id="saved-views-contract">
+        <h2>Storage and sharing</h2>
+        <p>The default adapter is localStorage. Pass <code>storage</code> with <code>load(key)</code> and <code>save(key, views)</code> to keep views on a server. <code>createSavedViewStore</code> is the same API without the element. <code>rowan-saved-view-apply</code> is cancelable: call <code>preventDefault</code> when the application owns the row list. Otherwise the element assigns the view onto the table and the linked filter builder. In client mode that builder filters the rows it snapshotted. Share uses <code>writeTableViewStateSearch</code>. A version 1 link is migrated. An unknown version is ignored.</p>
+        ${codeBlock(
+          `import {
+  createSavedViewStore,
+  createMemorySavedViewStorage,
+} from "@rowan-ui/core/saved-views";
+
+const views = createSavedViewStore({
+  key: "rowan-saved-views:open-orders",
+  storage: createMemorySavedViewStorage(),
+});
+
+await views.save({
+  name: "Held orders",
+  state: {
+    filters: [{ field: "status", operator: "equals", value: "Held" }],
+    sort: { id: "owner", dir: "asc" },
+    density: "sm",
+  },
+});`,
+          "js",
+        )}
+      </section>
+      ${renderApiReference("rowan-saved-views")}
+    `,
+    afterRender: setupSavedViewsDemo,
+  },
+  {
     id: "bulk-actions-bar",
     group: "Components",
     title: "Rowan Bulk Actions Bar",
@@ -4454,7 +4512,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
     content: () => `
       <section class="doc-section" data-doc-section id="filter-builder-overview">
         <h2>Filter with application-owned rows</h2>
-        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. appearance=toolbar shows chips and edits a row in a popover; the default panel keeps always-open rows. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the frozen operators and experimental groups, then assign the derived rows. Quick find is a separate rowan-text-field type=search plus applyQuickFind from @rowan-ui/core/table-quick-find; it is not a filter type.</p>
+        <p>Use the filter builder in a table toolbar or next to a table. In the toolbar slot it uses the table chrome and does not paint its own card. appearance=toolbar shows chips and edits a row in a popover; the default panel keeps always-open rows. It emits filter state. Import applyFilters from @rowan-ui/core/filter-builder to apply the built-in operators and stable AND/OR groups, then assign the derived rows. Quick find is a separate rowan-text-field type=search plus applyQuickFind from @rowan-ui/core/table-quick-find; it is not a filter type.</p>
         <div class="table-shell">
           <rowan-table id="docs-filter-builder-demo">
             <rowan-filter-builder id="docs-filter-builder" slot="toolbar" appearance="toolbar"></rowan-filter-builder>
@@ -4465,7 +4523,7 @@ document.querySelector("#ops-dashboard").dataset.rowanCharts = "vibrant";`,
 
       <section class="doc-section" data-doc-section id="filter-builder-contract">
         <h2>Behavior contract</h2>
-        <p>Pass field and filter arrays through properties. The top-level list is frozen AND of id, field, operator, and value. Nested groups with join and filters are experimental. appearance is panel or toolbar; it does not change the filter model. applyFilters(rows, filters, fields) evaluates the tree. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent.</p>
+        <p>Pass field and filter arrays through properties. The top-level list is an implicit AND of leaves and groups. A leaf is id, field, operator, and value. A group is join (<code>and</code> or <code>or</code>) plus filters, and groups nest at most four levels. A tree holds at most 40 nodes. validateFilters reports depth, size, and unknown fields. appearance is panel or toolbar; it does not change the filter model. applyFilters(rows, filters, fields) evaluates the tree. A group past the depth limit does not match, and nodes past the cap do not match. User edits emit rowan-filter-change with a copied filter array, while parent-set filters remain silent. Server mode passes the same tree to dataSource.getRows.</p>
         ${codeBlock(FILTER_BUILDER_SNIPPET, "html")}
       </section>
 
@@ -4764,7 +4822,8 @@ createDashboard({
       <section class="doc-section" data-doc-section id="saved-table-view-ownership">
         <h2>Ownership boundaries</h2>
         <ul>
-          <li><code>normalizeTableViewState()</code>, <code>serializeTableViewState()</code>, and <code>restoreTableViewState()</code> are pure data helpers. They do not touch a table, URL, storage, network, or router.</li>
+          <li><code>normalizeTableViewState()</code>, <code>serializeTableViewState()</code>, and <code>restoreTableViewState()</code> are pure data helpers. They always write version 2. Version 1 input is migrated. They do not touch a table, URL, storage, network, or router.</li>
+          <li><code>rowan-saved-views</code> is the named-view control: save, rename, delete, default, apply, and share. Storage defaults to localStorage and can be replaced. This recipe keeps a single snapshot in application code instead.</li>
           <li>The Save action is the persistence handoff. The recipe passes a deterministic URI-safe snapshot to application code; production code chooses whether it belongs in a URL, local storage, or a saved-view service.</li>
           <li>Restore is host-controlled property assignment to <code>rowan-table</code> and <code>rowan-filter-builder</code>. Parent-driven restoration stays silent; only new user interaction emits the established table or filter events.</li>
           <li>Source rows, query transport, authorization, server page totals, and saved-view naming remain application responsibilities.</li>
@@ -6058,6 +6117,71 @@ function setupTableToolbarDemo() {
     const next = `[${stamp}] rowan-select\n${formatEventDetail(event.detail)}\n`;
     output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
   });
+}
+
+function setupSavedViewsDemo() {
+  const table = mainEl.querySelector("#docs-saved-views-demo");
+  const builder = mainEl.querySelector("#docs-saved-views-filters");
+  const views = mainEl.querySelector("#docs-saved-views");
+  const output = mainEl.querySelector("#saved-views-events");
+  if (
+    !(table instanceof HTMLElement) ||
+    !(builder instanceof HTMLElement) ||
+    !(views instanceof HTMLElement) ||
+    !(output instanceof HTMLElement)
+  ) {
+    return;
+  }
+
+  table.config = {
+    caption: "Open orders",
+    captionVisuallyHidden: true,
+    rowId: "id",
+    density: "md",
+    sort: { id: "updated", dir: "desc" },
+    columns: [
+      { id: "order", header: "Order" },
+      { id: "status", header: "Status" },
+      { id: "owner", header: "Owner" },
+      { id: "updated", header: "Updated" },
+    ],
+    rows: [
+      { id: "SO-1042", order: "SO-1042", status: "Packed", owner: "Northwind", updated: "10m ago" },
+      { id: "SO-1048", order: "SO-1048", status: "Held", owner: "Contoso", updated: "24m ago" },
+      { id: "SO-1051", order: "SO-1051", status: "Shipped", owner: "Fabrikam", updated: "1h ago" },
+    ],
+  };
+  builder.fields = [
+    { id: "status", label: "Status", type: "select", options: ["Packed", "Held", "Shipped"] },
+    { id: "owner", label: "Owner", type: "select", options: ["Northwind", "Contoso", "Fabrikam"] },
+  ];
+  builder.filters = [{ id: "held", field: "status", operator: "equals", value: "Held" }];
+  views.storage = createMemorySavedViewStorage([
+    {
+      id: "view-held",
+      name: "Held orders",
+      isDefault: false,
+      updatedAt: Date.now(),
+      state: {
+        version: 2,
+        density: "sm",
+        filters: [{ field: "status", operator: "equals", value: "Held" }],
+      },
+    },
+  ]);
+  output.textContent = "Save a view, apply it, or copy a share link.";
+
+  for (const eventType of [
+    "rowan-saved-views-change",
+    "rowan-saved-view-apply",
+    "rowan-saved-view-share",
+  ]) {
+    views.addEventListener(eventType, (event) => {
+      const stamp = new Date().toLocaleTimeString();
+      const next = `[${stamp}] ${eventType}\n${formatEventDetail(event.detail)}\n`;
+      output.textContent = `${next}\n${output.textContent}`.slice(0, 5000);
+    });
+  }
 }
 
 function setupBulkActionsBarDemo() {
