@@ -6,16 +6,14 @@
 export function createMemorySavedViewStorage(
   initial?: RowanSavedView[] | undefined,
 ): RowanSavedViewStorage;
-export function createLocalStorageSavedViewStorage(backend: any): {
-  load(key: any): {
-    id: string;
-    name: string;
-    state: any;
-    isDefault: boolean;
-    updatedAt: number;
-  }[];
-  save(key: any, views: any): void;
-};
+/**
+ * `localStorage` adapter. `load` returns an empty list when storage is missing or corrupt.
+ * @param {Pick<Storage, "getItem" | "setItem"> | null} [backend]
+ * @returns {RowanSavedViewStorage}
+ */
+export function createLocalStorageSavedViewStorage(
+  backend?: Pick<Storage, "getItem" | "setItem"> | null | undefined,
+): RowanSavedViewStorage;
 /**
  * Named saved views for one table. The store normalizes every state to table-view-state v2.
  * Pass `storage` to persist on a server. The default adapter is `localStorage`.
