@@ -118,7 +118,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Resolved" [pressed]
   - status: "Incoming, Mon: 4"
-  - 'tooltip "Incoming, Mon: 4"'
+  - 'tooltip "Mon Incoming: 4 Resolved: 2"'
 - group:
   - text: Data table
   - table "Weekly flow data table":
@@ -217,7 +217,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Resolved" [pressed]
   - status: "Incoming, Mon: 4"
-  - 'tooltip "Incoming, Mon: 4"'
+  - 'tooltip "Mon Incoming: 4 Resolved: 2"'
 - group:
   - text: Data table
   - table "Weekly throughput data table":
@@ -310,7 +310,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Dwell" [pressed]
   - status: "Dwell, North: min=2, q1=4, median=6, q3=9, max=12"
-  - 'tooltip "Dwell, North: min=2, q1=4, median=6, q3=9, max=12"'
+  - tooltip "Dwell, North, min=2, q1=4, median=6, q3=9, max=12"
 - group:
   - text: Data table
   - table "Lane dwell data table":
@@ -569,7 +569,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Share" [pressed]
   - status: "Count, Mon: 10"
-  - 'tooltip "Count, Mon: 10"'
+  - 'tooltip "Mon Count: 10 Share: 40"'
 - group:
   - text: Data table
   - table "Defects and share data table":
@@ -755,7 +755,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Won 20" [pressed]
   - status: "Leads: 100"
-  - 'tooltip "Flow, Leads: 100"'
+  - tooltip "Leads, 100"
 - group:
   - text: Data table
   - table "Conversion data table":
@@ -931,7 +931,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
   - button "South, Mon, 1"
   - button "South, Tue, 9"
   - status: "North, Mon: 4"
-  - 'tooltip "North, Mon: 4"'
+  - tooltip "North, Mon, 4 South, Mon, 1"
 - group:
   - text: Data table
   - table "Lane dwell data table":
@@ -1025,7 +1025,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "South" [pressed]
   - status: "North, Fill: 80"
-  - 'tooltip "North, Fill: 80"'
+  - tooltip "North, Fill, 80 South, Fill, 60"
 - group:
   - text: Data table
   - table "Yard profile data table":
@@ -1119,7 +1119,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Dwell" [pressed]
   - status: "Dwell, Mon: low=4, high=12"
-  - 'tooltip "Dwell, Mon: low=4, high=12"'
+  - tooltip "Dwell, Mon, low=4, high=12"
 - group:
   - text: Data table
   - table "SLA window data table":
@@ -1221,7 +1221,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Lane B" [pressed]
   - status: "Lane A, P1: x=1, y=4"
-  - 'tooltip "Lane A, P1: x=1, y=4"'
+  - 'tooltip "Lane A: 4 Lane B: 5"'
 - group:
   - text: Data table
   - table "Fill versus dwell data table":
@@ -1321,7 +1321,6 @@ Chromium accessibility tree excerpt for the default fixture:
     - row "Target 6":
       - rowheader "Target"
       - cell "6"
-- tooltip "Mon 3 Target 6"
 ```
 
 ### State evidence
@@ -1399,7 +1398,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Resolved" [pressed]
   - status: "Incoming, Mon: 4"
-  - 'tooltip "Incoming, Mon: 4"'
+  - 'tooltip "Mon Incoming: 4 Resolved: 2"'
 - group:
   - text: Data table
   - table "Stacked flow data table":
@@ -1498,7 +1497,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Resolved" [pressed]
   - status: "Incoming, Mon: 4"
-  - 'tooltip "Incoming, Mon: 4"'
+  - 'tooltip "Mon Incoming: 4 Resolved: 2"'
 - group:
   - text: Data table
   - table "Stacked throughput data table":
@@ -1595,7 +1594,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Resolved" [pressed]
   - status: "Incoming, Mon: 4"
-  - 'tooltip "Incoming, Mon: 4"'
+  - 'tooltip "Mon Incoming: 4 Resolved: 2"'
 - group:
   - text: Data table
   - table "Weekly trend data table":
@@ -1694,7 +1693,7 @@ Chromium accessibility tree excerpt for the interactive fixture:
     - listitem:
       - button "Total" [pressed]
   - status: "Start: 20"
-  - 'tooltip "Cash, Start: 20"'
+  - tooltip "Start, total, 20"
 - group:
   - text: Data table
   - table "Cash movement data table":

@@ -9,6 +9,25 @@
 export function createDashboardFilters(
   initial?: Record<string, unknown> | undefined,
 ): RowanDashboardFilters;
+/**
+ * Write the shared crosshair category into a filter session.
+ * Listens once on `document`, so charts inside shadow roots are included.
+ * Repeated `rowan-sync` events for the same index update the session once.
+ *
+ * @param {RowanDashboardFilters} session
+ * @param {string} group `sync-group` name.
+ * @param {{ key?: string }} [options] Session key. Default `category`.
+ * @returns {() => void} Removes the listener.
+ */
+export function bindChartSync(
+  session: RowanDashboardFilters,
+  group: string,
+  options?:
+    | {
+        key?: string | undefined;
+      }
+    | undefined,
+): () => void;
 export type RowanDashboardFilterSnapshot = Record<string, unknown>;
 export type RowanDashboardFilters = {
   get: (key: string) => unknown;

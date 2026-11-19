@@ -80,10 +80,10 @@ Charts do not ship a `loading` attribute except `rowan-kpi-card`. Failed loads u
 | `rowan-filter-builder` | 100% | 100% | — |
 | `rowan-image` | 100% | 100% | — |
 | `rowan-row-details-panel` | 100% | 100% | — |
-| `rowan-saved-views` | 0% | 100% | — |
+| `rowan-saved-views` | 100% | 100% | — |
 | `rowan-source-meta` | 100% | 100% | — |
 | `rowan-table` | 100% | 100% | — |
-| `rowan-table-toolbar` | 89% | 100% | — |
+| `rowan-table-toolbar` | 100% | 100% | — |
 | `rowan-virtual-list` | 100% | 100% | — |
 
 ## Forms & Input

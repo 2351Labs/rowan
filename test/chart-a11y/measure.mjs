@@ -4,13 +4,24 @@ import { contrastRatio, parseCssColor, roundRatio, textPasses } from "./score.mj
 const axe = globalThis.axe;
 const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
+function frame() {
+  return new Promise((resolve) => requestAnimationFrame(resolve));
+}
+
 export async function settle(chart) {
   await Promise.resolve();
   await Promise.resolve();
   if (chart.__z) await chart.__z;
   if (chart.__k) await chart.__k;
   if (chart.__cuesReady) await chart.__cuesReady;
-  await new Promise((resolve) => requestAnimationFrame(resolve));
+  // The entrance fade starts when the lazy interaction sheet arrives. Contrast
+  // has to be read after that 280ms animation, or a mid-fade mark looks like it
+  // fails 1.4.11.
+  await frame();
+  const animations = chart.shadowRoot?.getAnimations?.({ subtree: true }) ?? [];
+  const finite = animations.filter((item) => item.effect?.getTiming?.().iterations !== Infinity);
+  if (finite.length) await Promise.all(finite.map((item) => item.finished.catch(() => undefined)));
+  await frame();
   await Promise.resolve();
 }
 

@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import { paintCategoryAxis } from "../chart/axis.js";
 import componentStyles from "./bar-chart.styles.js";
 import {
   createSvgElement,
@@ -37,6 +38,8 @@ import {
   formatChartValue,
   normalizeChartLabels,
   normalizeChartSeries,
+  drawIndexes,
+  rememberChart,
   resolveChartLabels,
 } from "../chart/model.js";
 
@@ -125,10 +128,10 @@ function normalizeText(value) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanBarChart extends BaseElement {
@@ -497,10 +500,13 @@ export class RowanBarChart extends BaseElement {
     const groupSize = groupSpan / categoryCount;
     const barThickness = groupSize / (seriesCount + 1);
     const axisStart = orientation === "horizontal" ? plot.top : plot.left;
+    rememberChart(this, this.#series, labels, labels.length);
+    const keep = drawIndexes(this, labels.length);
 
     return this.#series.flatMap((series, seriesIndex) =>
       series.values.flatMap((point, index) => {
         if (point.value === null) return [];
+        if (keep && !keep.has(index)) return [];
         const rect = categoricalBarRect({
           orientation,
           from: 0,
@@ -568,16 +574,7 @@ export class RowanBarChart extends BaseElement {
   }
 
   #renderAxis(labels) {
-    this.#xAxis.replaceChildren();
-    const fragment = document.createDocumentFragment();
-    for (const label of labels) {
-      const item = document.createElement("span");
-      item.textContent = label;
-      item.title = label;
-      fragment.append(item);
-    }
-    this.#xAxis.append(fragment);
-    this.#xAxis.style.setProperty("--category-count", String(Math.max(labels.length, 1)));
+    paintCategoryAxis(this.#xAxis, labels, this.orientation === "horizontal");
   }
 
   #renderLegend() {

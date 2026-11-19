@@ -7,7 +7,6 @@ export { RowanAppLayout } from "./app-layout/app-layout.js";
 export { RowanBulkActionsBar } from "./bulk-actions-bar/bulk-actions-bar.js";
 export { RowanBoxPlotChart } from "./box-plot-chart/box-plot-chart.js";
 export { RowanBulletChart } from "./bullet-chart/bullet-chart.js";
-export { createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export { createDashboard } from "./dashboard/dashboard.js";
 export { applyQuickFind } from "./table-quick-find/table-quick-find.js";
 export { RowanButton } from "./button/button.js";
@@ -102,6 +101,7 @@ export { RowanToaster } from "./toaster/toaster.js";
 export { RowanTooltip } from "./tooltip/tooltip.js";
 export { RowanValidationSummary } from "./validation-summary/validation-summary.js";
 export { RowanVirtualList } from "./virtual-list/virtual-list.js";
+export { bindChartSync, createDashboardFilters } from "./dashboard-filters/dashboard-filters.js";
 export {
   FILTER_GROUP_MAX_DEPTH,
   FILTER_MAX_NODES,

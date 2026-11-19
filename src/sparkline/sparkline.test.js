@@ -81,7 +81,7 @@ describe("rowan-sparkline", () => {
     await new Promise((resolve) => requestAnimationFrame(resolve));
     await new Promise((resolve) => requestAnimationFrame(resolve));
     const plotBox = chart.shadowRoot.querySelector(".plot").getBoundingClientRect();
-    const lineBox = line.getBoundingClientRect();
+    const lineBox = chart.shadowRoot.querySelector("path.line").getBoundingClientRect();
     expect(lineBox.width).to.be.above(plotBox.width * 0.85);
 
     chart.style.setProperty("--rowan-sparkline-height", "12rem");

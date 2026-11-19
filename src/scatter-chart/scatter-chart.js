@@ -18,7 +18,7 @@ import {
   readTooltipFormatter,
   writeTooltipFormatter,
 } from "../chart/hover.js";
-import { chartSeriesColor, formatChartValue } from "../chart/model.js";
+import { chartSeriesColor, drawIndexes, formatChartValue, rememberChart } from "../chart/model.js";
 import componentStyles from "./scatter-chart.styles.js";
 import {
   readHiddenSeries,
@@ -129,10 +129,10 @@ function normalizeText(value) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanScatterChart extends BaseElement {
@@ -419,11 +419,51 @@ export class RowanScatterChart extends BaseElement {
     this.#renderAxes(domains, plot);
     this.#renderLegend();
     this.#renderPointControls();
-    const hasSize = this.#entries.some((entry) => entry.size !== null);
+    const total = this.#series.reduce((sum, series) => sum + series.points.length, 0);
+    const hasSize = this.#series.some((series) => series.points.some((point) => point.size != null));
+    const maxStart = total > 80 ? Math.floor(Math.max(0, total - 1) / 40) * 40 : 0;
+    const start =
+      total > 80 ? Math.min(Math.floor((this.#summaryTable.__from || 0) / 40) * 40, maxStart) : 0;
+    this.#summaryTable.__from = start;
+    const rows = [];
+    let seen = 0;
+    const pushRow = (series, point, index) => {
+      const label = resolveScatterPointLabel(point, index, (pointIndex) => this.#pointLabel(pointIndex));
+      rows.push({
+        series: series.label,
+        label,
+        x: point.x == null ? null : this.#formatValue(point.x, { label }),
+        y: point.y == null ? null : this.#formatValue(point.y, { label }),
+        size: point.size == null ? null : this.#formatValue(point.size, { label }),
+      });
+    };
+    for (const series of this.#series) {
+      series.points.forEach((point, index) => {
+        if (total <= 80) {
+          if (point.x === null || point.y === null) return;
+          pushRow(series, point, index);
+          return;
+        }
+        if (seen >= start && rows.length < 40) pushRow(series, point, index);
+        seen += 1;
+      });
+    }
+    if (total > 80) {
+      this.#summaryTable.dataset.pageStart = String(start);
+      this.#summaryTable.dataset.pageEnd = String(start + rows.length);
+      this.#summaryTable.dataset.pageTotal = String(total);
+      this.#summaryTable.dataset.pageMode = "rows";
+    } else {
+      delete this.#summaryTable.dataset.pageStart;
+      delete this.#summaryTable.dataset.pageEnd;
+      delete this.#summaryTable.dataset.pageTotal;
+      delete this.#summaryTable.dataset.pageMode;
+    }
+    const caption = resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
+      chart: this.#chartName(),
+    });
     renderKeyedChartTable(this.#summaryTable, {
-      caption: resolveMessage(this.#messages, DEFAULT_MESSAGES, "dataTableCaption", {
-        chart: this.#chartName(),
-      }),
+      caption: total > 80 ? `${caption} Rows ${start + 1}–${start + rows.length} of ${total}.` : caption,
       columns: [
         { key: "series", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "series") },
         { key: "label", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "point") },
@@ -433,13 +473,7 @@ export class RowanScatterChart extends BaseElement {
           ? [{ key: "size", header: resolveMessage(this.#messages, DEFAULT_MESSAGES, "size") }]
           : []),
       ],
-      rows: this.#entries.map((entry) => ({
-        series: entry.series.label,
-        label: entry.label,
-        x: this.#formatValue(entry.x, { label: entry.label }),
-        y: this.#formatValue(entry.y, { label: entry.label }),
-        size: entry.size === null ? null : this.#formatValue(entry.size, { label: entry.label }),
-      })),
+      rows,
       messages: this.#messages,
     });
     this.#syncActivePoint();
@@ -447,10 +481,20 @@ export class RowanScatterChart extends BaseElement {
 
   #createEntries(domains, plot) {
     const entries = [];
+    const count = this.#series.reduce((sum, series) => Math.max(sum, series.points.length), 0);
+    rememberChart(this, this.#series, null, count);
+    this.__xScale = {
+      min: domains.x.min,
+      max: domains.x.max,
+      left: plot.left,
+      width: plot.width,
+    };
+    const keep = drawIndexes(this, count);
 
     this.#series.forEach((series, seriesIndex) => {
       series.points.forEach((point, index) => {
         if (point.x === null || point.y === null) return;
+        if (keep && !keep.has(index)) return;
         const label = resolveScatterPointLabel(point, index, (pointIndex) =>
           this.#pointLabel(pointIndex),
         );

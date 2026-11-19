@@ -1,4 +1,7 @@
-export { createDashboardFilters } from "../../types/dashboard-filters/dashboard-filters.js";
+export {
+  bindChartSync,
+  createDashboardFilters,
+} from "../../types/dashboard-filters/dashboard-filters.js";
 export type {
   RowanDashboardFilterSnapshot,
   RowanDashboardFilters,

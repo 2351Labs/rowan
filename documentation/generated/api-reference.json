@@ -379,10 +379,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -403,7 +403,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -555,7 +555,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -954,10 +954,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -985,7 +985,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -1137,7 +1137,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -1298,10 +1298,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -1322,7 +1322,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -1466,7 +1466,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -3468,10 +3468,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -3492,7 +3492,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "tone",
@@ -3631,7 +3631,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -3786,10 +3786,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -3810,7 +3810,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -3962,7 +3962,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -5939,10 +5939,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -5963,7 +5963,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "variant",
@@ -6115,7 +6115,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -8108,10 +8108,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -8132,7 +8132,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "variant",
@@ -8284,7 +8284,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -8406,10 +8406,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -8444,7 +8444,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         }
       ],
       "properties": [
@@ -8568,7 +8568,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -8727,10 +8727,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -8751,7 +8751,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         }
       ],
       "properties": [
@@ -8904,7 +8904,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -11410,10 +11410,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -11434,7 +11434,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         }
       ],
       "properties": [
@@ -11579,7 +11579,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         }
       ],
@@ -11999,10 +11999,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -12023,7 +12023,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "variant",
@@ -12182,7 +12182,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -13479,10 +13479,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -13503,7 +13503,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -13639,7 +13639,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -15169,6 +15169,13 @@
           "description": ""
         },
         {
+          "name": "large-series",
+          "type": "string",
+          "default": "",
+          "reflects": false,
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the sparkline keeps about two points per pixel. The tooltip and data table use the real values. A long table is paged."
+        },
+        {
           "name": "locale",
           "type": "string",
           "default": "",
@@ -15805,10 +15812,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -15836,7 +15843,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -15996,7 +16003,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -16174,10 +16181,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -16212,7 +16219,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -16380,7 +16387,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -19459,10 +19466,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -19483,7 +19490,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -19627,7 +19634,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {
@@ -20110,10 +20117,10 @@
         },
         {
           "name": "large-series",
-          "type": "number",
+          "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Downsample drawn marks above this count. The data table keeps every row."
+          "description": "Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged."
         },
         {
           "name": "locale",
@@ -20134,7 +20141,7 @@
           "type": "string",
           "default": "",
           "reflects": false,
-          "description": "Share the axis pointer with charts that use the same group name."
+          "description": "Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region."
         },
         {
           "name": "zoom",
@@ -20278,7 +20285,7 @@
         },
         {
           "name": "rowan-sync",
-          "description": "Shared hover. Detail: group, index, label.",
+          "description": "Shared crosshair. Detail: group, index, label.",
           "detail": "group, index, label."
         },
         {

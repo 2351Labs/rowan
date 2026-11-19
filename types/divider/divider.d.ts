@@ -7,9 +7,9 @@
 export class RowanDivider extends BaseElement {
   static styles: string;
   /** @param {"horizontal" | "vertical"} value */
-  set orientation(value: "vertical" | "horizontal");
+  set orientation(value: "horizontal" | "vertical");
   /** @returns {"horizontal" | "vertical"} */
-  get orientation(): "vertical" | "horizontal";
+  get orientation(): "horizontal" | "vertical";
   attributeChangedCallback(name: any, oldValue: any, newValue: any): void;
   #private;
 }

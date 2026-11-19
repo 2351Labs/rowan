@@ -24,11 +24,14 @@ import {
   areaBandPath,
   chartSeriesColor,
   cloneChartSeries,
+  drawIndexes,
   expandDomainWithReferenceLines,
   formatChartValue,
   normalizeReferenceLines,
+  rememberChart,
   resolveChartLabels,
 } from "../chart/model.js";
+import { paintCategoryAxis } from "../chart/axis.js";
 import { scaleCoordinate, tickPercent, zeroBaselineDomain } from "../chart/scale.js";
 import { cloneComboSeriesInput, comboAxisDomain, normalizeComboSeries } from "./model.js";
 import { createParetoData } from "./pareto.js";
@@ -126,10 +129,10 @@ function yForValue(value, domain, plotHeight) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanComboChart extends BaseElement {
@@ -491,6 +494,8 @@ export class RowanComboChart extends BaseElement {
     const groupWidth = plotWidth / categoryCount;
     const barCount = Math.max(barSeries.length, 1);
     const barWidth = groupWidth / (barCount + 1);
+    rememberChart(this, this.#series, labels, labels.length);
+    const keep = drawIndexes(this, labels.length);
 
     return this.#series.flatMap((series, seriesIndex) => {
       const domain = this.#domainFor(series, primary, secondary);
@@ -498,8 +503,17 @@ export class RowanComboChart extends BaseElement {
       const baseline = PLOT_TOP + ((domain.max - 0) / range) * plotHeight;
       const barIndex = barSeries.indexOf(series);
 
+      let previous = -1;
+      let gap = false;
       return series.values.flatMap((point, index) => {
-        if (point.value === null) return [];
+        if (point.value === null) {
+          if (previous >= 0) gap = true;
+          return [];
+        }
+        if (keep && !keep.has(index)) return [];
+        const bridge = previous >= 0 && !gap && index !== previous + 1;
+        gap = false;
+        previous = index;
         const groupX = PLOT_LEFT + index * groupWidth;
         const centerX = groupX + groupWidth / 2;
         const isBar = series.geometry === "bar";
@@ -525,6 +539,7 @@ export class RowanComboChart extends BaseElement {
             height: isBar ? Math.abs(baseline - y) : 16,
             barY: isBar ? Math.min(y, baseline) : y - 8,
             geometry: series.geometry,
+            bridge,
           },
         ];
       });
@@ -579,6 +594,7 @@ export class RowanComboChart extends BaseElement {
           yTop: entry.y,
           yBottom: baselineY,
           index: entry.index,
+          bridge: entry.bridge,
         }));
       const d = areaBandPath(points);
       if (!d) continue;
@@ -606,17 +622,9 @@ export class RowanComboChart extends BaseElement {
 
     for (const [seriesIndex, series] of this.#series.entries()) {
       if (series.geometry !== "line") continue;
-      const domain = this.#domainFor(series, primary, secondary);
-      const points = series.values
-        .map((point, index) => {
-          if (point.value === null) return null;
-          const categoryCount = Math.max(resolveChartLabels(this.#series, this.#labels).length, 1);
-          const groupWidth = plotWidth / categoryCount;
-          const x = PLOT_LEFT + index * groupWidth + groupWidth / 2;
-          const y = yForValue(point.value, domain, plotHeight);
-          return `${x},${y}`;
-        })
-        .filter(Boolean);
+      const points = this.#entries
+        .filter((entry) => entry.series.id === series.id && entry.geometry === "line")
+        .map((entry) => `${entry.x},${entry.y}`);
       if (!points.length) continue;
       const path = createSvgElement("polyline");
       path.setAttribute("class", "line");
@@ -643,15 +651,7 @@ export class RowanComboChart extends BaseElement {
   }
 
   #renderAxis(labels) {
-    this.#xAxis.replaceChildren();
-    const fragment = document.createDocumentFragment();
-    for (const label of labels) {
-      const item = document.createElement("span");
-      item.textContent = label;
-      fragment.append(item);
-    }
-    this.#xAxis.append(fragment);
-    this.#xAxis.style.setProperty("--category-count", String(Math.max(labels.length, 1)));
+    paintCategoryAxis(this.#xAxis, labels);
   }
 
   #plotHeight() {

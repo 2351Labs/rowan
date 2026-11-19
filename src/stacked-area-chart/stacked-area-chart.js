@@ -5,6 +5,7 @@ import { emit } from "../lib/events.js";
 import { formatNumber } from "../lib/format.js";
 import { resolveLocale } from "../lib/locale.js";
 import { normalizeMessages, resolveMessage } from "../lib/messages.js";
+import { paintCategoryAxis } from "../chart/axis.js";
 import componentStyles from "./stacked-area-chart.styles.js";
 import {
   readHiddenSeries,
@@ -47,6 +48,8 @@ import {
   resolveChartLabels,
   stackedAreaStacks,
   stackedBarPlotDomain,
+  drawIndexes,
+  rememberChart,
 } from "../chart/model.js";
 
 const SVG_NAMESPACE_WIDTH = 1000;
@@ -141,10 +144,10 @@ function normalizeText(value) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanStackedAreaChart extends BaseElement {
@@ -529,8 +532,18 @@ export class RowanStackedAreaChart extends BaseElement {
   #createEntries(labels, domain) {
     const plot = this.#plotBox();
     const categoryCount = Math.max(labels.length, 1);
+    rememberChart(this, this.#series, labels, labels.length);
+    const keep = drawIndexes(this, labels.length);
+    const state = new Map();
+    const entries = [];
 
-    return stackedAreaStacks(this.#series, this.stackMode).map((stack) => {
+    for (const stack of stackedAreaStacks(this.#series, this.stackMode)) {
+      const previous = state.get(stack.seriesIndex) || { index: -1, kept: -1, gap: false };
+      if (previous.index >= 0 && stack.index !== previous.index + 1) previous.gap = true;
+      previous.index = stack.index;
+      state.set(stack.seriesIndex, previous);
+      if (keep && !keep.has(stack.index)) continue;
+
       const series = this.#series[stack.seriesIndex];
       const point = series.values[stack.index];
       const formattedValue = this.#formatValue(stack.value, {
@@ -541,7 +554,10 @@ export class RowanStackedAreaChart extends BaseElement {
       const x = categoricalPointX(stack.index, categoryCount, plot);
       const yTop = categoricalValueY(stack.to, domain, plot);
       const yBottom = categoricalValueY(stack.from, domain, plot);
-      return {
+      const bridge = previous.kept >= 0 && !previous.gap && stack.index !== previous.kept + 1;
+      previous.gap = false;
+      previous.kept = stack.index;
+      entries.push({
         key: `${series.id}::${stack.index}`,
         series,
         seriesIndex: stack.seriesIndex,
@@ -553,8 +569,10 @@ export class RowanStackedAreaChart extends BaseElement {
         y: yTop,
         yTop,
         yBottom,
-      };
-    });
+        bridge,
+      });
+    }
+    return entries;
   }
 
   #renderPlot(domain) {
@@ -635,16 +653,7 @@ export class RowanStackedAreaChart extends BaseElement {
   }
 
   #renderAxis(labels) {
-    this.#xAxis.replaceChildren();
-    const fragment = document.createDocumentFragment();
-    for (const label of labels) {
-      const item = document.createElement("span");
-      item.textContent = label;
-      item.title = label;
-      fragment.append(item);
-    }
-    this.#xAxis.append(fragment);
-    this.#xAxis.style.setProperty("--category-count", String(Math.max(labels.length, 1)));
+    paintCategoryAxis(this.#xAxis, labels);
   }
 
   #renderLegend() {

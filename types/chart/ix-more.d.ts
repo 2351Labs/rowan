@@ -1,1 +1,10 @@
+export function plot(host: any): any;
+export function openHover(bubble: any): void;
+export function closeHover(bubble: any): void;
+export function marks(host: any): any[];
+export function indexOf(mark: any): any;
+export function labelOf(host: any, index: any): any;
+export function broadcast(host: any, index: any): void;
+export function members(host: any): any;
+export function clearSync(host: any): void;
 export function installChartExtras(host: any): void;

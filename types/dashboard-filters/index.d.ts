@@ -1,1 +1,1 @@
-export { createDashboardFilters } from "./dashboard-filters.js";
+export { bindChartSync, createDashboardFilters } from "./dashboard-filters.js";

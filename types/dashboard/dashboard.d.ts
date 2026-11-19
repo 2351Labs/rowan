@@ -61,6 +61,7 @@
  * @property {Array<{ id: string, label?: string, type?: string, options?: Array<string | { value?: string, label?: string }> }>} [fields]
  * @property {Array<Record<string, unknown>>} [rows] Client source rows. Defaults to the table rows at creation.
  * @property {boolean | HTMLElement} [chips] Active-filter chips. Defaults to true when `root` is set.
+ * @property {string} [syncGroup] Sets `sync-group` on collected charts so they share a crosshair.
  * @property {RowanDashboardMessages} [messages]
  */
 /**
@@ -200,6 +201,10 @@ export type RowanDashboardOptions = {
    * Active-filter chips. Defaults to true when `root` is set.
    */
   chips?: boolean | HTMLElement | undefined;
+  /**
+   * Sets `sync-group` on collected charts so they share a crosshair.
+   */
+  syncGroup?: string | undefined;
   messages?: RowanDashboardMessages | undefined;
 };
 export type RowanDashboard = {

@@ -94,6 +94,18 @@ export const MissingData = {
     }),
 };
 
+export const PointFeedback = {
+  name: "Point feedback",
+  parameters: createEventScriptParameters({
+    steps: [
+      "The line uses round caps immediately. Narrow the window under 480px and the axis gap tightens.",
+      "Hover or press a point. The wash, the active ring, and the summary pointer cursor arrive with the interaction styles.",
+    ],
+    events: ["rowan-point-activate"],
+  }),
+  render: () => createChart(),
+};
+
 export const NonInteractiveSnapshot = {
   render: () => {
     const chart = createChart({ interactive: false });

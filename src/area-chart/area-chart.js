@@ -29,8 +29,11 @@ import {
 } from "../chart/hover.js";
 import {
   cloneChartSeriesInput as cloneTrendSeriesInput,
+  drawIndexes,
   expandDomainWithReferenceLines,
+  linked,
   normalizeReferenceLines,
+  rememberChart,
 } from "../chart/model.js";
 import {
   cloneTrendSeries,
@@ -134,10 +137,10 @@ function normalizeText(value) {
  * @attr {boolean} zoom - Opt-in plot zoom and pan.
  * @event rowan-zoom - Fired when the zoom window changes. Detail: x, y, width, height.
  
- * @attr {string} sync-group - Share the axis pointer with charts that use the same group name.
+ * @attr {string} sync-group - Name of a crosshair group. Charts with the same name, including across shadow roots, show a crosshair and tooltip at the matching x. Hover, keyboard focus, and syncHover(index) move the group. rowan-sync detail is group, index, and label. Only the focused chart announces through its live region.
  * @attr {boolean} brush - Drag, or Shift+Arrow, to select an x range. Escape clears it.
- * @attr {number} large-series - Downsample drawn marks above this count. The data table keeps every row.
- * @event rowan-sync - Shared hover. Detail: group, index, label.
+ * @attr {string} large-series - Drawn-point budget. A number is the maximum marks to draw. off draws every point. When omitted, the chart keeps about two points per pixel. Tooltips and the data table use the real values. A long table is paged.
+ * @event rowan-sync - Shared crosshair. Detail: group, index, label.
  * @event rowan-brush - Selected range. Detail: startIndex, endIndex, startLabel, endLabel, or cleared.
 */
 export class RowanAreaChart extends BaseElement {
@@ -476,10 +479,13 @@ export class RowanAreaChart extends BaseElement {
     const plotWidth = VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT;
     const plotHeight = VIEWBOX_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
     const range = domain.max - domain.min || 1;
+    rememberChart(this, this.#series, labels, labels.length);
+    const keep = drawIndexes(this, labels.length);
 
     return this.#series.flatMap((series, seriesIndex) =>
       series.values.flatMap((point, index) => {
         if (point.value === null) return [];
+        if (keep && !keep.has(index)) return [];
 
         const x =
           PLOT_LEFT + (pointCount === 1 ? plotWidth / 2 : (index / (pointCount - 1)) * plotWidth);
@@ -800,7 +806,7 @@ export class RowanAreaChart extends BaseElement {
     let current = [];
 
     for (const entry of entries) {
-      if (current.length > 0 && entry.index !== current.at(-1).index + 1) {
+      if (current.length > 0 && !linked(entry.series.values, current.at(-1).index, entry.index)) {
         segments.push(current);
         current = [];
       }
@@ -829,7 +835,7 @@ export class RowanAreaChart extends BaseElement {
 
     return entries
       .map((entry) => {
-        const command = hasPreviousEntry && entry.index === previousIndex + 1 ? "L" : "M";
+        const command = hasPreviousEntry && linked(entry.series.values, previousIndex, entry.index) ? "L" : "M";
         hasPreviousEntry = true;
         previousIndex = entry.index;
         return `${command}${entry.x.toFixed(2)},${entry.y.toFixed(2)}`;
