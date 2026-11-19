@@ -178,14 +178,14 @@ function issue(path, code, message) {
 }
 
 function fieldIndex(fields) {
-  if (!Array.isArray(fields) || fields.length === 0) return null;
+  if (!Array.isArray(fields)) return null;
   const map = new Map();
   for (const field of fields) {
     if (!isRecord(field)) continue;
     const id = normalizeText(field.id);
     if (id) map.set(id, field);
   }
-  return map.size > 0 ? map : null;
+  return map;
 }
 
 function operatorsForField(field) {
@@ -198,7 +198,8 @@ function operatorsForField(field) {
 
 /**
  * Checks a filter tree against the stable group contract.
- * Pass `fields` to also reject unknown field ids and operators. Custom
+ * Pass `fields` to also reject unknown field ids and operators. An empty
+ * catalog rejects every field. Omitting `fields` checks shape only. Custom
  * operators are valid when that field lists them. This does not run the
  * predicates: `applyFilters` only implements the built-in operators.
  * A non-array `filters` value is invalid here. `applyFilters` treats that
@@ -289,28 +290,54 @@ function overflowEntry(depth) {
   return { node: null, index: FILTER_MAX_NODES + 1, depth, children: null, overflow: true };
 }
 
+function descendantCount(group) {
+  let size = 0;
+  const stack = Array.isArray(group.filters) ? [...group.filters] : [];
+  const limit = FILTER_MAX_NODES + 1;
+  while (stack.length > 0 && size < limit) {
+    const current = stack.pop();
+    size += 1;
+    if (isFilterGroup(current)) {
+      for (let index = current.filters.length - 1; index >= 0; index -= 1) {
+        stack.push(current.filters[index]);
+      }
+    }
+  }
+  return size;
+}
+
 function indexFilterTree(list) {
   let count = 0;
   const visit = (node, depth) => {
-    if (count >= FILTER_MAX_NODES || (isFilterGroup(node) && depth > FILTER_GROUP_MAX_DEPTH)) {
-      return overflowEntry(depth);
-    }
+    if (count >= FILTER_MAX_NODES) return overflowEntry(depth);
     count += 1;
-    const indexed = { node, index: count, depth, children: null, overflow: false };
+    const indexed = {
+      node,
+      index: count,
+      depth,
+      children: null,
+      overflow: false,
+      overflowTail: false,
+    };
     if (!isFilterGroup(node)) return indexed;
+
+    if (depth > FILTER_GROUP_MAX_DEPTH) {
+      const extra = descendantCount(node);
+      const room = FILTER_MAX_NODES - count;
+      count += Math.min(extra, room);
+      indexed.overflowTail = extra > room;
+      return indexed;
+    }
 
     const children = [];
     for (const child of node.filters) {
-      if (
-        count >= FILTER_MAX_NODES ||
-        (isFilterGroup(child) && depth + 1 > FILTER_GROUP_MAX_DEPTH)
-      ) {
+      if (count >= FILTER_MAX_NODES) {
         children.push(overflowEntry(depth + 1));
         break;
       }
       const next = visit(child, depth + 1);
       children.push(next);
-      if (next.overflow) break;
+      if (next.overflow || next.overflowTail) break;
     }
     indexed.children = children;
     return indexed;

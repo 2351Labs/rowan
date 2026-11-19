@@ -141,6 +141,50 @@ describe("saved view store", () => {
     expect((await store.list()).map((view) => view.name).sort()).to.deep.equal(["Alpha", "Beta"]);
   });
 
+  it("does not let a slower initial load erase a save", async () => {
+    let release;
+    const gate = new Promise((resolve) => {
+      release = resolve;
+    });
+    let loads = 0;
+    const stored = [];
+    const storage = {
+      load() {
+        loads += 1;
+        return gate.then(() => stored.map((view) => ({ ...view })));
+      },
+      async save(_key, views) {
+        stored.splice(0, stored.length, ...views);
+      },
+    };
+    const store = createSavedViewStore({ key: "orders", storage });
+    const listing = store.list();
+    const saving = store.save({ name: "Held orders", state: { density: "sm" } });
+    try {
+      for (let step = 0; step < 8 && loads === 0; step += 1) await Promise.resolve();
+      expect(loads).to.equal(1);
+    } finally {
+      release();
+    }
+    await Promise.all([listing, saving]);
+    expect((await store.list()).map((view) => view.name)).to.deep.equal(["Held orders"]);
+  });
+
+  it("rejects a save when storage is unavailable", async () => {
+    const store = createSavedViewStore({
+      key: "orders",
+      storage: createLocalStorageSavedViewStorage(null),
+    });
+    let threw = false;
+    try {
+      await store.save({ name: "Held orders", state: {} });
+    } catch {
+      threw = true;
+    }
+    expect(threw).to.equal(true);
+    expect(await store.list()).to.deep.equal([]);
+  });
+
   it("round-trips through a localStorage adapter and drops unknown versions", async () => {
     const backend = new Map();
     const storage = createLocalStorageSavedViewStorage({
@@ -486,6 +530,25 @@ describe("rowan-saved-views", () => {
     await settle();
     expect(views.shadowRoot.activeElement?.dataset.action).to.equal("confirm-delete");
     expect(views.shadowRoot.activeElement.textContent).to.equal("Confirm remove");
+
+    views.shadowRoot.querySelector("[data-action='confirm-delete']").click();
+    await settle();
+    expect(views.views).to.deep.equal([]);
+    expect(views.shadowRoot.activeElement?.className ?? "").to.equal("name-input");
+  });
+
+  it("serializes overlapping saves through one default adapter", async () => {
+    const table = ordersTable();
+    table.id = `orders-${Date.now()}`;
+    const views = document.createElement("rowan-saved-views");
+    views.share = "off";
+    views.table = table;
+    document.body.append(table, views);
+    await settle();
+    await Promise.all([views.save("Alpha"), views.save("Beta")]);
+    await settle();
+    expect(views.views.map((view) => view.name).sort()).to.deep.equal(["Alpha", "Beta"]);
+    localStorage.removeItem(`rowan-saved-views:${table.id}`);
   });
 
   it("loads the table key after connecting and still applies a shared link when storage fails", async () => {

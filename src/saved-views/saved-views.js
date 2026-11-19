@@ -236,7 +236,8 @@ export function createLocalStorageSavedViewStorage(backend) {
     },
     save(key, views) {
       const storage = resolve();
-      storage?.setItem(String(key), JSON.stringify(normalizeStoredList(views)));
+      if (!storage) throw new Error("Saved view storage is unavailable.");
+      storage.setItem(String(key), JSON.stringify(normalizeStoredList(views)));
     },
   };
 }
@@ -252,6 +253,8 @@ export function createSavedViewStore(options) {
   const listeners = new Set();
   let views = [];
   let loaded = false;
+  let loading = null;
+  let generation = 0;
   let tail = Promise.resolve();
 
   function exclusive(task) {
@@ -263,17 +266,33 @@ export function createSavedViewStore(options) {
     return run;
   }
 
-  async function read() {
-    if (!loaded) {
-      views = normalizeStoredList(await storage.load(key));
-      loaded = true;
+  function read() {
+    if (loaded) return Promise.resolve(views);
+    if (!loading) {
+      const generationAtStart = generation;
+      loading = Promise.resolve(storage.load(key)).then(
+        (loadedViews) => {
+          if (!loaded && generation === generationAtStart) {
+            views = normalizeStoredList(loadedViews);
+            loaded = true;
+          }
+          loading = null;
+          return views;
+        },
+        (error) => {
+          loading = null;
+          throw error;
+        },
+      );
     }
-    return views;
+    return loading;
   }
 
   async function write(next, reason) {
     const staged = normalizeStoredList(next);
     await storage.save(key, staged);
+    generation += 1;
+    loaded = true;
     views = staged;
     const detail = { views: cloneViews(views), reason };
     for (const listener of listeners) listener(detail);
@@ -287,8 +306,8 @@ export function createSavedViewStore(options) {
       return cloneViews(await read());
     },
     async get(id) {
-      const views = await read();
-      const found = views.find((view) => view.id === normalizeText(id));
+      const current = await read();
+      const found = current.find((view) => view.id === normalizeText(id));
       return found ? cloneView(found) : null;
     },
     /**
@@ -564,6 +583,7 @@ export class RowanSavedViews extends BaseElement {
   #boundTable = null;
   #tableAvailabilityCleanup = null;
   #storageAdapter = null;
+  #defaultStorage = null;
   #messages = {};
   #store = null;
   #unsubscribe = null;
@@ -815,9 +835,15 @@ export class RowanSavedViews extends BaseElement {
     return `rowan-saved-views:${this.storageKey || this.forTable || this.#boundTable?.id || "default"}`;
   }
 
+  #resolvedStorage() {
+    if (this.#storageAdapter) return this.#storageAdapter;
+    this.#defaultStorage ??= createLocalStorageSavedViewStorage();
+    return this.#defaultStorage;
+  }
+
   #activeStore() {
     const key = this.#storageKey();
-    const storage = this.#storageAdapter ?? createLocalStorageSavedViewStorage();
+    const storage = this.#resolvedStorage();
     if (!this.#store || this.#store.key !== key || this.#store.storage !== storage) {
       this.#unsubscribe?.();
       this.#unsubscribe = null;
@@ -844,7 +870,11 @@ export class RowanSavedViews extends BaseElement {
       this.#showError(this.#message("loadFailed"));
       views = [];
     }
-    if (token !== this.#bootToken || !this.isConnected || key !== this.#storageKey()) return;
+    if (token !== this.#bootToken || !this.isConnected) return;
+    if (key !== this.#storageKey()) {
+      void this.#boot();
+      return;
+    }
     this.#views = views;
     this.#loadedKey = key;
     this.requestRender();
@@ -1117,6 +1147,10 @@ export class RowanSavedViews extends BaseElement {
       input.select();
       return;
     }
+    if (preserve?.action === "name") {
+      this.#nameInput?.focus();
+      return;
+    }
     if (!preserve) return;
     const same = this.#list.querySelector(
       `[data-view-id="${CSS.escape(preserve.id)}"] [data-action="${CSS.escape(preserve.action)}"]`,
@@ -1124,7 +1158,8 @@ export class RowanSavedViews extends BaseElement {
     const row = this.#list.querySelector(
       `[data-view-id="${CSS.escape(preserve.id)}"] [data-action="apply"]`,
     );
-    const next = same || row || this.#list.querySelector("[data-action='apply']");
+    const next =
+      same || row || this.#list.querySelector("[data-action='apply']") || this.#nameInput;
     if (next instanceof HTMLElement) next.focus();
   }
 
@@ -1180,6 +1215,9 @@ export class RowanSavedViews extends BaseElement {
     }
     if (action === "confirm-delete") {
       this.#confirmDeleteId = "";
+      if (!this.#views.some((view) => view.id !== id)) {
+        this.#pendingFocus = { id: "", action: "name" };
+      }
       void this.delete(id);
       return;
     }

@@ -239,6 +239,33 @@ describe("applyFilters", () => {
       value: "Admin",
     }));
     expect(applyFilters(rows, wide, fields)).to.deep.equal([]);
+
+    let overDepth = {
+      join: "or",
+      filters: [
+        { join: "and", filters: [{ field: "role", operator: "equals", value: "Viewer" }] },
+        { field: "role", operator: "equals", value: "Admin" },
+      ],
+    };
+    for (let depth = 0; depth < 3; depth += 1) overDepth = { join: "or", filters: [overDepth] };
+    expect(applyFilters(rows, [overDepth], fields).map((row) => row.id)).to.deep.equal(["1"]);
+
+    let bulky = {
+      join: "or",
+      filters: [
+        {
+          join: "and",
+          filters: Array.from({ length: 50 }, () => ({
+            field: "role",
+            operator: "equals",
+            value: "Admin",
+          })),
+        },
+        { field: "role", operator: "equals", value: "Admin" },
+      ],
+    };
+    for (let depth = 0; depth < 3; depth += 1) bulky = { join: "or", filters: [bulky] };
+    expect(applyFilters(rows, [bulky], fields)).to.deep.equal([]);
   });
 
   it("validates shape, fields, depth, and size without filtering rows", () => {
@@ -280,5 +307,9 @@ describe("applyFilters", () => {
     expect(
       validateFilters([{ field: "role", operator: "equals", value: "Admin" }], fields).valid,
     ).to.equal(true);
+    expect(validateFilters([{ field: "missing", operator: "bogus" }], []).valid).to.equal(false);
+    expect(validateFilters([{ field: "missing", operator: "equals", value: "x" }]).valid).to.equal(
+      true,
+    );
   });
 });

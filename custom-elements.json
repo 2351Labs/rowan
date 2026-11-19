@@ -12175,7 +12175,7 @@
               }
             }
           ],
-          "description": "Checks a filter tree against the stable group contract.\nPass `fields` to also reject unknown field ids and operators. Custom\noperators are valid when that field lists them. This does not run the\npredicates: `applyFilters` only implements the built-in operators.\nA non-array `filters` value is invalid here. `applyFilters` treats that\nsame value as no filters.",
+          "description": "Checks a filter tree against the stable group contract.\nPass `fields` to also reject unknown field ids and operators. An empty\ncatalog rejects every field. Omitting `fields` checks shape only. Custom\noperators are valid when that field lists them. This does not run the\npredicates: `applyFilters` only implements the built-in operators.\nA non-array `filters` value is invalid here. `applyFilters` treats that\nsame value as no filters.",
           "return": {
             "type": {
               "text": "{ valid: boolean, issues: RowanFilterIssue[] }"

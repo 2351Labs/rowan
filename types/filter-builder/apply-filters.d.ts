@@ -12,7 +12,8 @@ export function isFilterGroup(value: unknown): value is {
 };
 /**
  * Checks a filter tree against the stable group contract.
- * Pass `fields` to also reject unknown field ids and operators. Custom
+ * Pass `fields` to also reject unknown field ids and operators. An empty
+ * catalog rejects every field. Omitting `fields` checks shape only. Custom
  * operators are valid when that field lists them. This does not run the
  * predicates: `applyFilters` only implements the built-in operators.
  * A non-array `filters` value is invalid here. `applyFilters` treats that
