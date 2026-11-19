@@ -6,6 +6,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
+## 0.24.0 - 2026-11-19
+
 ### Added
 
 - `rowan-saved-views` saves, names, lists, renames, deletes, defaults, and applies a table view. The view is table-view-state version 2: filters (including nested groups), sort, page, visible columns, column order, column widths, density, and grouping. Storage is an adapter. The default adapter is `localStorage`; pass `storage` for a server. `rowan-saved-views-change`, cancelable `rowan-saved-view-apply`, and `rowan-saved-view-share` report the change. Share writes the version 2 snapshot to the `view` query parameter. Set `saved-views` on `rowan-table-toolbar` to mount the control. That module loads on first use, so the table's initial bundle stays the same.
@@ -15,6 +17,8 @@ Rowan versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Changed
 
+- Getting-started docs pin `@rowan-ui/core@0.24.0`. First screen stays `rowan-app-layout`, `rowan-table`, `rowan-filter-builder`, and `rowan-data-state`. Hosts still do not fetch.
+- The Vite, React, and Vue starters and the admin template depend on `@rowan-ui/*@^0.23.0 || ^0.24.0`. Inside this repo that links the workspace packages. StackBlitz still installs published 0.23.4 until 0.24.0 is on npm.
 - Nested AND/OR filter groups are stable. The top-level filter list stays an implicit AND. A group is `{ join: "and" | "or", filters }`. A node with `field` stays a leaf. Groups nest at most four levels. A tree holds at most 40 nodes. Deeper groups and extra nodes do not match in `applyFilters`, and the filter builder drops them on assign. Toolbar chips still show one chip per group. Server mode still passes the tree to `dataSource.getRows`.
 - Table view state version 2 is the stable snapshot. `normalizeTableViewState` always writes version 2. Version 1 input is migrated. Any other explicit version, and malformed JSON, restore as the empty version 2 state.
 

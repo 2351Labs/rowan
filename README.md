@@ -32,7 +32,7 @@ That is the brief for this library.
 
 The mark is an R with a single berry in the counter. The letter is the product. The berry is the reminder: keep the accent small.
 
-**Current version:** `0.23.4` · **Status:** Pre-1.0 (most components are Stable)
+**Current version:** `0.24.0` · **Status:** Pre-1.0 (most components are Stable)
 
 ## Quick Start
 
@@ -80,7 +80,7 @@ table.config = {
 
 ### Bundlers
 
-Each component's CSS is a string inside its JavaScript module. The element adopts that string as a constructable stylesheet (`adoptedStyleSheets`). Vite, esbuild, webpack, and Rspack can prebundle the module. There is no `new URL("./component.css", import.meta.url)` for the bundler to rewrite, and you do not need `optimizeDeps.exclude`. The admin template and starters install `@rowan-ui/*@^0.23.0` and use that default Vite config.
+Each component's CSS is a string inside its JavaScript module. The element adopts that string as a constructable stylesheet (`adoptedStyleSheets`). Vite, esbuild, webpack, and Rspack can prebundle the module. There is no `new URL("./component.css", import.meta.url)` for the bundler to rewrite, and you do not need `optimizeDeps.exclude`. The admin template and starters install `@rowan-ui/*@^0.23.0 || ^0.24.0` and use that default Vite config. StackBlitz still resolves published 0.23.4 until 0.24.0 is on npm.
 
 The `.css` files remain in the package next to each component if you want to read or import them yourself. Chart stylesheets inline the shared hover and point-control rules, so those files have no runtime `@import`.
 
@@ -285,7 +285,7 @@ Automated testing runs on Chromium, Firefox, and WebKit.
 
 ## Status
 
-Rowan is at **version 0.23.4**. The public API is **Stable** (frozen), including nested filter groups and saved views:
+Rowan is at **version 0.24.0**. The public API is **Stable** (frozen), including nested filter groups and saved views:
 
 - **Stable**: attributes, properties, events, and slots will not change in breaking ways. Nested filter groups, table-view-state version 2, and saved views are part of that surface
 - **Experimental**: none in this release

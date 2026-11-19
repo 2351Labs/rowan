@@ -13,4 +13,4 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5177/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-vue` uses the local workspace copy. StackBlitz installs published `@rowan-ui/core@^0.23.0`. Component CSS is embedded in the JavaScript module, so Vite can prebundle it.
+Open http://127.0.0.1:5177/ . Inside the Rowan repo, `npm run dev --workspace=@rowan-ui/starter-vue` uses the local workspace copy. StackBlitz installs published `@rowan-ui/core@^0.23.0 || ^0.24.0` (0.23.4 until 0.24.0 is on npm). Component CSS is embedded in the JavaScript module, so Vite can prebundle it.
